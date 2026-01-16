@@ -14,7 +14,7 @@ const urlsToCache = [
   '/group-detail.html',
   '/workout.html',
   '/workout-active.html',
-  '/logo.PNG',
+  '/Logo.PNG',
   '/manifest.json'
 ];
 
