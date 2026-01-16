@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Buddy | Stop Juggling Fitness Apps. Start Crushing Consistency.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --text-light: #888888;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f9f9f9;
+            --card-border: #e8e8e8;
+            --dark-bg: #1a1a1a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back {
+            padding: 8px 16px;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-cta {
+            padding: 10px 22px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .nav-cta:hover {
+            background: #2a2a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.2);
+        }
+
+        /* Section Base */
+        section {
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 140px 20px 100px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(ellipse at top right, rgba(153, 49, 60, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero .container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(55, 55, 55, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .hero-note {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-logo-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+
+        .hero-logo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            filter: drop-shadow(0 0 40px rgba(153, 49, 60, 0.4));
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .hero-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(153, 49, 60, 0.15);
+            border-radius: 50%;
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+
+        .hero-ring-1 { width: 240px; height: 240px; }
+        .hero-ring-2 { width: 280px; height: 280px; animation-delay: 0.3s; border-width: 1px; }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(153, 49, 60, 0.4)); }
+            50% { filter: drop-shadow(0 0 50px rgba(153, 49, 60, 0.5)); }
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        /* Problem Section */
+        .problem {
+            background: var(--dark-bg);
+            color: #ffffff;
+        }
+
+        .problem .section-label {
+            color: var(--accent-color);
+        }
+
+        .problem .section-title {
+            color: #ffffff;
+        }
+
+        .problem .section-subtitle {
+            color: #aaa;
+        }
+
+        .problem-highlight {
+            display: inline-block;
+            background: rgba(153, 49, 60, 0.3);
+            color: var(--accent-color);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        /* Solution Section */
+        .solution {
+            background: var(--card-bg);
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(153, 49, 60, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card.featured {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #2a2a2a 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-tagline {
+            font-style: italic;
+            color: var(--accent-color);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card.featured .feature-tagline {
+            color: var(--accent-color);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .feature-card.featured p {
+            color: #aaa;
+        }
+
+        /* Blurred coming soon cards */
+        .feature-card.blurred {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card.blurred > *:not(.blur-overlay) {
+            filter: blur(6px);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .blur-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .blur-overlay span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(153, 49, 60, 0.2);
+        }
+
+        .feature-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feature-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 30px rgba(153, 49, 60, 0.4));
+        }
+
+        /* Philosophy Section */
+        .philosophy {
+            background: var(--bg-color);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .philosophy-list {
+            list-style: none;
+        }
+
+        .philosophy-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .philosophy-list li:last-child {
+            border-bottom: none;
+        }
+
+        .philosophy-check {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .philosophy-text strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .philosophy-text span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .philosophy-visual {
+            text-align: center;
+        }
+
+        .philosophy-logo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            opacity: 0.85;
+        }
+
+        .philosophy-quote {
+            margin-top: 24px;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            background: var(--card-bg);
+        }
+
+        .timeline {
+            margin-top: 50px;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 120px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--card-border);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 30px;
+            padding: 24px 0;
+            position: relative;
+        }
+
+        .timeline-day {
+            width: 90px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .timeline-day strong {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+        }
+
+        .timeline-day span {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px 24px;
+        }
+
+        .timeline-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .timeline-content strong {
+            color: var(--text-color);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--bg-color);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .testimonial-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background: var(--card-bg);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 900px;
+            margin: 50px auto 0;
+        }
+
+        .pricing-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent-color);
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        .pricing-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .pricing-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .pricing-price {
+            margin-bottom: 8px;
+        }
+
+        .pricing-amount {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .pricing-amount .currency {
+            font-size: 1.5rem;
+            vertical-align: super;
+        }
+
+        .pricing-period {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .pricing-save {
+            display: inline-block;
+            background: rgba(153, 49, 60, 0.1);
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .pricing-features li.disabled {
+            opacity: 0.4;
+        }
+
+        .pricing-features li.disabled::before {
+            content: '—';
+            color: var(--text-light);
+        }
+
+        .pricing-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-btn:hover {
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: var(--text-color);
+            border-color: var(--text-color);
+            color: #ffffff;
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            background: #2a2a2a;
+            box-shadow: 0 8px 30px rgba(55, 55, 55, 0.3);
+        }
+
+        .pricing-value {
+            max-width: 700px;
+            margin: 50px auto 0;
+            text-align: center;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .pricing-value p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .pricing-value strong {
+            color: var(--accent-color);
+        }
+
+        .pricing-guarantee {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            background: var(--bg-color);
+            overflow-x: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 50px;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .comparison-table th {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--card-bg);
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .comparison-table th.highlight,
+        .comparison-table td.highlight {
+            background: rgba(153, 49, 60, 0.05);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .comparison-table .check {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .comparison-table .cross {
+            color: var(--text-light);
+        }
+
+        /* Who It's For */
+        .who-for {
+            background: var(--card-bg);
+        }
+
+        .who-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .who-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 36px;
+        }
+
+        .who-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .who-card.positive h3 {
+            color: var(--accent-color);
+        }
+
+        .who-card ul {
+            list-style: none;
+        }
+
+        .who-card ul li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .who-card.positive ul li::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .who-card.negative ul li::before {
+            content: '✗';
+            color: var(--text-light);
+        }
+
+        /* FAQ Section */
+        .faq {
+            background: var(--bg-color);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .faq-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Technical Section */
+        .technical {
+            background: var(--dark-bg);
+            color: #ffffff;
+        }
+
+        .technical .section-label {
+            color: var(--accent-color);
+        }
+
+        .technical .section-title {
+            color: #ffffff;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .tech-item .icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .tech-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .tech-item p {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            text-align: center;
+            padding: 120px 20px;
+            position: relative;
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(153, 49, 60, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .final-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 30px rgba(153, 49, 60, 0.3));
+        }
+
+        .final-cta h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+        }
+
+        .final-cta > p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+        }
+
+        .final-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 25px rgba(55, 55, 55, 0.2);
+            margin-bottom: 24px;
+        }
+
+        .final-cta-btn:hover {
+            transform: translateY(-2px);
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+        }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .trust-badges span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 60px 20px 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto 40px;
+        }
+
+        .footer-brand img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand p {
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand .philosophy-short {
+            font-size: 0.8rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .footer-links h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-logo-wrapper {
+                width: 220px;
+                height: 220px;
+            }
+
+            .hero-logo {
+                width: 160px;
+                height: 160px;
+            }
+
+            .hero-ring-1 { width: 200px; height: 200px; }
+            .hero-ring-2 { width: 220px; height: 220px; }
+
+            .hero-cta-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card.featured {
+                grid-column: span 1;
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .philosophy-grid,
+            .who-grid,
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-day {
+                width: auto;
+                text-align: left;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 16px;
+                padding-left: 40px;
+            }
+
+            .timeline-dot {
+                position: absolute;
+                left: 14px;
+            }
+
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 12px 10px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav {
+                padding: 12px 20px;
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 70px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .stat-item h3 {
+                font-size: 2rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-badges {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Core Buddy">
+            <span>CORE BUDDY</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-back">← Back</a>
+            <span class="nav-cta" style="opacity: 0.6; cursor: not-allowed;">Coming Soon</span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Stop Juggling Fitness Apps. Start Crushing Consistency.</h1>
+                <p class="hero-sub">One app. Five tools. Zero guilt. Core Buddy gives you everything you need to stay fit without the overwhelm.</p>
+                <div class="hero-cta-group">
+                    <span class="btn-primary" style="opacity: 0.6; cursor: not-allowed;">Coming Soon</span>
+                    <a href="#features" class="btn-secondary">See Features</a>
+                </div>
+                <p class="hero-note">Join thousands who've ditched the app chaos for one simple system.</p>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-logo-wrapper">
+                    <div class="hero-ring hero-ring-1"></div>
+                    <div class="hero-ring hero-ring-2"></div>
+                    <img src="logo.png" alt="Core Buddy" class="hero-logo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+        <div class="container">
+            <span class="section-label">The Problem</span>
+            <h2 class="section-title">You're Paying for Too Many Apps</h2>
+            <p class="section-subtitle">MyFitnessPal for nutrition. Strava for tracking. A workout app. Maybe a habit tracker. You're spending £35-50/month and still jumping between apps that don't talk to each other.</p>
+            <span class="problem-highlight">Sound familiar? There's a better way.</span>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution">
+        <div class="container">
+            <span class="section-label">The Solution</span>
+            <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
+            <p class="section-subtitle">Core Buddy is your complete fitness system in one app. No app switching. No fragmented data. No guilt trips. Just five simple tools that work together to help you build sustainable habits.</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Features</span>
+                <h2 class="section-title">Five Tools. One App.</h2>
+            </div>
+
+            <div class="features-grid">
+                <!-- Featured: Instant Workouts -->
+                <div class="feature-card featured fade-in">
+                    <div>
+                        <div class="feature-icon">🎲</div>
+                        <h3>Instant Workouts</h3>
+                        <p class="feature-tagline">No time? No problem.</p>
+                        <p>Hit randomise and get a workout in 5-30 minutes based on what you have. Dumbbells? Bodyweight? At home? We've got you covered. No decision fatigue. No boring routines. Just press play and move.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <img src="logo.png" alt="" class="feature-logo">
+                    </div>
+                </div>
+
+                <!-- Simple Tracking -->
+                <div class="feature-card blurred fade-in">
+                    <div class="feature-icon">💪</div>
+                    <h3>Simple Tracking</h3>
+                    <p class="feature-tagline">Log it and forget it.</p>
+                    <p>Track your workouts in 10 seconds. No complicated sets and reps required. Just mark what you did, how long, and how it felt. See your weekly progress at a glance.</p>
+                    <div class="blur-overlay"><span>Coming Soon</span></div>
+                </div>
+
+                <!-- Protein + Water -->
+                <div class="feature-card blurred fade-in">
+                    <div class="feature-icon">🥩</div>
+                    <h3>Protein + Water Focus</h3>
+                    <p class="feature-tagline">Nutrition without the obsession.</p>
+                    <p>Forget calorie counting. Core Buddy focuses on what matters: hitting your protein goal and drinking enough water. Quick-log with one tap. No shame. No red/yellow/green food labels.</p>
+                    <div class="blur-overlay"><span>Coming Soon</span></div>
+                </div>
+
+                <!-- Consistency Analytics -->
+                <div class="feature-card blurred fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3>Consistency Analytics</h3>
+                    <p class="feature-tagline">Weekly wins, not daily perfection.</p>
+                    <p>Track your success week by week, not day by day. Hit 3-4 workouts per week and you're winning. Miss a week? Mark it as a "Life Week" and keep going. No guilt when life happens.</p>
+                    <div class="blur-overlay"><span>Coming Soon</span></div>
+                </div>
+
+                <!-- Buddy Accountability -->
+                <div class="feature-card blurred fade-in">
+                    <div class="feature-icon">👥</div>
+                    <h3>Buddy Accountability</h3>
+                    <p class="feature-tagline">Stay motivated together.</p>
+                    <p>Connect with friends. See who's working out today. Join groups. React with a 💪 when your buddy crushes it. Climb leaderboards. Earn badges. All the accountability without the comparison anxiety.</p>
+                    <div class="blur-overlay"><span>Coming Soon</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="philosophy">
+        <div class="container">
+            <span class="section-label">Our Approach</span>
+            <h2 class="section-title">The Core Buddy Philosophy</h2>
+
+            <div class="philosophy-grid">
+                <ul class="philosophy-list">
+                    <li>
+                        <span class="philosophy-check">✓</span>
+                        <div class="philosophy-text">
+                            <strong>Just keep moving</strong>
+                            <span>Any workout beats no workout</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="philosophy-check">✓</span>
+                        <div class="philosophy-text">
+                            <strong>Stay consistent</strong>
+                            <span>3-4 times per week, every week</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="philosophy-check">✓</span>
+                        <div class="philosophy-text">
+                            <strong>Prioritize protein</strong>
+                            <span>Fuel your body properly</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="philosophy-check">✓</span>
+                        <div class="philosophy-text">
+                            <strong>Drink water</strong>
+                            <span>The simplest habit that matters</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="philosophy-check">✓</span>
+                        <div class="philosophy-text">
+                            <strong>Progress over perfection</strong>
+                            <span>Sustainable beats intense</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="philosophy-visual">
+                    <img src="logo.png" alt="" class="philosophy-logo">
+                    <p class="philosophy-quote">"It's not about the perfect program. It's about showing up consistently and doing the basics right."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">How It Works</span>
+                <h2 class="section-title">Your Week With Core Buddy</h2>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">
+                        <strong>Monday</strong>
+                        <span>Morning</span>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <p>Open the app. Hit <strong>"Randomise Workout."</strong> Get a 20-minute dumbbell session. Complete it. Auto-logs to your tracker. You're <strong>1/4 workouts</strong> for the week.</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">
+                        <strong>Monday</strong>
+                        <span>Afternoon</span>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <p>Quick notification: <strong>"Don't forget protein 🥩"</strong> Log your meals with one tap. Hit your 180g goal.</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">
+                        <strong>Wednesday</strong>
+                        <span></span>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <p>See that <strong>6 buddies worked out today.</strong> Get motivated. Do another 15-minute session. Now <strong>2/4</strong> for the week.</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">
+                        <strong>Friday</strong>
+                        <span></span>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <p>Crush workout #3. Dashboard shows: <strong>"3/4 workouts this week ✅"</strong> You're winning.</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">
+                        <strong>Sunday</strong>
+                        <span></span>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <p>Weekly summary: <strong>"Great week! 3 workouts, 6/7 protein days, 7/7 water days."</strong> Bi-weekly progress photo check-in shows results.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Pricing</span>
+                <h2 class="section-title">One Price. Complete Access.</h2>
+            </div>
+
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3 class="pricing-name">Free Forever</h3>
+                    <p class="pricing-desc">Get started with the basics</p>
+                    <div class="pricing-price">
+                        <div class="pricing-amount"><span class="currency">£</span>0</div>
+                        <div class="pricing-period">forever free</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Limited workout options</li>
+                        <li>Basic tracking</li>
+                        <li>1 buddy connection</li>
+                        <li>Current week analytics</li>
+                        <li class="disabled">Full workout library (50+)</li>
+                        <li class="disabled">Unlimited buddies</li>
+                        <li class="disabled">Leaderboards & badges</li>
+                    </ul>
+                    <span class="pricing-btn" style="opacity: 0.6; cursor: not-allowed;">Coming Soon</span>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3 class="pricing-name">Core Buddy Pro</h3>
+                    <p class="pricing-desc">The complete experience</p>
+                    <div class="pricing-price">
+                        <div class="pricing-amount"><span class="currency">£</span>14.99</div>
+                        <div class="pricing-period">per month</div>
+                    </div>
+                    <span class="pricing-save">Or £119/year (Save £60)</span>
+                    <ul class="pricing-features">
+                        <li>50+ workout library</li>
+                        <li>Unlimited randomisation</li>
+                        <li>Unlimited buddies</li>
+                        <li>Group challenges & leaderboards</li>
+                        <li>Badges & achievements</li>
+                        <li>Full analytics (all-time data)</li>
+                        <li>Body tracker with progress photos</li>
+                        <li>Personal social feed</li>
+                        <li>Daily challenges</li>
+                        <li>Priority support & ad-free</li>
+                    </ul>
+                    <span class="pricing-btn" style="opacity: 0.6; cursor: not-allowed;">Coming Soon</span>
+                </div>
+            </div>
+
+            <div class="pricing-value">
+                <p>Replace MyFitnessPal (£20) + Strava Premium (£12) + Workout app (£15) = <strong>£47/month</strong><br>Get everything for just <strong>£15/month</strong>. Save £32 every month.</p>
+            </div>
+
+            <p class="pricing-guarantee">💳 30-day money-back guarantee. No questions asked.</p>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Comparison</span>
+                <h2 class="section-title">Why Core Buddy Wins</h2>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th class="highlight">Core Buddy</th>
+                        <th>MyFitnessPal</th>
+                        <th>Strava</th>
+                        <th>Nike Training</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Workout Randomiser</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>5-Minute Quick Workouts</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">N/A</td>
+                        <td class="cross">N/A</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Simple Nutrition</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">Complex</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Weekly Consistency Focus</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">Daily</td>
+                    </tr>
+                    <tr>
+                        <td>Works Any Equipment</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">N/A</td>
+                        <td class="cross">N/A</td>
+                        <td class="cross">Partial</td>
+                    </tr>
+                    <tr>
+                        <td>Social Feed (Private/Public)</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">Partial</td>
+                        <td class="cross">Partial</td>
+                    </tr>
+                    <tr>
+                        <td>Leaderboards & Badges</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="check">✓</td>
+                        <td class="cross">Partial</td>
+                    </tr>
+                    <tr>
+                        <td>Progress Photos</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>All-in-One System</td>
+                        <td class="highlight check">✓</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                        <td class="cross">✗</td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td class="highlight"><strong>£15/mo</strong></td>
+                        <td>£20/mo</td>
+                        <td>£12/mo</td>
+                        <td>£15/mo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Who It's For Section -->
+    <section class="who-for">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Is It Right For You?</span>
+                <h2 class="section-title">Built For Real People</h2>
+            </div>
+
+            <div class="who-grid">
+                <div class="who-card positive">
+                    <h3>✓ Core Buddy is perfect if you:</h3>
+                    <ul>
+                        <li>Want results without complexity</li>
+                        <li>Are tired of paying for multiple apps</li>
+                        <li>Have 5-30 minutes for workouts, not hours</li>
+                        <li>Want accountability with leaderboards and badges</li>
+                        <li>Need consistency, not perfection</li>
+                        <li>Hate decision fatigue ("What workout should I do?")</li>
+                        <li>Work out at home, gym, or anywhere</li>
+                        <li>Want to track protein without calorie obsession</li>
+                        <li>Need flexible goals that adapt to real life</li>
+                        <li>Want to share your journey (publicly or privately)</li>
+                    </ul>
+                </div>
+                <div class="who-card negative">
+                    <h3>✗ Not for you if:</h3>
+                    <ul>
+                        <li>You want ultra-detailed macro tracking</li>
+                        <li>You need sport-specific training (marathon prep, powerlifting)</li>
+                        <li>You prefer working with a live coach</li>
+                        <li>You want class-based workouts (like Peloton)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">Questions? We've Got Answers.</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item fade-in">
+                    <h4>Do I need equipment?</h4>
+                    <p>Nope! Core Buddy works with whatever you have: bodyweight, dumbbells, barbells, or a full gym. The randomiser adapts to your equipment.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Can I do a quick 5-minute workout?</h4>
+                    <p>Absolutely! Core Buddy offers workouts from 5-30 minutes. Perfect for busy days when you just need to move.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>How do leaderboards work?</h4>
+                    <p>Compete with your friends and groups on weekly workout counts, consistency streaks, and challenges. Friendly competition that keeps you motivated.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Can I keep my progress private?</h4>
+                    <p>Yes! Your social feed can be set to private (only you see it) or public (share with buddies). You control what you share.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Can I use it offline?</h4>
+                    <p>Yes! Core Buddy is a Progressive Web App (PWA) that works offline. Complete workouts and log data without internet.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What if I can't hit 3-4 workouts per week?</h4>
+                    <p>That's okay! Adjust your goal to 2-3. Core Buddy adapts to YOUR reality. The point is consistency at whatever level works for you.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Do I have to take progress photos?</h4>
+                    <p>Nope! Progress photos are optional. Some people love them, some don't. Use the features that work for you.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What badges can I earn?</h4>
+                    <p>Earn badges for consistency streaks, total workouts, challenges completed, helping buddies, and more. Each achievement celebrates your progress.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Is my data private?</h4>
+                    <p>100%. Your photos, measurements, and stats are private by default. You control what (if anything) you share with buddies.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Can I cancel anytime?</h4>
+                    <p>Yes. Cancel anytime from your account settings. No penalties. No hassle.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Section -->
+    <section class="technical">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Technical</span>
+                <h2 class="section-title">Works Everywhere</h2>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-item fade-in">
+                    <div class="icon">📱</div>
+                    <h4>Install Like An App</h4>
+                    <p>Add to your home screen on iOS, Android, or desktop. No app store needed.</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="icon">📡</div>
+                    <h4>Works Offline</h4>
+                    <p>Complete workouts and log data without internet. Syncs when you're back online.</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="icon">🔔</div>
+                    <h4>Push Notifications</h4>
+                    <p>Get reminded about workouts, protein goals, and buddy activity.</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="icon">⚡</div>
+                    <h4>Fast Loading</h4>
+                    <p>Under 3 seconds to load. No waiting around.</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="icon">📷</div>
+                    <h4>Camera Integration</h4>
+                    <p>Take progress photos directly in the app. Stored securely.</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="icon">🔄</div>
+                    <h4>Syncs Everywhere</h4>
+                    <p>Access your data on phone, tablet, or computer.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <img src="logo.png" alt="" class="final-logo">
+        <h2>Ready To Simplify Your Fitness?</h2>
+        <p>Stop paying for apps that don't work together. Stop feeling guilty about missed workouts. Stop overcomplicating fitness. Start building sustainable habits with Core Buddy.</p>
+        <span class="final-cta-btn" style="opacity: 0.6; cursor: not-allowed;">Coming Soon</span>
+        <div class="trust-badges">
+            <span>🛡️ 30-day money-back guarantee</span>
+            <span>🔓 Cancel anytime</span>
+            <span>🔒 Your data is secure</span>
+            <span>👥 10,000+ happy users</span>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <img src="logo.png" alt="Core Buddy">
+                <p>Built for real people who want real results. No BS. No guilt. Just consistency.</p>
+                <p class="philosophy-short">Move 3-4x/week. Prioritize protein. Drink water. Stay consistent. Progress over perfection.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Mind Core Fitness. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scroll Animation -->
+    <script>
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        fadeElements.forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Your Free Trial | Mind Core Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f8f8f8;
+            --card-border: #e5e5e5;
+            --success-color: #2e7d32;
+            --error-color: #c62828;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-secure {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .nav-secure svg {
+            width: 16px;
+            height: 16px;
+            color: var(--success-color);
+        }
+
+        /* Main Layout */
+        .checkout-page {
+            padding: 100px 20px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 50px;
+            align-items: start;
+        }
+
+        /* Form Section */
+        .checkout-form-section {
+            padding: 40px;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+        }
+
+        .checkout-form-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .checkout-form-section > p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title .step {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(153, 49, 60, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #aaa;
+        }
+
+        .form-group input.error {
+            border-color: var(--error-color);
+        }
+
+        .form-group .error-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group input.error + .error-message {
+            display: block;
+        }
+
+        /* Card Input Styling */
+        .card-input-wrapper {
+            position: relative;
+        }
+
+        .card-icons {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .card-icons img {
+            height: 24px;
+            opacity: 0.5;
+        }
+
+        .card-input-wrapper input {
+            padding-right: 100px;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 18px 30px;
+            background: var(--accent-color);
+            border: none;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(153, 49, 60, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .form-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            position: sticky;
+            top: 100px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px;
+        }
+
+        .order-summary h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+        }
+
+        .plan-selected {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 20px;
+        }
+
+        .plan-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .plan-details h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .plan-details p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .order-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 0.95rem;
+        }
+
+        .order-line.total {
+            border-top: 2px solid var(--card-border);
+            margin-top: 12px;
+            padding-top: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .trial-notice {
+            background: rgba(46, 125, 50, 0.1);
+            border: 1px solid rgba(46, 125, 50, 0.3);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .trial-notice p {
+            color: var(--success-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .trial-notice .trial-date {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .features-included {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .features-included h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .features-included ul {
+            list-style: none;
+        }
+
+        .features-included li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .features-included li::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-color);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .checkout-page {
+                grid-template-columns: 1fr;
+                padding: 90px 16px 40px;
+                gap: 30px;
+            }
+
+            .order-summary {
+                order: -1;
+                position: static;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+
+            .checkout-form-section {
+                padding: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core">
+            <span>MIND CORE</span>
+        </a>
+        <div class="nav-secure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Secure Checkout
+        </div>
+    </nav>
+
+    <!-- Checkout Page -->
+    <div class="checkout-page">
+        <!-- Form Section -->
+        <div class="checkout-form-section">
+            <a href="pricing.html" class="back-link">← Back to plans</a>
+            <h1>Start Your Free Trial</h1>
+            <p>You won't be charged until your 7-day trial ends.</p>
+
+            <form id="checkoutForm" onsubmit="handleSubmit(event)">
+                <!-- Account Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span class="step">1</span>
+                        Create Your Account
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" placeholder="John" required>
+                            <span class="error-message">Please enter your first name</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" placeholder="Smith" required>
+                            <span class="error-message">Please enter your last name</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="john@example.com" required>
+                        <span class="error-message">Please enter a valid email</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Create Password</label>
+                        <input type="password" id="password" placeholder="Minimum 8 characters" required minlength="8">
+                        <span class="error-message">Password must be at least 8 characters</span>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <span class="step">2</span>
+                        Payment Details
+                    </div>
+                    <div class="form-group">
+                        <label for="cardName">Name on Card</label>
+                        <input type="text" id="cardName" placeholder="John Smith" required>
+                        <span class="error-message">Please enter the name on your card</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <div class="card-input-wrapper">
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19">
+                            <div class="card-icons">
+                                <svg width="38" height="24" viewBox="0 0 38 24"><rect width="38" height="24" rx="4" fill="#1A1F71"/><path d="M15 17.5l1.5-9h2.4l-1.5 9H15zm9.3-8.8c-.5-.2-1.2-.4-2.2-.4-2.4 0-4.1 1.3-4.1 3.1 0 1.3 1.2 2.1 2.2 2.5 1 .5 1.3.8 1.3 1.2 0 .6-.8 1-1.5 1-.9 0-1.5-.2-2.3-.5l-.3-.2-.3 2c.6.3 1.6.5 2.7.5 2.6 0 4.2-1.3 4.2-3.2 0-1.1-.6-1.9-2-2.5-.9-.4-1.4-.7-1.4-1.2 0-.4.4-.8 1.4-.8.8 0 1.4.2 1.8.4l.2.1.3-2z" fill="#fff"/></svg>
+                                <svg width="38" height="24" viewBox="0 0 38 24"><rect width="38" height="24" rx="4" fill="#EB001B" fill-opacity=".8"/><circle cx="15" cy="12" r="7" fill="#EB001B"/><circle cx="23" cy="12" r="7" fill="#F79E1B"/><path d="M19 7a7 7 0 0 0 0 10 7 7 0 0 0 0-10z" fill="#FF5F00"/></svg>
+                            </div>
+                        </div>
+                        <span class="error-message">Please enter a valid card number</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry">Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" required maxlength="5">
+                            <span class="error-message">Please enter expiry date</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvc">CVC</label>
+                            <input type="text" id="cvc" placeholder="123" required maxlength="4">
+                            <span class="error-message">Please enter CVC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Start My Free Trial</button>
+
+                <p class="form-footer">
+                    By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            
+            <div class="plan-selected">
+                <div class="plan-icon">👑</div>
+                <div class="plan-details">
+                    <h3>Premium Plan</h3>
+                    <p>Monthly billing</p>
+                </div>
+            </div>
+
+            <div class="order-line">
+                <span>Premium Monthly</span>
+                <span>£9.99/mo</span>
+            </div>
+            <div class="order-line">
+                <span>7-Day Free Trial</span>
+                <span style="color: var(--success-color);">-£9.99</span>
+            </div>
+            <div class="order-line total">
+                <span>Due Today</span>
+                <span>£0.00</span>
+            </div>
+
+            <div class="trial-notice">
+                <p>You won't be charged until<span class="trial-date" id="trialEndDate"></span></p>
+            </div>
+
+            <div class="features-included">
+                <h4>What's Included:</h4>
+                <ul>
+                    <li>Unlimited workout generation</li>
+                    <li>Earn badges & achievements</li>
+                    <li>Global leaderboard access</li>
+                    <li>Track all your stats</li>
+                    <li>Core Buddy feature</li>
+                    <li>Community access</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calculate trial end date (7 days from now)
+        function setTrialEndDate() {
+            const today = new Date();
+            const trialEnd = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('trialEndDate').textContent = trialEnd.toLocaleDateString('en-GB', options);
+        }
+        setTrialEndDate();
+
+        // Format card number with spaces
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || '';
+            e.target.value = formatted;
+        });
+
+        // Format expiry date
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value;
+        });
+
+        // Only allow numbers in CVC
+        document.getElementById('cvc').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Form submission (demo - redirects to welcome page)
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // Basic validation
+            const form = document.getElementById('checkoutForm');
+            const inputs = form.querySelectorAll('input[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                if (!input.value || (input.type === 'email' && !input.value.includes('@'))) {
+                    input.classList.add('error');
+                    isValid = false;
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            if (isValid) {
+                // Store user's name for welcome page
+                localStorage.setItem('userName', document.getElementById('firstName').value);
+                // Redirect to welcome page
+                window.location.href = 'welcome.html';
+            }
+        }
+
+        // Remove error class on input
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+            });
+        });
+    </script>
+</body>
+</html>

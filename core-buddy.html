@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Buddy | Mind Core Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f8f8f8;
+            --card-border: #e5e5e5;
+            --success-color: #2e7d32;
+            --online-color: #4caf50;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            position: relative;
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .nav-icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .core-buddy-page {
+            padding-top: 80px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .page-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .buddy-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .buddy-count strong {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Search Bar */
+        .search-section {
+            padding: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--accent-color);
+        }
+
+        .search-bar svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--card-border);
+            padding: 0 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        /* Buddy Card */
+        .buddy-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .buddy-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .buddy-avatar {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .buddy-avatar img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: var(--online-color);
+            border: 3px solid var(--bg-color);
+            border-radius: 50%;
+        }
+
+        .buddy-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .buddy-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .buddy-username {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .buddy-stats {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .buddy-stat {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .buddy-stat strong {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .buddy-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .buddy-btn {
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buddy-btn.primary {
+            background: var(--accent-color);
+            color: #ffffff;
+            border: none;
+        }
+
+        .buddy-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .buddy-btn.secondary {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--card-border);
+        }
+
+        .buddy-btn.secondary:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .buddy-btn.icon-only {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .buddy-btn.icon-only svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Request Card */
+        .request-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .request-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .request-avatar img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .request-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .request-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .request-actions .buddy-btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Groups Section */
+        .create-group-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .create-group-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: rgba(153, 49, 60, 0.05);
+        }
+
+        .create-group-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Group Card */
+        .group-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .group-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .group-members-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .group-badge {
+            padding: 6px 12px;
+            background: rgba(153, 49, 60, 0.1);
+            color: var(--accent-color);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .group-avatars {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .group-avatars img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-color);
+            margin-left: -10px;
+            object-fit: cover;
+        }
+
+        .group-avatars img:first-child {
+            margin-left: 0;
+        }
+
+        .group-avatars .more-count {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 3px solid var(--bg-color);
+            margin-left: -10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .group-stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .group-stat {
+            text-align: center;
+        }
+
+        .group-stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        .group-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            color: var(--card-border);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--accent-color);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .nav-logo span {
+                display: none;
+            }
+
+            .buddy-stats {
+                display: none;
+            }
+
+            .tabs {
+                padding: 0 10px;
+            }
+
+            .tab {
+                padding: 14px 8px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core">
+            <span>MIND CORE</span>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-icon-btn" title="Buddy Requests">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                <span class="notification-badge">2</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Core Buddy Page -->
+    <div class="core-buddy-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Core Buddy</h1>
+            <p>Train together, grow together</p>
+            <div class="buddy-count">
+                <span>👥</span>
+                <span><strong>7</strong> / 20 Core Buddies</span>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-section">
+            <div class="search-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" placeholder="Search by username..." id="searchInput">
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('buddies')">My Buddies</button>
+            <button class="tab" onclick="switchTab('requests')">
+                Requests
+                <span class="tab-badge">2</span>
+            </button>
+            <button class="tab" onclick="switchTab('groups')">My Groups</button>
+        </div>
+
+        <!-- Buddies Tab -->
+        <div class="tab-content active" id="buddies-tab">
+            <p class="section-title">Your Core Buddies (7)</p>
+            
+            <div class="buddy-card">
+                <div class="buddy-avatar">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" alt="Sarah">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="buddy-info">
+                    <div class="buddy-name">Sarah Johnson</div>
+                    <div class="buddy-username">@sarahj_fit</div>
+                    <div class="buddy-stats">
+                        <span class="buddy-stat"><strong>52</strong> workouts</span>
+                        <span class="buddy-stat"><strong>21</strong> day streak</span>
+                    </div>
+                </div>
+                <div class="buddy-actions">
+                    <button class="buddy-btn icon-only secondary" title="View Profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buddy-card">
+                <div class="buddy-avatar">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Mike">
+                </div>
+                <div class="buddy-info">
+                    <div class="buddy-name">Mike Chen</div>
+                    <div class="buddy-username">@mikechen</div>
+                    <div class="buddy-stats">
+                        <span class="buddy-stat"><strong>38</strong> workouts</span>
+                        <span class="buddy-stat"><strong>7</strong> day streak</span>
+                    </div>
+                </div>
+                <div class="buddy-actions">
+                    <button class="buddy-btn icon-only secondary" title="View Profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buddy-card">
+                <div class="buddy-avatar">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Emma">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="buddy-info">
+                    <div class="buddy-name">Emma Wilson</div>
+                    <div class="buddy-username">@emmaw</div>
+                    <div class="buddy-stats">
+                        <span class="buddy-stat"><strong>67</strong> workouts</span>
+                        <span class="buddy-stat"><strong>14</strong> day streak</span>
+                    </div>
+                </div>
+                <div class="buddy-actions">
+                    <button class="buddy-btn icon-only secondary" title="View Profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buddy-card">
+                <div class="buddy-avatar">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" alt="James">
+                </div>
+                <div class="buddy-info">
+                    <div class="buddy-name">James Taylor</div>
+                    <div class="buddy-username">@jtaylor</div>
+                    <div class="buddy-stats">
+                        <span class="buddy-stat"><strong>29</strong> workouts</span>
+                        <span class="buddy-stat"><strong>5</strong> day streak</span>
+                    </div>
+                </div>
+                <div class="buddy-actions">
+                    <button class="buddy-btn icon-only secondary" title="View Profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buddy-card">
+                <div class="buddy-avatar">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face" alt="Lisa">
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="buddy-info">
+                    <div class="buddy-name">Lisa Park</div>
+                    <div class="buddy-username">@lisapark</div>
+                    <div class="buddy-stats">
+                        <span class="buddy-stat"><strong>45</strong> workouts</span>
+                        <span class="buddy-stat"><strong>12</strong> day streak</span>
+                    </div>
+                </div>
+                <div class="buddy-actions">
+                    <button class="buddy-btn icon-only secondary" title="View Profile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Tab -->
+        <div class="tab-content" id="requests-tab">
+            <p class="section-title">Pending Requests (2)</p>
+
+            <div class="request-card">
+                <div class="request-header">
+                    <div class="request-avatar">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Tom">
+                    </div>
+                    <div class="request-info">
+                        <h3>Tom Bradley</h3>
+                        <p>@tombradley • 34 workouts</p>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="buddy-btn secondary" onclick="declineRequest(this)">Decline</button>
+                    <button class="buddy-btn primary" onclick="acceptRequest(this)">Accept</button>
+                </div>
+            </div>
+
+            <div class="request-card">
+                <div class="request-header">
+                    <div class="request-avatar">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face" alt="Rachel">
+                    </div>
+                    <div class="request-info">
+                        <h3>Rachel Green</h3>
+                        <p>@rachelg • 56 workouts</p>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="buddy-btn secondary" onclick="declineRequest(this)">Decline</button>
+                    <button class="buddy-btn primary" onclick="acceptRequest(this)">Accept</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups Tab -->
+        <div class="tab-content" id="groups-tab">
+            <button class="create-group-btn" onclick="openCreateGroupModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Create New Group
+            </button>
+
+            <p class="section-title">Your Groups (2 / 5)</p>
+
+            <div class="group-card" onclick="window.location.href='group-detail.html'">
+                <div class="group-header">
+                    <div>
+                        <div class="group-name">Morning Crushers 🌅</div>
+                        <div class="group-members-count">6 members</div>
+                    </div>
+                    <span class="group-badge">Active</span>
+                </div>
+                <div class="group-avatars">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <span class="more-count">+2</span>
+                </div>
+                <div class="group-stats">
+                    <div class="group-stat">
+                        <div class="group-stat-value">127</div>
+                        <div class="group-stat-label">Total Workouts</div>
+                    </div>
+                    <div class="group-stat">
+                        <div class="group-stat-value">21h</div>
+                        <div class="group-stat-label">This Week</div>
+                    </div>
+                    <div class="group-stat">
+                        <div class="group-stat-value">#1</div>
+                        <div class="group-stat-label">Your Rank</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-card" onclick="window.location.href='group-detail.html'">
+                <div class="group-header">
+                    <div>
+                        <div class="group-name">Work Fitness Club 💼</div>
+                        <div class="group-members-count">8 members</div>
+                    </div>
+                    <span class="group-badge">Active</span>
+                </div>
+                <div class="group-avatars">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50&h=50&fit=crop&crop=face" alt="Member">
+                    <span class="more-count">+4</span>
+                </div>
+                <div class="group-stats">
+                    <div class="group-stat">
+                        <div class="group-stat-value">89</div>
+                        <div class="group-stat-label">Total Workouts</div>
+                    </div>
+                    <div class="group-stat">
+                        <div class="group-stat-value">14h</div>
+                        <div class="group-stat-label">This Week</div>
+                    </div>
+                    <div class="group-stat">
+                        <div class="group-stat-value">#3</div>
+                        <div class="group-stat-label">Your Rank</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="workout.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Workout
+        </a>
+        <a href="core-buddy.html" class="bottom-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Core Buddy
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Activity
+        </a>
+        <a href="profile.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Profile
+        </a>
+    </nav>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active to selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Accept request
+        function acceptRequest(btn) {
+            const card = btn.closest('.request-card');
+            card.style.animation = 'fadeOut 0.3s ease forwards';
+            setTimeout(() => {
+                card.remove();
+                updateRequestCount();
+            }, 300);
+        }
+
+        // Decline request
+        function declineRequest(btn) {
+            const card = btn.closest('.request-card');
+            card.style.animation = 'fadeOut 0.3s ease forwards';
+            setTimeout(() => {
+                card.remove();
+                updateRequestCount();
+            }, 300);
+        }
+
+        // Update request count
+        function updateRequestCount() {
+            const count = document.querySelectorAll('.request-card').length;
+            const badge = document.querySelector('.tab-badge');
+            const navBadge = document.querySelector('.notification-badge');
+            
+            if (count === 0) {
+                badge.style.display = 'none';
+                navBadge.style.display = 'none';
+            } else {
+                badge.textContent = count;
+                navBadge.textContent = count;
+            }
+        }
+
+        // Create group modal (placeholder)
+        function openCreateGroupModal() {
+            alert('Create Group Modal - Coming soon!\n\nYou would be able to:\n- Name your group\n- Invite Core Buddies\n- Set group goals');
+        }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

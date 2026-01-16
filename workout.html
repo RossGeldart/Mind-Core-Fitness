@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout | Mind Core Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f8f8f8;
+            --card-border: #e5e5e5;
+            --success-color: #2e7d32;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .workout-page {
+            padding-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Step Container */
+        .step-container {
+            display: none;
+            padding: 40px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Step 1: Time Selection */
+        .step-header {
+            margin-bottom: 40px;
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-color), #6b1f27);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.2rem;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .step-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Time Options */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .time-option {
+            padding: 24px 16px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-option:hover {
+            border-color: var(--accent-color);
+        }
+
+        .time-option.selected {
+            border-color: var(--accent-color);
+            background: rgba(153, 49, 60, 0.08);
+        }
+
+        .time-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            line-height: 1;
+        }
+
+        .time-option.selected .time-value {
+            color: var(--accent-color);
+        }
+
+        .time-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Primary Button */
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px 32px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(153, 49, 60, 0.4);
+        }
+
+        .primary-btn:disabled {
+            background: var(--card-border);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .primary-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Step 2: Confirm */
+        .confirm-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .confirm-time {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 4rem;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .confirm-time span {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .confirm-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .change-time-btn {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .change-time-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Step 3: Randomise */
+        .randomise-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-color), #6b1f27);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 40px var(--accent-glow);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .randomise-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(153, 49, 60, 0.5);
+        }
+
+        .randomise-icon svg {
+            width: 50px;
+            height: 50px;
+            color: #ffffff;
+        }
+
+        .randomise-icon.spinning svg {
+            animation: spin 0.8s ease-in-out;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 40px var(--accent-glow); }
+            50% { box-shadow: 0 0 60px rgba(153, 49, 60, 0.5); }
+        }
+
+        .randomise-text {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Step 4: Workout Summary */
+        .summary-header {
+            margin-bottom: 24px;
+        }
+
+        .summary-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(46, 125, 50, 0.1);
+            border: 1px solid rgba(46, 125, 50, 0.3);
+            border-radius: 30px;
+            color: var(--success-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .workout-list {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .workout-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-color);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .workout-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .workout-number {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .workout-item.rest .workout-number {
+            background: var(--card-border);
+            color: var(--text-muted);
+        }
+
+        .workout-details {
+            flex: 1;
+        }
+
+        .workout-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .workout-item.rest .workout-name {
+            color: var(--text-muted);
+        }
+
+        .workout-duration {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .workout-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .total-item {
+            text-align: center;
+        }
+
+        .total-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--accent-color);
+        }
+
+        .total-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .regenerate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid var(--card-border);
+            border-radius: 30px;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .regenerate-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .regenerate-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--accent-color);
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .nav-logo span {
+                display: none;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .confirm-time {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core">
+            <span>MIND CORE</span>
+        </a>
+    </nav>
+
+    <!-- Workout Page -->
+    <div class="workout-page">
+        <!-- Step 1: Time Selection -->
+        <div class="step-container active" id="step1">
+            <div class="step-header">
+                <div class="step-icon">⏱️</div>
+                <h1 class="step-title">Choose Your Time</h1>
+                <p class="step-subtitle">How long do you want to train today?</p>
+            </div>
+
+            <div class="time-grid">
+                <div class="time-option" data-time="5" onclick="selectTime(this)">
+                    <div class="time-value">5</div>
+                    <div class="time-label">minutes</div>
+                </div>
+                <div class="time-option" data-time="10" onclick="selectTime(this)">
+                    <div class="time-value">10</div>
+                    <div class="time-label">minutes</div>
+                </div>
+                <div class="time-option" data-time="15" onclick="selectTime(this)">
+                    <div class="time-value">15</div>
+                    <div class="time-label">minutes</div>
+                </div>
+                <div class="time-option" data-time="20" onclick="selectTime(this)">
+                    <div class="time-value">20</div>
+                    <div class="time-label">minutes</div>
+                </div>
+                <div class="time-option" data-time="25" onclick="selectTime(this)">
+                    <div class="time-value">25</div>
+                    <div class="time-label">minutes</div>
+                </div>
+                <div class="time-option" data-time="30" onclick="selectTime(this)">
+                    <div class="time-value">30</div>
+                    <div class="time-label">minutes</div>
+                </div>
+            </div>
+
+            <button class="primary-btn" id="confirmTimeBtn" disabled onclick="goToStep(2)">
+                Confirm Time
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Step 2: Confirm Time -->
+        <div class="step-container" id="step2">
+            <div class="step-header">
+                <div class="step-icon">✅</div>
+                <h1 class="step-title">Ready to Go!</h1>
+                <p class="step-subtitle">Your workout duration is set</p>
+            </div>
+
+            <div class="confirm-card">
+                <div class="confirm-time"><span id="selectedTimeDisplay">15</span><span> min</span></div>
+                <p class="confirm-label">Core HIIT Session</p>
+                <button class="change-time-btn" onclick="goToStep(1)">Change time</button>
+            </div>
+
+            <button class="primary-btn" onclick="goToStep(3)">
+                Continue
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Step 3: Randomise -->
+        <div class="step-container" id="step3">
+            <div class="step-header">
+                <h1 class="step-title">Generate Your Workout</h1>
+                <p class="step-subtitle">Tap the icon to randomise your <span id="randomiseTimeText">15</span> minute session</p>
+            </div>
+
+            <div class="randomise-icon" id="randomiseBtn" onclick="generateWorkout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 11-9-9"/>
+                    <path d="M21 3v6h-6"/>
+                </svg>
+            </div>
+
+            <p class="randomise-text">Every workout is unique!</p>
+        </div>
+
+        <!-- Step 4: Workout Summary -->
+        <div class="step-container" id="step4">
+            <div class="summary-header">
+                <div class="summary-badge">✨ Workout Generated!</div>
+                <h1 class="step-title">Your Workout</h1>
+            </div>
+
+            <div class="workout-total">
+                <div class="total-item">
+                    <div class="total-value" id="totalTime">15</div>
+                    <div class="total-label">Minutes</div>
+                </div>
+                <div class="total-item">
+                    <div class="total-value" id="totalExercises">8</div>
+                    <div class="total-label">Exercises</div>
+                </div>
+                <div class="total-item">
+                    <div class="total-value" id="totalRounds">3</div>
+                    <div class="total-label">Rounds</div>
+                </div>
+            </div>
+
+            <div class="workout-list" id="workoutList">
+                <!-- Exercises will be populated here -->
+            </div>
+
+            <button class="regenerate-btn" onclick="regenerateWorkout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 11-9-9"/>
+                    <path d="M21 3v6h-6"/>
+                </svg>
+                Regenerate Workout
+            </button>
+
+            <button class="primary-btn" onclick="startWorkout()">
+                Start Workout
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="workout.html" class="bottom-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Workout
+        </a>
+        <a href="core-buddy.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Core Buddy
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Activity
+        </a>
+        <a href="profile.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Profile
+        </a>
+    </nav>
+
+    <script>
+        // Exercise database
+        const exercises = [
+            { name: "Plank Hold", type: "core" },
+            { name: "Mountain Climbers", type: "cardio" },
+            { name: "Bicycle Crunches", type: "core" },
+            { name: "Russian Twists", type: "core" },
+            { name: "Dead Bug", type: "core" },
+            { name: "Leg Raises", type: "core" },
+            { name: "Flutter Kicks", type: "core" },
+            { name: "High Knees", type: "cardio" },
+            { name: "Plank Jacks", type: "cardio" },
+            { name: "Toe Touches", type: "core" },
+            { name: "V-Ups", type: "core" },
+            { name: "Burpees", type: "cardio" },
+            { name: "Plank to Push-up", type: "core" },
+            { name: "Side Plank (Left)", type: "core" },
+            { name: "Side Plank (Right)", type: "core" },
+            { name: "Reverse Crunches", type: "core" },
+            { name: "Hollow Body Hold", type: "core" },
+            { name: "Scissor Kicks", type: "core" },
+            { name: "Boat Pose", type: "core" },
+            { name: "Crunches", type: "core" }
+        ];
+
+        let selectedTime = 0;
+        let currentWorkout = [];
+
+        // Time selection
+        function selectTime(element) {
+            document.querySelectorAll('.time-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedTime = parseInt(element.dataset.time);
+            document.getElementById('confirmTimeBtn').disabled = false;
+        }
+
+        // Navigation between steps
+        function goToStep(step) {
+            document.querySelectorAll('.step-container').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+
+            if (step === 2 || step === 3) {
+                document.getElementById('selectedTimeDisplay').textContent = selectedTime;
+                document.getElementById('randomiseTimeText').textContent = selectedTime;
+            }
+        }
+
+        // Generate workout
+        function generateWorkout() {
+            const btn = document.getElementById('randomiseBtn');
+            btn.classList.add('spinning');
+
+            setTimeout(() => {
+                btn.classList.remove('spinning');
+                createWorkout();
+                goToStep(4);
+            }, 800);
+        }
+
+        // Create workout based on selected time
+        function createWorkout() {
+            currentWorkout = [];
+            const workDuration = 30; // seconds per exercise
+            const restDuration = 10; // seconds rest
+            const roundTime = 60; // 1 minute per round approx
+            
+            const totalSeconds = selectedTime * 60;
+            const exercisesPerRound = 4;
+            const rounds = Math.floor(selectedTime / 5);
+            const totalExercises = rounds * exercisesPerRound;
+
+            // Shuffle and pick exercises
+            const shuffled = [...exercises].sort(() => Math.random() - 0.5);
+            const selectedExercises = shuffled.slice(0, totalExercises);
+
+            // Build workout structure
+            let exerciseIndex = 0;
+            for (let round = 0; round < rounds; round++) {
+                for (let i = 0; i < exercisesPerRound; i++) {
+                    currentWorkout.push({
+                        name: selectedExercises[exerciseIndex].name,
+                        duration: workDuration,
+                        type: 'exercise'
+                    });
+                    exerciseIndex++;
+
+                    // Add rest after each exercise except last of round
+                    if (i < exercisesPerRound - 1) {
+                        currentWorkout.push({
+                            name: 'Rest',
+                            duration: restDuration,
+                            type: 'rest'
+                        });
+                    }
+                }
+
+                // Add longer rest between rounds
+                if (round < rounds - 1) {
+                    currentWorkout.push({
+                        name: 'Round Break',
+                        duration: 20,
+                        type: 'rest'
+                    });
+                }
+            }
+
+            // Update summary
+            document.getElementById('totalTime').textContent = selectedTime;
+            document.getElementById('totalExercises').textContent = totalExercises;
+            document.getElementById('totalRounds').textContent = rounds;
+
+            // Render workout list
+            renderWorkoutList();
+        }
+
+        // Render workout list
+        function renderWorkoutList() {
+            const list = document.getElementById('workoutList');
+            list.innerHTML = '';
+
+            let exerciseNum = 1;
+            currentWorkout.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'workout-item' + (item.type === 'rest' ? ' rest' : '');
+                
+                const num = item.type === 'rest' ? '—' : exerciseNum++;
+                
+                div.innerHTML = `
+                    <div class="workout-number">${num}</div>
+                    <div class="workout-details">
+                        <div class="workout-name">${item.name}</div>
+                        <div class="workout-duration">${item.duration} seconds</div>
+                    </div>
+                `;
+                
+                list.appendChild(div);
+            });
+        }
+
+        // Regenerate workout
+        function regenerateWorkout() {
+            createWorkout();
+        }
+
+        // Start workout - redirect to active workout page
+        function startWorkout() {
+            // Store workout in localStorage
+            localStorage.setItem('currentWorkout', JSON.stringify(currentWorkout));
+            localStorage.setItem('workoutTime', selectedTime);
+            window.location.href = 'workout-active.html';
+        }
+    </script>
+</body>
+</html>

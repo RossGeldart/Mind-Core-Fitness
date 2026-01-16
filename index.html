@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Core Fitness</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#99313c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Core Buddy">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --text-color: #373737;
+            --accent-color: #99313c;
+            --background: #ffffff;
+            --glow-color: rgba(55, 55, 55, 0.25);
+            --glow-color-strong: rgba(55, 55, 55, 0.4);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 580px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Logo with refined grey glow */
+        .logo-wrapper {
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: logoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .logo {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            filter: drop-shadow(0 0 40px var(--glow-color)) 
+                    drop-shadow(0 0 80px rgba(55, 55, 55, 0.15));
+            animation: breathe 5s ease-in-out infinite;
+            animation-delay: 1.2s;
+        }
+
+        @keyframes logoReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                filter: drop-shadow(0 0 25px rgba(55, 55, 55, 0.2)) 
+                        drop-shadow(0 0 50px rgba(55, 55, 55, 0.1));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 60px rgba(55, 55, 55, 0.45)) 
+                        drop-shadow(0 0 100px rgba(55, 55, 55, 0.25));
+                transform: scale(1.05);
+            }
+        }
+
+        /* Typewriter heading */
+        .question {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: clamp(1.3rem, 4vw, 1.7rem);
+            color: var(--text-color);
+            margin-bottom: 45px;
+            min-height: 3em;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+            animation-delay: 0.8s;
+        }
+
+        .typewriter {
+            display: inline;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background-color: var(--text-color);
+            margin-left: 3px;
+            vertical-align: text-bottom;
+            animation: blink 1s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 0; }
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: block;
+            padding: 18px 28px;
+            background: var(--background);
+            border: 1.5px solid rgba(55, 55, 55, 0.2);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .option.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .option:hover {
+            background: var(--text-color);
+            color: #ffffff;
+            border-color: var(--text-color);
+            box-shadow: 0 8px 30px rgba(55, 55, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .option:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.15);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            .logo {
+                width: 220px;
+                height: 220px;
+            }
+
+            .logo-wrapper {
+                margin-bottom: 40px;
+            }
+
+            .question {
+                margin-bottom: 35px;
+            }
+
+            .options {
+                gap: 10px;
+            }
+
+            .option {
+                padding: 16px 22px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-wrapper">
+            <img src="logo.png" alt="Mind Core Fitness" class="logo">
+        </div>
+
+        <h1 class="question">
+            <span class="typewriter" id="typewriter"></span><span class="cursor"></span>
+        </h1>
+
+        <div class="options">
+            <a href="personal-training.html" class="option">Explore 1-2-1 In Person Training</a>
+            <a href="online-coaching.html" class="option">Explore Online Personal Training</a>
+            <a href="free-challenge.html" class="option">Try My Free 30 Day Core Challenge</a>
+            <a href="quick.html" class="option">Explore Core Buddy</a>
+        </div>
+    </div>
+
+    <script>
+        const text = "What can Mind Core Fitness do for you today?";
+        const typewriter = document.getElementById('typewriter');
+        const options = document.querySelectorAll('.option');
+        let index = 0;
+        const speed = 70;
+
+        function type() {
+            if (index < text.length) {
+                typewriter.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, speed);
+            } else {
+                // Typing complete - reveal options with stagger
+                revealOptions();
+            }
+        }
+
+        function revealOptions() {
+            options.forEach((option, i) => {
+                setTimeout(() => {
+                    option.classList.add('visible');
+                }, i * 100);
+            });
+        }
+
+        // Start typewriter after logo reveal
+        setTimeout(type, 1200);
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker not registered', err));
+        }
+    </script>
+</body>
+</html>

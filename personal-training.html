@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1-2-1 Personal Training | Mind Core Fitness - Elgin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --text-light: #888888;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f9f9f9;
+            --card-border: #e8e8e8;
+            --dark-bg: #1a1a1a;
+            --dark-teal: #2d3d3d;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back {
+            padding: 8px 16px;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-cta {
+            padding: 10px 22px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .nav-cta:hover {
+            background: #2a2a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.2);
+        }
+
+        /* Section Base */
+        section {
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 20px;
+            position: relative;
+            background: var(--dark-bg);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('Gym Studio 1.jpg') center/cover no-repeat;
+            opacity: 0.3;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.7) 100%);
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(153, 49, 60, 0.3);
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            color: var(--accent-color);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: #aaa;
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(55, 55, 55, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+            background: #2a2a2a;
+        }
+
+        .btn-secondary {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Pillars Section */
+        .pillars {
+            background: var(--bg-color);
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .pillar-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .pillar-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(153, 49, 60, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pillar-icon img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .pillar-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+
+        .pillar-tagline {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 12px;
+        }
+
+        .pillar-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--card-bg);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-image-badge {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            background: var(--accent-color);
+            color: #ffffff;
+            padding: 20px 28px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .about-image-badge strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+        }
+
+        .about-image-badge span {
+            font-size: 0.85rem;
+        }
+
+        .about-content h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.6rem, 3vw, 2rem);
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .about-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .about-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 1rem;
+        }
+
+        .about-list li::before {
+            content: '✓';
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        /* Video Section */
+        .video-section {
+            padding: 60px 0;
+            background: #f8f8f8;
+        }
+
+        .video-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-text {
+            text-align: left;
+        }
+
+        .video-section .section-label {
+            color: var(--accent-color);
+        }
+
+        .video-section .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .video-intro {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .video-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .video-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .video-text {
+                text-align: center;
+            }
+        }
+
+        /* Studio Gallery */
+        .gallery {
+            background: var(--dark-bg);
+            color: #ffffff;
+        }
+
+        .gallery .section-label {
+            color: var(--accent-color);
+        }
+
+        .gallery .section-title {
+            color: #ffffff;
+        }
+
+        .gallery .section-subtitle {
+            color: #aaa;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 50px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item.large {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* What to Expect */
+        .expect {
+            background: var(--bg-color);
+        }
+
+        .expect-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .expect-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .expect-content p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .expect-steps {
+            list-style: none;
+            counter-reset: step;
+        }
+
+        .expect-steps li {
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--card-border);
+            counter-increment: step;
+        }
+
+        .expect-steps li:last-child {
+            border-bottom: none;
+        }
+
+        .expect-steps li::before {
+            content: counter(step);
+            width: 36px;
+            height: 36px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .expect-step-content strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .expect-step-content span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .expect-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--card-bg);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .testimonial-stars {
+            color: var(--accent-color);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-author-info strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .testimonial-author-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Pricing Section - Matching Website Style */
+        .pricing {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 120px 20px;
+        }
+
+        .pricing .section-label {
+            color: var(--accent-color);
+        }
+
+        .pricing .section-title {
+            color: #ffffff;
+        }
+
+        .pricing .section-subtitle {
+            color: #aaa;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+            align-items: stretch;
+        }
+
+        .pricing-card {
+            background: var(--dark-teal);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.featured {
+            background: var(--dark-teal);
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-card.featured::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0.3;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-ring 3s ease-in-out infinite;
+        }
+
+        .pricing-card.featured::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-color);
+            border-radius: 20px;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        .pricing-card-image {
+            width: 100%;
+            height: 140px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .pricing-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pricing-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .pricing-desc {
+            color: #ccc;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .pricing-ideal {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            font-size: 0.9rem;
+            color: #ccc;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .pricing-amount {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3.5rem;
+            color: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        .pricing-amount .currency {
+            font-size: 1.8rem;
+            vertical-align: super;
+        }
+
+        .pricing-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            background: #2a2a2a;
+            box-shadow: 0 8px 30px rgba(55, 55, 55, 0.3);
+        }
+
+        .pricing-note {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        /* Location */
+        .location {
+            background: var(--card-bg);
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .location-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .location-content p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .location-details {
+            list-style: none;
+        }
+
+        .location-details li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .location-details li:last-child {
+            border-bottom: none;
+        }
+
+        .location-details .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .location-details strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .location-details span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .location-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* FAQ */
+        .faq {
+            background: var(--bg-color);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .faq-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            text-align: center;
+            padding: 120px 20px;
+            background: var(--dark-bg);
+            color: #ffffff;
+            position: relative;
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('Circuit Class 1.jpg') center/cover no-repeat;
+            opacity: 0.15;
+        }
+
+        .final-cta .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .final-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 30px rgba(153, 49, 60, 0.4));
+        }
+
+        .final-cta h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+        }
+
+        .final-cta > .container > p {
+            color: #aaa;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+        }
+
+        .final-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 25px rgba(55, 55, 55, 0.2);
+        }
+
+        .final-cta-btn:hover {
+            transform: translateY(-2px);
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1000px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-image {
+                display: none;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-cta-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-grid,
+            .expect-grid,
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-image {
+                order: -1;
+            }
+
+            .about-image-badge {
+                right: 20px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .gallery-item.large {
+                grid-column: span 2;
+                grid-row: span 1;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav {
+                padding: 12px 20px;
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 70px 20px;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .hero-stat {
+                text-align: center;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-item.large {
+                grid-column: span 1;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core Fitness">
+            <span>MIND CORE FITNESS</span>
+        </a>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#pillars">Approach</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-back">← Back</a>
+            <a href="#contact" class="nav-cta">Start Coaching</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-label">1-2-1 In-Person Coaching</span>
+                <h1>Train with <span>Purpose</span></h1>
+                <p class="hero-sub">Personalised 1-to-1 coaching sessions designed to build strength, focus, and discipline - right here in Elgin.</p>
+                <div class="hero-cta-group">
+                    <a href="#pricing" class="btn-primary">Start In-Person Coaching</a>
+                    <a href="#pillars" class="btn-secondary">Learn More</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">200+</span>
+                        <span class="hero-stat-label">Clients Trained</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">5★</span>
+                        <span class="hero-stat-label">Google Rating</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">Elgin</span>
+                        <span class="hero-stat-label">Based</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="Circuit 3.jpg" alt="Personal Training Session">
+            </div>
+        </div>
+    </section>
+
+    <!-- Three Pillars Section -->
+    <section class="pillars" id="pillars">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">The Mind Core Approach</span>
+                <h2 class="section-title">Strength. Mindset. Support.</h2>
+            </div>
+
+            <div class="pillars-grid">
+                <div class="pillar-card fade-in">
+                    <div class="pillar-icon">
+                        <span style="font-size: 2.2rem;">💪</span>
+                    </div>
+                    <h3>Strength</h3>
+                    <p class="pillar-tagline">Build a foundation that lasts.</p>
+                    <p>Every session focuses on developing real strength - from your core outward. You'll learn correct movement patterns, build stability, and create a body that performs as well as it looks.</p>
+                </div>
+                <div class="pillar-card fade-in">
+                    <div class="pillar-icon">
+                        <span style="font-size: 2.2rem;">🧠</span>
+                    </div>
+                    <h3>Mindset</h3>
+                    <p class="pillar-tagline">Strength starts in the mind.</p>
+                    <p>Training with Mind Core Fitness isn't just about reps and sets - it's about discipline, focus, and building the habits that keep you consistent long after motivation fades.</p>
+                </div>
+                <div class="pillar-card fade-in">
+                    <div class="pillar-icon">
+                        <span style="font-size: 2.2rem;">🤝</span>
+                    </div>
+                    <h3>Support</h3>
+                    <p class="pillar-tagline">Coaching that actually cares.</p>
+                    <p>You'll get hands-on guidance every step of the way - from form corrections to accountability check-ins. I'll help you stay on track and push beyond what you thought was possible.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-image fade-in">
+                    <img src="Client Bond.jpg" alt="Ross - Mind Core Fitness">
+                    <div class="about-image-badge">
+                        <strong>200+</strong>
+                        <span>Clients</span>
+                    </div>
+                </div>
+                <div class="about-content fade-in">
+                    <span class="section-label">Meet Ross</span>
+                    <h2>Dedicated To Helping You Achieve Your Goals</h2>
+                    <p>I'm passionate about helping people transform their lives through fitness. My approach is simple: understand your goals, create a personalised plan, and support you every step of the way.</p>
+                    <p>No judgement, no pressure - just expert guidance and genuine care for your success. Whether you're getting back into training, looking to build serious strength, or wanting a complete transformation, I'm here to help you get there.</p>
+                    <ul class="about-list">
+                        <li>Personalised Training Programmes</li>
+                        <li>Nutrition & Habit Guidance</li>
+                        <li>Strength & Conditioning Focus</li>
+                        <li>Circuit Group Access Included</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <div class="video-content fade-in">
+                <div class="video-text">
+                    <span class="section-label">See What's Possible</span>
+                    <h2 class="section-title">What 4 Weeks Could Do For You</h2>
+                    <p class="video-intro">Hear directly from me about the transformation you can expect when you commit to focused training. Real results from real effort.</p>
+                </div>
+                <div class="video-container">
+                    <video controls playsinline>
+                        <source src="Ross Geldart - Mind Core Fitness.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Studio Gallery -->
+    <section class="gallery">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">The Studio</span>
+                <h2 class="section-title">Train In A Private, Fully-Equipped Space</h2>
+                <p class="section-subtitle">No waiting for equipment. No distractions. Just you, me, and everything we need to get results.</p>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item large">
+                    <img src="Gym Studio 1.jpg" alt="Training Studio">
+                </div>
+                <div class="gallery-item">
+                    <img src="Gym Studio 2.jpg" alt="Equipment">
+                </div>
+                <div class="gallery-item">
+                    <img src="Gym Studio 3.jpg" alt="Training Area">
+                </div>
+                <div class="gallery-item">
+                    <img src="Gym Studio 4.jpg" alt="Weights">
+                </div>
+                <div class="gallery-item">
+                    <img src="Gym Studio 5.jpg" alt="Functional Area">
+                </div>
+                <div class="gallery-item">
+                    <img src="Gym Studio 6.jpg" alt="Studio Space">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What to Expect -->
+    <section class="expect">
+        <div class="container">
+            <div class="expect-grid">
+                <div class="expect-content fade-in">
+                    <span class="section-label">Your Journey</span>
+                    <h3>What To Expect</h3>
+                    <p>From your first session to hitting your goals, here's how we'll work together to transform your fitness.</p>
+
+                    <ul class="expect-steps">
+                        <li>
+                            <div class="expect-step-content">
+                                <strong>Free Consultation</strong>
+                                <span>We'll discuss your goals, fitness history, and what you want to achieve. No pressure, just a conversation.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="expect-step-content">
+                                <strong>Fitness Assessment</strong>
+                                <span>A full assessment to understand your current fitness level, movement patterns, and any limitations.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="expect-step-content">
+                                <strong>Custom Programme</strong>
+                                <span>I'll design a programme specifically for you - your goals, your schedule, your preferences.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="expect-step-content">
+                                <strong>Train & Progress</strong>
+                                <span>Regular sessions with constant adaptation. As you improve, your programme evolves with you.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="expect-step-content">
+                                <strong>Ongoing Support</strong>
+                                <span>Accountability check-ins and support beyond just our training time. I'm here to keep you on track.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="expect-image fade-in">
+                    <img src="Circuit 2.jpg" alt="Training Session">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Testimonials</span>
+                <h2 class="section-title">What My Clients Say</h2>
+                <p class="section-subtitle">Real results from real people. Here's what they have to say about training with me.</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"So far I have lost 25 kilos and still going. I find that Ross is a good motivator and pushing me onwards to better and more physical work outs even at my tender age of 53. I can only praise on the way Ross trains me and the monthly weigh ins which for me is a very strong motivator to get to my target."</p>
+                    <div class="testimonial-author">
+                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <div class="testimonial-author-info">
+                            <strong>Scott Grant</strong>
+                            <span>Lost 25 Kilos</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Since signing up, to put it politely it's been the kick up the arse I've desperately needed. Ross makes the sessions varied and challenging yet fun. Whether we progress with weights, reps or body weight movement. I feel so much more motivated, fitter and stronger. Thanks Ross!"</p>
+                    <div class="testimonial-author">
+                        <img src="Emily Paterson.jpg" alt="Emily">
+                        <div class="testimonial-author-info">
+                            <strong>Emily Paterson</strong>
+                            <span>Building Strength</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Intense but deeply satisfying—pushed beyond limits into new gears I didn't know I had. Exactly the kick I needed to stay disciplined for my well-being."</p>
+                    <div class="testimonial-author">
+                        <img src="Baz Duncan.jpg" alt="Lee">
+                        <div class="testimonial-author-info">
+                            <strong>Lee Bazzie Duncan</strong>
+                            <span>Staying Disciplined</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"The sessions were intense and challenging at times, but Ross kept me going. He pushed me just enough to keep coming back each week. Even on the days when my mental health made things tough, Ross was always there to reassure me. This didn't just make me feel good physically — it made a huge difference mentally too."</p>
+                    <div class="testimonial-author">
+                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
+                        <div class="testimonial-author-info">
+                            <strong>Christopher Snedden Murdoch</strong>
+                            <span>Mental & Physical Progress</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section - Website Style -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Programmes</span>
+                <h2 class="section-title">Choose Your Programme</h2>
+                <p class="section-subtitle">Flexible programmes to suit your goals and commitment level. All include Circuit Group Access and Mind Core Community.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- 4 Week Fit Starter -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-card-image">
+                        <img src="Circuit 3.jpg" alt="4 Week Fit Starter">
+                    </div>
+                    <h3 class="pricing-name">4 Week Fit Starter</h3>
+                    <p class="pricing-desc">Rebuild strength, refocus mindset, and set solid habits.</p>
+                    <p class="pricing-ideal">Ideal for people getting back into training or needing a reset.</p>
+                    <ul class="pricing-features">
+                        <li>2 × 45-min sessions per week</li>
+                        <li>Circuit Group Access</li>
+                        <li>Access to Mind Core Community</li>
+                        <li>Basic nutrition & habit guidance</li>
+                        <li>Accountability check-ins</li>
+                    </ul>
+                    <div class="pricing-amount"><span class="currency">£</span>240</div>
+                    <a href="#contact" class="pricing-btn">Get Started!</a>
+                </div>
+
+                <!-- 12 Week Strength Builder - Featured -->
+                <div class="pricing-card featured fade-in">
+                    <div class="pricing-card-image">
+                        <img src="Gym Studio 2.jpg" alt="12 Week Strength Builder">
+                    </div>
+                    <h3 class="pricing-name">12-Week Strength Builder</h3>
+                    <p class="pricing-desc">Build real strength and consistency through progressive training.</p>
+                    <p class="pricing-ideal">Ideal for anyone ready to move beyond the basics and commit to visible progress.</p>
+                    <ul class="pricing-features">
+                        <li>2 × 45-min sessions per week</li>
+                        <li>Circuit Group Access</li>
+                        <li>Movement coaching and form development</li>
+                        <li>Nutrition & Recovery Guidance</li>
+                        <li>Mid-block strength assessment and goal reset</li>
+                        <li>Access to Mind Core Community</li>
+                    </ul>
+                    <div class="pricing-amount"><span class="currency">£</span>660</div>
+                    <a href="#contact" class="pricing-btn">Let's Go!</a>
+                </div>
+
+                <!-- 24 Week Performance Phase -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-card-image">
+                        <img src="Gym Studio 4.jpg" alt="24 Week Performance Phase">
+                    </div>
+                    <h3 class="pricing-name">24-Week Performance Phase</h3>
+                    <p class="pricing-desc">Long-term transformation focused on performance, body composition, and mindset.</p>
+                    <p class="pricing-ideal">Ideal for dedicated clients ready to build strength, endurance, and discipline over six months.</p>
+                    <ul class="pricing-features">
+                        <li>2 × 45-min sessions per week</li>
+                        <li>Six-month training roadmap (strength → conditioning → power)</li>
+                        <li>Regular performance testing and tracking</li>
+                        <li>Ongoing nutrition and recovery adjustments</li>
+                        <li>Priority scheduling + messaging support</li>
+                        <li>Group Circuit Access</li>
+                    </ul>
+                    <div class="pricing-amount"><span class="currency">£</span>1200</div>
+                    <a href="#contact" class="pricing-btn">Enquire Now!</a>
+                </div>
+            </div>
+
+            <p class="pricing-note">Not sure which programme is right for you? Get in touch and we'll find the perfect fit.</p>
+        </div>
+    </section>
+
+    <!-- Location -->
+    <section class="location" id="contact">
+        <div class="container">
+            <div class="location-grid">
+                <div class="location-content fade-in">
+                    <span class="section-label">Get In Touch</span>
+                    <h3>Ready To Start Your Transformation?</h3>
+                    <p>Book your free consultation today. No obligation, no pressure - just a friendly chat about your goals and how I can help you achieve them.</p>
+
+                    <ul class="location-details">
+                        <li>
+                            <span class="icon">📍</span>
+                            <div>
+                                <strong>Location</strong>
+                                <span>Elgin, Scotland</span>
+                            </div>
+                        </li>
+                        <li style="flex-direction: column; align-items: flex-start;">
+                            <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
+                                <span class="icon" style="background: #25D366;">💬</span>
+                                <div>
+                                    <strong>WhatsApp</strong>
+                                    <span>Ready to chat? Tap below to message me directly</span>
+                                </div>
+                            </div>
+                            <a href="https://wa.me/447449782055" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #25D366; color: #ffffff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                Message on WhatsApp
+                            </a>
+                        </li>
+                        <li style="flex-direction: column; align-items: flex-start;">
+                            <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
+                                <span class="icon">📱</span>
+                                <div>
+                                    <strong>Follow Mind Core Fitness</strong>
+                                    <span>Connect on social media</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <a href="https://www.instagram.com/mind_core_fitness/" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #ffffff; text-decoration: none; border-radius: 10px; transition: all 0.3s ease;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                </a>
+                                <a href="https://www.facebook.com/mindcorefitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: #1877F2; color: #ffffff; text-decoration: none; border-radius: 10px; transition: all 0.3s ease;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                </a>
+                                <a href="https://www.youtube.com/@Mind_Core_Fitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: #FF0000; color: #ffffff; text-decoration: none; border-radius: 10px; transition: all 0.3s ease;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                </a>
+                                <a href="https://www.tiktok.com/@mind.core.fitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: #000000; color: #ffffff; text-decoration: none; border-radius: 10px; transition: all 0.3s ease;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="location-image fade-in">
+                    <img src="Gym 2.jpg" alt="Training Location">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">Common Questions</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item fade-in">
+                    <h4>How do I sign up for 1-2-1 coaching?</h4>
+                    <p>Sign up by filling out the contact form or getting in touch directly. Our sessions are tailored to your individual fitness needs and goals. Let's start your personalised fitness journey today!</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Do I need to be fit to start?</h4>
+                    <p>Absolutely not! I work with all fitness levels, from complete beginners to experienced athletes. Everyone starts somewhere.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What's included in each programme?</h4>
+                    <p>All programmes include 2 × 45-minute sessions per week, Circuit Group Access, and access to the Mind Core Community. Higher tiers include additional support and tracking.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What should I wear/bring?</h4>
+                    <p>Just comfortable workout clothes and trainers. Water and towels are provided at the studio.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What's the cancellation policy?</h4>
+                    <p>24 hours notice required for cancellations. Life happens - just let me know as soon as you can.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Why join programmes on Everfit?</h4>
+                    <p>Joining our fitness programmes on Everfit gives you personalised workout plans, progress tracking, and access to a community of like-minded individuals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <img src="logo.png" alt="" class="final-logo">
+            <h2>Your Transformation Starts Here</h2>
+            <p>Stop waiting for the perfect time. Get in touch today and take the first step towards building strength, discipline, and the body you deserve.</p>
+            <a href="#contact" class="final-cta-btn">Start In-Person Coaching</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Mind Core Fitness. All rights reserved. | <a href="index.html">Back to Home</a></p>
+    </footer>
+
+    <!-- Scroll Animation -->
+    <script>
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        fadeElements.forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

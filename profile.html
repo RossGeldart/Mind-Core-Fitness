@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Mind Core Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f8f8f8;
+            --card-border: #e5e5e5;
+            --success-color: #2e7d32;
+            --gold-color: #f4a100;
+            --silver-color: #9e9e9e;
+            --bronze-color: #cd7f32;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+
+        .nav-icon-btn:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .nav-icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .profile-page {
+            padding-top: 80px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Profile Banner */
+        .profile-banner {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #373737 0%, #1a1a1a 100%);
+            overflow: hidden;
+        }
+
+        .profile-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .edit-banner-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 20px;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-banner-btn:hover {
+            background: var(--accent-color);
+        }
+
+        .edit-banner-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            text-align: center;
+            padding: 20px 20px 40px;
+            margin-top: -70px;
+            position: relative;
+        }
+
+        .profile-image-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-image {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--bg-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            background: var(--bg-color);
+        }
+
+        .profile-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--bg-color);
+            font-size: 1rem;
+        }
+
+        .edit-profile-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--bg-color);
+            border: 2px solid var(--card-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .edit-profile-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .edit-profile-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .profile-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-username {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .profile-bio {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-item .number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+
+        .meta-item .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Stats Section */
+        .section {
+            padding: 24px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .section-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #6b1f27 100%);
+            color: #ffffff;
+        }
+
+        .stat-card.highlight .stat-value,
+        .stat-card.highlight .stat-label {
+            color: #ffffff;
+        }
+
+        /* Goal Tracker */
+        .goal-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .goal-target {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .goal-progress-bar {
+            height: 12px;
+            background: var(--card-border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color) 0%, #c94b58 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .goal-current {
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+
+        .goal-remaining {
+            color: var(--text-muted);
+        }
+
+        /* Achievements/Badges */
+        .badges-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 8px 0;
+            scrollbar-width: none;
+        }
+
+        .badges-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .badge-item {
+            flex-shrink: 0;
+            text-align: center;
+            width: 90px;
+        }
+
+        .badge-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 10px;
+            border: 3px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .badge-item.earned .badge-icon {
+            border-color: var(--gold-color);
+            background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+            box-shadow: 0 4px 15px rgba(244, 161, 0, 0.3);
+        }
+
+        .badge-item.locked .badge-icon {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .badge-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .badge-item.locked .badge-name {
+            color: var(--text-muted);
+        }
+
+        /* Social Feed */
+        .feed-section {
+            border-top: 8px solid var(--card-bg);
+        }
+
+        .create-post {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .create-post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .create-post-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .create-post-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-color);
+            border: 2px solid var(--card-border);
+            border-radius: 24px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .create-post-input:hover {
+            border-color: var(--accent-color);
+        }
+
+        .create-post-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .post-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--bg-color);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .post-action-btn:hover {
+            background: rgba(153, 49, 60, 0.1);
+            color: var(--accent-color);
+        }
+
+        .post-action-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Post Cards */
+        .post-card {
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--card-border);
+            padding: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .post-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post-user-info {
+            flex: 1;
+        }
+
+        .post-user-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .post-menu {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .post-menu:hover {
+            background: var(--card-bg);
+        }
+
+        .post-content {
+            margin-bottom: 16px;
+        }
+
+        .post-text {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .post-media {
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .post-media img,
+        .post-media video {
+            width: 100%;
+            display: block;
+        }
+
+        .post-media.grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .workout-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(153, 49, 60, 0.1);
+            color: var(--accent-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 12px;
+        }
+
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .like-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .like-btn.liked {
+            color: var(--accent-color);
+        }
+
+        .like-btn.liked svg {
+            fill: var(--accent-color);
+        }
+
+        .like-btn svg {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.2s ease;
+        }
+
+        .like-btn:hover svg {
+            transform: scale(1.1);
+        }
+
+        .like-btn.liked svg {
+            animation: likePopup 0.3s ease;
+        }
+
+        @keyframes likePopup {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+
+        .share-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .share-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-color);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--accent-color);
+        }
+
+        /* Friends Only Notice */
+        .friends-only-notice {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px 24px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .friends-only-notice svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .friends-only-notice h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .friends-only-notice p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Post Modal */
+        .post-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .post-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .post-modal {
+            background: var(--bg-color);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .post-modal-overlay.active .post-modal {
+            transform: translateY(0);
+        }
+
+        .post-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .post-modal-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .modal-close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .modal-close-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .post-modal-body {
+            padding: 20px;
+        }
+
+        .modal-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .modal-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .modal-user-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        .post-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: none;
+            resize: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: var(--text-color);
+            background: transparent;
+            outline: none;
+        }
+
+        .post-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .image-preview-container {
+            position: relative;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .image-preview-container img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image-btn:hover {
+            background: var(--accent-color);
+        }
+
+        .remove-image-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .workout-tag-input {
+            margin-top: 16px;
+        }
+
+        .workout-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            background: var(--bg-color);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .workout-select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .post-modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .modal-action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .modal-action-btn:hover,
+        .modal-action-btn.active {
+            background: rgba(153, 49, 60, 0.1);
+            color: var(--accent-color);
+        }
+
+        .modal-action-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .post-submit-btn {
+            padding: 12px 32px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 20px;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .post-submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .post-submit-btn:disabled {
+            background: var(--card-border);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .profile-meta {
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core">
+            <span>MIND CORE</span>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-icon-btn" title="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </button>
+            <button class="nav-icon-btn" title="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Profile Page -->
+    <div class="profile-page">
+        <!-- Profile Banner -->
+        <div class="profile-banner">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=300&fit=crop" alt="Banner">
+            <button class="edit-banner-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Edit Banner
+            </button>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-image-wrapper">
+                <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&h=200&fit=crop&crop=face" alt="Profile" class="profile-image">
+                <div class="profile-badge">🔥</div>
+                <button class="edit-profile-btn" title="Edit Profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+            </div>
+            <h1 class="profile-name" id="profileName">John Smith</h1>
+            <p class="profile-username">@johnsmith_fitness</p>
+            <p class="profile-bio">Building elite core strength one workout at a time 💪 | Premium Member</p>
+        </div>
+
+        <!-- Workout Stats -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Workout Stats</h2>
+                <a href="#" class="section-link">View All</a>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value">12.5h</div>
+                    <div class="stat-label">Total Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💪</div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Workouts Done</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value">#23</div>
+                    <div class="stat-label">Leaderboard</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goal Tracker -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Monthly Goal</h2>
+                <a href="#" class="section-link">Edit Goal</a>
+            </div>
+            <div class="goal-card">
+                <div class="goal-header">
+                    <span class="goal-title">Complete 20 Workouts</span>
+                    <span class="goal-target">January 2026</span>
+                </div>
+                <div class="goal-progress-bar">
+                    <div class="goal-progress-fill" style="width: 70%;"></div>
+                </div>
+                <div class="goal-stats">
+                    <span class="goal-current">14 / 20 completed</span>
+                    <span class="goal-remaining">6 to go!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements / Badges -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Achievements</h2>
+                <a href="#" class="section-link">View All</a>
+            </div>
+            <div class="badges-scroll">
+                <div class="badge-item earned">
+                    <div class="badge-icon">🎯</div>
+                    <span class="badge-name">First Workout</span>
+                </div>
+                <div class="badge-item earned">
+                    <div class="badge-icon">🔥</div>
+                    <span class="badge-name">7-Day Streak</span>
+                </div>
+                <div class="badge-item earned">
+                    <div class="badge-icon">⚡</div>
+                    <span class="badge-name">Speed Demon</span>
+                </div>
+                <div class="badge-item earned">
+                    <div class="badge-icon">💪</div>
+                    <span class="badge-name">Core Crusher</span>
+                </div>
+                <div class="badge-item earned">
+                    <div class="badge-icon">🌅</div>
+                    <span class="badge-name">Early Bird</span>
+                </div>
+                <div class="badge-item locked">
+                    <div class="badge-icon">🏆</div>
+                    <span class="badge-name">30-Day Streak</span>
+                </div>
+                <div class="badge-item locked">
+                    <div class="badge-icon">👑</div>
+                    <span class="badge-name">100 Workouts</span>
+                </div>
+                <div class="badge-item locked">
+                    <div class="badge-icon">⭐</div>
+                    <span class="badge-name">Top 10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Feed -->
+        <div class="section feed-section">
+            <div class="section-header">
+                <h2 class="section-title">My Journey</h2>
+            </div>
+
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="create-post-header" onclick="openPostModal()">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="You" class="create-post-avatar">
+                    <div class="create-post-input">Share your workout journey...</div>
+                </div>
+                <div class="create-post-actions">
+                    <button class="post-action-btn" onclick="openPostModal('photo')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        Photo
+                    </button>
+                    <button class="post-action-btn" onclick="openPostModal('video')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                        Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Posts Container -->
+            <div id="newPostsContainer"></div>
+
+            <!-- Post 1 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="John" class="post-avatar">
+                    <div class="post-user-info">
+                        <div class="post-user-name">John Smith</div>
+                        <div class="post-time">2 hours ago</div>
+                    </div>
+                    <button class="post-menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="post-content">
+                    <p class="post-text">Day 14 streak! 🔥 Crushed a 20-minute HIIT session this morning. Feeling stronger every day. The consistency is paying off!</p>
+                    <div class="post-media">
+                        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop" alt="Workout">
+                    </div>
+                    <div class="workout-tag">
+                        <span>💪</span> 20 min HIIT Core Workout
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="like-btn liked" onclick="toggleLike(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>24 likes</span>
+                    </button>
+                    <button class="share-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="John" class="post-avatar">
+                    <div class="post-user-info">
+                        <div class="post-user-name">John Smith</div>
+                        <div class="post-time">Yesterday</div>
+                    </div>
+                    <button class="post-menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="post-content">
+                    <p class="post-text">Unlocked the "Early Bird" badge! 🌅 5am workouts hit different. Who else is in the early morning crew?</p>
+                    <div class="workout-tag">
+                        <span>🏆</span> Badge Unlocked: Early Bird
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="like-btn" onclick="toggleLike(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>18 likes</span>
+                    </button>
+                    <button class="share-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="John" class="post-avatar">
+                    <div class="post-user-info">
+                        <div class="post-user-name">John Smith</div>
+                        <div class="post-time">3 days ago</div>
+                    </div>
+                    <button class="post-menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="post-content">
+                    <p class="post-text">Progress check! Week 2 complete. Already feeling the difference in my core stability. This app is a game changer 🙌</p>
+                    <div class="post-media grid">
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop" alt="Gym">
+                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop" alt="Workout">
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="like-btn" onclick="toggleLike(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>31 likes</span>
+                    </button>
+                    <button class="share-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="post-modal-overlay" id="postModal" onclick="closePostModal(event)">
+        <div class="post-modal" onclick="event.stopPropagation()">
+            <div class="post-modal-header">
+                <h3>Create Post</h3>
+                <button class="modal-close-btn" onclick="closePostModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="post-modal-body">
+                <div class="modal-user-info">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="You" class="modal-avatar">
+                    <span class="modal-user-name" id="modalUserName">John Smith</span>
+                </div>
+                <textarea class="post-textarea" id="postTextarea" placeholder="What's on your mind? Share your workout journey..."></textarea>
+                
+                <!-- Image Preview -->
+                <div class="image-preview-container" id="imagePreviewContainer" style="display: none;">
+                    <img id="imagePreview" src="" alt="Preview">
+                    <button class="remove-image-btn" onclick="removeImage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+            <div class="post-modal-actions">
+                <div class="modal-action-buttons">
+                    <button class="modal-action-btn" onclick="triggerImageUpload()" id="photoBtn" title="Add Photo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </button>
+                    <button class="modal-action-btn" onclick="triggerVideoUpload()" id="videoBtn" title="Add Video">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <button class="post-submit-btn" onclick="submitPost()" id="submitPostBtn">Post</button>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleMediaSelect(event, 'image')">
+            <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="handleMediaSelect(event, 'video')">
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="workout.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Workout
+        </a>
+        <a href="core-buddy.html" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Core Buddy
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Activity
+        </a>
+        <a href="profile.html" class="bottom-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Profile
+        </a>
+    </nav>
+
+    <script>
+        // Get user name from localStorage
+        const userName = localStorage.getItem('userName') || 'John';
+        document.getElementById('profileName').textContent = userName + ' Smith';
+        document.getElementById('modalUserName').textContent = userName + ' Smith';
+
+        // Selected media data
+        let selectedMediaData = null;
+        let selectedMediaType = null;
+
+        // Toggle like button
+        function toggleLike(btn) {
+            btn.classList.toggle('liked');
+            const span = btn.querySelector('span');
+            let likes = parseInt(span.textContent);
+            
+            if (btn.classList.contains('liked')) {
+                likes += 1;
+                btn.querySelector('svg').style.fill = 'var(--accent-color)';
+            } else {
+                likes -= 1;
+                btn.querySelector('svg').style.fill = 'none';
+            }
+            
+            span.textContent = likes + ' likes';
+        }
+
+        // Open post modal
+        function openPostModal(type) {
+            document.getElementById('postModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            if (type === 'photo') {
+                triggerImageUpload();
+            } else if (type === 'video') {
+                triggerVideoUpload();
+            }
+            
+            document.getElementById('postTextarea').focus();
+        }
+
+        // Close post modal
+        function closePostModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('postModal').classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Reset modal
+            document.getElementById('postTextarea').value = '';
+            removeMedia();
+        }
+
+        // Trigger image upload
+        function triggerImageUpload() {
+            document.getElementById('imageInput').click();
+        }
+
+        // Trigger video upload
+        function triggerVideoUpload() {
+            document.getElementById('videoInput').click();
+        }
+
+        // Handle media selection (image or video)
+        function handleMediaSelect(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedMediaData = e.target.result;
+                    selectedMediaType = type;
+                    
+                    const previewContainer = document.getElementById('imagePreviewContainer');
+                    const preview = document.getElementById('imagePreview');
+                    
+                    if (type === 'video') {
+                        // Replace img with video for preview
+                        preview.outerHTML = `<video id="imagePreview" src="${selectedMediaData}" controls style="width:100%; max-height:300px;"></video>`;
+                        document.getElementById('videoBtn').classList.add('active');
+                        document.getElementById('photoBtn').classList.remove('active');
+                    } else {
+                        // Make sure it's an img element
+                        const currentPreview = document.getElementById('imagePreview');
+                        if (currentPreview.tagName === 'VIDEO') {
+                            currentPreview.outerHTML = `<img id="imagePreview" src="${selectedMediaData}" alt="Preview">`;
+                        } else {
+                            currentPreview.src = selectedMediaData;
+                        }
+                        document.getElementById('photoBtn').classList.add('active');
+                        document.getElementById('videoBtn').classList.remove('active');
+                    }
+                    
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Remove selected media
+        function removeMedia() {
+            selectedMediaData = null;
+            selectedMediaType = null;
+            
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const preview = document.getElementById('imagePreview');
+            
+            // Reset to img element
+            if (preview.tagName === 'VIDEO') {
+                preview.outerHTML = `<img id="imagePreview" src="" alt="Preview">`;
+            } else {
+                preview.src = '';
+            }
+            
+            previewContainer.style.display = 'none';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('videoInput').value = '';
+            document.getElementById('photoBtn').classList.remove('active');
+            document.getElementById('videoBtn').classList.remove('active');
+        }
+
+        // Submit post
+        function submitPost() {
+            const text = document.getElementById('postTextarea').value.trim();
+            
+            if (!text && !selectedMediaData) {
+                alert('Please add some text or media to your post.');
+                return;
+            }
+
+            // Create new post HTML
+            const newPost = document.createElement('div');
+            newPost.className = 'post-card';
+            newPost.style.animation = 'fadeIn 0.5s ease-out';
+            
+            let mediaHTML = '';
+            if (selectedMediaData) {
+                if (selectedMediaType === 'video') {
+                    mediaHTML = `
+                        <div class="post-media">
+                            <video src="${selectedMediaData}" controls style="width:100%;"></video>
+                        </div>
+                    `;
+                } else {
+                    mediaHTML = `
+                        <div class="post-media">
+                            <img src="${selectedMediaData}" alt="Post image">
+                        </div>
+                    `;
+                }
+            }
+
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face" alt="${userName}" class="post-avatar">
+                    <div class="post-user-info">
+                        <div class="post-user-name">${userName} Smith</div>
+                        <div class="post-time">Just now</div>
+                    </div>
+                    <button class="post-menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="post-content">
+                    ${text ? `<p class="post-text">${text}</p>` : ''}
+                    ${mediaHTML}
+                </div>
+                <div class="post-actions">
+                    <button class="like-btn" onclick="toggleLike(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>0 likes</span>
+                    </button>
+                    <button class="share-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            `;
+
+            // Add to feed
+            document.getElementById('newPostsContainer').prepend(newPost);
+            
+            // Close modal
+            closePostModal();
+        }
+
+        // Add fadeIn animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePostModal();
+            }
+        });
+    </script>
+</body>
+</html>

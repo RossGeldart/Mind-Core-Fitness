@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Coaching | Mind Core Fitness - Train Anywhere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #373737;
+            --text-muted: #666666;
+            --text-light: #888888;
+            --accent-color: #99313c;
+            --accent-glow: rgba(153, 49, 60, 0.3);
+            --card-bg: #f9f9f9;
+            --card-border: #e8e8e8;
+            --dark-bg: #1a1a1a;
+            --dark-teal: #2d3d3d;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .nav-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back {
+            padding: 8px 16px;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-cta {
+            padding: 10px 22px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .nav-cta:hover {
+            background: #2a2a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.2);
+        }
+
+        /* Section Base */
+        section {
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 20px;
+            position: relative;
+            background: var(--dark-bg);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('Core 1.jpg') center/cover no-repeat;
+            opacity: 0.25;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.7) 100%);
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(153, 49, 60, 0.3);
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            color: var(--accent-color);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: #aaa;
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(55, 55, 55, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #aaa;
+        }
+
+        .hero-feature span {
+            color: var(--accent-color);
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Video Section */
+        .video-section {
+            padding: 60px 0;
+            background: #f8f8f8;
+        }
+
+        .video-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-text {
+            text-align: left;
+        }
+
+        .video-section .section-label {
+            color: var(--accent-color);
+        }
+
+        .video-section .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .video-intro {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .video-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .video-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .video-text {
+                text-align: center;
+            }
+        }
+
+        /* Benefits Section */
+        .benefits {
+            background: var(--bg-color);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(153, 49, 60, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+        }
+
+        .benefit-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--accent-color);
+        }
+
+        .benefit-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--card-bg);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .step-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .step-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Programmes Section */
+        .programmes {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 120px 20px;
+        }
+
+        .programmes .section-label {
+            color: var(--accent-color);
+        }
+
+        .programmes .section-title {
+            color: #ffffff;
+        }
+
+        .programmes .section-subtitle {
+            color: #aaa;
+        }
+
+        /* Featured Programme */
+        .featured-programme {
+            background: linear-gradient(135deg, var(--dark-teal) 0%, #1e2e2e 100%);
+            border: 2px solid var(--accent-color);
+            border-radius: 24px;
+            padding: 50px;
+            margin-top: 50px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-programme::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+
+        .featured-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        .featured-content p {
+            color: #aaa;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .featured-details {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 24px;
+        }
+
+        .featured-detail {
+            text-align: center;
+        }
+
+        .featured-detail strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .featured-detail span {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .featured-price {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .featured-price .amount {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3.5rem;
+            color: #ffffff;
+        }
+
+        .featured-price .currency {
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        .featured-price .note {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .featured-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .featured-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .featured-image {
+            position: relative;
+        }
+
+        .featured-image img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Individual Programmes */
+        .programmes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .programme-card {
+            background: var(--dark-teal);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .programme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .programme-image {
+            width: 100%;
+            height: 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .programme-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .programme-level {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(153, 49, 60, 0.3);
+            color: var(--accent-color);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+
+        .programme-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .programme-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .programme-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .programme-price {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #ffffff;
+        }
+
+        .programme-price .currency {
+            font-size: 1rem;
+        }
+
+        .programme-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .programme-btn:hover {
+            background: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        /* Everfit Section */
+        .everfit {
+            background: var(--bg-color);
+        }
+
+        .everfit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .everfit-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+
+        .everfit-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .everfit-features {
+            list-style: none;
+        }
+
+        .everfit-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .everfit-features li:last-child {
+            border-bottom: none;
+        }
+
+        .everfit-features li::before {
+            content: '✓';
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .everfit-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--card-bg);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .testimonial-stars {
+            color: var(--accent-color);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-author-info strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .testimonial-author-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* FAQ */
+        .faq {
+            background: var(--bg-color);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .faq-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--card-bg);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .contact-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .contact-content p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .contact-details {
+            list-style: none;
+        }
+
+        .contact-details li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .contact-details li:last-child {
+            border-bottom: none;
+        }
+
+        .contact-details .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-details strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .contact-details span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .contact-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Final CTA */
+        .final-cta {
+            text-align: center;
+            padding: 120px 20px;
+            background: var(--dark-bg);
+            color: #ffffff;
+            position: relative;
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('Circuit 3.jpg') center/cover no-repeat;
+            opacity: 0.15;
+        }
+
+        .final-cta .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .final-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 30px rgba(153, 49, 60, 0.4));
+        }
+
+        .final-cta h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+        }
+
+        .final-cta > .container > p {
+            color: #aaa;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.7;
+        }
+
+        .final-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: var(--text-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 25px rgba(55, 55, 55, 0.2);
+        }
+
+        .final-cta-btn:hover {
+            transform: translateY(-2px);
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-bg);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1000px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-image {
+                display: none;
+            }
+
+            .hero-features {
+                justify-content: center;
+            }
+
+            .hero-cta-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .benefits-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .featured-programme {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .featured-details {
+                justify-content: center;
+            }
+
+            .featured-price {
+                justify-content: center;
+            }
+
+            .programmes-grid {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .everfit-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav {
+                padding: 12px 20px;
+            }
+
+            .nav-logo span {
+                display: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 70px 20px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-features {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Mind Core Fitness">
+            <span>MIND CORE FITNESS</span>
+        </a>
+        <div class="nav-links">
+            <a href="#programmes">Programmes</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-back">← Back</a>
+            <a href="#programmes" class="nav-cta">View Programmes</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-label">Online Coaching</span>
+                <h1>Train Anywhere. <span>Stay Accountable.</span></h1>
+                <p class="hero-sub">Personalised online coaching through the Everfit app - real structure, real feedback, real results. No matter where you are.</p>
+                <div class="hero-cta-group">
+                    <a href="#programmes" class="btn-primary">View Programmes</a>
+                    <a href="#how-it-works" class="btn-secondary">How It Works</a>
+                </div>
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <span>✓</span> Personalised Plans
+                    </div>
+                    <div class="hero-feature">
+                        <span>✓</span> Progress Tracking
+                    </div>
+                    <div class="hero-feature">
+                        <span>✓</span> Direct Support
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="Mike Mortz.jpg" alt="Online Coaching">
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Testimonial Section -->
+    <section class="video-section">
+        <div class="container">
+            <div class="video-content fade-in">
+                <div class="video-text">
+                    <span class="section-label">Client Success</span>
+                    <h2 class="section-title">Hear From Mike</h2>
+                    <p class="video-intro">Real results from real commitment. Mike shares his experience working with Mind Core Fitness online coaching.</p>
+                </div>
+                <div class="video-container">
+                    <video controls playsinline>
+                        <source src="Mike Mortz Testimonial Video.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Why Online Coaching?</span>
+                <h2 class="section-title">Train On Your Terms</h2>
+                <p class="section-subtitle">Get the structure and accountability of personal training, without the location constraints.</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">🌍</div>
+                    <h3>Train Anywhere</h3>
+                    <p>At home, in the gym, travelling - your programme goes wherever you go. All you need is the Everfit app.</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">📱</div>
+                    <h3>App-Based Delivery</h3>
+                    <p>Everything delivered through Everfit - workout videos, progress tracking, messaging, and more. All in one place.</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">💬</div>
+                    <h3>Real Support</h3>
+                    <p>Direct messaging with Ross for form checks, questions, and motivation. You're never on your own.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">The Process</span>
+                <h2 class="section-title">How Online Coaching Works</h2>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card fade-in">
+                    <div class="step-number">1</div>
+                    <h4>Consultation Process</h4>
+                    <p>We'll discuss your goals, fitness level, and find the right programme for you.</p>
+                </div>
+                <div class="step-card fade-in">
+                    <div class="step-number">2</div>
+                    <h4>Download Everfit</h4>
+                    <p>Get the Everfit app and receive your personalised programme instantly.</p>
+                </div>
+                <div class="step-card fade-in">
+                    <div class="step-number">3</div>
+                    <h4>Start Training</h4>
+                    <p>Follow the structured workouts with video demos and track your progress.</p>
+                </div>
+                <div class="step-card fade-in">
+                    <div class="step-number">4</div>
+                    <h4>Get Results</h4>
+                    <p>Build strength, discipline, and habits that last well beyond the programme.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programmes Section -->
+    <section class="programmes" id="programmes">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Programmes</span>
+                <h2 class="section-title">Ready-Made Programmes</h2>
+                <p class="section-subtitle">One-time purchase programmes for those who prefer to train independently. Get full structure and video guidance through the Everfit app - with the option to message me anytime for support and accountability.</p>
+            </div>
+
+            <!-- Featured: 12-Week Unbreakable -->
+            <div class="featured-programme fade-in">
+                <div class="featured-content">
+                    <h3>Unbreakable: The 12-Week Core Rebuild</h3>
+                    <p>Build lasting strength, discipline, and total-body control through the full Mind Core system. This 12-week progression combines three phases of structured core training to rebuild stability, increase strength under load, and master power with precision.</p>
+                    <div class="featured-details">
+                        <div class="featured-detail">
+                            <strong>12</strong>
+                            <span>Weeks</span>
+                        </div>
+                        <div class="featured-detail">
+                            <strong>3</strong>
+                            <span>Phases</span>
+                        </div>
+                        <div class="featured-detail">
+                            <strong>All</strong>
+                            <span>Levels</span>
+                        </div>
+                    </div>
+                    <div class="featured-price">
+                        <span class="currency">£</span>
+                        <span class="amount">149</span>
+                        <span class="note">one-time payment</span>
+                    </div>
+                    <a href="#contact" class="featured-btn">Start Today</a>
+                </div>
+                <div class="featured-image">
+                    <img src="Gym Studio 1.jpg" alt="12-Week Core Rebuild">
+                </div>
+            </div>
+
+            <!-- Individual Programmes -->
+            <div class="programmes-grid">
+                <div class="programme-card fade-in">
+                    <div class="programme-image">
+                        <img src="Gym Studio 3.jpg" alt="Core Foundation">
+                    </div>
+                    <span class="programme-level">Beginner</span>
+                    <h4>Core Foundation</h4>
+                    <p>A 4-week beginner programme designed to teach you how to control, activate, and strengthen your core from the ground up. Perfect for beginners or anyone returning to training.</p>
+                    <div class="programme-meta">
+                        <span class="programme-price"><span class="currency">£</span>59</span>
+                        <a href="#contact" class="programme-btn">Start Today</a>
+                    </div>
+                </div>
+
+                <div class="programme-card fade-in">
+                    <div class="programme-image">
+                        <img src="Gym Studio 4.jpg" alt="Core Strength & Endurance">
+                    </div>
+                    <span class="programme-level">Intermediate</span>
+                    <h4>Core Strength & Endurance</h4>
+                    <p>Takes your foundation work and pushes it to the next level. 4 weeks of weighted core training, longer timed intervals, and controlled conditioning circuits.</p>
+                    <div class="programme-meta">
+                        <span class="programme-price"><span class="currency">£</span>59</span>
+                        <a href="#contact" class="programme-btn">Start Today</a>
+                    </div>
+                </div>
+
+                <div class="programme-card fade-in">
+                    <div class="programme-image">
+                        <img src="Gym Studio 5.jpg" alt="Core Power & Control">
+                    </div>
+                    <span class="programme-level">Advanced</span>
+                    <h4>Core Power & Control</h4>
+                    <p>The final 4-week phase built to develop explosive core power, strength endurance, and total control under fatigue. For those ready to push for peak performance.</p>
+                    <div class="programme-meta">
+                        <span class="programme-price"><span class="currency">£</span>59</span>
+                        <a href="#contact" class="programme-btn">Start Today</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Everfit Section -->
+    <section class="everfit">
+        <div class="container">
+            <div class="everfit-grid">
+                <div class="everfit-content fade-in">
+                    <span class="section-label">Powered By Everfit</span>
+                    <h3>Your Training Hub</h3>
+                    <p>All programmes are delivered through the Everfit app - a professional coaching platform that puts everything you need in one place.</p>
+                    <ul class="everfit-features">
+                        <li>HD video demonstrations for every exercise</li>
+                        <li>Progress tracking and workout history</li>
+                        <li>Direct messaging with Ross</li>
+                        <li>Personalised workout schedules</li>
+                        <li>Track weights, reps, and personal records</li>
+                        <li>Works on iOS and Android</li>
+                    </ul>
+                </div>
+                <div class="everfit-image fade-in">
+                    <img src="Everfit.png" alt="Everfit App">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Testimonials</span>
+                <h2 class="section-title">What Clients Say</h2>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"So far I have lost 25 kilos and still going. Ross is a good motivator and pushing me onwards to better and more physical work outs even at my tender age of 53."</p>
+                    <div class="testimonial-author">
+                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <div class="testimonial-author-info">
+                            <strong>Scott Grant</strong>
+                            <span>Lost 25 Kilos</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Since signing up, it's been the kick up the arse I've desperately needed. Ross makes the sessions varied and challenging yet fun. I feel so much more motivated, fitter and stronger."</p>
+                    <div class="testimonial-author">
+                        <img src="Emily Paterson.jpg" alt="Emily Paterson">
+                        <div class="testimonial-author-info">
+                            <strong>Emily Paterson</strong>
+                            <span>Building Strength</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Intense but deeply satisfying—pushed beyond limits into new gears I didn't know I had. Exactly the kick I needed to stay disciplined for my well-being."</p>
+                    <div class="testimonial-author">
+                        <img src="Baz Duncan.jpg" alt="Lee Bazzie Duncan">
+                        <div class="testimonial-author-info">
+                            <strong>Lee Bazzie Duncan</strong>
+                            <span>Staying Disciplined</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">Common Questions</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item fade-in">
+                    <h4>What equipment do I need?</h4>
+                    <p>Most programmes can be done with minimal equipment. Specific requirements are listed with each programme, but bodyweight options are always included.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>How do I access my programme?</h4>
+                    <p>Download the Everfit app (free on iOS and Android), and your programme will be delivered directly to you after purchase.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Can I message Ross for help?</h4>
+                    <p>Yes! All programmes include direct messaging through the Everfit app. Ask questions, send form check videos, and get real support.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>What level should I start at?</h4>
+                    <p>If you're new to core training, start with Core Foundation. If you've been training consistently, Intermediate or the full 12-Week programme is ideal.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>How long do I have access?</h4>
+                    <p>You get lifetime access to any programme you purchase. Train at your own pace and revisit whenever you want.</p>
+                </div>
+                <div class="faq-item fade-in">
+                    <h4>Why join programmes on Everfit?</h4>
+                    <p>Everfit gives you personalised workout plans, progress tracking, and access to a community of like-minded individuals - all in one professional platform.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-content fade-in">
+                    <span class="section-label">Get In Touch</span>
+                    <h3>Questions About Online Coaching?</h3>
+                    <p>Not sure which programme is right for you? Have questions before you start? Get in touch and I'll help you find the perfect fit.</p>
+
+                    <ul class="contact-details">
+                        <li style="flex-direction: column; align-items: flex-start;">
+                            <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
+                                <span class="icon" style="background: #25D366;">💬</span>
+                                <div>
+                                    <strong>WhatsApp</strong>
+                                    <span>Message me directly</span>
+                                </div>
+                            </div>
+                            <a href="https://wa.me/447449782055" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: #25D366; color: #ffffff; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                Message on WhatsApp
+                            </a>
+                        </li>
+                        <li style="flex-direction: column; align-items: flex-start;">
+                            <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px;">
+                                <span class="icon">📱</span>
+                                <div>
+                                    <strong>Follow Mind Core Fitness</strong>
+                                    <span>Connect on social media</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <a href="https://www.instagram.com/mind_core_fitness/" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #ffffff; text-decoration: none; border-radius: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                </a>
+                                <a href="https://www.facebook.com/mindcorefitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #1877F2; color: #ffffff; text-decoration: none; border-radius: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                </a>
+                                <a href="https://www.youtube.com/@Mind_Core_Fitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #FF0000; color: #ffffff; text-decoration: none; border-radius: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                </a>
+                                <a href="https://www.tiktok.com/@mind.core.fitness" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #000000; color: #ffffff; text-decoration: none; border-radius: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="contact-image fade-in">
+                    <img src="Gym 2.jpg" alt="Contact">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <img src="logo.png" alt="" class="final-logo">
+            <h2>Ready To Start Training?</h2>
+            <p>Choose your programme and start building real strength, discipline, and habits that last - from anywhere in the world.</p>
+            <a href="#programmes" class="final-cta-btn">View Programmes</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Mind Core Fitness. All rights reserved. | <a href="index.html">Back to Home</a></p>
+    </footer>
+
+    <!-- Scroll Animation -->
+    <script>
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        fadeElements.forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
