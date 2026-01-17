@@ -1067,7 +1067,7 @@
         @media (max-width: 1000px) {
             .hero {
                 min-height: auto;
-                padding: 120px 20px 60px;
+                padding: 100px 20px 60px;
             }
 
             .hero::before {
@@ -1083,10 +1083,14 @@
                 text-align: center;
             }
 
+            .hero-label {
+                display: none;
+            }
+
             .hero-image {
                 display: block;
                 order: -1;
-                margin-bottom: 30px;
+                margin-bottom: 28px;
             }
 
             .hero-image img {
@@ -1099,7 +1103,7 @@
 
             .hero h1 {
                 font-size: 2rem;
-                margin-bottom: 16px;
+                margin-bottom: 20px;
             }
 
             .hero-sub {
@@ -1109,16 +1113,21 @@
             }
 
             .hero-cta-group {
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-bottom: 32px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 28px;
             }
 
             .hero-cta-group .btn-primary,
             .hero-cta-group .btn-secondary {
-                padding: 14px 28px;
+                padding: 16px 32px;
                 font-size: 0.9rem;
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+                justify-content: center;
             }
 
             .hero-features {
