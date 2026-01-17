@@ -1065,9 +1065,44 @@
 
         /* Mobile Responsive */
         @media (max-width: 1000px) {
+            .hero {
+                min-height: auto;
+                padding: 140px 20px 80px;
+            }
+
+            .hero::before {
+                opacity: 0.45;
+            }
+
+            .hero::after {
+                background: linear-gradient(180deg, rgba(26, 26, 26, 0.6) 0%, rgba(26, 26, 26, 0.85) 100%);
+            }
+
             .hero .container {
                 grid-template-columns: 1fr;
                 text-align: center;
+                gap: 0;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-label {
+                margin-bottom: 20px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                margin-bottom: 24px;
+            }
+
+            .hero-sub {
+                font-size: 1rem;
+                margin-bottom: 40px;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .hero-image {
@@ -1076,11 +1111,23 @@
 
             .hero-features {
                 justify-content: center;
+                gap: 16px;
             }
 
             .hero-cta-group {
                 justify-content: center;
                 flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 40px;
+            }
+
+            .hero-cta-group .btn-primary,
+            .hero-cta-group .btn-secondary {
+                padding: 14px 28px;
+                font-size: 0.9rem;
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
             }
 
             .benefits-grid,
@@ -1139,6 +1186,23 @@
                 padding: 70px 20px;
             }
 
+            .hero {
+                padding: 120px 20px 60px;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .hero-sub {
+                font-size: 0.95rem;
+                margin-bottom: 32px;
+            }
+
+            .hero-cta-group {
+                margin-bottom: 32px;
+            }
+
             .steps-grid {
                 grid-template-columns: 1fr;
             }
@@ -1146,6 +1210,11 @@
             .hero-features {
                 flex-direction: column;
                 align-items: center;
+                gap: 12px;
+            }
+
+            .hero-feature {
+                font-size: 0.9rem;
             }
         }
 
