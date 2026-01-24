@@ -6,6 +6,11 @@
       "source": "/:path*.html",
       "destination": "/:path*",
       "permanent": true
+    },
+    {
+      "source": "/quick",
+      "destination": "/core-buddy",
+      "permanent": true
     }
   ]
 }
