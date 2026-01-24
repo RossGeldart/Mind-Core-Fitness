@@ -1215,6 +1215,127 @@
             font-size: 0.85rem;
         }
 
+        /* Contact Form Section */
+        .contact-form-section {
+            background: #0d0d0d;
+            color: #ffffff;
+            padding: 100px 20px;
+        }
+
+        .contact-form-section .section-label {
+            color: var(--accent-color);
+        }
+
+        .contact-form-section .section-title {
+            color: #ffffff;
+        }
+
+        .contact-form-section .section-subtitle {
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-form-wrapper {
+            max-width: 600px;
+            margin: 50px auto 0;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-btn {
+            padding: 18px 40px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #b33a47;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(153, 49, 60, 0.3);
+        }
+
+        .form-note {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Cookie Consent Banner */
         .cookie-banner {
             position: fixed;
@@ -1971,6 +2092,37 @@
                     <h4>Syncs Everywhere</h4>
                     <p>Access your data on phone, tablet, or computer.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact-form-section" id="contact">
+        <div class="container text-center">
+            <span class="section-label">Get In Touch</span>
+            <h2 class="section-title">Questions About Core Buddy?</h2>
+            <p class="section-subtitle">Interested in learning more? Fill out the form and I'll get back to you within 24 hours.</p>
+            
+            <div class="contact-form-wrapper">
+                <form class="contact-form" action="https://formspree.io/f/xpwzgkvq" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Your Name *</label>
+                            <input type="text" id="name" name="name" placeholder="John Smith" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Your Message *</label>
+                        <textarea id="message" name="message" placeholder="What would you like to know about Core Buddy?" required></textarea>
+                    </div>
+                    <input type="hidden" name="_subject" value="Core Buddy Enquiry - Mind Core Fitness">
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+                <p class="form-note">I typically respond within 24 hours.</p>
             </div>
         </div>
     </section>
