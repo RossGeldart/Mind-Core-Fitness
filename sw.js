@@ -1,5 +1,5 @@
 // Service Worker for Mind Core Fitness PWA
-const CACHE_NAME = 'mindcore-fitness-v3';
+const CACHE_NAME = 'mindcore-fitness-v4';
 const urlsToCache = [
   '/',
   '/index.html',
