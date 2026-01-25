@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Core Fitness</title>
-    
+    <title>Mind Core Fitness | Personal Training & Online Coaching</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform your fitness with Mind Core Fitness. Expert 1-2-1 personal training, online coaching, and the free 30-day core challenge. Build strength, improve posture, and achieve your fitness goals.">
+    <meta name="keywords" content="personal training, online coaching, core fitness, fitness challenge, 1-2-1 training, core strength, Mind Core Fitness">
+    <meta name="author" content="Mind Core Fitness">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.mindcorefitness.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mindcorefitness.com/">
+    <meta property="og:title" content="Mind Core Fitness | Personal Training & Online Coaching">
+    <meta property="og:description" content="Transform your fitness with Mind Core Fitness. Expert 1-2-1 personal training, online coaching, and the free 30-day core challenge.">
+    <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+    <meta property="og:site_name" content="Mind Core Fitness">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.mindcorefitness.com/">
+    <meta name="twitter:title" content="Mind Core Fitness | Personal Training & Online Coaching">
+    <meta name="twitter:description" content="Transform your fitness with Mind Core Fitness. Expert 1-2-1 personal training, online coaching, and the free 30-day core challenge.">
+    <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#99313c">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,291 +44,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --text-color: #373737;
-            --accent-color: #99313c;
-            --background: #ffffff;
-            --glow-color: rgba(55, 55, 55, 0.25);
-            --glow-color-strong: rgba(55, 55, 55, 0.4);
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 580px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Logo with refined grey glow */
-        .logo-wrapper {
-            margin-bottom: 50px;
-            opacity: 0;
-            animation: logoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .logo {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            filter: drop-shadow(0 0 40px var(--glow-color)) 
-                    drop-shadow(0 0 80px rgba(55, 55, 55, 0.15));
-            animation: breathe 5s ease-in-out infinite;
-            animation-delay: 1.2s;
-        }
-
-        @keyframes logoReveal {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes breathe {
-            0%, 100% {
-                filter: drop-shadow(0 0 25px rgba(55, 55, 55, 0.2)) 
-                        drop-shadow(0 0 50px rgba(55, 55, 55, 0.1));
-                transform: scale(1);
-            }
-            50% {
-                filter: drop-shadow(0 0 60px rgba(55, 55, 55, 0.45)) 
-                        drop-shadow(0 0 100px rgba(55, 55, 55, 0.25));
-                transform: scale(1.05);
-            }
-        }
-
-        /* Typewriter heading */
-        .question {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
-            font-size: clamp(1.3rem, 4vw, 1.7rem);
-            color: var(--text-color);
-            margin-bottom: 45px;
-            min-height: 3em;
-            line-height: 1.5;
-            letter-spacing: -0.01em;
-            opacity: 0;
-            animation: fadeIn 0.8s ease forwards;
-            animation-delay: 0.8s;
-        }
-
-        .typewriter {
-            display: inline;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background-color: var(--text-color);
-            margin-left: 3px;
-            vertical-align: text-bottom;
-            animation: blink 1s ease-in-out infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0; }
-        }
-
-        /* Options */
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option {
-            display: block;
-            padding: 18px 28px;
-            background: var(--background);
-            border: 1.5px solid rgba(55, 55, 55, 0.2);
-            border-radius: 10px;
-            color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            text-decoration: none;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .option.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .option:hover {
-            background: var(--text-color);
-            color: #ffffff;
-            border-color: var(--text-color);
-            box-shadow: 0 8px 30px rgba(55, 55, 55, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .option:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.15);
-        }
-
-        /* Cookie Consent Banner */
-        .cookie-banner {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #1a1a1a;
-            color: #ffffff;
-            padding: 20px;
-            z-index: 9999;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .cookie-banner.show {
-            transform: translateY(0);
-        }
-
-        .cookie-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .cookie-text {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .cookie-text p {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #ccc;
-            margin: 0;
-        }
-
-        .cookie-text a {
-            color: var(--accent-color);
-            text-decoration: underline;
-        }
-
-        .cookie-buttons {
-            display: flex;
-            gap: 12px;
-            flex-shrink: 0;
-        }
-
-        .cookie-btn {
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .cookie-btn.accept {
-            background: var(--accent-color);
-            color: #ffffff;
-        }
-
-        .cookie-btn.accept:hover {
-            background: #b33a47;
-        }
-
-        .cookie-btn.decline {
-            background: transparent;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .cookie-btn.decline:hover {
-            border-color: #ffffff;
-        }
-
-        @media (max-width: 600px) {
-            .cookie-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cookie-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 480px) {
-            .logo {
-                width: 220px;
-                height: 220px;
-            }
-
-            .logo-wrapper {
-                margin-bottom: 40px;
-            }
-
-            .question {
-                margin-bottom: 35px;
-            }
-
-            .options {
-                gap: 10px;
-            }
-
-            .option {
-                padding: 16px 22px;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <div class="logo-wrapper">
-            <img src="Logo.PNG" alt="Mind Core Fitness" class="logo">
+            <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="280" height="280">
         </div>
 
         <h1 class="question">
@@ -326,7 +69,10 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="alert('Cookie Policy: We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.')">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" id="cookiePolicyToggle">Learn more</a></p>
+                <div class="cookie-policy-details" id="cookiePolicyDetails">
+                    We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
+                </div>
             </div>
             <div class="cookie-buttons">
                 <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
@@ -347,26 +93,37 @@
             document.getElementById('cookieBanner').classList.remove('show');
         }
 
+        // Cookie policy toggle
+        document.getElementById('cookiePolicyToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            var details = document.getElementById('cookiePolicyDetails');
+            details.classList.toggle('show');
+            this.textContent = details.classList.contains('show') ? 'Show less' : 'Learn more';
+        });
+
         // Check cookie consent on page load
         window.addEventListener('DOMContentLoaded', function() {
             if (!localStorage.getItem('cookieConsent')) {
+                // Show cookie banner after animations complete to avoid interrupting UX
+                var COOKIE_BANNER_DELAY_MS = 1500;
                 setTimeout(function() {
                     document.getElementById('cookieBanner').classList.add('show');
-                }, 1500);
+                }, COOKIE_BANNER_DELAY_MS);
             }
         });
 
+        // Typewriter animation configuration
         const text = "What can Mind Core Fitness do for you today?";
         const typewriter = document.getElementById('typewriter');
         const options = document.querySelectorAll('.option');
         let index = 0;
-        const speed = 70;
+        const TYPING_SPEED_MS = 70; // Milliseconds between each character typed
 
         function type() {
             if (index < text.length) {
                 typewriter.textContent += text.charAt(index);
                 index++;
-                setTimeout(type, speed);
+                setTimeout(type, TYPING_SPEED_MS);
             } else {
                 // Typing complete - reveal options with stagger
                 revealOptions();
@@ -374,21 +131,21 @@
         }
 
         function revealOptions() {
+            const STAGGER_DELAY_MS = 100; // Delay between each option appearing
             options.forEach((option, i) => {
                 setTimeout(() => {
                     option.classList.add('visible');
-                }, i * 100);
+                }, i * STAGGER_DELAY_MS);
             });
         }
 
-        // Start typewriter after logo reveal
-        setTimeout(type, 1200);
+        // Start typewriter after logo reveal animation completes (1.2s CSS animation)
+        const LOGO_REVEAL_DURATION_MS = 1200;
+        setTimeout(type, LOGO_REVEAL_DURATION_MS);
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker not registered', err));
+            navigator.serviceWorker.register('sw.js').catch(function() {});
         }
     </script>
 </body>
