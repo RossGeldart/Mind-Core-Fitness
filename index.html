@@ -52,9 +52,7 @@
             <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="280" height="280">
         </div>
 
-        <h1 class="question">
-            <span class="typewriter" id="typewriter"></span><span class="cursor"></span>
-        </h1>
+        <h1 class="question" id="questionText"></h1>
 
         <div class="options">
             <a href="/personal-training" class="option">Explore 1-2-1 In Person Training</a>
@@ -163,26 +161,25 @@
             }
         });
 
-        // Typewriter animation configuration
+        // Word reveal animation configuration
         const text = "What can Mind Core Fitness do for you today?";
-        const typewriter = document.getElementById('typewriter');
+        const questionElement = document.getElementById('questionText');
         const options = document.querySelectorAll('.option');
-        let index = 0;
-        const TYPING_SPEED_MS = 70; // Milliseconds between each character typed
+        const WORD_STAGGER_MS = 80; // Delay between each word appearing
 
-        function type() {
-            if (index < text.length) {
-                typewriter.textContent += text.charAt(index);
-                index++;
-                setTimeout(type, TYPING_SPEED_MS);
-            } else {
-                // Typing complete - reveal options with stagger
-                revealOptions();
-            }
+        function revealWords() {
+            const words = text.split(' ');
+            questionElement.innerHTML = words.map((word, i) =>
+                `<span class="word" style="animation-delay: ${i * WORD_STAGGER_MS}ms">${word}</span>`
+            ).join(' ');
+
+            // Reveal options after words animation completes
+            const totalWordDuration = words.length * WORD_STAGGER_MS + 400;
+            setTimeout(revealOptions, totalWordDuration);
         }
 
         function revealOptions() {
-            const STAGGER_DELAY_MS = 100; // Delay between each option appearing
+            const STAGGER_DELAY_MS = 80; // Delay between each option appearing
             options.forEach((option, i) => {
                 setTimeout(() => {
                     option.classList.add('visible');
@@ -190,9 +187,9 @@
             });
         }
 
-        // Start typewriter after logo reveal animation completes (1.2s CSS animation)
+        // Start word reveal after logo animation completes (1.2s CSS animation)
         const LOGO_REVEAL_DURATION_MS = 1200;
-        setTimeout(type, LOGO_REVEAL_DURATION_MS);
+        setTimeout(revealWords, LOGO_REVEAL_DURATION_MS);
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
