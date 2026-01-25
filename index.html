@@ -323,12 +323,36 @@
                 font-size: 0.9rem;
             }
         }
+
+        /* Accessibility - Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .logo-wrapper {
+                animation: none;
+                opacity: 1;
+            }
+
+            .logo {
+                animation: none;
+            }
+
+            .cursor {
+                animation: none;
+            }
+
+            .option {
+                transition: none;
+            }
+
+            .cookie-banner {
+                transition: none;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo-wrapper">
-            <img src="Logo.PNG" alt="Mind Core Fitness" class="logo">
+            <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="280" height="280">
         </div>
 
         <h1 class="question">
