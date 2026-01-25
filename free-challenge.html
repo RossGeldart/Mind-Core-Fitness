@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free 30 Day Core Challenge | Mind Core Fitness</title>
 
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Join the free 30 Day Core Challenge with Mind Core Fitness. Daily 10-15 minute workouts delivered through the Everfit app. No equipment needed. Build real core strength in just 30 days.">
+    <meta name="keywords" content="free fitness challenge, 30 day core challenge, core workouts, free workout programme, Mind Core Fitness, Everfit app, home workouts, no equipment workout">
+    <meta name="author" content="Mind Core Fitness">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.mindcorefitness.com/free-challenge">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mindcorefitness.com/free-challenge">
+    <meta property="og:title" content="Free 30 Day Core Challenge | Mind Core Fitness">
+    <meta property="og:description" content="Transform your core in 30 days with daily 10-15 minute workouts. 100% free. No equipment needed.">
+    <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.mindcorefitness.com/free-challenge">
+    <meta name="twitter:title" content="Free 30 Day Core Challenge | Mind Core Fitness">
+    <meta name="twitter:description" content="Transform your core in 30 days with daily 10-15 minute workouts. 100% free. No equipment needed.">
+    <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
     <!-- Vercel Web Analytics -->
 <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -183,6 +204,84 @@
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Focus states for keyboard navigation */
+        .btn-primary:focus,
+        .nav-cta:focus,
+        .nav-back:focus,
+        .submit-btn:focus,
+        .cookie-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .btn-primary:focus:not(:focus-visible),
+        .nav-cta:focus:not(:focus-visible),
+        .nav-back:focus:not(:focus-visible),
+        .submit-btn:focus:not(:focus-visible),
+        .cookie-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .btn-primary:focus-visible,
+        .nav-cta:focus-visible,
+        .nav-back:focus-visible,
+        .submit-btn:focus-visible,
+        .cookie-btn:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-text a:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Cookie policy details (expandable) */
+        .cookie-policy-details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .cookie-policy-details.show {
+            display: block;
+        }
+
+        /* Accessibility - Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .fade-in {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .feature-card,
+            .testimonial-card {
+                transition: none;
+            }
+
+            .feature-card:hover {
+                transform: none;
+            }
+
+            .btn-primary,
+            .nav-cta,
+            .submit-btn,
+            .cookie-banner {
+                transition: none;
+            }
+
+            .btn-primary:hover,
+            .nav-cta:hover,
+            .submit-btn:hover {
+                transform: none;
+            }
         }
 
         /* Hero Section */
@@ -1076,6 +1175,11 @@
             document.getElementById('cookieBanner').classList.remove('show');
         }
 
+        function toggleCookieDetails() {
+            var details = document.getElementById('cookiePolicyDetails');
+            details.classList.toggle('show');
+        }
+
         // Check cookie consent on page load
         if (!localStorage.getItem('cookieConsent')) {
             setTimeout(function() {
@@ -1088,7 +1192,10 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="alert('Cookie Policy: We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.'); return false;">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="toggleCookieDetails(); return false;">Learn more</a></p>
+                <div class="cookie-policy-details" id="cookiePolicyDetails">
+                    <strong>Cookie Policy:</strong> We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
+                </div>
             </div>
             <div class="cookie-buttons">
                 <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
