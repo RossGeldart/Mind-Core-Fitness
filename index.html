@@ -44,357 +44,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --text-color: #373737;
-            --accent-color: #99313c;
-            --background: #ffffff;
-            --glow-color: rgba(55, 55, 55, 0.25);
-            --glow-color-strong: rgba(55, 55, 55, 0.4);
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 580px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Logo with refined grey glow */
-        .logo-wrapper {
-            margin-bottom: 50px;
-            opacity: 0;
-            animation: logoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .logo {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            filter: drop-shadow(0 0 40px var(--glow-color)) 
-                    drop-shadow(0 0 80px rgba(55, 55, 55, 0.15));
-            animation: breathe 5s ease-in-out infinite;
-            animation-delay: 1.2s;
-        }
-
-        @keyframes logoReveal {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes breathe {
-            0%, 100% {
-                filter: drop-shadow(0 0 25px rgba(55, 55, 55, 0.2)) 
-                        drop-shadow(0 0 50px rgba(55, 55, 55, 0.1));
-                transform: scale(1);
-            }
-            50% {
-                filter: drop-shadow(0 0 60px rgba(55, 55, 55, 0.45)) 
-                        drop-shadow(0 0 100px rgba(55, 55, 55, 0.25));
-                transform: scale(1.05);
-            }
-        }
-
-        /* Typewriter heading */
-        .question {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
-            font-size: clamp(1.3rem, 4vw, 1.7rem);
-            color: var(--text-color);
-            margin-bottom: 45px;
-            min-height: 3em;
-            line-height: 1.5;
-            letter-spacing: -0.01em;
-            opacity: 0;
-            animation: fadeIn 0.8s ease forwards;
-            animation-delay: 0.8s;
-        }
-
-        .typewriter {
-            display: inline;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background-color: var(--text-color);
-            margin-left: 3px;
-            vertical-align: text-bottom;
-            animation: blink 1s ease-in-out infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0; }
-        }
-
-        /* Options */
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option {
-            display: block;
-            padding: 18px 28px;
-            background: var(--background);
-            border: 1.5px solid rgba(55, 55, 55, 0.2);
-            border-radius: 10px;
-            color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            text-decoration: none;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .option.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .option:hover {
-            background: var(--text-color);
-            color: #ffffff;
-            border-color: var(--text-color);
-            box-shadow: 0 8px 30px rgba(55, 55, 55, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .option:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.15);
-        }
-
-        .option:focus {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        .option:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        .option:focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        /* Cookie Consent Banner */
-        .cookie-banner {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #1a1a1a;
-            color: #ffffff;
-            padding: 20px;
-            z-index: 9999;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .cookie-banner.show {
-            transform: translateY(0);
-        }
-
-        .cookie-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .cookie-text {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .cookie-text p {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #ccc;
-            margin: 0;
-        }
-
-        .cookie-text a {
-            color: var(--accent-color);
-            text-decoration: underline;
-        }
-
-        .cookie-buttons {
-            display: flex;
-            gap: 12px;
-            flex-shrink: 0;
-        }
-
-        .cookie-btn {
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .cookie-btn.accept {
-            background: var(--accent-color);
-            color: #ffffff;
-        }
-
-        .cookie-btn.accept:hover {
-            background: #b33a47;
-        }
-
-        .cookie-btn.decline {
-            background: transparent;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .cookie-btn.decline:hover {
-            border-color: #ffffff;
-        }
-
-        .cookie-btn:focus {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        .cookie-btn:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        .cookie-btn:focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        .cookie-text a:focus {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        .cookie-policy-details {
-            display: none;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-            color: #aaa;
-            line-height: 1.5;
-        }
-
-        .cookie-policy-details.show {
-            display: block;
-        }
-
-        @media (max-width: 600px) {
-            .cookie-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cookie-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 480px) {
-            .logo {
-                width: 220px;
-                height: 220px;
-            }
-
-            .logo-wrapper {
-                margin-bottom: 40px;
-            }
-
-            .question {
-                margin-bottom: 35px;
-            }
-
-            .options {
-                gap: 10px;
-            }
-
-            .option {
-                padding: 16px 22px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Accessibility - Reduced motion preference */
-        @media (prefers-reduced-motion: reduce) {
-            .logo-wrapper {
-                animation: none;
-                opacity: 1;
-            }
-
-            .logo {
-                animation: none;
-            }
-
-            .cursor {
-                animation: none;
-            }
-
-            .option {
-                transition: none;
-            }
-
-            .cookie-banner {
-                transition: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -454,23 +104,26 @@
         // Check cookie consent on page load
         window.addEventListener('DOMContentLoaded', function() {
             if (!localStorage.getItem('cookieConsent')) {
+                // Show cookie banner after animations complete to avoid interrupting UX
+                var COOKIE_BANNER_DELAY_MS = 1500;
                 setTimeout(function() {
                     document.getElementById('cookieBanner').classList.add('show');
-                }, 1500);
+                }, COOKIE_BANNER_DELAY_MS);
             }
         });
 
+        // Typewriter animation configuration
         const text = "What can Mind Core Fitness do for you today?";
         const typewriter = document.getElementById('typewriter');
         const options = document.querySelectorAll('.option');
         let index = 0;
-        const speed = 70;
+        const TYPING_SPEED_MS = 70; // Milliseconds between each character typed
 
         function type() {
             if (index < text.length) {
                 typewriter.textContent += text.charAt(index);
                 index++;
-                setTimeout(type, speed);
+                setTimeout(type, TYPING_SPEED_MS);
             } else {
                 // Typing complete - reveal options with stagger
                 revealOptions();
@@ -478,15 +131,17 @@
         }
 
         function revealOptions() {
+            const STAGGER_DELAY_MS = 100; // Delay between each option appearing
             options.forEach((option, i) => {
                 setTimeout(() => {
                     option.classList.add('visible');
-                }, i * 100);
+                }, i * STAGGER_DELAY_MS);
             });
         }
 
-        // Start typewriter after logo reveal
-        setTimeout(type, 1200);
+        // Start typewriter after logo reveal animation completes (1.2s CSS animation)
+        const LOGO_REVEAL_DURATION_MS = 1200;
+        setTimeout(type, LOGO_REVEAL_DURATION_MS);
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
