@@ -89,19 +89,12 @@ body {
     animation-delay: 0.8s;
 }
 
-.typewriter {
-    display: inline;
-}
-
-.cursor {
+/* Word reveal animation */
+.word {
     display: inline-block;
-    width: 2px;
-    height: 1em;
-    background-color: var(--text-color);
-    margin-left: 3px;
-    vertical-align: text-bottom;
-    animation: blink 1s ease-in-out infinite;
-    opacity: 0.7;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: wordReveal 0.4s ease forwards;
 }
 
 @keyframes fadeIn {
@@ -113,9 +106,15 @@ body {
     }
 }
 
-@keyframes blink {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0; }
+@keyframes wordReveal {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Options */
@@ -521,8 +520,10 @@ body {
         animation: none;
     }
 
-    .cursor {
+    .word {
         animation: none;
+        opacity: 1;
+        transform: none;
     }
 
     .option {
