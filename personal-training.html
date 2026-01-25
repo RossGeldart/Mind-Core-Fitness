@@ -165,6 +165,19 @@
             box-shadow: 0 4px 15px rgba(55, 55, 55, 0.2);
         }
 
+        .nav-links a:focus,
+        .nav-back:focus,
+        .nav-cta:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .nav-links a:focus:not(:focus-visible),
+        .nav-back:focus:not(:focus-visible),
+        .nav-cta:focus:not(:focus-visible) {
+            outline: none;
+        }
+
         /* Section Base */
         section {
             padding: 100px 20px;
@@ -336,6 +349,24 @@
         .btn-secondary:hover {
             border-color: #ffffff;
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Focus states for keyboard navigation */
+        .btn-primary:focus,
+        .btn-secondary:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .btn-primary:focus:not(:focus-visible),
+        .btn-secondary:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .btn-primary:focus-visible,
+        .btn-secondary:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
         }
 
         .hero-stats {
@@ -958,6 +989,15 @@
             box-shadow: 0 8px 30px rgba(55, 55, 55, 0.3);
         }
 
+        .pricing-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .pricing-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
         .pricing-note {
             text-align: center;
             margin-top: 40px;
@@ -1142,6 +1182,15 @@
             box-shadow: 0 10px 40px rgba(55, 55, 55, 0.3);
         }
 
+        .final-cta-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .final-cta-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
         /* Footer */
         footer {
             background: var(--dark-bg);
@@ -1266,6 +1315,15 @@
             box-shadow: 0 10px 30px rgba(153, 49, 60, 0.3);
         }
 
+        .submit-btn:focus {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+        }
+
+        .submit-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
         .form-note {
             text-align: center;
             color: #666;
@@ -1358,6 +1416,34 @@
 
         .cookie-btn.decline:hover {
             border-color: #ffffff;
+        }
+
+        .cookie-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .cookie-text a:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-policy-details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .cookie-policy-details.show {
+            display: block;
         }
 
         @media (max-width: 600px) {
@@ -2142,6 +2228,14 @@
             document.getElementById('cookieBanner').classList.remove('show');
         }
 
+        // Cookie policy toggle
+        document.getElementById('cookiePolicyToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            var details = document.getElementById('cookiePolicyDetails');
+            details.classList.toggle('show');
+            this.textContent = details.classList.contains('show') ? 'Show less' : 'Learn more';
+        });
+
         // Check cookie consent on page load
         if (!localStorage.getItem('cookieConsent')) {
             setTimeout(function() {
@@ -2154,7 +2248,10 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="alert('Cookie Policy: We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.'); return false;">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" id="cookiePolicyToggle">Learn more</a></p>
+                <div class="cookie-policy-details" id="cookiePolicyDetails">
+                    We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
+                </div>
             </div>
             <div class="cookie-buttons">
                 <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
