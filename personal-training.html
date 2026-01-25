@@ -1562,6 +1562,55 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Accessibility - Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .fade-in {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .pillar-card,
+            .testimonial-card,
+            .pricing-card {
+                transition: none;
+            }
+
+            .pillar-card:hover,
+            .pricing-card:hover {
+                transform: none;
+            }
+
+            .gallery-item img {
+                transition: none;
+            }
+
+            .gallery-item:hover img {
+                transform: none;
+            }
+
+            .btn-primary,
+            .btn-secondary,
+            .nav-cta,
+            .pricing-btn,
+            .submit-btn,
+            .final-cta-btn {
+                transition: none;
+            }
+
+            .btn-primary:hover,
+            .nav-cta:hover,
+            .pricing-btn:hover,
+            .submit-btn:hover,
+            .final-cta-btn:hover {
+                transform: none;
+            }
+
+            .cookie-banner {
+                transition: none;
+            }
+        }
     </style>
 </head>
 <body>
