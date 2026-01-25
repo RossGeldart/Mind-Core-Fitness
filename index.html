@@ -206,6 +206,20 @@
             box-shadow: 0 4px 15px rgba(55, 55, 55, 0.15);
         }
 
+        .option:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .option:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .option:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
         /* Cookie Consent Banner */
         .cookie-banner {
             position: fixed;
@@ -285,6 +299,39 @@
 
         .cookie-btn.decline:hover {
             border-color: #ffffff;
+        }
+
+        .cookie-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .cookie-btn:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-text a:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-policy-details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .cookie-policy-details.show {
+            display: block;
         }
 
         @media (max-width: 600px) {
@@ -372,7 +419,10 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="alert('Cookie Policy: We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.')">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" id="cookiePolicyToggle">Learn more</a></p>
+                <div class="cookie-policy-details" id="cookiePolicyDetails">
+                    We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
+                </div>
             </div>
             <div class="cookie-buttons">
                 <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
@@ -392,6 +442,14 @@
             localStorage.setItem('cookieConsent', 'declined');
             document.getElementById('cookieBanner').classList.remove('show');
         }
+
+        // Cookie policy toggle
+        document.getElementById('cookiePolicyToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            var details = document.getElementById('cookiePolicyDetails');
+            details.classList.toggle('show');
+            this.textContent = details.classList.contains('show') ? 'Show less' : 'Learn more';
+        });
 
         // Check cookie consent on page load
         window.addEventListener('DOMContentLoaded', function() {
@@ -432,9 +490,7 @@
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker not registered', err));
+            navigator.serviceWorker.register('sw.js').catch(function() {});
         }
     </script>
 </body>
