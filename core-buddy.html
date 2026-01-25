@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Core Buddy | Stop Juggling Fitness Apps. Start Crushing Consistency.</title>
 
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Core Buddy - your complete fitness system in one app. Five tools: instant workouts, simple tracking, protein & water focus, consistency analytics, and buddy accountability. Stop paying for multiple apps.">
+    <meta name="keywords" content="fitness app, workout app, Core Buddy, Mind Core Fitness, fitness tracker, protein tracker, workout randomiser, accountability app, consistency tracker">
+    <meta name="author" content="Mind Core Fitness">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.mindcorefitness.com/core-buddy">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mindcorefitness.com/core-buddy">
+    <meta property="og:title" content="Core Buddy | Stop Juggling Fitness Apps. Start Crushing Consistency.">
+    <meta property="og:description" content="One app. Five tools. Zero guilt. Everything you need to stay fit without the overwhelm.">
+    <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.mindcorefitness.com/core-buddy">
+    <meta name="twitter:title" content="Core Buddy | Stop Juggling Fitness Apps. Start Crushing Consistency.">
+    <meta name="twitter:description" content="One app. Five tools. Zero guilt. Everything you need to stay fit without the overwhelm.">
+    <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
 <!-- Vercel Web Analytics -->
 <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -1571,6 +1592,114 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Focus states for keyboard navigation */
+        .btn-primary:focus,
+        .btn-secondary:focus,
+        .nav-cta:focus,
+        .nav-back:focus,
+        .nav-links a:focus,
+        .pricing-btn:focus,
+        .submit-btn:focus,
+        .final-cta-btn:focus,
+        .cookie-btn:focus,
+        .footer-links a:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .btn-primary:focus:not(:focus-visible),
+        .btn-secondary:focus:not(:focus-visible),
+        .nav-cta:focus:not(:focus-visible),
+        .nav-back:focus:not(:focus-visible),
+        .nav-links a:focus:not(:focus-visible),
+        .pricing-btn:focus:not(:focus-visible),
+        .submit-btn:focus:not(:focus-visible),
+        .final-cta-btn:focus:not(:focus-visible),
+        .cookie-btn:focus:not(:focus-visible),
+        .footer-links a:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .btn-primary:focus-visible,
+        .btn-secondary:focus-visible,
+        .nav-cta:focus-visible,
+        .nav-back:focus-visible,
+        .nav-links a:focus-visible,
+        .pricing-btn:focus-visible,
+        .submit-btn:focus-visible,
+        .final-cta-btn:focus-visible,
+        .cookie-btn:focus-visible,
+        .footer-links a:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .cookie-text a:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Cookie policy details (expandable) */
+        .cookie-policy-details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .cookie-policy-details.show {
+            display: block;
+        }
+
+        /* Accessibility - Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .fade-in {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .hero-logo {
+                animation: none;
+                filter: drop-shadow(0 0 40px rgba(153, 49, 60, 0.4));
+            }
+
+            .hero-ring {
+                animation: none;
+            }
+
+            .feature-card,
+            .pricing-card,
+            .testimonial-card,
+            .btn-primary,
+            .btn-secondary,
+            .nav-cta,
+            .pricing-btn,
+            .submit-btn,
+            .final-cta-btn,
+            .cookie-banner,
+            .footer-links a {
+                transition: none;
+            }
+
+            .feature-card:hover,
+            .pricing-card:hover,
+            .btn-primary:hover,
+            .nav-cta:hover,
+            .pricing-btn:hover,
+            .submit-btn:hover,
+            .final-cta-btn:hover {
+                transform: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2202,6 +2331,11 @@
             document.getElementById('cookieBanner').classList.remove('show');
         }
 
+        function toggleCookieDetails() {
+            var details = document.getElementById('cookiePolicyDetails');
+            details.classList.toggle('show');
+        }
+
         // Check cookie consent on page load
         if (!localStorage.getItem('cookieConsent')) {
             setTimeout(function() {
@@ -2214,7 +2348,10 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="alert('Cookie Policy: We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.'); return false;">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="toggleCookieDetails(); return false;">Learn more</a></p>
+                <div class="cookie-policy-details" id="cookiePolicyDetails">
+                    <strong>Cookie Policy:</strong> We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
+                </div>
             </div>
             <div class="cookie-buttons">
                 <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
