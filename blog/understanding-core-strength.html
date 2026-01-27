@@ -516,10 +516,11 @@
         .social-link svg {
             width: 24px;
             height: 24px;
+            fill: #ffffff;
         }
 
         .social-link:focus {
-            outline: 2px solid var(--accent-color);
+            outline: 2px solid #666666;
             outline-offset: 2px;
         }
 
@@ -624,10 +625,16 @@
             height: 42px;
             border-radius: 50%;
             background: var(--card-bg);
-            color: var(--text-muted);
+            color: #666666;
             text-decoration: none;
             transition: all 0.2s ease;
             border: 1px solid var(--card-border);
+        }
+
+        .share-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #666666;
         }
 
         .share-btn:hover {
@@ -641,10 +648,18 @@
             border-color: #1DA1F2;
         }
 
+        .share-btn.twitter:hover svg {
+            fill: #fff;
+        }
+
         .share-btn.facebook:hover {
             background: #1877F2;
             color: #fff;
             border-color: #1877F2;
+        }
+
+        .share-btn.facebook:hover svg {
+            fill: #fff;
         }
 
         .share-btn.linkedin:hover {
@@ -653,25 +668,32 @@
             border-color: #0A66C2;
         }
 
+        .share-btn.linkedin:hover svg {
+            fill: #fff;
+        }
+
         .share-btn.whatsapp:hover {
             background: #25D366;
             color: #fff;
             border-color: #25D366;
         }
 
-        .share-btn.copy:hover {
-            background: var(--accent-color);
-            color: #fff;
-            border-color: var(--accent-color);
+        .share-btn.whatsapp:hover svg {
+            fill: #fff;
         }
 
-        .share-btn svg {
-            width: 20px;
-            height: 20px;
+        .share-btn.copy:hover {
+            background: #666666;
+            color: #fff;
+            border-color: #666666;
+        }
+
+        .share-btn.copy:hover svg {
+            stroke: #fff;
         }
 
         .share-btn:focus {
-            outline: 2px solid var(--accent-color);
+            outline: 2px solid #666666;
             outline-offset: 2px;
         }
 
