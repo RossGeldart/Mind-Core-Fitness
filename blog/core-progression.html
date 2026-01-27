@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beyond the Mat: Core Strength for Everyday Life | Mind Core Fitness</title>
+    <title>How to Level Up Your Core Training Safely | Mind Core Fitness</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Core strength isn't just for athletes. Learn how a strong core improves posture, lifting, walking, and mental confidence in your everyday life.">
-    <meta name="keywords" content="core strength everyday life, functional core training, posture improvement, lifting safely, core stability benefits, Mind Core Fitness, Elgin personal trainer">
+    <meta name="description" content="Learn how to progress your core training safely with this 4-level pyramid system. From beginner activation to advanced loaded movements.">
+    <meta name="keywords" content="core progression, progressive core training, level up core strength, core exercises beginner to advanced, Mind Core Fitness, Elgin personal trainer">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.mindcorefitness.com/blog/beyond-the-mat">
+    <link rel="canonical" href="https://www.mindcorefitness.com/blog/core-progression">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://www.mindcorefitness.com/blog/beyond-the-mat">
-    <meta property="og:title" content="Beyond the Mat: Core Strength for Everyday Life">
-    <meta property="og:description" content="Core strength isn't just for athletes. Learn how it improves posture, lifting, and confidence.">
-    <meta property="og:image" content="https://www.mindcorefitness.com/blog/images/beyond-the-mat.avif">
+    <meta property="og:url" content="https://www.mindcorefitness.com/blog/core-progression">
+    <meta property="og:title" content="How to Level Up Your Core Training Safely">
+    <meta property="og:description" content="Learn how to progress your core training safely with this 4-level pyramid system.">
+    <meta property="og:image" content="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg">
     <meta property="og:site_name" content="Mind Core Fitness">
-    <meta property="article:published_time" content="2026-01-26">
+    <meta property="article:published_time" content="2026-01-27">
     <meta property="article:author" content="Mind Core Fitness">
     <meta property="article:section" content="Training">
     <meta property="article:tag" content="Core Strength">
-    <meta property="article:tag" content="Everyday Fitness">
-    <meta property="article:tag" content="Functional Training">
+    <meta property="article:tag" content="Progressive Training">
+    <meta property="article:tag" content="Workout Plan">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://www.mindcorefitness.com/blog/beyond-the-mat">
-    <meta name="twitter:title" content="Beyond the Mat: Core Strength for Everyday Life">
-    <meta name="twitter:description" content="Core strength isn't just for athletes. Learn how it improves posture, lifting, and confidence.">
-    <meta name="twitter:image" content="https://www.mindcorefitness.com/blog/images/beyond-the-mat.avif">
+    <meta name="twitter:url" content="https://www.mindcorefitness.com/blog/core-progression">
+    <meta name="twitter:title" content="How to Level Up Your Core Training Safely">
+    <meta name="twitter:description" content="Learn how to progress your core training safely with this 4-level pyramid system.">
+    <meta name="twitter:image" content="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg">
 
     <!-- Schema.org Article Markup -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Article",
-        "headline": "Beyond the Mat: How Core Strength Workouts Impact Your Everyday Life",
-        "description": "Core strength isn't just for athletes. Learn how a strong core improves posture, lifting, walking, and mental confidence in your everyday life.",
-        "image": "https://www.mindcorefitness.com/blog/images/beyond-the-mat.avif",
+        "headline": "Core Progression: How to Level Up Your Core Training Safely",
+        "description": "Learn how to progress your core training safely with this 4-level pyramid system. From beginner activation to advanced loaded movements.",
+        "image": "https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg",
         "author": {
             "@type": "Person",
             "name": "Ross Geldart",
@@ -54,13 +54,13 @@
                 "url": "https://www.mindcorefitness.com/Logo.PNG"
             }
         },
-        "datePublished": "2026-01-26",
-        "dateModified": "2026-01-26",
+        "datePublished": "2026-01-27",
+        "dateModified": "2026-01-27",
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://www.mindcorefitness.com/blog/beyond-the-mat"
+            "@id": "https://www.mindcorefitness.com/blog/core-progression"
         },
-        "keywords": "core strength everyday life, functional core training, posture improvement, lifting safely"
+        "keywords": "core progression, progressive core training, core exercises, workout progression"
     }
     </script>
 
@@ -85,8 +85,8 @@
             {
                 "@type": "ListItem",
                 "position": 3,
-                "name": "Beyond the Mat",
-                "item": "https://www.mindcorefitness.com/blog/beyond-the-mat"
+                "name": "Core Progression",
+                "item": "https://www.mindcorefitness.com/blog/core-progression"
             }
         ]
     }
@@ -444,17 +444,29 @@
             color: #b33a47;
         }
 
-        /* Content Image */
-        .content-image {
-            width: 100%;
-            height: auto;
+        /* Video Embed */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 20px 0;
             border-radius: 12px;
-            margin: 30px 0;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* Benefit Card */
-        .benefit-card {
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* Level Card */
+        .level-card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 30px;
@@ -462,43 +474,102 @@
             border: 1px solid var(--card-border);
         }
 
-        .benefit-card h3 {
+        .level-card.level-1 {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .level-card.level-2 {
+            border-left: 4px solid #2196F3;
+        }
+
+        .level-card.level-3 {
+            border-left: 4px solid #FF9800;
+        }
+
+        .level-card.level-4 {
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .level-card h3 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1.2rem;
             color: var(--text-color);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             margin-top: 0;
         }
 
-        .benefit-card p {
+        .level-card .level-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .level-card.level-1 .level-tag {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+
+        .level-card.level-2 .level-tag {
+            background: rgba(33, 150, 243, 0.15);
+            color: #2196F3;
+        }
+
+        .level-card.level-3 .level-tag {
+            background: rgba(255, 152, 0, 0.15);
+            color: #FF9800;
+        }
+
+        .level-card.level-4 .level-tag {
+            background: rgba(153, 49, 60, 0.15);
+            color: var(--accent-color);
+        }
+
+        .level-card p {
             font-size: 1rem;
             margin-bottom: 16px;
         }
 
-        .benefit-card ul {
-            margin: 16px 0 0;
-        }
-
-        .benefit-card .real-life-win {
-            background: rgba(153, 49, 60, 0.1);
+        .level-card .focus {
+            background: rgba(0, 0, 0, 0.03);
             border-radius: 8px;
-            padding: 16px;
+            padding: 12px 16px;
             margin-top: 20px;
+            font-size: 0.95rem;
         }
 
-        .benefit-card .real-life-win p {
-            margin: 0;
-            font-size: 0.95rem;
+        .level-card .focus strong {
             color: var(--text-color);
         }
 
-        .benefit-card .real-life-win strong {
-            color: var(--accent-color);
+        /* Exercise Item */
+        .exercise-item {
+            margin: 20px 0;
         }
 
-        /* Practice Card */
-        .practice-card {
+        .exercise-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .exercise-item p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        /* Workout Card */
+        .workout-card {
             background: var(--dark-bg);
             border-radius: 16px;
             padding: 30px;
@@ -506,38 +577,50 @@
             color: #ffffff;
         }
 
-        .practice-card h3 {
+        .workout-card h3 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: #ffffff;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             margin-top: 0;
         }
 
-        .practice-card ol {
-            margin: 0;
+        .workout-card .week-label {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(153, 49, 60, 0.3);
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin-bottom: 16px;
         }
 
-        .practice-card ol li {
+        .workout-card ul {
+            margin: 0 0 16px 0;
+        }
+
+        .workout-card ul li {
             color: #ccc;
+            margin-bottom: 8px;
         }
 
-        .practice-card ol li::before {
+        .workout-card ul li::before {
             background: var(--accent-color);
         }
 
-        .practice-card ol li strong {
+        .workout-card ul li strong {
             color: #ffffff;
         }
 
-        .practice-card .tagline {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-style: italic;
+        .workout-card .rounds {
             color: var(--accent-color);
-            font-size: 1.05rem;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         /* Highlight Box */
@@ -571,23 +654,32 @@
             outline-offset: 2px;
         }
 
-        /* Benefits List */
-        .benefits-list {
+        /* Checklist */
+        .checklist {
             background: var(--card-bg);
             border-radius: 12px;
             padding: 24px 28px;
             margin: 24px 0;
         }
 
-        .benefits-list ul {
+        .checklist h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-color);
+            margin-bottom: 16px;
+            margin-top: 0;
+        }
+
+        .checklist ul {
             margin: 0;
         }
 
-        .benefits-list li {
-            margin-bottom: 8px;
+        .checklist li {
+            margin-bottom: 10px;
         }
 
-        .benefits-list li:last-child {
+        .checklist li:last-child {
             margin-bottom: 0;
         }
 
@@ -1082,8 +1174,8 @@
                 text-align: center;
             }
 
-            .benefit-card,
-            .practice-card {
+            .level-card,
+            .workout-card {
                 padding: 20px;
             }
         }
@@ -1135,11 +1227,11 @@
         <div class="container">
             <div class="article-meta">
                 <span class="article-category">Training</span>
-                <span class="article-series">Core Strength Series - Part 5</span>
-                <span class="article-date">January 26, 2026</span>
+                <span class="article-series">Core Strength Series - Part 6</span>
+                <span class="article-date">January 27, 2026</span>
             </div>
-            <h1 class="article-title">Beyond the Mat: How Core Strength Workouts Impact Your Everyday Life</h1>
-            <p class="article-excerpt">Core strength isn't just for athletes. It's for everyone. Whether you're lifting weights or lifting the wee ones, your core is the common denominator.</p>
+            <h1 class="article-title">Core Progression: How to Level Up Your Core Training Safely</h1>
+            <p class="article-excerpt">Core training isn't about repeating the same plank every week. If you want your strength to keep improving, you need a smart, progressive approach.</p>
         </div>
     </header>
 
@@ -1155,105 +1247,267 @@
 
             <!-- Series Navigation -->
             <div class="series-nav">
-                <a href="/blog/core-connection.html">
+                <a href="/blog/beyond-the-mat.html">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
-                    Part 4: The Core Connection
+                    Part 5: Beyond the Mat
                 </a>
-                <a href="/blog/core-progression.html">
-                    Part 6: Core Progression
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
+                <span style="color: var(--text-light); font-size: 0.85rem;">You're reading Part 6</span>
             </div>
 
-            <p>Core strength isn't just for athletes. It's not reserved for gym-goers, fitness influencers, or people chasing a six-pack.</p>
+            <p>Now that you've built a strong foundation, it's time to level up.</p>
 
-            <p><strong>It's for everyone.</strong></p>
+            <p>Core training isn't just about repeating the same plank every week. If you want your strength to keep improving (and your body to keep adapting), you need a smart, progressive approach.</p>
 
-            <p>Whether you're lifting weights or lifting the wee ones, climbing a mountain or just the stairs—your core is the common denominator. The stronger and more stable it is, the better your entire body functions.</p>
+            <p>This post will show you exactly how to do that—without risking injury or sacrificing form.</p>
 
-            <p>Let's break down how a reliable core translates into everyday strength, confidence, and resilience.</p>
+            <h2>Why Progression Matters</h2>
 
-            <h2>1. Everyday Lifting – Shopping, Bairns, Washing</h2>
+            <p>Your core is like any other muscle group—it needs <strong>progressive overload</strong> to grow stronger.</p>
 
-            <img src="/blog/images/mind-core-fitness-beyond-the-mat.JPG" alt="Parent lifting child - everyday core strength in action" class="content-image" width="750" height="500" loading="lazy">
+            <p>But with core training, this doesn't always mean adding more weight. It can also mean:</p>
 
-            <p>We all bend, carry, and twist hundreds of times a week. Without core strength, these movements add up to poor posture, back pain, or even injury.</p>
+            <ul>
+                <li>Increasing time under tension</li>
+                <li>Reducing stability</li>
+                <li>Adding movement complexity</li>
+                <li>Combining upper/lower body coordination</li>
+                <li>Increasing resistance through load or bands</li>
+            </ul>
 
-            <div class="benefit-card">
-                <h3>Core strength helps you:</h3>
-                <ul>
-                    <li><strong>Lift objects safely</strong> with proper spinal alignment</li>
-                    <li><strong>Prevent strain</strong> on your lower back</li>
-                    <li><strong>Carry heavier loads</strong> with less fatigue</li>
-                    <li><strong>Move through daily tasks</strong> with control and confidence</li>
-                </ul>
-            </div>
+            <p>The goal is <strong>challenge with control</strong>—not chaos.</p>
 
-            <h2>2. Sitting, Standing & Posture</h2>
+            <h2>The Core Progression Pyramid</h2>
 
-            <p>Your posture is a 24/7 reflection of your core strength.</p>
+            <p>Here's a simple structure to follow as your strength improves:</p>
 
-            <p>Without an engaged core, we collapse into our hips, slump forward, and overstretch the neck—leading to tension, pain, and decreased energy.</p>
+            <!-- Level 1 -->
+            <div class="level-card level-1">
+                <span class="level-tag">Beginner</span>
+                <h3>Level 1 – Activation & Stability</h3>
+                <p>Master the basics with control, posture, and breathing.</p>
 
-            <div class="benefit-card">
-                <h3>With a strong core, you:</h3>
-                <ul>
-                    <li><strong>Sit taller</strong> without effort</li>
-                    <li><strong>Reduce neck and shoulder tension</strong></li>
-                    <li><strong>Keep your spine</strong> in its natural alignment</li>
-                    <li><strong>Boost your energy</strong> by improving oxygen flow and circulation</li>
-                </ul>
-                <div class="real-life-win">
-                    <p><strong>Real-life win:</strong> Fewer headaches, less back stiffness, and more comfort during your workday.</p>
+                <div class="exercise-item">
+                    <h4>Dead Bug</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/e_E8Bf1Nafk" title="Dead Bug Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Glute Bridge</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/QKjFY-uV7IE" title="Glute Bridge Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Forearm Plank</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/oLNtHe_c7-Q" title="Forearm Plank Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Bird Dog</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/Q2KdDhe_W5A" title="Bird Dog Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="focus">
+                    <strong>Focus:</strong> Breath control, spinal alignment, low-intensity holds
                 </div>
             </div>
 
-            <h2>3. Walking, Running, and Moving Efficiently</h2>
+            <!-- Level 2 -->
+            <div class="level-card level-2">
+                <span class="level-tag">Foundation</span>
+                <h3>Level 2 – Anti-Movement & Bracing</h3>
+                <p>Train your core to resist unwanted motion—rotation, extension, and flexion.</p>
 
-            <img src="/blog/images/beyond-the-mat-running.avif" alt="Person running with proper form - core stability in motion" class="content-image" width="750" height="500" loading="lazy">
+                <div class="exercise-item">
+                    <h4>Glute Bridge March</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/W2YNGvZMBCs" title="Glute Bridge March Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
 
-            <p>Your core is the engine room for every step you take.</p>
+                <div class="exercise-item">
+                    <h4>Bear Crawl Isometric</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/E9RbNHiiQII" title="Bear Crawl Isometric Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
 
-            <p>It stabilises your pelvis, controls rotation, and maintains balance so your limbs can move efficiently—whether you're walking the dog or going for a jog.</p>
+                <div class="exercise-item">
+                    <h4>Side Plank</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/XYomArjaLIk" title="Side Plank Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
 
-            <div class="benefit-card">
-                <h3>Stronger core = better:</h3>
+                <div class="focus">
+                    <strong>Focus:</strong> Tension without movement, maintaining control under load
+                </div>
+            </div>
+
+            <!-- Level 3 -->
+            <div class="level-card level-3">
+                <span class="level-tag">Intermediate</span>
+                <h3>Level 3 – Controlled Dynamic Core</h3>
+                <p>Start introducing movement without sacrificing core engagement.</p>
+
+                <div class="exercise-item">
+                    <h4>Crunch</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/T8Cymd8X71Q" title="Crunch Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Straddle Leg Lift</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/6oP0ZLwBZrc" title="Straddle Leg Lift Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Plank Pull-Throughs</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/hD_A5nli6z8" title="Plank Pull-Throughs Exercise Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="focus">
+                    <strong>Focus:</strong> Moving through full ranges with a stable spine and braced core
+                </div>
+            </div>
+
+            <!-- Level 4 -->
+            <div class="level-card level-4">
+                <span class="level-tag">Advanced</span>
+                <h3>Level 4 – Integrated Core & Load</h3>
+                <p>Bring your core into full-body movements and loaded exercises.</p>
+
+                <div class="exercise-item">
+                    <h4>Hollow Hold With Dumbbell</h4>
+                    <p>Hold a hollow body position while pressing a dumbbell overhead. Keep your lower back pressed into the floor and ribs pulled down throughout the movement.</p>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Scorpion Kicks</h4>
+                    <p>From a plank position, rotate your hips and bring one foot across your body towards the opposite hand. This challenges rotational control while maintaining a stable upper body.</p>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Weighted Carries (Suitcase/Farmer)</h4>
+                    <p>Walk with weight held at your side (suitcase carry) or both sides (farmer carry). Focus on staying tall, bracing your core, and preventing any lateral lean or rotation.</p>
+                </div>
+
+                <div class="focus">
+                    <strong>Focus:</strong> Stability under load, power transfer between limbs, dynamic control
+                </div>
+            </div>
+
+            <h2>When Should You Progress?</h2>
+
+            <p>Ask yourself:</p>
+
+            <div class="checklist">
+                <h4>Progression Readiness Checklist</h4>
                 <ul>
-                    <li><strong>Stride control</strong></li>
-                    <li><strong>Balance and coordination</strong></li>
-                    <li><strong>Shock absorption</strong> during impact</li>
-                    <li><strong>Joint protection</strong> (especially knees and hips)</li>
+                    <li>Can I maintain proper form under fatigue?</li>
+                    <li>Am I engaging my core or just going through the motions?</li>
+                    <li>Is my lower back compensating?</li>
+                    <li>Am I still being challenged?</li>
                 </ul>
             </div>
 
-            <h2>4. Mental Strength & Confidence</h2>
-
-            <p>There's a mindset shift that happens when your core gets stronger.</p>
-
-            <p>You stand taller, breathe better, and move with more intent. This sense of physical control leads to mental control—you feel more grounded, capable, and confident.</p>
-
-            <p><strong>Core training isn't just about how you look—it's about how you show up in the world.</strong></p>
-
-            <h2>Everyday Core Practice (No Equipment Needed)</h2>
-
-            <p>You don't need a gym to reinforce your core. Try these 3 habits throughout your day:</p>
-
-            <div class="practice-card">
-                <h3>Daily Core Habits</h3>
-                <ol>
-                    <li><strong>Brace before you lift anything</strong> – Shopping bags, boxes, your dog—anything.</li>
-                    <li><strong>Check your posture while sitting or standing</strong> – Tall spine, ribs stacked over hips.</li>
-                    <li><strong>Engage your core during walks</strong> – Short strides, soft bracing, shoulders relaxed.</li>
-                </ol>
-                <p class="tagline">Little efforts, repeated often, lead to big results.</p>
-            </div>
+            <p>If it's too easy and you've mastered the basics, you're ready to level up.</p>
 
             <div class="highlight-box">
-                <p>Ready to build a core that works for you every day? Try our <a href="/free-challenge">free 30-day core challenge</a>, or work with me directly through <a href="/personal-training">1-2-1 personal training</a> or <a href="/online-coaching">online coaching</a>.</p>
+                <p><strong>But remember:</strong> progression only works if your foundation is solid.</p>
+            </div>
+
+            <h2>Sample Core Progression Workout (Bodyweight Only)</h2>
+
+            <!-- Week 1-2 -->
+            <div class="workout-card">
+                <span class="week-label">Week 1–2</span>
+                <h3>Foundation Focus</h3>
+                <ul>
+                    <li><strong>20s Dead Bug (single leg drop)</strong></li>
+                    <li><strong>30s Glute Bridge</strong></li>
+                    <li><strong>20s Side Plank</strong> (each side)</li>
+                </ul>
+                <p class="rounds">2 rounds</p>
+
+                <div class="exercise-item">
+                    <h4>Dead Bug (Single Leg Drop)</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/8Fmiih0ty0c" title="Dead Bug Single Leg Drop Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 3-4 -->
+            <div class="workout-card">
+                <span class="week-label">Week 3–4</span>
+                <h3>Anti-Movement Intro</h3>
+                <ul>
+                    <li><strong>10 Pallof Presses</strong> (each side) — Stand side-on to a resistance band or cable, press forward and hold. Resist the rotation.</li>
+                    <li><strong>30s Plank Shoulder Taps</strong></li>
+                    <li><strong>20s Side Plank with Reach Under</strong></li>
+                </ul>
+                <p class="rounds">3 rounds</p>
+
+                <div class="exercise-item">
+                    <h4>Plank Shoulder Taps</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/DtOvjLtlsZ0" title="Plank Shoulder Taps Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Side Plank with Reach Under</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/hD_A5nli6z8" title="Side Plank with Reach Under Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 5-6 -->
+            <div class="workout-card">
+                <span class="week-label">Week 5–6</span>
+                <h3>Dynamic Core</h3>
+                <ul>
+                    <li><strong>10 Plank Pull-Throughs</strong></li>
+                    <li><strong>12 Leg Raises</strong></li>
+                    <li><strong>8 Lunge with Rotation</strong> (each side)</li>
+                </ul>
+                <p class="rounds">3 rounds</p>
+
+                <div class="exercise-item">
+                    <h4>Leg Raises</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/7YIV56wZ8ls" title="Leg Raises Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <h4>Lunge with Rotation</h4>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/pmTfTUK4JDo" title="Lunge with Rotation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <p>Keep progressing by increasing difficulty, reps, or duration—but <strong>always prioritise control.</strong></p>
+
+            <div class="highlight-box">
+                <p>Ready to progress your core training with expert guidance? Try our <a href="/free-challenge">free 30-day core challenge</a>, or work with me directly through <a href="/personal-training">1-2-1 personal training</a> or <a href="/online-coaching">online coaching</a>.</p>
             </div>
 
             <!-- Social Share -->
@@ -1290,8 +1544,8 @@
 
             <!-- CTA Section -->
             <div class="article-cta">
-                <h3>Ready to Build Everyday Strength?</h3>
-                <p>Work with me to build a core that supports everything you do—on and off the mat.</p>
+                <h3>Ready to Level Up Your Core?</h3>
+                <p>Get personalised progression guidance and take your training to the next level.</p>
                 <a href="/personal-training#contact" class="btn">Get In Touch</a>
             </div>
 
