@@ -37,6 +37,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* Hide floating hamburger - this page has its own nav */
+        .hamburger-nav {
+            display: none !important;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -184,7 +189,7 @@
 
         /* Section Base */
         section {
-            padding: 100px 16px;
+            padding: 100px 0;
         }
 
         .container {
@@ -232,7 +237,7 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 140px 16px 100px;
+            padding: 140px 0 100px;
             position: relative;
         }
 
@@ -1610,7 +1615,7 @@
             }
 
             section {
-                padding: 70px 16px;
+                padding: 70px 0;
             }
 
             .stats-grid {
