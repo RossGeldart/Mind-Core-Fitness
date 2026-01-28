@@ -47,23 +47,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Hamburger Navigation -->
-    <nav class="hamburger-nav">
-        <button class="hamburger-toggle" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <div class="hamburger-menu">
-            <a href="/personal-training">Personal Training</a>
-            <a href="/online-coaching">Online Coaching</a>
-            <a href="/12-week-core-programme">12-Week Programme</a>
-            <a href="/free-challenge">Free Challenge</a>
-            <a href="/core-buddy">Core Buddy</a>
-            <a href="/blog">Blog</a>
-        </div>
-    </nav>
-
     <div class="container">
         <div class="logo-wrapper">
             <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="280" height="280">
@@ -123,23 +106,6 @@
     </div>
 
     <script>
-        // Hamburger menu toggle
-        const hamburgerToggle = document.querySelector('.hamburger-toggle');
-        const hamburgerMenu = document.querySelector('.hamburger-menu');
-
-        if (hamburgerToggle) {
-            hamburgerToggle.addEventListener('click', function() {
-                hamburgerMenu.classList.toggle('show');
-            });
-
-            // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!hamburgerToggle.contains(e.target) && !hamburgerMenu.contains(e.target)) {
-                    hamburgerMenu.classList.remove('show');
-                }
-            });
-        }
-
         // Contact Modal Functions
         function openContactModal(event) {
             event.preventDefault();

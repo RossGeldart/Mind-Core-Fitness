@@ -164,24 +164,6 @@
             box-shadow: 0 4px 15px rgba(55, 55, 55, 0.2);
         }
 
-        /* Mobile Menu */
-        .mobile-menu-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .mobile-menu-toggle span {
-            width: 24px;
-            height: 2px;
-            background: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
         /* Section Base */
         section {
             padding: 100px 20px;
@@ -1326,38 +1308,6 @@
 
         /* Mobile Responsive */
         @media (max-width: 1000px) {
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 20px;
-                gap: 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            }
-
-            .nav-links.show {
-                display: flex;
-            }
-
-            .mobile-menu-toggle {
-                display: flex;
-            }
-
-            .nav-buttons {
-                gap: 12px;
-            }
-
-            .nav-back {
-                display: none;
-            }
-
             .hero {
                 min-height: auto;
                 padding: 100px 20px 60px;
@@ -1766,11 +1716,6 @@
             <a href="/" class="nav-back">← Back</a>
             <a href="#programmes" class="nav-cta">View Programmes</a>
         </div>
-        <button class="mobile-menu-toggle" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
     </nav>
 
     <!-- Hero Section -->
@@ -1915,10 +1860,10 @@
                         <span class="amount">149</span>
                         <span class="note">one-time payment</span>
                     </div>
-                    <a href="https://coach.everfit.io/package/EC189796" class="featured-btn" target="_blank">Start Today</a>
+                    <a href="#contact" class="featured-btn">Start Today</a>
                 </div>
                 <div class="featured-image">
-                    <img src="Core 1.jpg" alt="12-Week Core Rebuild">
+                    <img src="Gym Studio 1.jpg" alt="12-Week Core Rebuild">
                 </div>
             </div>
 
@@ -1926,40 +1871,40 @@
             <div class="programmes-grid">
                 <div class="programme-card fade-in">
                     <div class="programme-image">
-                        <img src="blog/images/forearm-plank.avif" alt="Core Foundation">
+                        <img src="Gym Studio 3.jpg" alt="Core Foundation">
                     </div>
                     <span class="programme-level">Beginner</span>
                     <h4>Core Foundation</h4>
                     <p>A 4-week beginner programme designed to teach you how to control, activate, and strengthen your core from the ground up. Perfect for beginners or anyone returning to training.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/JJ887180" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="#contact" class="programme-btn">Start Today</a>
                     </div>
                 </div>
 
                 <div class="programme-card fade-in">
                     <div class="programme-image">
-                        <img src="blog/images/glute-bridge.avif" alt="Core Strength & Endurance">
+                        <img src="Gym Studio 4.jpg" alt="Core Strength & Endurance">
                     </div>
                     <span class="programme-level">Intermediate</span>
                     <h4>Core Strength & Endurance</h4>
                     <p>Takes your foundation work and pushes it to the next level. 4 weeks of weighted core training, longer timed intervals, and controlled conditioning circuits.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/KN806774" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="#contact" class="programme-btn">Start Today</a>
                     </div>
                 </div>
 
                 <div class="programme-card fade-in">
                     <div class="programme-image">
-                        <img src="blog/images/v-sit-core.jpg.avif" alt="Core Power & Control">
+                        <img src="Gym Studio 5.jpg" alt="Core Power & Control">
                     </div>
                     <span class="programme-level">Advanced</span>
                     <h4>Core Power & Control</h4>
                     <p>The final 4-week phase built to develop explosive core power, strength endurance, and total control under fatigue. For those ready to push for peak performance.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/EZ235042" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="#contact" class="programme-btn">Start Today</a>
                     </div>
                 </div>
             </div>
@@ -2240,16 +2185,6 @@
 
     <!-- Scroll Animation -->
     <script>
-        // Mobile menu toggle
-        const mobileToggle = document.querySelector('.mobile-menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
-
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', function() {
-                navLinks.classList.toggle('show');
-            });
-        }
-
         const fadeElements = document.querySelectorAll('.fade-in');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
