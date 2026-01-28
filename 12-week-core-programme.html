@@ -880,6 +880,218 @@
             }
         }
 
+        /* Everfit Section */
+        .everfit {
+            background: var(--bg-color);
+        }
+
+        .everfit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .everfit-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+
+        .everfit-content p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .everfit-features {
+            list-style: none;
+        }
+
+        .everfit-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .everfit-features li:last-child {
+            border-bottom: none;
+        }
+
+        .everfit-features li::before {
+            content: '✓';
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .everfit-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Client Results Carousel */
+        .client-results {
+            background: var(--card-bg);
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 50px auto 0;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease;
+            cursor: grab;
+        }
+
+        .carousel-track:active {
+            cursor: grabbing;
+        }
+
+        .carousel-slide {
+            flex: 0 0 calc(33.333% - 14px);
+            max-width: calc(33.333% - 14px);
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .carousel-slide img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .carousel-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--text-color);
+            background: transparent;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-btn:hover {
+            background: var(--text-color);
+            color: #ffffff;
+        }
+
+        .carousel-btn:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .carousel-btn:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(55, 55, 55, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: var(--text-color);
+            transform: scale(1.2);
+        }
+
+        .carousel-dot:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .carousel-dot:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        @media (max-width: 1024px) {
+            .everfit-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .everfit-image {
+                order: -1;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .carousel-slide {
+                flex: 0 0 calc(50% - 10px);
+                max-width: calc(50% - 10px);
+            }
+
+            .carousel-slide img {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .carousel-slide {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .carousel-slide img {
+                height: 300px;
+            }
+
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
         /* Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
             .fade-in {
@@ -893,7 +1105,10 @@
             .testimonial-card,
             .hero-cta,
             .final-cta-btn,
-            .nav-cta {
+            .nav-cta,
+            .carousel-slide img,
+            .carousel-btn,
+            .carousel-dot {
                 transition: none;
             }
 
@@ -902,7 +1117,8 @@
             .testimonial-card:hover,
             .hero-cta:hover,
             .final-cta-btn:hover,
-            .nav-cta:hover {
+            .nav-cta:hover,
+            .carousel-slide img:hover {
                 transform: none;
             }
         }
@@ -1165,6 +1381,79 @@
         </div>
     </section>
 
+    <!-- Everfit Section -->
+    <section class="everfit">
+        <div class="container">
+            <div class="everfit-grid">
+                <div class="everfit-content fade-in">
+                    <span class="section-label">Powered By Everfit</span>
+                    <h3>Your Training Hub</h3>
+                    <p>All programmes are delivered through the Everfit app - a professional coaching platform that puts everything you need in one place.</p>
+                    <ul class="everfit-features">
+                        <li>HD video demonstrations for every exercise</li>
+                        <li>Progress tracking and workout history</li>
+                        <li>Direct messaging with Ross</li>
+                        <li>Personalised workout schedules</li>
+                        <li>Track weights, reps, and personal records</li>
+                        <li>Works on iOS and Android</li>
+                    </ul>
+                </div>
+                <div class="everfit-image fade-in">
+                    <img src="Everfit.png" alt="Everfit App">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Results Carousel -->
+    <section class="client-results">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Real Results</span>
+                <h2 class="section-title">Client Transformations</h2>
+                <p class="section-subtitle">See what's possible with dedicated training and the right support.</p>
+            </div>
+
+            <div class="carousel-container">
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/russell-anderson.png" alt="Russell Anderson - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/scott-grant.png" alt="Scott Grant - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/james .png" alt="James - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/emily-paterson.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/emily-paterson-2.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy">
+                    </div>
+                </div>
+
+                <div class="carousel-nav">
+                    <button class="carousel-btn" id="prevBtn" aria-label="Previous slide">←</button>
+                    <div class="carousel-dots" id="carouselDots"></div>
+                    <button class="carousel-btn" id="nextBtn" aria-label="Next slide">→</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ Section -->
     <section class="faq">
         <div class="container">
@@ -1262,6 +1551,178 @@
         fadeElements.forEach(element => {
             observer.observe(element);
         });
+
+        // Client Results Carousel
+        (function() {
+            const track = document.getElementById('carouselTrack');
+            const slides = track.querySelectorAll('.carousel-slide');
+            const dotsContainer = document.getElementById('carouselDots');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            let currentIndex = 0;
+            let slidesPerView = 3;
+            let autoplayInterval;
+            let isDragging = false;
+            let startPos = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+
+            // Calculate slides per view based on screen width
+            function getSlidesPerView() {
+                if (window.innerWidth <= 600) return 1;
+                if (window.innerWidth <= 900) return 2;
+                return 3;
+            }
+
+            // Create dots
+            function createDots() {
+                dotsContainer.innerHTML = '';
+                const totalDots = Math.ceil(slides.length / slidesPerView);
+                for (let i = 0; i < totalDots; i++) {
+                    const dot = document.createElement('button');
+                    dot.classList.add('carousel-dot');
+                    dot.setAttribute('aria-label', `Go to slide group ${i + 1}`);
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToSlide(i * slidesPerView));
+                    dotsContainer.appendChild(dot);
+                }
+            }
+
+            // Update dots
+            function updateDots() {
+                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                const activeDot = Math.floor(currentIndex / slidesPerView);
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === activeDot);
+                });
+            }
+
+            // Go to specific slide
+            function goToSlide(index) {
+                const maxIndex = slides.length - slidesPerView;
+                currentIndex = Math.max(0, Math.min(index, maxIndex));
+                updateCarousel();
+            }
+
+            // Update carousel position
+            function updateCarousel() {
+                const slideWidth = slides[0].offsetWidth + 20; // width + gap
+                track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                updateDots();
+            }
+
+            // Next slide
+            function nextSlide() {
+                const maxIndex = slides.length - slidesPerView;
+                if (currentIndex >= maxIndex) {
+                    currentIndex = 0;
+                } else {
+                    currentIndex++;
+                }
+                updateCarousel();
+            }
+
+            // Previous slide
+            function prevSlide() {
+                const maxIndex = slides.length - slidesPerView;
+                if (currentIndex <= 0) {
+                    currentIndex = maxIndex;
+                } else {
+                    currentIndex--;
+                }
+                updateCarousel();
+            }
+
+            // Touch/Mouse drag handling
+            function touchStart(e) {
+                isDragging = true;
+                startPos = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+                track.style.transition = 'none';
+                stopAutoplay();
+            }
+
+            function touchMove(e) {
+                if (!isDragging) return;
+                const currentPosition = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+                currentTranslate = prevTranslate + currentPosition - startPos;
+            }
+
+            function touchEnd() {
+                isDragging = false;
+                const movedBy = currentTranslate - prevTranslate;
+
+                if (movedBy < -50) nextSlide();
+                if (movedBy > 50) prevSlide();
+
+                track.style.transition = 'transform 0.5s ease';
+                updateCarousel();
+                startAutoplay();
+            }
+
+            // Autoplay
+            function startAutoplay() {
+                stopAutoplay();
+                autoplayInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopAutoplay() {
+                if (autoplayInterval) clearInterval(autoplayInterval);
+            }
+
+            // Event listeners
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                stopAutoplay();
+                startAutoplay();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                stopAutoplay();
+                startAutoplay();
+            });
+
+            // Touch events
+            track.addEventListener('touchstart', touchStart);
+            track.addEventListener('touchmove', touchMove);
+            track.addEventListener('touchend', touchEnd);
+
+            // Mouse events
+            track.addEventListener('mousedown', touchStart);
+            track.addEventListener('mousemove', touchMove);
+            track.addEventListener('mouseup', touchEnd);
+            track.addEventListener('mouseleave', () => {
+                if (isDragging) touchEnd();
+            });
+
+            // Prevent context menu on long press
+            track.addEventListener('contextmenu', e => e.preventDefault());
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    createDots();
+                    goToSlide(0);
+                }
+            });
+
+            // Pause autoplay when not visible
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAutoplay();
+                } else {
+                    startAutoplay();
+                }
+            });
+
+            // Initialize
+            slidesPerView = getSlidesPerView();
+            createDots();
+            startAutoplay();
+        })();
     </script>
 </body>
 </html>
