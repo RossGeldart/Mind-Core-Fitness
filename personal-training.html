@@ -2641,13 +2641,10 @@
             document.getElementById('cookieBanner').classList.remove('show');
         }
 
-        // Cookie policy toggle
-        document.getElementById('cookiePolicyToggle').addEventListener('click', function(e) {
-            e.preventDefault();
+        function toggleCookieDetails() {
             var details = document.getElementById('cookiePolicyDetails');
             details.classList.toggle('show');
-            this.textContent = details.classList.contains('show') ? 'Show less' : 'Learn more';
-        });
+        }
 
         // Check cookie consent on page load
         if (!localStorage.getItem('cookieConsent')) {
@@ -2671,7 +2668,7 @@
     <div class="cookie-banner" id="cookieBanner">
         <div class="cookie-content">
             <div class="cookie-text">
-                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" id="cookiePolicyToggle">Learn more</a></p>
+                <p>We use cookies to enhance your experience on our website. By continuing to browse, you agree to our use of cookies. <a href="#" onclick="toggleCookieDetails(); return false;">Learn more</a></p>
                 <div class="cookie-policy-details" id="cookiePolicyDetails">
                     We use essential cookies for site functionality and analytics cookies to understand how visitors use our site. No personal data is sold to third parties.
                 </div>
