@@ -578,46 +578,6 @@ body {
     color: var(--accent-color);
 }
 
-.hamburger-divider {
-    height: 1px;
-    background: rgba(0, 0, 0, 0.1);
-    margin: 12px 0;
-}
-
-.hamburger-social {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    padding: 8px 16px;
-}
-
-.hamburger-social a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border-radius: 50%;
-    background: rgba(153, 49, 60, 0.1);
-    transition: all 0.2s ease;
-}
-
-.hamburger-social a:hover {
-    background: var(--accent-color);
-}
-
-.hamburger-social a:hover svg {
-    fill: #ffffff;
-}
-
-.hamburger-social svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--accent-color);
-    transition: fill 0.2s ease;
-}
-
 /* Accessibility - Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
     .logo-wrapper {
