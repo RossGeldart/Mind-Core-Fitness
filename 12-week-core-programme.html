@@ -1750,13 +1750,19 @@
 
         // Facebook Pixel - Track InitiateCheckout on purchase button clicks
         document.querySelectorAll('a[href*="coach.everfit.io"]').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var url = this.href;
                 fbq('track', 'InitiateCheckout', {
                     content_name: '12-Week Core Programme',
                     content_category: 'Online Programme',
                     value: 149.00,
                     currency: 'GBP'
                 });
+                // Small delay to ensure pixel fires before navigation
+                setTimeout(function() {
+                    window.open(url, '_blank');
+                }, 300);
             });
         });
     </script>
