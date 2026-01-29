@@ -40,30 +40,196 @@
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="logo-wrapper">
-            <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="280" height="280">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="logo-wrapper">
+                <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="200" height="200">
+            </div>
+            <h1 class="hero-title">Build Strength.<br>Transform Your Life.</h1>
+            <p class="hero-subtitle">Expert personal training and online coaching to help you achieve real, lasting results.</p>
+            <a href="#options" class="hero-cta">Explore Your Options</a>
         </div>
+    </section>
 
-        <h1 class="question" id="questionText"></h1>
-
-        <div class="options">
-            <a href="/personal-training" class="option">Explore 1-2-1 In Person Training</a>
-            <a href="/online-coaching" class="option">Explore Online Personal Training</a>
-            <a href="/free-challenge" class="option">Try My Free 30 Day Core Challenge</a>
-            <a href="/12-week-core-programme" class="option">Join the 12-Week Core Programme</a>
-            <a href="/core-buddy" class="option">Explore Core Buddy</a>
-            <a href="#" class="option" id="getInTouchBtn" onclick="openContactModal(event)">Get In Touch</a>
-            <a href="/blog" class="option">Read Our Blog</a>
+    <!-- Value Proposition Section -->
+    <section class="value-prop">
+        <div class="container">
+            <h2 class="section-title">Why Mind Core Fitness?</h2>
+            <div class="value-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </div>
+                    <h3>Personalised Approach</h3>
+                    <p>Every programme is tailored to your goals, fitness level, and lifestyle. No cookie-cutter plans here.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3>Proven Results</h3>
+                    <p>200+ clients trained with a 5-star Google rating. Real transformations backed by real testimonials.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3>Ongoing Support</h3>
+                    <p>Daily check-ins, accountability, and guidance. You're never alone on your fitness journey.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Options Section -->
+    <section class="options-section" id="options">
+        <div class="container">
+            <h2 class="question" id="questionText"></h2>
+
+            <div class="options">
+                <a href="/personal-training" class="option featured">
+                    <span class="option-badge">Most Popular</span>
+                    <span class="option-title">Explore 1-2-1 In Person Training</span>
+                    <span class="option-desc">Private sessions in Elgin with full accountability</span>
+                </a>
+                <a href="/12-week-core-programme" class="option featured">
+                    <span class="option-badge">Best Value</span>
+                    <span class="option-title">Join the 12-Week Core Programme</span>
+                    <span class="option-desc">Build unbreakable core strength with guided workouts</span>
+                </a>
+                <a href="/online-coaching" class="option">
+                    <span class="option-title">Explore Online Personal Training</span>
+                    <span class="option-desc">Train anywhere with personalised programming</span>
+                </a>
+                <a href="/free-challenge" class="option free">
+                    <span class="option-badge free-badge">100% Free</span>
+                    <span class="option-title">Try My Free 30 Day Core Challenge</span>
+                    <span class="option-desc">Start your journey with no commitment</span>
+                </a>
+                <a href="/core-buddy" class="option">
+                    <span class="option-title">Explore Core Buddy</span>
+                    <span class="option-desc">Your AI-powered fitness companion</span>
+                </a>
+                <a href="#" class="option" id="getInTouchBtn" onclick="openContactModal(event)">
+                    <span class="option-title">Get In Touch</span>
+                    <span class="option-desc">Have questions? Let's chat</span>
+                </a>
+                <a href="/blog" class="option">
+                    <span class="option-title">Read Our Blog</span>
+                    <span class="option-desc">Tips, workouts, and fitness insights</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <span class="section-label">Success Stories</span>
+            <h2 class="section-title">What Our Clients Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"So far I have lost 25 kilos and still going. Ross is a good motivator, pushing me onwards to better and more physical workouts even at my tender age of 53. The monthly weigh ins are a very strong motivator to get to my target."</p>
+                    <div class="testimonial-author">
+                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <div class="testimonial-author-info">
+                            <strong>Scott Grant</strong>
+                            <span>Lost 25 Kilos • 1-2-1 Training</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Since signing up, it's been the kick up the arse I've desperately needed. Ross makes the sessions varied and challenging yet fun. I feel so much more motivated, fitter and stronger. Thanks Ross!"</p>
+                    <div class="testimonial-author">
+                        <img src="Emily Paterson.jpg" alt="Emily Paterson">
+                        <div class="testimonial-author-info">
+                            <strong>Emily Paterson</strong>
+                            <span>Building Strength • 1-2-1 Training</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"I really enjoyed this. I need to be accountable and have support or I won't do anything. I completed this every day and before work so it clearly works! My core is so much better now."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-info">
+                            <strong>Paula Coutts</strong>
+                            <span>30-Day Core Challenge</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"Intense but deeply satisfying—pushed beyond limits into new gears I didn't know I had. Exactly the kick I needed to stay disciplined for my well-being."</p>
+                    <div class="testimonial-author">
+                        <img src="Baz Duncan.jpg" alt="Lee Bazzie Duncan">
+                        <div class="testimonial-author-info">
+                            <strong>Lee Bazzie Duncan</strong>
+                            <span>Staying Disciplined • 1-2-1 Training</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"I thought it was great. I liked the different lengths of exercises, some 12, some 16 minutes. My core definitely feels stronger and I can't wait to continue. You checked in with us every day which was magic!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-info">
+                            <strong>Sharon Hughes</strong>
+                            <span>30-Day Core Challenge</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p>"The sessions were intense and challenging at times, but Ross kept me going. Even on the days when my mental health made things tough, Ross was always there to reassure me. This made a huge difference mentally too."</p>
+                    <div class="testimonial-author">
+                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
+                        <div class="testimonial-author-info">
+                            <strong>Christopher Snedden Murdoch</strong>
+                            <span>Mental & Physical Progress • 1-2-1 Training</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Links Section -->
+    <section class="social-section">
+        <div class="container">
+            <h2 class="section-title">Follow the Journey</h2>
+            <p class="social-subtitle">Join the community for daily motivation, workout tips, and behind-the-scenes content.</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/mind_core_fitness/" target="_blank" class="social-link social-instagram" aria-label="Instagram">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <span>Instagram</span>
+                </a>
+                <a href="https://www.facebook.com/mindcorefitness" target="_blank" class="social-link social-facebook" aria-label="Facebook">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span>Facebook</span>
+                </a>
+                <a href="https://www.youtube.com/@Mind_Core_Fitness" target="_blank" class="social-link social-youtube" aria-label="YouTube">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span>YouTube</span>
+                </a>
+                <a href="https://www.tiktok.com/@mind.core.fitness" target="_blank" class="social-link social-tiktok" aria-label="TikTok">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                    <span>TikTok</span>
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- Contact Form Modal -->
     <div class="modal-overlay" id="contactModal">
@@ -155,7 +321,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             if (!localStorage.getItem('cookieConsent')) {
                 // Show cookie banner after animations complete to avoid interrupting UX
-                var COOKIE_BANNER_DELAY_MS = 1500;
+                var COOKIE_BANNER_DELAY_MS = 2500;
                 setTimeout(function() {
                     document.getElementById('cookieBanner').classList.add('show');
                 }, COOKIE_BANNER_DELAY_MS);
@@ -166,7 +332,7 @@
         const text = "What can Mind Core Fitness do for you today?";
         const questionElement = document.getElementById('questionText');
         const options = document.querySelectorAll('.option');
-        const WORD_STAGGER_MS = 80; // Delay between each word appearing
+        const WORD_STAGGER_MS = 80;
 
         function revealWords() {
             const words = text.split(' ');
@@ -180,7 +346,7 @@
         }
 
         function revealOptions() {
-            const STAGGER_DELAY_MS = 80; // Delay between each option appearing
+            const STAGGER_DELAY_MS = 80;
             options.forEach((option, i) => {
                 setTimeout(() => {
                     option.classList.add('visible');
@@ -188,9 +354,34 @@
             });
         }
 
-        // Start word reveal after logo animation completes (1.2s CSS animation)
-        const LOGO_REVEAL_DURATION_MS = 1200;
-        setTimeout(revealWords, LOGO_REVEAL_DURATION_MS);
+        // Start animations when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            // Animate hero elements
+            setTimeout(function() {
+                document.querySelector('.hero-content').classList.add('visible');
+            }, 300);
+
+            // Start word reveal after hero animation
+            setTimeout(revealWords, 800);
+
+            // Add fade-in animations on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.value-card, .testimonial-card').forEach(function(el) {
+                observer.observe(el);
+            });
+        });
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
