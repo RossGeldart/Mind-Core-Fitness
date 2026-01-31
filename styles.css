@@ -296,7 +296,7 @@ body {
 }
 
 .option-card-thumb {
-    width: 80px;
+    width: 120px;
     align-self: stretch;
     object-fit: cover;
     border-radius: 0 12px 12px 0;
@@ -977,7 +977,7 @@ body {
 /* Larger screens - bigger thumbnails */
 @media (min-width: 768px) {
     .option-card-thumb {
-        width: 100px;
+        width: 150px;
     }
 }
 
@@ -1067,7 +1067,7 @@ body {
     }
 
     .option-card-thumb {
-        width: 65px;
+        width: 100px;
     }
 
     .option-title {
