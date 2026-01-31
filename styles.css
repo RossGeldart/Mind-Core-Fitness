@@ -289,12 +289,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.1) 100%);
     transition: background 0.4s ease;
 }
 
 .option-card:hover .option-card-overlay {
-    background: linear-gradient(to top, rgba(153, 49, 60, 0.9) 0%, rgba(153, 49, 60, 0.6) 50%, rgba(153, 49, 60, 0.3) 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.2) 100%);
 }
 
 .option-card-content {
@@ -305,9 +305,9 @@ body {
 }
 
 .option-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-4px);
     z-index: 2;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 .option-card:active {
@@ -333,14 +333,6 @@ body {
     min-height: 320px;
 }
 
-.option-card.featured .option-card-overlay {
-    background: linear-gradient(to top, rgba(153, 49, 60, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
-}
-
-.option-card.featured:hover .option-card-overlay {
-    background: linear-gradient(to top, rgba(153, 49, 60, 0.95) 0%, rgba(153, 49, 60, 0.7) 50%, rgba(153, 49, 60, 0.4) 100%);
-}
-
 /* Option Badge */
 .option-badge {
     display: inline-block;
@@ -354,15 +346,6 @@ body {
     text-transform: uppercase;
     border-radius: 20px;
     margin-bottom: 12px;
-}
-
-/* Free Option Styling */
-.option-card.free .option-card-overlay {
-    background: linear-gradient(to top, rgba(45, 138, 78, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
-}
-
-.option-card.free:hover .option-card-overlay {
-    background: linear-gradient(to top, rgba(45, 138, 78, 0.95) 0%, rgba(45, 138, 78, 0.7) 50%, rgba(45, 138, 78, 0.4) 100%);
 }
 
 .option-badge.free-badge {
