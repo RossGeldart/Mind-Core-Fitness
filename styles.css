@@ -297,7 +297,7 @@ body {
 
 .option-card-thumb {
     width: 80px;
-    height: 70px;
+    align-self: stretch;
     object-fit: cover;
     border-radius: 0 12px 12px 0;
     flex-shrink: 0;
@@ -978,7 +978,6 @@ body {
 @media (min-width: 768px) {
     .option-card-thumb {
         width: 100px;
-        height: 85px;
     }
 }
 
@@ -1069,7 +1068,6 @@ body {
 
     .option-card-thumb {
         width: 65px;
-        height: 60px;
     }
 
     .option-title {
