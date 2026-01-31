@@ -291,19 +291,23 @@ body {
     border: 1.5px solid #2d8a4e;
 }
 
-/* Option Badge */
+/* Option Badge - Flag/Bookmark Style */
 .option-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
     display: inline-block;
-    padding: 5px 12px;
+    padding: 6px 10px;
     background: var(--accent-color);
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    border-radius: 20px;
-    margin-bottom: 12px;
+    border-radius: 4px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .option-badge.free-badge {
@@ -326,8 +330,9 @@ body {
 }
 
 .hero-card-image {
+    position: relative;
     width: 100%;
-    height: 200px;
+    height: 260px;
     overflow: hidden;
     border-radius: 20px 20px 0 0;
 }
@@ -437,8 +442,9 @@ body {
 }
 
 .standard-card-image {
+    position: relative;
     width: 100%;
-    height: 140px;
+    height: 180px;
     overflow: hidden;
     border-radius: 16px 16px 0 0;
 }
@@ -1190,7 +1196,7 @@ body {
 /* Larger screens */
 @media (min-width: 1024px) {
     .hero-card-image {
-        height: 220px;
+        height: 280px;
     }
 }
 
@@ -1291,7 +1297,7 @@ body {
     }
 
     .hero-card-image {
-        height: 160px;
+        height: 200px;
     }
 
     .hero-card-content {
@@ -1330,7 +1336,7 @@ body {
     }
 
     .standard-card-image {
-        height: 120px;
+        height: 160px;
     }
 
     .standard-card-content {
@@ -1361,9 +1367,10 @@ body {
     }
 
     .option-badge {
-        padding: 4px 10px;
-        font-size: 0.6rem;
-        margin-bottom: 8px;
+        padding: 5px 8px;
+        font-size: 0.55rem;
+        top: 10px;
+        left: 10px;
     }
 
     .testimonial-card {
