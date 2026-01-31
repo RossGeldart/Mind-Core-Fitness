@@ -1,0 +1,679 @@
+/* Mind Core Mindset Workbook - Dedicated Landing Page Styles */
+
+/* Navigation */
+.workbook-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent-color);
+}
+
+.back-link svg {
+    transition: transform 0.2s ease;
+}
+
+.back-link:hover svg {
+    transform: translateX(-3px);
+}
+
+/* Hero Section */
+.workbook-hero {
+    padding: 140px 20px 100px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+}
+
+.workbook-hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.workbook-hero-image {
+    display: flex;
+    justify-content: center;
+}
+
+.hero-book-cover {
+    max-width: 100%;
+    width: 380px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2), 0 15px 40px rgba(0, 0, 0, 0.15);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hero-book-cover:hover {
+    transform: translateY(-8px) rotate(-1deg);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.25), 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.workbook-hero-text {
+    text-align: left;
+}
+
+.workbook-hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--text-color);
+    margin-bottom: 16px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.workbook-hero-tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.workbook-hero-intro {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+.workbook-hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 16px 32px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+}
+
+.cta-button.primary {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.cta-button.primary:hover {
+    background: #b33a47;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(153, 49, 60, 0.35);
+}
+
+.cta-button.secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--text-color);
+}
+
+.cta-button.secondary:hover {
+    background: var(--text-color);
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(55, 55, 55, 0.2);
+}
+
+/* What's Inside Section */
+.whats-inside {
+    padding: 100px 20px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: #f9f9f9;
+    padding: 35px 28px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid var(--card-border);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s ease;
+}
+
+.feature-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-card:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(153, 49, 60, 0.1);
+    border-radius: 50%;
+    color: var(--accent-color);
+}
+
+.feature-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--text-color);
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Who It's For Section */
+.who-its-for {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    text-align: center;
+}
+
+.audience-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.audience-text {
+    text-align: left;
+}
+
+.audience-intro {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 24px;
+}
+
+.audience-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 32px;
+}
+
+.audience-list li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.audience-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.audience-cta-text {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-style: italic;
+    line-height: 1.7;
+    padding: 24px;
+    background: rgba(153, 49, 60, 0.05);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 8px 8px 0;
+}
+
+/* Preview Section */
+.preview-section {
+    padding: 100px 20px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.preview-subtitle {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 500px;
+    margin: -30px auto 50px;
+    line-height: 1.7;
+}
+
+.preview-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.preview-item {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+.preview-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.preview-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+}
+
+.preview-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.preview-item:hover img {
+    transform: scale(1.03);
+}
+
+/* Digital/Format Section */
+.digital-section {
+    padding: 100px 20px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    text-align: center;
+}
+
+.format-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.format-card {
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--card-border);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s ease;
+}
+
+.format-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.format-card:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+}
+
+.format-image {
+    padding: 30px;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 280px;
+}
+
+.format-image img {
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.format-card.digital .format-image img {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.format-card.paperback .format-image img {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.format-details {
+    padding: 30px;
+    text-align: left;
+}
+
+.format-details h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-bottom: 12px;
+}
+
+.format-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.format-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 24px;
+}
+
+.format-features li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.format-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.format-price {
+    margin-bottom: 20px;
+}
+
+.format-price .price {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--text-color);
+}
+
+.format-btn {
+    display: block;
+    padding: 16px 24px;
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.format-btn.coming-soon {
+    background: #888888;
+    color: #ffffff;
+    cursor: default;
+}
+
+.format-card.digital .format-btn:not(.coming-soon) {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.format-card.digital .format-btn:not(.coming-soon):hover {
+    background: #b33a47;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(153, 49, 60, 0.3);
+}
+
+.format-card.paperback .format-btn:not(.coming-soon) {
+    background: var(--text-color);
+    color: #ffffff;
+}
+
+.format-card.paperback .format-btn:not(.coming-soon):hover {
+    background: #2a2a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(55, 55, 55, 0.3);
+}
+
+/* Final CTA Section */
+.final-cta {
+    padding: 100px 20px;
+    background: var(--text-color);
+    text-align: center;
+}
+
+.final-cta-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    color: #ffffff;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.final-cta-text {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 32px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+}
+
+.final-cta .cta-button.primary {
+    background: #ffffff;
+    color: var(--text-color);
+}
+
+.final-cta .cta-button.primary:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Footer */
+.workbook-footer {
+    padding: 40px 20px;
+    background: #1a1a1a;
+    text-align: center;
+}
+
+.footer-logo {
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.footer-logo img {
+    border-radius: 50%;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.footer-logo:hover img {
+    opacity: 1;
+}
+
+.footer-text {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .workbook-hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .workbook-hero-text {
+        text-align: center;
+    }
+
+    .workbook-hero-cta {
+        justify-content: center;
+    }
+
+    .hero-book-cover {
+        width: 300px;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .preview-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .format-options {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+    }
+
+    .audience-text {
+        text-align: center;
+    }
+
+    .audience-list {
+        text-align: left;
+        max-width: 450px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 32px;
+    }
+
+    .audience-cta-text {
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    .workbook-hero {
+        padding: 120px 20px 70px;
+    }
+
+    .hero-book-cover {
+        width: 240px;
+    }
+
+    .workbook-hero-title {
+        font-size: 1.8rem;
+    }
+
+    .workbook-hero-tagline {
+        font-size: 1.2rem;
+    }
+
+    .workbook-hero-intro {
+        font-size: 1rem;
+    }
+
+    .workbook-hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cta-button {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .preview-gallery {
+        grid-template-columns: 1fr;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .whats-inside,
+    .who-its-for,
+    .preview-section,
+    .digital-section {
+        padding: 70px 20px;
+    }
+
+    .final-cta {
+        padding: 70px 20px;
+    }
+
+    .format-image {
+        min-height: 220px;
+        padding: 24px;
+    }
+
+    .format-image img {
+        max-height: 180px;
+    }
+
+    .format-details {
+        padding: 24px;
+    }
+
+    .format-details h3 {
+        font-size: 1.2rem;
+    }
+
+    .format-price .price {
+        font-size: 1.6rem;
+    }
+}
+
+/* Accessibility - Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .hero-book-cover,
+    .feature-card,
+    .preview-item,
+    .format-card,
+    .cta-button,
+    .back-link svg {
+        transition: none;
+    }
+
+    .feature-card,
+    .preview-item,
+    .format-card {
+        opacity: 1;
+        transform: none;
+    }
+}

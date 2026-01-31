@@ -939,6 +939,37 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Workbook More Info Button */
+.workbook-more-info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: var(--accent-color);
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 8px;
+}
+
+.workbook-more-info-btn:hover {
+    background: #b33a47;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(153, 49, 60, 0.35);
+}
+
+.workbook-more-info-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.workbook-more-info-btn:hover svg {
+    transform: translateX(4px);
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .value-grid {
