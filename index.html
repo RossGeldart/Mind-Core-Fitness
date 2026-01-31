@@ -94,67 +94,128 @@
     <section class="options-section" id="options">
         <div class="container">
             <h2 class="question" id="questionText"></h2>
-            <div class="options-grid">
-            <a href="/personal-training" class="option-card featured">
-                <div class="option-card-content">
-                    <span class="option-badge">Most Popular</span>
-                    <span class="option-title">Explore 1-2-1 In Person Training</span>
-                    <span class="option-desc">Private sessions in Elgin with full accountability</span>
-                </div>
-                <img src="Gym Studio 1.jpg" alt="" class="option-card-thumb">
-            </a>
-            <a href="/12-week-core-programme" class="option-card featured">
-                <div class="option-card-content">
-                    <span class="option-badge">Best Value</span>
-                    <span class="option-title">Join the 12-Week Core Programme</span>
-                    <span class="option-desc">Build unbreakable core strength with guided workouts</span>
-                </div>
-                <img src="Core 1.jpg" alt="" class="option-card-thumb">
-            </a>
-            <a href="/online-coaching" class="option-card">
-                <div class="option-card-content">
-                    <span class="option-title">Explore Online Personal Training</span>
-                    <span class="option-desc">Train anywhere with personalised programming</span>
-                </div>
-                <img src="Everfit.png" alt="" class="option-card-thumb">
-            </a>
-            <a href="/workbook" class="option-card featured">
-                <div class="option-card-content">
-                    <span class="option-badge">New Release</span>
-                    <span class="option-title">Get The Mind Core Mindset Workbook</span>
-                    <span class="option-desc">Your 6-month transformation journal — digital or paperback</span>
-                </div>
-                <img src="downloads/front-cover-square.jpeg" alt="" class="option-card-thumb">
-            </a>
-            <a href="/free-challenge" class="option-card free">
-                <div class="option-card-content">
-                    <span class="option-badge free-badge">100% Free</span>
-                    <span class="option-title">Try My Free 30 Day Core Challenge</span>
-                    <span class="option-desc">Start your journey with no commitment</span>
-                </div>
-                <img src="blog/images/forearm-plank.avif" alt="" class="option-card-thumb">
-            </a>
-            <a href="/core-buddy" class="option-card">
-                <div class="option-card-content">
-                    <span class="option-title">Explore Core Buddy</span>
-                    <span class="option-desc">Your AI-powered fitness companion</span>
-                </div>
-                <img src="Logo.PNG" alt="" class="option-card-thumb">
-            </a>
-            <a href="#" class="option-card" id="getInTouchBtn" onclick="openContactModal(event)">
-                <div class="option-card-content">
-                    <span class="option-title">Get In Touch</span>
-                    <span class="option-desc">Have questions? Let's chat</span>
-                </div>
-                <img src="Client Bond.jpg" alt="" class="option-card-thumb">
-            </a>
-            <a href="/blog" class="option-card">
-                <div class="option-card-content">
-                    <span class="option-title">Read Our Blog</span>
-                    <span class="option-desc">Tips, workouts, and fitness insights</span>
-                </div>
-                <img src="blog/images/beyond-the-mat.avif" alt="" class="option-card-thumb">
-            </a>
+
+            <!-- Hero Cards - Primary Services -->
+            <div class="hero-cards">
+                <a href="/personal-training" class="hero-card option-card">
+                    <div class="hero-card-image">
+                        <img src="Gym Studio 1.jpg" alt="Personal Training Studio">
+                    </div>
+                    <div class="hero-card-content">
+                        <span class="option-badge">Most Popular</span>
+                        <span class="hero-card-title">1-2-1 In Person Training</span>
+                        <span class="hero-card-desc">Transform your body with private, personalised sessions at my Elgin studio. Full accountability and expert guidance every step of the way.</span>
+                        <ul class="hero-card-features">
+                            <li>Tailored workouts for your goals</li>
+                            <li>Weekly check-ins & progress tracking</li>
+                            <li>Nutrition guidance included</li>
+                            <li>Flexible scheduling</li>
+                        </ul>
+                        <div class="hero-card-footer">
+                            <span class="hero-card-cta">Learn More</span>
+                            <span class="hero-card-social">Join 200+ clients trained</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="/12-week-core-programme" class="hero-card option-card">
+                    <div class="hero-card-image">
+                        <img src="Core 1.jpg" alt="Core Programme">
+                    </div>
+                    <div class="hero-card-content">
+                        <span class="option-badge">Best Value</span>
+                        <span class="hero-card-title">12-Week Core Programme</span>
+                        <span class="hero-card-desc">Build unbreakable core strength with a structured programme designed for busy professionals. Train on your schedule with guided workouts.</span>
+                        <ul class="hero-card-features">
+                            <li>84 progressive workouts</li>
+                            <li>Video demonstrations</li>
+                            <li>Weekly coaching check-ins</li>
+                            <li>Community support group</li>
+                        </ul>
+                        <div class="hero-card-footer">
+                            <span class="hero-card-cta">Join Now</span>
+                            <span class="hero-card-social">Trusted by 150+ members</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Standard Cards - Secondary Services -->
+            <div class="standard-cards">
+                <a href="/online-coaching" class="standard-card option-card">
+                    <div class="standard-card-image">
+                        <img src="Everfit.png" alt="Online Coaching App">
+                    </div>
+                    <div class="standard-card-content">
+                        <span class="standard-card-title">Online Personal Training</span>
+                        <span class="standard-card-desc">Train anywhere with personalised programming delivered through my coaching app. Perfect for those who can't train in person.</span>
+                        <ul class="standard-card-features">
+                            <li>Custom workout plans</li>
+                            <li>Direct messaging support</li>
+                            <li>Progress tracking</li>
+                        </ul>
+                        <span class="standard-card-cta">Explore Options</span>
+                    </div>
+                </a>
+                <a href="/workbook" class="standard-card option-card featured">
+                    <div class="standard-card-image">
+                        <img src="downloads/front-cover-square.jpeg" alt="Mind Core Mindset Workbook">
+                    </div>
+                    <div class="standard-card-content">
+                        <span class="option-badge">New Release</span>
+                        <span class="standard-card-title">Mind Core Mindset Workbook</span>
+                        <span class="standard-card-desc">Your 6-month transformation journal designed for busy professionals. Available in digital or paperback.</span>
+                        <ul class="standard-card-features">
+                            <li>Daily reflection prompts</li>
+                            <li>Goal setting frameworks</li>
+                            <li>Habit tracking tools</li>
+                        </ul>
+                        <span class="standard-card-cta">Get Your Copy</span>
+                    </div>
+                </a>
+                <a href="/free-challenge" class="standard-card option-card free">
+                    <div class="standard-card-image">
+                        <img src="blog/images/forearm-plank.avif" alt="30 Day Core Challenge">
+                    </div>
+                    <div class="standard-card-content">
+                        <span class="option-badge free-badge">100% Free</span>
+                        <span class="standard-card-title">Free 30 Day Core Challenge</span>
+                        <span class="standard-card-desc">Start your fitness journey with no commitment. Daily workouts, accountability check-ins, and community support.</span>
+                        <ul class="standard-card-features">
+                            <li>30 guided workouts</li>
+                            <li>Daily accountability</li>
+                            <li>No equipment needed</li>
+                        </ul>
+                        <span class="standard-card-cta">Start Free Today</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Quick Links - Tertiary Options -->
+            <div class="quick-links">
+                <a href="/core-buddy" class="quick-link option-card">
+                    <img src="Logo.PNG" alt="Core Buddy" class="quick-link-icon">
+                    <div class="quick-link-content">
+                        <span class="quick-link-title">Core Buddy</span>
+                        <span class="quick-link-desc">AI-powered fitness companion</span>
+                    </div>
+                    <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="#" class="quick-link option-card" id="getInTouchBtn" onclick="openContactModal(event)">
+                    <img src="Client Bond.jpg" alt="Get in Touch" class="quick-link-icon">
+                    <div class="quick-link-content">
+                        <span class="quick-link-title">Get In Touch</span>
+                        <span class="quick-link-desc">Have questions? Let's chat</span>
+                    </div>
+                    <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="/blog" class="quick-link option-card">
+                    <img src="blog/images/beyond-the-mat.avif" alt="Blog" class="quick-link-icon">
+                    <div class="quick-link-content">
+                        <span class="quick-link-title">Read Our Blog</span>
+                        <span class="quick-link-desc">Tips, workouts, and insights</span>
+                    </div>
+                    <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
