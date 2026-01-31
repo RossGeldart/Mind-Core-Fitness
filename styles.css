@@ -215,13 +215,8 @@ body {
 
 /* Options Section */
 .options-section {
-    padding-top: 100px;
-    padding-bottom: 0;
+    padding: 100px 20px;
     background: var(--background);
-}
-
-.options-section .container {
-    padding-bottom: 45px;
 }
 
 .question {
@@ -255,27 +250,29 @@ body {
     }
 }
 
-/* Options Grid - Full Width Image Cards */
+/* Options - Pill Style with Image Backgrounds */
 .options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 580px;
+    margin: 0 auto;
 }
 
 .option-card {
     position: relative;
     display: flex;
-    align-items: flex-end;
-    min-height: 140px;
+    align-items: center;
+    min-height: 70px;
     background-size: cover;
     background-position: center;
     text-decoration: none;
     cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
+    border-radius: 12px;
 }
 
 .option-card.visible {
@@ -289,67 +286,34 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    transition: background 0.4s ease;
+    background: rgba(0, 0, 0, 0.6);
+    transition: background 0.3s ease;
 }
 
-/* Odd cards (1st, 3rd, 5th...) - overlay from left */
-.options-grid .option-card:nth-child(odd) .option-card-overlay {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.1) 100%);
-}
-
-.options-grid .option-card:nth-child(odd):hover .option-card-overlay {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.2) 100%);
-}
-
-/* Even cards (2nd, 4th, 6th...) - overlay from right */
-.options-grid .option-card:nth-child(even) .option-card-overlay {
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.1) 100%);
-}
-
-.options-grid .option-card:nth-child(even):hover .option-card-overlay {
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.2) 100%);
+.option-card:hover .option-card-overlay {
+    background: rgba(0, 0, 0, 0.75);
 }
 
 .option-card-content {
     position: relative;
     z-index: 1;
-    padding: 20px;
+    padding: 20px 28px;
     width: 100%;
-    opacity: 0;
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-/* Odd cards - content aligned left, slides from left */
-.options-grid .option-card:nth-child(odd) .option-card-content {
-    text-align: left;
-    transform: translateX(-30px);
-}
-
-/* Even cards - content aligned right, slides from right */
-.options-grid .option-card:nth-child(even) .option-card-content {
-    text-align: right;
-    transform: translateX(30px);
-}
-
-/* Animated state - content visible */
-.option-card .option-card-content.content-visible {
-    opacity: 1;
-    transform: translateX(0);
 }
 
 .option-card:hover {
-    transform: translateY(-4px);
-    z-index: 2;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .option-card:active {
-    transform: scale(1);
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .option-card:focus {
-    outline: 3px solid var(--accent-color);
-    outline-offset: -3px;
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }
 
 .option-card:focus:not(:focus-visible) {
@@ -357,28 +321,50 @@ body {
 }
 
 .option-card:focus-visible {
-    outline: 3px solid var(--accent-color);
-    outline-offset: -3px;
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }
 
 /* Featured Card Styling */
 .option-card.featured {
-    min-height: 160px;
+    border: 2px solid var(--accent-color);
+}
+
+.option-card.featured .option-card-overlay {
+    background: rgba(153, 49, 60, 0.5);
+}
+
+.option-card.featured:hover .option-card-overlay {
+    background: rgba(153, 49, 60, 0.65);
+}
+
+/* Free Card Styling */
+.option-card.free {
+    border: 2px solid #2d8a4e;
+}
+
+.option-card.free .option-card-overlay {
+    background: rgba(45, 138, 78, 0.5);
+}
+
+.option-card.free:hover .option-card-overlay {
+    background: rgba(45, 138, 78, 0.65);
 }
 
 /* Option Badge */
 .option-badge {
-    display: inline-block;
-    padding: 6px 14px;
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    padding: 4px 12px;
     background: var(--accent-color);
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     border-radius: 20px;
-    margin-bottom: 12px;
 }
 
 .option-badge.free-badge {
@@ -387,21 +373,19 @@ body {
 
 .option-title {
     display: block;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
     color: #ffffff;
-    letter-spacing: -0.01em;
-    margin-bottom: 6px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.01em;
 }
 
 .option-desc {
     display: block;
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 4px;
     font-weight: 300;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Testimonials Section */
@@ -1063,13 +1047,7 @@ body {
     }
 
     .options-section {
-        padding-top: 70px;
-    }
-
-    .options-section .container {
-        padding-left: 20px;
-        padding-right: 20px;
-        padding-bottom: 35px;
+        padding: 70px 20px;
     }
 
     .section-title {
@@ -1082,27 +1060,30 @@ body {
     }
 
     .options-grid {
-        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .option-card {
-        min-height: 120px;
-    }
-
-    .option-card.featured {
-        min-height: 140px;
+        min-height: 65px;
     }
 
     .option-card-content {
-        padding: 16px;
+        padding: 16px 20px;
     }
 
     .option-title {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
 
     .option-desc {
-        font-size: 0.9rem;
+        font-size: 0.75rem;
+    }
+
+    .option-badge {
+        top: 8px;
+        right: 12px;
+        padding: 3px 10px;
+        font-size: 0.6rem;
     }
 
     .testimonial-card {
@@ -1190,12 +1171,6 @@ body {
     .option-card,
     .value-card,
     .testimonial-card {
-        transition: none;
-        opacity: 1;
-        transform: none;
-    }
-
-    .option-card-content {
         transition: none;
         opacity: 1;
         transform: none;
