@@ -974,6 +974,14 @@ body {
     transform: translateX(4px);
 }
 
+/* Larger screens - bigger thumbnails */
+@media (min-width: 768px) {
+    .option-card-thumb {
+        width: 100px;
+        height: 85px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .value-grid {
