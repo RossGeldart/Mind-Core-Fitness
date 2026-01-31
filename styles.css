@@ -895,10 +895,16 @@ body {
     color: #ffffff;
 }
 
-.workbook-btn.digital:hover {
+.workbook-btn.digital:hover:not(.coming-soon) {
     background: #b33a47;
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(153, 49, 60, 0.35);
+}
+
+.workbook-btn.digital.coming-soon {
+    background: #888888;
+    cursor: default;
+    opacity: 0.9;
 }
 
 .workbook-btn.paperback {
