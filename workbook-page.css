@@ -71,6 +71,57 @@
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.25), 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
+/* Square Book Card Container */
+.book-card-square {
+    width: 380px;
+    height: 380px;
+    background: #ffffff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15), 0 15px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.book-card-square:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2), 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.book-card-square .hero-book-cover {
+    width: auto;
+    max-width: 85%;
+    max-height: 90%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.book-card-square .hero-book-cover:hover {
+    transform: rotate(-1deg);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Small variant for format section */
+.book-card-square.small {
+    width: 220px;
+    height: 220px;
+    border-radius: 12px;
+    box-shadow: none;
+    background: #ffffff;
+}
+
+.book-card-square.small:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.book-card-square.small img {
+    max-width: 80%;
+    max-height: 85%;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
 .workbook-hero-text {
     text-align: left;
 }
@@ -362,6 +413,10 @@
     min-height: 280px;
 }
 
+.format-card.paperback .format-image {
+    background: #f5f5f5;
+}
+
 .format-image img {
     max-width: 100%;
     max-height: 240px;
@@ -549,6 +604,11 @@
         justify-content: center;
     }
 
+    .book-card-square {
+        width: 320px;
+        height: 320px;
+    }
+
     .hero-book-cover {
         width: 300px;
     }
@@ -588,8 +648,18 @@
         padding: 120px 20px 70px;
     }
 
+    .book-card-square {
+        width: 260px;
+        height: 260px;
+    }
+
     .hero-book-cover {
         width: 240px;
+    }
+
+    .book-card-square.small {
+        width: 180px;
+        height: 180px;
     }
 
     .workbook-hero-title {
