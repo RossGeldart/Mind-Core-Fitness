@@ -215,8 +215,13 @@ body {
 
 /* Options Section */
 .options-section {
-    padding: 100px 20px;
+    padding-top: 100px;
+    padding-bottom: 0;
     background: var(--background);
+}
+
+.options-section .container {
+    padding-bottom: 45px;
 }
 
 .question {
@@ -250,126 +255,137 @@ body {
     }
 }
 
-/* Options */
-.options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 580px;
-    margin: 0 auto;
+/* Options Grid - Full Width Image Cards */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    width: 100%;
 }
 
-.option {
+.option-card {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    padding: 20px 28px;
-    background: var(--background);
-    border: 1.5px solid rgba(55, 55, 55, 0.2);
-    border-radius: 12px;
-    color: var(--text-color);
+    align-items: flex-end;
+    min-height: 280px;
+    background-size: cover;
+    background-position: center;
     text-decoration: none;
     cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
 }
 
-.option.visible {
+.option-card.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-.option:hover {
-    background: var(--text-color);
-    color: #ffffff;
-    border-color: var(--text-color);
-    box-shadow: 0 8px 30px rgba(55, 55, 55, 0.2);
-    transform: translateY(-2px);
+.option-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
+    transition: background 0.4s ease;
 }
 
-.option:hover .option-desc {
-    color: rgba(255, 255, 255, 0.7);
+.option-card:hover .option-card-overlay {
+    background: linear-gradient(to top, rgba(153, 49, 60, 0.9) 0%, rgba(153, 49, 60, 0.6) 50%, rgba(153, 49, 60, 0.3) 100%);
 }
 
-.option:hover .option-badge {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+.option-card-content {
+    position: relative;
+    z-index: 1;
+    padding: 30px;
+    width: 100%;
 }
 
-.option:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(55, 55, 55, 0.15);
+.option-card:hover {
+    transform: scale(1.02);
+    z-index: 2;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
-.option:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
+.option-card:active {
+    transform: scale(1);
 }
 
-.option:focus:not(:focus-visible) {
+.option-card:focus {
+    outline: 3px solid var(--accent-color);
+    outline-offset: -3px;
+}
+
+.option-card:focus:not(:focus-visible) {
     outline: none;
 }
 
-.option:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
+.option-card:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: -3px;
 }
 
-/* Featured Options */
-.option.featured {
-    border: 2px solid var(--accent-color);
-    background: linear-gradient(135deg, rgba(153, 49, 60, 0.03) 0%, rgba(153, 49, 60, 0.08) 100%);
-    padding-top: 35px;
+/* Featured Card Styling */
+.option-card.featured {
+    min-height: 320px;
 }
 
-.option.featured:hover {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    box-shadow: 0 10px 40px rgba(153, 49, 60, 0.3);
+.option-card.featured .option-card-overlay {
+    background: linear-gradient(to top, rgba(153, 49, 60, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
 }
 
+.option-card.featured:hover .option-card-overlay {
+    background: linear-gradient(to top, rgba(153, 49, 60, 0.95) 0%, rgba(153, 49, 60, 0.7) 50%, rgba(153, 49, 60, 0.4) 100%);
+}
+
+/* Option Badge */
 .option-badge {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    padding: 4px 12px;
+    display: inline-block;
+    padding: 6px 14px;
     background: var(--accent-color);
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     border-radius: 20px;
+    margin-bottom: 12px;
 }
 
 /* Free Option Styling */
-.option.free {
-    padding-top: 35px;
+.option-card.free .option-card-overlay {
+    background: linear-gradient(to top, rgba(45, 138, 78, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+.option-card.free:hover .option-card-overlay {
+    background: linear-gradient(to top, rgba(45, 138, 78, 0.95) 0%, rgba(45, 138, 78, 0.7) 50%, rgba(45, 138, 78, 0.4) 100%);
 }
 
 .option-badge.free-badge {
     background: #2d8a4e;
 }
 
-.option.free:hover .option-badge.free-badge {
-    background: rgba(255, 255, 255, 0.2);
-}
-
 .option-title {
-    font-family: 'Roboto', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .option-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 4px;
+    display: block;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 300;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Testimonials Section */
@@ -1025,10 +1041,19 @@ body {
     }
 
     .value-prop,
-    .options-section,
     .testimonials,
     .social-section {
         padding: 70px 20px;
+    }
+
+    .options-section {
+        padding-top: 70px;
+    }
+
+    .options-section .container {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 35px;
     }
 
     .section-title {
@@ -1040,20 +1065,27 @@ body {
         padding: 30px 24px;
     }
 
-    .options {
-        gap: 10px;
+    .options-grid {
+        grid-template-columns: 1fr;
     }
 
-    .option {
-        padding: 18px 22px;
+    .option-card {
+        min-height: 220px;
     }
 
-    .option.featured,
-    .option.free {
-        padding-top: 32px;
+    .option-card.featured {
+        min-height: 250px;
+    }
+
+    .option-card-content {
+        padding: 24px;
     }
 
     .option-title {
+        font-size: 1.1rem;
+    }
+
+    .option-desc {
         font-size: 0.9rem;
     }
 
@@ -1139,12 +1171,16 @@ body {
         transform: none;
     }
 
-    .option,
+    .option-card,
     .value-card,
     .testimonial-card {
         transition: none;
         opacity: 1;
         transform: none;
+    }
+
+    .option-card-overlay {
+        transition: none;
     }
 
     .cookie-banner {

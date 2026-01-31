@@ -94,45 +94,69 @@
     <section class="options-section" id="options">
         <div class="container">
             <h2 class="question" id="questionText"></h2>
+        </div>
 
-            <div class="options">
-                <a href="/personal-training" class="option featured">
+        <div class="options-grid">
+            <a href="/personal-training" class="option-card featured" style="background-image: url('Gym Studio 1.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-badge">Most Popular</span>
                     <span class="option-title">Explore 1-2-1 In Person Training</span>
                     <span class="option-desc">Private sessions in Elgin with full accountability</span>
-                </a>
-                <a href="/12-week-core-programme" class="option featured">
+                </div>
+            </a>
+            <a href="/12-week-core-programme" class="option-card featured" style="background-image: url('Core 1.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-badge">Best Value</span>
                     <span class="option-title">Join the 12-Week Core Programme</span>
                     <span class="option-desc">Build unbreakable core strength with guided workouts</span>
-                </a>
-                <a href="/online-coaching" class="option">
+                </div>
+            </a>
+            <a href="/online-coaching" class="option-card" style="background-image: url('Gym Studio 2.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-title">Explore Online Personal Training</span>
                     <span class="option-desc">Train anywhere with personalised programming</span>
-                </a>
-                <a href="/workbook" class="option featured">
+                </div>
+            </a>
+            <a href="/workbook" class="option-card featured" style="background-image: url('downloads/front-cover-square.jpeg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-badge">New Release</span>
                     <span class="option-title">Get The Mind Core Mindset Workbook</span>
                     <span class="option-desc">Your 6-month transformation journal — digital or paperback</span>
-                </a>
-                <a href="/free-challenge" class="option free">
+                </div>
+            </a>
+            <a href="/free-challenge" class="option-card free" style="background-image: url('Circuit 2.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-badge free-badge">100% Free</span>
                     <span class="option-title">Try My Free 30 Day Core Challenge</span>
                     <span class="option-desc">Start your journey with no commitment</span>
-                </a>
-                <a href="/core-buddy" class="option">
+                </div>
+            </a>
+            <a href="/core-buddy" class="option-card" style="background-image: url('Gym Studio 4.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-title">Explore Core Buddy</span>
                     <span class="option-desc">Your AI-powered fitness companion</span>
-                </a>
-                <a href="#" class="option" id="getInTouchBtn" onclick="openContactModal(event)">
+                </div>
+            </a>
+            <a href="#" class="option-card" id="getInTouchBtn" onclick="openContactModal(event)" style="background-image: url('Client Bond.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-title">Get In Touch</span>
                     <span class="option-desc">Have questions? Let's chat</span>
-                </a>
-                <a href="/blog" class="option">
+                </div>
+            </a>
+            <a href="/blog" class="option-card" style="background-image: url('Gym Studio 6.jpg');">
+                <div class="option-card-overlay"></div>
+                <div class="option-card-content">
                     <span class="option-title">Read Our Blog</span>
                     <span class="option-desc">Tips, workouts, and fitness insights</span>
-                </a>
-            </div>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -360,7 +384,7 @@
         // Word reveal animation configuration
         const text = "What can Mind Core Fitness do for you today?";
         const questionElement = document.getElementById('questionText');
-        const options = document.querySelectorAll('.option');
+        const options = document.querySelectorAll('.option-card');
         const WORD_STAGGER_MS = 80;
 
         function revealWords() {
