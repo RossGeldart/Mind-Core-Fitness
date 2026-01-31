@@ -434,6 +434,24 @@
             document.querySelectorAll('.value-card, .testimonial-card').forEach(function(el) {
                 observer.observe(el);
             });
+
+            // Scroll-triggered animation for option card content
+            const contentObserverOptions = {
+                threshold: 0.3,
+                rootMargin: '0px 0px -30px 0px'
+            };
+
+            const contentObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('content-visible');
+                    }
+                });
+            }, contentObserverOptions);
+
+            document.querySelectorAll('.option-card-content').forEach(function(el) {
+                contentObserver.observe(el);
+            });
         });
 
         // Register Service Worker for PWA
