@@ -199,8 +199,8 @@
         /* Hero Section */
         .hero {
             padding: 140px 20px 100px;
-            background: var(--dark-bg);
-            color: #ffffff;
+            background: var(--bg-color);
+            color: var(--text-color);
             position: relative;
             overflow: hidden;
         }
@@ -212,7 +212,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(153, 49, 60, 0.1) 0%, transparent 50%);
+            background: linear-gradient(135deg, rgba(153, 49, 60, 0.05) 0%, transparent 50%);
         }
 
         .hero .container {
@@ -260,7 +260,7 @@
 
         .hero-sub {
             font-size: 1.15rem;
-            color: #aaa;
+            color: var(--text-muted);
             line-height: 1.7;
             margin-bottom: 32px;
         }
@@ -285,7 +285,7 @@
 
         .hero-stat span {
             font-size: 0.9rem;
-            color: #888;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -301,19 +301,19 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 1.5rem;
-            color: #fff;
+            color: var(--text-color);
         }
 
         .hero-price .amount {
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
             font-size: 3.5rem;
-            color: #fff;
+            color: var(--text-color);
         }
 
         .hero-price .note {
             font-size: 0.9rem;
-            color: #888;
+            color: var(--text-muted);
         }
 
         .hero-cta {
@@ -1208,7 +1208,7 @@
 
         /* Flash Sale Timer */
         .flash-sale-banner {
-            background: linear-gradient(135deg, rgba(153, 49, 60, 0.2) 0%, rgba(153, 49, 60, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(153, 49, 60, 0.1) 0%, rgba(153, 49, 60, 0.05) 100%);
             border: 2px solid var(--accent-color);
             border-radius: 12px;
             padding: 20px 28px;
@@ -1260,7 +1260,7 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
             font-size: 1.8rem;
-            color: #fff;
+            color: var(--text-color);
         }
 
         .countdown-container {
@@ -1272,7 +1272,7 @@
         }
 
         .countdown-unit {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(153, 49, 60, 0.1);
             border-radius: 8px;
             padding: 10px 14px;
             min-width: 60px;
@@ -1283,13 +1283,13 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
             font-size: 1.6rem;
-            color: #fff;
+            color: var(--text-color);
             display: block;
         }
 
         .countdown-unit .label {
             font-size: 0.7rem;
-            color: #888;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -1303,72 +1303,59 @@
 
         .flash-sale-note {
             font-size: 0.85rem;
-            color: #aaa;
+            color: var(--text-muted);
             margin-top: 8px;
         }
 
-        /* Urgency Badge */
-        .urgency-badge {
+        /* Urgency Text */
+        .urgency-text {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 193, 7, 0.15);
-            border: 1px solid rgba(255, 193, 7, 0.4);
-            color: #ffc107;
-            padding: 10px 18px;
-            border-radius: 6px;
+            color: var(--text-color);
             font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             margin-top: 20px;
         }
 
-        .urgency-badge svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
+        .urgency-text svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent-color);
         }
 
-        /* Guarantee Badge */
-        .guarantee-badge {
-            display: inline-flex;
-            align-items: center;
+        /* Guarantee Text */
+        .guarantee-simple {
+            display: flex;
+            align-items: flex-start;
             gap: 12px;
-            background: rgba(40, 167, 69, 0.1);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-            border-radius: 8px;
-            padding: 16px 24px;
             margin-top: 24px;
             text-align: left;
         }
 
-        .guarantee-badge .guarantee-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(40, 167, 69, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .guarantee-simple .guarantee-icon {
             flex-shrink: 0;
         }
 
-        .guarantee-badge .guarantee-icon svg {
-            width: 24px;
-            height: 24px;
+        .guarantee-simple .guarantee-icon svg {
+            width: 28px;
+            height: 28px;
             fill: #28a745;
         }
 
-        .guarantee-badge .guarantee-text {
+        .guarantee-simple .guarantee-text {
             font-size: 0.9rem;
-            color: #ccc;
+            color: var(--text-muted);
             line-height: 1.5;
         }
 
-        .guarantee-badge .guarantee-text strong {
+        .guarantee-simple .guarantee-text strong {
             color: #28a745;
             display: block;
             margin-bottom: 2px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
         }
 
         /* Enhanced Hero CTA */
@@ -1411,67 +1398,52 @@
         }
 
         /* Final CTA Guarantee */
-        .final-guarantee-badge {
+        .final-guarantee-simple {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background: rgba(40, 167, 69, 0.1);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-            border-radius: 8px;
-            padding: 16px 28px;
             margin: 24px auto 0;
-            max-width: 500px;
+            max-width: 600px;
             text-align: left;
         }
 
-        .final-guarantee-badge .guarantee-icon {
-            width: 44px;
-            height: 44px;
-            background: rgba(40, 167, 69, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .final-guarantee-simple .guarantee-icon {
             flex-shrink: 0;
         }
 
-        .final-guarantee-badge .guarantee-icon svg {
-            width: 22px;
-            height: 22px;
+        .final-guarantee-simple .guarantee-icon svg {
+            width: 28px;
+            height: 28px;
             fill: #28a745;
         }
 
-        .final-guarantee-badge .guarantee-text {
-            font-size: 0.85rem;
+        .final-guarantee-simple .guarantee-text {
+            font-size: 0.9rem;
             color: #aaa;
             line-height: 1.5;
         }
 
-        .final-guarantee-badge .guarantee-text strong {
+        .final-guarantee-simple .guarantee-text strong {
             color: #28a745;
         }
 
         /* Final CTA Urgency */
-        .final-urgency-badge {
+        .final-urgency-text {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 193, 7, 0.15);
-            border: 1px solid rgba(255, 193, 7, 0.4);
-            color: #ffc107;
-            padding: 10px 20px;
-            border-radius: 6px;
+            color: #ffffff;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             margin-bottom: 24px;
         }
 
-        .final-urgency-badge svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
+        .final-urgency-text svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent-color);
         }
 
         @media (max-width: 768px) {
@@ -1493,8 +1465,8 @@
                 font-size: 1.3rem;
             }
 
-            .guarantee-badge,
-            .final-guarantee-badge {
+            .guarantee-simple,
+            .final-guarantee-simple {
                 flex-direction: column;
                 text-align: center;
                 gap: 10px;
@@ -1545,6 +1517,9 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
+            <div class="hero-image">
+                <img src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness">
+            </div>
             <div class="hero-content">
                 <span class="hero-label">12-Week Programme</span>
                 <h1>Finally Build the <span>Strong, Stable Core</span> You've Been Missing</h1>
@@ -1602,12 +1577,12 @@
 
                 <a href="https://buy.stripe.com/3cIbJ1h1W0P46eb9lG6oo01" class="hero-cta-enhanced" target="_blank" rel="noopener">Claim Your Spot — £129 Today Only</a>
 
-                <div class="urgency-badge">
+                <div class="urgency-text">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     Only accepting 7 new members this month
                 </div>
 
-                <div class="guarantee-badge">
+                <div class="guarantee-simple">
                     <div class="guarantee-icon">
                         <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
                     </div>
@@ -1616,9 +1591,6 @@
                         Try it risk-free — if you're not enjoying the process after 7 days, get a full refund. No questions asked.
                     </div>
                 </div>
-            </div>
-            <div class="hero-image">
-                <img src="images/client-results/ross-geldart.jpeg" alt="12-Week Core Rebuild Programme">
             </div>
         </div>
     </section>
@@ -1945,7 +1917,7 @@
             <h2 class="section-title">Build an Unbreakable Core</h2>
             <p class="section-subtitle">12 weeks. 3 phases. One transformation. Join now and start your journey to lasting core strength.</p>
 
-            <div class="final-urgency-badge">
+            <div class="final-urgency-text">
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                 Only 7 spots available this month
             </div>
@@ -1959,7 +1931,7 @@
 
             <a href="https://buy.stripe.com/3cIbJ1h1W0P46eb9lG6oo01" class="final-cta-btn" target="_blank" rel="noopener">Start My Core Rebuild Now</a>
 
-            <div class="final-guarantee-badge">
+            <div class="final-guarantee-simple">
                 <div class="guarantee-icon">
                     <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
                 </div>
