@@ -1723,9 +1723,9 @@
 
         function sharePinterest(e) {
             e.preventDefault();
-            const ogImage = document.querySelector('meta[property="og:image"]');
-            const imageUrl = ogImage ? encodeURIComponent(ogImage.content) : '';
-            window.open(`https://pinterest.com/pin/create/button/?url=${pageUrl}&media=${imageUrl}&description=${pageTitle}`, '_blank', 'width=750,height=550');
+            
+            
+            window.open(`https://www.pinterest.com/pin/create/bookmarklet/?url=${pageUrl}&description=${pageTitle}`, '_blank', 'width=750,height=600');
         }
 
         function shareWhatsApp(e) {

@@ -41,14 +41,13 @@ function shareFacebook(e) {
     );
 }
 
-// Pinterest Share
+// Pinterest Share - Opens image picker so user can choose which image to pin
 function sharePinterest(e) {
     e.preventDefault();
-    const imageUrl = getPageImage();
     window.open(
-        `https://pinterest.com/pin/create/button/?url=${pageUrl}&media=${imageUrl}&description=${pageTitle}`,
+        `https://www.pinterest.com/pin/create/bookmarklet/?url=${pageUrl}&description=${pageTitle}`,
         '_blank',
-        'width=750,height=550'
+        'width=750,height=600'
     );
 }
 
