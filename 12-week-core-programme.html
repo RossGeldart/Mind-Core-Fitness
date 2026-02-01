@@ -6,7 +6,7 @@
     <title>Unbreakable: 12-Week Core Rebuild | Mind Core Fitness</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Transform your core strength in 12 weeks. The Unbreakable programme combines three phases of structured training to rebuild stability, increase strength, and master power. Join now for £149.">
+    <meta name="description" content="Transform your core strength in 12 weeks. The Unbreakable programme combines three phases of structured training to rebuild stability, increase strength, and master power. Flash sale: £129 (was £149).">
     <meta name="keywords" content="12 week core programme, core strength, core rebuild, Everfit, online training, Mind Core Fitness, Elgin personal trainer">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
@@ -57,7 +57,7 @@
     fbq('track', 'ViewContent', {
         content_name: '12-Week Core Programme',
         content_category: 'Online Programme',
-        value: 149.00,
+        value: 129.00,
         currency: 'GBP'
     });
     </script>
@@ -1205,6 +1205,306 @@
                 transform: none;
             }
         }
+
+        /* Flash Sale Timer */
+        .flash-sale-banner {
+            background: linear-gradient(135deg, rgba(153, 49, 60, 0.2) 0%, rgba(153, 49, 60, 0.1) 100%);
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .flash-sale-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .flash-sale-badge {
+            background: var(--accent-color);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .flash-sale-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flash-sale-price .original-price {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            color: #888;
+            text-decoration: line-through;
+        }
+
+        .flash-sale-price .sale-price {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .countdown-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .countdown-unit {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .countdown-unit .number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: #fff;
+            display: block;
+        }
+
+        .countdown-unit .label {
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .countdown-separator {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .flash-sale-note {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        /* Urgency Badge */
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            color: #ffc107;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        .urgency-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Guarantee Badge */
+        .guarantee-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .guarantee-badge .guarantee-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(40, 167, 69, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .guarantee-badge .guarantee-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #28a745;
+        }
+
+        .guarantee-badge .guarantee-text {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .guarantee-badge .guarantee-text strong {
+            color: #28a745;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Enhanced Hero CTA */
+        .hero-cta-enhanced {
+            display: inline-block;
+            padding: 22px 56px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #b33a47 100%);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(153, 49, 60, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-cta-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .hero-cta-enhanced:hover::before {
+            left: 100%;
+        }
+
+        .hero-cta-enhanced:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(153, 49, 60, 0.5);
+        }
+
+        /* Final CTA Guarantee */
+        .final-guarantee-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 8px;
+            padding: 16px 28px;
+            margin: 24px auto 0;
+            max-width: 500px;
+            text-align: left;
+        }
+
+        .final-guarantee-badge .guarantee-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(40, 167, 69, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .final-guarantee-badge .guarantee-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #28a745;
+        }
+
+        .final-guarantee-badge .guarantee-text {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .final-guarantee-badge .guarantee-text strong {
+            color: #28a745;
+        }
+
+        /* Final CTA Urgency */
+        .final-urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            color: #ffc107;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .final-urgency-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        @media (max-width: 768px) {
+            .flash-sale-banner {
+                padding: 16px 20px;
+            }
+
+            .flash-sale-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .countdown-unit {
+                padding: 8px 10px;
+                min-width: 50px;
+            }
+
+            .countdown-unit .number {
+                font-size: 1.3rem;
+            }
+
+            .guarantee-badge,
+            .final-guarantee-badge {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .hero-cta-enhanced {
+                padding: 18px 36px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1247,8 +1547,36 @@
         <div class="container">
             <div class="hero-content">
                 <span class="hero-label">12-Week Programme</span>
-                <h1>Unbreakable: The <span>12-Week Core Rebuild</span></h1>
+                <h1>Finally Build the <span>Strong, Stable Core</span> You've Been Missing</h1>
                 <p class="hero-sub">Build lasting strength, discipline, and total-body control through the full Mind Core system. This 12-week progression combines three phases of structured core training to rebuild stability, increase strength under load, and master power with precision.</p>
+
+                <!-- Flash Sale Countdown Timer -->
+                <div class="flash-sale-banner">
+                    <div class="flash-sale-header">
+                        <span class="flash-sale-badge">Flash Sale</span>
+                        <div class="flash-sale-price">
+                            <span class="original-price">£149</span>
+                            <span class="sale-price">£129</span>
+                        </div>
+                    </div>
+                    <div class="countdown-container">
+                        <div class="countdown-unit">
+                            <span class="number" id="hours">00</span>
+                            <span class="label">Hours</span>
+                        </div>
+                        <span class="countdown-separator">:</span>
+                        <div class="countdown-unit">
+                            <span class="number" id="minutes">00</span>
+                            <span class="label">Mins</span>
+                        </div>
+                        <span class="countdown-separator">:</span>
+                        <div class="countdown-unit">
+                            <span class="number" id="seconds">00</span>
+                            <span class="label">Secs</span>
+                        </div>
+                    </div>
+                    <p class="flash-sale-note">Sale ends when the timer hits zero</p>
+                </div>
 
                 <div class="hero-stats">
                     <div class="hero-stat">
@@ -1266,12 +1594,28 @@
                 </div>
 
                 <div class="hero-price">
+                    <span class="original-price" style="font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #666; text-decoration: line-through; margin-right: 8px;">£149</span>
                     <span class="currency">£</span>
-                    <span class="amount">149</span>
+                    <span class="amount">129</span>
                     <span class="note">one-time payment</span>
                 </div>
 
-                <a href="https://buy.stripe.com/fZuaEX272cxM31ZdBW6oo00" class="hero-cta" target="_blank" rel="noopener">Start Your Transformation</a>
+                <a href="https://buy.stripe.com/fZuaEX272cxM31ZdBW6oo00" class="hero-cta-enhanced" target="_blank" rel="noopener">Claim Your Spot — £129 Today Only</a>
+
+                <div class="urgency-badge">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Only accepting 7 new members this month
+                </div>
+
+                <div class="guarantee-badge">
+                    <div class="guarantee-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <div class="guarantee-text">
+                        <strong>7-Day Money-Back Guarantee</strong>
+                        Try it risk-free — if you're not enjoying the process after 7 days, get a full refund. No questions asked.
+                    </div>
+                </div>
             </div>
             <div class="hero-image">
                 <img src="Circuit 3.jpg" alt="12-Week Core Rebuild Programme">
@@ -1601,15 +1945,30 @@
             <h2 class="section-title">Build an Unbreakable Core</h2>
             <p class="section-subtitle">12 weeks. 3 phases. One transformation. Join now and start your journey to lasting core strength.</p>
 
+            <div class="final-urgency-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                Only 7 spots available this month
+            </div>
+
             <div class="final-price">
+                <span style="font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #666; text-decoration: line-through; margin-right: 10px;">£149</span>
                 <span class="currency">£</span>
-                <span class="amount">149</span>
+                <span class="amount">129</span>
                 <span class="note">one-time payment</span>
             </div>
 
-            <a href="https://buy.stripe.com/fZuaEX272cxM31ZdBW6oo00" class="final-cta-btn" target="_blank" rel="noopener">Join Now</a>
+            <a href="https://buy.stripe.com/fZuaEX272cxM31ZdBW6oo00" class="final-cta-btn" target="_blank" rel="noopener">Start My Core Rebuild Now</a>
 
-            <p class="guarantee"><strong>Full programme access</strong> - All 12 weeks delivered through the Everfit app</p>
+            <div class="final-guarantee-badge">
+                <div class="guarantee-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                </div>
+                <div class="guarantee-text">
+                    <strong>7-Day Money-Back Guarantee</strong> — Try it risk-free. If you're not enjoying the process after 7 days, get a full refund. No questions asked.
+                </div>
+            </div>
+
+            <p class="guarantee" style="margin-top: 20px;"><strong>Full programme access</strong> — All 12 weeks delivered through the Everfit app</p>
         </div>
     </section>
 
@@ -1827,6 +2186,50 @@
             startAutoplay();
         })();
 
+        // Flash Sale Countdown Timer
+        (function() {
+            // Check if there's a saved end time in localStorage, otherwise create a new 24-hour countdown
+            const STORAGE_KEY = 'flashSaleEndTime';
+            let endTime = localStorage.getItem(STORAGE_KEY);
+
+            if (!endTime || parseInt(endTime) < Date.now()) {
+                // Set new 24-hour countdown from now
+                endTime = Date.now() + (24 * 60 * 60 * 1000);
+                localStorage.setItem(STORAGE_KEY, endTime.toString());
+            } else {
+                endTime = parseInt(endTime);
+            }
+
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            function updateCountdown() {
+                const now = Date.now();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    // Reset the timer for another 24 hours
+                    endTime = Date.now() + (24 * 60 * 60 * 1000);
+                    localStorage.setItem(STORAGE_KEY, endTime.toString());
+                    updateCountdown();
+                    return;
+                }
+
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                hoursEl.textContent = hours.toString().padStart(2, '0');
+                minutesEl.textContent = minutes.toString().padStart(2, '0');
+                secondsEl.textContent = seconds.toString().padStart(2, '0');
+            }
+
+            // Update immediately and then every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        })();
+
         // Facebook Pixel - Track InitiateCheckout on purchase button clicks
         document.querySelectorAll('a[href*="buy.stripe.com"]').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
@@ -1837,7 +2240,7 @@
                 var buttonLocation = 'unknown';
                 if (this.classList.contains('nav-cta')) {
                     buttonLocation = 'navigation';
-                } else if (this.classList.contains('hero-cta')) {
+                } else if (this.classList.contains('hero-cta-enhanced')) {
                     buttonLocation = 'hero';
                 } else if (this.classList.contains('final-cta-btn')) {
                     buttonLocation = 'final_cta';
@@ -1846,11 +2249,11 @@
                 // Google Analytics event tracking
                 gtag('event', 'begin_checkout', {
                     currency: 'GBP',
-                    value: 149.00,
+                    value: 129.00,
                     items: [{
                         item_name: '12-Week Core Programme',
                         item_category: 'Online Programme',
-                        price: 149.00,
+                        price: 129.00,
                         quantity: 1
                     }],
                     button_location: buttonLocation
@@ -1860,7 +2263,7 @@
                 fbq('track', 'InitiateCheckout', {
                     content_name: '12-Week Core Programme',
                     content_category: 'Online Programme',
-                    value: 149.00,
+                    value: 129.00,
                     currency: 'GBP'
                 });
 
