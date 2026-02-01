@@ -291,6 +291,33 @@
             color: #ffffff;
         }
 
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 24px;
+            transition: color 0.2s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .back-btn svg {
+            transition: transform 0.2s ease;
+        }
+
+        .back-btn:hover svg {
+            transform: translateX(-3px);
+        }
+
         .privacy-note {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -351,6 +378,10 @@
 
             <!-- Step 2: Calculator -->
             <div id="calculatorStep">
+                <button class="back-btn" onclick="goToEmail()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back
+                </button>
                 <h1 class="calculator-title">Your Details</h1>
                 <p class="calculator-subtitle">We'll calculate your optimal daily protein intake based on your goal.</p>
 
@@ -383,6 +414,10 @@
 
             <!-- Step 3: Results -->
             <div id="resultsStep">
+                <button class="back-btn" onclick="recalculate()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back
+                </button>
                 <h1 class="calculator-title">Your Daily Target</h1>
 
                 <div class="results-number" id="proteinResult">0</div>
@@ -511,6 +546,13 @@
         function recalculate() {
             resultsStep.style.display = 'none';
             calculatorStep.style.display = 'block';
+        }
+
+        // Go back to email step
+        function goToEmail() {
+            calculatorStep.style.display = 'none';
+            emailStep.style.display = 'block';
+            sessionStorage.removeItem('proteinCalcEmail');
         }
 
         // Check if user has already submitted email (in same session)
