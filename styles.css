@@ -282,6 +282,7 @@ body {
 .quick-links .quick-link:nth-child(1) { transition-delay: 0s; }
 .quick-links .quick-link:nth-child(2) { transition-delay: 0.1s; }
 .quick-links .quick-link:nth-child(3) { transition-delay: 0.2s; }
+.quick-links .quick-link:nth-child(4) { transition-delay: 0.3s; }
 
 /* Staggered animation delays for social links */
 .social-links .social-link:nth-child(1) { transition-delay: 0s; }
