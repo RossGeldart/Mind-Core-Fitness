@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Is King Calculator | Mind Core Fitness</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Calculate your daily protein target with the Protein Is King calculator. Forget calorie counting - just hit your protein and watch your body transform.">
+    <meta name="keywords" content="protein calculator, daily protein intake, protein target, muscle building, fat loss, Mind Core Fitness">
+    <meta name="author" content="Mind Core Fitness">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Protein Is King Calculator | Mind Core Fitness">
+    <meta property="og:description" content="Calculate your daily protein target. Forget calorie counting - just hit your protein.">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ECBK32DRR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0ECBK32DRR');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --text-color: #373737;
+            --accent-color: #99313c;
+            --background: #ffffff;
+            --text-muted: #666666;
+            --card-border: #e8e8e8;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .calculator-container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .calculator-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .calculator-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .calculator-title span {
+            color: var(--accent-color);
+        }
+
+        .calculator-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid rgba(55, 55, 55, 0.2);
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(153, 49, 60, 0.1);
+        }
+
+        .weight-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .weight-input-wrapper input {
+            flex: 1;
+        }
+
+        .weight-input-wrapper select {
+            width: 90px;
+            flex-shrink: 0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 32px;
+            background: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            background: #b33a47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(153, 49, 60, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Email Gate Step */
+        #emailStep {
+            display: block;
+        }
+
+        /* Calculator Step */
+        #calculatorStep {
+            display: none;
+        }
+
+        /* Results Step */
+        #resultsStep {
+            display: none;
+        }
+
+        .results-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 4rem;
+            color: var(--accent-color);
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .results-unit {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .results-breakdown {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .results-breakdown-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .results-breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .results-breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .results-breakdown-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .results-breakdown-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .results-tip {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .recalculate-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: transparent;
+            color: var(--accent-color);
+            border: 1.5px solid var(--accent-color);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 16px;
+        }
+
+        .recalculate-btn:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .privacy-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 16px;
+            }
+
+            .calculator-card {
+                padding: 36px 24px;
+            }
+
+            .calculator-title {
+                font-size: 1.5rem;
+            }
+
+            .results-number {
+                font-size: 3rem;
+            }
+
+            .weight-input-wrapper {
+                flex-direction: column;
+            }
+
+            .weight-input-wrapper select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-card">
+            <!-- Step 1: Email Gate -->
+            <div id="emailStep">
+                <h1 class="calculator-title">Protein Is <span>King</span></h1>
+                <p class="calculator-subtitle">Forget calorie counting. Just hit your protein target and watch your body transform.</p>
+
+                <form id="emailForm" action="https://formspree.io/f/meeaprar" method="POST">
+                    <input type="hidden" name="_subject" value="Protein Calculator - New Lead">
+                    <input type="hidden" name="source" value="Protein Is King Calculator">
+
+                    <div class="form-group">
+                        <label for="email">Enter your email to calculate your target</label>
+                        <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="emailSubmitBtn">Calculate My Protein</button>
+                </form>
+
+                <p class="privacy-note">Your email is safe. No spam, just gains.</p>
+            </div>
+
+            <!-- Step 2: Calculator -->
+            <div id="calculatorStep">
+                <h1 class="calculator-title">Your Details</h1>
+                <p class="calculator-subtitle">We'll calculate your optimal daily protein intake based on your goal.</p>
+
+                <form id="calculatorForm">
+                    <div class="form-group">
+                        <label for="weight">Your Weight</label>
+                        <div class="weight-input-wrapper">
+                            <input type="number" id="weight" required placeholder="Enter weight" min="30" max="300" step="0.1">
+                            <select id="weightUnit">
+                                <option value="kg">kg</option>
+                                <option value="stone">stone</option>
+                                <option value="lbs">lbs</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goal">Your Goal</label>
+                        <select id="goal" required>
+                            <option value="" disabled selected>Select your goal</option>
+                            <option value="fat-loss">Fat Loss</option>
+                            <option value="maintain">Maintain / Recomp</option>
+                            <option value="muscle">Build Muscle</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Show My Protein Target</button>
+                </form>
+            </div>
+
+            <!-- Step 3: Results -->
+            <div id="resultsStep">
+                <h1 class="calculator-title">Your Daily Target</h1>
+
+                <div class="results-number" id="proteinResult">0</div>
+                <div class="results-unit">grams of protein per day</div>
+
+                <div class="results-breakdown">
+                    <div class="results-breakdown-title">Split across your meals</div>
+                    <div class="results-breakdown-item">
+                        <span class="results-breakdown-label">3 meals</span>
+                        <span class="results-breakdown-value" id="perMeal3">0g each</span>
+                    </div>
+                    <div class="results-breakdown-item">
+                        <span class="results-breakdown-label">4 meals</span>
+                        <span class="results-breakdown-value" id="perMeal4">0g each</span>
+                    </div>
+                </div>
+
+                <p class="results-tip">Focus on hitting this number daily. That's it. Protein builds muscle and keeps you full longer.</p>
+
+                <button class="recalculate-btn" onclick="recalculate()">Recalculate</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const emailStep = document.getElementById('emailStep');
+        const calculatorStep = document.getElementById('calculatorStep');
+        const resultsStep = document.getElementById('resultsStep');
+        const emailForm = document.getElementById('emailForm');
+        const calculatorForm = document.getElementById('calculatorForm');
+        const emailSubmitBtn = document.getElementById('emailSubmitBtn');
+
+        // Handle email form submission
+        emailForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const formData = new FormData(emailForm);
+
+            // Disable button and show loading state
+            emailSubmitBtn.disabled = true;
+            emailSubmitBtn.textContent = 'Loading...';
+
+            // Submit to Formspree
+            fetch(emailForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Store email in session
+                    sessionStorage.setItem('proteinCalcEmail', email);
+
+                    // Move to calculator step
+                    emailStep.style.display = 'none';
+                    calculatorStep.style.display = 'block';
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(error => {
+                // Still allow progression even if form fails (offline, etc)
+                sessionStorage.setItem('proteinCalcEmail', email);
+                emailStep.style.display = 'none';
+                calculatorStep.style.display = 'block';
+            })
+            .finally(() => {
+                emailSubmitBtn.disabled = false;
+                emailSubmitBtn.textContent = 'Calculate My Protein';
+            });
+        });
+
+        // Handle calculator form submission
+        calculatorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const weight = parseFloat(document.getElementById('weight').value);
+            const unit = document.getElementById('weightUnit').value;
+            const goal = document.getElementById('goal').value;
+
+            // Convert weight to kg
+            let weightKg;
+            if (unit === 'kg') {
+                weightKg = weight;
+            } else if (unit === 'stone') {
+                weightKg = weight * 6.35029;
+            } else {
+                weightKg = weight * 0.453592;
+            }
+
+            // Calculate protein based on goal (grams per kg bodyweight)
+            let proteinPerKg;
+            switch(goal) {
+                case 'fat-loss':
+                    proteinPerKg = 2.0; // Higher protein during fat loss to preserve muscle
+                    break;
+                case 'maintain':
+                    proteinPerKg = 1.7; // Maintenance / recomp
+                    break;
+                case 'muscle':
+                    proteinPerKg = 2.2; // Maximum for muscle building
+                    break;
+                default:
+                    proteinPerKg = 1.8;
+            }
+
+            const totalProtein = Math.round(weightKg * proteinPerKg);
+            const perMeal3 = Math.round(totalProtein / 3);
+            const perMeal4 = Math.round(totalProtein / 4);
+
+            // Display results
+            document.getElementById('proteinResult').textContent = totalProtein;
+            document.getElementById('perMeal3').textContent = perMeal3 + 'g each';
+            document.getElementById('perMeal4').textContent = perMeal4 + 'g each';
+
+            // Show results
+            calculatorStep.style.display = 'none';
+            resultsStep.style.display = 'block';
+        });
+
+        // Recalculate function
+        function recalculate() {
+            resultsStep.style.display = 'none';
+            calculatorStep.style.display = 'block';
+        }
+
+        // Check if user has already submitted email (in same session)
+        window.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('proteinCalcEmail')) {
+                emailStep.style.display = 'none';
+                calculatorStep.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
