@@ -503,6 +503,41 @@
             box-shadow: 0 12px 40px rgba(55, 55, 55, 0.3);
         }
 
+        .btn-primary.disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .btn-primary.disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 25px rgba(55, 55, 55, 0.2);
+        }
+
+        .btn-waitlist {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: transparent;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid var(--accent-color);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 15px;
+        }
+
+        .btn-waitlist:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(153, 49, 60, 0.3);
+        }
+
         .hero-note {
             margin-top: 20px;
             font-size: 0.95rem;
@@ -1053,7 +1088,7 @@
         </div>
         <div class="nav-buttons">
             <a href="/" class="nav-back">← Back</a>
-            <a href="https://invite.everfit.io/onboarding/QSE6IICJ6O" target="_blank" class="nav-cta">Join Free</a>
+            <a href="#contact" class="nav-cta">Join Waitlist</a>
         </div>
         <button class="mobile-menu-toggle" aria-label="Toggle menu">
             <span></span>
@@ -1068,7 +1103,9 @@
             <span class="hero-badge">100% Free</span>
             <h1>Transform Your Core in <span>30 Days</span></h1>
             <p class="hero-sub">Daily 10-15 minute workouts, straight from Ross inside the Everfit App. No equipment needed. No excuses.</p>
-            <a href="https://invite.everfit.io/onboarding/QSE6IICJ6O" target="_blank" class="btn-primary">Start The Challenge Now →</a>
+            <span class="btn-primary disabled">Full Up</span>
+            <br>
+            <a href="#contact" class="btn-waitlist">Join the Waitlist</a>
             <p class="hero-note">Free to join • 10-min workouts • Start anytime</p>
         </div>
     </section>
@@ -1248,9 +1285,9 @@
     <!-- Contact Form Section -->
     <section class="contact-form-section" id="contact">
         <div class="container text-center">
-            <span class="section-label">Questions?</span>
-            <h2 class="section-title">Get In Touch</h2>
-            <p class="section-subtitle">Have questions about the challenge? Fill out the form below and I'll get back to you.</p>
+            <span class="section-label">Join the Waitlist</span>
+            <h2 class="section-title">Get On The List</h2>
+            <p class="section-subtitle">The challenge is currently full! Join the waitlist to be notified when spots open up.</p>
             
             <div class="contact-form-wrapper">
                 <form class="contact-form" action="https://formspree.io/f/meeaprar" method="POST">
@@ -1265,13 +1302,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="message">Your Message *</label>
-                        <textarea id="message" name="message" placeholder="What would you like to know about the 30 Day Core Challenge?" required></textarea>
+                        <label for="message">Your Message (optional)</label>
+                        <textarea id="message" name="message" placeholder="Anything you'd like us to know?"></textarea>
                     </div>
-                    <input type="hidden" name="_subject" value="30 Day Challenge Enquiry - Mind Core Fitness">
-                    <button type="submit" class="submit-btn">Send Message</button>
+                    <input type="hidden" name="_subject" value="30 Day Challenge Waitlist - Mind Core Fitness">
+                    <button type="submit" class="submit-btn">Join Waitlist</button>
                 </form>
-                <p class="form-note">I typically respond within 24 hours.</p>
+                <p class="form-note">We'll notify you as soon as spots become available.</p>
             </div>
         </div>
     </section>
@@ -1282,7 +1319,9 @@
             <img src="Logo.PNG" alt="" class="final-logo">
             <h2>Ready To Strengthen Your Core?</h2>
             <p>Join hundreds who've already transformed their core strength in just 30 days.</p>
-            <a href="https://invite.everfit.io/onboarding/QSE6IICJ6O" target="_blank" class="btn-primary">Start The Challenge Now →</a>
+            <span class="btn-primary disabled">Full Up</span>
+            <br>
+            <a href="#contact" class="btn-waitlist">Join the Waitlist</a>
             <p class="final-cta-note">Free to join • 10-min workouts • Start today</p>
         </div>
     </section>
