@@ -33,6 +33,15 @@
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
 
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ECBK32DRR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0ECBK32DRR');
+    </script>
+
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -1823,13 +1832,39 @@
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 var url = this.href;
+
+                // Get button location for tracking
+                var buttonLocation = 'unknown';
+                if (this.classList.contains('nav-cta')) {
+                    buttonLocation = 'navigation';
+                } else if (this.classList.contains('hero-cta')) {
+                    buttonLocation = 'hero';
+                } else if (this.classList.contains('final-cta-btn')) {
+                    buttonLocation = 'final_cta';
+                }
+
+                // Google Analytics event tracking
+                gtag('event', 'begin_checkout', {
+                    currency: 'GBP',
+                    value: 149.00,
+                    items: [{
+                        item_name: '12-Week Core Programme',
+                        item_category: 'Online Programme',
+                        price: 149.00,
+                        quantity: 1
+                    }],
+                    button_location: buttonLocation
+                });
+
+                // Facebook Pixel tracking
                 fbq('track', 'InitiateCheckout', {
                     content_name: '12-Week Core Programme',
                     content_category: 'Online Programme',
                     value: 149.00,
                     currency: 'GBP'
                 });
-                // Small delay to ensure pixel fires before navigation
+
+                // Small delay to ensure tracking fires before navigation
                 setTimeout(function() {
                     window.open(url, '_blank');
                 }, 300);
