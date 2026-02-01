@@ -493,6 +493,7 @@
             font-size: 1.1rem;
             text-decoration: none;
             border-radius: 8px;
+            border: 2px solid transparent;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 4px 25px rgba(55, 55, 55, 0.2);
         }
@@ -504,9 +505,10 @@
         }
 
         .btn-primary.disabled {
-            background: #666;
+            background: rgba(153, 49, 60, 0.4);
+            border: 2px solid rgba(153, 49, 60, 0.6);
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.8;
             pointer-events: none;
         }
 
@@ -519,23 +521,25 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 16px 36px;
-            background: transparent;
+            padding: 18px 40px;
+            background: var(--accent-color);
             color: #ffffff;
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.1rem;
             text-decoration: none;
             border-radius: 8px;
             border: 2px solid var(--accent-color);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             margin-top: 15px;
+            box-shadow: 0 4px 25px rgba(153, 49, 60, 0.3);
         }
 
         .btn-waitlist:hover {
-            background: var(--accent-color);
+            background: #b33a47;
+            border-color: #b33a47;
             transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(153, 49, 60, 0.3);
+            box-shadow: 0 12px 40px rgba(153, 49, 60, 0.4);
         }
 
         .hero-note {
@@ -1303,7 +1307,7 @@
                     </div>
                     <div class="form-group">
                         <label for="message">Your Message (optional)</label>
-                        <textarea id="message" name="message" placeholder="Anything you'd like us to know?"></textarea>
+                        <textarea id="message" name="message" placeholder="Anything you'd like us to know?">Add me to the 30 day core list</textarea>
                     </div>
                     <input type="hidden" name="_subject" value="30 Day Challenge Waitlist - Mind Core Fitness">
                     <button type="submit" class="submit-btn">Join Waitlist</button>
