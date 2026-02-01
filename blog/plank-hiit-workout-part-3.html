@@ -1417,6 +1417,15 @@
                 navLinks.classList.toggle('show');
             });
         }
+
+        // Close mobile menu when a nav link is clicked
+        if (navLinks) {
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('show');
+                });
+            });
+        }
     </script>
 
     <!-- Footer -->
