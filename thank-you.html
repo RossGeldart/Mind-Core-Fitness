@@ -512,6 +512,12 @@
             box-shadow: 0 10px 30px rgba(153, 49, 60, 0.4);
         }
 
+        .cta-btn.primary.large {
+            padding: 22px 60px;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+
         .cta-btn.secondary {
             background: transparent;
             color: #ffffff;
@@ -827,12 +833,10 @@
         <div class="container">
             <span class="section-label">Ready to Begin?</span>
             <h2 class="section-title">Let's Build That Unbreakable Core</h2>
-            <p class="section-subtitle">Download the app, start your first workout, and let the transformation begin.</p>
+            <p class="section-subtitle">Your programme is ready and waiting. Click below to get started.</p>
 
             <div class="cta-buttons">
-                <a href="https://apps.apple.com/app/everfit/id1293498872" class="cta-btn primary" target="_blank" rel="noopener">Download for iOS</a>
-                <a href="https://play.google.com/store/apps/details?id=app.jefit.everfit" class="cta-btn primary" target="_blank" rel="noopener">Download for Android</a>
-                <a href="/" class="cta-btn secondary">Back to Home</a>
+                <a href="#" id="start-training-btn" class="cta-btn primary large" target="_blank" rel="noopener">Click Here to Start Training</a>
             </div>
         </div>
     </section>
@@ -851,6 +855,18 @@
     </footer>
 
     <script>
+        // Access Protection - Check for Stripe session_id parameter
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+
+            // If no session_id parameter, redirect to home page
+            if (!sessionId) {
+                window.location.href = '/';
+                return;
+            }
+        })();
+
         // Mobile menu toggle
         const mobileToggle = document.querySelector('.mobile-menu-toggle');
         const navLinks = document.querySelector('.nav-links');
@@ -878,6 +894,9 @@
         fadeElements.forEach(element => {
             observer.observe(element);
         });
+
+        // START TRAINING BUTTON - Update the href below with your Everfit autoflow link
+        // Example: document.getElementById('start-training-btn').href = 'https://your-everfit-link.com';
     </script>
 </body>
 </html>
