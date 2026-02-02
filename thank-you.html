@@ -255,239 +255,8 @@
             margin-right: auto;
         }
 
-        /* Order Confirmation Box */
-        .order-confirmation {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            text-align: left;
-        }
-
-        .order-confirmation h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .order-confirmation h3 svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--success-color);
-        }
-
-        .order-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .order-details:last-child {
-            border-bottom: none;
-        }
-
-        .order-label {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .order-value {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        /* Section Styling */
-        section {
-            padding: 80px 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .section-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background: rgba(153, 49, 60, 0.1);
-            border-radius: 4px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-color);
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
-            margin-bottom: 16px;
-            letter-spacing: -0.5px;
-        }
-
-        .section-subtitle {
-            font-size: 1.05rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 40px;
-            line-height: 1.7;
-        }
-
-        /* Next Steps Section */
-        .next-steps {
-            background: var(--card-bg);
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .step-card {
-            background: var(--bg-color);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .step-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .step-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #ffffff;
-            margin-bottom: 20px;
-        }
-
-        .step-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            margin-bottom: 12px;
-            color: var(--text-color);
-        }
-
-        .step-card p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.7;
-        }
-
-        /* Support Section */
-        .support {
-            background: var(--bg-color);
-        }
-
-        .support-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .support-image img {
-            width: 100%;
-            max-width: 400px;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-        }
-
-        .support-text h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            margin-bottom: 16px;
-        }
-
-        .support-text p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            line-height: 1.8;
-            margin-bottom: 24px;
-        }
-
-        .support-contact {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-color);
-            font-size: 0.95rem;
-        }
-
-        .contact-item svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--accent-color);
-        }
-
-        .contact-item a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .contact-item a:hover {
-            text-decoration: underline;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #2a2a2a 100%);
-            color: #ffffff;
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .cta-section .section-title {
-            color: #ffffff;
-        }
-
-        .cta-section .section-subtitle {
-            color: #aaa;
-        }
-
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+        .hero .cta-btn {
+            margin-top: 10px;
         }
 
         .cta-btn {
@@ -579,45 +348,7 @@
             text-decoration: none;
         }
 
-        /* Animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         /* Responsive */
-        @media (max-width: 900px) {
-            .steps-grid {
-                grid-template-columns: 1fr;
-                max-width: 500px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .support-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .support-image {
-                order: -1;
-            }
-
-            .support-image img {
-                margin: 0 auto;
-            }
-
-            .support-contact {
-                align-items: center;
-            }
-        }
-
         @media (max-width: 768px) {
             .nav {
                 padding: 14px 20px;
@@ -665,27 +396,6 @@
                 height: 40px;
             }
 
-            .order-confirmation {
-                padding: 20px;
-            }
-
-            .order-details {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .cta-btn {
-                width: 100%;
-                max-width: 280px;
-                text-align: center;
-            }
-
             .footer-links {
                 flex-direction: column;
                 gap: 12px;
@@ -698,18 +408,10 @@
                 animation: none;
             }
 
-            .fade-in {
-                opacity: 1;
-                transform: none;
-                transition: none;
-            }
-
-            .step-card,
             .cta-btn {
                 transition: none;
             }
 
-            .step-card:hover,
             .cta-btn:hover {
                 transform: none;
             }
@@ -743,101 +445,10 @@
                 <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             </div>
 
-            <h1>Thank You for Your <span>Purchase!</span></h1>
-            <p class="hero-sub">Your journey to building an unbreakable core starts now. Check your email for your Everfit app invite and get ready to transform your strength.</p>
+            <h1>Thank You!</h1>
+            <p class="hero-sub">Your purchase is complete. Click the button below to set up your Everfit account and start your programme.</p>
 
-            <div class="order-confirmation">
-                <h3>
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    Order Confirmed
-                </h3>
-                <div class="order-details">
-                    <span class="order-label">Programme</span>
-                    <span class="order-value">Unbreakable: 12-Week Core Rebuild</span>
-                </div>
-                <div class="order-details">
-                    <span class="order-label">Duration</span>
-                    <span class="order-value">12 Weeks (3 Phases)</span>
-                </div>
-                <div class="order-details">
-                    <span class="order-label">Delivery</span>
-                    <span class="order-value">Everfit App (iOS & Android)</span>
-                </div>
-                <div class="order-details">
-                    <span class="order-label">Amount Paid</span>
-                    <span class="order-value">£129.00</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Next Steps Section -->
-    <section class="next-steps">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-label">What Happens Next</span>
-                <h2 class="section-title">Your Next Steps</h2>
-                <p class="section-subtitle">Here's exactly what to do to get started on your core transformation journey.</p>
-            </div>
-
-            <div class="steps-grid">
-                <div class="step-card fade-in">
-                    <div class="step-number">1</div>
-                    <h3>Check Your Email</h3>
-                    <p>You'll receive an invite to the Everfit app within the next few minutes. Check your inbox (and spam folder just in case).</p>
-                </div>
-                <div class="step-card fade-in">
-                    <div class="step-number">2</div>
-                    <h3>Download Everfit</h3>
-                    <p>Get the Everfit app from the App Store or Google Play. Accept your invite and create your account to access all your workouts.</p>
-                </div>
-                <div class="step-card fade-in">
-                    <div class="step-number">3</div>
-                    <h3>Start Phase 1</h3>
-                    <p>Begin your first workout when you're ready. The programme adapts to your schedule, so train at your own pace.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Support Section -->
-    <section class="support">
-        <div class="container">
-            <div class="support-content">
-                <div class="support-image fade-in">
-                    <img src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness">
-                </div>
-                <div class="support-text fade-in">
-                    <span class="section-label">Here to Help</span>
-                    <h3>Questions? I've Got You.</h3>
-                    <p>Whether you need help with the app, have questions about form, or just want some extra motivation, I'm here to support you every step of the way.</p>
-                    <p>Message me directly through the Everfit app, or reach out using the details below.</p>
-
-                    <div class="support-contact">
-                        <div class="contact-item">
-                            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                            <span>Email: <a href="mailto:ross@mindcorefitness.com">ross@mindcorefitness.com</a></span>
-                        </div>
-                        <div class="contact-item">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                            <span>Based in Elgin, Scotland</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <span class="section-label">Ready to Begin?</span>
-            <h2 class="section-title">Let's Build That Unbreakable Core</h2>
-            <p class="section-subtitle">Your programme is ready and waiting. Click below to get started.</p>
-
-            <div class="cta-buttons">
-                <a href="http://invite.everfit.io/onboarding/AOF2VYW71A" id="start-training-btn" class="cta-btn primary large" target="_blank" rel="noopener" onclick="trackStartTraining()">Click Here to Start Training</a>
-            </div>
+            <a href="http://invite.everfit.io/onboarding/AOF2VYW71A" id="start-training-btn" class="cta-btn primary large" target="_blank" rel="noopener" onclick="trackStartTraining()">Get Started on Everfit</a>
         </div>
     </section>
 
@@ -876,24 +487,6 @@
                 navLinks.classList.toggle('show');
             });
         }
-
-        // Fade in animations
-        const fadeElements = document.querySelectorAll('.fade-in');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        fadeElements.forEach(element => {
-            observer.observe(element);
-        });
 
         // Track Start Training button click
         function trackStartTraining() {
