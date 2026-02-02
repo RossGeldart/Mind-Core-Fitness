@@ -836,7 +836,7 @@
             <p class="section-subtitle">Your programme is ready and waiting. Click below to get started.</p>
 
             <div class="cta-buttons">
-                <a href="http://invite.everfit.io/onboarding/AOF2VYW71A" id="start-training-btn" class="cta-btn primary large" target="_blank" rel="noopener">Click Here to Start Training</a>
+                <a href="http://invite.everfit.io/onboarding/AOF2VYW71A" id="start-training-btn" class="cta-btn primary large" target="_blank" rel="noopener" onclick="trackStartTraining()">Click Here to Start Training</a>
             </div>
         </div>
     </section>
@@ -895,8 +895,24 @@
             observer.observe(element);
         });
 
-        // START TRAINING BUTTON - Update the href below with your Everfit autoflow link
-        // Example: document.getElementById('start-training-btn').href = 'https://your-everfit-link.com';
+        // Track Start Training button click
+        function trackStartTraining() {
+            // Meta Pixel - Track button click
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Lead', {
+                    content_name: 'Start Training Click',
+                    content_category: '12-Week Core Programme'
+                });
+            }
+
+            // Google Analytics - Track button click
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'start_training_click', {
+                    event_category: 'Conversion',
+                    event_label: '12-Week Core Programme'
+                });
+            }
+        }
     </script>
 </body>
 </html>
