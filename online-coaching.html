@@ -41,6 +41,24 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1512543690146167');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -2015,7 +2033,7 @@
                         <span class="amount">149</span>
                         <span class="note">one-time payment</span>
                     </div>
-                    <a href="https://coach.everfit.io/package/EC189796" class="featured-btn" target="_blank">Start Today</a>
+                    <a href="https://coach.everfit.io/package/EC189796" class="featured-btn" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','InitiateCheckout',{content_name:'12-Week Core Rebuild',content_category:'Online Coaching',value:149.00,currency:'GBP'});}">Start Today</a>
                 </div>
                 <div class="featured-image">
                     <img src="Core 1.jpg" alt="12-Week Core Rebuild">
@@ -2033,7 +2051,7 @@
                     <p>A 4-week beginner programme designed to teach you how to control, activate, and strengthen your core from the ground up. Perfect for beginners or anyone returning to training.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/JJ887180" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="https://coach.everfit.io/package/JJ887180" class="programme-btn" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','InitiateCheckout',{content_name:'Core Foundation',content_category:'Online Coaching',value:59.00,currency:'GBP'});}">Start Today</a>
                     </div>
                 </div>
 
@@ -2046,7 +2064,7 @@
                     <p>Takes your foundation work and pushes it to the next level. 4 weeks of weighted core training, longer timed intervals, and controlled conditioning circuits.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/KN806774" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="https://coach.everfit.io/package/KN806774" class="programme-btn" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','InitiateCheckout',{content_name:'Core Strength & Endurance',content_category:'Online Coaching',value:59.00,currency:'GBP'});}">Start Today</a>
                     </div>
                 </div>
 
@@ -2059,7 +2077,7 @@
                     <p>The final 4-week phase built to develop explosive core power, strength endurance, and total control under fatigue. For those ready to push for peak performance.</p>
                     <div class="programme-meta">
                         <span class="programme-price"><span class="currency">£</span>59</span>
-                        <a href="https://coach.everfit.io/package/EZ235042" class="programme-btn" target="_blank">Start Today</a>
+                        <a href="https://coach.everfit.io/package/EZ235042" class="programme-btn" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','InitiateCheckout',{content_name:'Core Power & Control',content_category:'Online Coaching',value:59.00,currency:'GBP'});}">Start Today</a>
                     </div>
                 </div>
             </div>
@@ -2285,7 +2303,7 @@
             <p class="section-subtitle">Fill out the form below and I'll get back to you within 24 hours to discuss your fitness goals.</p>
             
             <div class="contact-form-wrapper">
-                <form class="contact-form" action="https://formspree.io/f/meeaprar" method="POST">
+                <form class="contact-form" action="https://formspree.io/f/meeaprar" method="POST" onsubmit="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'Contact Form',content_category:'Online Coaching'});}">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Your Name *</label>

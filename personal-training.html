@@ -42,6 +42,24 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1512543690146167');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -2341,7 +2359,7 @@
                         <li>Accountability check-ins</li>
                     </ul>
                     <div class="pricing-amount"><span class="currency">£</span>240</div>
-                    <a href="#contact" class="pricing-btn">Get Started!</a>
+                    <a href="#contact" class="pricing-btn" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'4-Week Starter',content_category:'Personal Training',value:240.00,currency:'GBP'});}">Get Started!</a>
                 </div>
 
                 <!-- 12 Week Strength Builder - Featured -->
@@ -2361,7 +2379,7 @@
                         <li>Access to Mind Core Community</li>
                     </ul>
                     <div class="pricing-amount"><span class="currency">£</span>660</div>
-                    <a href="#contact" class="pricing-btn">Let's Go!</a>
+                    <a href="#contact" class="pricing-btn" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'12-Week Strength Builder',content_category:'Personal Training',value:660.00,currency:'GBP'});}">Let's Go!</a>
                 </div>
 
                 <!-- 24 Week Performance Phase -->
@@ -2381,7 +2399,7 @@
                         <li>Group Circuit Access</li>
                     </ul>
                     <div class="pricing-amount"><span class="currency">£</span>1200</div>
-                    <a href="#contact" class="pricing-btn">Enquire Now!</a>
+                    <a href="#contact" class="pricing-btn" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'24-Week Performance Phase',content_category:'Personal Training',value:1200.00,currency:'GBP'});}">Enquire Now!</a>
                 </div>
             </div>
 
@@ -2496,7 +2514,7 @@
             <p class="section-subtitle">Fill out the form below and I'll get back to you within 24 hours to discuss your fitness goals.</p>
             
             <div class="contact-form-wrapper">
-                <form class="contact-form" action="https://formspree.io/f/meeaprar" method="POST">
+                <form class="contact-form" action="https://formspree.io/f/meeaprar" method="POST" onsubmit="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'Contact Form',content_category:'Personal Training'});}">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Your Name *</label>

@@ -50,6 +50,24 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1512543690146167');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -407,7 +425,7 @@
             <button class="modal-close" onclick="closeContactModal()" aria-label="Close contact form">&times;</button>
             <h2 class="modal-title">Get In Touch</h2>
             <p class="modal-subtitle">Have a question or ready to start your fitness journey? Send me a message!</p>
-            <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form">
+            <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'Contact Form',content_category:'Homepage'});}">
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required placeholder="Your name">
@@ -447,6 +465,13 @@
             event.preventDefault();
             document.getElementById('contactModal').classList.add('show');
             document.body.style.overflow = 'hidden';
+            // Track contact modal open
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Contact', {
+                    content_name: 'Contact Modal Open',
+                    content_category: 'Homepage'
+                });
+            }
         }
 
         function closeContactModal() {
