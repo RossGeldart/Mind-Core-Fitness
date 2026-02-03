@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Login | Mind Core Fitness</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../js/dashboard-styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../Logo.PNG">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-logo">
+                <img src="../Logo.PNG" alt="Mind Core Fitness">
+            </div>
+
+            <h1 class="login-title">Client Portal</h1>
+            <p class="login-subtitle">Sign in to view your sessions and manage bookings</p>
+
+            <div id="configWarning" class="config-warning" style="display: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <div class="config-warning-content">
+                    <h4>Portal Not Ready</h4>
+                    <p>The client portal is being set up. Please contact Ross if you need to book a session.</p>
+                </div>
+            </div>
+
+            <div id="loginError" class="login-error"></div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="forgot-password">
+                <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--card-border);">
+                <p style="font-size: 0.9rem; color: var(--text-muted);">
+                    New client? <a href="../index.html" style="color: var(--accent-color);">Learn about our services</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Firebase is configured
+            if (!MCF.isConfigured()) {
+                document.getElementById('configWarning').style.display = 'flex';
+                document.getElementById('loginBtn').disabled = true;
+            }
+
+            // Check if already logged in
+            MCFAuth.init(function(user, role) {
+                if (user && role === 'client') {
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Handle login form
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Signing in...';
+                loginError.style.display = 'none';
+
+                const result = await MCFAuth.signIn(email, password);
+
+                if (result.success) {
+                    // Check if user is a client
+                    const userDoc = await MCF.db.collection('users').doc(result.user.uid).get();
+
+                    if (userDoc.exists && userDoc.data().role === 'client') {
+                        window.location.href = 'index.html';
+                    } else if (userDoc.exists && userDoc.data().role === 'admin') {
+                        // Redirect admin to admin dashboard
+                        window.location.href = '../admin/index.html';
+                    } else {
+                        loginError.textContent = 'Your account has not been set up yet. Please contact Ross.';
+                        loginError.style.display = 'block';
+                        await MCFAuth.signOut();
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Sign In';
+                    }
+                } else {
+                    loginError.textContent = result.error;
+                    loginError.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            });
+
+            // Handle forgot password
+            document.getElementById('forgotPasswordLink').addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+
+                if (!email) {
+                    loginError.textContent = 'Please enter your email address first.';
+                    loginError.style.display = 'block';
+                    return;
+                }
+
+                const result = await MCFAuth.resetPassword(email);
+
+                if (result.success) {
+                    loginError.textContent = 'Password reset email sent! Check your inbox.';
+                    loginError.style.display = 'block';
+                    loginError.style.background = '#f0fdf4';
+                    loginError.style.color = '#166534';
+                } else {
+                    loginError.textContent = result.error;
+                    loginError.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

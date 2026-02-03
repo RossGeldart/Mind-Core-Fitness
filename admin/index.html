@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Mind Core Fitness</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../js/dashboard-styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../Logo.PNG">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../Logo.PNG" alt="Mind Core Fitness">
+                <h2>Mind Core Fitness</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item active" data-section="overview">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Overview
+                </a>
+                <a class="nav-item" data-section="availability">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                    Availability
+                </a>
+                <a class="nav-item" data-section="clients">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Clients
+                </a>
+                <a class="nav-item" data-section="calendar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Calendar
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">R</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Ross</div>
+                        <div class="user-role">Admin</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Overview Section -->
+            <section class="dashboard-section active" id="section-overview">
+                <header class="dashboard-header">
+                    <h1>Dashboard Overview</h1>
+                </header>
+
+                <div class="dashboard-content">
+                    <div id="configWarning" class="config-warning" style="display: none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <div class="config-warning-content">
+                            <h4>Firebase Not Configured</h4>
+                            <p>Update <code>js/firebase-config.js</code> with your Firebase credentials. Get them from Firebase Console > Project Settings > Your Apps > Web App.</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="statClients">0</div>
+                            <div class="stat-label">Active Clients</div>
+                        </div>
+                        <div class="stat-card accent">
+                            <div class="stat-value" id="statBookingsToday">0</div>
+                            <div class="stat-label">Sessions Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statBookingsWeek">0</div>
+                            <div class="stat-label">This Week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statUpcoming">0</div>
+                            <div class="stat-label">Upcoming</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Today's Schedule</h3>
+                            <span id="todayDate"></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="booking-list" id="todayBookings">
+                                <div class="empty-state">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <h4>No sessions scheduled</h4>
+                                    <p>Your day is free!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Availability Section -->
+            <section class="dashboard-section" id="section-availability">
+                <header class="dashboard-header">
+                    <h1>Your Availability</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="saveAvailability">Save Changes</button>
+                    </div>
+                </header>
+
+                <div class="dashboard-content">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Weekly Schedule</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Click a day to set your available hours</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="availability-grid" id="availabilityGrid">
+                                <!-- Days will be generated by JS -->
+                            </div>
+
+                            <div id="timeEditor" style="display: none; margin-top: 24px; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+                                <h4 style="font-family: 'Montserrat', sans-serif; margin-bottom: 16px;">
+                                    Set hours for <span id="selectedDayName"></span>
+                                </h4>
+                                <div class="time-input-group">
+                                    <input type="time" id="startTime" value="09:00">
+                                    <span>to</span>
+                                    <input type="time" id="endTime" value="17:00">
+                                    <button class="btn btn-success btn-sm" id="applyTime">Apply</button>
+                                    <button class="btn btn-danger btn-sm" id="removeDay">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3>Block Specific Times</h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--text-muted); margin-bottom: 16px;">Need to block off time for a specific date? (e.g., holiday, appointment)</p>
+                            <div class="form-row">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Date</label>
+                                    <input type="date" id="blockDate">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Time Range</label>
+                                    <div class="time-input-group" style="margin-top: 0;">
+                                        <input type="time" id="blockStartTime" value="09:00">
+                                        <span>to</span>
+                                        <input type="time" id="blockEndTime" value="17:00">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
+                                <label>Reason (optional)</label>
+                                <input type="text" id="blockReason" placeholder="e.g., Doctor's appointment">
+                            </div>
+                            <button class="btn btn-secondary" style="margin-top: 16px;" id="addBlockedTime">Block This Time</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clients Section -->
+            <section class="dashboard-section" id="section-clients">
+                <header class="dashboard-header">
+                    <h1>Manage Clients</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="addClientBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Client
+                        </button>
+                    </div>
+                </header>
+
+                <div class="dashboard-content">
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <div class="client-list" id="clientList">
+                                <div class="empty-state">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    <h4>No clients yet</h4>
+                                    <p>Add your first client to get started</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Section -->
+            <section class="dashboard-section" id="section-calendar">
+                <header class="dashboard-header">
+                    <h1>Booking Calendar</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="addBookingBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Booking
+                        </button>
+                    </div>
+                </header>
+
+                <div class="dashboard-content">
+                    <div class="calendar-container dashboard-card">
+                        <div class="calendar-header">
+                            <div class="calendar-nav">
+                                <button id="prevMonth">&lt;</button>
+                            </div>
+                            <h3 id="calendarMonth">February 2025</h3>
+                            <div class="calendar-nav">
+                                <button id="nextMonth">&gt;</button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h3>Selected Day: <span id="selectedDateDisplay">-</span></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="booking-list" id="selectedDayBookings">
+                                <div class="empty-state">
+                                    <p>Select a day to see bookings</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mobile Sidebar Toggle -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal-overlay" id="clientModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="clientModalTitle">Add New Client</h3>
+                <button class="modal-close" id="closeClientModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="clientName" required placeholder="John Smith">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="clientEmail" required placeholder="john@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Block Duration</label>
+                            <select id="clientBlockDuration">
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60" selected>60 minutes</option>
+                                <option value="90">90 minutes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Block End Date</label>
+                            <input type="date" id="clientBlockEndDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allowed Days</label>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Select which days this client can book</p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="clientDays">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="0"> Sun
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="1" checked> Mon
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="2" checked> Tue
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="3" checked> Wed
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="4" checked> Thu
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="5" checked> Fri
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" value="6"> Sat
+                            </label>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="clientId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelClientBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveClientBtn">Save Client</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Booking Modal -->
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Booking</h3>
+                <button class="modal-close" id="closeBookingModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label>Client *</label>
+                        <select id="bookingClient" required>
+                            <option value="">Select a client</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" id="bookingDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <select id="bookingDuration">
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60" selected>60 minutes</option>
+                                <option value="90">90 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Available Time Slots</label>
+                        <div class="time-slots-grid" id="availableSlots">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Select a date to see available slots</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <textarea id="bookingNotes" rows="2" placeholder="Any notes for this session..."></textarea>
+                    </div>
+
+                    <input type="hidden" id="selectedSlot">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBookingBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveBookingBtn">Create Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            let currentUser = null;
+            let availabilityData = {};
+            let currentMonth = new Date();
+            let selectedDay = null;
+
+            // Check if Firebase is configured
+            if (!MCF.isConfigured()) {
+                document.getElementById('configWarning').style.display = 'flex';
+            }
+
+            // Initialize auth
+            MCFAuth.init(function(user, role) {
+                if (!user || role !== 'admin') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                currentUser = user;
+                document.getElementById('userName').textContent = user.email.split('@')[0];
+                document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
+
+                // Load initial data
+                loadDashboardData();
+            });
+
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+
+                    // Update nav
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show section
+                    document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
+                    document.getElementById('section-' + section).classList.add('active');
+
+                    // Close mobile sidebar
+                    document.getElementById('sidebar').classList.remove('open');
+                });
+            });
+
+            // Mobile sidebar toggle
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', async function() {
+                await MCFAuth.signOut();
+                window.location.href = 'login.html';
+            });
+
+            // ==================
+            // OVERVIEW
+            // ==================
+            async function loadDashboardData() {
+                // Set today's date
+                const today = new Date();
+                document.getElementById('todayDate').textContent = today.toLocaleDateString('en-GB', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Load stats
+                const clientsResult = await MCFDatabase.getClients();
+                if (clientsResult.success) {
+                    document.getElementById('statClients').textContent = clientsResult.clients.length;
+                }
+
+                // Load availability
+                const availResult = await MCFDatabase.getAvailability();
+                if (availResult.success) {
+                    availResult.availability.forEach(a => {
+                        if (a.recurring) {
+                            availabilityData[a.day] = { start: a.startTime, end: a.endTime };
+                        }
+                    });
+                    renderAvailabilityGrid();
+                }
+
+                // Load today's bookings
+                const todayStr = today.toISOString().split('T')[0];
+                const bookingsResult = await MCFDatabase.getBookings(todayStr, todayStr);
+                if (bookingsResult.success) {
+                    document.getElementById('statBookingsToday').textContent = bookingsResult.bookings.length;
+                    renderTodayBookings(bookingsResult.bookings);
+                }
+
+                // Render calendar
+                renderCalendar();
+
+                // Load clients list
+                loadClients();
+            }
+
+            function renderTodayBookings(bookings) {
+                const container = document.getElementById('todayBookings');
+
+                if (bookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <h4>No sessions scheduled</h4>
+                            <p>Your day is free!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = bookings.map(b => `
+                    <div class="booking-item">
+                        <div class="booking-time">${b.startTime} - ${b.endTime}</div>
+                        <div class="booking-client">
+                            <h4>${b.clientName}</h4>
+                            <p>${b.notes || 'No notes'}</p>
+                        </div>
+                        <span class="booking-status ${b.status}">${b.status}</span>
+                    </div>
+                `).join('');
+            }
+
+            // ==================
+            // AVAILABILITY
+            // ==================
+            function renderAvailabilityGrid() {
+                const grid = document.getElementById('availabilityGrid');
+                grid.innerHTML = DAYS.map((day, i) => {
+                    const hasAvail = availabilityData[i];
+                    return `
+                        <div class="day-card ${hasAvail ? 'active' : ''}" data-day="${i}">
+                            <div class="day-name">${DAYS_SHORT[i]}</div>
+                            <div class="day-times">${hasAvail ? `${hasAvail.start} - ${hasAvail.end}` : 'Not set'}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Add click handlers
+                grid.querySelectorAll('.day-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        selectedDay = parseInt(this.dataset.day);
+                        document.getElementById('selectedDayName').textContent = DAYS[selectedDay];
+
+                        if (availabilityData[selectedDay]) {
+                            document.getElementById('startTime').value = availabilityData[selectedDay].start;
+                            document.getElementById('endTime').value = availabilityData[selectedDay].end;
+                        } else {
+                            document.getElementById('startTime').value = '09:00';
+                            document.getElementById('endTime').value = '17:00';
+                        }
+
+                        document.getElementById('timeEditor').style.display = 'block';
+                    });
+                });
+            }
+
+            document.getElementById('applyTime').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                const start = document.getElementById('startTime').value;
+                const end = document.getElementById('endTime').value;
+
+                availabilityData[selectedDay] = { start, end };
+                renderAvailabilityGrid();
+                document.getElementById('timeEditor').style.display = 'none';
+                showToast('Time updated! Click "Save Changes" to save.', 'success');
+            });
+
+            document.getElementById('removeDay').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                delete availabilityData[selectedDay];
+                renderAvailabilityGrid();
+                document.getElementById('timeEditor').style.display = 'none';
+                showToast('Day removed! Click "Save Changes" to save.', 'success');
+            });
+
+            document.getElementById('saveAvailability').addEventListener('click', async function() {
+                this.disabled = true;
+                this.textContent = 'Saving...';
+
+                // Save each day
+                for (let day = 0; day < 7; day++) {
+                    if (availabilityData[day]) {
+                        await MCFDatabase.setAvailability(day, availabilityData[day].start, availabilityData[day].end);
+                    } else {
+                        await MCFDatabase.removeAvailability(day);
+                    }
+                }
+
+                this.disabled = false;
+                this.textContent = 'Save Changes';
+                showToast('Availability saved!', 'success');
+            });
+
+            // Block specific time
+            document.getElementById('addBlockedTime').addEventListener('click', async function() {
+                const date = document.getElementById('blockDate').value;
+                const startTime = document.getElementById('blockStartTime').value;
+                const endTime = document.getElementById('blockEndTime').value;
+                const reason = document.getElementById('blockReason').value;
+
+                if (!date) {
+                    showToast('Please select a date', 'error');
+                    return;
+                }
+
+                await MCFDatabase.blockTime(date, startTime, endTime, reason);
+                showToast('Time blocked!', 'success');
+
+                // Clear form
+                document.getElementById('blockDate').value = '';
+                document.getElementById('blockReason').value = '';
+            });
+
+            // ==================
+            // CLIENTS
+            // ==================
+            let editingClientId = null;
+
+            async function loadClients() {
+                const result = await MCFDatabase.getClients();
+                const container = document.getElementById('clientList');
+
+                if (!result.success || result.clients.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                            </svg>
+                            <h4>No clients yet</h4>
+                            <p>Add your first client to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = result.clients.map(client => `
+                    <div class="client-item" data-id="${client.id}">
+                        <div class="client-info">
+                            <div class="client-avatar">${client.name.charAt(0).toUpperCase()}</div>
+                            <div class="client-details">
+                                <h4>${client.name}</h4>
+                                <p>${client.email} | ${client.blockDuration} min sessions</p>
+                            </div>
+                        </div>
+                        <div class="client-actions">
+                            <button class="btn btn-secondary btn-sm edit-client">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-client">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add event listeners
+                container.querySelectorAll('.edit-client').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.closest('.client-item').dataset.id;
+                        editClient(id);
+                    });
+                });
+
+                container.querySelectorAll('.delete-client').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.closest('.client-item').dataset.id;
+                        if (confirm('Are you sure you want to delete this client?')) {
+                            deleteClient(id);
+                        }
+                    });
+                });
+
+                // Update booking client dropdown
+                updateClientDropdown(result.clients);
+            }
+
+            function updateClientDropdown(clients) {
+                const select = document.getElementById('bookingClient');
+                select.innerHTML = '<option value="">Select a client</option>' +
+                    clients.map(c => `<option value="${c.id}" data-name="${c.name}" data-duration="${c.blockDuration}">${c.name}</option>`).join('');
+            }
+
+            // Add client modal
+            document.getElementById('addClientBtn').addEventListener('click', function() {
+                editingClientId = null;
+                document.getElementById('clientModalTitle').textContent = 'Add New Client';
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientModal').classList.add('show');
+            });
+
+            document.getElementById('closeClientModal').addEventListener('click', closeClientModal);
+            document.getElementById('cancelClientBtn').addEventListener('click', closeClientModal);
+
+            function closeClientModal() {
+                document.getElementById('clientModal').classList.remove('show');
+                editingClientId = null;
+            }
+
+            async function editClient(id) {
+                const result = await MCFDatabase.getClient(id);
+                if (!result.success) return;
+
+                const client = result.client;
+                editingClientId = id;
+
+                document.getElementById('clientModalTitle').textContent = 'Edit Client';
+                document.getElementById('clientName').value = client.name;
+                document.getElementById('clientEmail').value = client.email;
+                document.getElementById('clientBlockDuration').value = client.blockDuration || 60;
+
+                if (client.blockEndDate) {
+                    const endDate = client.blockEndDate.toDate();
+                    document.getElementById('clientBlockEndDate').value = endDate.toISOString().split('T')[0];
+                }
+
+                // Set allowed days
+                const allowedDays = (client.allowedSlots || []).map(s => s.day);
+                document.querySelectorAll('#clientDays input').forEach(input => {
+                    input.checked = allowedDays.includes(parseInt(input.value));
+                });
+
+                document.getElementById('clientModal').classList.add('show');
+            }
+
+            async function deleteClient(id) {
+                await MCFDatabase.deleteClient(id);
+                showToast('Client deleted', 'success');
+                loadClients();
+            }
+
+            document.getElementById('saveClientBtn').addEventListener('click', async function() {
+                const name = document.getElementById('clientName').value;
+                const email = document.getElementById('clientEmail').value;
+                const blockDuration = parseInt(document.getElementById('clientBlockDuration').value);
+                const blockEndDate = document.getElementById('clientBlockEndDate').value;
+
+                const allowedDays = [];
+                document.querySelectorAll('#clientDays input:checked').forEach(input => {
+                    allowedDays.push({
+                        day: parseInt(input.value),
+                        startTime: '00:00',
+                        endTime: '23:59'
+                    });
+                });
+
+                if (!name || !email) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = 'Saving...';
+
+                if (editingClientId) {
+                    await MCFDatabase.updateClient(editingClientId, {
+                        name,
+                        email,
+                        blockDuration,
+                        blockEndDate: blockEndDate ? firebase.firestore.Timestamp.fromDate(new Date(blockEndDate)) : null,
+                        allowedSlots: allowedDays
+                    });
+                    showToast('Client updated!', 'success');
+                } else {
+                    await MCFDatabase.createClient(email, name, blockDuration, blockEndDate, allowedDays);
+                    showToast('Client added!', 'success');
+                }
+
+                this.disabled = false;
+                this.textContent = 'Save Client';
+                closeClientModal();
+                loadClients();
+            });
+
+            // ==================
+            // CALENDAR
+            // ==================
+            function renderCalendar() {
+                const grid = document.getElementById('calendarGrid');
+                const year = currentMonth.getFullYear();
+                const month = currentMonth.getMonth();
+
+                document.getElementById('calendarMonth').textContent =
+                    currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+                // Day headers
+                let html = DAYS_SHORT.map(d => `<div class="calendar-day-header">${d}</div>`).join('');
+
+                // Get first day of month
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startDay = firstDay.getDay();
+
+                // Previous month days
+                const prevMonthLastDay = new Date(year, month, 0).getDate();
+                for (let i = startDay - 1; i >= 0; i--) {
+                    html += `<div class="calendar-day other-month"><span class="calendar-date">${prevMonthLastDay - i}</span></div>`;
+                }
+
+                // Current month days
+                const today = new Date();
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const date = new Date(year, month, day);
+                    const isToday = date.toDateString() === today.toDateString();
+                    const dateStr = date.toISOString().split('T')[0];
+
+                    html += `
+                        <div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
+                            <span class="calendar-date">${day}</span>
+                        </div>
+                    `;
+                }
+
+                // Next month days
+                const remainingDays = 42 - (startDay + lastDay.getDate());
+                for (let day = 1; day <= remainingDays; day++) {
+                    html += `<div class="calendar-day other-month"><span class="calendar-date">${day}</span></div>`;
+                }
+
+                grid.innerHTML = html;
+
+                // Add click handlers
+                grid.querySelectorAll('.calendar-day:not(.other-month)').forEach(day => {
+                    day.addEventListener('click', function() {
+                        const date = this.dataset.date;
+                        showDayBookings(date);
+                    });
+                });
+            }
+
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                currentMonth.setMonth(currentMonth.getMonth() - 1);
+                renderCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                currentMonth.setMonth(currentMonth.getMonth() + 1);
+                renderCalendar();
+            });
+
+            async function showDayBookings(dateStr) {
+                document.getElementById('selectedDateDisplay').textContent =
+                    new Date(dateStr).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+                const result = await MCFDatabase.getBookings(dateStr, dateStr);
+                const container = document.getElementById('selectedDayBookings');
+
+                if (!result.success || result.bookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No bookings on this day</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = result.bookings.map(b => `
+                    <div class="booking-item">
+                        <div class="booking-time">${b.startTime} - ${b.endTime}</div>
+                        <div class="booking-client">
+                            <h4>${b.clientName}</h4>
+                            <p>${b.notes || 'No notes'}</p>
+                        </div>
+                        <span class="booking-status ${b.status}">${b.status}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Add booking modal
+            document.getElementById('addBookingBtn').addEventListener('click', function() {
+                document.getElementById('bookingForm').reset();
+                document.getElementById('availableSlots').innerHTML = '<p style="color: var(--text-muted);">Select a date to see available slots</p>';
+                document.getElementById('bookingModal').classList.add('show');
+            });
+
+            document.getElementById('closeBookingModal').addEventListener('click', closeBookingModal);
+            document.getElementById('cancelBookingBtn').addEventListener('click', closeBookingModal);
+
+            function closeBookingModal() {
+                document.getElementById('bookingModal').classList.remove('show');
+            }
+
+            // Load available slots when date changes
+            document.getElementById('bookingDate').addEventListener('change', async function() {
+                const date = this.value;
+                const duration = parseInt(document.getElementById('bookingDuration').value);
+
+                if (!date) return;
+
+                const slots = await MCFDatabase.getAvailableSlots(date, duration);
+                const container = document.getElementById('availableSlots');
+
+                if (slots.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted);">No availability on this day</p>';
+                    return;
+                }
+
+                container.innerHTML = slots.map(slot => `
+                    <div class="time-slot ${slot.available ? 'available' : 'booked'}"
+                         data-start="${slot.startTime}" data-end="${slot.endTime}"
+                         ${slot.available ? '' : 'title="Already booked"'}>
+                        ${slot.startTime}
+                    </div>
+                `).join('');
+
+                // Add click handlers for available slots
+                container.querySelectorAll('.time-slot.available').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        container.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('selectedSlot').value = this.dataset.start + '-' + this.dataset.end;
+                    });
+                });
+            });
+
+            document.getElementById('bookingDuration').addEventListener('change', function() {
+                document.getElementById('bookingDate').dispatchEvent(new Event('change'));
+            });
+
+            document.getElementById('saveBookingBtn').addEventListener('click', async function() {
+                const clientSelect = document.getElementById('bookingClient');
+                const clientId = clientSelect.value;
+                const clientName = clientSelect.options[clientSelect.selectedIndex].dataset.name;
+                const date = document.getElementById('bookingDate').value;
+                const slotValue = document.getElementById('selectedSlot').value;
+                const notes = document.getElementById('bookingNotes').value;
+
+                if (!clientId || !date || !slotValue) {
+                    showToast('Please fill in all required fields and select a time slot', 'error');
+                    return;
+                }
+
+                const [startTime, endTime] = slotValue.split('-');
+
+                this.disabled = true;
+                this.textContent = 'Creating...';
+
+                await MCFDatabase.createBooking(clientId, clientName, date, startTime, endTime, notes);
+
+                this.disabled = false;
+                this.textContent = 'Create Booking';
+
+                showToast('Booking created!', 'success');
+                closeBookingModal();
+                loadDashboardData();
+            });
+
+            // ==================
+            // TOAST NOTIFICATIONS
+            // ==================
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ${type === 'success' ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22,4 12,14.01 9,11.01"></polyline>' : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}
+                    </svg>
+                    <span>${message}</span>
+                `;
+                container.appendChild(toast);
+
+                setTimeout(() => toast.classList.add('show'), 10);
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
