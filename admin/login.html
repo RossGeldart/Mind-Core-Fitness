@@ -28,15 +28,15 @@
             <h1 class="login-title">Admin Dashboard</h1>
             <p class="login-subtitle">Sign in to manage your clients and schedule</p>
 
-            <div id="configWarning" class="config-warning" style="display: none;">
+            <div id="configWarning" class="config-warning" style="display: flex;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 <div class="config-warning-content">
-                    <h4>Firebase Not Configured</h4>
-                    <p>Please update <code>js/firebase-config.js</code> with your Firebase project credentials.</p>
+                    <h4>Database Not Configured</h4>
+                    <p>The booking system database is being set up. Please check back soon.</p>
                 </div>
             </div>
 
@@ -45,15 +45,15 @@
             <form id="loginForm" class="login-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="ross@mindcorefitness.com">
+                    <input type="email" id="email" name="email" required placeholder="ross@mindcorefitness.com" disabled>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password" disabled>
                 </div>
 
-                <button type="submit" class="login-btn" id="loginBtn">
+                <button type="submit" class="login-btn" id="loginBtn" disabled>
                     Sign In
                 </button>
             </form>
@@ -63,94 +63,5 @@
             </div>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-    <!-- App Scripts -->
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/auth.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if Firebase is configured
-            if (!MCF.isConfigured()) {
-                document.getElementById('configWarning').style.display = 'flex';
-                document.getElementById('loginBtn').disabled = true;
-            }
-
-            // Check if already logged in
-            MCFAuth.init(function(user, role) {
-                if (user && role === 'admin') {
-                    window.location.href = 'index.html';
-                }
-            });
-
-            // Handle login form
-            const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-            const loginError = document.getElementById('loginError');
-
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'Signing in...';
-                loginError.style.display = 'none';
-
-                const result = await MCFAuth.signIn(email, password);
-
-                if (result.success) {
-                    // Check if user is admin
-                    const userDoc = await MCF.db.collection('users').doc(result.user.uid).get();
-
-                    if (userDoc.exists && userDoc.data().role === 'admin') {
-                        window.location.href = 'index.html';
-                    } else {
-                        loginError.textContent = 'You do not have admin access.';
-                        loginError.style.display = 'block';
-                        await MCFAuth.signOut();
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = 'Sign In';
-                    }
-                } else {
-                    loginError.textContent = result.error;
-                    loginError.style.display = 'block';
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Sign In';
-                }
-            });
-
-            // Handle forgot password
-            document.getElementById('forgotPasswordLink').addEventListener('click', async function(e) {
-                e.preventDefault();
-
-                const email = document.getElementById('email').value;
-
-                if (!email) {
-                    loginError.textContent = 'Please enter your email address first.';
-                    loginError.style.display = 'block';
-                    return;
-                }
-
-                const result = await MCFAuth.resetPassword(email);
-
-                if (result.success) {
-                    loginError.textContent = 'Password reset email sent! Check your inbox.';
-                    loginError.style.display = 'block';
-                    loginError.style.background = '#f0fdf4';
-                    loginError.style.color = '#166534';
-                } else {
-                    loginError.textContent = result.error;
-                    loginError.style.display = 'block';
-                }
-            });
-        });
-    </script>
 </body>
 </html>
