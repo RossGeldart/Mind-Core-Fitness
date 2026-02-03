@@ -4,12 +4,12 @@
 // Get these from: Firebase Console > Project Settings > Your Apps > Web App
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDb1gtBSB85GYcRgBRtQuKxNTitSVF3LCI",
+    authDomain: "mind-core-fitness-dashboard.firebaseapp.com",
+    projectId: "mind-core-fitness-dashboard",
+    storageBucket: "mind-core-fitness-dashboard.firebasestorage.app",
+    messagingSenderId: "1090834044897",
+    appId: "1:1090834044897:web:9dc72e48eb9794950524a0"
 };
 
 // Initialize Firebase
