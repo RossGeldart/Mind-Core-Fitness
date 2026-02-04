@@ -27,7 +27,7 @@ exports.createClient = functions.https.onCall(async (data, context) => {
     );
   }
 
-  const { name, email, blockDuration, blockStartDate, blockEndDate, totalSessions } = data;
+  const { name, email, blockDuration, blockStartDate, blockEndDate, totalSessions, selectedDays, dayTimes } = data;
 
   // Validate required fields
   if (!name || !email) {
@@ -79,6 +79,8 @@ exports.createClient = functions.https.onCall(async (data, context) => {
       blockEndDate: blockEndDate || null,
       totalSessions: totalSessions || 0,
       sessionsUsed: 0,
+      selectedDays: selectedDays || [],
+      dayTimes: dayTimes || {},
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       createdBy: context.auth.uid
     });
