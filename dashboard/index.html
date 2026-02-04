@@ -222,6 +222,15 @@
             border: 1px solid rgba(153, 49, 60, 0.2);
         }
 
+        .slot-item.booked.own-booking {
+            cursor: pointer;
+        }
+
+        .slot-item.booked.own-booking:hover {
+            background: rgba(153, 49, 60, 0.15);
+            border-color: var(--accent-color);
+        }
+
         .slot-time {
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
@@ -1233,6 +1242,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             let currentUserId = null;
+            let userSessionDuration = 30; // Default to 30 minutes, updated from user data
 
             // Check authentication
             auth.onAuthStateChanged(async (user) => {
@@ -1309,6 +1319,7 @@
                     // Display block info from user data
                     if (userData.blockDuration) {
                         document.getElementById('blockDuration').textContent = userData.blockDuration;
+                        userSessionDuration = parseInt(userData.blockDuration) || 30;
                     }
                     if (userData.blockEndDate) {
                         const endDate = new Date(userData.blockEndDate);
@@ -1914,6 +1925,25 @@
                 selectedDate = dateStr;
                 renderBookingCalendar();
 
+                // Auto-enter reschedule mode if user has upcoming bookings
+                if (!rescheduleMode && userBookings.length > 0) {
+                    // Check if clicking on a day with their booking
+                    const bookingOnDate = userBookings.find(b => b.date === dateStr);
+                    if (bookingOnDate) {
+                        // Reschedule the booking on this specific date
+                        rescheduleMode = true;
+                        rescheduleBookingId = bookingOnDate.id;
+                        document.querySelector('#section-book h2').textContent = `Reschedule Session (${bookingOnDate.date} at ${bookingOnDate.time})`;
+                    } else {
+                        // Reschedule their next upcoming booking to this new date
+                        const nextBooking = userBookings[0]; // Already sorted by date
+                        rescheduleMode = true;
+                        rescheduleBookingId = nextBooking.id;
+                        document.querySelector('#section-book h2').textContent = `Reschedule Session (${nextBooking.date} at ${nextBooking.time})`;
+                    }
+                    showToast('Select a new time for your session', 'info');
+                }
+
                 // Show the slots container
                 const slotsContainer = document.getElementById('slotsContainer');
                 slotsContainer.style.display = 'block';
@@ -1957,8 +1987,9 @@
                     if (data.status !== 'cancelled') {
                         bookedTimes.push({
                             time: data.time,
-                            duration: data.duration || 60,
-                            isOwn: data.clientId === currentUserId
+                            duration: data.duration || 30,
+                            isOwn: data.clientId === currentUserId,
+                            bookingId: doc.id
                         });
                     }
                 });
@@ -1973,25 +2004,36 @@
                     });
                 }
 
-                // Generate slots from schedule
+                // Generate slots from schedule using 15-minute increments
                 let html = '';
-                const slotDuration = 60; // 60 minute slots
+                const slotIncrement = 15; // 15 minute increments
+                const sessionDuration = userSessionDuration; // User's session duration (30 or 45 mins)
 
                 daySchedule.slots.forEach(slot => {
                     const [startHour, startMin] = slot.start.split(':').map(Number);
                     const [endHour, endMin] = slot.end.split(':').map(Number);
-                    const startMinutes = startHour * 60 + startMin;
-                    const endMinutes = endHour * 60 + endMin;
+                    const availStartMinutes = startHour * 60 + startMin;
+                    const availEndMinutes = endHour * 60 + endMin;
 
-                    for (let time = startMinutes; time + slotDuration <= endMinutes; time += slotDuration) {
+                    // Generate 15-minute increment slots
+                    for (let time = availStartMinutes; time + sessionDuration <= availEndMinutes; time += slotIncrement) {
                         const hour = Math.floor(time / 60);
                         const min = time % 60;
                         const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                        const slotEndTime = time + sessionDuration;
 
-                        // Check if slot is booked
-                        const booking = bookedTimes.find(bt => bt.time === timeStr);
-                        const isBooked = !!booking;
-                        const isOwnBooking = booking && booking.isOwn;
+                        // Check if this is the user's own booking
+                        const ownBooking = bookedTimes.find(bt => bt.time === timeStr && bt.isOwn);
+
+                        // Check if slot would overlap with any OTHER booking
+                        const overlapsOtherBooking = bookedTimes.some(bt => {
+                            if (bt.isOwn) return false; // Don't count own booking as conflict
+                            const [btH, btM] = bt.time.split(':').map(Number);
+                            const bookingStart = btH * 60 + btM;
+                            const bookingEnd = bookingStart + bt.duration;
+                            // Check if proposed session [time, time+sessionDuration] overlaps [bookingStart, bookingEnd]
+                            return time < bookingEnd && slotEndTime > bookingStart;
+                        });
 
                         // Check if blocked
                         const isBlocked = blockedTimes.some(bt => {
@@ -1999,7 +2041,7 @@
                             const [beH, beM] = bt.end.split(':').map(Number);
                             const blockStart = bsH * 60 + bsM;
                             const blockEnd = beH * 60 + beM;
-                            return time < blockEnd && (time + slotDuration) > blockStart;
+                            return time < blockEnd && slotEndTime > blockStart;
                         });
 
                         // Format display time
@@ -2015,10 +2057,12 @@
                         let statusText = '';
                         let clickable = false;
 
-                        if (isOwnBooking) {
-                            slotClass += ' booked';
+                        if (ownBooking) {
+                            // User's own booking - show as current session, clickable if in reschedule mode
+                            slotClass += ' booked own-booking';
                             statusText = '<span class="slot-status your-session">Your Session</span>';
-                        } else if (isBooked || isBlocked) {
+                            clickable = rescheduleMode; // Allow clicking to keep same time in reschedule mode
+                        } else if (overlapsOtherBooking || isBlocked) {
                             slotClass += ' unavailable';
                             statusText = '<span class="slot-status unavailable">Unavailable</span>';
                         } else {
