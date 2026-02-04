@@ -43,224 +43,33 @@
             opacity: 0.9;
         }
 
-        /* Dashboard Landing Cards */
-        .dashboard-landing {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .landing-card {
+        .client-nav {
             background: #ffffff;
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 32px 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .landing-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent-color);
-        }
-
-        .landing-card-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--accent-color) 0%, #b33a47 100%);
-            border-radius: 16px;
+            padding: 0 32px;
+            border-bottom: 1px solid var(--card-border);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
+            gap: 32px;
         }
 
-        .landing-card-icon svg {
-            width: 32px;
-            height: 32px;
-            stroke: #ffffff;
-        }
-
-        .landing-card-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--text-color);
-            margin-bottom: 8px;
-        }
-
-        .landing-card-desc {
-            font-size: 0.9rem;
+        .client-nav-item {
+            padding: 16px 0;
             color: var(--text-muted);
-            line-height: 1.5;
-        }
-
-        /* Block Expired Notice */
-        .block-expired-notice {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            border: 2px solid #ff9800;
-            border-radius: 12px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .block-expired-icon {
-            width: 48px;
-            height: 48px;
-            background: #ff9800;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .block-expired-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: #ffffff;
-        }
-
-        .block-expired-text h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            color: #e65100;
-            margin-bottom: 4px;
-        }
-
-        .block-expired-text p {
-            font-size: 0.9rem;
-            color: #e65100;
-            margin: 0;
-        }
-
-        /* Dashboard Actions */
-        .dashboard-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 32px;
-        }
-
-        .whatsapp-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 24px;
-            background: #25D366;
-            color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
             text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-
-        .whatsapp-btn:hover {
-            background: #1da851;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .whatsapp-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .signout-btn-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: transparent;
-            color: var(--text-muted);
             font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.9rem;
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
+            border-bottom: 2px solid transparent;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .signout-btn-bottom:hover {
+        .client-nav-item:hover {
             color: var(--text-color);
-            border-color: var(--text-muted);
         }
 
-        .signout-btn-bottom svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Section Back Button */
-        .section-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        .client-nav-item.active {
             color: var(--accent-color);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-bottom: 24px;
-            padding: 8px 0;
-            background: none;
-            border: none;
-            transition: opacity 0.2s ease;
-        }
-
-        .section-back:hover {
-            opacity: 0.7;
-        }
-
-        .section-back svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Stats Row */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: #ffffff;
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            border-bottom-color: var(--accent-color);
         }
 
         .client-content {
@@ -589,21 +398,55 @@
 
         .top-bar {
             background: #1a1a1a;
-            padding: 12px 24px;
+            padding: 12px 32px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
         }
 
         .top-bar-logo {
             display: flex;
             align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            text-decoration: none;
         }
 
         .top-bar-logo img {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+        }
+
+        .top-bar-logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        .top-bar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .top-bar-user span {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .top-bar-user button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .top-bar-user button:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .setup-notice {
@@ -661,23 +504,10 @@
                 justify-content: center;
             }
 
-            .dashboard-landing {
-                grid-template-columns: 1fr;
+            .client-nav {
+                padding: 0 16px;
                 gap: 16px;
-            }
-
-            .landing-card {
-                padding: 24px 20px;
-            }
-
-            .landing-card-icon {
-                width: 56px;
-                height: 56px;
-            }
-
-            .landing-card-icon svg {
-                width: 28px;
-                height: 28px;
+                overflow-x: auto;
             }
 
             .client-header {
@@ -697,11 +527,6 @@
                 flex-direction: column;
                 text-align: center;
             }
-
-            .block-expired-notice {
-                flex-direction: column;
-                text-align: center;
-            }
         }
     </style>
 
@@ -718,114 +543,32 @@
     <div class="top-bar">
         <a href="../index.html" class="top-bar-logo">
             <img src="../Logo.PNG" alt="Mind Core Fitness">
+            <span>Mind Core Fitness</span>
         </a>
+        <div class="top-bar-user">
+            <span id="userEmail"></span>
+            <button id="logoutBtn" onclick="window.location.href='login.html'">Sign Out</button>
+        </div>
     </div>
 
     <!-- Header -->
     <header class="client-header">
         <h1>Welcome back, <span id="userName">Client</span></h1>
-        <p>Manage your sessions and reschedule training times</p>
+        <p>Manage your sessions and book new training times</p>
     </header>
+
+    <!-- Navigation -->
+    <nav class="client-nav">
+        <a class="client-nav-item active" data-section="overview">Overview</a>
+        <a class="client-nav-item" data-section="book">Book / Reschedule</a>
+        <a class="client-nav-item" data-section="sessions">My Sessions</a>
+    </nav>
 
     <!-- Content -->
     <div class="client-content">
 
-        <!-- Landing Section with Cards -->
-        <section class="client-section" id="section-landing">
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-value" id="sessionsCompleted">0</div>
-                    <div class="stat-label">Sessions Completed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="sessionsLeft">0</div>
-                    <div class="stat-label">Sessions Left</div>
-                </div>
-            </div>
-            <div class="dashboard-landing">
-                <div class="landing-card" data-section="overview">
-                    <div class="landing-card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
-                    </div>
-                    <div class="landing-card-title">Overview</div>
-                    <div class="landing-card-desc">View your upcoming sessions and weekly schedule</div>
-                </div>
-                <div class="landing-card" data-section="book">
-                    <div class="landing-card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                    </div>
-                    <div class="landing-card-title">Reschedule</div>
-                    <div class="landing-card-desc">Reschedule your training sessions to a new time</div>
-                </div>
-                <div class="landing-card" data-section="sessions">
-                    <div class="landing-card-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="8" y1="6" x2="21" y2="6"></line>
-                            <line x1="8" y1="12" x2="21" y2="12"></line>
-                            <line x1="8" y1="18" x2="21" y2="18"></line>
-                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg>
-                    </div>
-                    <div class="landing-card-title">My Sessions</div>
-                    <div class="landing-card-desc">View and manage all your booked sessions</div>
-                </div>
-            </div>
-
-            <!-- Block Expired Notice -->
-            <div class="block-expired-notice" id="blockExpiredNotice" style="display: none;">
-                <div class="block-expired-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                </div>
-                <div class="block-expired-text">
-                    <h4>Your Training Block Has Ended</h4>
-                    <p>Ready to continue your fitness journey? Get in touch to renew your block.</p>
-                </div>
-            </div>
-
-            <!-- Contact & Actions -->
-            <div class="dashboard-actions">
-                <a href="https://wa.me/447449782055" target="_blank" class="whatsapp-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    Message on WhatsApp
-                </a>
-                <button id="logoutBtnBottom" class="signout-btn-bottom">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Sign Out
-                </button>
-            </div>
-        </section>
-
         <!-- Overview Section -->
-        <section class="client-section" id="section-overview" style="display: none;">
-            <button class="section-back" data-back>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                Back to Dashboard
-            </button>
+        <section class="client-section active" id="section-overview">
             <div class="block-info" id="blockInfo">
                 <div class="block-info-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -837,7 +580,7 @@
                 </div>
                 <div class="block-info-text">
                     <h4>Your Training Block</h4>
-                    <p><span id="blockDuration">-</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
+                    <p><span id="blockDuration">60</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
                 </div>
             </div>
 
@@ -851,7 +594,7 @@
                 </div>
                 <div class="banked-sessions-text">
                     <h4>Banked Sessions</h4>
-                    <p>You have <strong id="bankedSessionsCount">0</strong> session(s) available to reschedule. Select a day and time in the <a href="#" onclick="switchToBookSection(); return false;">Reschedule</a> section.</p>
+                    <p>You have <strong id="bankedSessionsCount">0</strong> session(s) available to reschedule. Select a day and time in the <a href="#" onclick="switchToBookSection(); return false;">Book / Reschedule</a> section.</p>
                 </div>
             </div>
 
@@ -877,16 +620,9 @@
             </div>
         </section>
 
-        <!-- Reschedule Section -->
+        <!-- Book / Reschedule Section -->
         <section class="client-section" id="section-book" style="display: none;">
-            <button class="section-back" data-back>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                Back to Dashboard
-            </button>
-            <h2 style="font-family: 'Montserrat', sans-serif; margin-bottom: 24px;">Reschedule Session</h2>
+            <h2 style="font-family: 'Montserrat', sans-serif; margin-bottom: 24px;">Book a Session</h2>
 
             <div class="dashboard-card" style="margin-bottom: 24px;">
                 <div class="card-header">
@@ -922,13 +658,6 @@
 
         <!-- My Sessions Section -->
         <section class="client-section" id="section-sessions" style="display: none;">
-            <button class="section-back" data-back>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                Back to Dashboard
-            </button>
             <h2 style="font-family: 'Montserrat', sans-serif; margin-bottom: 24px;">My Upcoming Sessions</h2>
 
             <div class="my-sessions-list" id="sessionsList">
@@ -1603,17 +1332,18 @@
 
             // Switch to Book/Reschedule section
             function switchToBookSection() {
+                document.querySelectorAll('.client-nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelector('.client-nav-item[data-section="book"]').classList.add('active');
                 document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
                 document.getElementById('section-book').style.display = 'block';
-                document.querySelector('#section-book h2').textContent = 'Reschedule Session';
+                document.querySelector('#section-book h2').textContent = 'Book Session';
             }
 
             // Check authentication
             auth.onAuthStateChanged(async (user) => {
                 if (!user) {
                     // Not logged in, redirect to login
-                    // Use replace() to prevent back button from returning to this protected page
-                    window.location.replace('/dashboard/login.html');
+                    window.location.href = '/dashboard/login.html';
                     return;
                 }
 
@@ -1689,9 +1419,6 @@
                     if (userData.blockDuration) {
                         document.getElementById('blockDuration').textContent = userData.blockDuration;
                         userSessionDuration = parseInt(userData.blockDuration) || 30;
-                    } else {
-                        document.getElementById('blockDuration').textContent = '-';
-                        userSessionDuration = 30; // Default fallback
                     }
                     if (userData.blockEndDate) {
                         const endDate = new Date(userData.blockEndDate);
@@ -1700,38 +1427,11 @@
                             month: 'short',
                             year: 'numeric'
                         });
-
-                        // Check if block has expired
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        if (endDate < today) {
-                            document.getElementById('blockExpiredNotice').style.display = 'flex';
-                        }
                     }
 
                     // Display banked sessions if any
                     const bankedSessions = userData.bankedSessions || 0;
                     updateBankedSessionsDisplay(bankedSessions);
-
-                    // If this user was migrated, ensure bookings are also migrated
-                    if (userData.migratedFrom) {
-                        try {
-                            const oldBookings = await db.collection('bookings')
-                                .where('clientId', '==', userData.migratedFrom)
-                                .get();
-
-                            if (!oldBookings.empty) {
-                                const batch = db.batch();
-                                oldBookings.forEach(doc => {
-                                    batch.update(doc.ref, { clientId: user.uid });
-                                });
-                                await batch.commit();
-                                console.log(`Migrated ${oldBookings.size} bookings from old clientId`);
-                            }
-                        } catch (migrationError) {
-                            console.error('Error migrating bookings:', migrationError);
-                        }
-                    }
 
                     // Check if onboarding is complete
                     if (!userData.onboardingComplete) {
@@ -1950,25 +1650,21 @@
                 }, 4000);
             }
 
-            // Logout button (bottom of dashboard)
-            document.getElementById('logoutBtnBottom').addEventListener('click', () => {
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
                 logout();
             });
 
-            // Card Navigation - click card to go to section
-            document.querySelectorAll('.landing-card').forEach(card => {
-                card.addEventListener('click', function() {
+            // Navigation
+            document.querySelectorAll('.client-nav-item').forEach(item => {
+                item.addEventListener('click', function() {
                     const section = this.dataset.section;
+
+                    document.querySelectorAll('.client-nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
                     document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
                     document.getElementById('section-' + section).style.display = 'block';
-                });
-            });
-
-            // Back buttons - return to landing
-            document.querySelectorAll('.section-back').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
-                    document.getElementById('section-landing').style.display = 'block';
                 });
             });
 
@@ -2025,54 +1721,34 @@
                     console.log('Bookings found by UID:', snapshot.size);
 
                     // If no bookings found by UID, try finding by email
-                    if (snapshot.empty) {
-                        const emailsToTry = [];
-                        if (auth.currentUser && auth.currentUser.email) {
-                            emailsToTry.push(auth.currentUser.email);
-                        }
-                        // Also try the email stored in user data (in case of mismatch)
-                        if (currentUserData && currentUserData.email &&
-                            !emailsToTry.includes(currentUserData.email)) {
-                            emailsToTry.push(currentUserData.email);
-                        }
+                    if (snapshot.empty && auth.currentUser && auth.currentUser.email) {
+                        console.log('No bookings by UID, trying email:', auth.currentUser.email);
+                        snapshot = await db.collection('bookings')
+                            .where('clientEmail', '==', auth.currentUser.email)
+                            .get();
+                        console.log('Bookings found by email:', snapshot.size);
 
-                        for (const email of emailsToTry) {
-                            console.log('No bookings by UID, trying email:', email);
-                            snapshot = await db.collection('bookings')
-                                .where('clientEmail', '==', email)
-                                .get();
-                            console.log('Bookings found by email:', snapshot.size);
-
-                            if (!snapshot.empty) {
-                                // If found by email, update these bookings to use correct clientId
-                                console.log('Migrating bookings to correct clientId...');
-                                const batch = db.batch();
-                                snapshot.forEach(doc => {
-                                    batch.update(doc.ref, { clientId: currentUserId });
-                                });
-                                await batch.commit();
-                                console.log('Bookings migrated successfully');
-                                break; // Found bookings, stop trying other emails
-                            }
+                        // If found by email, update these bookings to use correct clientId
+                        if (!snapshot.empty) {
+                            console.log('Migrating bookings to correct clientId...');
+                            const batch = db.batch();
+                            snapshot.forEach(doc => {
+                                batch.update(doc.ref, { clientId: currentUserId });
+                            });
+                            await batch.commit();
+                            console.log('Bookings migrated successfully');
                         }
                     }
 
                     userBookings = [];
-                    let completedCount = 0;
-
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        if (data.status !== 'cancelled') {
-                            if (data.date >= todayStr) {
-                                // Future sessions
-                                userBookings.push({
-                                    id: doc.id,
-                                    ...data
-                                });
-                            } else {
-                                // Past sessions (completed)
-                                completedCount++;
-                            }
+                        // Only include confirmed bookings with future dates
+                        if (data.status !== 'cancelled' && data.date >= todayStr) {
+                            userBookings.push({
+                                id: doc.id,
+                                ...data
+                            });
                         }
                     });
 
@@ -2084,14 +1760,9 @@
                     });
 
                     console.log('Upcoming sessions found:', userBookings.length);
-                    console.log('Completed sessions:', completedCount);
                     if (userBookings.length > 0) {
                         console.log('Next session:', userBookings[0].date, userBookings[0].time);
                     }
-
-                    // Update stats display
-                    document.getElementById('sessionsCompleted').textContent = completedCount;
-                    document.getElementById('sessionsLeft').textContent = userBookings.length;
 
                     // Update displays
                     displayNextSession();
@@ -2658,7 +2329,9 @@
                 // Find the booking
                 const booking = userBookings.find(b => b.id === bookingId);
                 if (booking) {
-                    // Switch to Book/Reschedule section
+                    // Switch to Book/Reschedule tab
+                    document.querySelectorAll('.client-nav-item').forEach(i => i.classList.remove('active'));
+                    document.querySelector('.client-nav-item[data-section="book"]').classList.add('active');
                     document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
                     document.getElementById('section-book').style.display = 'block';
 
@@ -2773,7 +2446,7 @@
             };
 
             // Initialize calendar when switching to Book section
-            document.querySelector('.landing-card[data-section="book"]').addEventListener('click', async function() {
+            document.querySelector('.client-nav-item[data-section="book"]').addEventListener('click', async function() {
                 if (!trainerAvailability) {
                     await loadTrainerAvailability();
                 }

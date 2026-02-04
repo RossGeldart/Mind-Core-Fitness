@@ -54,7 +54,6 @@ async function getUserData(uid) {
 
 function logout() {
   auth.signOut().then(() => {
-    // Use replace() to prevent back button from returning to protected pages
-    window.location.replace('/dashboard/login.html');
+    window.location.href = '/dashboard/login.html';
   });
 }
