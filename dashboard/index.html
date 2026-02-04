@@ -452,7 +452,7 @@
 
         .top-bar {
             background: #1a1a1a;
-            padding: 12px 32px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -461,46 +461,39 @@
         .top-bar-logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: #ffffff;
-            text-decoration: none;
         }
 
         .top-bar-logo img {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
         }
 
-        .top-bar-logo span {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-        }
-
-        .top-bar-user {
+        .logout-btn {
             display: flex;
             align-items: center;
-            gap: 16px;
-        }
-
-        .top-bar-user span {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-        }
-
-        .top-bar-user button {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
+            gap: 8px;
+            padding: 10px 18px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .top-bar-user button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
         }
 
         .setup-notice {
@@ -610,12 +603,15 @@
     <div class="top-bar">
         <a href="../index.html" class="top-bar-logo">
             <img src="../Logo.PNG" alt="Mind Core Fitness">
-            <span>Mind Core Fitness</span>
         </a>
-        <div class="top-bar-user">
-            <span id="userEmail"></span>
-            <button id="logoutBtn">Sign Out</button>
-        </div>
+        <button id="logoutBtn" class="logout-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sign Out
+        </button>
     </div>
 
     <!-- Header -->
