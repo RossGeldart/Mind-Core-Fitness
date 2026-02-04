@@ -55,6 +55,10 @@
                 <a href="#" id="forgotPasswordLink">Forgot your password?</a>
             </div>
 
+            <div class="first-time-setup">
+                <a href="#" id="firstTimeLink">First time? Set up your account</a>
+            </div>
+
             <!-- Reset Password Form (hidden by default) -->
             <div id="resetForm" style="display: none;">
                 <p style="margin-bottom: 16px; color: var(--text-muted);">Enter your email to receive a password reset link.</p>
@@ -65,6 +69,37 @@
                 <button class="btn btn-secondary" id="backToLogin" style="width: 100%;">Back to Login</button>
             </div>
 
+            <!-- First Time Setup Form (hidden by default) -->
+            <div id="setupForm" style="display: none;">
+                <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; margin-bottom: 8px;">Set Up Your Account</h2>
+                <p style="margin-bottom: 20px; color: var(--text-muted);">Enter the email your trainer registered you with, then create your password.</p>
+
+                <div id="setupStep1">
+                    <div class="form-group">
+                        <label for="setupEmail">Email Address</label>
+                        <input type="email" id="setupEmail" placeholder="your@email.com" required>
+                    </div>
+                    <button class="login-btn" id="checkEmailBtn" style="margin-bottom: 12px;">Continue</button>
+                </div>
+
+                <div id="setupStep2" style="display: none;">
+                    <div class="setup-welcome" style="background: rgba(45, 138, 78, 0.1); border: 1px solid rgba(45, 138, 78, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                        <p style="color: #2d8a4e; margin: 0;">Welcome, <strong id="setupUserName"></strong>! Create a password to complete your account setup.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="setupPassword">Create Password</label>
+                        <input type="password" id="setupPassword" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="setupPasswordConfirm">Confirm Password</label>
+                        <input type="password" id="setupPasswordConfirm" placeholder="Confirm your password" required>
+                    </div>
+                    <button class="login-btn" id="createAccountBtn" style="margin-bottom: 12px;">Create Account</button>
+                </div>
+
+                <button class="btn btn-secondary" id="backToLoginFromSetup" style="width: 100%;">Back to Login</button>
+            </div>
+
             <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--card-border);">
                 <p style="font-size: 0.9rem; color: var(--text-muted);">
                     New client? <a href="../index.html" style="color: var(--accent-color);">Learn about our services</a>
@@ -72,6 +107,21 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .first-time-setup {
+            text-align: center;
+            margin-top: 12px;
+        }
+        .first-time-setup a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .first-time-setup a:hover {
+            text-decoration: underline;
+        }
+    </style>
 
     <script src="../js/firebase-config.js"></script>
     <script>
@@ -83,6 +133,17 @@
             const resetForm = document.getElementById('resetForm');
             const resetBtn = document.getElementById('resetBtn');
             const backToLogin = document.getElementById('backToLogin');
+
+            // First time setup elements
+            const firstTimeLink = document.getElementById('firstTimeLink');
+            const setupForm = document.getElementById('setupForm');
+            const setupStep1 = document.getElementById('setupStep1');
+            const setupStep2 = document.getElementById('setupStep2');
+            const checkEmailBtn = document.getElementById('checkEmailBtn');
+            const createAccountBtn = document.getElementById('createAccountBtn');
+            const backToLoginFromSetup = document.getElementById('backToLoginFromSetup');
+
+            let pendingClientData = null; // Store client data during setup
 
             // Check if user is already logged in
             auth.onAuthStateChanged(async (user) => {
@@ -216,6 +277,199 @@
                     }
                     resetBtn.disabled = false;
                     resetBtn.textContent = 'Send Reset Link';
+                }
+            });
+
+            // ==================
+            // FIRST TIME SETUP
+            // ==================
+
+            // Show setup form
+            firstTimeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                forgotPasswordLink.parentElement.style.display = 'none';
+                firstTimeLink.parentElement.style.display = 'none';
+                setupForm.style.display = 'block';
+                loginError.style.display = 'none';
+                // Reset form state
+                setupStep1.style.display = 'block';
+                setupStep2.style.display = 'none';
+                document.getElementById('setupEmail').value = document.getElementById('email').value;
+            });
+
+            // Back to login from setup
+            backToLoginFromSetup.addEventListener('click', () => {
+                loginForm.style.display = 'block';
+                forgotPasswordLink.parentElement.style.display = 'block';
+                firstTimeLink.parentElement.style.display = 'block';
+                setupForm.style.display = 'none';
+                loginError.style.display = 'none';
+                pendingClientData = null;
+            });
+
+            // Check email - Step 1
+            checkEmailBtn.addEventListener('click', async () => {
+                const email = document.getElementById('setupEmail').value.trim().toLowerCase();
+
+                // Reset error styling
+                loginError.style.background = '';
+                loginError.style.borderColor = '';
+                loginError.style.color = '';
+
+                if (!email) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Please enter your email address.';
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+
+                checkEmailBtn.disabled = true;
+                checkEmailBtn.textContent = 'Checking...';
+                loginError.style.display = 'none';
+
+                try {
+                    // Check if email exists in Firestore users collection
+                    const snapshot = await db.collection('users')
+                        .where('email', '==', email)
+                        .where('role', '==', 'client')
+                        .limit(1)
+                        .get();
+
+                    if (snapshot.empty) {
+                        loginError.style.display = 'block';
+                        loginError.textContent = 'No client account found with this email. Please contact your trainer.';
+                        checkEmailBtn.disabled = false;
+                        checkEmailBtn.textContent = 'Continue';
+                        return;
+                    }
+
+                    // Check if they already have an auth account
+                    try {
+                        const methods = await auth.fetchSignInMethodsForEmail(email);
+                        if (methods.length > 0) {
+                            loginError.style.display = 'block';
+                            loginError.textContent = 'Account already exists. Please use the login form or reset your password.';
+                            checkEmailBtn.disabled = false;
+                            checkEmailBtn.textContent = 'Continue';
+                            return;
+                        }
+                    } catch (authError) {
+                        // If error, assume no account exists and continue
+                        console.log('Auth check:', authError.code);
+                    }
+
+                    // Found client in Firestore, proceed to step 2
+                    const clientDoc = snapshot.docs[0];
+                    pendingClientData = {
+                        docId: clientDoc.id,
+                        ...clientDoc.data()
+                    };
+
+                    document.getElementById('setupUserName').textContent = pendingClientData.name || 'Client';
+                    setupStep1.style.display = 'none';
+                    setupStep2.style.display = 'block';
+
+                } catch (error) {
+                    console.error('Email check error:', error);
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'An error occurred. Please try again.';
+                } finally {
+                    checkEmailBtn.disabled = false;
+                    checkEmailBtn.textContent = 'Continue';
+                }
+            });
+
+            // Create account - Step 2
+            createAccountBtn.addEventListener('click', async () => {
+                const password = document.getElementById('setupPassword').value;
+                const confirmPassword = document.getElementById('setupPasswordConfirm').value;
+
+                // Reset error styling
+                loginError.style.background = '';
+                loginError.style.borderColor = '';
+                loginError.style.color = '';
+
+                if (!password || password.length < 6) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Password must be at least 6 characters.';
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Passwords do not match.';
+                    return;
+                }
+
+                if (!pendingClientData) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Session expired. Please start again.';
+                    return;
+                }
+
+                createAccountBtn.disabled = true;
+                createAccountBtn.textContent = 'Creating Account...';
+                loginError.style.display = 'none';
+
+                try {
+                    // Create the Firebase Auth account
+                    const userCredential = await auth.createUserWithEmailAndPassword(
+                        pendingClientData.email,
+                        password
+                    );
+
+                    const user = userCredential.user;
+
+                    // Update the Firestore document with the new Auth UID
+                    // First, copy data to new document with Auth UID
+                    const oldDocRef = db.collection('users').doc(pendingClientData.docId);
+                    const newDocRef = db.collection('users').doc(user.uid);
+
+                    // Get the latest data
+                    const oldDoc = await oldDocRef.get();
+                    const data = oldDoc.data();
+
+                    // Create new document with Auth UID
+                    await newDocRef.set({
+                        ...data,
+                        needsPasswordSetup: false,
+                        accountCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Delete old document (with random ID)
+                    await oldDocRef.delete();
+
+                    // Update display name in Auth
+                    await user.updateProfile({
+                        displayName: pendingClientData.name
+                    });
+
+                    // Success - redirect to dashboard
+                    window.location.href = '/dashboard/index.html';
+
+                } catch (error) {
+                    console.error('Account creation error:', error);
+                    loginError.style.display = 'block';
+
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            loginError.textContent = 'An account already exists with this email. Try logging in instead.';
+                            break;
+                        case 'auth/weak-password':
+                            loginError.textContent = 'Password is too weak. Please use at least 6 characters.';
+                            break;
+                        default:
+                            loginError.textContent = 'Could not create account: ' + error.message;
+                    }
+                    createAccountBtn.disabled = false;
+                    createAccountBtn.textContent = 'Create Account';
                 }
             });
         });
