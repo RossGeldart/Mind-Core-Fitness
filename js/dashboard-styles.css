@@ -501,6 +501,46 @@
     color: var(--text-muted);
 }
 
+/* Blocked Times List */
+.blocked-times-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.blocked-time-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+    border-radius: 8px;
+}
+
+.blocked-time-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.blocked-time-info strong {
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.blocked-time-range {
+    color: var(--accent-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.blocked-time-reason {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
 /* Client List */
 .client-list {
     display: flex;
