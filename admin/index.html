@@ -325,6 +325,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Number of Sessions</label>
+                        <input type="number" id="clientSessions" min="1" placeholder="e.g. 10">
+                    </div>
+
                     <input type="hidden" id="clientId">
                 </form>
             </div>
@@ -525,6 +530,7 @@
                 const email = document.getElementById('clientEmail').value.trim();
                 const blockDuration = parseInt(document.getElementById('clientBlockDuration').value);
                 const blockEndDate = document.getElementById('clientBlockEndDate').value;
+                const totalSessions = parseInt(document.getElementById('clientSessions').value) || 0;
                 const clientId = document.getElementById('clientId').value;
 
                 if (!name || !email) {
@@ -544,6 +550,7 @@
                             email,
                             blockDuration,
                             blockEndDate,
+                            totalSessions,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         showToast('Client updated successfully');
@@ -564,6 +571,8 @@
                             role: 'client',
                             blockDuration,
                             blockEndDate,
+                            totalSessions,
+                            sessionsUsed: 0,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             needsPasswordSetup: true
                         });
@@ -593,6 +602,7 @@
                 document.getElementById('clientEmail').value = client.email || '';
                 document.getElementById('clientBlockDuration').value = client.blockDuration || 60;
                 document.getElementById('clientBlockEndDate').value = client.blockEndDate || '';
+                document.getElementById('clientSessions').value = client.totalSessions || '';
 
                 document.getElementById('clientModal').classList.add('show');
             };
