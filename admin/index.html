@@ -1612,11 +1612,10 @@
                             navigateToSection('clients');
                         };
 
-                        const activeClients = clients.filter(c => c.status === 'active');
-                        if (activeClients.length === 0) {
+                        if (clients.length === 0) {
                             content.innerHTML = '<p class="no-data">No active clients</p>';
                         } else {
-                            content.innerHTML = activeClients.slice(0, 5).map(client => `
+                            content.innerHTML = clients.slice(0, 5).map(client => `
                                 <div class="stats-detail-item">
                                     <div class="stats-detail-avatar">${client.name.charAt(0).toUpperCase()}</div>
                                     <div class="stats-detail-info">
@@ -1625,8 +1624,8 @@
                                     </div>
                                 </div>
                             `).join('');
-                            if (activeClients.length > 5) {
-                                content.innerHTML += `<p class="stats-detail-more">+${activeClients.length - 5} more clients</p>`;
+                            if (clients.length > 5) {
+                                content.innerHTML += `<p class="stats-detail-more">+${clients.length - 5} more clients</p>`;
                             }
                         }
                     } else if (type === 'today') {
@@ -1640,14 +1639,16 @@
                         const todayStr = today.toISOString().split('T')[0];
                         const snapshot = await db.collection('bookings')
                             .where('date', '==', todayStr)
-                            .where('status', '==', 'confirmed')
-                            .orderBy('startTime')
                             .get();
 
-                        if (snapshot.empty) {
+                        const bookings = snapshot.docs
+                            .map(doc => ({ id: doc.id, ...doc.data() }))
+                            .filter(b => b.status === 'confirmed')
+                            .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+
+                        if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No sessions scheduled for today</p>';
                         } else {
-                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                             content.innerHTML = bookings.map(booking => `
                                 <div class="stats-detail-item">
                                     <div class="stats-detail-time">${formatTimeDisplay(booking.startTime)}</div>
@@ -1671,15 +1672,16 @@
                         const snapshot = await db.collection('bookings')
                             .where('date', '>=', todayStr)
                             .where('date', '<=', endWeekStr)
-                            .where('status', '==', 'confirmed')
-                            .orderBy('date')
-                            .orderBy('startTime')
                             .get();
 
-                        if (snapshot.empty) {
+                        const bookings = snapshot.docs
+                            .map(doc => ({ id: doc.id, ...doc.data() }))
+                            .filter(b => b.status === 'confirmed')
+                            .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+
+                        if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No sessions scheduled this week</p>';
                         } else {
-                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                             const grouped = {};
                             bookings.forEach(b => {
                                 if (!grouped[b.date]) grouped[b.date] = [];
@@ -1719,16 +1721,16 @@
                         const todayStr = today.toISOString().split('T')[0];
                         const snapshot = await db.collection('bookings')
                             .where('date', '>=', todayStr)
-                            .where('status', '==', 'confirmed')
-                            .orderBy('date')
-                            .orderBy('startTime')
-                            .limit(10)
                             .get();
 
-                        if (snapshot.empty) {
+                        const bookings = snapshot.docs
+                            .map(doc => ({ id: doc.id, ...doc.data() }))
+                            .filter(b => b.status === 'confirmed')
+                            .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+
+                        if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No upcoming sessions</p>';
                         } else {
-                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                             content.innerHTML = bookings.slice(0, 6).map(booking => {
                                 const dateObj = new Date(booking.date + 'T00:00:00');
                                 const dayName = DAYS_SHORT[dateObj.getDay()];
