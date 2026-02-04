@@ -27,7 +27,7 @@ exports.createClient = functions.https.onCall(async (data, context) => {
     );
   }
 
-  const { name, email, blockDuration, blockEndDate, totalSessions } = data;
+  const { name, email, blockDuration, blockStartDate, blockEndDate, totalSessions } = data;
 
   // Validate required fields
   if (!name || !email) {
@@ -75,6 +75,7 @@ exports.createClient = functions.https.onCall(async (data, context) => {
       email: email,
       role: 'client',
       blockDuration: blockDuration || 60,
+      blockStartDate: blockStartDate || null,
       blockEndDate: blockEndDate || null,
       totalSessions: totalSessions || 0,
       sessionsUsed: 0,

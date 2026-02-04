@@ -445,12 +445,19 @@
                         </div>
                     </div>
 
-                    <!-- Step 5: Block End Date -->
+                    <!-- Step 5: Block Dates -->
                     <div class="client-wizard-panel" data-panel="5">
-                        <h4>When does their block end?</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Sessions will be scheduled up to this date</p>
-                        <div class="form-group">
-                            <input type="date" id="clientBlockEndDate" class="wizard-input-large" style="text-align: center;">
+                        <h4>When does their block run?</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Set the start and end dates for this training block</p>
+                        <div class="form-row" style="gap: 16px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label style="text-align: center; display: block; margin-bottom: 8px;">Start Date</label>
+                                <input type="date" id="clientBlockStartDate" class="wizard-input-large" style="text-align: center;">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label style="text-align: center; display: block; margin-bottom: 8px;">End Date</label>
+                                <input type="date" id="clientBlockEndDate" class="wizard-input-large" style="text-align: center;">
+                            </div>
                         </div>
                         <div class="date-presets">
                             <button type="button" class="date-preset-btn" data-weeks="4">4 weeks</button>
@@ -501,6 +508,10 @@
                                     <span class="summary-value" id="clientSummarySessions">-</span>
                                 </div>
                                 <div class="summary-item">
+                                    <span class="summary-label">Block Starts:</span>
+                                    <span class="summary-value" id="clientSummaryStartDate">-</span>
+                                </div>
+                                <div class="summary-item">
                                     <span class="summary-label">Block Ends:</span>
                                     <span class="summary-value" id="clientSummaryEndDate">-</span>
                                 </div>
@@ -534,9 +545,15 @@
                                     <input type="number" id="clientEditSessions" min="1" placeholder="e.g. 10">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Block End Date</label>
-                                <input type="date" id="clientEditBlockEndDate">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Block Start Date</label>
+                                    <input type="date" id="clientEditBlockStartDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>Block End Date</label>
+                                    <input type="date" id="clientEditBlockEndDate">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -830,7 +847,7 @@
                         </div>
                         <div class="client-meta">
                             <span class="client-duration">${client.blockDuration || 60} min</span>
-                            ${client.blockEndDate ? `<span class="client-end">Until ${new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>` : ''}
+                            ${client.blockStartDate || client.blockEndDate ? `<span class="client-end">${client.blockStartDate ? new Date(client.blockStartDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''} - ${client.blockEndDate ? new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</span>` : ''}
                         </div>
                         <div class="client-actions">
                             <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">Edit</button>
@@ -849,6 +866,7 @@
                 email: '',
                 blockDuration: 30,
                 totalSessions: 0,
+                blockStartDate: '',
                 blockEndDate: '',
                 selectedDays: [],    // Array of day numbers (1=Mon, 2=Tue, etc.)
                 dayTimes: {}         // Object mapping day number to time string
@@ -863,6 +881,7 @@
                     email: '',
                     blockDuration: 30,
                     totalSessions: 0,
+                    blockStartDate: '',
                     blockEndDate: '',
                     selectedDays: [],
                     dayTimes: {}
@@ -888,6 +907,11 @@
                 document.querySelectorAll('.session-preset-btn, .date-preset-btn').forEach(btn => {
                     btn.classList.remove('selected');
                 });
+
+                // Set default start date to today
+                const defaultStart = new Date();
+                document.getElementById('clientBlockStartDate').value = defaultStart.toISOString().split('T')[0];
+                clientWizardState.blockStartDate = defaultStart.toISOString().split('T')[0];
 
                 // Set default end date to 3 months from now
                 const defaultEnd = new Date();
@@ -1167,6 +1191,7 @@
                     document.getElementById('clientEditEmail').value = state.email || '';
                     document.getElementById('clientEditBlockDuration').value = state.blockDuration || 30;
                     document.getElementById('clientEditSessions').value = state.totalSessions || '';
+                    document.getElementById('clientEditBlockStartDate').value = state.blockStartDate || '';
                     document.getElementById('clientEditBlockEndDate').value = state.blockEndDate || '';
                 } else {
                     // Show read-only summary, hide edit form
@@ -1178,6 +1203,18 @@
                     document.getElementById('clientSummaryEmail').textContent = state.email || '-';
                     document.getElementById('clientSummaryDuration').textContent = state.blockDuration + ' minutes';
                     document.getElementById('clientSummarySessions').textContent = state.totalSessions || '-';
+
+                    if (state.blockStartDate) {
+                        const startDate = new Date(state.blockStartDate);
+                        document.getElementById('clientSummaryStartDate').textContent = startDate.toLocaleDateString('en-GB', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    } else {
+                        document.getElementById('clientSummaryStartDate').textContent = '-';
+                    }
 
                     if (state.blockEndDate) {
                         const endDate = new Date(state.blockEndDate);
@@ -1245,11 +1282,19 @@
                     document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('selected'));
                     this.classList.add('selected');
                     const weeks = parseInt(this.dataset.weeks);
+
+                    // Set start date to today
+                    const startDate = new Date();
+                    const startStr = startDate.toISOString().split('T')[0];
+                    clientWizardState.blockStartDate = startStr;
+                    document.getElementById('clientBlockStartDate').value = startStr;
+
+                    // Set end date to X weeks from today
                     const endDate = new Date();
                     endDate.setDate(endDate.getDate() + (weeks * 7));
-                    const dateStr = endDate.toISOString().split('T')[0];
-                    clientWizardState.blockEndDate = dateStr;
-                    document.getElementById('clientBlockEndDate').value = dateStr;
+                    const endStr = endDate.toISOString().split('T')[0];
+                    clientWizardState.blockEndDate = endStr;
+                    document.getElementById('clientBlockEndDate').value = endStr;
                 });
             });
 
@@ -1316,11 +1361,21 @@
                     clientWizardState.totalSessions = sessions;
                 }
                 if (step === 5) {
+                    const startDate = document.getElementById('clientBlockStartDate').value;
                     const endDate = document.getElementById('clientBlockEndDate').value;
+                    if (!startDate) {
+                        showToast('Please select a block start date', 'error');
+                        return;
+                    }
                     if (!endDate) {
                         showToast('Please select a block end date', 'error');
                         return;
                     }
+                    if (startDate > endDate) {
+                        showToast('Start date must be before end date', 'error');
+                        return;
+                    }
+                    clientWizardState.blockStartDate = startDate;
                     clientWizardState.blockEndDate = endDate;
                 }
                 if (step === 6) {
@@ -1353,13 +1408,14 @@
             // Save Client
             document.getElementById('saveClientBtn').addEventListener('click', async () => {
                 const state = clientWizardState;
-                let name, email, blockDuration, blockEndDate, totalSessions;
+                let name, email, blockDuration, blockStartDate, blockEndDate, totalSessions;
 
                 if (state.isEditMode) {
                     // Read from edit form
                     name = document.getElementById('clientEditName').value.trim();
                     email = document.getElementById('clientEditEmail').value.trim();
                     blockDuration = parseInt(document.getElementById('clientEditBlockDuration').value);
+                    blockStartDate = document.getElementById('clientEditBlockStartDate').value;
                     blockEndDate = document.getElementById('clientEditBlockEndDate').value;
                     totalSessions = parseInt(document.getElementById('clientEditSessions').value) || 0;
                 } else {
@@ -1367,6 +1423,7 @@
                     name = state.name || document.getElementById('clientName').value.trim();
                     email = state.email || document.getElementById('clientEmail').value.trim();
                     blockDuration = state.blockDuration || parseInt(document.getElementById('clientBlockDuration').value);
+                    blockStartDate = state.blockStartDate || document.getElementById('clientBlockStartDate').value;
                     blockEndDate = state.blockEndDate || document.getElementById('clientBlockEndDate').value;
                     totalSessions = state.totalSessions || parseInt(document.getElementById('clientSessions').value) || 0;
                 }
@@ -1391,6 +1448,7 @@
                             name,
                             email,
                             blockDuration,
+                            blockStartDate,
                             blockEndDate,
                             totalSessions,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1421,6 +1479,7 @@
                                 name,
                                 email,
                                 blockDuration,
+                                blockStartDate,
                                 blockEndDate,
                                 totalSessions
                             });
@@ -1443,6 +1502,7 @@
                                 email,
                                 role: 'client',
                                 blockDuration,
+                                blockStartDate,
                                 blockEndDate,
                                 totalSessions,
                                 sessionsUsed: 0,
@@ -1473,17 +1533,27 @@
 
             // Create initial bookings for new client based on schedule
             async function createInitialBookings(clientId, clientName, clientEmail, state) {
-                const { selectedDays, dayTimes, blockDuration, blockEndDate, totalSessions } = state;
+                const { selectedDays, dayTimes, blockDuration, blockStartDate, blockEndDate, totalSessions } = state;
                 const endDate = new Date(blockEndDate);
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
+
+                // Use blockStartDate if provided and it's in the future, otherwise use today
+                let startDate = today;
+                if (blockStartDate) {
+                    const providedStart = new Date(blockStartDate);
+                    providedStart.setHours(0, 0, 0, 0);
+                    if (providedStart >= today) {
+                        startDate = providedStart;
+                    }
+                }
 
                 let bookingsCreated = 0;
                 const maxBookings = totalSessions || 999;
                 const batch = db.batch();
 
                 // Loop through weeks until end date
-                let currentDate = new Date(today);
+                let currentDate = new Date(startDate);
 
                 while (currentDate <= endDate && bookingsCreated < maxBookings) {
                     const dayOfWeek = currentDate.getDay();
@@ -1542,6 +1612,7 @@
                 document.getElementById('clientName').value = client.name || '';
                 document.getElementById('clientEmail').value = client.email || '';
                 document.getElementById('clientBlockDuration').value = client.blockDuration || 30;
+                document.getElementById('clientBlockStartDate').value = client.blockStartDate || '';
                 document.getElementById('clientBlockEndDate').value = client.blockEndDate || '';
                 document.getElementById('clientSessions').value = client.totalSessions || '';
 
@@ -1549,6 +1620,7 @@
                 clientWizardState.name = client.name || '';
                 clientWizardState.email = client.email || '';
                 clientWizardState.blockDuration = client.blockDuration || 30;
+                clientWizardState.blockStartDate = client.blockStartDate || '';
                 clientWizardState.blockEndDate = client.blockEndDate || '';
                 clientWizardState.totalSessions = client.totalSessions || 0;
 
@@ -2769,7 +2841,7 @@
                         <div class="client-select-avatar">${(client.name || 'C')[0].toUpperCase()}</div>
                         <div class="client-select-info">
                             <div class="client-select-name">${client.name || client.email}</div>
-                            <div class="client-select-meta">${client.blockDuration || 60} min sessions${client.blockEndDate ? ' • Until ' + new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</div>
+                            <div class="client-select-meta">${client.blockDuration || 60} min sessions${client.blockStartDate || client.blockEndDate ? ' • ' + (client.blockStartDate ? new Date(client.blockStartDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '') + ' - ' + (client.blockEndDate ? new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '') : ''}</div>
                         </div>
                     </div>
                 `).join('');
