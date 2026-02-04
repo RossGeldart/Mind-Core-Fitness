@@ -1794,7 +1794,452 @@
                 container.innerHTML = html;
             }
 
+            // ==================
+            // BOOKING CALENDAR
+            // ==================
+
+            let calendarDate = new Date();
+            let selectedDate = null;
+            let availableSlots = [];
+            let trainerAvailability = null;
+            let rescheduleMode = false;
+            let rescheduleBookingId = null;
+
+            // Load trainer availability
+            async function loadTrainerAvailability() {
+                try {
+                    // Get the admin/trainer's availability
+                    const adminsSnapshot = await db.collection('users')
+                        .where('role', '==', 'admin')
+                        .limit(1)
+                        .get();
+
+                    if (!adminsSnapshot.empty) {
+                        const adminId = adminsSnapshot.docs[0].id;
+                        const availDoc = await db.collection('availability').doc(adminId).get();
+                        if (availDoc.exists) {
+                            trainerAvailability = availDoc.data();
+                            console.log('Loaded trainer availability');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading trainer availability:', error);
+                }
+            }
+
+            // Render the booking calendar
+            function renderBookingCalendar() {
+                const grid = document.getElementById('calendarGrid');
+                const monthLabel = document.getElementById('calendarMonth');
+
+                const year = calendarDate.getFullYear();
+                const month = calendarDate.getMonth();
+
+                // Update month label
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                monthLabel.textContent = `${monthNames[month]} ${year}`;
+
+                // Get first day of month and total days
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Create set of dates with sessions
+                const sessionDates = new Set();
+                userBookings.forEach(booking => {
+                    sessionDates.add(booking.date);
+                });
+
+                // Build calendar HTML
+                let html = '';
+
+                // Day headers
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                dayNames.forEach(day => {
+                    html += `<div class="calendar-day-header">${day}</div>`;
+                });
+
+                // Empty cells before first day
+                for (let i = 0; i < firstDay; i++) {
+                    html += '<div class="calendar-day empty"></div>';
+                }
+
+                // Days of month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dateStr = date.toISOString().split('T')[0];
+                    const isPast = date < today;
+                    const isToday = date.toDateString() === today.toDateString();
+                    const hasSession = sessionDates.has(dateStr);
+                    const isSelected = selectedDate === dateStr;
+
+                    // Check if trainer is available on this day
+                    const dayOfWeek = date.getDay();
+                    let isAvailable = false;
+                    if (trainerAvailability && trainerAvailability.schedule && trainerAvailability.schedule[dayOfWeek]) {
+                        const daySchedule = trainerAvailability.schedule[dayOfWeek];
+                        isAvailable = daySchedule.slots && daySchedule.slots.length > 0;
+                    }
+
+                    // Check if blocked
+                    let isBlocked = false;
+                    if (trainerAvailability && trainerAvailability.blockedTimes) {
+                        isBlocked = trainerAvailability.blockedTimes.some(bt =>
+                            bt.date === dateStr && bt.allDay
+                        );
+                    }
+
+                    const classes = ['calendar-day'];
+                    if (isPast) classes.push('past');
+                    if (isToday) classes.push('today');
+                    if (hasSession) classes.push('has-session');
+                    if (isSelected) classes.push('selected');
+                    if (!isPast && isAvailable && !isBlocked) classes.push('available');
+
+                    html += `
+                        <div class="${classes.join(' ')}" data-date="${dateStr}" ${isPast ? '' : 'onclick="selectBookingDate(\'' + dateStr + '\')"'}>
+                            <span class="day-number">${day}</span>
+                            ${hasSession ? '<span class="session-dot"></span>' : ''}
+                        </div>
+                    `;
+                }
+
+                grid.innerHTML = html;
+            }
+
+            // Select a date for booking/rescheduling
+            window.selectBookingDate = async function(dateStr) {
+                selectedDate = dateStr;
+                renderBookingCalendar();
+
+                // Show the slots container
+                const slotsContainer = document.getElementById('slotsContainer');
+                slotsContainer.style.display = 'block';
+
+                // Update date display
+                const date = new Date(dateStr + 'T00:00:00');
+                const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                document.getElementById('selectedDateDisplay').textContent = date.toLocaleDateString('en-GB', options);
+
+                // Generate available time slots
+                await generateTimeSlots(dateStr);
+            };
+
+            // Generate time slots for selected date
+            async function generateTimeSlots(dateStr) {
+                const slotsBody = document.getElementById('slotsBody');
+                slotsBody.innerHTML = '<p style="color: var(--text-muted);">Loading available times...</p>';
+
+                const date = new Date(dateStr + 'T00:00:00');
+                const dayOfWeek = date.getDay();
+
+                // Get trainer's schedule for this day
+                let daySchedule = null;
+                if (trainerAvailability && trainerAvailability.schedule && trainerAvailability.schedule[dayOfWeek]) {
+                    daySchedule = trainerAvailability.schedule[dayOfWeek];
+                }
+
+                if (!daySchedule || !daySchedule.slots || daySchedule.slots.length === 0) {
+                    slotsBody.innerHTML = '<p style="color: var(--text-muted);">No available times on this day</p>';
+                    return;
+                }
+
+                // Get existing bookings for this date
+                const existingBookings = await db.collection('bookings')
+                    .where('date', '==', dateStr)
+                    .get();
+
+                const bookedTimes = [];
+                existingBookings.forEach(doc => {
+                    const data = doc.data();
+                    if (data.status !== 'cancelled') {
+                        bookedTimes.push({
+                            time: data.time,
+                            duration: data.duration || 60,
+                            isOwn: data.clientId === currentUserId
+                        });
+                    }
+                });
+
+                // Get blocked times for this date
+                const blockedTimes = [];
+                if (trainerAvailability && trainerAvailability.blockedTimes) {
+                    trainerAvailability.blockedTimes.forEach(bt => {
+                        if (bt.date === dateStr && !bt.allDay) {
+                            blockedTimes.push({ start: bt.startTime, end: bt.endTime });
+                        }
+                    });
+                }
+
+                // Generate slots from schedule
+                let html = '';
+                const slotDuration = 60; // 60 minute slots
+
+                daySchedule.slots.forEach(slot => {
+                    const [startHour, startMin] = slot.start.split(':').map(Number);
+                    const [endHour, endMin] = slot.end.split(':').map(Number);
+                    const startMinutes = startHour * 60 + startMin;
+                    const endMinutes = endHour * 60 + endMin;
+
+                    for (let time = startMinutes; time + slotDuration <= endMinutes; time += slotDuration) {
+                        const hour = Math.floor(time / 60);
+                        const min = time % 60;
+                        const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+
+                        // Check if slot is booked
+                        const booking = bookedTimes.find(bt => bt.time === timeStr);
+                        const isBooked = !!booking;
+                        const isOwnBooking = booking && booking.isOwn;
+
+                        // Check if blocked
+                        const isBlocked = blockedTimes.some(bt => {
+                            const [bsH, bsM] = bt.start.split(':').map(Number);
+                            const [beH, beM] = bt.end.split(':').map(Number);
+                            const blockStart = bsH * 60 + bsM;
+                            const blockEnd = beH * 60 + beM;
+                            return time < blockEnd && (time + slotDuration) > blockStart;
+                        });
+
+                        // Format display time
+                        const displayDate = new Date();
+                        displayDate.setHours(hour, min);
+                        const displayTime = displayDate.toLocaleTimeString('en-GB', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+
+                        let slotClass = 'slot-item';
+                        let statusText = '';
+                        let clickable = false;
+
+                        if (isOwnBooking) {
+                            slotClass += ' booked';
+                            statusText = '<span class="slot-status your-session">Your Session</span>';
+                        } else if (isBooked || isBlocked) {
+                            slotClass += ' unavailable';
+                            statusText = '<span class="slot-status unavailable">Unavailable</span>';
+                        } else {
+                            slotClass += ' available';
+                            statusText = '<span class="slot-status available">Available</span>';
+                            clickable = true;
+                        }
+
+                        html += `
+                            <div class="${slotClass}" ${clickable ? `onclick="selectTimeSlot('${dateStr}', '${timeStr}')"` : ''}>
+                                <span class="slot-time">${displayTime}</span>
+                                ${statusText}
+                            </div>
+                        `;
+                    }
+                });
+
+                if (html === '') {
+                    html = '<p style="color: var(--text-muted);">No available times on this day</p>';
+                }
+
+                slotsBody.innerHTML = html;
+            }
+
+            // Select a time slot for booking
+            window.selectTimeSlot = async function(dateStr, timeStr) {
+                if (rescheduleMode && rescheduleBookingId) {
+                    // Reschedule existing booking
+                    if (confirm(`Reschedule your session to ${dateStr} at ${timeStr}?`)) {
+                        try {
+                            await db.collection('bookings').doc(rescheduleBookingId).update({
+                                date: dateStr,
+                                time: timeStr,
+                                rescheduledAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                rescheduledBy: 'client'
+                            });
+                            showToast('Session rescheduled successfully!');
+                            rescheduleMode = false;
+                            rescheduleBookingId = null;
+
+                            // Reload bookings and update displays
+                            await loadUserBookings();
+                            renderBookingCalendar();
+                            await generateTimeSlots(dateStr);
+                        } catch (error) {
+                            console.error('Error rescheduling:', error);
+                            showToast('Failed to reschedule. Please try again.', 'error');
+                        }
+                    }
+                } else {
+                    // New booking - show confirmation
+                    showToast('Please contact your trainer to book additional sessions.', 'info');
+                }
+            };
+
+            // Start reschedule mode
+            window.startReschedule = function(bookingId) {
+                rescheduleMode = true;
+                rescheduleBookingId = bookingId;
+
+                // Find the booking
+                const booking = userBookings.find(b => b.id === bookingId);
+                if (booking) {
+                    // Switch to Book/Reschedule tab
+                    document.querySelectorAll('.client-nav-item').forEach(i => i.classList.remove('active'));
+                    document.querySelector('.client-nav-item[data-section="book"]').classList.add('active');
+                    document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
+                    document.getElementById('section-book').style.display = 'block';
+
+                    // Update heading
+                    document.querySelector('#section-book h2').textContent = `Reschedule Session (${booking.date})`;
+
+                    showToast('Select a new date and time for your session', 'info');
+                }
+            };
+
+            // Calendar navigation
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                calendarDate.setMonth(calendarDate.getMonth() - 1);
+                renderBookingCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                calendarDate.setMonth(calendarDate.getMonth() + 1);
+                renderBookingCalendar();
+            });
+
+            // Reschedule button on next session card
+            document.getElementById('rescheduleNextBtn').addEventListener('click', function() {
+                const bookingId = this.dataset.bookingId;
+                if (bookingId) {
+                    startReschedule(bookingId);
+                }
+            });
+
+            // Initialize calendar when switching to Book section
+            document.querySelector('.client-nav-item[data-section="book"]').addEventListener('click', async function() {
+                if (!trainerAvailability) {
+                    await loadTrainerAvailability();
+                }
+                renderBookingCalendar();
+            });
+
+            // Load trainer availability on page load
+            loadTrainerAvailability();
+
         });
     </script>
+
+    <style>
+        /* Calendar styles for client dashboard */
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        #calendarGrid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            background: #f9f9f9;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .calendar-day.past {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--accent-color);
+        }
+
+        .calendar-day.available:not(.past):hover {
+            background: rgba(45, 138, 78, 0.1);
+            border-color: var(--success-color);
+        }
+
+        .calendar-day.has-session {
+            background: rgba(45, 138, 78, 0.15);
+        }
+
+        .calendar-day.selected {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .calendar-day .day-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day .session-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success-color);
+            position: absolute;
+            bottom: 4px;
+        }
+
+        .calendar-day.selected .session-dot {
+            background: #ffffff;
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .calendar-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .calendar-nav button {
+            background: #f0f0f0;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: #e0e0e0;
+        }
+
+        .slot-item {
+            cursor: pointer;
+        }
+
+        .slot-item.available:hover {
+            transform: translateX(4px);
+        }
+    </style>
 </body>
 </html>
