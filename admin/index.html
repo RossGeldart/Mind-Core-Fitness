@@ -1526,7 +1526,8 @@
                     const bookingsToday = await db.collection('bookings')
                         .where('date', '==', todayStr)
                         .get();
-                    document.getElementById('statBookingsToday').textContent = bookingsToday.size;
+                    const confirmedToday = bookingsToday.docs.filter(doc => doc.data().status === 'confirmed').length;
+                    document.getElementById('statBookingsToday').textContent = confirmedToday;
 
                     // Get this week's bookings
                     const weekStart = new Date(today);
@@ -1538,13 +1539,15 @@
                         .where('date', '>=', weekStart.toISOString().split('T')[0])
                         .where('date', '<=', weekEnd.toISOString().split('T')[0])
                         .get();
-                    document.getElementById('statBookingsWeek').textContent = bookingsWeek.size;
+                    const confirmedWeek = bookingsWeek.docs.filter(doc => doc.data().status === 'confirmed').length;
+                    document.getElementById('statBookingsWeek').textContent = confirmedWeek;
 
                     // Get all upcoming bookings
                     const upcoming = await db.collection('bookings')
                         .where('date', '>=', todayStr)
                         .get();
-                    document.getElementById('statUpcoming').textContent = upcoming.size;
+                    const confirmedUpcoming = upcoming.docs.filter(doc => doc.data().status === 'confirmed').length;
+                    document.getElementById('statUpcoming').textContent = confirmedUpcoming;
                 } catch (error) {
                     console.error('Error loading stats:', error);
                 }
@@ -1644,14 +1647,14 @@
                         const bookings = snapshot.docs
                             .map(doc => ({ id: doc.id, ...doc.data() }))
                             .filter(b => b.status === 'confirmed')
-                            .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+                            .sort((a, b) => (a.time || a.startTime || '').localeCompare(b.time || b.startTime || ''));
 
                         if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No sessions scheduled for today</p>';
                         } else {
                             content.innerHTML = bookings.map(booking => `
                                 <div class="stats-detail-item">
-                                    <div class="stats-detail-time">${formatTimeDisplay(booking.startTime)}</div>
+                                    <div class="stats-detail-time">${formatTimeDisplay(booking.time || booking.startTime)}</div>
                                     <div class="stats-detail-info">
                                         <div class="stats-detail-name">${booking.clientName}</div>
                                         <div class="stats-detail-sub">${booking.duration || 30} min session</div>
@@ -1677,7 +1680,7 @@
                         const bookings = snapshot.docs
                             .map(doc => ({ id: doc.id, ...doc.data() }))
                             .filter(b => b.status === 'confirmed')
-                            .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+                            .sort((a, b) => (a.date + (a.time || a.startTime || '')).localeCompare(b.date + (b.time || b.startTime || '')));
 
                         if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No sessions scheduled this week</p>';
@@ -1689,7 +1692,7 @@
                             });
 
                             let html = '';
-                            Object.keys(grouped).slice(0, 4).forEach(date => {
+                            Object.keys(grouped).sort().slice(0, 4).forEach(date => {
                                 const dateObj = new Date(date + 'T00:00:00');
                                 const dayName = DAYS_SHORT[dateObj.getDay()];
                                 const dayNum = dateObj.getDate();
@@ -1697,7 +1700,7 @@
                                 grouped[date].slice(0, 3).forEach(booking => {
                                     html += `
                                         <div class="stats-detail-item compact">
-                                            <div class="stats-detail-time">${formatTimeDisplay(booking.startTime)}</div>
+                                            <div class="stats-detail-time">${formatTimeDisplay(booking.time || booking.startTime)}</div>
                                             <div class="stats-detail-info">
                                                 <div class="stats-detail-name">${booking.clientName}</div>
                                             </div>
@@ -1726,7 +1729,7 @@
                         const bookings = snapshot.docs
                             .map(doc => ({ id: doc.id, ...doc.data() }))
                             .filter(b => b.status === 'confirmed')
-                            .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+                            .sort((a, b) => (a.date + (a.time || a.startTime || '')).localeCompare(b.date + (b.time || b.startTime || '')));
 
                         if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No upcoming sessions</p>';
@@ -1743,7 +1746,7 @@
                                         </div>
                                         <div class="stats-detail-info">
                                             <div class="stats-detail-name">${booking.clientName}</div>
-                                            <div class="stats-detail-sub">${formatTimeDisplay(booking.startTime)} • ${booking.duration || 30} min</div>
+                                            <div class="stats-detail-sub">${formatTimeDisplay(booking.time || booking.startTime)} • ${booking.duration || 30} min</div>
                                         </div>
                                     </div>
                                 `;
