@@ -1967,20 +1967,42 @@
                 // Build calendar HTML
                 let html = '';
 
-                // Day headers
-                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                // Day headers (weekdays only: Monday to Friday)
+                const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                 dayNames.forEach(day => {
                     html += `<div class="calendar-day-header">${day}</div>`;
                 });
 
-                // Empty cells before first day
-                for (let i = 0; i < firstDay; i++) {
+                // Find the first weekday of the month
+                // Convert Sunday=0...Saturday=6 to Monday=0...Friday=4 (skip weekends)
+                let firstWeekday = firstDay;
+                // If first day is Sunday (0), first weekday is Monday (day 2)
+                // If first day is Saturday (6), first weekday is Monday (day 3)
+                let firstWeekdayDate = 1;
+                if (firstDay === 0) {
+                    firstWeekdayDate = 2; // Skip Sunday, start Monday
+                } else if (firstDay === 6) {
+                    firstWeekdayDate = 3; // Skip Saturday and Sunday, start Monday
+                }
+
+                // Calculate which column (Mon=0, Tue=1, Wed=2, Thu=3, Fri=4) the first weekday falls on
+                const firstWeekdayColumn = firstDay === 0 ? 0 : (firstDay === 6 ? 0 : firstDay - 1);
+
+                // Empty cells before first weekday
+                for (let i = 0; i < firstWeekdayColumn; i++) {
                     html += '<div class="calendar-day empty"></div>';
                 }
 
-                // Days of month
+                // Days of month (only weekdays)
                 for (let day = 1; day <= daysInMonth; day++) {
                     const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay();
+
+                    // Skip weekends (Saturday = 6, Sunday = 0)
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        continue;
+                    }
+
                     const dateStr = date.toISOString().split('T')[0];
                     const isPast = date < today;
                     const isToday = date.toDateString() === today.toDateString();
@@ -1988,7 +2010,6 @@
                     const isSelected = selectedDate === dateStr;
 
                     // Check if trainer is available on this day
-                    const dayOfWeek = date.getDay();
                     let isAvailable = false;
                     if (trainerAvailability && trainerAvailability.schedule && trainerAvailability.schedule[dayOfWeek]) {
                         const daySchedule = trainerAvailability.schedule[dayOfWeek];
@@ -2425,7 +2446,7 @@
 
         #calendarGrid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 4px;
         }
 
