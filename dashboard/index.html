@@ -1265,17 +1265,37 @@
 
                         if (!querySnapshot.empty) {
                             const doc = querySnapshot.docs[0];
+                            const oldDocId = doc.id;
                             userData = doc.data();
 
                             // Migrate the document to use the correct UID
                             // This ensures future lookups work correctly
                             await db.collection('users').doc(user.uid).set({
                                 ...userData,
-                                migratedFrom: doc.id,
+                                migratedFrom: oldDocId,
                                 migratedAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
+
+                            // Also update any bookings that reference the old clientId
+                            try {
+                                const bookingsSnapshot = await db.collection('bookings')
+                                    .where('clientId', '==', oldDocId)
+                                    .get();
+
+                                const batch = db.batch();
+                                bookingsSnapshot.forEach(bookingDoc => {
+                                    batch.update(bookingDoc.ref, { clientId: user.uid });
+                                });
+                                if (!bookingsSnapshot.empty) {
+                                    await batch.commit();
+                                    console.log(`Migrated ${bookingsSnapshot.size} bookings to new clientId`);
+                                }
+                            } catch (bookingError) {
+                                console.error('Error migrating bookings:', bookingError);
+                            }
+
                             // Delete the old document with wrong ID
-                            await db.collection('users').doc(doc.id).delete();
+                            await db.collection('users').doc(oldDocId).delete();
                         }
                     } catch (error) {
                         console.error('Error looking up user by email:', error);
@@ -1285,6 +1305,19 @@
                 if (userData) {
                     document.getElementById('userName').textContent = userData.name || 'Client';
                     document.getElementById('userEmail').textContent = user.email;
+
+                    // Display block info from user data
+                    if (userData.blockDuration) {
+                        document.getElementById('blockDuration').textContent = userData.blockDuration;
+                    }
+                    if (userData.blockEndDate) {
+                        const endDate = new Date(userData.blockEndDate);
+                        document.getElementById('blockEndDate').textContent = endDate.toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                    }
 
                     // Check if onboarding is complete
                     if (!userData.onboardingComplete) {
@@ -1296,6 +1329,9 @@
                     // No user data means they definitely need onboarding
                     showWelcomeForm();
                 }
+
+                // Load user's upcoming sessions
+                loadUserBookings();
             });
 
             // ==================
@@ -1339,8 +1375,8 @@
                 document.getElementById('welcomeNextBtn').style.display = currentStep < totalSteps ? 'block' : 'none';
                 document.getElementById('welcomeSubmitBtn').style.display = currentStep === totalSteps ? 'block' : 'none';
 
-                // Scroll to top of form
-                document.querySelector('.welcome-container').scrollTop = 0;
+                // Scroll to top of form (target the overlay which has overflow-y: auto)
+                document.querySelector('.welcome-overlay').scrollTop = 0;
             }
 
             function validateCurrentStep() {
@@ -1542,6 +1578,188 @@
             }
 
             renderWeekView();
+
+            // ==================
+            // LOAD USER DATA & SESSIONS
+            // ==================
+
+            let userBookings = [];
+
+            // Load user's upcoming sessions from bookings collection
+            async function loadUserBookings() {
+                if (!currentUserId) return;
+
+                try {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const todayStr = today.toISOString().split('T')[0];
+
+                    // Query bookings where clientId matches current user
+                    const snapshot = await db.collection('bookings')
+                        .where('clientId', '==', currentUserId)
+                        .where('date', '>=', todayStr)
+                        .orderBy('date')
+                        .get();
+
+                    userBookings = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        // Only include confirmed bookings
+                        if (data.status !== 'cancelled') {
+                            userBookings.push({
+                                id: doc.id,
+                                ...data
+                            });
+                        }
+                    });
+
+                    // Sort by date and time
+                    userBookings.sort((a, b) => {
+                        const dateCompare = a.date.localeCompare(b.date);
+                        if (dateCompare !== 0) return dateCompare;
+                        return (a.time || '00:00').localeCompare(b.time || '00:00');
+                    });
+
+                    // Update displays
+                    displayNextSession();
+                    displayUpcomingSessions();
+                    updateWeekViewWithSessions();
+
+                } catch (error) {
+                    console.error('Error loading user bookings:', error);
+                }
+            }
+
+            // Display the next upcoming session
+            function displayNextSession() {
+                const nextSessionCard = document.getElementById('nextSessionCard');
+                const nextSessionDate = document.getElementById('nextSessionDate');
+                const nextSessionTime = document.getElementById('nextSessionTime');
+                const rescheduleBtn = document.getElementById('rescheduleNextBtn');
+
+                if (userBookings.length === 0) {
+                    nextSessionDate.textContent = 'No upcoming sessions';
+                    nextSessionTime.textContent = '';
+                    rescheduleBtn.style.display = 'none';
+                    return;
+                }
+
+                const nextBooking = userBookings[0];
+                const sessionDate = new Date(nextBooking.date + 'T00:00:00');
+
+                // Format date nicely
+                const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                nextSessionDate.textContent = sessionDate.toLocaleDateString('en-GB', dateOptions);
+
+                // Format time
+                if (nextBooking.time) {
+                    const [hours, minutes] = nextBooking.time.split(':');
+                    const timeDate = new Date();
+                    timeDate.setHours(parseInt(hours), parseInt(minutes));
+                    nextSessionTime.textContent = timeDate.toLocaleTimeString('en-GB', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                } else {
+                    nextSessionTime.textContent = 'Time TBC';
+                }
+
+                // Store booking ID for reschedule
+                rescheduleBtn.style.display = 'inline-flex';
+                rescheduleBtn.dataset.bookingId = nextBooking.id;
+            }
+
+            // Display list of upcoming sessions
+            function displayUpcomingSessions() {
+                const sessionsList = document.getElementById('sessionsList');
+
+                if (userBookings.length === 0) {
+                    sessionsList.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                            </svg>
+                            <h4>No upcoming sessions</h4>
+                            <p>Your trainer will schedule your sessions soon!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                userBookings.forEach(booking => {
+                    const sessionDate = new Date(booking.date + 'T00:00:00');
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+                    // Format time
+                    let timeStr = 'Time TBC';
+                    if (booking.time) {
+                        const [hours, minutes] = booking.time.split(':');
+                        const timeDate = new Date();
+                        timeDate.setHours(parseInt(hours), parseInt(minutes));
+                        timeStr = timeDate.toLocaleTimeString('en-GB', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+                    }
+
+                    // Duration
+                    const duration = booking.duration || 60;
+
+                    html += `
+                        <div class="session-card" data-booking-id="${booking.id}">
+                            <div class="session-date-box">
+                                <div class="month">${monthNames[sessionDate.getMonth()]}</div>
+                                <div class="day">${sessionDate.getDate()}</div>
+                            </div>
+                            <div class="session-details">
+                                <h4>${dayNames[sessionDate.getDay()]}</h4>
+                                <p>${timeStr} - ${duration} minutes</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                sessionsList.innerHTML = html;
+            }
+
+            // Update week view to show sessions
+            function updateWeekViewWithSessions() {
+                const container = document.getElementById('weekView');
+                const today = new Date();
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - today.getDay());
+
+                // Create a set of dates that have sessions
+                const sessionDates = new Set();
+                userBookings.forEach(booking => {
+                    sessionDates.add(booking.date);
+                });
+
+                let html = '';
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(startOfWeek);
+                    date.setDate(startOfWeek.getDate() + i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    const isToday = date.toDateString() === today.toDateString();
+                    const hasSession = sessionDates.has(dateStr);
+
+                    html += `
+                        <div class="week-day ${isToday ? 'selected' : ''} ${hasSession ? 'has-session' : ''}">
+                            <div class="week-day-name">${DAYS_SHORT[date.getDay()]}</div>
+                            <div class="week-day-date">${date.getDate()}</div>
+                            ${hasSession ? '<div class="week-day-dot"></div>' : ''}
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            }
+
         });
     </script>
 </body>
