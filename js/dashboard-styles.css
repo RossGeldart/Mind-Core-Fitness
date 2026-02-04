@@ -1851,6 +1851,27 @@
     margin-top: 0;
 }
 
+.stats-detail-week-header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary);
+    padding: 16px 12px 8px;
+    border-top: 2px solid var(--card-border);
+    margin-top: 12px;
+}
+
+.stats-detail-week-header:first-child {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 8px;
+}
+
+.stats-detail-week-header + .stats-detail-date-header {
+    border-top: none;
+    margin-top: 0;
+}
+
 .stats-detail-date-badge {
     width: 48px;
     height: 48px;

@@ -1721,9 +1721,15 @@
                             navigateToSection('calendar');
                         };
 
+                        // Get bookings for next 4 weeks
                         const todayStr = today.toISOString().split('T')[0];
+                        const fourWeeksLater = new Date(today);
+                        fourWeeksLater.setDate(today.getDate() + 28);
+                        const fourWeeksStr = fourWeeksLater.toISOString().split('T')[0];
+
                         const snapshot = await db.collection('bookings')
                             .where('date', '>=', todayStr)
+                            .where('date', '<=', fourWeeksStr)
                             .get();
 
                         const bookings = snapshot.docs
@@ -1734,23 +1740,46 @@
                         if (bookings.length === 0) {
                             content.innerHTML = '<p class="no-data">No upcoming sessions</p>';
                         } else {
-                            content.innerHTML = bookings.slice(0, 6).map(booking => {
-                                const dateObj = new Date(booking.date + 'T00:00:00');
-                                const dayName = DAYS_SHORT[dateObj.getDay()];
-                                const dayNum = dateObj.getDate();
-                                return `
-                                    <div class="stats-detail-item">
-                                        <div class="stats-detail-date-badge">
-                                            <div class="badge-day">${dayName}</div>
-                                            <div class="badge-num">${dayNum}</div>
-                                        </div>
-                                        <div class="stats-detail-info">
-                                            <div class="stats-detail-name">${booking.clientName}</div>
-                                            <div class="stats-detail-sub">${formatTimeDisplay(booking.time || booking.startTime)} • ${booking.duration || 30} min</div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('');
+                            // Group by week
+                            const getWeekNumber = (dateStr) => {
+                                const date = new Date(dateStr + 'T00:00:00');
+                                const diffDays = Math.floor((date - today) / (1000 * 60 * 60 * 24));
+                                return Math.floor(diffDays / 7);
+                            };
+
+                            const weekNames = ['This Week', 'Next Week', 'Week 3', 'Week 4'];
+                            const weeks = {};
+
+                            bookings.forEach(b => {
+                                const weekNum = getWeekNumber(b.date);
+                                if (weekNum >= 0 && weekNum < 4) {
+                                    if (!weeks[weekNum]) weeks[weekNum] = {};
+                                    if (!weeks[weekNum][b.date]) weeks[weekNum][b.date] = [];
+                                    weeks[weekNum][b.date].push(b);
+                                }
+                            });
+
+                            let html = '';
+                            Object.keys(weeks).sort((a, b) => a - b).forEach(weekNum => {
+                                html += `<div class="stats-detail-week-header">${weekNames[weekNum]}</div>`;
+                                Object.keys(weeks[weekNum]).sort().forEach(date => {
+                                    const dateObj = new Date(date + 'T00:00:00');
+                                    const dayName = DAYS_SHORT[dateObj.getDay()];
+                                    const dayNum = dateObj.getDate();
+                                    html += `<div class="stats-detail-date-header">${dayName} ${dayNum}</div>`;
+                                    weeks[weekNum][date].forEach(booking => {
+                                        html += `
+                                            <div class="stats-detail-item compact">
+                                                <div class="stats-detail-time">${formatTimeDisplay(booking.time || booking.startTime)}</div>
+                                                <div class="stats-detail-info">
+                                                    <div class="stats-detail-name">${booking.clientName}</div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                });
+                            });
+                            content.innerHTML = html;
                         }
                     }
                 } catch (error) {
