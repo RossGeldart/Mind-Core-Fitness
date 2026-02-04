@@ -909,55 +909,144 @@
                 }
             }
 
-            // Generate time slots for client scheduling
-            function generateClientTimeSlots(dayNum) {
+            // Generate time slots for client scheduling with availability check
+            async function generateClientTimeSlotsWithAvailability(dayNum, existingBookings, duration) {
                 const slots = [];
 
                 // Generate time slots from 6am to 8pm in 15-minute increments
                 for (let hour = 6; hour < 20; hour++) {
                     for (let min = 0; min < 60; min += 15) {
                         const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-                        slots.push(time);
+                        const slotStartMinutes = hour * 60 + min;
+                        const slotEndMinutes = slotStartMinutes + duration;
+
+                        // Check if this time slot conflicts with any existing booking
+                        const isBooked = existingBookings.some(booking => {
+                            const [bHour, bMin] = booking.time.split(':').map(Number);
+                            const bookingStart = bHour * 60 + bMin;
+                            const bookingEnd = bookingStart + (booking.duration || 60);
+                            // Check for overlap: slot overlaps if it starts before booking ends AND ends after booking starts
+                            return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
+                        });
+
+                        slots.push({ time, isBooked });
                     }
                 }
                 return slots;
             }
 
+            // Get all dates for a specific weekday between today and end date
+            function getDatesForWeekday(dayNum, endDate) {
+                const dates = [];
+                const end = new Date(endDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let currentDate = new Date(today);
+
+                while (currentDate <= end) {
+                    const dayOfWeek = currentDate.getDay();
+                    // Convert Sunday=0 to our format (Mon=1, Tue=2, etc.)
+                    const ourDayNum = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                    if (ourDayNum === dayNum) {
+                        dates.push(currentDate.toISOString().split('T')[0]);
+                    }
+
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                return dates;
+            }
+
             // Render time selectors for each selected day
-            function renderClientDayTimeSelectors() {
+            async function renderClientDayTimeSelectors() {
                 const container = document.getElementById('clientDayTimeSelectors');
                 const days = clientWizardState.selectedDays;
                 const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                const duration = clientWizardState.blockDuration || 30;
+                const blockEndDate = clientWizardState.blockEndDate;
 
                 if (days.length === 0) {
                     container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Select training days above first</p>';
                     return;
                 }
 
-                container.innerHTML = days.map(dayNum => {
-                    const slots = generateClientTimeSlots(dayNum);
+                // Show loading state
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Loading available slots...</p>';
+
+                // Fetch existing bookings for all relevant dates
+                let allExistingBookings = {};
+
+                if (blockEndDate) {
+                    for (const dayNum of days) {
+                        const dates = getDatesForWeekday(dayNum, blockEndDate);
+
+                        for (const dateStr of dates) {
+                            if (!allExistingBookings[dateStr]) {
+                                try {
+                                    const snapshot = await db.collection('bookings')
+                                        .where('date', '==', dateStr)
+                                        .where('status', '==', 'confirmed')
+                                        .get();
+                                    allExistingBookings[dateStr] = snapshot.docs.map(doc => doc.data());
+                                } catch (error) {
+                                    try {
+                                        const snapshot = await db.collection('bookings')
+                                            .where('date', '==', dateStr)
+                                            .get();
+                                        allExistingBookings[dateStr] = snapshot.docs.map(doc => doc.data()).filter(b => b.status !== 'cancelled');
+                                    } catch (err) {
+                                        allExistingBookings[dateStr] = [];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Build bookings per weekday - aggregate all bookings for each day of week
+                const bookingsByWeekday = {};
+                for (const dayNum of days) {
+                    bookingsByWeekday[dayNum] = [];
+                    const dates = blockEndDate ? getDatesForWeekday(dayNum, blockEndDate) : [];
+                    for (const dateStr of dates) {
+                        if (allExistingBookings[dateStr]) {
+                            bookingsByWeekday[dayNum].push(...allExistingBookings[dateStr]);
+                        }
+                    }
+                }
+
+                // Generate HTML for each day
+                let html = '';
+                for (const dayNum of days) {
+                    const existingBookings = bookingsByWeekday[dayNum] || [];
+                    const slots = await generateClientTimeSlotsWithAvailability(dayNum, existingBookings, duration);
                     const selectedTime = clientWizardState.dayTimes[dayNum] || '';
 
-                    return `
+                    html += `
                         <div class="day-time-selector">
                             <div class="day-time-header">
                                 <span class="day-time-label">${dayNames[dayNum]}</span>
                                 <span class="day-time-selected" id="clientSelectedTime${dayNum}">${selectedTime ? formatTime(selectedTime) : 'Select time'}</span>
                             </div>
                             <div class="day-slots time-slots-container">
-                                ${slots.map(time => `
-                                    <div class="time-slot ${selectedTime === time ? 'selected' : ''}"
-                                         data-day="${dayNum}" data-time="${time}">
-                                        ${formatTime(time)}
+                                ${slots.map(slot => `
+                                    <div class="time-slot ${slot.isBooked ? 'booked' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
+                                         data-day="${dayNum}" data-time="${slot.time}"
+                                         ${slot.isBooked ? 'title="This time is already booked"' : ''}>
+                                        ${formatTime(slot.time)}
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
                     `;
-                }).join('');
+                }
 
-                // Add click handlers for time slots
-                container.querySelectorAll('.time-slot').forEach(slot => {
+                container.innerHTML = html;
+
+                // Add click handlers for time slots (excluding booked ones)
+                container.querySelectorAll('.time-slot:not(.booked)').forEach(slot => {
                     slot.addEventListener('click', function() {
                         const day = parseInt(this.dataset.day);
                         const time = this.dataset.time;
