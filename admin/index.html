@@ -556,28 +556,49 @@
                         });
                         showToast('Client updated successfully');
                     } else {
-                        // Create new client using Cloud Function
-                        // This creates both Firebase Auth user AND Firestore document
-                        const functions = firebase.functions();
-                        const createClient = functions.httpsCallable('createClient');
+                        // Try Cloud Function first (creates Auth user + Firestore doc)
+                        let cloudFunctionWorked = false;
 
-                        const result = await createClient({
-                            name,
-                            email,
-                            blockDuration,
-                            blockEndDate,
-                            totalSessions
-                        });
+                        try {
+                            const functions = firebase.functions();
+                            const createClientFn = functions.httpsCallable('createClient');
 
-                        if (result.data.success) {
-                            showToast(`Client created! Password reset email sent to ${email}`);
+                            const result = await createClientFn({
+                                name,
+                                email,
+                                blockDuration,
+                                blockEndDate,
+                                totalSessions
+                            });
 
-                            // Also try to send password reset email directly as backup
-                            try {
-                                await auth.sendPasswordResetEmail(email);
-                            } catch (e) {
-                                // Ignore - Cloud Function already handles this
+                            if (result.data.success) {
+                                cloudFunctionWorked = true;
+                                showToast(`Client created! Password reset email sent to ${email}`);
                             }
+                        } catch (cfError) {
+                            console.log('Cloud Function not available, using fallback:', cfError.message);
+                        }
+
+                        // Fallback: Create Firestore document only if Cloud Function failed
+                        if (!cloudFunctionWorked) {
+                            // Create user document in Firestore
+                            const newUserRef = db.collection('users').doc();
+                            await newUserRef.set({
+                                name,
+                                email,
+                                role: 'client',
+                                blockDuration,
+                                blockEndDate,
+                                totalSessions,
+                                sessionsUsed: 0,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                needsPasswordSetup: true,
+                                onboardingComplete: false
+                            });
+
+                            // Note: Without Cloud Functions, we can't create Firebase Auth user
+                            // The client will need to be set up manually or Cloud Functions deployed
+                            showToast(`Client added to database. Note: Deploy Cloud Functions to enable automatic login setup, or manually create their Firebase Auth account.`, 'warning');
                         }
                     }
 
