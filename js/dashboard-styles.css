@@ -1140,3 +1140,36 @@
     border-radius: 4px;
     font-size: 0.85rem;
 }
+
+/* Booking Info and Actions */
+.booking-info {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.booking-info .booking-client {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.booking-info .booking-duration {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.booking-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Calendar day selected state */
+.calendar-day.selected {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.calendar-day.selected .calendar-date {
+    color: #fff;
+}

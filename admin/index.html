@@ -775,6 +775,356 @@
             document.getElementById('cancelBookingBtn').addEventListener('click', () => {
                 document.getElementById('bookingModal').classList.remove('show');
             });
+
+            // ==================
+            // BOOKING FUNCTIONALITY
+            // ==================
+
+            // Enable the Add Booking button
+            document.getElementById('addBookingBtn').disabled = false;
+
+            // Open booking modal
+            document.getElementById('addBookingBtn').addEventListener('click', () => {
+                // Populate client dropdown
+                const clientSelect = document.getElementById('bookingClient');
+                clientSelect.innerHTML = '<option value="">Select a client</option>';
+                clients.forEach(client => {
+                    clientSelect.innerHTML += `<option value="${client.id}" data-duration="${client.blockDuration || 60}">${client.name || client.email}</option>`;
+                });
+
+                // Set default date to today
+                const todayStr = new Date().toISOString().split('T')[0];
+                document.getElementById('bookingDate').value = todayStr;
+                document.getElementById('bookingDate').min = todayStr;
+
+                // Reset form
+                document.getElementById('bookingNotes').value = '';
+                document.getElementById('selectedSlot').value = '';
+                document.getElementById('availableSlots').innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Select a date to see available slots</p>';
+
+                // Generate initial time slots
+                generateTimeSlots(todayStr);
+
+                document.getElementById('bookingModal').classList.add('show');
+            });
+
+            // When client is selected, update duration default
+            document.getElementById('bookingClient').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption && selectedOption.dataset.duration) {
+                    document.getElementById('bookingDuration').value = selectedOption.dataset.duration;
+                }
+                // Regenerate slots with new duration
+                const dateVal = document.getElementById('bookingDate').value;
+                if (dateVal) generateTimeSlots(dateVal);
+            });
+
+            // When date changes, regenerate time slots
+            document.getElementById('bookingDate').addEventListener('change', function() {
+                generateTimeSlots(this.value);
+            });
+
+            // When duration changes, regenerate time slots
+            document.getElementById('bookingDuration').addEventListener('change', function() {
+                const dateVal = document.getElementById('bookingDate').value;
+                if (dateVal) generateTimeSlots(dateVal);
+            });
+
+            // Generate available time slots
+            async function generateTimeSlots(dateStr) {
+                const slotsContainer = document.getElementById('availableSlots');
+                slotsContainer.innerHTML = '<p style="color: var(--text-muted);">Loading slots...</p>';
+
+                const duration = parseInt(document.getElementById('bookingDuration').value) || 60;
+
+                // Define working hours (can be made configurable later)
+                const workingHours = { start: 6, end: 21 }; // 6 AM to 9 PM
+
+                // Get existing bookings for this date
+                let existingBookings = [];
+                try {
+                    const snapshot = await db.collection('bookings')
+                        .where('date', '==', dateStr)
+                        .get();
+                    existingBookings = snapshot.docs.map(doc => doc.data());
+                } catch (error) {
+                    console.error('Error loading existing bookings:', error);
+                }
+
+                // Generate slots
+                const slots = [];
+                for (let hour = workingHours.start; hour < workingHours.end; hour++) {
+                    for (let minute of [0, 30]) {
+                        const slotStart = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                        const slotEndMinutes = hour * 60 + minute + duration;
+                        const slotEndHour = Math.floor(slotEndMinutes / 60);
+                        const slotEndMin = slotEndMinutes % 60;
+
+                        // Don't show slots that would extend past working hours
+                        if (slotEndHour > workingHours.end) continue;
+
+                        // Check if slot conflicts with existing bookings
+                        const slotStartMinutes = hour * 60 + minute;
+                        const isBooked = existingBookings.some(booking => {
+                            const [bHour, bMin] = booking.time.split(':').map(Number);
+                            const bookingStart = bHour * 60 + bMin;
+                            const bookingEnd = bookingStart + (booking.duration || 60);
+                            // Check for overlap
+                            return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
+                        });
+
+                        slots.push({
+                            time: slotStart,
+                            endTime: `${slotEndHour.toString().padStart(2, '0')}:${slotEndMin.toString().padStart(2, '0')}`,
+                            isBooked
+                        });
+                    }
+                }
+
+                if (slots.length === 0) {
+                    slotsContainer.innerHTML = '<p style="color: var(--text-muted);">No available slots for this date</p>';
+                    return;
+                }
+
+                slotsContainer.innerHTML = slots.map(slot => `
+                    <button type="button" class="time-slot ${slot.isBooked ? 'booked' : ''}"
+                            data-time="${slot.time}"
+                            ${slot.isBooked ? 'disabled' : ''}>
+                        ${formatTime12Hour(slot.time)}
+                    </button>
+                `).join('');
+
+                // Add click handlers to slots
+                slotsContainer.querySelectorAll('.time-slot:not(.booked)').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        slotsContainer.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('selectedSlot').value = this.dataset.time;
+                    });
+                });
+            }
+
+            // Format time to 12-hour format
+            function formatTime12Hour(time24) {
+                const [hours, minutes] = time24.split(':').map(Number);
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const hours12 = hours % 12 || 12;
+                return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+
+            // Save booking
+            document.getElementById('saveBookingBtn').addEventListener('click', async () => {
+                const clientId = document.getElementById('bookingClient').value;
+                const dateVal = document.getElementById('bookingDate').value;
+                const duration = parseInt(document.getElementById('bookingDuration').value);
+                const timeVal = document.getElementById('selectedSlot').value;
+                const notes = document.getElementById('bookingNotes').value.trim();
+
+                if (!clientId) {
+                    showToast('Please select a client', 'error');
+                    return;
+                }
+                if (!dateVal) {
+                    showToast('Please select a date', 'error');
+                    return;
+                }
+                if (!timeVal) {
+                    showToast('Please select a time slot', 'error');
+                    return;
+                }
+
+                const saveBtn = document.getElementById('saveBookingBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Creating...';
+
+                try {
+                    // Get client info for the booking
+                    const client = clients.find(c => c.id === clientId);
+
+                    await db.collection('bookings').add({
+                        clientId: clientId,
+                        clientName: client ? client.name : 'Unknown',
+                        clientEmail: client ? client.email : '',
+                        date: dateVal,
+                        time: timeVal,
+                        duration: duration,
+                        notes: notes,
+                        status: 'confirmed',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: auth.currentUser.uid
+                    });
+
+                    showToast('Booking created successfully!');
+                    document.getElementById('bookingModal').classList.remove('show');
+
+                    // Refresh stats and calendar
+                    updateStats();
+                    loadTodayBookings();
+                } catch (error) {
+                    console.error('Error creating booking:', error);
+                    showToast('Failed to create booking: ' + error.message, 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Create Booking';
+                }
+            });
+
+            // Load today's bookings for dashboard
+            async function loadTodayBookings() {
+                const container = document.getElementById('todayBookings');
+                const todayStr = new Date().toISOString().split('T')[0];
+
+                try {
+                    const snapshot = await db.collection('bookings')
+                        .where('date', '==', todayStr)
+                        .orderBy('time')
+                        .get();
+
+                    if (snapshot.empty) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <h4>No sessions scheduled</h4>
+                                <p>Your day is free!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = snapshot.docs.map(doc => {
+                        const booking = doc.data();
+                        return `
+                            <div class="booking-item">
+                                <div class="booking-time">${formatTime12Hour(booking.time)}</div>
+                                <div class="booking-info">
+                                    <div class="booking-client">${booking.clientName || 'Unknown Client'}</div>
+                                    <div class="booking-duration">${booking.duration} minutes</div>
+                                </div>
+                                <div class="booking-status ${booking.status}">${booking.status}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (error) {
+                    console.error('Error loading today\'s bookings:', error);
+                    // Try without orderBy if index doesn't exist
+                    try {
+                        const snapshot = await db.collection('bookings')
+                            .where('date', '==', todayStr)
+                            .get();
+
+                        if (snapshot.empty) {
+                            container.innerHTML = `
+                                <div class="empty-state">
+                                    <h4>No sessions scheduled</h4>
+                                    <p>Your day is free!</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        const bookings = snapshot.docs.map(doc => doc.data()).sort((a, b) => a.time.localeCompare(b.time));
+
+                        container.innerHTML = bookings.map(booking => `
+                            <div class="booking-item">
+                                <div class="booking-time">${formatTime12Hour(booking.time)}</div>
+                                <div class="booking-info">
+                                    <div class="booking-client">${booking.clientName || 'Unknown Client'}</div>
+                                    <div class="booking-duration">${booking.duration} minutes</div>
+                                </div>
+                                <div class="booking-status ${booking.status}">${booking.status}</div>
+                            </div>
+                        `).join('');
+                    } catch (err) {
+                        console.error('Error loading bookings (fallback):', err);
+                    }
+                }
+            }
+
+            // Load today's bookings on page load
+            loadTodayBookings();
+
+            // Load bookings for selected day in calendar
+            async function loadSelectedDayBookings(dateStr) {
+                const container = document.getElementById('selectedDayBookings');
+                container.innerHTML = '<p style="color: var(--text-muted);">Loading...</p>';
+
+                try {
+                    const snapshot = await db.collection('bookings')
+                        .where('date', '==', dateStr)
+                        .get();
+
+                    if (snapshot.empty) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <p>No bookings for this day</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.time.localeCompare(b.time));
+
+                    container.innerHTML = bookings.map(booking => `
+                        <div class="booking-item">
+                            <div class="booking-time">${formatTime12Hour(booking.time)}</div>
+                            <div class="booking-info">
+                                <div class="booking-client">${booking.clientName || 'Unknown Client'}</div>
+                                <div class="booking-duration">${booking.duration} minutes</div>
+                            </div>
+                            <div class="booking-actions">
+                                <button class="btn btn-sm btn-danger" onclick="cancelBooking('${booking.id}', '${dateStr}')">Cancel</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error loading bookings:', error);
+                    container.innerHTML = '<p style="color: var(--danger);">Error loading bookings</p>';
+                }
+            }
+
+            // Cancel booking function (global)
+            window.cancelBooking = async (bookingId, dateStr) => {
+                if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+                try {
+                    await db.collection('bookings').doc(bookingId).delete();
+                    showToast('Booking cancelled');
+                    loadSelectedDayBookings(dateStr);
+                    updateStats();
+                    loadTodayBookings();
+                } catch (error) {
+                    console.error('Error cancelling booking:', error);
+                    showToast('Failed to cancel booking', 'error');
+                }
+            };
+
+            // Update calendar day click to load bookings
+            const originalRenderCalendar = renderCalendar;
+            renderCalendar = function() {
+                originalRenderCalendar();
+                document.querySelectorAll('#calendarGrid .calendar-day:not(.other-month)').forEach(day => {
+                    day.addEventListener('click', function() {
+                        const date = this.dataset.date;
+                        if (date) {
+                            // Update selected state
+                            document.querySelectorAll('#calendarGrid .calendar-day').forEach(d => d.classList.remove('selected'));
+                            this.classList.add('selected');
+
+                            // Update display and load bookings
+                            document.getElementById('selectedDateDisplay').textContent =
+                                new Date(date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+                            loadSelectedDayBookings(date);
+                        }
+                    });
+                });
+            };
+            // Re-render to apply new click handlers
+            renderCalendar();
         });
     </script>
 </body>
