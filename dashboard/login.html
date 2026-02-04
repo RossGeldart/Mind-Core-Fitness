@@ -144,16 +144,19 @@
             const backToLoginFromSetup = document.getElementById('backToLoginFromSetup');
 
             let pendingClientData = null; // Store client data during setup
+            let isRedirecting = false; // Prevent double redirects
 
             // Check if user is already logged in
             auth.onAuthStateChanged(async (user) => {
-                if (user) {
+                if (user && !isRedirecting) {
+                    isRedirecting = true;
                     // User is logged in, redirect based on role
+                    // Use replace() to prevent back button from returning to login page
                     const role = await getUserRole(user.uid);
                     if (role === 'admin') {
-                        window.location.href = '/admin/index.html';
+                        window.location.replace('/admin/index.html');
                     } else {
-                        window.location.href = '/dashboard/index.html';
+                        window.location.replace('/dashboard/index.html');
                     }
                 }
             });
@@ -174,12 +177,16 @@
                     const user = userCredential.user;
 
                     // Get user role and redirect
-                    const role = await getUserRole(user.uid);
+                    // Use replace() to prevent back button from returning to login page
+                    if (!isRedirecting) {
+                        isRedirecting = true;
+                        const role = await getUserRole(user.uid);
 
-                    if (role === 'admin') {
-                        window.location.href = '/admin/index.html';
-                    } else {
-                        window.location.href = '/dashboard/index.html';
+                        if (role === 'admin') {
+                            window.location.replace('/admin/index.html');
+                        } else {
+                            window.location.replace('/dashboard/index.html');
+                        }
                     }
                 } catch (error) {
                     loginError.style.display = 'block';

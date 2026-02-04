@@ -547,7 +547,7 @@
         </a>
         <div class="top-bar-user">
             <span id="userEmail"></span>
-            <button id="logoutBtn" onclick="window.location.href='login.html'">Sign Out</button>
+            <button id="logoutBtn">Sign Out</button>
         </div>
     </div>
 
@@ -1343,7 +1343,8 @@
             auth.onAuthStateChanged(async (user) => {
                 if (!user) {
                     // Not logged in, redirect to login
-                    window.location.href = '/dashboard/login.html';
+                    // Use replace() to prevent back button from returning to this protected page
+                    window.location.replace('/dashboard/login.html');
                     return;
                 }
 
