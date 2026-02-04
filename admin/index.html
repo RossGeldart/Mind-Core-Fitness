@@ -747,13 +747,15 @@
             // Check authentication
             auth.onAuthStateChanged(async (user) => {
                 if (!user) {
-                    window.location.href = '/dashboard/login.html';
+                    // Use replace() to prevent back button from returning to this protected page
+                    window.location.replace('/dashboard/login.html');
                     return;
                 }
 
                 const role = await getUserRole(user.uid);
                 if (role !== 'admin') {
-                    window.location.href = '/dashboard/index.html';
+                    // Use replace() to prevent back button from returning to admin page
+                    window.location.replace('/dashboard/index.html');
                     return;
                 }
 
