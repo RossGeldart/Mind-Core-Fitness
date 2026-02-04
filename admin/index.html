@@ -22,6 +22,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -555,29 +556,29 @@
                         });
                         showToast('Client updated successfully');
                     } else {
-                        // Create new client - first create auth account
-                        // Generate a temporary password
-                        const tempPassword = 'Welcome' + Math.random().toString(36).slice(-6) + '!';
+                        // Create new client using Cloud Function
+                        // This creates both Firebase Auth user AND Firestore document
+                        const functions = firebase.functions();
+                        const createClient = functions.httpsCallable('createClient');
 
-                        // We need to use a Cloud Function or Admin SDK to create users
-                        // For now, we'll just create the Firestore document
-                        // The client will need to use "Forgot Password" to set their password
-
-                        // Create user document
-                        const newUserRef = db.collection('users').doc();
-                        await newUserRef.set({
+                        const result = await createClient({
                             name,
                             email,
-                            role: 'client',
                             blockDuration,
                             blockEndDate,
-                            totalSessions,
-                            sessionsUsed: 0,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            needsPasswordSetup: true
+                            totalSessions
                         });
 
-                        showToast(`Client added! They should use "Forgot Password" with ${email} to set up their login.`);
+                        if (result.data.success) {
+                            showToast(`Client created! Password reset email sent to ${email}`);
+
+                            // Also try to send password reset email directly as backup
+                            try {
+                                await auth.sendPasswordResetEmail(email);
+                            } catch (e) {
+                                // Ignore - Cloud Function already handles this
+                            }
+                        }
                     }
 
                     document.getElementById('clientModal').classList.remove('show');
