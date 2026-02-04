@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mind-core-fitness-v3';
+const CACHE_NAME = 'mind-core-fitness-v1';
 const urlsToCache = [
   '/',
   '/dashboard/',

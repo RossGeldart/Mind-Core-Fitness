@@ -144,19 +144,16 @@
             const backToLoginFromSetup = document.getElementById('backToLoginFromSetup');
 
             let pendingClientData = null; // Store client data during setup
-            let isRedirecting = false; // Prevent double redirects
 
             // Check if user is already logged in
             auth.onAuthStateChanged(async (user) => {
-                if (user && !isRedirecting) {
-                    isRedirecting = true;
+                if (user) {
                     // User is logged in, redirect based on role
-                    // Use replace() to prevent back button from returning to login page
                     const role = await getUserRole(user.uid);
                     if (role === 'admin') {
-                        window.location.replace('/admin/index.html');
+                        window.location.href = '/admin/index.html';
                     } else {
-                        window.location.replace('/dashboard/index.html');
+                        window.location.href = '/dashboard/index.html';
                     }
                 }
             });
@@ -177,16 +174,12 @@
                     const user = userCredential.user;
 
                     // Get user role and redirect
-                    // Use replace() to prevent back button from returning to login page
-                    if (!isRedirecting) {
-                        isRedirecting = true;
-                        const role = await getUserRole(user.uid);
+                    const role = await getUserRole(user.uid);
 
-                        if (role === 'admin') {
-                            window.location.replace('/admin/index.html');
-                        } else {
-                            window.location.replace('/dashboard/index.html');
-                        }
+                    if (role === 'admin') {
+                        window.location.href = '/admin/index.html';
+                    } else {
+                        window.location.href = '/dashboard/index.html';
                     }
                 } catch (error) {
                     loginError.style.display = 'block';
@@ -447,31 +440,11 @@
                     await newDocRef.set({
                         ...data,
                         needsPasswordSetup: false,
-                        migratedFrom: pendingClientData.docId,
                         accountCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
                     // Delete old document (with random ID)
                     await oldDocRef.delete();
-
-                    // Migrate any bookings that reference the old clientId
-                    try {
-                        const bookingsSnapshot = await db.collection('bookings')
-                            .where('clientId', '==', pendingClientData.docId)
-                            .get();
-
-                        if (!bookingsSnapshot.empty) {
-                            const batch = db.batch();
-                            bookingsSnapshot.forEach(bookingDoc => {
-                                batch.update(bookingDoc.ref, { clientId: user.uid });
-                            });
-                            await batch.commit();
-                            console.log(`Migrated ${bookingsSnapshot.size} bookings to new clientId`);
-                        }
-                    } catch (bookingError) {
-                        console.error('Error migrating bookings:', bookingError);
-                        // Continue anyway - dashboard has fallback migration
-                    }
 
                     // Update display name in Auth
                     await user.updateProfile({
