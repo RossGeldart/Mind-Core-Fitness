@@ -468,6 +468,11 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../Logo.PNG">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -497,11 +502,6 @@
 
     <!-- Content -->
     <div class="client-content">
-        <!-- Setup Notice -->
-        <div class="setup-notice">
-            <h3>Booking System Coming Soon</h3>
-            <p>The online booking system is being set up. Please contact Ross directly to schedule your sessions.</p>
-        </div>
 
         <!-- Overview Section -->
         <section class="client-section active" id="section-overview">
@@ -628,10 +628,41 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <script src="../js/firebase-config.js"></script>
     <script>
-        // Basic navigation functionality (no database)
         document.addEventListener('DOMContentLoaded', function() {
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            // Check authentication
+            auth.onAuthStateChanged(async (user) => {
+                if (!user) {
+                    // Not logged in, redirect to login
+                    window.location.href = '/dashboard/login.html';
+                    return;
+                }
+
+                // Check if admin - redirect to admin dashboard
+                const role = await getUserRole(user.uid);
+                if (role === 'admin') {
+                    window.location.href = '/admin/index.html';
+                    return;
+                }
+
+                // Get user data and display
+                const userData = await getUserData(user.uid);
+                if (userData) {
+                    document.getElementById('userName').textContent = userData.name || 'Client';
+                    document.getElementById('userEmail').textContent = user.email;
+                } else {
+                    document.getElementById('userName').textContent = user.email.split('@')[0];
+                    document.getElementById('userEmail').textContent = user.email;
+                }
+            });
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                logout();
+            });
 
             // Navigation
             document.querySelectorAll('.client-nav-item').forEach(item => {
@@ -646,7 +677,7 @@
                 });
             });
 
-            // Render week view (static)
+            // Render week view
             function renderWeekView() {
                 const container = document.getElementById('weekView');
                 const today = new Date();
