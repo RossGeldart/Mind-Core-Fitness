@@ -1762,3 +1762,150 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* Stats Detail Modal */
+.stats-detail-modal {
+    max-width: 420px;
+}
+
+.stats-detail-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.stats-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.stats-detail-item:hover {
+    background: #f8f8f8;
+}
+
+.stats-detail-item.compact {
+    padding: 8px 12px;
+}
+
+.stats-detail-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stats-detail-time {
+    min-width: 80px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+.stats-detail-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.stats-detail-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stats-detail-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.stats-detail-date-header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 12px 12px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: 1px solid var(--card-border);
+    margin-top: 8px;
+}
+
+.stats-detail-date-header:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
+.stats-detail-date-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stats-detail-date-badge .badge-day {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.stats-detail-date-badge .badge-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.stats-detail-more {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    padding: 8px;
+    margin: 8px 0 0;
+}
+
+.no-data {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 32px 16px;
+    font-size: 0.95rem;
+}
+
+.loading-spinner {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 32px 16px;
+}
+
+@media (max-width: 480px) {
+    .stats-detail-modal {
+        width: 95%;
+        max-height: 85vh;
+    }
+
+    .stats-detail-content {
+        max-height: 300px;
+    }
+}
