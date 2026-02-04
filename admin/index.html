@@ -731,6 +731,55 @@
         </div>
     </div>
 
+    <!-- Repeat Block Modal -->
+    <div class="modal-overlay" id="repeatBlockModal">
+        <div class="modal booking-wizard-modal">
+            <div class="modal-header">
+                <h3>Repeat Block</h3>
+                <button class="modal-close" id="closeRepeatBlockModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="repeat-block-summary" style="margin-bottom: 20px; padding: 16px; background: rgba(153, 49, 60, 0.05); border-radius: 10px;">
+                    <h4 style="margin: 0 0 8px 0; font-family: 'Montserrat', sans-serif;" id="repeatBlockClientName">Client Name</h4>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                        Extending block by <strong>4 weeks</strong><br>
+                        New end date: <strong id="repeatBlockNewEndDate">-</strong>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600; margin-bottom: 12px; display: block;">Training Days</label>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Select up to 3 days for training sessions</p>
+                    <div class="weekday-selection-grid" id="repeatDaySelection">
+                        <button type="button" class="weekday-btn" data-day="1">Mon</button>
+                        <button type="button" class="weekday-btn" data-day="2">Tue</button>
+                        <button type="button" class="weekday-btn" data-day="3">Wed</button>
+                        <button type="button" class="weekday-btn" data-day="4">Thu</button>
+                        <button type="button" class="weekday-btn" data-day="5">Fri</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="font-weight: 600; margin-bottom: 12px; display: block;">Session Times</label>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Select a time for each training day based on availability</p>
+                    <div id="repeatDayTimeSelectors" class="day-time-selectors">
+                        <p style="color: var(--text-muted); text-align: center;">Select training days above first</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelRepeatBlock">Cancel</button>
+                <button class="btn btn-primary" id="confirmRepeatBlock">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    Extend Block
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -1644,7 +1693,19 @@
                 document.getElementById('clientModal').classList.add('show');
             };
 
-            // Repeat block function - extends client by 4 weeks with same schedule
+            // ==================
+            // REPEAT BLOCK MODAL
+            // ==================
+            let repeatBlockState = {
+                clientId: null,
+                client: null,
+                selectedDays: [],
+                dayTimes: {},
+                newStartDate: null,
+                newEndDate: null
+            };
+
+            // Open repeat block modal
             window.repeatBlock = async (id) => {
                 const client = clients.find(c => c.id === id);
                 if (!client) {
@@ -1652,38 +1713,214 @@
                     return;
                 }
 
-                // Check if client has a stored schedule
-                const selectedDays = client.selectedDays || [];
-                const dayTimes = client.dayTimes || {};
-
-                if (selectedDays.length === 0 || Object.keys(dayTimes).length === 0) {
-                    showToast('No schedule found for this client. Please edit and set up their schedule first.', 'error');
-                    return;
-                }
-
                 // Calculate dates
                 const currentEndDate = client.blockEndDate ? new Date(client.blockEndDate) : new Date();
                 const newStartDate = new Date(currentEndDate);
-                newStartDate.setDate(newStartDate.getDate() + 1); // Start day after current end
+                newStartDate.setDate(newStartDate.getDate() + 1);
                 const newEndDate = new Date(currentEndDate);
-                newEndDate.setDate(newEndDate.getDate() + 28); // Add 4 weeks (28 days)
+                newEndDate.setDate(newEndDate.getDate() + 28);
 
-                // Format day names for confirmation
-                const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                const scheduleText = selectedDays.map(d => `${dayNames[d]} at ${dayTimes[d]}`).join(', ');
+                // Initialize state with client's existing schedule (or empty if none)
+                repeatBlockState = {
+                    clientId: id,
+                    client: client,
+                    selectedDays: [...(client.selectedDays || [])],
+                    dayTimes: { ...(client.dayTimes || {}) },
+                    newStartDate: newStartDate,
+                    newEndDate: newEndDate
+                };
 
-                // Confirm with user
-                const confirmed = confirm(
-                    `Repeat block for ${client.name}?\n\n` +
-                    `Schedule: ${scheduleText}\n` +
-                    `New end date: ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}\n\n` +
-                    `This will create new sessions from ${newStartDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} to ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}.`
-                );
+                // Update modal display
+                document.getElementById('repeatBlockClientName').textContent = client.name;
+                document.getElementById('repeatBlockNewEndDate').textContent = newEndDate.toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
 
-                if (!confirmed) return;
+                // Update day selection UI
+                updateRepeatDaySelection();
+
+                // Render time selectors
+                await renderRepeatDayTimeSelectors();
+
+                // Show modal
+                document.getElementById('repeatBlockModal').classList.add('show');
+            };
+
+            // Update day selection buttons
+            function updateRepeatDaySelection() {
+                document.querySelectorAll('#repeatDaySelection .weekday-btn').forEach(btn => {
+                    const day = parseInt(btn.dataset.day);
+                    btn.classList.toggle('selected', repeatBlockState.selectedDays.includes(day));
+                });
+            }
+
+            // Render time selectors for repeat block
+            async function renderRepeatDayTimeSelectors() {
+                const container = document.getElementById('repeatDayTimeSelectors');
+                const days = repeatBlockState.selectedDays;
+                const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                const duration = repeatBlockState.client?.blockDuration || 60;
+                const newEndDate = repeatBlockState.newEndDate;
+                const newStartDate = repeatBlockState.newStartDate;
+
+                if (days.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Select training days above first</p>';
+                    return;
+                }
+
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Loading available slots...</p>';
+
+                // Fetch existing bookings for the new period
+                let allExistingBookings = {};
+                for (const dayNum of days) {
+                    const dates = getRepeatDatesForWeekday(dayNum, newStartDate, newEndDate);
+                    for (const dateStr of dates) {
+                        if (!allExistingBookings[dateStr]) {
+                            try {
+                                const snapshot = await db.collection('bookings')
+                                    .where('date', '==', dateStr)
+                                    .where('status', '==', 'confirmed')
+                                    .get();
+                                allExistingBookings[dateStr] = snapshot.docs.map(doc => doc.data());
+                            } catch (error) {
+                                allExistingBookings[dateStr] = [];
+                            }
+                        }
+                    }
+                }
+
+                // Build bookings per weekday
+                const bookingsByWeekday = {};
+                for (const dayNum of days) {
+                    bookingsByWeekday[dayNum] = [];
+                    const dates = getRepeatDatesForWeekday(dayNum, newStartDate, newEndDate);
+                    for (const dateStr of dates) {
+                        if (allExistingBookings[dateStr]) {
+                            bookingsByWeekday[dayNum].push(...allExistingBookings[dateStr]);
+                        }
+                    }
+                }
+
+                // Generate HTML for each day
+                let html = '';
+                for (const dayNum of days) {
+                    const existingBookings = bookingsByWeekday[dayNum] || [];
+                    const slots = await generateClientTimeSlotsWithAvailability(dayNum, existingBookings, duration, false);
+                    const selectedTime = repeatBlockState.dayTimes[dayNum] || '';
+
+                    html += `
+                        <div class="day-time-selector">
+                            <div class="day-time-header">
+                                <span class="day-time-label">${dayNames[dayNum]}</span>
+                                <span class="day-time-selected" id="repeatSelectedTime${dayNum}">${selectedTime ? formatTime(selectedTime) : 'Select time'}</span>
+                            </div>
+                            <div class="day-slots time-slots-container">
+                                ${slots.length === 0 ?
+                                    '<p style="color: var(--text-muted); text-align: center; padding: 12px; margin: 0;">No availability set for this day</p>' :
+                                    slots.map(slot => `
+                                        <div class="time-slot ${slot.isBooked ? 'booked' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
+                                             data-day="${dayNum}" data-time="${slot.time}"
+                                             ${slot.isBooked ? 'title="This time is already booked"' : ''}>
+                                            ${formatTime(slot.time)}
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = html;
+
+                // Add click handlers for time slots
+                container.querySelectorAll('.time-slot:not(.booked)').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        const day = parseInt(this.dataset.day);
+                        const time = this.dataset.time;
+
+                        // Update state
+                        repeatBlockState.dayTimes[day] = time;
+
+                        // Update UI - clear other selections for this day
+                        this.closest('.day-slots').querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Update the selected time display
+                        document.getElementById(`repeatSelectedTime${day}`).textContent = formatTime(time);
+                    });
+                });
+            }
+
+            // Get dates for a weekday within the new block period
+            function getRepeatDatesForWeekday(dayNum, startDate, endDate) {
+                const dates = [];
+                let currentDate = new Date(startDate);
+
+                while (currentDate <= endDate) {
+                    const dayOfWeek = currentDate.getDay();
+                    const ourDayNum = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                    if (ourDayNum === dayNum) {
+                        dates.push(currentDate.toISOString().split('T')[0]);
+                    }
+
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                return dates;
+            }
+
+            // Day selection click handlers for repeat block modal
+            document.querySelectorAll('#repeatDaySelection .weekday-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const day = parseInt(this.dataset.day);
+
+                    if (repeatBlockState.selectedDays.includes(day)) {
+                        // Remove day
+                        repeatBlockState.selectedDays = repeatBlockState.selectedDays.filter(d => d !== day);
+                        delete repeatBlockState.dayTimes[day];
+                    } else if (repeatBlockState.selectedDays.length < 3) {
+                        // Add day
+                        repeatBlockState.selectedDays.push(day);
+                        repeatBlockState.selectedDays.sort((a, b) => a - b);
+                    }
+
+                    updateRepeatDaySelection();
+                    await renderRepeatDayTimeSelectors();
+                });
+            });
+
+            // Close modal handlers
+            document.getElementById('closeRepeatBlockModal').addEventListener('click', () => {
+                document.getElementById('repeatBlockModal').classList.remove('show');
+            });
+
+            document.getElementById('cancelRepeatBlock').addEventListener('click', () => {
+                document.getElementById('repeatBlockModal').classList.remove('show');
+            });
+
+            // Confirm repeat block
+            document.getElementById('confirmRepeatBlock').addEventListener('click', async () => {
+                const { clientId, client, selectedDays, dayTimes, newStartDate, newEndDate } = repeatBlockState;
+
+                // Validate
+                if (selectedDays.length === 0) {
+                    showToast('Please select at least one training day', 'error');
+                    return;
+                }
+
+                const missingTimes = selectedDays.filter(d => !dayTimes[d]);
+                if (missingTimes.length > 0) {
+                    const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                    showToast(`Please select a time for ${missingTimes.map(d => dayNames[d]).join(', ')}`, 'error');
+                    return;
+                }
+
+                const confirmBtn = document.getElementById('confirmRepeatBlock');
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = 'Extending...';
 
                 try {
-                    // Create new bookings for the extended period
                     const blockDuration = client.blockDuration || 60;
                     let bookingsCreated = 0;
                     const batch = db.batch();
@@ -1697,7 +1934,6 @@
                             const dateStr = currentDate.toISOString().split('T')[0];
                             const time = dayTimes[ourDayNum];
 
-                            // Calculate end time
                             const [startHour, startMin] = time.split(':').map(Number);
                             const endMinutes = startHour * 60 + startMin + blockDuration;
                             const endHour = Math.floor(endMinutes / 60);
@@ -1706,7 +1942,7 @@
 
                             const bookingRef = db.collection('bookings').doc();
                             batch.set(bookingRef, {
-                                clientId: client.id,
+                                clientId: clientId,
                                 clientName: client.name,
                                 clientEmail: client.email,
                                 date: dateStr,
@@ -1723,24 +1959,36 @@
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
 
-                    // Update client's block end date and total sessions
-                    const clientRef = db.collection('users').doc(id);
+                    // Update client's block end date, total sessions, and schedule
+                    const clientRef = db.collection('users').doc(clientId);
                     batch.update(clientRef, {
                         blockEndDate: newEndDate.toISOString().split('T')[0],
                         totalSessions: (client.totalSessions || 0) + bookingsCreated,
+                        selectedDays: selectedDays,
+                        dayTimes: dayTimes,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
                     await batch.commit();
 
+                    document.getElementById('repeatBlockModal').classList.remove('show');
                     showToast(`Block extended! Created ${bookingsCreated} new sessions until ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`, 'success');
-                    loadClients(); // Refresh the list
+                    loadClients();
 
                 } catch (error) {
                     console.error('Error repeating block:', error);
                     showToast('Failed to repeat block: ' + error.message, 'error');
+                } finally {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Extend Block
+                    `;
                 }
-            };
+            });
 
             // Update stats
             async function updateStats() {
