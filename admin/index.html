@@ -790,6 +790,8 @@
             // ==================
             // CALENDAR (Monday-Friday only)
             // ==================
+            const WEEKDAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
             function renderCalendar() {
                 const grid = document.getElementById('calendarGrid');
                 const year = currentMonth.getFullYear();
@@ -888,9 +890,6 @@
                 times: {}, // Object mapping date -> time for each selected day
                 repeatWeekly: false
             };
-
-            // Days for Monday-Friday calendar (weekdays only)
-            const WEEKDAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
             let bookingCalendarMonth = new Date();
 
