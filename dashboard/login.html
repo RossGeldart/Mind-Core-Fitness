@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Login | Mind Core Fitness</title>
+    <title>Login | Mind Core Fitness</title>
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Fonts -->
@@ -17,6 +17,11 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../Logo.PNG">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="login-page">
@@ -25,41 +30,39 @@
                 <img src="../Logo.PNG" alt="Mind Core Fitness">
             </div>
 
-            <h1 class="login-title">Client Portal</h1>
-            <p class="login-subtitle">Sign in to view your sessions and manage bookings</p>
-
-            <div id="configWarning" class="config-warning" style="display: flex;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <div class="config-warning-content">
-                    <h4>Portal Not Ready</h4>
-                    <p>The client portal is being set up. Please contact Ross if you need to book a session.</p>
-                </div>
-            </div>
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to access your dashboard</p>
 
             <div id="loginError" class="login-error"></div>
 
             <form id="loginForm" class="login-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com" disabled>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter your password" disabled>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
                 </div>
 
-                <button type="submit" class="login-btn" id="loginBtn" disabled>
+                <button type="submit" class="login-btn" id="loginBtn">
                     Sign In
                 </button>
             </form>
 
             <div class="forgot-password">
                 <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+            </div>
+
+            <!-- Reset Password Form (hidden by default) -->
+            <div id="resetForm" style="display: none;">
+                <p style="margin-bottom: 16px; color: var(--text-muted);">Enter your email to receive a password reset link.</p>
+                <div class="form-group">
+                    <input type="email" id="resetEmail" placeholder="your@email.com" style="width: 100%;">
+                </div>
+                <button class="login-btn" id="resetBtn" style="margin-bottom: 12px;">Send Reset Link</button>
+                <button class="btn btn-secondary" id="backToLogin" style="width: 100%;">Back to Login</button>
             </div>
 
             <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--card-border);">
@@ -69,5 +72,125 @@
             </div>
         </div>
     </div>
+
+    <script src="../js/firebase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+            const loginBtn = document.getElementById('loginBtn');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const resetForm = document.getElementById('resetForm');
+            const resetBtn = document.getElementById('resetBtn');
+            const backToLogin = document.getElementById('backToLogin');
+
+            // Check if user is already logged in
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is logged in, redirect based on role
+                    const role = await getUserRole(user.uid);
+                    if (role === 'admin') {
+                        window.location.href = '/admin/index.html';
+                    } else {
+                        window.location.href = '/dashboard/index.html';
+                    }
+                }
+            });
+
+            // Login form submit
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Signing in...';
+                loginError.style.display = 'none';
+
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    // Get user role and redirect
+                    const role = await getUserRole(user.uid);
+
+                    if (role === 'admin') {
+                        window.location.href = '/admin/index.html';
+                    } else {
+                        window.location.href = '/dashboard/index.html';
+                    }
+                } catch (error) {
+                    loginError.style.display = 'block';
+
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            loginError.textContent = 'No account found with this email address.';
+                            break;
+                        case 'auth/wrong-password':
+                            loginError.textContent = 'Incorrect password. Please try again.';
+                            break;
+                        case 'auth/invalid-email':
+                            loginError.textContent = 'Please enter a valid email address.';
+                            break;
+                        case 'auth/too-many-requests':
+                            loginError.textContent = 'Too many failed attempts. Please try again later.';
+                            break;
+                        case 'auth/invalid-credential':
+                            loginError.textContent = 'Invalid email or password. Please try again.';
+                            break;
+                        default:
+                            loginError.textContent = 'An error occurred. Please try again.';
+                    }
+
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            });
+
+            // Forgot password
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                forgotPasswordLink.parentElement.style.display = 'none';
+                resetForm.style.display = 'block';
+                document.getElementById('resetEmail').value = document.getElementById('email').value;
+            });
+
+            backToLogin.addEventListener('click', () => {
+                loginForm.style.display = 'block';
+                forgotPasswordLink.parentElement.style.display = 'block';
+                resetForm.style.display = 'none';
+            });
+
+            resetBtn.addEventListener('click', async () => {
+                const email = document.getElementById('resetEmail').value;
+
+                if (!email) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Please enter your email address.';
+                    return;
+                }
+
+                resetBtn.disabled = true;
+                resetBtn.textContent = 'Sending...';
+
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    loginError.style.display = 'block';
+                    loginError.style.background = 'rgba(45, 138, 78, 0.1)';
+                    loginError.style.borderColor = 'rgba(45, 138, 78, 0.3)';
+                    loginError.style.color = '#2d8a4e';
+                    loginError.textContent = 'Password reset email sent! Check your inbox.';
+                    resetBtn.textContent = 'Email Sent';
+                } catch (error) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Could not send reset email. Please check the address and try again.';
+                    resetBtn.disabled = false;
+                    resetBtn.textContent = 'Send Reset Link';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

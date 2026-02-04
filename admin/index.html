@@ -17,6 +17,11 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../Logo.PNG">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -85,18 +90,6 @@
                 </header>
 
                 <div class="dashboard-content">
-                    <div id="configWarning" class="config-warning" style="display: flex;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                            <line x1="12" y1="9" x2="12" y2="13"></line>
-                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                        </svg>
-                        <div class="config-warning-content">
-                            <h4>Database Not Configured</h4>
-                            <p>The booking system database is being set up. The dashboard will be fully functional once connected.</p>
-                        </div>
-                    </div>
-
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-value" id="statClients">0</div>
@@ -427,13 +420,42 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <script src="../js/firebase-config.js"></script>
     <script>
-        // Dashboard functionality (UI only - no database)
         document.addEventListener('DOMContentLoaded', function() {
             const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
             let currentMonth = new Date();
+
+            // Check authentication
+            auth.onAuthStateChanged(async (user) => {
+                if (!user) {
+                    // Not logged in, redirect to login
+                    window.location.href = '/dashboard/login.html';
+                    return;
+                }
+
+                // Check if admin
+                const role = await getUserRole(user.uid);
+                if (role !== 'admin') {
+                    // Not admin, redirect to client dashboard
+                    window.location.href = '/dashboard/index.html';
+                    return;
+                }
+
+                // Get user data and display
+                const userData = await getUserData(user.uid);
+                if (userData) {
+                    document.getElementById('userName').textContent = userData.name || 'Admin';
+                    document.getElementById('userAvatar').textContent = (userData.name || 'A')[0].toUpperCase();
+                }
+            });
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                logout();
+            });
 
             // Set today's date
             const today = new Date();
