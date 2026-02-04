@@ -1752,7 +1752,7 @@
                     }
                 } catch (error) {
                     console.error('Error loading stats detail:', error);
-                    content.innerHTML = '<p class="no-data">Error loading data</p>';
+                    content.innerHTML = `<p class="no-data">Error: ${error.message || 'Unknown error'}</p>`;
                 }
 
                 modal.classList.add('show');
