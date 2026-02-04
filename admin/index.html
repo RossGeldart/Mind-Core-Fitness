@@ -850,6 +850,13 @@
                             ${client.blockStartDate || client.blockEndDate ? `<span class="client-end">${client.blockStartDate ? new Date(client.blockStartDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''} - ${client.blockEndDate ? new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</span>` : ''}
                         </div>
                         <div class="client-actions">
+                            <button class="btn btn-sm btn-primary" onclick="repeatBlock('${client.id}')" title="Extend by 4 weeks with same schedule">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Repeat
+                            </button>
                             <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">Edit</button>
                         </div>
                     </div>
@@ -1481,7 +1488,9 @@
                                 blockDuration,
                                 blockStartDate,
                                 blockEndDate,
-                                totalSessions
+                                totalSessions,
+                                selectedDays: state.selectedDays,
+                                dayTimes: state.dayTimes
                             });
 
                             if (result.data.success) {
@@ -1506,6 +1515,8 @@
                                 blockEndDate,
                                 totalSessions,
                                 sessionsUsed: 0,
+                                selectedDays: state.selectedDays || [],
+                                dayTimes: state.dayTimes || {},
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                 needsPasswordSetup: true,
                                 onboardingComplete: false
@@ -1631,6 +1642,104 @@
 
                 updateClientWizardUI();
                 document.getElementById('clientModal').classList.add('show');
+            };
+
+            // Repeat block function - extends client by 4 weeks with same schedule
+            window.repeatBlock = async (id) => {
+                const client = clients.find(c => c.id === id);
+                if (!client) {
+                    showToast('Client not found', 'error');
+                    return;
+                }
+
+                // Check if client has a stored schedule
+                const selectedDays = client.selectedDays || [];
+                const dayTimes = client.dayTimes || {};
+
+                if (selectedDays.length === 0 || Object.keys(dayTimes).length === 0) {
+                    showToast('No schedule found for this client. Please edit and set up their schedule first.', 'error');
+                    return;
+                }
+
+                // Calculate dates
+                const currentEndDate = client.blockEndDate ? new Date(client.blockEndDate) : new Date();
+                const newStartDate = new Date(currentEndDate);
+                newStartDate.setDate(newStartDate.getDate() + 1); // Start day after current end
+                const newEndDate = new Date(currentEndDate);
+                newEndDate.setDate(newEndDate.getDate() + 28); // Add 4 weeks (28 days)
+
+                // Format day names for confirmation
+                const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                const scheduleText = selectedDays.map(d => `${dayNames[d]} at ${dayTimes[d]}`).join(', ');
+
+                // Confirm with user
+                const confirmed = confirm(
+                    `Repeat block for ${client.name}?\n\n` +
+                    `Schedule: ${scheduleText}\n` +
+                    `New end date: ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}\n\n` +
+                    `This will create new sessions from ${newStartDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} to ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}.`
+                );
+
+                if (!confirmed) return;
+
+                try {
+                    // Create new bookings for the extended period
+                    const blockDuration = client.blockDuration || 60;
+                    let bookingsCreated = 0;
+                    const batch = db.batch();
+
+                    let currentDate = new Date(newStartDate);
+                    while (currentDate <= newEndDate) {
+                        const dayOfWeek = currentDate.getDay();
+                        const ourDayNum = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                        if (selectedDays.includes(ourDayNum) && dayTimes[ourDayNum]) {
+                            const dateStr = currentDate.toISOString().split('T')[0];
+                            const time = dayTimes[ourDayNum];
+
+                            // Calculate end time
+                            const [startHour, startMin] = time.split(':').map(Number);
+                            const endMinutes = startHour * 60 + startMin + blockDuration;
+                            const endHour = Math.floor(endMinutes / 60);
+                            const endMin = endMinutes % 60;
+                            const endTime = `${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}`;
+
+                            const bookingRef = db.collection('bookings').doc();
+                            batch.set(bookingRef, {
+                                clientId: client.id,
+                                clientName: client.name,
+                                clientEmail: client.email,
+                                date: dateStr,
+                                time,
+                                endTime,
+                                duration: blockDuration,
+                                status: 'confirmed',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+
+                            bookingsCreated++;
+                        }
+
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+
+                    // Update client's block end date and total sessions
+                    const clientRef = db.collection('users').doc(id);
+                    batch.update(clientRef, {
+                        blockEndDate: newEndDate.toISOString().split('T')[0],
+                        totalSessions: (client.totalSessions || 0) + bookingsCreated,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    await batch.commit();
+
+                    showToast(`Block extended! Created ${bookingsCreated} new sessions until ${newEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`, 'success');
+                    loadClients(); // Refresh the list
+
+                } catch (error) {
+                    console.error('Error repeating block:', error);
+                    showToast('Failed to repeat block: ' + error.message, 'error');
+                }
             };
 
             // Update stats
