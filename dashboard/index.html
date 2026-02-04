@@ -1587,25 +1587,50 @@
 
             // Load user's upcoming sessions from bookings collection
             async function loadUserBookings() {
-                if (!currentUserId) return;
+                if (!currentUserId) {
+                    console.log('No currentUserId, skipping booking load');
+                    return;
+                }
 
                 try {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     const todayStr = today.toISOString().split('T')[0];
 
-                    // Query bookings where clientId matches current user
-                    const snapshot = await db.collection('bookings')
+                    console.log('Loading bookings for userId:', currentUserId);
+
+                    // First try to find bookings by clientId (UID)
+                    let snapshot = await db.collection('bookings')
                         .where('clientId', '==', currentUserId)
-                        .where('date', '>=', todayStr)
-                        .orderBy('date')
                         .get();
+
+                    console.log('Bookings found by UID:', snapshot.size);
+
+                    // If no bookings found by UID, try finding by email
+                    if (snapshot.empty && auth.currentUser && auth.currentUser.email) {
+                        console.log('No bookings by UID, trying email:', auth.currentUser.email);
+                        snapshot = await db.collection('bookings')
+                            .where('clientEmail', '==', auth.currentUser.email)
+                            .get();
+                        console.log('Bookings found by email:', snapshot.size);
+
+                        // If found by email, update these bookings to use correct clientId
+                        if (!snapshot.empty) {
+                            console.log('Migrating bookings to correct clientId...');
+                            const batch = db.batch();
+                            snapshot.forEach(doc => {
+                                batch.update(doc.ref, { clientId: currentUserId });
+                            });
+                            await batch.commit();
+                            console.log('Bookings migrated successfully');
+                        }
+                    }
 
                     userBookings = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        // Only include confirmed bookings
-                        if (data.status !== 'cancelled') {
+                        // Only include confirmed bookings with future dates
+                        if (data.status !== 'cancelled' && data.date >= todayStr) {
                             userBookings.push({
                                 id: doc.id,
                                 ...data
@@ -1620,6 +1645,11 @@
                         return (a.time || '00:00').localeCompare(b.time || '00:00');
                     });
 
+                    console.log('Upcoming sessions found:', userBookings.length);
+                    if (userBookings.length > 0) {
+                        console.log('Next session:', userBookings[0].date, userBookings[0].time);
+                    }
+
                     // Update displays
                     displayNextSession();
                     displayUpcomingSessions();
@@ -1627,6 +1657,10 @@
 
                 } catch (error) {
                     console.error('Error loading user bookings:', error);
+                    // Show error to user if it's an index issue
+                    if (error.message && error.message.includes('index')) {
+                        console.error('Firestore index may be required. Check Firebase console.');
+                    }
                 }
             }
 
