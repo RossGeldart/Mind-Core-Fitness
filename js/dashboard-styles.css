@@ -550,9 +550,56 @@
     color: var(--text-muted);
 }
 
+.client-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.client-email {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.client-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-right: 16px;
+}
+
+.client-duration {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--accent-color);
+}
+
+.client-end {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
 .client-actions {
     display: flex;
     gap: 8px;
+}
+
+.toast button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0;
+    line-height: 1;
+}
+
+.toast button:hover {
+    color: var(--text-color);
 }
 
 /* Calendar */

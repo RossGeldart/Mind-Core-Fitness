@@ -202,7 +202,7 @@
                 <header class="dashboard-header">
                     <h1>Manage Clients</h1>
                     <div class="header-actions">
-                        <button class="btn btn-primary" id="addClientBtn" disabled>
+                        <button class="btn btn-primary" id="addClientBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -427,35 +427,51 @@
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
             let currentMonth = new Date();
+            let clients = [];
+
+            // Toast notification
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.remove()">&times;</button>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
 
             // Check authentication
             auth.onAuthStateChanged(async (user) => {
                 if (!user) {
-                    // Not logged in, redirect to login
                     window.location.href = '/dashboard/login.html';
                     return;
                 }
 
-                // Check if admin
                 const role = await getUserRole(user.uid);
                 if (role !== 'admin') {
-                    // Not admin, redirect to client dashboard
                     window.location.href = '/dashboard/index.html';
                     return;
                 }
 
-                // Get user data and display
                 const userData = await getUserData(user.uid);
                 if (userData) {
                     document.getElementById('userName').textContent = userData.name || 'Admin';
                     document.getElementById('userAvatar').textContent = (userData.name || 'A')[0].toUpperCase();
                 }
+
+                // Load clients after auth confirmed
+                loadClients();
+                updateStats();
             });
 
-            // Logout button
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                logout();
-            });
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => logout());
 
             // Set today's date
             const today = new Date();
@@ -466,55 +482,234 @@
                 day: 'numeric'
             });
 
-            // Navigation
+            // ==================
+            // CLIENTS
+            // ==================
+            async function loadClients() {
+                try {
+                    const snapshot = await db.collection('users').where('role', '==', 'client').get();
+                    clients = [];
+                    snapshot.forEach(doc => {
+                        clients.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderClientList();
+                    updateStats();
+                } catch (error) {
+                    console.error('Error loading clients:', error);
+                    showToast('Failed to load clients', 'error');
+                }
+            }
+
+            function renderClientList() {
+                const container = document.getElementById('clientList');
+
+                if (clients.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                            </svg>
+                            <h4>No clients yet</h4>
+                            <p>Add your first client to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = clients.map(client => `
+                    <div class="client-item" data-id="${client.id}">
+                        <div class="client-avatar">${(client.name || 'C')[0].toUpperCase()}</div>
+                        <div class="client-info">
+                            <div class="client-name">${client.name || 'Unknown'}</div>
+                            <div class="client-email">${client.email}</div>
+                        </div>
+                        <div class="client-meta">
+                            <span class="client-duration">${client.blockDuration || 60} min</span>
+                            ${client.blockEndDate ? `<span class="client-end">Until ${new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>` : ''}
+                        </div>
+                        <div class="client-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">Edit</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Add Client Modal
+            document.getElementById('addClientBtn').addEventListener('click', () => {
+                document.getElementById('clientModalTitle').textContent = 'Add New Client';
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientId').value = '';
+                // Set default end date to 3 months from now
+                const defaultEnd = new Date();
+                defaultEnd.setMonth(defaultEnd.getMonth() + 3);
+                document.getElementById('clientBlockEndDate').value = defaultEnd.toISOString().split('T')[0];
+                document.getElementById('clientModal').classList.add('show');
+            });
+
+            // Save Client
+            document.getElementById('saveClientBtn').addEventListener('click', async () => {
+                const name = document.getElementById('clientName').value.trim();
+                const email = document.getElementById('clientEmail').value.trim();
+                const blockDuration = parseInt(document.getElementById('clientBlockDuration').value);
+                const blockEndDate = document.getElementById('clientBlockEndDate').value;
+                const clientId = document.getElementById('clientId').value;
+
+                // Get allowed days
+                const allowedDays = [];
+                document.querySelectorAll('#clientDays input:checked').forEach(cb => {
+                    allowedDays.push(parseInt(cb.value));
+                });
+
+                if (!name || !email) {
+                    showToast('Please fill in name and email', 'error');
+                    return;
+                }
+
+                const saveBtn = document.getElementById('saveClientBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                try {
+                    if (clientId) {
+                        // Update existing client
+                        await db.collection('users').doc(clientId).update({
+                            name,
+                            email,
+                            blockDuration,
+                            blockEndDate,
+                            allowedDays,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        showToast('Client updated successfully');
+                    } else {
+                        // Create new client - first create auth account
+                        // Generate a temporary password
+                        const tempPassword = 'Welcome' + Math.random().toString(36).slice(-6) + '!';
+
+                        // We need to use a Cloud Function or Admin SDK to create users
+                        // For now, we'll just create the Firestore document
+                        // The client will need to use "Forgot Password" to set their password
+
+                        // Create user document
+                        const newUserRef = db.collection('users').doc();
+                        await newUserRef.set({
+                            name,
+                            email,
+                            role: 'client',
+                            blockDuration,
+                            blockEndDate,
+                            allowedDays,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            needsPasswordSetup: true
+                        });
+
+                        showToast(`Client added! They should use "Forgot Password" with ${email} to set up their login.`);
+                    }
+
+                    document.getElementById('clientModal').classList.remove('show');
+                    loadClients();
+                } catch (error) {
+                    console.error('Error saving client:', error);
+                    showToast('Failed to save client: ' + error.message, 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Client';
+                }
+            });
+
+            // Edit client function (global)
+            window.editClient = async (id) => {
+                const client = clients.find(c => c.id === id);
+                if (!client) return;
+
+                document.getElementById('clientModalTitle').textContent = 'Edit Client';
+                document.getElementById('clientId').value = id;
+                document.getElementById('clientName').value = client.name || '';
+                document.getElementById('clientEmail').value = client.email || '';
+                document.getElementById('clientBlockDuration').value = client.blockDuration || 60;
+                document.getElementById('clientBlockEndDate').value = client.blockEndDate || '';
+
+                // Set allowed days
+                document.querySelectorAll('#clientDays input').forEach(cb => {
+                    cb.checked = (client.allowedDays || [1,2,3,4,5]).includes(parseInt(cb.value));
+                });
+
+                document.getElementById('clientModal').classList.add('show');
+            };
+
+            // Update stats
+            async function updateStats() {
+                document.getElementById('statClients').textContent = clients.length;
+
+                // Get today's bookings
+                const todayStr = today.toISOString().split('T')[0];
+                try {
+                    const bookingsToday = await db.collection('bookings')
+                        .where('date', '==', todayStr)
+                        .get();
+                    document.getElementById('statBookingsToday').textContent = bookingsToday.size;
+
+                    // Get this week's bookings
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - today.getDay());
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+
+                    const bookingsWeek = await db.collection('bookings')
+                        .where('date', '>=', weekStart.toISOString().split('T')[0])
+                        .where('date', '<=', weekEnd.toISOString().split('T')[0])
+                        .get();
+                    document.getElementById('statBookingsWeek').textContent = bookingsWeek.size;
+
+                    // Get all upcoming bookings
+                    const upcoming = await db.collection('bookings')
+                        .where('date', '>=', todayStr)
+                        .get();
+                    document.getElementById('statUpcoming').textContent = upcoming.size;
+                } catch (error) {
+                    console.error('Error loading stats:', error);
+                }
+            }
+
+            // ==================
+            // NAVIGATION
+            // ==================
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const section = this.dataset.section;
-
-                    // Update nav
                     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
-
-                    // Show section
                     document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
                     document.getElementById('section-' + section).classList.add('active');
-
-                    // Close mobile sidebar
                     document.getElementById('sidebar').classList.remove('open');
 
-                    // Render calendar if switching to calendar section
-                    if (section === 'calendar') {
-                        renderCalendar();
-                    } else if (section === 'availability') {
-                        renderAvailabilityGrid();
-                    }
+                    if (section === 'calendar') renderCalendar();
+                    else if (section === 'availability') renderAvailabilityGrid();
+                    else if (section === 'clients') loadClients();
                 });
             });
 
-            // Mobile sidebar toggle
             document.getElementById('sidebarToggle').addEventListener('click', function() {
                 document.getElementById('sidebar').classList.toggle('open');
             });
 
             // ==================
-            // AVAILABILITY (Static UI)
+            // AVAILABILITY
             // ==================
             function renderAvailabilityGrid() {
                 const grid = document.getElementById('availabilityGrid');
-                grid.innerHTML = DAYS.map((day, i) => {
-                    return `
-                        <div class="day-card" data-day="${i}">
-                            <div class="day-name">${DAYS_SHORT[i]}</div>
-                            <div class="day-times">Not set</div>
-                        </div>
-                    `;
-                }).join('');
+                grid.innerHTML = DAYS.map((day, i) => `
+                    <div class="day-card" data-day="${i}">
+                        <div class="day-name">${DAYS_SHORT[i]}</div>
+                        <div class="day-times">Not set</div>
+                    </div>
+                `).join('');
             }
-
             renderAvailabilityGrid();
 
             // ==================
-            // CALENDAR (Static UI)
+            // CALENDAR
             // ==================
             function renderCalendar() {
                 const grid = document.getElementById('calendarGrid');
@@ -524,26 +719,21 @@
                 document.getElementById('calendarMonth').textContent =
                     currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 
-                // Day headers
                 let html = DAYS_SHORT.map(d => `<div class="calendar-day-header">${d}</div>`).join('');
 
-                // Get first day of month
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
                 const startDay = firstDay.getDay();
 
-                // Previous month days
                 const prevMonthLastDay = new Date(year, month, 0).getDate();
                 for (let i = startDay - 1; i >= 0; i--) {
                     html += `<div class="calendar-day other-month"><span class="calendar-date">${prevMonthLastDay - i}</span></div>`;
                 }
 
-                // Current month days
                 for (let day = 1; day <= lastDay.getDate(); day++) {
                     const date = new Date(year, month, day);
                     const isToday = date.toDateString() === today.toDateString();
                     const dateStr = date.toISOString().split('T')[0];
-
                     html += `
                         <div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateStr}">
                             <span class="calendar-date">${day}</span>
@@ -551,7 +741,6 @@
                     `;
                 }
 
-                // Next month days
                 const remainingDays = 42 - (startDay + lastDay.getDate());
                 for (let day = 1; day <= remainingDays; day++) {
                     html += `<div class="calendar-day other-month"><span class="calendar-date">${day}</span></div>`;
@@ -559,7 +748,6 @@
 
                 grid.innerHTML = html;
 
-                // Add click handlers
                 grid.querySelectorAll('.calendar-day:not(.other-month)').forEach(day => {
                     day.addEventListener('click', function() {
                         const date = this.dataset.date;
@@ -571,30 +759,29 @@
                 });
             }
 
-            document.getElementById('prevMonth').addEventListener('click', function() {
+            document.getElementById('prevMonth').addEventListener('click', () => {
                 currentMonth.setMonth(currentMonth.getMonth() - 1);
                 renderCalendar();
             });
 
-            document.getElementById('nextMonth').addEventListener('click', function() {
+            document.getElementById('nextMonth').addEventListener('click', () => {
                 currentMonth.setMonth(currentMonth.getMonth() + 1);
                 renderCalendar();
             });
 
-            // Initial calendar render
             renderCalendar();
 
             // Modal close handlers
-            document.getElementById('closeClientModal').addEventListener('click', function() {
+            document.getElementById('closeClientModal').addEventListener('click', () => {
                 document.getElementById('clientModal').classList.remove('show');
             });
-            document.getElementById('cancelClientBtn').addEventListener('click', function() {
+            document.getElementById('cancelClientBtn').addEventListener('click', () => {
                 document.getElementById('clientModal').classList.remove('show');
             });
-            document.getElementById('closeBookingModal').addEventListener('click', function() {
+            document.getElementById('closeBookingModal').addEventListener('click', () => {
                 document.getElementById('bookingModal').classList.remove('show');
             });
-            document.getElementById('cancelBookingBtn').addEventListener('click', function() {
+            document.getElementById('cancelBookingBtn').addEventListener('click', () => {
                 document.getElementById('bookingModal').classList.remove('show');
             });
         });
