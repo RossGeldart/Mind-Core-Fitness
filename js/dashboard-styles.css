@@ -476,6 +476,11 @@
     color: var(--accent-color);
 }
 
+.day-card.selected {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(153, 49, 60, 0.2);
+}
+
 /* Time Input Group */
 .time-input-group {
     display: flex;

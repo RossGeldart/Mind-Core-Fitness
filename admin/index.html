@@ -776,15 +776,162 @@
             // ==================
             // AVAILABILITY
             // ==================
+            let availability = {}; // { 0: {start: '09:00', end: '17:00'}, 1: {...}, ... }
+            let originalAvailability = {}; // To track changes
+            let selectedDay = null;
+
+            // Format time to 12-hour display
+            function formatTimeDisplay(time24) {
+                const [hours, minutes] = time24.split(':').map(Number);
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const hours12 = hours % 12 || 12;
+                return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+
             function renderAvailabilityGrid() {
                 const grid = document.getElementById('availabilityGrid');
-                grid.innerHTML = DAYS.map((day, i) => `
-                    <div class="day-card" data-day="${i}">
-                        <div class="day-name">${DAYS_SHORT[i]}</div>
-                        <div class="day-times">Not set</div>
-                    </div>
-                `).join('');
+                grid.innerHTML = DAYS.map((day, i) => {
+                    const dayData = availability[i];
+                    const hasTime = dayData && dayData.start && dayData.end;
+                    const timeText = hasTime
+                        ? `${formatTimeDisplay(dayData.start)} - ${formatTimeDisplay(dayData.end)}`
+                        : 'Not set';
+                    const activeClass = hasTime ? 'active' : '';
+                    const selectedClass = selectedDay === i ? 'selected' : '';
+
+                    return `
+                        <div class="day-card ${activeClass} ${selectedClass}" data-day="${i}">
+                            <div class="day-name">${DAYS_SHORT[i]}</div>
+                            <div class="day-times">${timeText}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Add click handlers to day cards
+                grid.querySelectorAll('.day-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const dayIndex = parseInt(this.dataset.day);
+                        selectDay(dayIndex);
+                    });
+                });
             }
+
+            function selectDay(dayIndex) {
+                selectedDay = dayIndex;
+                const timeEditor = document.getElementById('timeEditor');
+                const dayData = availability[dayIndex];
+
+                // Update selected day name
+                document.getElementById('selectedDayName').textContent = DAYS[dayIndex];
+
+                // Set time inputs
+                if (dayData && dayData.start && dayData.end) {
+                    document.getElementById('startTime').value = dayData.start;
+                    document.getElementById('endTime').value = dayData.end;
+                } else {
+                    document.getElementById('startTime').value = '09:00';
+                    document.getElementById('endTime').value = '17:00';
+                }
+
+                // Enable buttons
+                document.getElementById('applyTime').disabled = false;
+                document.getElementById('removeDay').disabled = !!(!dayData || !dayData.start);
+
+                // Show time editor
+                timeEditor.style.display = 'block';
+
+                // Re-render to show selection
+                renderAvailabilityGrid();
+            }
+
+            function checkForChanges() {
+                const hasChanges = JSON.stringify(availability) !== JSON.stringify(originalAvailability);
+                document.getElementById('saveAvailability').disabled = !hasChanges;
+            }
+
+            // Apply time to selected day
+            document.getElementById('applyTime').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                const start = document.getElementById('startTime').value;
+                const end = document.getElementById('endTime').value;
+
+                if (start >= end) {
+                    showToast('End time must be after start time', 'error');
+                    return;
+                }
+
+                availability[selectedDay] = { start, end };
+                document.getElementById('removeDay').disabled = false;
+                checkForChanges();
+                renderAvailabilityGrid();
+                showToast(`${DAYS[selectedDay]} hours set: ${formatTimeDisplay(start)} - ${formatTimeDisplay(end)}`, 'success');
+            });
+
+            // Remove day from availability
+            document.getElementById('removeDay').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                delete availability[selectedDay];
+                document.getElementById('removeDay').disabled = true;
+                checkForChanges();
+                renderAvailabilityGrid();
+                showToast(`${DAYS[selectedDay]} removed from schedule`, 'success');
+            });
+
+            // Save availability to Firebase
+            document.getElementById('saveAvailability').addEventListener('click', async function() {
+                const btn = this;
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) {
+                        showToast('You must be logged in to save', 'error');
+                        return;
+                    }
+
+                    await db.collection('availability').doc(user.uid).set({
+                        schedule: availability,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    originalAvailability = JSON.parse(JSON.stringify(availability));
+                    showToast('Availability saved successfully!', 'success');
+                } catch (error) {
+                    console.error('Error saving availability:', error);
+                    showToast('Failed to save availability', 'error');
+                } finally {
+                    btn.textContent = 'Save Changes';
+                    checkForChanges();
+                }
+            });
+
+            // Load availability from Firebase
+            async function loadAvailability() {
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) return;
+
+                    const doc = await db.collection('availability').doc(user.uid).get();
+                    if (doc.exists && doc.data().schedule) {
+                        availability = doc.data().schedule;
+                        originalAvailability = JSON.parse(JSON.stringify(availability));
+                    }
+                    renderAvailabilityGrid();
+                } catch (error) {
+                    console.error('Error loading availability:', error);
+                }
+            }
+
+            // Initialize availability on auth state change
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    loadAvailability();
+                }
+            });
+
             renderAvailabilityGrid();
 
             // ==================
