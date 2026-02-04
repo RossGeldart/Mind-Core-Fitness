@@ -126,6 +126,38 @@
             height: 20px;
         }
 
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .client-content {
             padding: 32px;
             max-width: 1000px;
@@ -625,6 +657,16 @@
 
         <!-- Landing Section with Cards -->
         <section class="client-section" id="section-landing">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionsCompleted">0</div>
+                    <div class="stat-label">Sessions Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionsLeft">0</div>
+                    <div class="stat-label">Sessions Left</div>
+                </div>
+            </div>
             <div class="dashboard-landing">
                 <div class="landing-card" data-section="overview">
                     <div class="landing-card-icon">
@@ -1865,14 +1907,21 @@
                     }
 
                     userBookings = [];
+                    let completedCount = 0;
+
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        // Only include confirmed bookings with future dates
-                        if (data.status !== 'cancelled' && data.date >= todayStr) {
-                            userBookings.push({
-                                id: doc.id,
-                                ...data
-                            });
+                        if (data.status !== 'cancelled') {
+                            if (data.date >= todayStr) {
+                                // Future sessions
+                                userBookings.push({
+                                    id: doc.id,
+                                    ...data
+                                });
+                            } else {
+                                // Past sessions (completed)
+                                completedCount++;
+                            }
                         }
                     });
 
@@ -1884,9 +1933,14 @@
                     });
 
                     console.log('Upcoming sessions found:', userBookings.length);
+                    console.log('Completed sessions:', completedCount);
                     if (userBookings.length > 0) {
                         console.log('Next session:', userBookings[0].date, userBookings[0].time);
                     }
+
+                    // Update stats display
+                    document.getElementById('sessionsCompleted').textContent = completedCount;
+                    document.getElementById('sessionsLeft').textContent = userBookings.length;
 
                     // Update displays
                     displayNextSession();
