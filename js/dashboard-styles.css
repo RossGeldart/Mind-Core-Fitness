@@ -1613,6 +1613,110 @@
     font-weight: 600;
 }
 
+/* ==================== */
+/* Client Wizard Styles */
+/* ==================== */
+
+.client-wizard-modal {
+    max-width: 550px;
+}
+
+.client-wizard-panel {
+    display: none;
+}
+
+.client-wizard-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.client-wizard-panel h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.wizard-input-large {
+    font-size: 1.2rem !important;
+    padding: 16px !important;
+}
+
+/* Session presets */
+.session-presets,
+.date-presets {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.session-preset-btn,
+.date-preset-btn {
+    padding: 10px 20px;
+    background: #f9f9f9;
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.session-preset-btn:hover,
+.date-preset-btn:hover {
+    border-color: var(--accent-color);
+    background: rgba(153, 49, 60, 0.05);
+}
+
+.session-preset-btn.selected,
+.date-preset-btn.selected {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
+/* Weekday selection grid */
+.weekday-selection-grid {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.weekday-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.weekday-btn:hover {
+    border-color: var(--accent-color);
+    background: rgba(153, 49, 60, 0.05);
+}
+
+.weekday-btn.selected {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
 /* Responsive Booking Wizard */
 @media (max-width: 768px) {
     .wizard-progress {

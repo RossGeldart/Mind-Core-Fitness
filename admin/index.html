@@ -343,43 +343,194 @@
         </button>
     </div>
 
-    <!-- Add Client Modal -->
+    <!-- Add Client Modal - Step by Step Wizard -->
     <div class="modal-overlay" id="clientModal">
-        <div class="modal">
+        <div class="modal booking-wizard-modal client-wizard-modal">
             <div class="modal-header">
                 <h3 id="clientModalTitle">Add New Client</h3>
                 <button class="modal-close" id="closeClientModal">&times;</button>
             </div>
+
+            <!-- Progress Steps -->
+            <div class="wizard-progress client-wizard-progress" id="clientWizardProgress">
+                <div class="wizard-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Name</div>
+                </div>
+                <div class="wizard-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Email</div>
+                </div>
+                <div class="wizard-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Duration</div>
+                </div>
+                <div class="wizard-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Sessions</div>
+                </div>
+                <div class="wizard-step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-label">End Date</div>
+                </div>
+                <div class="wizard-step" data-step="6">
+                    <div class="step-number">6</div>
+                    <div class="step-label">Schedule</div>
+                </div>
+                <div class="wizard-step" data-step="7">
+                    <div class="step-number">7</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
             <div class="modal-body">
                 <form id="clientForm">
-                    <div class="form-row">
+                    <!-- Step 1: Name -->
+                    <div class="client-wizard-panel active" data-panel="1">
+                        <h4>What's the client's name?</h4>
                         <div class="form-group">
-                            <label>Name *</label>
-                            <input type="text" id="clientName" required placeholder="John Smith">
-                        </div>
-                        <div class="form-group">
-                            <label>Email *</label>
-                            <input type="email" id="clientEmail" required placeholder="john@example.com">
+                            <label>Full Name *</label>
+                            <input type="text" id="clientName" required placeholder="John Smith" class="wizard-input-large">
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <!-- Step 2: Email -->
+                    <div class="client-wizard-panel" data-panel="2">
+                        <h4>What's their email address?</h4>
                         <div class="form-group">
-                            <label>Block Duration</label>
-                            <select id="clientBlockDuration">
-                                <option value="30" selected>30 minutes</option>
-                                <option value="45">45 minutes</option>
-                            </select>
+                            <label>Email Address *</label>
+                            <input type="email" id="clientEmail" required placeholder="john@example.com" class="wizard-input-large">
                         </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">They'll receive a password reset email to set up their account.</p>
+                    </div>
+
+                    <!-- Step 3: Block Duration (Workout Time) -->
+                    <div class="client-wizard-panel" data-panel="3">
+                        <h4>How long are their workouts?</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Select the session duration</p>
+                        <div class="duration-selection-grid" style="grid-template-columns: repeat(2, 1fr);">
+                            <button type="button" class="duration-option client-duration-option selected" data-duration="30">
+                                <span class="duration-value">30</span>
+                                <span class="duration-unit">minutes</span>
+                            </button>
+                            <button type="button" class="duration-option client-duration-option" data-duration="45">
+                                <span class="duration-value">45</span>
+                                <span class="duration-unit">minutes</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="clientBlockDuration" value="30">
+                    </div>
+
+                    <!-- Step 4: Number of Sessions -->
+                    <div class="client-wizard-panel" data-panel="4">
+                        <h4>How many sessions in their block?</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Total number of sessions included in this training block</p>
                         <div class="form-group">
-                            <label>Block End Date</label>
-                            <input type="date" id="clientBlockEndDate">
+                            <input type="number" id="clientSessions" min="1" placeholder="e.g. 10" class="wizard-input-large" style="text-align: center; font-size: 2rem; font-weight: 600;">
+                        </div>
+                        <div class="session-presets">
+                            <button type="button" class="session-preset-btn" data-sessions="8">8</button>
+                            <button type="button" class="session-preset-btn" data-sessions="10">10</button>
+                            <button type="button" class="session-preset-btn" data-sessions="12">12</button>
+                            <button type="button" class="session-preset-btn" data-sessions="16">16</button>
+                            <button type="button" class="session-preset-btn" data-sessions="20">20</button>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Number of Sessions</label>
-                        <input type="number" id="clientSessions" min="1" placeholder="e.g. 10">
+                    <!-- Step 5: Block End Date -->
+                    <div class="client-wizard-panel" data-panel="5">
+                        <h4>When does their block end?</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Sessions will be scheduled up to this date</p>
+                        <div class="form-group">
+                            <input type="date" id="clientBlockEndDate" class="wizard-input-large" style="text-align: center;">
+                        </div>
+                        <div class="date-presets">
+                            <button type="button" class="date-preset-btn" data-weeks="4">4 weeks</button>
+                            <button type="button" class="date-preset-btn" data-weeks="8">8 weeks</button>
+                            <button type="button" class="date-preset-btn" data-weeks="12">12 weeks</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Pick Days and Times -->
+                    <div class="client-wizard-panel" data-panel="6">
+                        <h4>Pick their training schedule</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">Select 1-3 days for weekly sessions</p>
+
+                        <div class="weekday-selection-grid">
+                            <button type="button" class="weekday-btn" data-day="1">Mon</button>
+                            <button type="button" class="weekday-btn" data-day="2">Tue</button>
+                            <button type="button" class="weekday-btn" data-day="3">Wed</button>
+                            <button type="button" class="weekday-btn" data-day="4">Thu</button>
+                            <button type="button" class="weekday-btn" data-day="5">Fri</button>
+                        </div>
+
+                        <div id="clientDayTimeSelectors" style="margin-top: 20px;">
+                            <!-- Time selectors for each selected day will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Confirm & Create / Edit Mode -->
+                    <div class="client-wizard-panel" data-panel="7">
+                        <h4 id="clientStep7Title">Review & Create Client</h4>
+
+                        <!-- Read-only summary for new clients -->
+                        <div id="clientSummaryReadOnly">
+                            <div class="booking-summary">
+                                <div class="summary-item">
+                                    <span class="summary-label">Name:</span>
+                                    <span class="summary-value" id="clientSummaryName">-</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Email:</span>
+                                    <span class="summary-value" id="clientSummaryEmail">-</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Session Duration:</span>
+                                    <span class="summary-value" id="clientSummaryDuration">-</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Total Sessions:</span>
+                                    <span class="summary-value" id="clientSummarySessions">-</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Block Ends:</span>
+                                    <span class="summary-value" id="clientSummaryEndDate">-</span>
+                                </div>
+                            </div>
+                            <div class="booking-summary" id="clientSummarySchedule" style="margin-top: 12px;">
+                                <!-- Training schedule will be populated by JS -->
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 16px;">A password reset email will be sent to the client so they can set up their account.</p>
+                        </div>
+
+                        <!-- Editable form for edit mode -->
+                        <div id="clientEditForm" style="display: none;">
+                            <div class="form-group">
+                                <label>Name *</label>
+                                <input type="text" id="clientEditName" required placeholder="John Smith">
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="clientEditEmail" required placeholder="john@example.com">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Block Duration</label>
+                                    <select id="clientEditBlockDuration">
+                                        <option value="30">30 minutes</option>
+                                        <option value="45">45 minutes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Number of Sessions</label>
+                                    <input type="number" id="clientEditSessions" min="1" placeholder="e.g. 10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Block End Date</label>
+                                <input type="date" id="clientEditBlockEndDate">
+                            </div>
+                        </div>
                     </div>
 
                     <input type="hidden" id="clientId">
@@ -387,7 +538,9 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelClientBtn">Cancel</button>
-                <button class="btn btn-primary" id="saveClientBtn">Save Client</button>
+                <button class="btn btn-secondary" id="clientPrevStepBtn" style="display: none;">Back</button>
+                <button class="btn btn-primary" id="clientNextStepBtn">Next</button>
+                <button class="btn btn-primary" id="saveClientBtn" style="display: none;">Create Client</button>
             </div>
         </div>
     </div>
@@ -653,25 +806,414 @@
                 `).join('');
             }
 
-            // Add Client Modal
-            document.getElementById('addClientBtn').addEventListener('click', () => {
-                document.getElementById('clientModalTitle').textContent = 'Add New Client';
+            // ==================
+            // CLIENT WIZARD
+            // ==================
+            let clientWizardState = {
+                currentStep: 1,
+                isEditMode: false,
+                name: '',
+                email: '',
+                blockDuration: 30,
+                totalSessions: 0,
+                blockEndDate: '',
+                selectedDays: [],    // Array of day numbers (1=Mon, 2=Tue, etc.)
+                dayTimes: {}         // Object mapping day number to time string
+            };
+
+            // Reset client wizard
+            function resetClientWizard() {
+                clientWizardState = {
+                    currentStep: 1,
+                    isEditMode: false,
+                    name: '',
+                    email: '',
+                    blockDuration: 30,
+                    totalSessions: 0,
+                    blockEndDate: '',
+                    selectedDays: [],
+                    dayTimes: {}
+                };
                 document.getElementById('clientForm').reset();
                 document.getElementById('clientId').value = '';
+                document.getElementById('clientBlockDuration').value = '30';
+
+                // Reset duration buttons
+                document.querySelectorAll('.client-duration-option').forEach(btn => {
+                    btn.classList.toggle('selected', btn.dataset.duration === '30');
+                });
+
+                // Reset weekday buttons
+                document.querySelectorAll('.weekday-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+
+                // Clear day time selectors
+                document.getElementById('clientDayTimeSelectors').innerHTML = '';
+
+                // Reset presets
+                document.querySelectorAll('.session-preset-btn, .date-preset-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+
                 // Set default end date to 3 months from now
                 const defaultEnd = new Date();
                 defaultEnd.setMonth(defaultEnd.getMonth() + 3);
                 document.getElementById('clientBlockEndDate').value = defaultEnd.toISOString().split('T')[0];
+                clientWizardState.blockEndDate = defaultEnd.toISOString().split('T')[0];
+
+                updateClientWizardUI();
+            }
+
+            // Update client wizard UI based on current step
+            function updateClientWizardUI() {
+                const step = clientWizardState.currentStep;
+                const isEditMode = clientWizardState.isEditMode;
+
+                // Update progress steps
+                document.querySelectorAll('#clientWizardProgress .wizard-step').forEach((el, i) => {
+                    el.classList.remove('active', 'completed');
+                    if (i + 1 < step) el.classList.add('completed');
+                    if (i + 1 === step) el.classList.add('active');
+                });
+
+                // Show/hide panels
+                document.querySelectorAll('.client-wizard-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.querySelector(`.client-wizard-panel[data-panel="${step}"]`).classList.add('active');
+
+                // Update buttons
+                const prevBtn = document.getElementById('clientPrevStepBtn');
+                const nextBtn = document.getElementById('clientNextStepBtn');
+                const saveBtn = document.getElementById('saveClientBtn');
+
+                prevBtn.style.display = step > 1 ? 'inline-flex' : 'none';
+                nextBtn.style.display = step < 7 ? 'inline-flex' : 'none';
+                saveBtn.style.display = step === 7 ? 'inline-flex' : 'none';
+                saveBtn.textContent = isEditMode ? 'Update Client' : 'Create Client';
+
+                // Show/hide wizard progress in edit mode (hide schedule step for edit)
+                const progressContainer = document.getElementById('clientWizardProgress');
+                if (isEditMode) {
+                    progressContainer.style.display = 'none';
+                } else {
+                    progressContainer.style.display = 'flex';
+                }
+
+                // Update panel content based on step
+                if (step === 6) {
+                    renderClientDayTimeSelectors();
+                } else if (step === 7) {
+                    updateClientSummary();
+                }
+            }
+
+            // Generate time slots for client scheduling
+            function generateClientTimeSlots(dayNum) {
+                const duration = clientWizardState.blockDuration || 30;
+                const slots = [];
+
+                // Generate time slots from 6am to 8pm
+                for (let hour = 6; hour < 20; hour++) {
+                    for (let min = 0; min < 60; min += 30) {
+                        if (min === 0 || duration <= 30) {
+                            const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                            slots.push(time);
+                        }
+                    }
+                }
+                return slots;
+            }
+
+            // Render time selectors for each selected day
+            function renderClientDayTimeSelectors() {
+                const container = document.getElementById('clientDayTimeSelectors');
+                const days = clientWizardState.selectedDays;
+                const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+                if (days.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Select training days above first</p>';
+                    return;
+                }
+
+                container.innerHTML = days.map(dayNum => {
+                    const slots = generateClientTimeSlots(dayNum);
+                    const selectedTime = clientWizardState.dayTimes[dayNum] || '';
+
+                    return `
+                        <div class="day-time-selector">
+                            <div class="day-time-header">
+                                <span class="day-time-label">${dayNames[dayNum]}</span>
+                                <span class="day-time-selected" id="clientSelectedTime${dayNum}">${selectedTime ? formatTime(selectedTime) : 'Select time'}</span>
+                            </div>
+                            <div class="day-slots time-slots-container">
+                                ${slots.map(time => `
+                                    <div class="time-slot ${selectedTime === time ? 'selected' : ''}"
+                                         data-day="${dayNum}" data-time="${time}">
+                                        ${formatTime(time)}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Add click handlers for time slots
+                container.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.addEventListener('click', function() {
+                        const day = parseInt(this.dataset.day);
+                        const time = this.dataset.time;
+
+                        // Update state
+                        clientWizardState.dayTimes[day] = time;
+
+                        // Update UI - remove selected from siblings, add to this
+                        this.closest('.day-time-selector').querySelectorAll('.time-slot').forEach(s => {
+                            s.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+
+                        // Update the selected time display
+                        document.getElementById(`clientSelectedTime${day}`).textContent = formatTime(time);
+                    });
+                });
+            }
+
+            // Format time for display
+            function formatTime(time) {
+                const [hours, minutes] = time.split(':');
+                const h = parseInt(hours);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const h12 = h % 12 || 12;
+                return `${h12}:${minutes} ${ampm}`;
+            }
+
+            // Update client summary panel
+            function updateClientSummary() {
+                const state = clientWizardState;
+                const dayNames = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+                // Toggle between read-only and edit form
+                const readOnlyContainer = document.getElementById('clientSummaryReadOnly');
+                const editFormContainer = document.getElementById('clientEditForm');
+                const step7Title = document.getElementById('clientStep7Title');
+
+                if (state.isEditMode) {
+                    // Show edit form, hide read-only
+                    readOnlyContainer.style.display = 'none';
+                    editFormContainer.style.display = 'block';
+                    step7Title.textContent = 'Edit Client';
+
+                    // Populate edit form fields
+                    document.getElementById('clientEditName').value = state.name || '';
+                    document.getElementById('clientEditEmail').value = state.email || '';
+                    document.getElementById('clientEditBlockDuration').value = state.blockDuration || 30;
+                    document.getElementById('clientEditSessions').value = state.totalSessions || '';
+                    document.getElementById('clientEditBlockEndDate').value = state.blockEndDate || '';
+                } else {
+                    // Show read-only summary, hide edit form
+                    readOnlyContainer.style.display = 'block';
+                    editFormContainer.style.display = 'none';
+                    step7Title.textContent = 'Review & Create Client';
+
+                    document.getElementById('clientSummaryName').textContent = state.name || '-';
+                    document.getElementById('clientSummaryEmail').textContent = state.email || '-';
+                    document.getElementById('clientSummaryDuration').textContent = state.blockDuration + ' minutes';
+                    document.getElementById('clientSummarySessions').textContent = state.totalSessions || '-';
+
+                    if (state.blockEndDate) {
+                        const endDate = new Date(state.blockEndDate);
+                        document.getElementById('clientSummaryEndDate').textContent = endDate.toLocaleDateString('en-GB', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    } else {
+                        document.getElementById('clientSummaryEndDate').textContent = '-';
+                    }
+
+                    // Schedule summary
+                    const scheduleContainer = document.getElementById('clientSummarySchedule');
+                    if (state.selectedDays.length > 0) {
+                        const scheduleHtml = state.selectedDays.map(dayNum => {
+                            const time = state.dayTimes[dayNum];
+                            return `
+                                <div class="summary-item">
+                                    <span class="summary-label">${dayNames[dayNum]}:</span>
+                                    <span class="summary-value">${time ? formatTime(time) : 'No time selected'}</span>
+                                </div>
+                            `;
+                        }).join('');
+                        scheduleContainer.innerHTML = scheduleHtml;
+                        scheduleContainer.style.display = 'block';
+                    } else {
+                        scheduleContainer.style.display = 'none';
+                    }
+                }
+            }
+
+            // Add Client Modal - Open Wizard
+            document.getElementById('addClientBtn').addEventListener('click', () => {
+                document.getElementById('clientModalTitle').textContent = 'Add New Client';
+                resetClientWizard();
                 document.getElementById('clientModal').classList.add('show');
+            });
+
+            // Duration option click handlers
+            document.querySelectorAll('.client-duration-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.client-duration-option').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    clientWizardState.blockDuration = parseInt(this.dataset.duration);
+                    document.getElementById('clientBlockDuration').value = this.dataset.duration;
+                });
+            });
+
+            // Session preset click handlers
+            document.querySelectorAll('.session-preset-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.session-preset-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const sessions = parseInt(this.dataset.sessions);
+                    clientWizardState.totalSessions = sessions;
+                    document.getElementById('clientSessions').value = sessions;
+                });
+            });
+
+            // Date preset click handlers
+            document.querySelectorAll('.date-preset-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const weeks = parseInt(this.dataset.weeks);
+                    const endDate = new Date();
+                    endDate.setDate(endDate.getDate() + (weeks * 7));
+                    const dateStr = endDate.toISOString().split('T')[0];
+                    clientWizardState.blockEndDate = dateStr;
+                    document.getElementById('clientBlockEndDate').value = dateStr;
+                });
+            });
+
+            // Weekday button click handlers
+            document.querySelectorAll('.weekday-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const day = parseInt(this.dataset.day);
+                    const isSelected = this.classList.contains('selected');
+
+                    if (isSelected) {
+                        // Remove from selection
+                        this.classList.remove('selected');
+                        clientWizardState.selectedDays = clientWizardState.selectedDays.filter(d => d !== day);
+                        delete clientWizardState.dayTimes[day];
+                    } else if (clientWizardState.selectedDays.length < 3) {
+                        // Add to selection (max 3)
+                        this.classList.add('selected');
+                        clientWizardState.selectedDays.push(day);
+                        clientWizardState.selectedDays.sort((a, b) => a - b);
+                    } else {
+                        showToast('Maximum 3 training days allowed', 'warning');
+                    }
+
+                    // Re-render time selectors
+                    renderClientDayTimeSelectors();
+                });
+            });
+
+            // Client wizard navigation - Next
+            document.getElementById('clientNextStepBtn').addEventListener('click', () => {
+                const step = clientWizardState.currentStep;
+
+                // Validation for each step
+                if (step === 1) {
+                    const name = document.getElementById('clientName').value.trim();
+                    if (!name) {
+                        showToast('Please enter a name', 'error');
+                        return;
+                    }
+                    clientWizardState.name = name;
+                }
+                if (step === 2) {
+                    const email = document.getElementById('clientEmail').value.trim();
+                    if (!email) {
+                        showToast('Please enter an email address', 'error');
+                        return;
+                    }
+                    // Basic email validation
+                    if (!email.includes('@') || !email.includes('.')) {
+                        showToast('Please enter a valid email address', 'error');
+                        return;
+                    }
+                    clientWizardState.email = email;
+                }
+                if (step === 3) {
+                    // Duration is already set via button clicks
+                }
+                if (step === 4) {
+                    const sessions = parseInt(document.getElementById('clientSessions').value);
+                    if (!sessions || sessions < 1) {
+                        showToast('Please enter number of sessions', 'error');
+                        return;
+                    }
+                    clientWizardState.totalSessions = sessions;
+                }
+                if (step === 5) {
+                    const endDate = document.getElementById('clientBlockEndDate').value;
+                    if (!endDate) {
+                        showToast('Please select a block end date', 'error');
+                        return;
+                    }
+                    clientWizardState.blockEndDate = endDate;
+                }
+                if (step === 6) {
+                    if (clientWizardState.selectedDays.length === 0) {
+                        showToast('Please select at least one training day', 'error');
+                        return;
+                    }
+                    // Check all selected days have times
+                    const missingTimes = clientWizardState.selectedDays.filter(d => !clientWizardState.dayTimes[d]);
+                    if (missingTimes.length > 0) {
+                        showToast('Please select a time for each training day', 'error');
+                        return;
+                    }
+                }
+
+                if (step < 7) {
+                    clientWizardState.currentStep++;
+                    updateClientWizardUI();
+                }
+            });
+
+            // Client wizard navigation - Previous
+            document.getElementById('clientPrevStepBtn').addEventListener('click', () => {
+                if (clientWizardState.currentStep > 1) {
+                    clientWizardState.currentStep--;
+                    updateClientWizardUI();
+                }
             });
 
             // Save Client
             document.getElementById('saveClientBtn').addEventListener('click', async () => {
-                const name = document.getElementById('clientName').value.trim();
-                const email = document.getElementById('clientEmail').value.trim();
-                const blockDuration = parseInt(document.getElementById('clientBlockDuration').value);
-                const blockEndDate = document.getElementById('clientBlockEndDate').value;
-                const totalSessions = parseInt(document.getElementById('clientSessions').value) || 0;
+                const state = clientWizardState;
+                let name, email, blockDuration, blockEndDate, totalSessions;
+
+                if (state.isEditMode) {
+                    // Read from edit form
+                    name = document.getElementById('clientEditName').value.trim();
+                    email = document.getElementById('clientEditEmail').value.trim();
+                    blockDuration = parseInt(document.getElementById('clientEditBlockDuration').value);
+                    blockEndDate = document.getElementById('clientEditBlockEndDate').value;
+                    totalSessions = parseInt(document.getElementById('clientEditSessions').value) || 0;
+                } else {
+                    // Read from wizard state
+                    name = state.name || document.getElementById('clientName').value.trim();
+                    email = state.email || document.getElementById('clientEmail').value.trim();
+                    blockDuration = state.blockDuration || parseInt(document.getElementById('clientBlockDuration').value);
+                    blockEndDate = state.blockEndDate || document.getElementById('clientBlockEndDate').value;
+                    totalSessions = state.totalSessions || parseInt(document.getElementById('clientSessions').value) || 0;
+                }
+
                 const clientId = document.getElementById('clientId').value;
 
                 if (!name || !email) {
@@ -684,6 +1226,8 @@
                 saveBtn.textContent = 'Saving...';
 
                 try {
+                    let newClientId = clientId;
+
                     if (clientId) {
                         // Update existing client
                         await db.collection('users').doc(clientId).update({
@@ -713,6 +1257,7 @@
 
                             if (result.data.success) {
                                 cloudFunctionWorked = true;
+                                newClientId = result.data.uid;
                                 showToast(`Client created! Password reset email sent to ${email}`);
                             }
                         } catch (cfError) {
@@ -735,10 +1280,13 @@
                                 needsPasswordSetup: true,
                                 onboardingComplete: false
                             });
+                            newClientId = newUserRef.id;
+                            showToast(`Client added to database. Note: Deploy Cloud Functions to enable automatic login setup.`, 'warning');
+                        }
 
-                            // Note: Without Cloud Functions, we can't create Firebase Auth user
-                            // The client will need to be set up manually or Cloud Functions deployed
-                            showToast(`Client added to database. Note: Deploy Cloud Functions to enable automatic login setup, or manually create their Firebase Auth account.`, 'warning');
+                        // Create initial bookings based on schedule (only for new clients)
+                        if (state.selectedDays.length > 0 && Object.keys(state.dayTimes).length > 0) {
+                            await createInitialBookings(newClientId, name, state);
                         }
                     }
 
@@ -749,23 +1297,96 @@
                     showToast('Failed to save client: ' + error.message, 'error');
                 } finally {
                     saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save Client';
+                    saveBtn.textContent = state.isEditMode ? 'Update Client' : 'Create Client';
                 }
             });
 
-            // Edit client function (global)
+            // Create initial bookings for new client based on schedule
+            async function createInitialBookings(clientId, clientName, state) {
+                const { selectedDays, dayTimes, blockDuration, blockEndDate, totalSessions } = state;
+                const endDate = new Date(blockEndDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let bookingsCreated = 0;
+                const maxBookings = totalSessions || 999;
+                const batch = db.batch();
+
+                // Loop through weeks until end date
+                let currentDate = new Date(today);
+
+                while (currentDate <= endDate && bookingsCreated < maxBookings) {
+                    const dayOfWeek = currentDate.getDay();
+                    // Convert Sunday=0 to our format (Mon=1, Tue=2, etc.)
+                    const ourDayNum = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                    if (selectedDays.includes(ourDayNum) && dayTimes[ourDayNum]) {
+                        const dateStr = currentDate.toISOString().split('T')[0];
+                        const time = dayTimes[ourDayNum];
+
+                        // Calculate end time
+                        const [startHour, startMin] = time.split(':').map(Number);
+                        const endMinutes = startHour * 60 + startMin + blockDuration;
+                        const endHour = Math.floor(endMinutes / 60);
+                        const endMin = endMinutes % 60;
+                        const endTime = `${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}`;
+
+                        const bookingRef = db.collection('bookings').doc();
+                        batch.set(bookingRef, {
+                            clientId,
+                            clientName,
+                            date: dateStr,
+                            time,
+                            endTime,
+                            duration: blockDuration,
+                            status: 'confirmed',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        bookingsCreated++;
+                    }
+
+                    // Move to next day
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                if (bookingsCreated > 0) {
+                    await batch.commit();
+                    showToast(`Created ${bookingsCreated} scheduled sessions`, 'success');
+                }
+            }
+
+            // Edit client function (global) - simplified for editing
             window.editClient = async (id) => {
                 const client = clients.find(c => c.id === id);
                 if (!client) return;
+
+                // Reset and set edit mode
+                resetClientWizard();
+                clientWizardState.isEditMode = true;
+                clientWizardState.currentStep = 7; // Go straight to summary/confirm step
 
                 document.getElementById('clientModalTitle').textContent = 'Edit Client';
                 document.getElementById('clientId').value = id;
                 document.getElementById('clientName').value = client.name || '';
                 document.getElementById('clientEmail').value = client.email || '';
-                document.getElementById('clientBlockDuration').value = client.blockDuration || 60;
+                document.getElementById('clientBlockDuration').value = client.blockDuration || 30;
                 document.getElementById('clientBlockEndDate').value = client.blockEndDate || '';
                 document.getElementById('clientSessions').value = client.totalSessions || '';
 
+                // Update wizard state
+                clientWizardState.name = client.name || '';
+                clientWizardState.email = client.email || '';
+                clientWizardState.blockDuration = client.blockDuration || 30;
+                clientWizardState.blockEndDate = client.blockEndDate || '';
+                clientWizardState.totalSessions = client.totalSessions || 0;
+
+                // Update duration buttons
+                document.querySelectorAll('.client-duration-option').forEach(btn => {
+                    btn.classList.toggle('selected', parseInt(btn.dataset.duration) === clientWizardState.blockDuration);
+                });
+
+                updateClientWizardUI();
                 document.getElementById('clientModal').classList.add('show');
             };
 
