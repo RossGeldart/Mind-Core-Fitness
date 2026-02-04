@@ -1710,6 +1710,26 @@
                     const bankedSessions = userData.bankedSessions || 0;
                     updateBankedSessionsDisplay(bankedSessions);
 
+                    // If this user was migrated, ensure bookings are also migrated
+                    if (userData.migratedFrom) {
+                        try {
+                            const oldBookings = await db.collection('bookings')
+                                .where('clientId', '==', userData.migratedFrom)
+                                .get();
+
+                            if (!oldBookings.empty) {
+                                const batch = db.batch();
+                                oldBookings.forEach(doc => {
+                                    batch.update(doc.ref, { clientId: user.uid });
+                                });
+                                await batch.commit();
+                                console.log(`Migrated ${oldBookings.size} bookings from old clientId`);
+                            }
+                        } catch (migrationError) {
+                            console.error('Error migrating bookings:', migrationError);
+                        }
+                    }
+
                     // Check if onboarding is complete
                     if (!userData.onboardingComplete) {
                         showWelcomeForm();
@@ -2002,22 +2022,35 @@
                     console.log('Bookings found by UID:', snapshot.size);
 
                     // If no bookings found by UID, try finding by email
-                    if (snapshot.empty && auth.currentUser && auth.currentUser.email) {
-                        console.log('No bookings by UID, trying email:', auth.currentUser.email);
-                        snapshot = await db.collection('bookings')
-                            .where('clientEmail', '==', auth.currentUser.email)
-                            .get();
-                        console.log('Bookings found by email:', snapshot.size);
+                    if (snapshot.empty) {
+                        const emailsToTry = [];
+                        if (auth.currentUser && auth.currentUser.email) {
+                            emailsToTry.push(auth.currentUser.email);
+                        }
+                        // Also try the email stored in user data (in case of mismatch)
+                        if (currentUserData && currentUserData.email &&
+                            !emailsToTry.includes(currentUserData.email)) {
+                            emailsToTry.push(currentUserData.email);
+                        }
 
-                        // If found by email, update these bookings to use correct clientId
-                        if (!snapshot.empty) {
-                            console.log('Migrating bookings to correct clientId...');
-                            const batch = db.batch();
-                            snapshot.forEach(doc => {
-                                batch.update(doc.ref, { clientId: currentUserId });
-                            });
-                            await batch.commit();
-                            console.log('Bookings migrated successfully');
+                        for (const email of emailsToTry) {
+                            console.log('No bookings by UID, trying email:', email);
+                            snapshot = await db.collection('bookings')
+                                .where('clientEmail', '==', email)
+                                .get();
+                            console.log('Bookings found by email:', snapshot.size);
+
+                            if (!snapshot.empty) {
+                                // If found by email, update these bookings to use correct clientId
+                                console.log('Migrating bookings to correct clientId...');
+                                const batch = db.batch();
+                                snapshot.forEach(doc => {
+                                    batch.update(doc.ref, { clientId: currentUserId });
+                                });
+                                await batch.commit();
+                                console.log('Bookings migrated successfully');
+                                break; // Found bookings, stop trying other emails
+                            }
                         }
                     }
 

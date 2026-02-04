@@ -447,11 +447,31 @@
                     await newDocRef.set({
                         ...data,
                         needsPasswordSetup: false,
+                        migratedFrom: pendingClientData.docId,
                         accountCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
                     // Delete old document (with random ID)
                     await oldDocRef.delete();
+
+                    // Migrate any bookings that reference the old clientId
+                    try {
+                        const bookingsSnapshot = await db.collection('bookings')
+                            .where('clientId', '==', pendingClientData.docId)
+                            .get();
+
+                        if (!bookingsSnapshot.empty) {
+                            const batch = db.batch();
+                            bookingsSnapshot.forEach(bookingDoc => {
+                                batch.update(bookingDoc.ref, { clientId: user.uid });
+                            });
+                            await batch.commit();
+                            console.log(`Migrated ${bookingsSnapshot.size} bookings to new clientId`);
+                        }
+                    } catch (bookingError) {
+                        console.error('Error migrating bookings:', bookingError);
+                        // Continue anyway - dashboard has fallback migration
+                    }
 
                     // Update display name in Auth
                     await user.updateProfile({
