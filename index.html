@@ -75,6 +75,31 @@
     <link rel="stylesheet" href="social-share.css">
 </head>
 <body>
+    <!-- Header with Navigation -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="header-logo">
+                <img src="Logo.PNG" alt="Mind Core Fitness" width="40" height="40">
+                <span>Mind Core Fitness</span>
+            </a>
+
+            <nav class="main-nav" id="mainNav">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="personal-training.html" class="nav-link">Personal Training</a>
+                <a href="online-coaching.html" class="nav-link">Online Coaching</a>
+                <a href="free-challenge.html" class="nav-link">Free Challenge</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="dashboard/login.html" class="nav-link nav-login">Client Login</a>
+            </nav>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-overlay"></div>
@@ -460,6 +485,34 @@
     </div>
 
     <script>
+        // Hamburger Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const mainNav = document.getElementById('mainNav');
+
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            mainNav.classList.toggle('open');
+            document.body.style.overflow = mainNav.classList.contains('open') ? 'hidden' : '';
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mainNav.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !mainNav.contains(e.target) && mainNav.classList.contains('open')) {
+                hamburger.classList.remove('active');
+                mainNav.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+
         // Contact Modal Functions
         function openContactModal(event) {
             event.preventDefault();
