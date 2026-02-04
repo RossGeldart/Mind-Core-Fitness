@@ -1423,6 +1423,42 @@
     font-family: 'Montserrat', sans-serif;
 }
 
+/* Per-day time selectors */
+.day-time-selector {
+    margin-bottom: 20px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.day-time-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f9f9f9;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.day-time-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.day-time-selected {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+.day-slots {
+    padding: 12px;
+    max-height: 180px;
+}
+
 /* Time Slots Container */
 .time-slots-container {
     display: grid;
