@@ -1440,8 +1440,8 @@
                         onboardingCompletedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
 
-                    // Save to Firestore
-                    await db.collection('users').doc(currentUserId).update(formData);
+                    // Save to Firestore (use set with merge to create doc if it doesn't exist)
+                    await db.collection('users').doc(currentUserId).set(formData, { merge: true });
 
                     showToast('Welcome form completed successfully!');
                     hideWelcomeForm();
