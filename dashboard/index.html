@@ -346,6 +346,47 @@
             color: var(--text-muted);
         }
 
+        .banked-sessions-notice {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banked-sessions-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #4caf50;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .banked-sessions-text h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2e7d32;
+        }
+
+        .banked-sessions-text p {
+            font-size: 0.9rem;
+            color: #1b5e20;
+        }
+
+        .banked-sessions-text a {
+            color: #1b5e20;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
         .top-bar {
             background: #1a1a1a;
             padding: 12px 32px;
@@ -472,6 +513,11 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .banked-sessions-notice {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 
@@ -526,6 +572,20 @@
                 <div class="block-info-text">
                     <h4>Your Training Block</h4>
                     <p><span id="blockDuration">60</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
+                </div>
+            </div>
+
+            <!-- Banked Sessions Notice -->
+            <div class="banked-sessions-notice" id="bankedSessionsNotice" style="display: none;">
+                <div class="banked-sessions-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="banked-sessions-text">
+                    <h4>Banked Sessions</h4>
+                    <p>You have <strong id="bankedSessionsCount">0</strong> session(s) available to reschedule. Select a day and time in the <a href="#" onclick="switchToBookSection(); return false;">Book / Reschedule</a> section.</p>
                 </div>
             </div>
 
@@ -1246,6 +1306,29 @@
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             let currentUserId = null;
             let userSessionDuration = 30; // Default to 30 minutes, updated from user data
+            let currentUserData = null; // Store user data globally for access in functions
+            let userBlockEndDate = null; // Store block end date for banked session validation
+
+            // Update banked sessions display
+            function updateBankedSessionsDisplay(count) {
+                const notice = document.getElementById('bankedSessionsNotice');
+                const countEl = document.getElementById('bankedSessionsCount');
+                if (count > 0) {
+                    notice.style.display = 'flex';
+                    countEl.textContent = count;
+                } else {
+                    notice.style.display = 'none';
+                }
+            }
+
+            // Switch to Book/Reschedule section
+            function switchToBookSection() {
+                document.querySelectorAll('.client-nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelector('.client-nav-item[data-section="book"]').classList.add('active');
+                document.querySelectorAll('.client-section').forEach(s => s.style.display = 'none');
+                document.getElementById('section-book').style.display = 'block';
+                document.querySelector('#section-book h2').textContent = 'Book Session';
+            }
 
             // Check authentication
             auth.onAuthStateChanged(async (user) => {
@@ -1316,6 +1399,10 @@
                 }
 
                 if (userData) {
+                    // Store user data globally for access in other functions
+                    currentUserData = userData;
+                    userBlockEndDate = userData.blockEndDate || null;
+
                     document.getElementById('userName').textContent = userData.name || 'Client';
                     document.getElementById('userEmail').textContent = user.email;
 
@@ -1332,6 +1419,10 @@
                             year: 'numeric'
                         });
                     }
+
+                    // Display banked sessions if any
+                    const bankedSessions = userData.bankedSessions || 0;
+                    updateBankedSessionsDisplay(bankedSessions);
 
                     // Check if onboarding is complete
                     if (!userData.onboardingComplete) {
@@ -2108,8 +2199,78 @@
                         }
                     }
                 } else {
-                    // New booking - show confirmation
-                    showToast('Please contact your trainer to book additional sessions.', 'info');
+                    // Check if user has banked sessions available
+                    const bankedSessions = currentUserData?.bankedSessions || 0;
+
+                    if (bankedSessions > 0) {
+                        // Check if within block end date
+                        let withinBlockPeriod = true;
+                        if (userBlockEndDate) {
+                            const blockEnd = new Date(userBlockEndDate);
+                            const bookingDate = new Date(dateStr);
+                            withinBlockPeriod = bookingDate <= blockEnd;
+                        }
+
+                        if (!withinBlockPeriod) {
+                            showToast('This date is outside your training block period.', 'error');
+                            return;
+                        }
+
+                        // Confirm booking with banked session
+                        const bookingDateFormatted = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long'
+                        });
+                        const [hours, minutes] = timeStr.split(':');
+                        const timeDate = new Date();
+                        timeDate.setHours(parseInt(hours), parseInt(minutes));
+                        const timeFormatted = timeDate.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+                        if (confirm(`Book your session on ${bookingDateFormatted} at ${timeFormatted}?\n\nThis will use one of your ${bankedSessions} banked session(s).`)) {
+                            try {
+                                // Create the new booking
+                                await db.collection('bookings').add({
+                                    clientId: currentUserId,
+                                    clientName: currentUserData?.name || 'Client',
+                                    clientEmail: auth.currentUser?.email || '',
+                                    date: dateStr,
+                                    time: timeStr,
+                                    duration: userSessionDuration,
+                                    status: 'confirmed',
+                                    isRecurring: false,
+                                    bookedFromBankedSession: true,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    createdBy: currentUserId
+                                });
+
+                                // Decrement banked sessions
+                                await db.collection('users').doc(currentUserId).update({
+                                    bankedSessions: firebase.firestore.FieldValue.increment(-1)
+                                });
+
+                                // Update local display
+                                const newBankedCount = bankedSessions - 1;
+                                if (currentUserData) {
+                                    currentUserData.bankedSessions = newBankedCount;
+                                }
+                                updateBankedSessionsDisplay(newBankedCount);
+
+                                showToast('Session booked successfully!', 'success');
+
+                                // Reload bookings and update displays
+                                await loadUserBookings();
+                                renderBookingCalendar();
+                                await generateTimeSlots(dateStr);
+                            } catch (error) {
+                                console.error('Error booking session:', error);
+                                showToast('Failed to book session. Please try again.', 'error');
+                            }
+                        }
+                    } else {
+                        // No banked sessions available
+                        showToast('Please contact your trainer to book additional sessions.', 'info');
+                    }
                 }
             };
 
@@ -2180,7 +2341,20 @@
                     timeStr = timeDate.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
                 }
 
-                if (!confirm(`Are you sure you want to cancel your session on ${dateStr} at ${timeStr}?\n\nThis action cannot be undone.`)) {
+                // Check if cancellation is within block end date for banked session
+                let canBankSession = false;
+                if (userBlockEndDate) {
+                    const blockEnd = new Date(userBlockEndDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    canBankSession = today <= blockEnd;
+                }
+
+                const confirmMessage = canBankSession
+                    ? `Are you sure you want to cancel your session on ${dateStr} at ${timeStr}?\n\nYou will receive a banked session credit that you can use to book a new time within your training block.`
+                    : `Are you sure you want to cancel your session on ${dateStr} at ${timeStr}?\n\nThis action cannot be undone.`;
+
+                if (!confirm(confirmMessage)) {
                     return;
                 }
 
@@ -2192,7 +2366,23 @@
                         cancelledBy: 'client'
                     });
 
-                    showToast('Session cancelled successfully');
+                    // Add banked session credit if within block period
+                    if (canBankSession && currentUserId) {
+                        await db.collection('users').doc(currentUserId).update({
+                            bankedSessions: firebase.firestore.FieldValue.increment(1)
+                        });
+
+                        // Update local display
+                        const newBankedCount = (currentUserData?.bankedSessions || 0) + 1;
+                        if (currentUserData) {
+                            currentUserData.bankedSessions = newBankedCount;
+                        }
+                        updateBankedSessionsDisplay(newBankedCount);
+
+                        showToast('Session cancelled. You have a banked session to reschedule!', 'success');
+                    } else {
+                        showToast('Session cancelled successfully');
+                    }
 
                     // Reload bookings and update displays
                     await loadUserBookings();
