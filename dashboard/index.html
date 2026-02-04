@@ -1252,7 +1252,36 @@
                 }
 
                 // Get user data and display
-                const userData = await getUserData(user.uid);
+                let userData = await getUserData(user.uid);
+
+                // If no data found by UID, try finding by email (for fallback-created clients)
+                if (!userData && user.email) {
+                    try {
+                        const querySnapshot = await db.collection('users')
+                            .where('email', '==', user.email)
+                            .where('role', '==', 'client')
+                            .limit(1)
+                            .get();
+
+                        if (!querySnapshot.empty) {
+                            const doc = querySnapshot.docs[0];
+                            userData = doc.data();
+
+                            // Migrate the document to use the correct UID
+                            // This ensures future lookups work correctly
+                            await db.collection('users').doc(user.uid).set({
+                                ...userData,
+                                migratedFrom: doc.id,
+                                migratedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            // Delete the old document with wrong ID
+                            await db.collection('users').doc(doc.id).delete();
+                        }
+                    } catch (error) {
+                        console.error('Error looking up user by email:', error);
+                    }
+                }
+
                 if (userData) {
                     document.getElementById('userName').textContent = userData.name || 'Client';
                     document.getElementById('userEmail').textContent = user.email;
