@@ -837,7 +837,7 @@
                 </div>
                 <div class="block-info-text">
                     <h4>Your Training Block</h4>
-                    <p><span id="blockDuration">60</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
+                    <p><span id="blockDuration">-</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
                 </div>
             </div>
 
@@ -1689,6 +1689,9 @@
                     if (userData.blockDuration) {
                         document.getElementById('blockDuration').textContent = userData.blockDuration;
                         userSessionDuration = parseInt(userData.blockDuration) || 30;
+                    } else {
+                        document.getElementById('blockDuration').textContent = '-';
+                        userSessionDuration = 30; // Default fallback
                     }
                     if (userData.blockEndDate) {
                         const endDate = new Date(userData.blockEndDate);
