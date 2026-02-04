@@ -924,7 +924,8 @@
                         const isBooked = existingBookings.some(booking => {
                             const [bHour, bMin] = booking.time.split(':').map(Number);
                             const bookingStart = bHour * 60 + bMin;
-                            const bookingEnd = bookingStart + (booking.duration || 60);
+                            const bookingDuration = parseInt(booking.duration) || 60;
+                            const bookingEnd = bookingStart + bookingDuration;
                             // Check for overlap: slot overlaps if it starts before booking ends AND ends after booking starts
                             return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
                         });
@@ -2658,7 +2659,8 @@
                             const isBooked = existingBookings.some(booking => {
                                 const [bHour, bMin] = booking.time.split(':').map(Number);
                                 const bookingStart = bHour * 60 + bMin;
-                                const bookingEnd = bookingStart + (booking.duration || 60);
+                                const bookingDuration = parseInt(booking.duration) || 60;
+                                const bookingEnd = bookingStart + bookingDuration;
                                 return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
                             });
 
@@ -2911,7 +2913,8 @@
                         const hasConflict = existingBookings.some(existing => {
                             const [eHour, eMin] = existing.time.split(':').map(Number);
                             const existingStart = eHour * 60 + eMin;
-                            const existingEnd = existingStart + (existing.duration || 60);
+                            const existingDuration = parseInt(existing.duration) || 60;
+                            const existingEnd = existingStart + existingDuration;
                             return (bookingStartMinutes < existingEnd && bookingEndMinutes > existingStart);
                         });
 

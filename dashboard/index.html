@@ -1760,7 +1760,7 @@
                     }
 
                     // Duration
-                    const duration = booking.duration || 60;
+                    const duration = parseInt(booking.duration) || 60;
 
                     html += `
                         <div class="session-card" data-booking-id="${booking.id}">
@@ -2024,7 +2024,8 @@
                             if (bt.isOwn) return false; // Don't count own booking as conflict
                             const [btH, btM] = bt.time.split(':').map(Number);
                             const bookingStart = btH * 60 + btM;
-                            const bookingEnd = bookingStart + bt.duration;
+                            const bookingDuration = parseInt(bt.duration) || 60;
+                            const bookingEnd = bookingStart + bookingDuration;
                             // Check if proposed session [time, time+sessionDuration] overlaps [bookingStart, bookingEnd]
                             return time < bookingEnd && slotEndTime > bookingStart;
                         });
