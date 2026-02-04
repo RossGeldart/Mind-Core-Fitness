@@ -938,6 +938,14 @@
             async function generateClientTimeSlotsWithAvailability(dayNum, existingBookings, duration, todayIsSameDay = false) {
                 const slots = [];
 
+                // Get trainer's availability for this day of week
+                const daySlots = getDaySlots(dayNum);
+
+                // If no availability set for this day, return empty
+                if (!daySlots || daySlots.length === 0) {
+                    return slots;
+                }
+
                 // Calculate minimum allowed time if today is the same day
                 let minAllowedMinutes = 0;
                 if (todayIsSameDay) {
@@ -947,11 +955,18 @@
                     minAllowedMinutes = Math.ceil((currentMinutes + 15) / 15) * 15;
                 }
 
-                // Generate time slots from 6am to 8pm in 15-minute increments
-                for (let hour = 6; hour < 20; hour++) {
-                    for (let min = 0; min < 60; min += 15) {
+                // Generate time slots only within trainer's available windows
+                daySlots.forEach(availSlot => {
+                    const [startHour, startMin] = availSlot.start.split(':').map(Number);
+                    const [endHour, endMin] = availSlot.end.split(':').map(Number);
+                    const availStartMinutes = startHour * 60 + startMin;
+                    const availEndMinutes = endHour * 60 + endMin;
+
+                    // Generate 15-minute increment slots within this availability window
+                    for (let slotStartMinutes = availStartMinutes; slotStartMinutes + duration <= availEndMinutes; slotStartMinutes += 15) {
+                        const hour = Math.floor(slotStartMinutes / 60);
+                        const min = slotStartMinutes % 60;
                         const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-                        const slotStartMinutes = hour * 60 + min;
                         const slotEndMinutes = slotStartMinutes + duration;
 
                         // Check if this time has already passed today
@@ -969,7 +984,8 @@
 
                         slots.push({ time, isBooked: isBooked || isPastTime, isPastTime });
                     }
-                }
+                });
+
                 return slots;
             }
 
@@ -1075,13 +1091,16 @@
                                 <span class="day-time-selected" id="clientSelectedTime${dayNum}">${selectedTime ? formatTime(selectedTime) : 'Select time'}</span>
                             </div>
                             <div class="day-slots time-slots-container">
-                                ${slots.map(slot => `
-                                    <div class="time-slot ${slot.isBooked ? 'booked' : ''} ${slot.isPastTime ? 'past-time' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
-                                         data-day="${dayNum}" data-time="${slot.time}"
-                                         ${slot.isPastTime ? 'title="This time has already passed"' : (slot.isBooked ? 'title="This time is already booked"' : '')}>
-                                        ${formatTime(slot.time)}
-                                    </div>
-                                `).join('')}
+                                ${slots.length === 0 ?
+                                    '<p style="color: var(--text-muted); text-align: center; padding: 12px; margin: 0;">No availability set for this day</p>' :
+                                    slots.map(slot => `
+                                        <div class="time-slot ${slot.isBooked ? 'booked' : ''} ${slot.isPastTime ? 'past-time' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
+                                             data-day="${dayNum}" data-time="${slot.time}"
+                                             ${slot.isPastTime ? 'title="This time has already passed"' : (slot.isBooked ? 'title="This time is already booked"' : '')}>
+                                            ${formatTime(slot.time)}
+                                        </div>
+                                    `).join('')
+                                }
                             </div>
                         </div>
                     `;
@@ -2932,9 +2951,13 @@
                 // Generate slots for each day
                 let html = '';
                 for (const dateStr of dates) {
-                    const date = new Date(dateStr);
+                    const date = new Date(dateStr + 'T00:00:00');
+                    const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, etc.
                     const dayName = date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
                     const existingBookings = allExistingBookings[dateStr] || [];
+
+                    // Get trainer's availability for this day of week
+                    const daySlots = getDaySlots(dayOfWeek);
 
                     // Check if this date is today and calculate min allowed time
                     const isToday = dateStr === todayStr;
@@ -2946,30 +2969,37 @@
                         minAllowedMinutes = Math.ceil((currentMinutes + 15) / 15) * 15;
                     }
 
-                    // Generate available slots for this day
+                    // Generate available slots only within trainer's availability windows
                     const slots = [];
-                    for (let hour = workingHours.start; hour < workingHours.end; hour++) {
-                        for (let minute of [0, 15, 30, 45]) {
-                            const slotStart = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                            const slotStartMinutes = hour * 60 + minute;
-                            const slotEndMinutes = slotStartMinutes + duration;
-                            const slotEndHour = Math.floor(slotEndMinutes / 60);
 
-                            if (slotEndHour > workingHours.end) continue;
+                    if (daySlots && daySlots.length > 0) {
+                        daySlots.forEach(availSlot => {
+                            const [startHour, startMin] = availSlot.start.split(':').map(Number);
+                            const [endHour, endMin] = availSlot.end.split(':').map(Number);
+                            const availStartMinutes = startHour * 60 + startMin;
+                            const availEndMinutes = endHour * 60 + endMin;
 
-                            // Check if this time has already passed today
-                            const isPastTime = isToday && slotStartMinutes < minAllowedMinutes;
+                            // Generate 15-minute increment slots within this availability window
+                            for (let slotStartMinutes = availStartMinutes; slotStartMinutes + duration <= availEndMinutes; slotStartMinutes += 15) {
+                                const hour = Math.floor(slotStartMinutes / 60);
+                                const minute = slotStartMinutes % 60;
+                                const slotStart = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                                const slotEndMinutes = slotStartMinutes + duration;
 
-                            const isBooked = existingBookings.some(booking => {
-                                const [bHour, bMin] = booking.time.split(':').map(Number);
-                                const bookingStart = bHour * 60 + bMin;
-                                const bookingDuration = parseInt(booking.duration) || 60;
-                                const bookingEnd = bookingStart + bookingDuration;
-                                return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
-                            });
+                                // Check if this time has already passed today
+                                const isPastTime = isToday && slotStartMinutes < minAllowedMinutes;
 
-                            slots.push({ time: slotStart, isBooked: isBooked || isPastTime, isPastTime });
-                        }
+                                const isBooked = existingBookings.some(booking => {
+                                    const [bHour, bMin] = booking.time.split(':').map(Number);
+                                    const bookingStart = bHour * 60 + bMin;
+                                    const bookingDuration = parseInt(booking.duration) || 60;
+                                    const bookingEnd = bookingStart + bookingDuration;
+                                    return (slotStartMinutes < bookingEnd && slotEndMinutes > bookingStart);
+                                });
+
+                                slots.push({ time: slotStart, isBooked: isBooked || isPastTime, isPastTime });
+                            }
+                        });
                     }
 
                     const selectedTime = wizardState.times[dateStr] || '';
@@ -2981,15 +3011,18 @@
                                 <span class="day-time-selected" id="selectedTime_${dateStr}">${selectedTime ? formatTime12Hour(selectedTime) : 'Select time'}</span>
                             </div>
                             <div class="time-slots-container day-slots" id="slots_${dateStr}">
-                                ${slots.map(slot => `
-                                    <button type="button" class="time-slot ${slot.isBooked ? 'booked' : ''} ${slot.isPastTime ? 'past-time' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
-                                            data-time="${slot.time}"
-                                            data-date="${dateStr}"
-                                            ${slot.isBooked ? 'disabled' : ''}
-                                            ${slot.isPastTime ? 'title="This time has already passed"' : (slot.isBooked ? 'title="This time is already booked"' : '')}>
-                                        ${formatTime12Hour(slot.time)}
-                                    </button>
-                                `).join('')}
+                                ${slots.length === 0 ?
+                                    '<p style="color: var(--text-muted); text-align: center; padding: 12px; margin: 0;">No availability set for this day</p>' :
+                                    slots.map(slot => `
+                                        <button type="button" class="time-slot ${slot.isBooked ? 'booked' : ''} ${slot.isPastTime ? 'past-time' : ''} ${selectedTime === slot.time ? 'selected' : ''}"
+                                                data-time="${slot.time}"
+                                                data-date="${dateStr}"
+                                                ${slot.isBooked ? 'disabled' : ''}
+                                                ${slot.isPastTime ? 'title="This time has already passed"' : (slot.isBooked ? 'title="This time is already booked"' : '')}>
+                                            ${formatTime12Hour(slot.time)}
+                                        </button>
+                                    `).join('')
+                                }
                             </div>
                         </div>
                     `;
