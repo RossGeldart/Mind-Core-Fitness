@@ -326,31 +326,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Allowed Days</label>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Select which days this client can book</p>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="clientDays">
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="0"> Sun
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="1" checked> Mon
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="2" checked> Tue
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="3" checked> Wed
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="4" checked> Thu
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="5" checked> Fri
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" value="6"> Sat
-                            </label>
-                        </div>
+                        <label>Number of Sessions</label>
+                        <input type="number" id="clientSessions" min="1" placeholder="e.g. 10">
                     </div>
 
                     <input type="hidden" id="clientId">
@@ -553,13 +530,8 @@
                 const email = document.getElementById('clientEmail').value.trim();
                 const blockDuration = parseInt(document.getElementById('clientBlockDuration').value);
                 const blockEndDate = document.getElementById('clientBlockEndDate').value;
+                const totalSessions = parseInt(document.getElementById('clientSessions').value) || 0;
                 const clientId = document.getElementById('clientId').value;
-
-                // Get allowed days
-                const allowedDays = [];
-                document.querySelectorAll('#clientDays input:checked').forEach(cb => {
-                    allowedDays.push(parseInt(cb.value));
-                });
 
                 if (!name || !email) {
                     showToast('Please fill in name and email', 'error');
@@ -578,7 +550,7 @@
                             email,
                             blockDuration,
                             blockEndDate,
-                            allowedDays,
+                            totalSessions,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         showToast('Client updated successfully');
@@ -599,7 +571,8 @@
                             role: 'client',
                             blockDuration,
                             blockEndDate,
-                            allowedDays,
+                            totalSessions,
+                            sessionsUsed: 0,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             needsPasswordSetup: true
                         });
@@ -629,11 +602,7 @@
                 document.getElementById('clientEmail').value = client.email || '';
                 document.getElementById('clientBlockDuration').value = client.blockDuration || 60;
                 document.getElementById('clientBlockEndDate').value = client.blockEndDate || '';
-
-                // Set allowed days
-                document.querySelectorAll('#clientDays input').forEach(cb => {
-                    cb.checked = (client.allowedDays || [1,2,3,4,5]).includes(parseInt(cb.value));
-                });
+                document.getElementById('clientSessions').value = client.totalSessions || '';
 
                 document.getElementById('clientModal').classList.add('show');
             };
