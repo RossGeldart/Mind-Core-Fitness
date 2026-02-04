@@ -921,6 +921,14 @@
     cursor: not-allowed;
 }
 
+.time-slot.past-time {
+    background: #f0f0f0;
+    color: #bbb;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
 .time-slot.selected {
     background: var(--accent-color);
     color: #ffffff;

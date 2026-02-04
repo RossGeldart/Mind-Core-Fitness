@@ -2115,6 +2115,17 @@
                 const slotIncrement = 15; // 15 minute increments
                 const sessionDuration = userSessionDuration; // User's session duration (30 or 45 mins)
 
+                // Check if the selected date is today and calculate min allowed time
+                const todayStr = new Date().toISOString().split('T')[0];
+                const isToday = dateStr === todayStr;
+                let minAllowedMinutes = 0;
+                if (isToday) {
+                    const now = new Date();
+                    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                    // Round up to the next 15-minute slot + 15 min buffer
+                    minAllowedMinutes = Math.ceil((currentMinutes + 15) / 15) * 15;
+                }
+
                 daySchedule.slots.forEach(slot => {
                     const [startHour, startMin] = slot.start.split(':').map(Number);
                     const [endHour, endMin] = slot.end.split(':').map(Number);
@@ -2151,6 +2162,9 @@
                             return time < blockEnd && slotEndTime > blockStart;
                         });
 
+                        // Check if this time has already passed today
+                        const isPastTime = isToday && time < minAllowedMinutes;
+
                         // Format display time
                         const displayDate = new Date();
                         displayDate.setHours(hour, min);
@@ -2169,6 +2183,9 @@
                             slotClass += ' booked own-booking';
                             statusText = '<span class="slot-status your-session">Your Session</span>';
                             clickable = rescheduleMode; // Allow clicking to keep same time in reschedule mode
+                        } else if (isPastTime) {
+                            slotClass += ' unavailable past-time';
+                            statusText = '<span class="slot-status unavailable">Passed</span>';
                         } else if (overlapsOtherBooking || isBlocked) {
                             slotClass += ' unavailable';
                             statusText = '<span class="slot-status unavailable">Unavailable</span>';
