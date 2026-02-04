@@ -1,24 +1,19 @@
 {
   "name": "Mind Core Fitness",
   "short_name": "Mind Core",
-  "description": "Stop juggling fitness apps. Start crushing consistency. One subscription. Five apps. Zero guilt.",
-  "start_url": "/index.html",
+  "description": "Personal training and fitness management app",
+  "start_url": "/dashboard/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#99313c",
+  "theme_color": "#8B2635",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "Logo.PNG",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "Logo.PNG",
+      "src": "/Logo.PNG",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["fitness", "health", "lifestyle"]
 }
