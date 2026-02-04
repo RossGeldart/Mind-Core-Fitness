@@ -1587,7 +1587,7 @@
             // Show stats detail popup when clicking dashboard cards
             let currentStatsType = null;
 
-            async function showStatsDetail(type) {
+            window.showStatsDetail = async function(type) {
                 currentStatsType = type;
                 const modal = document.getElementById('statsModal');
                 const title = document.getElementById('statsModalTitle');
