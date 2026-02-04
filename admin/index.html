@@ -911,16 +911,13 @@
 
             // Generate time slots for client scheduling
             function generateClientTimeSlots(dayNum) {
-                const duration = clientWizardState.blockDuration || 30;
                 const slots = [];
 
-                // Generate time slots from 6am to 8pm
+                // Generate time slots from 6am to 8pm in 15-minute increments
                 for (let hour = 6; hour < 20; hour++) {
-                    for (let min = 0; min < 60; min += 30) {
-                        if (min === 0 || duration <= 30) {
-                            const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-                            slots.push(time);
-                        }
+                    for (let min = 0; min < 60; min += 15) {
+                        const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                        slots.push(time);
                     }
                 }
                 return slots;
