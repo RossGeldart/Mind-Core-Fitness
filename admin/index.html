@@ -92,19 +92,19 @@
 
                 <div class="dashboard-content">
                     <div class="stats-grid">
-                        <div class="stat-card clickable" onclick="navigateToSection('clients')">
+                        <div class="stat-card clickable" onclick="showStatsDetail('clients')">
                             <div class="stat-value" id="statClients">0</div>
                             <div class="stat-label">Active Clients</div>
                         </div>
-                        <div class="stat-card accent clickable" onclick="navigateToSection('calendar')">
+                        <div class="stat-card accent clickable" onclick="showStatsDetail('today')">
                             <div class="stat-value" id="statBookingsToday">0</div>
                             <div class="stat-label">Sessions Today</div>
                         </div>
-                        <div class="stat-card clickable" onclick="navigateToSection('calendar')">
+                        <div class="stat-card clickable" onclick="showStatsDetail('week')">
                             <div class="stat-value" id="statBookingsWeek">0</div>
                             <div class="stat-label">This Week</div>
                         </div>
-                        <div class="stat-card clickable" onclick="navigateToSection('calendar')">
+                        <div class="stat-card clickable" onclick="showStatsDetail('upcoming')">
                             <div class="stat-value" id="statUpcoming">0</div>
                             <div class="stat-label">Upcoming</div>
                         </div>
@@ -683,6 +683,25 @@
                 <button class="btn btn-secondary" id="prevStepBtn" style="display: none;">Back</button>
                 <button class="btn btn-primary" id="nextStepBtn">Next</button>
                 <button class="btn btn-primary" id="saveBookingBtn" style="display: none;">Create Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Detail Modal -->
+    <div class="modal-overlay" id="statsModal">
+        <div class="modal stats-detail-modal">
+            <div class="modal-header">
+                <h3 id="statsModalTitle">Details</h3>
+                <button class="modal-close" id="closeStatsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-detail-content" id="statsModalContent">
+                    <!-- Content populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="statsModalViewAll">View All</button>
+                <button class="btn btn-primary" id="statsModalClose">Close</button>
             </div>
         </div>
     </div>
@@ -1564,6 +1583,191 @@
                 else if (section === 'availability') renderAvailabilityGrid();
                 else if (section === 'clients') loadClients();
             }
+
+            // Show stats detail popup when clicking dashboard cards
+            let currentStatsType = null;
+
+            async function showStatsDetail(type) {
+                currentStatsType = type;
+                const modal = document.getElementById('statsModal');
+                const title = document.getElementById('statsModalTitle');
+                const content = document.getElementById('statsModalContent');
+                const viewAllBtn = document.getElementById('statsModalViewAll');
+
+                content.innerHTML = '<div class="loading-spinner">Loading...</div>';
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const endOfWeek = new Date(today);
+                endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
+                endOfWeek.setHours(23, 59, 59, 999);
+
+                try {
+                    if (type === 'clients') {
+                        title.textContent = 'Active Clients';
+                        viewAllBtn.textContent = 'View All Clients';
+                        viewAllBtn.onclick = () => {
+                            modal.classList.remove('show');
+                            navigateToSection('clients');
+                        };
+
+                        const activeClients = clients.filter(c => c.status === 'active');
+                        if (activeClients.length === 0) {
+                            content.innerHTML = '<p class="no-data">No active clients</p>';
+                        } else {
+                            content.innerHTML = activeClients.slice(0, 5).map(client => `
+                                <div class="stats-detail-item">
+                                    <div class="stats-detail-avatar">${client.name.charAt(0).toUpperCase()}</div>
+                                    <div class="stats-detail-info">
+                                        <div class="stats-detail-name">${client.name}</div>
+                                        <div class="stats-detail-sub">${client.sessionsRemaining || 0} sessions remaining</div>
+                                    </div>
+                                </div>
+                            `).join('');
+                            if (activeClients.length > 5) {
+                                content.innerHTML += `<p class="stats-detail-more">+${activeClients.length - 5} more clients</p>`;
+                            }
+                        }
+                    } else if (type === 'today') {
+                        title.textContent = "Today's Sessions";
+                        viewAllBtn.textContent = 'View Calendar';
+                        viewAllBtn.onclick = () => {
+                            modal.classList.remove('show');
+                            navigateToSection('calendar');
+                        };
+
+                        const todayStr = today.toISOString().split('T')[0];
+                        const snapshot = await db.collection('bookings')
+                            .where('date', '==', todayStr)
+                            .where('status', '==', 'confirmed')
+                            .orderBy('startTime')
+                            .get();
+
+                        if (snapshot.empty) {
+                            content.innerHTML = '<p class="no-data">No sessions scheduled for today</p>';
+                        } else {
+                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            content.innerHTML = bookings.map(booking => `
+                                <div class="stats-detail-item">
+                                    <div class="stats-detail-time">${formatTimeDisplay(booking.startTime)}</div>
+                                    <div class="stats-detail-info">
+                                        <div class="stats-detail-name">${booking.clientName}</div>
+                                        <div class="stats-detail-sub">${booking.duration || 30} min session</div>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    } else if (type === 'week') {
+                        title.textContent = 'Sessions This Week';
+                        viewAllBtn.textContent = 'View Calendar';
+                        viewAllBtn.onclick = () => {
+                            modal.classList.remove('show');
+                            navigateToSection('calendar');
+                        };
+
+                        const todayStr = today.toISOString().split('T')[0];
+                        const endWeekStr = endOfWeek.toISOString().split('T')[0];
+                        const snapshot = await db.collection('bookings')
+                            .where('date', '>=', todayStr)
+                            .where('date', '<=', endWeekStr)
+                            .where('status', '==', 'confirmed')
+                            .orderBy('date')
+                            .orderBy('startTime')
+                            .get();
+
+                        if (snapshot.empty) {
+                            content.innerHTML = '<p class="no-data">No sessions scheduled this week</p>';
+                        } else {
+                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            const grouped = {};
+                            bookings.forEach(b => {
+                                if (!grouped[b.date]) grouped[b.date] = [];
+                                grouped[b.date].push(b);
+                            });
+
+                            let html = '';
+                            Object.keys(grouped).slice(0, 4).forEach(date => {
+                                const dateObj = new Date(date + 'T00:00:00');
+                                const dayName = DAYS_SHORT[dateObj.getDay()];
+                                const dayNum = dateObj.getDate();
+                                html += `<div class="stats-detail-date-header">${dayName} ${dayNum}</div>`;
+                                grouped[date].slice(0, 3).forEach(booking => {
+                                    html += `
+                                        <div class="stats-detail-item compact">
+                                            <div class="stats-detail-time">${formatTimeDisplay(booking.startTime)}</div>
+                                            <div class="stats-detail-info">
+                                                <div class="stats-detail-name">${booking.clientName}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                if (grouped[date].length > 3) {
+                                    html += `<p class="stats-detail-more">+${grouped[date].length - 3} more</p>`;
+                                }
+                            });
+                            content.innerHTML = html;
+                        }
+                    } else if (type === 'upcoming') {
+                        title.textContent = 'Upcoming Sessions';
+                        viewAllBtn.textContent = 'View Calendar';
+                        viewAllBtn.onclick = () => {
+                            modal.classList.remove('show');
+                            navigateToSection('calendar');
+                        };
+
+                        const todayStr = today.toISOString().split('T')[0];
+                        const snapshot = await db.collection('bookings')
+                            .where('date', '>=', todayStr)
+                            .where('status', '==', 'confirmed')
+                            .orderBy('date')
+                            .orderBy('startTime')
+                            .limit(10)
+                            .get();
+
+                        if (snapshot.empty) {
+                            content.innerHTML = '<p class="no-data">No upcoming sessions</p>';
+                        } else {
+                            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            content.innerHTML = bookings.slice(0, 6).map(booking => {
+                                const dateObj = new Date(booking.date + 'T00:00:00');
+                                const dayName = DAYS_SHORT[dateObj.getDay()];
+                                const dayNum = dateObj.getDate();
+                                return `
+                                    <div class="stats-detail-item">
+                                        <div class="stats-detail-date-badge">
+                                            <div class="badge-day">${dayName}</div>
+                                            <div class="badge-num">${dayNum}</div>
+                                        </div>
+                                        <div class="stats-detail-info">
+                                            <div class="stats-detail-name">${booking.clientName}</div>
+                                            <div class="stats-detail-sub">${formatTimeDisplay(booking.startTime)} • ${booking.duration || 30} min</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading stats detail:', error);
+                    content.innerHTML = '<p class="no-data">Error loading data</p>';
+                }
+
+                modal.classList.add('show');
+            }
+
+            // Stats modal close handlers
+            document.getElementById('closeStatsModal').addEventListener('click', () => {
+                document.getElementById('statsModal').classList.remove('show');
+            });
+            document.getElementById('statsModalClose').addEventListener('click', () => {
+                document.getElementById('statsModal').classList.remove('show');
+            });
+            document.getElementById('statsModal').addEventListener('click', (e) => {
+                if (e.target.id === 'statsModal') {
+                    document.getElementById('statsModal').classList.remove('show');
+                }
+            });
 
             // ==================
             // AVAILABILITY
