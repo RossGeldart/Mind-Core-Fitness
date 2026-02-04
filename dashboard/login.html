@@ -164,7 +164,12 @@
             });
 
             resetBtn.addEventListener('click', async () => {
-                const email = document.getElementById('resetEmail').value;
+                const email = document.getElementById('resetEmail').value.trim();
+
+                // Reset error styling to default (red)
+                loginError.style.background = '';
+                loginError.style.borderColor = '';
+                loginError.style.color = '';
 
                 if (!email) {
                     loginError.style.display = 'block';
@@ -172,8 +177,17 @@
                     return;
                 }
 
+                // Basic email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+
                 resetBtn.disabled = true;
                 resetBtn.textContent = 'Sending...';
+                loginError.style.display = 'none';
 
                 try {
                     await auth.sendPasswordResetEmail(email);
@@ -181,11 +195,25 @@
                     loginError.style.background = 'rgba(45, 138, 78, 0.1)';
                     loginError.style.borderColor = 'rgba(45, 138, 78, 0.3)';
                     loginError.style.color = '#2d8a4e';
-                    loginError.textContent = 'Password reset email sent! Check your inbox.';
+                    loginError.textContent = 'Password reset email sent! Check your inbox (and spam folder).';
                     resetBtn.textContent = 'Email Sent';
                 } catch (error) {
+                    console.error('Password reset error:', error.code, error.message);
                     loginError.style.display = 'block';
-                    loginError.textContent = 'Could not send reset email. Please check the address and try again.';
+
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            loginError.textContent = 'No account found with this email address.';
+                            break;
+                        case 'auth/invalid-email':
+                            loginError.textContent = 'Please enter a valid email address.';
+                            break;
+                        case 'auth/too-many-requests':
+                            loginError.textContent = 'Too many requests. Please wait a few minutes and try again.';
+                            break;
+                        default:
+                            loginError.textContent = 'Could not send reset email. Please check the address and try again.';
+                    }
                     resetBtn.disabled = false;
                     resetBtn.textContent = 'Send Reset Link';
                 }
