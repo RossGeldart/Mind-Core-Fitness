@@ -1283,7 +1283,7 @@
 
                         // Create initial bookings based on schedule (only for new clients)
                         if (state.selectedDays.length > 0 && Object.keys(state.dayTimes).length > 0) {
-                            await createInitialBookings(newClientId, name, state);
+                            await createInitialBookings(newClientId, name, email, state);
                         }
                     }
 
@@ -1299,7 +1299,7 @@
             });
 
             // Create initial bookings for new client based on schedule
-            async function createInitialBookings(clientId, clientName, state) {
+            async function createInitialBookings(clientId, clientName, clientEmail, state) {
                 const { selectedDays, dayTimes, blockDuration, blockEndDate, totalSessions } = state;
                 const endDate = new Date(blockEndDate);
                 const today = new Date();
@@ -1332,6 +1332,7 @@
                         batch.set(bookingRef, {
                             clientId,
                             clientName,
+                            clientEmail,
                             date: dateStr,
                             time,
                             endTime,
