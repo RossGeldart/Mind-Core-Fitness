@@ -1620,7 +1620,7 @@
                                     <div class="stats-detail-avatar">${client.name.charAt(0).toUpperCase()}</div>
                                     <div class="stats-detail-info">
                                         <div class="stats-detail-name">${client.name}</div>
-                                        <div class="stats-detail-sub">${client.sessionsRemaining || 0} sessions remaining</div>
+                                        <div class="stats-detail-sub">${(client.totalSessions || 0) - (client.sessionsUsed || 0)} sessions remaining</div>
                                     </div>
                                 </div>
                             `).join('');
