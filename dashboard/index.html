@@ -533,7 +533,10 @@
                 <div class="next-session-label">Your Next Session</div>
                 <div class="next-session-date" id="nextSessionDate">No upcoming sessions</div>
                 <div class="next-session-time" id="nextSessionTime"></div>
-                <button class="btn btn-primary" id="rescheduleNextBtn" style="display: none;">Reschedule</button>
+                <div class="next-session-actions" id="nextSessionActions" style="display: none; gap: 12px; margin-top: 16px;">
+                    <button class="btn btn-primary" id="rescheduleNextBtn">Reschedule</button>
+                    <button class="btn btn-danger" id="cancelNextBtn">Cancel Session</button>
+                </div>
             </div>
 
             <div class="dashboard-card">
@@ -1680,12 +1683,14 @@
                 const nextSessionCard = document.getElementById('nextSessionCard');
                 const nextSessionDate = document.getElementById('nextSessionDate');
                 const nextSessionTime = document.getElementById('nextSessionTime');
+                const actionsContainer = document.getElementById('nextSessionActions');
                 const rescheduleBtn = document.getElementById('rescheduleNextBtn');
+                const cancelBtn = document.getElementById('cancelNextBtn');
 
                 if (userBookings.length === 0) {
                     nextSessionDate.textContent = 'No upcoming sessions';
                     nextSessionTime.textContent = '';
-                    rescheduleBtn.style.display = 'none';
+                    actionsContainer.style.display = 'none';
                     return;
                 }
 
@@ -1710,9 +1715,10 @@
                     nextSessionTime.textContent = 'Time TBC';
                 }
 
-                // Store booking ID for reschedule
-                rescheduleBtn.style.display = 'inline-flex';
+                // Show action buttons and store booking ID
+                actionsContainer.style.display = 'flex';
                 rescheduleBtn.dataset.bookingId = nextBooking.id;
+                cancelBtn.dataset.bookingId = nextBooking.id;
             }
 
             // Display list of upcoming sessions
@@ -1765,6 +1771,10 @@
                             <div class="session-details">
                                 <h4>${dayNames[sessionDate.getDay()]}</h4>
                                 <p>${timeStr} - ${duration} minutes</p>
+                            </div>
+                            <div class="session-actions">
+                                <button class="btn btn-sm btn-primary" onclick="startReschedule('${booking.id}')">Reschedule</button>
+                                <button class="btn btn-sm btn-danger" onclick="cancelBooking('${booking.id}')">Cancel</button>
                             </div>
                         </div>
                     `;
@@ -1925,24 +1935,8 @@
                 selectedDate = dateStr;
                 renderBookingCalendar();
 
-                // Auto-enter reschedule mode if user has upcoming bookings
-                if (!rescheduleMode && userBookings.length > 0) {
-                    // Check if clicking on a day with their booking
-                    const bookingOnDate = userBookings.find(b => b.date === dateStr);
-                    if (bookingOnDate) {
-                        // Reschedule the booking on this specific date
-                        rescheduleMode = true;
-                        rescheduleBookingId = bookingOnDate.id;
-                        document.querySelector('#section-book h2').textContent = `Reschedule Session (${bookingOnDate.date} at ${bookingOnDate.time})`;
-                    } else {
-                        // Reschedule their next upcoming booking to this new date
-                        const nextBooking = userBookings[0]; // Already sorted by date
-                        rescheduleMode = true;
-                        rescheduleBookingId = nextBooking.id;
-                        document.querySelector('#section-book h2').textContent = `Reschedule Session (${nextBooking.date} at ${nextBooking.time})`;
-                    }
-                    showToast('Select a new time for your session', 'info');
-                }
+                // Only show reschedule info if already in reschedule mode (user clicked reschedule button)
+                // Don't auto-enter reschedule mode when browsing dates
 
                 // Show the slots container
                 const slotsContainer = document.getElementById('slotsContainer');
@@ -2157,6 +2151,61 @@
                     startReschedule(bookingId);
                 }
             });
+
+            // Cancel button on next session card
+            document.getElementById('cancelNextBtn').addEventListener('click', function() {
+                const bookingId = this.dataset.bookingId;
+                if (bookingId) {
+                    cancelBooking(bookingId);
+                }
+            });
+
+            // Cancel booking function for clients
+            window.cancelBooking = async function(bookingId) {
+                const booking = userBookings.find(b => b.id === bookingId);
+                if (!booking) {
+                    showToast('Session not found', 'error');
+                    return;
+                }
+
+                // Format date and time for confirmation
+                const sessionDate = new Date(booking.date + 'T00:00:00');
+                const dateStr = sessionDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+                let timeStr = booking.time || 'TBC';
+                if (booking.time) {
+                    const [hours, minutes] = booking.time.split(':');
+                    const timeDate = new Date();
+                    timeDate.setHours(parseInt(hours), parseInt(minutes));
+                    timeStr = timeDate.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+                }
+
+                if (!confirm(`Are you sure you want to cancel your session on ${dateStr} at ${timeStr}?\n\nThis action cannot be undone.`)) {
+                    return;
+                }
+
+                try {
+                    // Update the booking status to cancelled
+                    await db.collection('bookings').doc(bookingId).update({
+                        status: 'cancelled',
+                        cancelledAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        cancelledBy: 'client'
+                    });
+
+                    showToast('Session cancelled successfully');
+
+                    // Reload bookings and update displays
+                    await loadUserBookings();
+                    renderBookingCalendar();
+
+                    // If on the slots view, refresh it
+                    if (selectedDate) {
+                        await generateTimeSlots(selectedDate);
+                    }
+                } catch (error) {
+                    console.error('Error cancelling booking:', error);
+                    showToast('Failed to cancel session. Please try again.', 'error');
+                }
+            };
 
             // Initialize calendar when switching to Book section
             document.querySelector('.client-nav-item[data-section="book"]').addEventListener('click', async function() {
