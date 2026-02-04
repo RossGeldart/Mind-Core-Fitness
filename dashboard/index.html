@@ -580,7 +580,7 @@
                 </div>
                 <div class="block-info-text">
                     <h4>Your Training Block</h4>
-                    <p><span id="blockDuration">60</span> minute sessions | Block ends: <span id="blockEndDate">-</span></p>
+                    <p><span id="blockDuration">60</span> minute sessions | <span id="blockStartDate">-</span> - <span id="blockEndDate">-</span></p>
                 </div>
             </div>
 
@@ -1316,7 +1316,8 @@
             let currentUserId = null;
             let userSessionDuration = 30; // Default to 30 minutes, updated from user data
             let currentUserData = null; // Store user data globally for access in functions
-            let userBlockEndDate = null; // Store block end date for banked session validation
+            let userBlockStartDate = null; // Store block start date for booking validation
+            let userBlockEndDate = null; // Store block end date for booking validation
 
             // Update banked sessions display
             function updateBankedSessionsDisplay(count) {
@@ -1410,6 +1411,7 @@
                 if (userData) {
                     // Store user data globally for access in other functions
                     currentUserData = userData;
+                    userBlockStartDate = userData.blockStartDate || null;
                     userBlockEndDate = userData.blockEndDate || null;
 
                     document.getElementById('userName').textContent = userData.name || 'Client';
@@ -1419,6 +1421,13 @@
                     if (userData.blockDuration) {
                         document.getElementById('blockDuration').textContent = userData.blockDuration;
                         userSessionDuration = parseInt(userData.blockDuration) || 30;
+                    }
+                    if (userData.blockStartDate) {
+                        const startDate = new Date(userData.blockStartDate);
+                        document.getElementById('blockStartDate').textContent = startDate.toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short'
+                        });
                     }
                     if (userData.blockEndDate) {
                         const endDate = new Date(userData.blockEndDate);
@@ -2033,15 +2042,32 @@
                         );
                     }
 
+                    // Check if date is within client's block period
+                    let isOutsideBlock = false;
+                    if (userBlockStartDate) {
+                        const blockStart = new Date(userBlockStartDate);
+                        blockStart.setHours(0, 0, 0, 0);
+                        if (date < blockStart) isOutsideBlock = true;
+                    }
+                    if (userBlockEndDate) {
+                        const blockEnd = new Date(userBlockEndDate);
+                        blockEnd.setHours(23, 59, 59, 999);
+                        if (date > blockEnd) isOutsideBlock = true;
+                    }
+
                     const classes = ['calendar-day'];
                     if (isPast) classes.push('past');
                     if (isToday) classes.push('today');
                     if (hasSession) classes.push('has-session');
                     if (isSelected) classes.push('selected');
-                    if (!isPast && isAvailable && !isBlocked) classes.push('available');
+                    if (isOutsideBlock) classes.push('outside-block');
+                    if (!isPast && isAvailable && !isBlocked && !isOutsideBlock) classes.push('available');
+
+                    // Only allow clicking if not past and within block period
+                    const isClickable = !isPast && !isOutsideBlock;
 
                     html += `
-                        <div class="${classes.join(' ')}" data-date="${dateStr}" ${isPast ? '' : 'onclick="selectBookingDate(\'' + dateStr + '\')"'}>
+                        <div class="${classes.join(' ')}" data-date="${dateStr}" ${isClickable ? 'onclick="selectBookingDate(\'' + dateStr + '\')"' : ''}>
                             <span class="day-number">${day}</span>
                             ${hasSession ? '<span class="session-dot"></span>' : ''}
                         </div>
@@ -2053,6 +2079,27 @@
 
             // Select a date for booking/rescheduling
             window.selectBookingDate = async function(dateStr) {
+                // Validate date is within block period
+                const selectedDateObj = new Date(dateStr + 'T00:00:00');
+
+                if (userBlockStartDate) {
+                    const blockStart = new Date(userBlockStartDate);
+                    blockStart.setHours(0, 0, 0, 0);
+                    if (selectedDateObj < blockStart) {
+                        showToast('This date is before your training block starts', 'error');
+                        return;
+                    }
+                }
+
+                if (userBlockEndDate) {
+                    const blockEnd = new Date(userBlockEndDate);
+                    blockEnd.setHours(23, 59, 59, 999);
+                    if (selectedDateObj > blockEnd) {
+                        showToast('This date is after your training block ends', 'error');
+                        return;
+                    }
+                }
+
                 selectedDate = dateStr;
                 renderBookingCalendar();
 
@@ -2222,6 +2269,27 @@
 
             // Select a time slot for booking
             window.selectTimeSlot = async function(dateStr, timeStr) {
+                // Validate date is within block period for all booking actions
+                const bookingDate = new Date(dateStr + 'T00:00:00');
+
+                if (userBlockStartDate) {
+                    const blockStart = new Date(userBlockStartDate);
+                    blockStart.setHours(0, 0, 0, 0);
+                    if (bookingDate < blockStart) {
+                        showToast('This date is before your training block starts.', 'error');
+                        return;
+                    }
+                }
+
+                if (userBlockEndDate) {
+                    const blockEnd = new Date(userBlockEndDate);
+                    blockEnd.setHours(23, 59, 59, 999);
+                    if (bookingDate > blockEnd) {
+                        showToast('This date is after your training block ends.', 'error');
+                        return;
+                    }
+                }
+
                 if (rescheduleMode && rescheduleBookingId) {
                     // Reschedule existing booking
                     if (confirm(`Reschedule your session to ${dateStr} at ${timeStr}?`)) {
@@ -2250,18 +2318,6 @@
                     const bankedSessions = currentUserData?.bankedSessions || 0;
 
                     if (bankedSessions > 0) {
-                        // Check if within block end date
-                        let withinBlockPeriod = true;
-                        if (userBlockEndDate) {
-                            const blockEnd = new Date(userBlockEndDate);
-                            const bookingDate = new Date(dateStr);
-                            withinBlockPeriod = bookingDate <= blockEnd;
-                        }
-
-                        if (!withinBlockPeriod) {
-                            showToast('This date is outside your training block period.', 'error');
-                            return;
-                        }
 
                         // Confirm booking with banked session
                         const bookingDateFormatted = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
@@ -2497,6 +2553,12 @@
         .calendar-day.past {
             opacity: 0.4;
             cursor: not-allowed;
+        }
+
+        .calendar-day.outside-block {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #e0e0e0;
         }
 
         .calendar-day.today {
