@@ -177,22 +177,32 @@
                             <div class="form-row">
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Date</label>
-                                    <input type="date" id="blockDate" disabled>
+                                    <input type="date" id="blockDate">
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
-                                    <label>Time Range</label>
+                                    <label>Time Range (or leave for all day)</label>
                                     <div class="time-input-group" style="margin-top: 0;">
-                                        <input type="time" id="blockStartTime" value="09:00" disabled>
+                                        <input type="time" id="blockStartTime" value="09:00">
                                         <span>to</span>
-                                        <input type="time" id="blockEndTime" value="17:00" disabled>
+                                        <input type="time" id="blockEndTime" value="17:00">
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
-                                <label>Reason (optional)</label>
-                                <input type="text" id="blockReason" placeholder="e.g., Doctor's appointment" disabled>
+                            <div class="form-group" style="margin-top: 16px;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="blockAllDay" style="width: auto;">
+                                    Block entire day
+                                </label>
                             </div>
-                            <button class="btn btn-secondary" style="margin-top: 16px;" id="addBlockedTime" disabled>Block This Time</button>
+                            <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                                <label>Reason (optional)</label>
+                                <input type="text" id="blockReason" placeholder="e.g., Doctor's appointment, Holiday">
+                            </div>
+                            <button class="btn btn-secondary" style="margin-top: 16px;" id="addBlockedTime">Block This Time</button>
+
+                            <div id="blockedTimesList" style="margin-top: 24px;">
+                                <!-- Blocked times will be listed here -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -776,16 +786,307 @@
             // ==================
             // AVAILABILITY
             // ==================
+            let availability = {}; // { 0: {start: '09:00', end: '17:00'}, 1: {...}, ... }
+            let originalAvailability = {}; // To track changes
+            let selectedDay = null;
+
+            // Format time to 12-hour display
+            function formatTimeDisplay(time24) {
+                const [hours, minutes] = time24.split(':').map(Number);
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const hours12 = hours % 12 || 12;
+                return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+
             function renderAvailabilityGrid() {
                 const grid = document.getElementById('availabilityGrid');
-                grid.innerHTML = DAYS.map((day, i) => `
-                    <div class="day-card" data-day="${i}">
-                        <div class="day-name">${DAYS_SHORT[i]}</div>
-                        <div class="day-times">Not set</div>
-                    </div>
-                `).join('');
+                grid.innerHTML = DAYS.map((day, i) => {
+                    const dayData = availability[i];
+                    const hasTime = dayData && dayData.start && dayData.end;
+                    const timeText = hasTime
+                        ? `${formatTimeDisplay(dayData.start)} - ${formatTimeDisplay(dayData.end)}`
+                        : 'Not set';
+                    const activeClass = hasTime ? 'active' : '';
+                    const selectedClass = selectedDay === i ? 'selected' : '';
+
+                    return `
+                        <div class="day-card ${activeClass} ${selectedClass}" data-day="${i}">
+                            <div class="day-name">${DAYS_SHORT[i]}</div>
+                            <div class="day-times">${timeText}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Add click handlers to day cards
+                grid.querySelectorAll('.day-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const dayIndex = parseInt(this.dataset.day);
+                        selectDay(dayIndex);
+                    });
+                });
             }
+
+            function selectDay(dayIndex) {
+                selectedDay = dayIndex;
+                const timeEditor = document.getElementById('timeEditor');
+                const dayData = availability[dayIndex];
+
+                // Update selected day name
+                document.getElementById('selectedDayName').textContent = DAYS[dayIndex];
+
+                // Set time inputs
+                if (dayData && dayData.start && dayData.end) {
+                    document.getElementById('startTime').value = dayData.start;
+                    document.getElementById('endTime').value = dayData.end;
+                } else {
+                    document.getElementById('startTime').value = '09:00';
+                    document.getElementById('endTime').value = '17:00';
+                }
+
+                // Enable buttons
+                document.getElementById('applyTime').disabled = false;
+                document.getElementById('removeDay').disabled = !!(!dayData || !dayData.start);
+
+                // Show time editor
+                timeEditor.style.display = 'block';
+
+                // Re-render to show selection
+                renderAvailabilityGrid();
+            }
+
+            function checkForChanges() {
+                const hasChanges = JSON.stringify(availability) !== JSON.stringify(originalAvailability);
+                document.getElementById('saveAvailability').disabled = !hasChanges;
+            }
+
+            // Apply time to selected day
+            document.getElementById('applyTime').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                const start = document.getElementById('startTime').value;
+                const end = document.getElementById('endTime').value;
+
+                if (start >= end) {
+                    showToast('End time must be after start time', 'error');
+                    return;
+                }
+
+                availability[selectedDay] = { start, end };
+                document.getElementById('removeDay').disabled = false;
+                checkForChanges();
+                renderAvailabilityGrid();
+                showToast(`${DAYS[selectedDay]} hours set: ${formatTimeDisplay(start)} - ${formatTimeDisplay(end)}`, 'success');
+            });
+
+            // Remove day from availability
+            document.getElementById('removeDay').addEventListener('click', function() {
+                if (selectedDay === null) return;
+
+                delete availability[selectedDay];
+                document.getElementById('removeDay').disabled = true;
+                checkForChanges();
+                renderAvailabilityGrid();
+                showToast(`${DAYS[selectedDay]} removed from schedule`, 'success');
+            });
+
+            // Save availability to Firebase
+            document.getElementById('saveAvailability').addEventListener('click', async function() {
+                const btn = this;
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) {
+                        showToast('You must be logged in to save', 'error');
+                        return;
+                    }
+
+                    await db.collection('availability').doc(user.uid).set({
+                        schedule: availability,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    originalAvailability = JSON.parse(JSON.stringify(availability));
+                    showToast('Availability saved successfully!', 'success');
+                } catch (error) {
+                    console.error('Error saving availability:', error);
+                    showToast('Failed to save availability', 'error');
+                } finally {
+                    btn.textContent = 'Save Changes';
+                    checkForChanges();
+                }
+            });
+
+            // Load availability from Firebase
+            async function loadAvailability() {
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) return;
+
+                    const doc = await db.collection('availability').doc(user.uid).get();
+                    if (doc.exists && doc.data().schedule) {
+                        availability = doc.data().schedule;
+                        originalAvailability = JSON.parse(JSON.stringify(availability));
+                    }
+                    renderAvailabilityGrid();
+                } catch (error) {
+                    console.error('Error loading availability:', error);
+                }
+            }
+
+            // Initialize availability on auth state change
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    loadAvailability();
+                }
+            });
+
             renderAvailabilityGrid();
+
+            // ==================
+            // BLOCKED TIMES (Holidays, etc.)
+            // ==================
+            let blockedTimes = []; // Array of { id, date, startTime, endTime, allDay, reason }
+
+            function formatDateDisplay(dateStr) {
+                const date = new Date(dateStr + 'T00:00:00');
+                return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function renderBlockedTimesList() {
+                const container = document.getElementById('blockedTimesList');
+
+                if (blockedTimes.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                // Sort by date
+                const sorted = [...blockedTimes].sort((a, b) => a.date.localeCompare(b.date));
+
+                container.innerHTML = `
+                    <h4 style="font-family: 'Montserrat', sans-serif; margin-bottom: 12px; padding-top: 16px; border-top: 1px solid #eee;">Blocked Times</h4>
+                    <div class="blocked-times-list">
+                        ${sorted.map(block => `
+                            <div class="blocked-time-item" data-id="${block.id}">
+                                <div class="blocked-time-info">
+                                    <strong>${formatDateDisplay(block.date)}</strong>
+                                    <span class="blocked-time-range">
+                                        ${block.allDay ? 'All day' : `${formatTimeDisplay(block.startTime)} - ${formatTimeDisplay(block.endTime)}`}
+                                    </span>
+                                    ${block.reason ? `<span class="blocked-time-reason">${block.reason}</span>` : ''}
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-blocked-time" data-id="${block.id}">Remove</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Add remove handlers
+                container.querySelectorAll('.remove-blocked-time').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        removeBlockedTime(id);
+                    });
+                });
+            }
+
+            // Toggle time inputs based on all-day checkbox
+            document.getElementById('blockAllDay').addEventListener('change', function() {
+                const disabled = this.checked;
+                document.getElementById('blockStartTime').disabled = disabled;
+                document.getElementById('blockEndTime').disabled = disabled;
+            });
+
+            // Add blocked time
+            document.getElementById('addBlockedTime').addEventListener('click', async function() {
+                const date = document.getElementById('blockDate').value;
+                const allDay = document.getElementById('blockAllDay').checked;
+                const startTime = document.getElementById('blockStartTime').value;
+                const endTime = document.getElementById('blockEndTime').value;
+                const reason = document.getElementById('blockReason').value.trim();
+
+                if (!date) {
+                    showToast('Please select a date', 'error');
+                    return;
+                }
+
+                if (!allDay && startTime >= endTime) {
+                    showToast('End time must be after start time', 'error');
+                    return;
+                }
+
+                const block = {
+                    id: Date.now().toString(),
+                    date,
+                    startTime: allDay ? null : startTime,
+                    endTime: allDay ? null : endTime,
+                    allDay,
+                    reason
+                };
+
+                blockedTimes.push(block);
+                await saveBlockedTimes();
+                renderBlockedTimesList();
+
+                // Reset form
+                document.getElementById('blockDate').value = '';
+                document.getElementById('blockAllDay').checked = false;
+                document.getElementById('blockStartTime').disabled = false;
+                document.getElementById('blockEndTime').disabled = false;
+                document.getElementById('blockStartTime').value = '09:00';
+                document.getElementById('blockEndTime').value = '17:00';
+                document.getElementById('blockReason').value = '';
+
+                showToast(`Blocked ${formatDateDisplay(date)}${reason ? ` (${reason})` : ''}`, 'success');
+            });
+
+            async function removeBlockedTime(id) {
+                blockedTimes = blockedTimes.filter(b => b.id !== id);
+                await saveBlockedTimes();
+                renderBlockedTimesList();
+                showToast('Blocked time removed', 'success');
+            }
+
+            async function saveBlockedTimes() {
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) return;
+
+                    await db.collection('availability').doc(user.uid).set({
+                        blockedTimes: blockedTimes
+                    }, { merge: true });
+                } catch (error) {
+                    console.error('Error saving blocked times:', error);
+                    showToast('Failed to save blocked times', 'error');
+                }
+            }
+
+            async function loadBlockedTimes() {
+                try {
+                    const user = firebase.auth().currentUser;
+                    if (!user) return;
+
+                    const doc = await db.collection('availability').doc(user.uid).get();
+                    if (doc.exists && doc.data().blockedTimes) {
+                        blockedTimes = doc.data().blockedTimes;
+                        renderBlockedTimesList();
+                    }
+                } catch (error) {
+                    console.error('Error loading blocked times:', error);
+                }
+            }
+
+            // Update auth listener to also load blocked times
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    loadBlockedTimes();
+                }
+            });
+
+            // Set minimum date to today
+            document.getElementById('blockDate').min = new Date().toISOString().split('T')[0];
 
             // ==================
             // CALENDAR (Monday-Friday only)
