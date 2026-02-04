@@ -92,19 +92,19 @@
 
                 <div class="dashboard-content">
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card clickable" onclick="navigateToSection('clients')">
                             <div class="stat-value" id="statClients">0</div>
                             <div class="stat-label">Active Clients</div>
                         </div>
-                        <div class="stat-card accent">
+                        <div class="stat-card accent clickable" onclick="navigateToSection('calendar')">
                             <div class="stat-value" id="statBookingsToday">0</div>
                             <div class="stat-label">Sessions Today</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card clickable" onclick="navigateToSection('calendar')">
                             <div class="stat-value" id="statBookingsWeek">0</div>
                             <div class="stat-label">This Week</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card clickable" onclick="navigateToSection('calendar')">
                             <div class="stat-value" id="statUpcoming">0</div>
                             <div class="stat-label">Upcoming</div>
                         </div>
@@ -760,8 +760,14 @@
                 try {
                     const snapshot = await db.collection('users').where('role', '==', 'client').get();
                     clients = [];
+                    const seenEmails = new Set();
                     snapshot.forEach(doc => {
-                        clients.push({ id: doc.id, ...doc.data() });
+                        const data = doc.data();
+                        // Deduplicate by email - keep the first one found (usually the older one)
+                        if (!seenEmails.has(data.email)) {
+                            seenEmails.add(data.email);
+                            clients.push({ id: doc.id, ...data });
+                        }
                     });
                     renderClientList();
                     updateStats();
@@ -1327,6 +1333,19 @@
                         });
                         showToast('Client updated successfully');
                     } else {
+                        // Check if a client with this email already exists
+                        const existingClients = await db.collection('users')
+                            .where('email', '==', email)
+                            .where('role', '==', 'client')
+                            .get();
+
+                        if (!existingClients.empty) {
+                            showToast('A client with this email already exists', 'error');
+                            saveBtn.disabled = false;
+                            saveBtn.textContent = 'Create Client';
+                            return;
+                        }
+
                         // Try Cloud Function first (creates Auth user + Firestore doc)
                         let cloudFunctionWorked = false;
 
@@ -1533,6 +1552,18 @@
             document.getElementById('sidebarToggle').addEventListener('click', function() {
                 document.getElementById('sidebar').classList.toggle('open');
             });
+
+            // Navigate to section from stat cards
+            function navigateToSection(section) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
+                document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('section-' + section).classList.add('active');
+
+                if (section === 'calendar') renderCalendar();
+                else if (section === 'availability') renderAvailabilityGrid();
+                else if (section === 'clients') loadClients();
+            }
 
             // ==================
             // AVAILABILITY
