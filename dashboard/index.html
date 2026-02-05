@@ -545,6 +545,255 @@
             line-height: 1.6;
         }
 
+        /* Macro Calculator Styles */
+        .macro-calculator {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .macro-calc-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #b33a47 100%);
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .macro-calc-header:hover {
+            background: linear-gradient(135deg, #7a232d 0%, #9e323e 100%);
+        }
+
+        .macro-calc-header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .macro-calc-header h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .macro-calc-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 4px 0 0 0;
+        }
+
+        .macro-calc-toggle {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .macro-calc-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .macro-calc-body {
+            padding: 24px;
+            display: none;
+        }
+
+        .macro-calc-body.open {
+            display: block;
+        }
+
+        .macro-calc-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .macro-calc-info svg {
+            color: var(--info-color);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .macro-calc-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .macro-calc-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .macro-form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .macro-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .macro-form-group label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+
+        .macro-form-group input,
+        .macro-form-group select {
+            padding: 12px 14px;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .macro-form-group input:focus,
+        .macro-form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(153, 49, 49, 0.1);
+        }
+
+        .macro-form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .macro-calc-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .macro-calc-btn:hover {
+            background: #7a232d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(153, 49, 49, 0.3);
+        }
+
+        .macro-results {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .macro-results.show {
+            display: block;
+        }
+
+        .macro-results-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .macro-results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .macro-result-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            transition: all 0.2s ease;
+        }
+
+        .macro-result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .macro-result-card.calories {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #b33a47 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .macro-result-card.protein {
+            border-color: #e74c3c;
+        }
+
+        .macro-result-card.carbs {
+            border-color: #f39c12;
+        }
+
+        .macro-result-card.fat {
+            border-color: #3498db;
+        }
+
+        .macro-result-value {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .macro-result-card.protein .macro-result-value {
+            color: #e74c3c;
+        }
+
+        .macro-result-card.carbs .macro-result-value {
+            color: #f39c12;
+        }
+
+        .macro-result-card.fat .macro-result-value {
+            color: #3498db;
+        }
+
+        .macro-result-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .macro-result-card.calories .macro-result-label {
+            opacity: 0.9;
+        }
+
+        .deficit-options {
+            display: none;
+        }
+
+        .deficit-options.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .calendar-week-view {
                 grid-template-columns: repeat(7, 1fr);
@@ -603,6 +852,26 @@
             .banked-sessions-notice {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .macro-form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .macro-results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .macro-calc-header {
+                padding: 16px 20px;
+            }
+
+            .macro-calc-body {
+                padding: 20px;
+            }
+
+            .macro-result-value {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -1065,6 +1334,124 @@
                 </div>
             </div>
         </section>
+
+        <!-- Macro Calculator -->
+        <div class="macro-calculator">
+            <div class="macro-calc-header" onclick="toggleMacroCalculator()">
+                <div class="macro-calc-header-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                        <line x1="8" y1="6" x2="16" y2="6"></line>
+                        <line x1="8" y1="10" x2="16" y2="10"></line>
+                        <line x1="8" y1="14" x2="12" y2="14"></line>
+                        <line x1="8" y1="18" x2="12" y2="18"></line>
+                    </svg>
+                    <div>
+                        <h3>Macro Calculator</h3>
+                        <p>Calculate your daily calories and macros</p>
+                    </div>
+                </div>
+                <span class="macro-calc-toggle" id="macroToggleIcon">▼</span>
+            </div>
+            <div class="macro-calc-body" id="macroCalcBody">
+                <div class="macro-calc-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p>This calculator uses the <strong>Mifflin-St Jeor Equation</strong>, one of the most accurate formulas for estimating your daily calorie needs. Results are personalised based on your body stats and activity level.</p>
+                </div>
+
+                <div class="macro-calc-form">
+                    <div class="macro-form-row">
+                        <div class="macro-form-group">
+                            <label for="macroGender">Gender</label>
+                            <select id="macroGender">
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="macro-form-group">
+                            <label for="macroAge">Age</label>
+                            <input type="number" id="macroAge" placeholder="e.g. 25" min="15" max="100">
+                        </div>
+                    </div>
+
+                    <div class="macro-form-row">
+                        <div class="macro-form-group">
+                            <label for="macroWeight">Weight (kg)</label>
+                            <input type="number" id="macroWeight" placeholder="e.g. 70" min="30" max="300" step="0.1">
+                        </div>
+                        <div class="macro-form-group">
+                            <label for="macroHeight">Height (cm)</label>
+                            <input type="number" id="macroHeight" placeholder="e.g. 175" min="100" max="250">
+                        </div>
+                    </div>
+
+                    <div class="macro-form-row">
+                        <div class="macro-form-group">
+                            <label for="macroActivity">Activity Level</label>
+                            <select id="macroActivity">
+                                <option value="">Select activity level</option>
+                                <option value="light">Light (1-2 days/week)</option>
+                                <option value="moderate">Moderate (3-5 days/week)</option>
+                                <option value="high">High (6-7 days/week)</option>
+                            </select>
+                        </div>
+                        <div class="macro-form-group">
+                            <label for="macroGoal">Your Goal</label>
+                            <select id="macroGoal" onchange="toggleDeficitOptions()">
+                                <option value="">Select your goal</option>
+                                <option value="lose">Lose Weight</option>
+                                <option value="build">Build Muscle</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="macro-form-row deficit-options" id="deficitOptions">
+                        <div class="macro-form-group full-width">
+                            <label for="macroDeficit">Calorie Deficit Level</label>
+                            <select id="macroDeficit">
+                                <option value="light">Light (-15%) - Sustainable, slower results</option>
+                                <option value="moderate">Moderate (-20%) - Balanced approach</option>
+                                <option value="harsh">Harsh (-30%) - Aggressive, faster results</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" class="macro-calc-btn" onclick="calculateMacros()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        Calculate My Macros
+                    </button>
+                </div>
+
+                <div class="macro-results" id="macroResults">
+                    <h4 class="macro-results-title">Your Daily Targets</h4>
+                    <div class="macro-results-grid">
+                        <div class="macro-result-card calories">
+                            <div class="macro-result-value" id="resultCalories">-</div>
+                            <div class="macro-result-label">Calories</div>
+                        </div>
+                        <div class="macro-result-card protein">
+                            <div class="macro-result-value" id="resultProtein">-</div>
+                            <div class="macro-result-label">Protein (g)</div>
+                        </div>
+                        <div class="macro-result-card carbs">
+                            <div class="macro-result-value" id="resultCarbs">-</div>
+                            <div class="macro-result-label">Carbs (g)</div>
+                        </div>
+                        <div class="macro-result-card fat">
+                            <div class="macro-result-value" id="resultFat">-</div>
+                            <div class="macro-result-label">Fat (g)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Footer Actions -->
         <div class="dashboard-footer-actions">
@@ -1893,6 +2280,109 @@
 
     <script src="../js/firebase-config.js"></script>
     <script>
+        // =============================================
+        // MACRO CALCULATOR FUNCTIONS
+        // Using the Mifflin-St Jeor Equation
+        // =============================================
+
+        function toggleMacroCalculator() {
+            const body = document.getElementById('macroCalcBody');
+            const icon = document.getElementById('macroToggleIcon');
+            body.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        function toggleDeficitOptions() {
+            const goal = document.getElementById('macroGoal').value;
+            const deficitOptions = document.getElementById('deficitOptions');
+
+            if (goal === 'lose') {
+                deficitOptions.classList.add('show');
+            } else {
+                deficitOptions.classList.remove('show');
+            }
+        }
+
+        function calculateMacros() {
+            // Get input values
+            const gender = document.getElementById('macroGender').value;
+            const age = parseInt(document.getElementById('macroAge').value);
+            const weight = parseFloat(document.getElementById('macroWeight').value);
+            const height = parseFloat(document.getElementById('macroHeight').value);
+            const activity = document.getElementById('macroActivity').value;
+            const goal = document.getElementById('macroGoal').value;
+            const deficit = document.getElementById('macroDeficit').value;
+
+            // Validation
+            if (!gender || !age || !weight || !height || !activity || !goal) {
+                alert('Please fill in all fields to calculate your macros.');
+                return;
+            }
+
+            // Step 1: Calculate BMR using Mifflin-St Jeor Equation
+            let bmr;
+            if (gender === 'male') {
+                // Men: BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age) + 5
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            } else {
+                // Women: BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age) - 161
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            }
+
+            // Step 2: Calculate TDEE (Total Daily Energy Expenditure)
+            const activityMultipliers = {
+                'light': 1.375,      // Light exercise (1-2 days/week)
+                'moderate': 1.55,    // Moderate exercise (3-5 days/week)
+                'high': 1.725        // Heavy exercise (6-7 days/week)
+            };
+
+            let tdee = bmr * activityMultipliers[activity];
+
+            // Step 3: Adjust for goal
+            let targetCalories;
+            if (goal === 'lose') {
+                // Apply deficit based on selection
+                const deficitMultipliers = {
+                    'light': 0.85,      // -15% deficit
+                    'moderate': 0.80,   // -20% deficit
+                    'harsh': 0.70       // -30% deficit
+                };
+                targetCalories = tdee * deficitMultipliers[deficit];
+            } else {
+                // Build muscle: +10% surplus
+                targetCalories = tdee * 1.10;
+            }
+
+            // Step 4: Calculate macros
+            // Protein: 2g per kg of body weight
+            const proteinGrams = Math.round(weight * 2);
+            const proteinCalories = proteinGrams * 4;
+
+            // Fat: 25% of total calories
+            const fatCalories = targetCalories * 0.25;
+            const fatGrams = Math.round(fatCalories / 9);
+
+            // Carbs: Remaining calories
+            const carbCalories = targetCalories - proteinCalories - fatCalories;
+            const carbGrams = Math.round(carbCalories / 4);
+
+            // Display results
+            document.getElementById('resultCalories').textContent = Math.round(targetCalories);
+            document.getElementById('resultProtein').textContent = proteinGrams + 'g';
+            document.getElementById('resultCarbs').textContent = carbGrams + 'g';
+            document.getElementById('resultFat').textContent = fatGrams + 'g';
+
+            // Show results section
+            document.getElementById('macroResults').classList.add('show');
+
+            // Smooth scroll to results
+            document.getElementById('macroResults').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // =============================================
+        // END MACRO CALCULATOR FUNCTIONS
+        // =============================================
+
         document.addEventListener('DOMContentLoaded', function() {
             const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             let currentUserId = null;
