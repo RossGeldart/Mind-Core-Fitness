@@ -1,13 +1,12 @@
 {
-  "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/login/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
@@ -27,6 +26,10 @@
       "destination": "/login/index.html"
     },
     {
+      "source": "/login/",
+      "destination": "/login/index.html"
+    },
+    {
       "source": "/login/dashboard",
       "destination": "/login/index.html"
     },
@@ -43,7 +46,14 @@
       "destination": "/login/index.html"
     },
     {
-      "source": "/login/(.*)",
+      "source": "/login/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": ".*text/html.*"
+        }
+      ],
       "destination": "/login/index.html"
     }
   ],
@@ -52,11 +62,6 @@
       "source": "/admin",
       "destination": "/login",
       "permanent": false
-    },
-    {
-      "source": "/:path*.html",
-      "destination": "/:path*",
-      "permanent": true
     },
     {
       "source": "/quick",
