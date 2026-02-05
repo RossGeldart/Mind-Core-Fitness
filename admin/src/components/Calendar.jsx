@@ -320,6 +320,108 @@ export default function Calendar() {
     }
   };
 
+  // Repeat current week's sessions across all weeks in client's block
+  const handleRepeatWeekly = async () => {
+    if (!selectedClient) return;
+
+    const clientStart = selectedClient.startDate?.toDate ? selectedClient.startDate.toDate() : new Date(selectedClient.startDate);
+    const clientEnd = selectedClient.endDate?.toDate ? selectedClient.endDate.toDate() : new Date(selectedClient.endDate);
+
+    // Get current week's sessions for this client
+    const currentWeekSessions = sessions.filter(s => {
+      if (s.clientId !== selectedClient.id) return false;
+      return weekDates.some(d => formatDateKey(d) === s.date);
+    });
+
+    if (currentWeekSessions.length === 0) {
+      alert('No sessions in current week to repeat. Book some sessions first, then use this button.');
+      return;
+    }
+
+    // Calculate how many weeks in the block
+    const totalWeeks = selectedClient.weeksInBlock || Math.ceil((clientEnd - clientStart) / (7 * 24 * 60 * 60 * 1000));
+
+    // Calculate total sessions that would be created
+    const sessionsPerWeek = currentWeekSessions.length;
+    const existingClientSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
+    const newSessionsNeeded = sessionsPerWeek * totalWeeks - existingClientSessions;
+
+    if (existingClientSessions + newSessionsNeeded > selectedClient.totalSessions) {
+      alert(`This would create ${sessionsPerWeek * totalWeeks} total sessions, but client only has ${selectedClient.totalSessions} sessions in their package.`);
+      return;
+    }
+
+    if (!window.confirm(`This will copy this week's ${sessionsPerWeek} session(s) to all ${totalWeeks} weeks.\n\nContinue?`)) {
+      return;
+    }
+
+    try {
+      const newSessions = [];
+
+      // Get the day of week (0-4 for Mon-Fri) and time for each current session
+      const sessionPatterns = currentWeekSessions.map(s => {
+        const sessionDate = new Date(s.date);
+        const dayOfWeek = sessionDate.getDay(); // 0=Sun, 1=Mon, etc.
+        return { dayOfWeek, time: s.time };
+      });
+
+      // For each week in the block
+      for (let week = 0; week < totalWeeks; week++) {
+        const weekStartDate = new Date(clientStart);
+        weekStartDate.setDate(weekStartDate.getDate() + (week * 7));
+
+        // Get the Monday of that week
+        const monday = new Date(weekStartDate);
+        const day = monday.getDay();
+        const diff = monday.getDate() - day + (day === 0 ? -6 : 1);
+        monday.setDate(diff);
+
+        // For each session pattern
+        for (const pattern of sessionPatterns) {
+          // Calculate the date for this session
+          const sessionDate = new Date(monday);
+          const daysToAdd = pattern.dayOfWeek === 0 ? 6 : pattern.dayOfWeek - 1; // Convert Sun=0 to Mon=0
+          sessionDate.setDate(monday.getDate() + daysToAdd);
+
+          const dateKey = formatDateKey(sessionDate);
+
+          // Skip if session already exists at this slot
+          if (sessions.some(s => s.clientId === selectedClient.id && s.date === dateKey && s.time === pattern.time)) {
+            continue;
+          }
+
+          // Skip if outside client's block
+          if (sessionDate < clientStart || sessionDate > clientEnd) {
+            continue;
+          }
+
+          // Skip holidays
+          if (holidays.some(h => h.date === dateKey)) {
+            continue;
+          }
+
+          const sessionData = {
+            clientId: selectedClient.id,
+            clientName: selectedClient.name,
+            date: dateKey,
+            time: pattern.time,
+            duration: selectedClient.sessionDuration || 45,
+            createdAt: Timestamp.now()
+          };
+
+          const docRef = await addDoc(collection(db, 'sessions'), sessionData);
+          newSessions.push({ id: docRef.id, ...sessionData });
+        }
+      }
+
+      setSessions([...sessions, ...newSessions]);
+      alert(`Created ${newSessions.length} new sessions across all weeks!`);
+    } catch (error) {
+      console.error('Error repeating weekly:', error);
+      alert('Failed to repeat sessions');
+    }
+  };
+
   const handleAddHoliday = async () => {
     if (!holidayDate) return;
 
@@ -380,11 +482,6 @@ export default function Calendar() {
               <strong>{selectedClient.name}</strong>
               <span>{selectedClient.sessionDuration || 45}min • {getSessionsRemaining(selectedClient)}/{selectedClient.totalSessions} remaining</span>
               <span className="booked-info">{getBookedSessionsCount(selectedClient.id)} booked</span>
-              {getClientDateInfo() && (
-                <span className="block-info">
-                  Week {getClientDateInfo().weekNumber} of {getClientDateInfo().totalWeeks}
-                </span>
-              )}
             </div>
             <button onClick={() => setSelectedClient(null)}>Change</button>
           </div>
@@ -395,18 +492,13 @@ export default function Calendar() {
         )}
       </div>
 
-      {/* Client Block Navigation */}
-      {selectedClient && getClientDateInfo() && (
-        <div className="block-nav">
-          <button onClick={goToClientStart}>
-            ← Start ({getClientDateInfo().startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})
+      {/* Repeat Weekly Button */}
+      {selectedClient && (
+        <div className="repeat-weekly-section">
+          <button className="repeat-weekly-btn" onClick={handleRepeatWeekly}>
+            Repeat This Week's Schedule For All Weeks
           </button>
-          <span className="block-range">
-            {getClientDateInfo().isWithinBlock ? '✓ Within block' : '⚠ Outside block'}
-          </span>
-          <button onClick={goToClientEnd}>
-            End ({getClientDateInfo().endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}) →
-          </button>
+          <span className="repeat-hint">Copies current week's sessions to all weeks in block</span>
         </div>
       )}
 
