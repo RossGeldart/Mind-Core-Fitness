@@ -833,15 +833,25 @@
             }
 
             // Check authentication
-            auth.onAuthStateChanged(async (user) => {
+            // Use isRedirecting flag and unsubscribe pattern to prevent iOS credential manager loops
+            let isRedirecting = false;
+            const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+                if (isRedirecting) return; // Already redirecting, ignore
+
                 if (!user) {
-                    window.location.href = '/dashboard/login.html';
+                    isRedirecting = true;
+                    unsubscribeAuth();
+                    window.location.replace('/dashboard/login.html');
                     return;
                 }
 
                 const role = await getUserRole(user.uid);
+                if (isRedirecting) return; // Check again after async call
+
                 if (role !== 'admin') {
-                    window.location.href = '/dashboard/index.html';
+                    isRedirecting = true;
+                    unsubscribeAuth();
+                    window.location.replace('/dashboard/index.html');
                     return;
                 }
 

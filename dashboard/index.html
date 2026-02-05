@@ -895,6 +895,9 @@
 
     <!-- Early auth check to prevent dashboard flash for unauthenticated users -->
     <script>
+        // Global flag to prevent redirect loops (shared with main script)
+        window.isRedirecting = false;
+
         (function() {
             const firebaseConfig = {
                 apiKey: "AIzaSyA-9s2ihbcFb6C_kvL4hPR3HVgiHPPF2mw",
@@ -914,14 +917,22 @@
             const auth = firebase.auth();
 
             // Single auth state check - redirect immediately if not logged in
-            auth.onAuthStateChanged(function(user) {
+            // Use unsubscribe pattern to prevent multiple triggers from iOS credential manager
+            const unsubscribeEarlyAuth = auth.onAuthStateChanged(function(user) {
+                if (window.isRedirecting) return; // Already redirecting, ignore
+
                 if (!user) {
                     // Not logged in - redirect to login immediately before body renders
+                    window.isRedirecting = true;
+                    unsubscribeEarlyAuth();
                     window.location.replace('/dashboard/login.html');
                 }
                 // If user exists, the main script will handle showing the page
             }, function(error) {
+                if (window.isRedirecting) return;
                 // On error, redirect to login
+                window.isRedirecting = true;
+                unsubscribeEarlyAuth();
                 window.location.replace('/dashboard/login.html');
             });
         })();
@@ -2469,10 +2480,15 @@
             }
 
             // Check authentication
-            auth.onAuthStateChanged(async (user) => {
+            // Use unsubscribe pattern to prevent multiple triggers from iOS credential manager
+            const unsubscribeMainAuth = auth.onAuthStateChanged(async (user) => {
+                if (window.isRedirecting) return; // Already redirecting, ignore
+
                 if (!user) {
                     // Not logged in, redirect to login
-                    window.location.href = '/dashboard/login.html';
+                    window.isRedirecting = true;
+                    unsubscribeMainAuth();
+                    window.location.replace('/dashboard/login.html');
                     return;
                 }
 
@@ -2480,8 +2496,12 @@
 
                 // Check if admin - redirect to admin dashboard
                 const role = await getUserRole(user.uid);
+                if (window.isRedirecting) return; // Check again after async call
+
                 if (role === 'admin') {
-                    window.location.href = '/admin/index.html';
+                    window.isRedirecting = true;
+                    unsubscribeMainAuth();
+                    window.location.replace('/admin/index.html');
                     return;
                 }
 
