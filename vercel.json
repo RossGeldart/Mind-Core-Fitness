@@ -27,7 +27,15 @@
       "destination": "/login/index.html"
     },
     {
-      "source": "/login/:path*",
+      "source": "/login/dashboard",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/calendar",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/clients",
       "destination": "/login/index.html"
     }
   ],
