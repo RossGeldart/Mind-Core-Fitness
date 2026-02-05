@@ -36,9 +36,13 @@ export default function AddClientForm({ onClose, onClientAdded }) {
       if (!isNaN(weeks) && weeks > 0) {
         const end = new Date(start);
         end.setDate(end.getDate() + (weeks * 7));
+        // Use local date format to avoid timezone issues
+        const year = end.getFullYear();
+        const month = (end.getMonth() + 1).toString().padStart(2, '0');
+        const day = end.getDate().toString().padStart(2, '0');
         setFormData(prev => ({
           ...prev,
-          endDate: end.toISOString().split('T')[0]
+          endDate: `${year}-${month}-${day}`
         }));
       }
     }
