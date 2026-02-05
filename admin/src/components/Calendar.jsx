@@ -341,81 +341,87 @@ export default function Calendar() {
     // Calculate how many weeks in the block
     const totalWeeks = selectedClient.weeksInBlock || Math.ceil((clientEnd - clientStart) / (7 * 24 * 60 * 60 * 1000));
 
-    // Calculate total sessions that would be created
-    const sessionsPerWeek = currentWeekSessions.length;
-    const existingClientSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
-    const newSessionsNeeded = sessionsPerWeek * totalWeeks - existingClientSessions;
+    // Get the day of week and time for each current session
+    const sessionPatterns = currentWeekSessions.map(s => {
+      const sessionDate = new Date(s.date);
+      const dayOfWeek = sessionDate.getDay(); // 0=Sun, 1=Mon, etc.
+      return { dayOfWeek, time: s.time };
+    });
 
-    if (existingClientSessions + newSessionsNeeded > selectedClient.totalSessions) {
-      alert(`This would create ${sessionsPerWeek * totalWeeks} total sessions, but client only has ${selectedClient.totalSessions} sessions in their package.`);
+    // First pass: count how many sessions would actually be created
+    let sessionsToCreate = [];
+    const existingClientSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
+
+    for (let week = 0; week < totalWeeks; week++) {
+      const weekStartDate = new Date(clientStart);
+      weekStartDate.setDate(weekStartDate.getDate() + (week * 7));
+
+      const monday = new Date(weekStartDate);
+      const day = monday.getDay();
+      const diff = monday.getDate() - day + (day === 0 ? -6 : 1);
+      monday.setDate(diff);
+
+      for (const pattern of sessionPatterns) {
+        const sessionDate = new Date(monday);
+        const daysToAdd = pattern.dayOfWeek === 0 ? 6 : pattern.dayOfWeek - 1;
+        sessionDate.setDate(monday.getDate() + daysToAdd);
+
+        const dateKey = formatDateKey(sessionDate);
+
+        // Skip if session already exists
+        if (sessions.some(s => s.clientId === selectedClient.id && s.date === dateKey && s.time === pattern.time)) {
+          continue;
+        }
+
+        // Skip if outside client's block
+        if (sessionDate < clientStart || sessionDate > clientEnd) {
+          continue;
+        }
+
+        // Skip holidays
+        if (holidays.some(h => h.date === dateKey)) {
+          continue;
+        }
+
+        sessionsToCreate.push({ dateKey, time: pattern.time, sessionDate });
+      }
+    }
+
+    // Check if this would exceed the package
+    const totalAfterCreation = existingClientSessions + sessionsToCreate.length;
+    if (totalAfterCreation > selectedClient.totalSessions) {
+      alert(`This would create ${sessionsToCreate.length} new sessions (${totalAfterCreation} total), but client only has ${selectedClient.totalSessions} sessions in their package.\n\nYou can still book ${selectedClient.totalSessions - existingClientSessions} more sessions.`);
       return;
     }
 
-    if (!window.confirm(`This will copy this week's ${sessionsPerWeek} session(s) to all ${totalWeeks} weeks.\n\nContinue?`)) {
+    if (sessionsToCreate.length === 0) {
+      alert('All weeks already have sessions booked for this pattern.');
+      return;
+    }
+
+    if (!window.confirm(`This will create ${sessionsToCreate.length} new sessions across the block.\n\n(${existingClientSessions} existing + ${sessionsToCreate.length} new = ${totalAfterCreation} total)\n\nContinue?`)) {
       return;
     }
 
     try {
       const newSessions = [];
 
-      // Get the day of week (0-4 for Mon-Fri) and time for each current session
-      const sessionPatterns = currentWeekSessions.map(s => {
-        const sessionDate = new Date(s.date);
-        const dayOfWeek = sessionDate.getDay(); // 0=Sun, 1=Mon, etc.
-        return { dayOfWeek, time: s.time };
-      });
+      for (const slot of sessionsToCreate) {
+        const sessionData = {
+          clientId: selectedClient.id,
+          clientName: selectedClient.name,
+          date: slot.dateKey,
+          time: slot.time,
+          duration: selectedClient.sessionDuration || 45,
+          createdAt: Timestamp.now()
+        };
 
-      // For each week in the block
-      for (let week = 0; week < totalWeeks; week++) {
-        const weekStartDate = new Date(clientStart);
-        weekStartDate.setDate(weekStartDate.getDate() + (week * 7));
-
-        // Get the Monday of that week
-        const monday = new Date(weekStartDate);
-        const day = monday.getDay();
-        const diff = monday.getDate() - day + (day === 0 ? -6 : 1);
-        monday.setDate(diff);
-
-        // For each session pattern
-        for (const pattern of sessionPatterns) {
-          // Calculate the date for this session
-          const sessionDate = new Date(monday);
-          const daysToAdd = pattern.dayOfWeek === 0 ? 6 : pattern.dayOfWeek - 1; // Convert Sun=0 to Mon=0
-          sessionDate.setDate(monday.getDate() + daysToAdd);
-
-          const dateKey = formatDateKey(sessionDate);
-
-          // Skip if session already exists at this slot
-          if (sessions.some(s => s.clientId === selectedClient.id && s.date === dateKey && s.time === pattern.time)) {
-            continue;
-          }
-
-          // Skip if outside client's block
-          if (sessionDate < clientStart || sessionDate > clientEnd) {
-            continue;
-          }
-
-          // Skip holidays
-          if (holidays.some(h => h.date === dateKey)) {
-            continue;
-          }
-
-          const sessionData = {
-            clientId: selectedClient.id,
-            clientName: selectedClient.name,
-            date: dateKey,
-            time: pattern.time,
-            duration: selectedClient.sessionDuration || 45,
-            createdAt: Timestamp.now()
-          };
-
-          const docRef = await addDoc(collection(db, 'sessions'), sessionData);
-          newSessions.push({ id: docRef.id, ...sessionData });
-        }
+        const docRef = await addDoc(collection(db, 'sessions'), sessionData);
+        newSessions.push({ id: docRef.id, ...sessionData });
       }
 
       setSessions([...sessions, ...newSessions]);
-      alert(`Created ${newSessions.length} new sessions across all weeks!`);
+      alert(`Created ${newSessions.length} new sessions!`);
     } catch (error) {
       console.error('Error repeating weekly:', error);
       alert('Failed to repeat sessions');
