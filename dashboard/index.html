@@ -913,6 +913,19 @@
     <!-- Content -->
     <div class="client-content">
 
+        <!-- Archived Account Notice -->
+        <div class="archived-notice" id="archivedNotice" style="display: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                <rect x="1" y="3" width="22" height="5"></rect>
+                <line x1="10" y1="12" x2="14" y2="12"></line>
+            </svg>
+            <div class="archived-notice-content">
+                <h3>Your Membership is Currently Inactive</h3>
+                <p>Your training block has ended. Contact Ross to reactivate your membership and continue your fitness journey.</p>
+            </div>
+        </div>
+
         <!-- Overview Section -->
         <section class="client-section active" id="section-overview">
             <div class="block-info" id="blockInfo">
@@ -2513,6 +2526,11 @@
                     // Display banked sessions if any
                     const bankedSessions = userData.bankedSessions || 0;
                     updateBankedSessionsDisplay(bankedSessions);
+
+                    // Show archived notice if account is archived
+                    if (userData.status === 'archived') {
+                        document.getElementById('archivedNotice').style.display = 'flex';
+                    }
 
                     // Onboarding form is now optional - available in Profile tab
                 } else {

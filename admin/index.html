@@ -275,6 +275,27 @@
                 </header>
 
                 <div class="dashboard-content">
+                    <!-- Client Status Tabs -->
+                    <div class="client-status-tabs">
+                        <button class="client-status-tab active" data-status="active" onclick="switchClientTab('active')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                            </svg>
+                            Active Clients
+                            <span class="tab-count" id="activeClientCount">0</span>
+                        </button>
+                        <button class="client-status-tab" data-status="archived" onclick="switchClientTab('archived')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                                <rect x="1" y="3" width="22" height="5"></rect>
+                                <line x1="10" y1="12" x2="14" y2="12"></line>
+                            </svg>
+                            Archived
+                            <span class="tab-count" id="archivedClientCount">0</span>
+                        </button>
+                    </div>
+
                     <div class="dashboard-card">
                         <div class="card-body">
                             <div class="client-list" id="clientList">
@@ -792,6 +813,7 @@
 
             let currentMonth = new Date();
             let clients = [];
+            let currentClientView = 'active'; // 'active' or 'archived'
 
             // Toast notification
             function showToast(message, type = 'success') {
@@ -859,9 +881,11 @@
                         // Deduplicate by email - keep the first one found (usually the older one)
                         if (!seenEmails.has(data.email)) {
                             seenEmails.add(data.email);
-                            clients.push({ id: doc.id, ...data });
+                            // Default status to 'active' if not set
+                            clients.push({ id: doc.id, status: 'active', ...data });
                         }
                     });
+                    updateClientTabCounts();
                     renderClientList();
                     updateStats();
                 } catch (error) {
@@ -870,28 +894,116 @@
                 }
             }
 
+            // Update tab counts
+            function updateClientTabCounts() {
+                const activeCount = clients.filter(c => c.status !== 'archived').length;
+                const archivedCount = clients.filter(c => c.status === 'archived').length;
+                document.getElementById('activeClientCount').textContent = activeCount;
+                document.getElementById('archivedClientCount').textContent = archivedCount;
+            }
+
+            // Switch between Active and Archived tabs
+            window.switchClientTab = function(status) {
+                currentClientView = status;
+                // Update tab UI
+                document.querySelectorAll('.client-status-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.status === status);
+                });
+                renderClientList();
+            };
+
+            // Archive a client
+            window.archiveClient = async function(id) {
+                const client = clients.find(c => c.id === id);
+                if (!client) return;
+
+                if (!confirm(`Are you sure you want to archive ${client.name}?\n\nThey will be moved to the Archived tab and won't appear in your active client list. You can reactivate them at any time.`)) {
+                    return;
+                }
+
+                try {
+                    await db.collection('users').doc(id).update({
+                        status: 'archived',
+                        archivedAt: new Date().toISOString()
+                    });
+                    client.status = 'archived';
+                    updateClientTabCounts();
+                    renderClientList();
+                    updateStats();
+                    showToast(`${client.name} has been archived`, 'success');
+                } catch (error) {
+                    console.error('Error archiving client:', error);
+                    showToast('Failed to archive client', 'error');
+                }
+            };
+
+            // Reactivate an archived client
+            window.reactivateClient = async function(id) {
+                const client = clients.find(c => c.id === id);
+                if (!client) return;
+
+                if (!confirm(`Reactivate ${client.name}?\n\nThey will be moved back to your active clients list.`)) {
+                    return;
+                }
+
+                try {
+                    await db.collection('users').doc(id).update({
+                        status: 'active',
+                        reactivatedAt: new Date().toISOString()
+                    });
+                    client.status = 'active';
+                    updateClientTabCounts();
+                    renderClientList();
+                    updateStats();
+                    showToast(`${client.name} has been reactivated`, 'success');
+                } catch (error) {
+                    console.error('Error reactivating client:', error);
+                    showToast('Failed to reactivate client', 'error');
+                }
+            };
+
             function renderClientList() {
                 const container = document.getElementById('clientList');
 
-                if (clients.length === 0) {
+                // Filter clients based on current view
+                const filteredClients = clients.filter(client => {
+                    if (currentClientView === 'archived') {
+                        return client.status === 'archived';
+                    }
+                    return client.status !== 'archived';
+                });
+
+                if (filteredClients.length === 0) {
+                    const isArchived = currentClientView === 'archived';
                     container.innerHTML = `
-                        <div class="empty-state">
+                        <div class="empty-state ${isArchived ? 'archived-empty' : ''}">
                             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
+                                ${isArchived ? `
+                                    <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                                    <rect x="1" y="3" width="22" height="5"></rect>
+                                    <line x1="10" y1="12" x2="14" y2="12"></line>
+                                ` : `
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                `}
                             </svg>
-                            <h4>No clients yet</h4>
-                            <p>Add your first client to get started</p>
+                            <h4>${isArchived ? 'No archived clients' : 'No clients yet'}</h4>
+                            <p>${isArchived ? 'Archived clients will appear here' : 'Add your first client to get started'}</p>
                         </div>
                     `;
                     return;
                 }
 
-                container.innerHTML = clients.map(client => `
-                    <div class="client-item" data-id="${client.id}">
+                const isArchivedView = currentClientView === 'archived';
+
+                container.innerHTML = filteredClients.map(client => `
+                    <div class="client-item ${client.status === 'archived' ? 'archived' : ''}" data-id="${client.id}">
                         <div class="client-avatar">${(client.name || 'C')[0].toUpperCase()}</div>
                         <div class="client-info">
-                            <div class="client-name">${client.name || 'Unknown'}</div>
+                            <div class="client-name">
+                                ${client.name || 'Unknown'}
+                                ${client.status === 'archived' ? '<span class="archived-badge">Archived</span>' : ''}
+                            </div>
                             <div class="client-email">${client.email}</div>
                         </div>
                         <div class="client-meta">
@@ -899,14 +1011,31 @@
                             ${client.blockStartDate || client.blockEndDate ? `<span class="client-end">${client.blockStartDate ? new Date(client.blockStartDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''} - ${client.blockEndDate ? new Date(client.blockEndDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</span>` : ''}
                         </div>
                         <div class="client-actions">
-                            <button class="btn btn-sm btn-primary" onclick="repeatBlock('${client.id}')" title="Extend by 4 weeks with same schedule">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
-                                    <polyline points="23 4 23 10 17 10"></polyline>
-                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                </svg>
-                                Repeat
-                            </button>
-                            <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">Edit</button>
+                            ${isArchivedView ? `
+                                <button class="btn btn-sm btn-reactivate" onclick="reactivateClient('${client.id}')" title="Reactivate client">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                        <polyline points="1 4 1 10 7 10"></polyline>
+                                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                    </svg>
+                                    Reactivate
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">View</button>
+                            ` : `
+                                <button class="btn btn-sm btn-primary" onclick="repeatBlock('${client.id}')" title="Extend by 4 weeks with same schedule">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                    </svg>
+                                    Repeat
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="editClient('${client.id}')">Edit</button>
+                                <button class="btn btn-sm btn-archive" onclick="archiveClient('${client.id}')" title="Archive client">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                                        <rect x="1" y="3" width="22" height="5"></rect>
+                                    </svg>
+                                </button>
+                            `}
                         </div>
                     </div>
                 `).join('');
