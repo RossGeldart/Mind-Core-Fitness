@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
+import Availability from '../components/Availability';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -130,6 +131,12 @@ export default function Dashboard() {
           >
             Calendar
           </button>
+          <button
+            className={`nav-btn ${activeView === 'availability' ? 'active' : ''}`}
+            onClick={() => setActiveView('availability')}
+          >
+            Slots
+          </button>
         </nav>
         <div className="header-actions">
           <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing}>
@@ -173,6 +180,15 @@ export default function Dashboard() {
               <h2>Calendar</h2>
             </div>
             <Calendar />
+          </div>
+        )}
+
+        {activeView === 'availability' && (
+          <div className="availability-view">
+            <div className="view-header">
+              <h2>Available Slots</h2>
+            </div>
+            <Availability />
           </div>
         )}
       </main>
