@@ -9,6 +9,7 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     email: '',
     weeksInBlock: '',
     numberOfSessions: '',
+    sessionDuration: '45',
     startDate: '',
     endDate: ''
   });
@@ -51,6 +52,7 @@ export default function AddClientForm({ onClose, onClientAdded }) {
         weeksInBlock: parseInt(formData.weeksInBlock),
         totalSessions: parseInt(formData.numberOfSessions),
         sessionsRemaining: parseInt(formData.numberOfSessions),
+        sessionDuration: parseInt(formData.sessionDuration),
         startDate: Timestamp.fromDate(new Date(formData.startDate)),
         endDate: Timestamp.fromDate(new Date(formData.endDate)),
         status: 'active',
@@ -137,6 +139,20 @@ export default function AddClientForm({ onClose, onClientAdded }) {
           </div>
 
           <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="sessionDuration">Session Duration</label>
+              <select
+                id="sessionDuration"
+                name="sessionDuration"
+                value={formData.sessionDuration}
+                onChange={handleChange}
+                required
+              >
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+              </select>
+            </div>
+
             <div className="form-group">
               <label htmlFor="startDate">Start Date</label>
               <input

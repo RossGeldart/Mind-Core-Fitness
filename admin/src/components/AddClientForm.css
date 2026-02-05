@@ -98,6 +98,22 @@ form {
   border-color: #99313c;
 }
 
+.form-group select {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
+  transition: border-color 0.2s;
+  background: white;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #99313c;
+}
+
 .helper-text {
   font-size: 0.75rem;
   color: #999;

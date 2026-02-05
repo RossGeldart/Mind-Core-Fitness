@@ -1,0 +1,398 @@
+.calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.calendar-loading {
+  padding: 60px;
+  text-align: center;
+  color: #666;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calendar-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #373737;
+  margin: 0;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-nav button,
+.calendar-actions button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-nav button:hover,
+.calendar-actions button:hover {
+  border-color: #99313c;
+  color: #99313c;
+}
+
+.holiday-btn {
+  background: #f5f5f5 !important;
+}
+
+.client-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.client-selector label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.selected-client {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selected-client span:first-child {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #373737;
+}
+
+.selected-client .client-info {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.selected-client button {
+  padding: 6px 12px;
+  border: 1px solid #99313c;
+  background: transparent;
+  color: #99313c;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.select-client-btn {
+  padding: 10px 20px;
+  background: #99313c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.select-client-btn:hover {
+  background: #7a2730;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: flex;
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.time-column {
+  flex-shrink: 0;
+  width: 70px;
+  border-right: 1px solid #e0e0e0;
+  background: #f9f9f9;
+}
+
+.day-column {
+  flex: 1;
+  min-width: 120px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+.day-header {
+  padding: 12px 8px;
+  text-align: center;
+  background: #1a1a1a;
+  color: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.day-header.holiday {
+  background: #d32f2f;
+}
+
+.time-column .day-header {
+  background: #333;
+}
+
+.day-name {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.day-date {
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.time-label {
+  height: 20px;
+  padding: 0 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Slots */
+.slot {
+  height: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.slot:hover {
+  background: #f5f5f5;
+}
+
+.slot.outside {
+  background: #f0f0f0;
+  cursor: default;
+}
+
+.slot.outside:hover {
+  background: #f0f0f0;
+}
+
+.slot.holiday {
+  background: #ffebee;
+  cursor: default;
+}
+
+.slot.booked {
+  background: #99313c;
+  cursor: pointer;
+}
+
+.slot.booked:hover {
+  background: #7a2730;
+}
+
+.slot.available {
+  background: #e8f5e9;
+}
+
+.slot.available:hover {
+  background: #c8e6c9;
+}
+
+.slot.unavailable {
+  background: #fff3e0;
+  cursor: not-allowed;
+}
+
+.session-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  height: 100%;
+  color: white;
+  font-size: 0.7rem;
+}
+
+.session-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-duration {
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* Modal Overrides */
+.client-picker {
+  max-width: 400px;
+}
+
+.client-list-picker {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.client-option {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.client-option:hover {
+  background: #f9f9f9;
+}
+
+.client-option:last-child {
+  border-bottom: none;
+}
+
+.client-option .client-name {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #373737;
+  margin-bottom: 4px;
+}
+
+.client-option .client-details {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.no-clients,
+.no-holidays {
+  padding: 24px;
+  text-align: center;
+  color: #999;
+}
+
+/* Holiday Modal */
+.holiday-modal {
+  max-width: 400px;
+}
+
+.holiday-form {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.holiday-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.holiday-form button {
+  padding: 10px 16px;
+  background: #99313c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  cursor: pointer;
+}
+
+.holiday-form button:hover {
+  background: #7a2730;
+}
+
+.holiday-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.holiday-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.holiday-item:last-child {
+  border-bottom: none;
+}
+
+.holiday-item span {
+  font-family: 'Roboto', sans-serif;
+  color: #373737;
+}
+
+.holiday-item button {
+  padding: 6px 12px;
+  border: 1px solid #d32f2f;
+  background: transparent;
+  color: #d32f2f;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.holiday-item button:hover {
+  background: #d32f2f;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .client-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selected-client {
+    flex-wrap: wrap;
+  }
+
+  .day-column {
+    min-width: 80px;
+  }
+
+  .session-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
