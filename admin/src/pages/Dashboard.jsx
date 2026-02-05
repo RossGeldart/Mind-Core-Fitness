@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import AddClientForm from '../components/AddClientForm';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import './Dashboard.css';
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState('clients');
-  const [showAddClient, setShowAddClient] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const { currentUser, logout, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -28,9 +25,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleClientAdded = () => {
-    setShowAddClient(false);
-    setRefreshKey(prev => prev + 1);
+  const handleAddClient = () => {
+    navigate('/add-client');
   };
 
   if (loading) {
@@ -74,20 +70,13 @@ export default function Dashboard() {
               <h2>Clients</h2>
               <button
                 className="add-btn"
-                onClick={() => setShowAddClient(true)}
+                onClick={handleAddClient}
               >
                 + Add Client
               </button>
             </div>
 
-            {showAddClient && (
-              <AddClientForm
-                onClose={() => setShowAddClient(false)}
-                onClientAdded={handleClientAdded}
-              />
-            )}
-
-            <ClientList key={refreshKey} />
+            <ClientList />
           </div>
         )}
 
