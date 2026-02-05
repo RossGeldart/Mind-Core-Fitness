@@ -522,6 +522,29 @@
             color: #856404;
         }
 
+        .coming-soon-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 60px 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .coming-soon-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 12px;
+        }
+
+        .coming-soon-content p {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             .calendar-week-view {
                 grid-template-columns: repeat(7, 1fr);
@@ -678,7 +701,21 @@
         <section class="client-section" id="section-book" style="display: none;">
             <h2 style="font-family: 'Montserrat', sans-serif; margin-bottom: 24px;">Book a Session</h2>
 
-            <div class="dashboard-card" style="margin-bottom: 24px;">
+            <!-- Coming Soon Overlay -->
+            <div class="coming-soon-container">
+                <div class="coming-soon-content">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 16px; color: var(--accent-color);">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <h3>Coming Soon</h3>
+                    <p>Online booking will be available shortly. In the meantime, please contact your trainer directly to schedule or reschedule sessions.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-card" style="margin-bottom: 24px; display: none;">
                 <div class="card-header">
                     <h3>Select a Date</h3>
                 </div>
