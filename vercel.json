@@ -39,6 +39,10 @@
       "destination": "/login/index.html"
     },
     {
+      "source": "/login/add-client",
+      "destination": "/login/index.html"
+    },
+    {
       "source": "/login/(.*)",
       "destination": "/login/index.html"
     }
