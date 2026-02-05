@@ -3164,12 +3164,18 @@
                     userBookings = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        // Only include confirmed bookings with future dates
+                        // Only include confirmed bookings with future dates within block period
                         if (data.status !== 'cancelled' && data.date >= todayStr) {
-                            userBookings.push({
-                                id: doc.id,
-                                ...data
-                            });
+                            // Also filter out bookings outside the block period
+                            const isBeforeStart = userBlockStartDate && data.date < userBlockStartDate;
+                            const isAfterEnd = userBlockEndDate && data.date > userBlockEndDate;
+
+                            if (!isBeforeStart && !isAfterEnd) {
+                                userBookings.push({
+                                    id: doc.id,
+                                    ...data
+                                });
+                            }
                         }
                     });
 
