@@ -144,16 +144,19 @@
             const backToLoginFromSetup = document.getElementById('backToLoginFromSetup');
 
             let pendingClientData = null; // Store client data during setup
+            let isRedirecting = false; // Prevent multiple redirect attempts
 
             // Check if user is already logged in
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
+            const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+                if (user && !isRedirecting) {
+                    isRedirecting = true;
+                    unsubscribeAuth(); // Stop listening to prevent further triggers
                     // User is logged in, redirect based on role
                     const role = await getUserRole(user.uid);
                     if (role === 'admin') {
-                        window.location.href = '/admin/index.html';
+                        window.location.replace('/admin/index.html');
                     } else {
-                        window.location.href = '/dashboard/index.html';
+                        window.location.replace('/dashboard/index.html');
                     }
                 }
             });
@@ -161,6 +164,8 @@
             // Login form submit
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                if (isRedirecting) return; // Prevent double submission
 
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
@@ -173,13 +178,16 @@
                     const userCredential = await auth.signInWithEmailAndPassword(email, password);
                     const user = userCredential.user;
 
+                    isRedirecting = true;
+                    unsubscribeAuth(); // Stop auth listener to prevent race condition
+
                     // Get user role and redirect
                     const role = await getUserRole(user.uid);
 
                     if (role === 'admin') {
-                        window.location.href = '/admin/index.html';
+                        window.location.replace('/admin/index.html');
                     } else {
-                        window.location.href = '/dashboard/index.html';
+                        window.location.replace('/dashboard/index.html');
                     }
                 } catch (error) {
                     loginError.style.display = 'block';
@@ -453,8 +461,11 @@
                         displayName: pendingClientData.name
                     });
 
+                    isRedirecting = true;
+                    unsubscribeAuth(); // Stop auth listener
+
                     // Success - redirect to dashboard
-                    window.location.href = '/dashboard/index.html';
+                    window.location.replace('/dashboard/index.html');
 
                 } catch (error) {
                     console.error('Account creation error:', error);
