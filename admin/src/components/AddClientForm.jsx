@@ -69,9 +69,15 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     setLoading(false);
   };
 
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="modal-content">
         <div className="modal-header">
           <h3>Add New Client</h3>
           <button className="close-btn" onClick={onClose}>&times;</button>
