@@ -1648,7 +1648,45 @@
                             totalSessions,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
-                        showToast('Client updated successfully');
+
+                        // Clean up bookings that fall outside the new block period
+                        if (blockStartDate || blockEndDate) {
+                            try {
+                                const bookingsSnapshot = await db.collection('bookings')
+                                    .where('clientId', '==', clientId)
+                                    .get();
+
+                                const batch = db.batch();
+                                let deletedCount = 0;
+
+                                bookingsSnapshot.forEach(doc => {
+                                    const booking = doc.data();
+                                    const bookingDate = booking.date; // ISO string format YYYY-MM-DD
+
+                                    // Check if booking is outside the new block period
+                                    const isBeforeStart = blockStartDate && bookingDate < blockStartDate;
+                                    const isAfterEnd = blockEndDate && bookingDate > blockEndDate;
+
+                                    if (isBeforeStart || isAfterEnd) {
+                                        batch.delete(doc.ref);
+                                        deletedCount++;
+                                    }
+                                });
+
+                                if (deletedCount > 0) {
+                                    await batch.commit();
+                                    console.log(`Cleaned up ${deletedCount} bookings outside new block period`);
+                                    showToast(`Client updated. ${deletedCount} session(s) outside the new block period were removed.`);
+                                } else {
+                                    showToast('Client updated successfully');
+                                }
+                            } catch (cleanupError) {
+                                console.error('Error cleaning up bookings:', cleanupError);
+                                showToast('Client updated successfully');
+                            }
+                        } else {
+                            showToast('Client updated successfully');
+                        }
                     } else {
                         // Check if a client with this email already exists
                         const existingClients = await db.collection('users')
