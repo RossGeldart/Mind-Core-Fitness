@@ -1938,3 +1938,167 @@
         max-height: 300px;
     }
 }
+
+/* ==========================================
+   CLIENT ARCHIVE FEATURE STYLES
+   ========================================== */
+
+/* Client Status Tabs */
+.client-status-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.client-status-tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.client-status-tab:hover {
+    color: var(--text-color);
+}
+
+.client-status-tab.active {
+    background: #ffffff;
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.client-status-tab .tab-count {
+    background: var(--card-border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.client-status-tab.active .tab-count {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+/* Archived Client Styling */
+.client-item.archived {
+    opacity: 0.7;
+    background: #f9f9f9;
+}
+
+.client-item.archived .client-avatar {
+    background: #ccc;
+    color: #888;
+}
+
+.client-item.archived .client-name {
+    color: var(--text-muted);
+}
+
+.client-item.archived .client-meta {
+    opacity: 0.7;
+}
+
+/* Archive/Reactivate Buttons */
+.btn-archive {
+    background: transparent;
+    color: var(--warning-color);
+    border: 1px solid var(--warning-color);
+}
+
+.btn-archive:hover {
+    background: var(--warning-color);
+    color: #ffffff;
+}
+
+.btn-reactivate {
+    background: var(--success-color);
+    color: #ffffff;
+    border: 1px solid var(--success-color);
+}
+
+.btn-reactivate:hover {
+    background: #246b3e;
+    border-color: #246b3e;
+}
+
+/* Archived Badge */
+.archived-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--warning-color);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Empty State for Archived */
+.empty-state.archived-empty svg {
+    stroke: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Client Dashboard - Archived Notice */
+.archived-notice {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.archived-notice svg {
+    flex-shrink: 0;
+}
+
+.archived-notice-content h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.archived-notice-content p {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .client-status-tabs {
+        flex-direction: column;
+    }
+
+    .client-status-tab {
+        justify-content: flex-start;
+        padding: 14px 16px;
+    }
+
+    .archived-notice {
+        flex-direction: column;
+        text-align: center;
+    }
+}
