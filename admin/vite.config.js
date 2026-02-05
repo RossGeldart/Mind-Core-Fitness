@@ -3,9 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/admin/dist/',
+  base: '/login/',
   build: {
-    outDir: 'dist',
+    outDir: '../login',
+    emptyOutDir: true,
     assetsDir: 'assets'
   }
 })

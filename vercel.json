@@ -23,15 +23,16 @@
   ],
   "rewrites": [
     {
-      "source": "/admin",
-      "destination": "/admin/dist/index.html"
-    },
-    {
-      "source": "/admin/dashboard",
-      "destination": "/admin/dist/index.html"
+      "source": "/login/dashboard",
+      "destination": "/login/index.html"
     }
   ],
   "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/login",
+      "permanent": false
+    },
     {
       "source": "/:path*.html",
       "destination": "/:path*",
