@@ -1548,30 +1548,38 @@
                                 showToast(`Client created! Password reset email sent to ${email}`);
                             }
                         } catch (cfError) {
-                            console.log('Cloud Function not available, using fallback:', cfError.message);
+                            console.log('Cloud Function not available:', cfError.message);
                         }
 
                         // Fallback: Create Firestore document only if Cloud Function failed
                         if (!cloudFunctionWorked) {
-                            // Create user document in Firestore
-                            const newUserRef = db.collection('users').doc();
-                            await newUserRef.set({
-                                name,
-                                email,
-                                role: 'client',
-                                blockDuration,
-                                blockStartDate,
-                                blockEndDate,
-                                totalSessions,
-                                sessionsUsed: 0,
-                                selectedDays: state.selectedDays || [],
-                                dayTimes: state.dayTimes || {},
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                needsPasswordSetup: true,
-                                onboardingComplete: false
-                            });
-                            newClientId = newUserRef.id;
-                            showToast(`Client added to database. Note: Deploy Cloud Functions to enable automatic login setup.`, 'warning');
+                            try {
+                                // Create user document in Firestore (requires admin role in Firestore rules)
+                                const newUserRef = db.collection('users').doc();
+                                await newUserRef.set({
+                                    name,
+                                    email,
+                                    role: 'client',
+                                    blockDuration,
+                                    blockStartDate,
+                                    blockEndDate,
+                                    totalSessions,
+                                    sessionsUsed: 0,
+                                    selectedDays: state.selectedDays || [],
+                                    dayTimes: state.dayTimes || {},
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    needsPasswordSetup: true,
+                                    onboardingComplete: false
+                                });
+                                newClientId = newUserRef.id;
+                                showToast(`Client added. Note: Deploy Cloud Functions (firebase deploy --only functions) to enable automatic login emails.`, 'warning');
+                            } catch (firestoreError) {
+                                console.error('Firestore fallback failed:', firestoreError);
+                                if (firestoreError.message.includes('permission')) {
+                                    throw new Error('Please deploy Firestore rules: firebase deploy --only firestore:rules');
+                                }
+                                throw firestoreError;
+                            }
                         }
 
                         // Create initial bookings based on schedule (only for new clients)
