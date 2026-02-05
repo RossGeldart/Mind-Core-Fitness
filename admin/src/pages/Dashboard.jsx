@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import AddClientForm from '../components/AddClientForm';
 import ClientList from '../components/ClientList';
+import Calendar from '../components/Calendar';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -95,10 +96,7 @@ export default function Dashboard() {
             <div className="view-header">
               <h2>Calendar</h2>
             </div>
-            <div className="coming-soon">
-              <p>Calendar view coming in Phase 2</p>
-              <span>Assign clients to days and times here</span>
-            </div>
+            <Calendar />
           </div>
         )}
       </main>

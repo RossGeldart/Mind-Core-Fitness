@@ -58,6 +58,7 @@ export default function ClientList() {
       weeksInBlock: client.weeksInBlock,
       totalSessions: client.totalSessions,
       sessionsRemaining: client.sessionsRemaining,
+      sessionDuration: client.sessionDuration || 45,
       startDate: client.startDate?.toDate?.().toISOString().split('T')[0] || '',
       endDate: client.endDate?.toDate?.().toISOString().split('T')[0] || '',
       status: client.status
@@ -94,6 +95,7 @@ export default function ClientList() {
         weeksInBlock: parseInt(editForm.weeksInBlock),
         totalSessions: parseInt(editForm.totalSessions),
         sessionsRemaining: parseInt(editForm.sessionsRemaining),
+        sessionDuration: parseInt(editForm.sessionDuration),
         startDate: Timestamp.fromDate(new Date(editForm.startDate)),
         endDate: Timestamp.fromDate(new Date(editForm.endDate)),
         status: editForm.status
@@ -107,6 +109,7 @@ export default function ClientList() {
               weeksInBlock: parseInt(editForm.weeksInBlock),
               totalSessions: parseInt(editForm.totalSessions),
               sessionsRemaining: parseInt(editForm.sessionsRemaining),
+              sessionDuration: parseInt(editForm.sessionDuration),
               startDate: Timestamp.fromDate(new Date(editForm.startDate)),
               endDate: Timestamp.fromDate(new Date(editForm.endDate))
             }
@@ -195,6 +198,14 @@ export default function ClientList() {
                   placeholder="Remaining"
                   min="0"
                 />
+                <select
+                  name="sessionDuration"
+                  value={editForm.sessionDuration}
+                  onChange={handleEditChange}
+                >
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                </select>
               </div>
               <div className="edit-row">
                 <input
@@ -243,6 +254,10 @@ export default function ClientList() {
                   <span className="detail-value">
                     {client.sessionsRemaining} / {client.totalSessions} remaining
                   </span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Duration</span>
+                  <span className="detail-value">{client.sessionDuration || 45} min</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Start</span>
