@@ -102,6 +102,61 @@ export default function Calendar() {
     fetchData();
   }, []);
 
+  // When a client is selected, jump to their start date
+  const handleClientSelect = (client) => {
+    setSelectedClient(client);
+    setShowClientPicker(false);
+
+    // Jump to client's start date
+    if (client.startDate) {
+      const startDate = client.startDate.toDate ? client.startDate.toDate() : new Date(client.startDate);
+      setCurrentDate(startDate);
+    }
+    setSelectedDay(null);
+  };
+
+  // Get client's date range info
+  const getClientDateInfo = () => {
+    if (!selectedClient) return null;
+
+    const startDate = selectedClient.startDate?.toDate ? selectedClient.startDate.toDate() : new Date(selectedClient.startDate);
+    const endDate = selectedClient.endDate?.toDate ? selectedClient.endDate.toDate() : new Date(selectedClient.endDate);
+
+    // Calculate which week we're viewing within the client's block
+    const weekStart = weekDates[0];
+    if (!weekStart) return null;
+
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const weekNumber = Math.floor((weekStart - startDate) / msPerWeek) + 1;
+    const totalWeeks = selectedClient.weeksInBlock || Math.ceil((endDate - startDate) / msPerWeek);
+
+    const isWithinBlock = weekStart >= startDate && weekStart <= endDate;
+
+    return {
+      startDate,
+      endDate,
+      weekNumber,
+      totalWeeks,
+      isWithinBlock
+    };
+  };
+
+  const goToClientStart = () => {
+    if (selectedClient?.startDate) {
+      const startDate = selectedClient.startDate.toDate ? selectedClient.startDate.toDate() : new Date(selectedClient.startDate);
+      setCurrentDate(startDate);
+      setSelectedDay(null);
+    }
+  };
+
+  const goToClientEnd = () => {
+    if (selectedClient?.endDate) {
+      const endDate = selectedClient.endDate.toDate ? selectedClient.endDate.toDate() : new Date(selectedClient.endDate);
+      setCurrentDate(endDate);
+      setSelectedDay(null);
+    }
+  };
+
   const fetchData = async () => {
     try {
       const clientsSnapshot = await getDocs(collection(db, 'clients'));
@@ -320,6 +375,11 @@ export default function Calendar() {
             <div className="selected-info">
               <strong>{selectedClient.name}</strong>
               <span>{selectedClient.sessionDuration || 45}min • {selectedClient.sessionsRemaining} left</span>
+              {getClientDateInfo() && (
+                <span className="block-info">
+                  Week {getClientDateInfo().weekNumber} of {getClientDateInfo().totalWeeks}
+                </span>
+              )}
             </div>
             <button onClick={() => setSelectedClient(null)}>Change</button>
           </div>
@@ -329,6 +389,21 @@ export default function Calendar() {
           </button>
         )}
       </div>
+
+      {/* Client Block Navigation */}
+      {selectedClient && getClientDateInfo() && (
+        <div className="block-nav">
+          <button onClick={goToClientStart}>
+            ← Start ({getClientDateInfo().startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})
+          </button>
+          <span className="block-range">
+            {getClientDateInfo().isWithinBlock ? '✓ Within block' : '⚠ Outside block'}
+          </span>
+          <button onClick={goToClientEnd}>
+            End ({getClientDateInfo().endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}) →
+          </button>
+        </div>
+      )}
 
       {/* Day Cards */}
       <div className="day-cards">
@@ -414,19 +489,23 @@ export default function Calendar() {
               {clients.length === 0 ? (
                 <p className="no-items">No active clients</p>
               ) : (
-                clients.map(client => (
-                  <button
-                    key={client.id}
-                    className="client-option"
-                    onClick={() => {
-                      setSelectedClient(client);
-                      setShowClientPicker(false);
-                    }}
-                  >
-                    <strong>{client.name}</strong>
-                    <span>{client.sessionDuration || 45}min • {client.sessionsRemaining} sessions left</span>
-                  </button>
-                ))
+                clients.map(client => {
+                  const clientStart = client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate);
+                  const clientEnd = client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate);
+                  return (
+                    <button
+                      key={client.id}
+                      className="client-option"
+                      onClick={() => handleClientSelect(client)}
+                    >
+                      <strong>{client.name}</strong>
+                      <span>{client.sessionDuration || 45}min • {client.sessionsRemaining} sessions left</span>
+                      <span className="client-dates">
+                        {clientStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - {clientEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>
