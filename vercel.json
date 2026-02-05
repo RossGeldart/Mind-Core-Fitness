@@ -37,6 +37,10 @@
     {
       "source": "/login/clients",
       "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/(.*)",
+      "destination": "/login/index.html"
     }
   ],
   "redirects": [
