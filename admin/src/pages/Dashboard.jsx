@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
+import Schedule from '../components/Schedule';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const [activeView, setActiveView] = useState('clients');
+  const [activeView, setActiveView] = useState('schedule');
   const { currentUser, logout, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -46,6 +47,12 @@ export default function Dashboard() {
         </div>
         <nav className="header-nav">
           <button
+            className={`nav-btn ${activeView === 'schedule' ? 'active' : ''}`}
+            onClick={() => setActiveView('schedule')}
+          >
+            Today
+          </button>
+          <button
             className={`nav-btn ${activeView === 'clients' ? 'active' : ''}`}
             onClick={() => setActiveView('clients')}
           >
@@ -64,6 +71,15 @@ export default function Dashboard() {
       </header>
 
       <main className="dashboard-main">
+        {activeView === 'schedule' && (
+          <div className="schedule-view">
+            <div className="view-header">
+              <h2>Schedule</h2>
+            </div>
+            <Schedule />
+          </div>
+        )}
+
         {activeView === 'clients' && (
           <div className="clients-view">
             <div className="view-header">
