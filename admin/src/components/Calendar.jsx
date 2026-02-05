@@ -92,6 +92,8 @@ export default function Calendar() {
   const [showClientPicker, setShowClientPicker] = useState(false);
   const [showHolidayModal, setShowHolidayModal] = useState(false);
   const [holidayDate, setHolidayDate] = useState('');
+  const [holidayEndDate, setHolidayEndDate] = useState('');
+  const [holidayMode, setHolidayMode] = useState('single'); // 'single' or 'range'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -432,13 +434,49 @@ export default function Calendar() {
     if (!holidayDate) return;
 
     try {
-      const docRef = await addDoc(collection(db, 'holidays'), {
-        date: holidayDate,
-        createdAt: Timestamp.now()
-      });
-      setHolidays([...holidays, { id: docRef.id, date: holidayDate }]);
+      const newHolidays = [];
+
+      if (holidayMode === 'range' && holidayEndDate) {
+        // Add all dates in the range
+        const start = new Date(holidayDate);
+        const end = new Date(holidayEndDate);
+
+        if (end < start) {
+          alert('End date must be after start date');
+          return;
+        }
+
+        const current = new Date(start);
+        while (current <= end) {
+          const dateKey = formatDateKey(current);
+          // Check if holiday already exists
+          if (!holidays.some(h => h.date === dateKey)) {
+            const docRef = await addDoc(collection(db, 'holidays'), {
+              date: dateKey,
+              createdAt: Timestamp.now()
+            });
+            newHolidays.push({ id: docRef.id, date: dateKey });
+          }
+          current.setDate(current.getDate() + 1);
+        }
+
+        setHolidays([...holidays, ...newHolidays]);
+        alert(`Added ${newHolidays.length} holiday(s)`);
+      } else {
+        // Single date
+        if (holidays.some(h => h.date === holidayDate)) {
+          alert('This date is already marked as a holiday');
+          return;
+        }
+        const docRef = await addDoc(collection(db, 'holidays'), {
+          date: holidayDate,
+          createdAt: Timestamp.now()
+        });
+        setHolidays([...holidays, { id: docRef.id, date: holidayDate }]);
+      }
+
       setHolidayDate('');
-      setShowHolidayModal(false);
+      setHolidayEndDate('');
     } catch (error) {
       console.error('Error adding holiday:', error);
       alert('Failed to add holiday');
@@ -620,34 +658,75 @@ export default function Calendar() {
       {/* Holiday Modal */}
       {showHolidayModal && (
         <div className="modal-overlay" onClick={() => setShowHolidayModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content holiday-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Manage Holidays</h3>
               <button className="close-btn" onClick={() => setShowHolidayModal(false)}>&times;</button>
             </div>
-            <div className="holiday-form">
-              <input
-                type="date"
-                value={holidayDate}
-                onChange={e => setHolidayDate(e.target.value)}
-              />
-              <button onClick={handleAddHoliday}>Add</button>
+
+            {/* Mode Toggle */}
+            <div className="holiday-mode-toggle">
+              <button
+                className={`mode-btn ${holidayMode === 'single' ? 'active' : ''}`}
+                onClick={() => setHolidayMode('single')}
+              >
+                Single Day
+              </button>
+              <button
+                className={`mode-btn ${holidayMode === 'range' ? 'active' : ''}`}
+                onClick={() => setHolidayMode('range')}
+              >
+                Date Range
+              </button>
             </div>
+
+            <div className="holiday-form">
+              <div className="date-inputs">
+                <div className="date-field">
+                  <label>{holidayMode === 'range' ? 'Start Date' : 'Date'}</label>
+                  <input
+                    type="date"
+                    value={holidayDate}
+                    onChange={e => setHolidayDate(e.target.value)}
+                  />
+                </div>
+                {holidayMode === 'range' && (
+                  <div className="date-field">
+                    <label>End Date</label>
+                    <input
+                      type="date"
+                      value={holidayEndDate}
+                      onChange={e => setHolidayEndDate(e.target.value)}
+                      min={holidayDate}
+                    />
+                  </div>
+                )}
+              </div>
+              <button className="add-holiday-btn" onClick={handleAddHoliday}>
+                {holidayMode === 'range' ? 'Add Range' : 'Add Day'}
+              </button>
+            </div>
+
             <div className="holiday-list">
+              <div className="holiday-list-header">
+                <span>Scheduled Holidays ({holidays.length})</span>
+              </div>
               {holidays.length === 0 ? (
                 <p className="no-items">No holidays set</p>
               ) : (
-                holidays.map(holiday => (
-                  <div key={holiday.id} className="holiday-item">
-                    <span>{new Date(holiday.date).toLocaleDateString('en-GB', {
-                      weekday: 'short',
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    })}</span>
-                    <button onClick={() => handleRemoveHoliday(holiday.id)}>Remove</button>
-                  </div>
-                ))
+                [...holidays]
+                  .sort((a, b) => a.date.localeCompare(b.date))
+                  .map(holiday => (
+                    <div key={holiday.id} className="holiday-item">
+                      <span>{new Date(holiday.date).toLocaleDateString('en-GB', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}</span>
+                      <button onClick={() => handleRemoveHoliday(holiday.id)}>Remove</button>
+                    </div>
+                  ))
               )}
             </div>
           </div>
