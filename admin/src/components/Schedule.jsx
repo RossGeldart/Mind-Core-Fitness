@@ -37,12 +37,42 @@ const formatDateLabel = (dateStr) => {
   });
 };
 
+// Check if a session has been completed (time has passed)
+const isSessionCompleted = (session) => {
+  const now = new Date();
+  const today = formatDateKey(now);
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  // Past dates are completed
+  if (session.date < today) return true;
+  // Today: check if session time + duration has passed
+  if (session.date === today) {
+    const sessionEndMinutes = timeToMinutes(session.time) + (session.duration || 45);
+    const currentMinutes = timeToMinutes(currentTime);
+    return currentMinutes >= sessionEndMinutes;
+  }
+  return false;
+};
+
+const timeToMinutes = (time) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
 export default function Schedule() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     fetchSessions();
+
+    // Update current time every minute to refresh completed status
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchSessions = async () => {
@@ -83,6 +113,8 @@ export default function Schedule() {
   const dates = Object.keys(groupedSessions).sort();
   const todayStr = formatDateKey(new Date());
   const todaySessions = groupedSessions[todayStr] || [];
+  const completedToday = todaySessions.filter(s => isSessionCompleted(s)).length;
+  const remainingToday = todaySessions.length - completedToday;
 
   return (
     <div className="schedule">
@@ -93,7 +125,10 @@ export default function Schedule() {
           {todaySessions.length === 0 ? (
             <span className="no-sessions">No sessions today</span>
           ) : (
-            <span className="session-count">{todaySessions.length} session{todaySessions.length !== 1 ? 's' : ''}</span>
+            <div className="today-stats">
+              <span className="completed-count">{completedToday} completed</span>
+              <span className="remaining-count">{remainingToday} remaining</span>
+            </div>
           )}
         </div>
       </div>
@@ -112,15 +147,19 @@ export default function Schedule() {
                 <span className="date-count">{groupedSessions[date].length} session{groupedSessions[date].length !== 1 ? 's' : ''}</span>
               </div>
               <div className="date-sessions">
-                {groupedSessions[date].map(session => (
-                  <div key={session.id} className="session-card">
-                    <div className="session-time">{formatTime(session.time)}</div>
-                    <div className="session-details">
-                      <strong>{session.clientName}</strong>
-                      <span>{session.duration}min session</span>
+                {groupedSessions[date].map(session => {
+                  const completed = isSessionCompleted(session);
+                  return (
+                    <div key={session.id} className={`session-card ${completed ? 'completed' : ''}`}>
+                      <div className="session-time">{formatTime(session.time)}</div>
+                      <div className="session-details">
+                        <strong>{session.clientName}</strong>
+                        <span>{session.duration}min session</span>
+                      </div>
+                      {completed && <div className="completed-badge">✓</div>}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
