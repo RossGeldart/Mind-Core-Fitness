@@ -5,13 +5,11 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
   z-index: 1000;
-  padding: 20px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-content {
@@ -19,9 +17,8 @@
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
-  margin: auto;
+  margin: 0 auto 20px auto;
   position: relative;
-  touch-action: pan-y;
 }
 
 .modal-header {
