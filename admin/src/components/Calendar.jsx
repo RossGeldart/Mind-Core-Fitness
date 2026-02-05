@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc, query, where, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import './Calendar.css';
 
@@ -13,21 +13,8 @@ const SCHEDULE = {
 };
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
-// Generate time slots (every 15 minutes)
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 6; hour < 21; hour++) {
-    for (let min = 0; min < 60; min += 15) {
-      const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-      slots.push(time);
-    }
-  }
-  return slots;
-};
-
-const TIME_SLOTS = generateTimeSlots();
+const DAY_LABELS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(':');
@@ -54,18 +41,6 @@ const formatDateKey = (date) => {
   return date.toISOString().split('T')[0];
 };
 
-const isWithinWorkingHours = (time, dayName) => {
-  const schedule = SCHEDULE[dayName];
-  if (!schedule) return false;
-
-  const { morning, afternoon } = schedule;
-
-  if (morning && time >= morning.start && time < morning.end) return true;
-  if (afternoon && time >= afternoon.start && time < afternoon.end) return true;
-
-  return false;
-};
-
 const timeToMinutes = (time) => {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
@@ -78,6 +53,34 @@ const addMinutesToTime = (time, minutes) => {
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
 };
 
+// Generate time slots for a specific day
+const generateTimeSlotsForDay = (dayName) => {
+  const schedule = SCHEDULE[dayName];
+  if (!schedule) return [];
+
+  const slots = [];
+
+  // Morning slots
+  if (schedule.morning) {
+    let current = schedule.morning.start;
+    while (current < schedule.morning.end) {
+      slots.push({ time: current, period: 'morning' });
+      current = addMinutesToTime(current, 15);
+    }
+  }
+
+  // Afternoon slots
+  if (schedule.afternoon) {
+    let current = schedule.afternoon.start;
+    while (current < schedule.afternoon.end) {
+      slots.push({ time: current, period: 'afternoon' });
+      current = addMinutesToTime(current, 15);
+    }
+  }
+
+  return slots;
+};
+
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
@@ -85,6 +88,7 @@ export default function Calendar() {
   const [sessions, setSessions] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null);
   const [showClientPicker, setShowClientPicker] = useState(false);
   const [showHolidayModal, setShowHolidayModal] = useState(false);
   const [holidayDate, setHolidayDate] = useState('');
@@ -100,19 +104,16 @@ export default function Calendar() {
 
   const fetchData = async () => {
     try {
-      // Fetch clients
       const clientsSnapshot = await getDocs(collection(db, 'clients'));
       const clientsData = clientsSnapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
         .filter(c => c.status === 'active');
       setClients(clientsData);
 
-      // Fetch sessions
       const sessionsSnapshot = await getDocs(collection(db, 'sessions'));
       const sessionsData = sessionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setSessions(sessionsData);
 
-      // Fetch holidays
       const holidaysSnapshot = await getDocs(collection(db, 'holidays'));
       const holidaysData = holidaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setHolidays(holidaysData);
@@ -126,15 +127,22 @@ export default function Calendar() {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + (direction * 7));
     setCurrentDate(newDate);
+    setSelectedDay(null);
   };
 
   const goToToday = () => {
     setCurrentDate(new Date());
+    setSelectedDay(null);
   };
 
   const isHoliday = (date) => {
     const dateKey = formatDateKey(date);
     return holidays.some(h => h.date === dateKey);
+  };
+
+  const getSessionsForDate = (date) => {
+    const dateKey = formatDateKey(date);
+    return sessions.filter(s => s.date === dateKey);
   };
 
   const getSessionAtSlot = (date, time) => {
@@ -146,22 +154,15 @@ export default function Calendar() {
     const dayName = DAYS[date.getDay() - 1];
     if (!dayName) return false;
 
-    // Check if within working hours
-    if (!isWithinWorkingHours(time, dayName)) return false;
-
-    // Check if holiday
     if (isHoliday(date)) return false;
 
-    // Check if slot is already booked
     const dateKey = formatDateKey(date);
     const existingSession = sessions.find(s => s.date === dateKey && s.time === time);
     if (existingSession) return false;
 
-    // Check if the slot + duration would overlap with another session or go outside working hours
     const endTime = addMinutesToTime(time, clientDuration);
     const schedule = SCHEDULE[dayName];
 
-    // Check if end time is within working hours
     const isEndInMorning = schedule.morning && endTime <= schedule.morning.end;
     const isEndInAfternoon = schedule.afternoon && endTime <= schedule.afternoon.end;
     const startsInMorning = schedule.morning && time >= schedule.morning.start && time < schedule.morning.end;
@@ -170,7 +171,6 @@ export default function Calendar() {
     if (startsInMorning && !isEndInMorning) return false;
     if (startsInAfternoon && !isEndInAfternoon) return false;
 
-    // Check if would overlap with any existing session
     for (const session of sessions) {
       if (session.date !== dateKey) continue;
 
@@ -188,21 +188,13 @@ export default function Calendar() {
   };
 
   const handleSlotClick = async (date, time) => {
-    if (!selectedClient) {
-      setShowClientPicker(true);
-      return;
-    }
-
-    const dateKey = formatDateKey(date);
     const existingSession = getSessionAtSlot(date, time);
 
     if (existingSession) {
-      // Cancel session
-      if (window.confirm(`Cancel ${existingSession.clientName}'s session?`)) {
+      if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(time)}?`)) {
         try {
           await deleteDoc(doc(db, 'sessions', existingSession.id));
 
-          // Return session to client's remaining count
           const client = clients.find(c => c.id === existingSession.clientId);
           if (client) {
             await updateDoc(doc(db, 'clients', client.id), {
@@ -224,7 +216,11 @@ export default function Calendar() {
       return;
     }
 
-    // Book new session
+    if (!selectedClient) {
+      alert('Please select a client first');
+      return;
+    }
+
     if (!isSlotAvailable(date, time, selectedClient.sessionDuration || 45)) {
       alert('This slot is not available for this client\'s session duration');
       return;
@@ -236,6 +232,7 @@ export default function Calendar() {
     }
 
     try {
+      const dateKey = formatDateKey(date);
       const sessionData = {
         clientId: selectedClient.id,
         clientName: selectedClient.name,
@@ -248,7 +245,6 @@ export default function Calendar() {
       const docRef = await addDoc(collection(db, 'sessions'), sessionData);
       setSessions([...sessions, { id: docRef.id, ...sessionData }]);
 
-      // Decrement client's remaining sessions
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         sessionsRemaining: selectedClient.sessionsRemaining - 1
       });
@@ -291,28 +287,6 @@ export default function Calendar() {
     }
   };
 
-  const getSlotClass = (date, time) => {
-    const dayIndex = date.getDay();
-    if (dayIndex === 0 || dayIndex === 6) return 'slot outside';
-
-    const dayName = DAYS[dayIndex - 1];
-
-    if (isHoliday(date)) return 'slot holiday';
-    if (!isWithinWorkingHours(time, dayName)) return 'slot outside';
-
-    const session = getSessionAtSlot(date, time);
-    if (session) return 'slot booked';
-
-    if (selectedClient) {
-      if (isSlotAvailable(date, time, selectedClient.sessionDuration || 45)) {
-        return 'slot available';
-      }
-      return 'slot unavailable';
-    }
-
-    return 'slot';
-  };
-
   if (loading) {
     return <div className="calendar-loading">Loading calendar...</div>;
   }
@@ -325,28 +299,28 @@ export default function Calendar() {
 
   return (
     <div className="calendar">
+      {/* Header */}
       <div className="calendar-header">
         <div className="calendar-nav">
-          <button onClick={() => navigateWeek(-1)}>&larr; Prev</button>
+          <button onClick={() => navigateWeek(-1)}>&larr;</button>
           <button onClick={goToToday}>Today</button>
-          <button onClick={() => navigateWeek(1)}>Next &rarr;</button>
+          <button onClick={() => navigateWeek(1)}>&rarr;</button>
         </div>
         <h3>{weekLabel}</h3>
-        <div className="calendar-actions">
-          <button className="holiday-btn" onClick={() => setShowHolidayModal(true)}>
-            Manage Holidays
-          </button>
-        </div>
+        <button className="holiday-btn" onClick={() => setShowHolidayModal(true)}>
+          Holidays
+        </button>
       </div>
 
+      {/* Client Selector */}
       <div className="client-selector">
-        <label>Booking for:</label>
+        <span className="selector-label">Booking for:</span>
         {selectedClient ? (
           <div className="selected-client">
-            <span>{selectedClient.name}</span>
-            <span className="client-info">
-              {selectedClient.sessionDuration || 45} min | {selectedClient.sessionsRemaining} sessions left
-            </span>
+            <div className="selected-info">
+              <strong>{selectedClient.name}</strong>
+              <span>{selectedClient.sessionDuration || 45}min • {selectedClient.sessionsRemaining} left</span>
+            </div>
             <button onClick={() => setSelectedClient(null)}>Change</button>
           </div>
         ) : (
@@ -356,56 +330,92 @@ export default function Calendar() {
         )}
       </div>
 
-      <div className="calendar-grid">
-        <div className="time-column">
-          <div className="day-header"></div>
-          {TIME_SLOTS.map(time => (
-            <div key={time} className="time-label">
-              {time.endsWith(':00') || time.endsWith(':30') ? formatTime(time) : ''}
-            </div>
-          ))}
-        </div>
+      {/* Day Cards */}
+      <div className="day-cards">
+        {weekDates.map((date, index) => {
+          const daySessions = getSessionsForDate(date);
+          const isToday = formatDateKey(date) === formatDateKey(new Date());
+          const holiday = isHoliday(date);
 
-        {weekDates.map((date, dayIndex) => (
-          <div key={dayIndex} className="day-column">
-            <div className={`day-header ${isHoliday(date) ? 'holiday' : ''}`}>
-              <span className="day-name">{DAY_LABELS[dayIndex]}</span>
-              <span className="day-date">{date.getDate()}</span>
+          return (
+            <div
+              key={index}
+              className={`day-card ${selectedDay === index ? 'selected' : ''} ${isToday ? 'today' : ''} ${holiday ? 'holiday' : ''}`}
+              onClick={() => !holiday && setSelectedDay(selectedDay === index ? null : index)}
+            >
+              <div className="day-card-header">
+                <span className="day-name">{DAY_SHORT[index]}</span>
+                <span className="day-date">{date.getDate()}</span>
+              </div>
+              {holiday ? (
+                <div className="day-card-status holiday">Unavailable</div>
+              ) : (
+                <div className="day-card-status">
+                  {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                </div>
+              )}
             </div>
-            {TIME_SLOTS.map(time => {
-              const session = getSessionAtSlot(date, time);
+          );
+        })}
+      </div>
+
+      {/* Time Slots Panel */}
+      {selectedDay !== null && weekDates[selectedDay] && !isHoliday(weekDates[selectedDay]) && (
+        <div className="time-panel">
+          <div className="time-panel-header">
+            <h4>{DAY_LABELS[selectedDay]} {weekDates[selectedDay].getDate()}</h4>
+            <button className="close-panel" onClick={() => setSelectedDay(null)}>&times;</button>
+          </div>
+
+          <div className="time-slots">
+            {generateTimeSlotsForDay(DAYS[selectedDay]).map(({ time, period }, idx, arr) => {
+              const session = getSessionAtSlot(weekDates[selectedDay], time);
+              const available = selectedClient && isSlotAvailable(weekDates[selectedDay], time, selectedClient.sessionDuration || 45);
+              const showPeriodLabel = idx === 0 || arr[idx - 1]?.period !== period;
+
               return (
-                <div
-                  key={time}
-                  className={getSlotClass(date, time)}
-                  onClick={() => handleSlotClick(date, time)}
-                >
-                  {session && (
-                    <div className="session-info">
-                      <span className="session-name">{session.clientName}</span>
-                      <span className="session-duration">{session.duration}m</span>
+                <div key={time}>
+                  {showPeriodLabel && (
+                    <div className="period-label">
+                      {period === 'morning' ? 'Morning' : 'Afternoon'}
                     </div>
                   )}
+                  <button
+                    className={`time-slot ${session ? 'booked' : ''} ${available ? 'available' : ''} ${!session && !available && selectedClient ? 'unavailable' : ''}`}
+                    onClick={() => handleSlotClick(weekDates[selectedDay], time)}
+                  >
+                    <span className="slot-time">{formatTime(time)}</span>
+                    {session ? (
+                      <span className="slot-client">{session.clientName} ({session.duration}m)</span>
+                    ) : available ? (
+                      <span className="slot-available">Available</span>
+                    ) : selectedClient ? (
+                      <span className="slot-unavailable">Unavailable</span>
+                    ) : (
+                      <span className="slot-empty">Select client to book</span>
+                    )}
+                  </button>
                 </div>
               );
             })}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
+      {/* Client Picker Modal */}
       {showClientPicker && (
         <div className="modal-overlay" onClick={() => setShowClientPicker(false)}>
-          <div className="modal-content client-picker" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Select Client</h3>
               <button className="close-btn" onClick={() => setShowClientPicker(false)}>&times;</button>
             </div>
             <div className="client-list-picker">
               {clients.length === 0 ? (
-                <p className="no-clients">No active clients</p>
+                <p className="no-items">No active clients</p>
               ) : (
                 clients.map(client => (
-                  <div
+                  <button
                     key={client.id}
                     className="client-option"
                     onClick={() => {
@@ -413,11 +423,9 @@ export default function Calendar() {
                       setShowClientPicker(false);
                     }}
                   >
-                    <span className="client-name">{client.name}</span>
-                    <span className="client-details">
-                      {client.sessionDuration || 45} min | {client.sessionsRemaining} sessions left
-                    </span>
-                  </div>
+                    <strong>{client.name}</strong>
+                    <span>{client.sessionDuration || 45}min • {client.sessionsRemaining} sessions left</span>
+                  </button>
                 ))
               )}
             </div>
@@ -425,9 +433,10 @@ export default function Calendar() {
         </div>
       )}
 
+      {/* Holiday Modal */}
       {showHolidayModal && (
         <div className="modal-overlay" onClick={() => setShowHolidayModal(false)}>
-          <div className="modal-content holiday-modal" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Manage Holidays</h3>
               <button className="close-btn" onClick={() => setShowHolidayModal(false)}>&times;</button>
@@ -438,11 +447,11 @@ export default function Calendar() {
                 value={holidayDate}
                 onChange={e => setHolidayDate(e.target.value)}
               />
-              <button onClick={handleAddHoliday}>Add Holiday</button>
+              <button onClick={handleAddHoliday}>Add</button>
             </div>
             <div className="holiday-list">
               {holidays.length === 0 ? (
-                <p className="no-holidays">No holidays set</p>
+                <p className="no-items">No holidays set</p>
               ) : (
                 holidays.map(holiday => (
                   <div key={holiday.id} className="holiday-item">
