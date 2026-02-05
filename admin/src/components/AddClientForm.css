@@ -173,31 +173,59 @@ form {
 
 @media (max-width: 600px) {
   .modal-overlay {
-    padding: 10px;
-    align-items: flex-start;
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
   }
 
   .modal-content {
-    max-height: calc(100vh - 20px);
-    margin-top: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    height: 100vh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    flex-shrink: 0;
+    padding: 16px;
+  }
+
+  form {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    padding-bottom: 100px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
   }
 
-  form {
-    padding: 16px;
-    padding-bottom: 24px;
+  .form-group input,
+  .form-group select {
+    padding: 14px;
+    font-size: 16px;
   }
 
   .form-actions {
-    flex-direction: column;
-    padding-bottom: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    background: white;
+    padding: 12px 16px;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
   }
 
   .cancel-btn,
   .submit-btn {
-    width: 100%;
+    flex: 1;
+    padding: 14px;
   }
 }
