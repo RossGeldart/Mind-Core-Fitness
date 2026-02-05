@@ -14,6 +14,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const startY = useRef(0);
   const isPulling = useRef(false);
+  const mainRef = useRef(null);
 
   useEffect(() => {
     if (!loading && (!currentUser || !isAdmin)) {
@@ -23,8 +24,12 @@ export default function Dashboard() {
 
   // Pull-to-refresh handlers
   useEffect(() => {
+    const getScrollTop = () => {
+      return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    };
+
     const handleTouchStart = (e) => {
-      if (window.scrollY === 0) {
+      if (getScrollTop() <= 0) {
         startY.current = e.touches[0].clientY;
         isPulling.current = true;
       }
@@ -34,7 +39,7 @@ export default function Dashboard() {
       if (!isPulling.current) return;
       const currentY = e.touches[0].clientY;
       const diff = currentY - startY.current;
-      if (diff > 0 && window.scrollY === 0) {
+      if (diff > 0 && getScrollTop() <= 0) {
         setPullDistance(Math.min(diff * 0.5, 80));
       }
     };
@@ -61,6 +66,13 @@ export default function Dashboard() {
       document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [pullDistance]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  };
 
   const handleLogout = async () => {
     try {
@@ -119,9 +131,14 @@ export default function Dashboard() {
             Calendar
           </button>
         </nav>
-        <button className="logout-btn" onClick={handleLogout}>
-          Log Out
-        </button>
+        <div className="header-actions">
+          <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing}>
+            {isRefreshing ? '↻' : '⟳'}
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log Out
+          </button>
+        </div>
       </header>
 
       <main className="dashboard-main">
