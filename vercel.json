@@ -23,7 +23,11 @@
   ],
   "rewrites": [
     {
-      "source": "/login/dashboard",
+      "source": "/login",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/:path*",
       "destination": "/login/index.html"
     }
   ],
