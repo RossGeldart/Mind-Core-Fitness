@@ -16,6 +16,18 @@ export default function AddClientForm({ onClose, onClientAdded }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Lock body scroll when modal is open (fixes iOS)
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, []);
+
   // Auto-calculate end date when start date or weeks change
   useEffect(() => {
     if (formData.startDate && formData.weeksInBlock) {

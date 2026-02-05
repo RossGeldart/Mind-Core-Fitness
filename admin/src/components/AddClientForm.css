@@ -173,22 +173,33 @@ form {
 
 @media (max-width: 600px) {
   .modal-overlay {
-    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     padding: 0;
+    display: block;
   }
 
   .modal-content {
-    min-height: 100%;
+    background: white;
+    min-height: auto;
     max-width: 100%;
     max-height: none;
     border-radius: 0;
-    overflow: visible;
   }
 
   .modal-header {
     padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
   }
 
   form {
@@ -200,7 +211,7 @@ form {
   }
 
   .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .form-group input,
@@ -212,8 +223,8 @@ form {
   .form-actions {
     flex-direction: column;
     padding: 16px;
-    padding-bottom: 40px;
-    margin-top: 0;
+    padding-bottom: 50px;
+    margin-top: 10px;
     border-top: 1px solid #e0e0e0;
   }
 
@@ -221,5 +232,6 @@ form {
   .submit-btn {
     width: 100%;
     padding: 16px;
+    font-size: 16px;
   }
 }
