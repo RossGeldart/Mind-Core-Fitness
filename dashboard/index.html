@@ -26,6 +26,15 @@
 
     <!-- Additional Client Styles -->
     <style>
+        /* Hide body until auth is confirmed to prevent flash */
+        body {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        body.auth-ready {
+            opacity: 1;
+        }
+
         .client-header {
             background: linear-gradient(135deg, var(--accent-color) 0%, #b33a47 100%);
             color: #ffffff;
@@ -883,6 +892,40 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Early auth check to prevent dashboard flash for unauthenticated users -->
+    <script>
+        (function() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyA-9s2ihbcFb6C_kvL4hPR3HVgiHPPF2mw",
+                authDomain: "mind-core-fitness.firebaseapp.com",
+                projectId: "mind-core-fitness",
+                storageBucket: "mind-core-fitness.firebasestorage.app",
+                messagingSenderId: "140169907799",
+                appId: "1:140169907799:web:f5eb45e0fcc9dc1c8a08de",
+                measurementId: "G-3L43QNV0GD"
+            };
+
+            // Initialize Firebase early if not already initialized
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            const auth = firebase.auth();
+
+            // Single auth state check - redirect immediately if not logged in
+            auth.onAuthStateChanged(function(user) {
+                if (!user) {
+                    // Not logged in - redirect to login immediately before body renders
+                    window.location.replace('/dashboard/login.html');
+                }
+                // If user exists, the main script will handle showing the page
+            }, function(error) {
+                // On error, redirect to login
+                window.location.replace('/dashboard/login.html');
+            });
+        })();
+    </script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -2540,6 +2583,9 @@
 
                 // Load user's upcoming sessions
                 loadUserBookings();
+
+                // Auth confirmed - show the page
+                document.body.classList.add('auth-ready');
             });
 
             // ==================
