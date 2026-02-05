@@ -41,7 +41,11 @@ export default function ClientList() {
   // Calculate completed sessions (sessions that have passed)
   const getCompletedSessionsCount = (clientId) => {
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    // Use local date to avoid timezone issues
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     return sessions.filter(s => {
@@ -85,6 +89,16 @@ export default function ClientList() {
     }
   };
 
+  // Helper to format date for input fields
+  const formatDateForInput = (timestamp) => {
+    if (!timestamp) return '';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleEdit = (client) => {
     setEditingClient(client.id);
     setEditForm({
@@ -94,8 +108,8 @@ export default function ClientList() {
       totalSessions: client.totalSessions,
       sessionsRemaining: client.sessionsRemaining,
       sessionDuration: client.sessionDuration || 45,
-      startDate: client.startDate?.toDate?.().toISOString().split('T')[0] || '',
-      endDate: client.endDate?.toDate?.().toISOString().split('T')[0] || '',
+      startDate: formatDateForInput(client.startDate),
+      endDate: formatDateForInput(client.endDate),
       status: client.status
     });
   };
@@ -113,10 +127,14 @@ export default function ClientList() {
         const start = new Date(startDate);
         const end = new Date(start);
         end.setDate(end.getDate() + (weeks * 7));
+        // Use local date format
+        const year = end.getFullYear();
+        const month = (end.getMonth() + 1).toString().padStart(2, '0');
+        const day = end.getDate().toString().padStart(2, '0');
         setEditForm(prev => ({
           ...prev,
           [name]: value,
-          endDate: end.toISOString().split('T')[0]
+          endDate: `${year}-${month}-${day}`
         }));
       }
     }
