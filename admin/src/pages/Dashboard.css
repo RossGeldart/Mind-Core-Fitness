@@ -216,6 +216,7 @@
   .dashboard-header {
     flex-wrap: wrap;
     gap: 12px;
+    padding: 12px 16px;
   }
 
   .header-left {
@@ -223,10 +224,22 @@
     justify-content: space-between;
   }
 
+  .header-left h1 {
+    font-size: 1.1rem;
+  }
+
   .header-nav {
     order: 3;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .nav-btn {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: center;
   }
 
   .header-actions {
@@ -241,5 +254,9 @@
 
   .add-btn {
     width: 100%;
+  }
+
+  .dashboard-main {
+    padding: 16px;
   }
 }
