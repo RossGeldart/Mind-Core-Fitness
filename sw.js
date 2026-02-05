@@ -1,11 +1,14 @@
-const CACHE_NAME = 'mind-core-fitness-v1';
+const CACHE_NAME = 'mind-core-fitness-v2';
 const urlsToCache = [
   '/',
   '/dashboard/',
   '/admin/',
   '/Logo.PNG',
+  '/styles.css',
   '/js/dashboard-styles.css',
-  '/js/firebase-config.js'
+  '/js/firebase-config.js',
+  '/social-share.css',
+  '/social-share.js'
 ];
 
 // Install service worker and cache essential files
