@@ -157,6 +157,32 @@ export default function Calendar() {
     }
   };
 
+  // Calculate completed sessions (sessions that have passed)
+  const getCompletedSessionsCount = (clientId) => {
+    const now = new Date();
+    const today = formatDateKey(now);
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    return sessions.filter(s => {
+      if (s.clientId !== clientId) return false;
+      // Session is completed if date is in past, or if today and time has passed
+      if (s.date < today) return true;
+      if (s.date === today && s.time < currentTime) return true;
+      return false;
+    }).length;
+  };
+
+  // Calculate remaining sessions for a client
+  const getSessionsRemaining = (client) => {
+    const completed = getCompletedSessionsCount(client.id);
+    return (client.totalSessions || 0) - completed;
+  };
+
+  // Calculate booked sessions for a client
+  const getBookedSessionsCount = (clientId) => {
+    return sessions.filter(s => s.clientId === clientId).length;
+  };
+
   const fetchData = async () => {
     try {
       const clientsSnapshot = await getDocs(collection(db, 'clients'));
@@ -249,19 +275,6 @@ export default function Calendar() {
       if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(time)}?`)) {
         try {
           await deleteDoc(doc(db, 'sessions', existingSession.id));
-
-          const client = clients.find(c => c.id === existingSession.clientId);
-          if (client) {
-            await updateDoc(doc(db, 'clients', client.id), {
-              sessionsRemaining: (client.sessionsRemaining || 0) + 1
-            });
-            setClients(clients.map(c =>
-              c.id === client.id
-                ? { ...c, sessionsRemaining: (c.sessionsRemaining || 0) + 1 }
-                : c
-            ));
-          }
-
           setSessions(sessions.filter(s => s.id !== existingSession.id));
         } catch (error) {
           console.error('Error cancelling session:', error);
@@ -281,8 +294,10 @@ export default function Calendar() {
       return;
     }
 
-    if (selectedClient.sessionsRemaining <= 0) {
-      alert(`${selectedClient.name} has no sessions remaining`);
+    // Check if client can book more sessions (total - already booked)
+    const clientBookedSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
+    if (clientBookedSessions >= selectedClient.totalSessions) {
+      alert(`${selectedClient.name} has already booked all ${selectedClient.totalSessions} sessions`);
       return;
     }
 
@@ -299,17 +314,6 @@ export default function Calendar() {
 
       const docRef = await addDoc(collection(db, 'sessions'), sessionData);
       setSessions([...sessions, { id: docRef.id, ...sessionData }]);
-
-      await updateDoc(doc(db, 'clients', selectedClient.id), {
-        sessionsRemaining: selectedClient.sessionsRemaining - 1
-      });
-
-      setClients(clients.map(c =>
-        c.id === selectedClient.id
-          ? { ...c, sessionsRemaining: c.sessionsRemaining - 1 }
-          : c
-      ));
-      setSelectedClient({ ...selectedClient, sessionsRemaining: selectedClient.sessionsRemaining - 1 });
     } catch (error) {
       console.error('Error booking session:', error);
       alert('Failed to book session');
@@ -374,7 +378,8 @@ export default function Calendar() {
           <div className="selected-client">
             <div className="selected-info">
               <strong>{selectedClient.name}</strong>
-              <span>{selectedClient.sessionDuration || 45}min • {selectedClient.sessionsRemaining} left</span>
+              <span>{selectedClient.sessionDuration || 45}min • {getSessionsRemaining(selectedClient)}/{selectedClient.totalSessions} remaining</span>
+              <span className="booked-info">{getBookedSessionsCount(selectedClient.id)} booked</span>
               {getClientDateInfo() && (
                 <span className="block-info">
                   Week {getClientDateInfo().weekNumber} of {getClientDateInfo().totalWeeks}
@@ -492,6 +497,8 @@ export default function Calendar() {
                 clients.map(client => {
                   const clientStart = client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate);
                   const clientEnd = client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate);
+                  const remaining = getSessionsRemaining(client);
+                  const booked = getBookedSessionsCount(client.id);
                   return (
                     <button
                       key={client.id}
@@ -499,7 +506,7 @@ export default function Calendar() {
                       onClick={() => handleClientSelect(client)}
                     >
                       <strong>{client.name}</strong>
-                      <span>{client.sessionDuration || 45}min • {client.sessionsRemaining} sessions left</span>
+                      <span>{client.sessionDuration || 45}min • {remaining}/{client.totalSessions} remaining • {booked} booked</span>
                       <span className="client-dates">
                         {clientStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - {clientEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>

@@ -5,27 +5,62 @@ import './ClientList.css';
 
 export default function ClientList() {
   const [clients, setClients] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingClient, setEditingClient] = useState(null);
   const [editForm, setEditForm] = useState({});
 
   useEffect(() => {
-    fetchClients();
+    fetchData();
   }, []);
 
-  const fetchClients = async () => {
+  const fetchData = async () => {
     try {
-      const q = query(collection(db, 'clients'), orderBy('createdAt', 'desc'));
-      const snapshot = await getDocs(q);
-      const clientsData = snapshot.docs.map(doc => ({
+      const [clientsSnapshot, sessionsSnapshot] = await Promise.all([
+        getDocs(query(collection(db, 'clients'), orderBy('createdAt', 'desc'))),
+        getDocs(collection(db, 'sessions'))
+      ]);
+
+      const clientsData = clientsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      const sessionsData = sessionsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
       setClients(clientsData);
+      setSessions(sessionsData);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      console.error('Error fetching data:', error);
     }
     setLoading(false);
+  };
+
+  // Calculate completed sessions (sessions that have passed)
+  const getCompletedSessionsCount = (clientId) => {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    return sessions.filter(s => {
+      if (s.clientId !== clientId) return false;
+      if (s.date < today) return true;
+      if (s.date === today && s.time < currentTime) return true;
+      return false;
+    }).length;
+  };
+
+  // Calculate remaining sessions for a client
+  const getSessionsRemaining = (client) => {
+    const completed = getCompletedSessionsCount(client.id);
+    return (client.totalSessions || 0) - completed;
+  };
+
+  // Get booked sessions count
+  const getBookedCount = (clientId) => {
+    return sessions.filter(s => s.clientId === clientId).length;
   };
 
   const formatDate = (timestamp) => {
@@ -94,7 +129,6 @@ export default function ClientList() {
         email: editForm.email.trim().toLowerCase(),
         weeksInBlock: parseInt(editForm.weeksInBlock),
         totalSessions: parseInt(editForm.totalSessions),
-        sessionsRemaining: parseInt(editForm.sessionsRemaining),
         sessionDuration: parseInt(editForm.sessionDuration),
         startDate: Timestamp.fromDate(new Date(editForm.startDate)),
         endDate: Timestamp.fromDate(new Date(editForm.endDate)),
@@ -108,7 +142,6 @@ export default function ClientList() {
               ...editForm,
               weeksInBlock: parseInt(editForm.weeksInBlock),
               totalSessions: parseInt(editForm.totalSessions),
-              sessionsRemaining: parseInt(editForm.sessionsRemaining),
               sessionDuration: parseInt(editForm.sessionDuration),
               startDate: Timestamp.fromDate(new Date(editForm.startDate)),
               endDate: Timestamp.fromDate(new Date(editForm.endDate))
@@ -190,14 +223,6 @@ export default function ClientList() {
                   placeholder="Total Sessions"
                   min="1"
                 />
-                <input
-                  type="number"
-                  name="sessionsRemaining"
-                  value={editForm.sessionsRemaining}
-                  onChange={handleEditChange}
-                  placeholder="Remaining"
-                  min="0"
-                />
                 <select
                   name="sessionDuration"
                   value={editForm.sessionDuration}
@@ -252,8 +277,12 @@ export default function ClientList() {
                 <div className="detail-item">
                   <span className="detail-label">Sessions</span>
                   <span className="detail-value">
-                    {client.sessionsRemaining} / {client.totalSessions} remaining
+                    {getSessionsRemaining(client)} / {client.totalSessions} remaining
                   </span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Booked</span>
+                  <span className="detail-value">{getBookedCount(client.id)} sessions</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Duration</span>
