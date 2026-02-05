@@ -615,6 +615,7 @@
         <a class="client-nav-item active" data-section="overview">Overview</a>
         <a class="client-nav-item" data-section="book">Book / Reschedule</a>
         <a class="client-nav-item" data-section="sessions">My Sessions</a>
+        <a class="client-nav-item" data-section="profile">Profile</a>
     </nav>
 
     <!-- Content -->
@@ -722,6 +723,308 @@
                     </svg>
                     <h4>No upcoming sessions</h4>
                     <p>Book a session to get started!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section class="client-section" id="section-profile" style="display: none;">
+            <h2 style="font-family: 'Montserrat', sans-serif; margin-bottom: 24px;">My Profile</h2>
+
+            <div class="profile-form-container">
+                <div class="profile-form-header">
+                    <p>Complete this form to help us personalise your training experience. This information helps your trainer understand your goals and any health considerations.</p>
+                    <p class="profile-status" id="profileStatus"></p>
+                </div>
+
+                <div class="profile-progress">
+                    <div class="progress-step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">About You</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Fitness Background</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Your Goals</span>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">PAR-Q</span>
+                    </div>
+                </div>
+
+                <form id="profileForm">
+                    <!-- Step 1: About You -->
+                    <div class="profile-step active" data-step="1">
+                        <h3>About You</h3>
+
+                        <div class="form-group">
+                            <label>Date of Birth *</label>
+                            <input type="date" id="profileDob" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Height</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="profileHeight" placeholder="175">
+                                    <span class="unit">cm</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="profileWeight" placeholder="70">
+                                    <span class="unit">kg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="profilePhone" placeholder="07XXX XXXXXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Emergency Contact Name *</label>
+                            <input type="text" id="profileEmergencyName" required placeholder="Full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Emergency Contact Phone *</label>
+                            <input type="tel" id="profileEmergencyPhone" required placeholder="07XXX XXXXXX">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Fitness Background -->
+                    <div class="profile-step" data-step="2">
+                        <h3>Your Fitness Background</h3>
+
+                        <div class="form-group">
+                            <label>How would you describe your current fitness level? *</label>
+                            <select id="profileFitnessLevel" required>
+                                <option value="">Select an option</option>
+                                <option value="beginner">Beginner - New to exercise or returning after a long break</option>
+                                <option value="intermediate">Intermediate - Exercise regularly (1-3 times per week)</option>
+                                <option value="advanced">Advanced - Very active (4+ times per week)</option>
+                                <option value="athlete">Athlete - Competitive or professional sports background</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>What types of exercise have you done before? (Select all that apply)</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="weights"> Weight Training
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="cardio"> Cardio (Running, Cycling, etc.)
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="hiit"> HIIT / Circuit Training
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="yoga"> Yoga / Pilates
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="sports"> Team Sports
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="swimming"> Swimming
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="martial-arts"> Martial Arts / Boxing
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileExerciseTypes" value="none"> None / Very Little
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Do you have any current injuries or physical limitations?</label>
+                            <textarea id="profileInjuries" rows="3" placeholder="Please describe any injuries, conditions, or areas of concern..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Have you worked with a personal trainer before?</label>
+                            <select id="profilePreviousTrainer">
+                                <option value="">Select an option</option>
+                                <option value="no">No, this is my first time</option>
+                                <option value="briefly">Yes, briefly (less than 3 months)</option>
+                                <option value="yes">Yes, for an extended period</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Goals -->
+                    <div class="profile-step" data-step="3">
+                        <h3>Your Goals</h3>
+
+                        <div class="form-group">
+                            <label>What are your main fitness goals? (Select up to 3) *</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="weight-loss"> Weight Loss / Fat Loss
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="muscle-gain"> Build Muscle / Strength
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="tone"> Tone Up / Get Lean
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="endurance"> Improve Endurance / Stamina
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="flexibility"> Improve Flexibility / Mobility
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="health"> General Health & Wellbeing
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="sport"> Sport-Specific Performance
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="profileGoals" value="rehab"> Injury Rehabilitation
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tell us more about what you want to achieve</label>
+                            <textarea id="profileGoalDetails" rows="3" placeholder="Any specific targets, events you're training for, or things you'd like to accomplish..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>How many times per week do you plan to train? *</label>
+                            <select id="profileTrainingFrequency" required>
+                                <option value="">Select an option</option>
+                                <option value="1">1 time per week</option>
+                                <option value="2">2 times per week</option>
+                                <option value="3">3 times per week</option>
+                                <option value="4">4+ times per week</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Is there anything else you'd like us to know?</label>
+                            <textarea id="profileAdditionalInfo" rows="3" placeholder="Dietary requirements, scheduling preferences, or anything else..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: PAR-Q -->
+                    <div class="profile-step" data-step="4">
+                        <h3>Physical Activity Readiness Questionnaire (PAR-Q)</h3>
+                        <p class="parq-intro">For most people, physical activity should not pose a problem. This questionnaire has been designed to identify the small number of adults for whom physical activity might be inappropriate.</p>
+
+                        <div class="parq-questions">
+                            <div class="parq-question">
+                                <label>1. Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq1" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq1" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>2. Do you feel pain in your chest when you do physical activity? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq2" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq2" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>3. In the past month, have you had chest pain when you were not doing physical activity? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq3" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq3" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>4. Do you lose your balance because of dizziness or do you ever lose consciousness? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq4" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq4" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>5. Do you have a bone or joint problem that could be made worse by a change in your physical activity? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq5" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq5" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>6. Is your doctor currently prescribing drugs for your blood pressure or heart condition? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq6" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq6" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="parq-question">
+                                <label>7. Do you know of any other reason why you should not do physical activity? *</label>
+                                <div class="radio-group">
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq7" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-item">
+                                        <input type="radio" name="profileParq7" value="no" required> No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="profileParqDetailsGroup" style="display: none;">
+                            <label>Please provide details about your "Yes" answers:</label>
+                            <textarea id="profileParqDetails" rows="3" placeholder="Please explain..."></textarea>
+                        </div>
+
+                        <div class="parq-declaration">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="profileParqConsent" required>
+                                <span>I confirm that I have read, understood and completed this questionnaire honestly. I understand that if my health changes, I should inform my trainer immediately. *</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="profile-form-footer">
+                    <button type="button" class="btn btn-secondary" id="profilePrevBtn" style="display: none;">Previous</button>
+                    <button type="button" class="btn btn-primary" id="profileNextBtn">Next</button>
+                    <button type="button" class="btn btn-primary" id="profileSubmitBtn" style="display: none;">Save Profile</button>
                 </div>
             </div>
         </section>
@@ -1371,6 +1674,184 @@
                 width: calc(100% - 32px);
             }
         }
+
+        /* Profile Section Styles */
+        .profile-form-container {
+            max-width: 700px;
+        }
+
+        .profile-form-header {
+            margin-bottom: 32px;
+        }
+
+        .profile-form-header p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .profile-status {
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .profile-status.completed {
+            background: rgba(45, 138, 78, 0.1);
+            color: #2d8a4e;
+            border: 1px solid rgba(45, 138, 78, 0.3);
+        }
+
+        .profile-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .profile-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .profile-progress .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-progress .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: calc(50% + 16px);
+            width: calc(100% - 32px);
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .profile-progress .progress-step.completed:not(:last-child)::after {
+            background: var(--accent-color);
+        }
+
+        .profile-progress .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-progress .progress-step.active .step-number {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .profile-progress .progress-step.completed .step-number {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .profile-progress .step-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .profile-progress .progress-step.active .step-label,
+        .profile-progress .progress-step.completed .step-label {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .profile-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .profile-step.active {
+            display: block;
+        }
+
+        .profile-step h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            color: var(--text-color);
+        }
+
+        .profile-step .form-group {
+            margin-bottom: 20px;
+        }
+
+        .profile-step label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .profile-step input[type="text"],
+        .profile-step input[type="email"],
+        .profile-step input[type="tel"],
+        .profile-step input[type="date"],
+        .profile-step input[type="number"],
+        .profile-step select,
+        .profile-step textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.2s ease;
+        }
+
+        .profile-step input:focus,
+        .profile-step select:focus,
+        .profile-step textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .profile-form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+        }
+
+        .profile-form-footer .btn {
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-progress {
+                padding: 0;
+            }
+
+            .profile-progress .step-label {
+                display: none;
+            }
+
+            .profile-progress .progress-step:not(:last-child)::after {
+                left: calc(50% + 16px);
+                width: calc(100% - 32px);
+            }
+        }
     </style>
 
     <script src="../js/firebase-config.js"></script>
@@ -1506,15 +1987,10 @@
                     const bankedSessions = userData.bankedSessions || 0;
                     updateBankedSessionsDisplay(bankedSessions);
 
-                    // Check if onboarding is complete
-                    if (!userData.onboardingComplete) {
-                        showWelcomeForm();
-                    }
+                    // Onboarding form is now optional - available in Profile tab
                 } else {
                     document.getElementById('userName').textContent = user.email.split('@')[0];
                     document.getElementById('userEmail').textContent = user.email;
-                    // No user data means they definitely need onboarding
-                    showWelcomeForm();
                 }
 
                 // Load user's upcoming sessions
@@ -1704,6 +2180,267 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit';
                 }
+            });
+
+            // ==================
+            // PROFILE FORM (In Profile Tab)
+            // ==================
+            let profileCurrentStep = 1;
+            const profileTotalSteps = 4;
+
+            function updateProfileStepDisplay() {
+                // Update progress steps
+                document.querySelectorAll('.profile-progress .progress-step').forEach(step => {
+                    const stepNum = parseInt(step.dataset.step);
+                    step.classList.remove('active', 'completed');
+                    if (stepNum === profileCurrentStep) {
+                        step.classList.add('active');
+                    } else if (stepNum < profileCurrentStep) {
+                        step.classList.add('completed');
+                    }
+                });
+
+                // Update form steps
+                document.querySelectorAll('.profile-step').forEach(step => {
+                    step.classList.remove('active');
+                    if (parseInt(step.dataset.step) === profileCurrentStep) {
+                        step.classList.add('active');
+                    }
+                });
+
+                // Update buttons
+                document.getElementById('profilePrevBtn').style.display = profileCurrentStep > 1 ? 'block' : 'none';
+                document.getElementById('profileNextBtn').style.display = profileCurrentStep < profileTotalSteps ? 'block' : 'none';
+                document.getElementById('profileSubmitBtn').style.display = profileCurrentStep === profileTotalSteps ? 'block' : 'none';
+
+                // Scroll to top of section
+                document.getElementById('section-profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function validateProfileCurrentStep() {
+                const currentStepEl = document.querySelector(`.profile-step[data-step="${profileCurrentStep}"]`);
+                const requiredFields = currentStepEl.querySelectorAll('[required]');
+
+                for (const field of requiredFields) {
+                    if (field.type === 'radio') {
+                        const radioGroup = currentStepEl.querySelectorAll(`input[name="${field.name}"]`);
+                        const isChecked = Array.from(radioGroup).some(r => r.checked);
+                        if (!isChecked) {
+                            showToast('Please answer all required questions', 'error');
+                            return false;
+                        }
+                    } else if (field.type === 'checkbox') {
+                        if (!field.checked) {
+                            showToast('Please confirm the declaration', 'error');
+                            return false;
+                        }
+                    } else if (!field.value.trim()) {
+                        field.focus();
+                        showToast('Please fill in all required fields', 'error');
+                        return false;
+                    }
+                }
+
+                // Check goals limit (max 3) on step 3
+                if (profileCurrentStep === 3) {
+                    const selectedGoals = document.querySelectorAll('input[name="profileGoals"]:checked');
+                    if (selectedGoals.length === 0) {
+                        showToast('Please select at least one fitness goal', 'error');
+                        return false;
+                    }
+                    if (selectedGoals.length > 3) {
+                        showToast('Please select a maximum of 3 goals', 'error');
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            // Limit profile goals selection to 3
+            document.querySelectorAll('input[name="profileGoals"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checked = document.querySelectorAll('input[name="profileGoals"]:checked');
+                    if (checked.length > 3) {
+                        this.checked = false;
+                        showToast('You can select a maximum of 3 goals', 'error');
+                    }
+                });
+            });
+
+            // PAR-Q yes answer detection for profile form
+            document.querySelectorAll('.profile-step .parq-question input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const hasYes = Array.from(document.querySelectorAll('.profile-step .parq-question input[value="yes"]'))
+                        .some(r => r.checked);
+                    document.getElementById('profileParqDetailsGroup').style.display = hasYes ? 'block' : 'none';
+                });
+            });
+
+            // Profile Next button
+            document.getElementById('profileNextBtn').addEventListener('click', function() {
+                if (validateProfileCurrentStep()) {
+                    profileCurrentStep++;
+                    updateProfileStepDisplay();
+                }
+            });
+
+            // Profile Previous button
+            document.getElementById('profilePrevBtn').addEventListener('click', function() {
+                profileCurrentStep--;
+                updateProfileStepDisplay();
+            });
+
+            // Profile Submit button
+            document.getElementById('profileSubmitBtn').addEventListener('click', async function() {
+                if (!validateProfileCurrentStep()) return;
+
+                const submitBtn = this;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                try {
+                    // Gather all profile form data
+                    const formData = {
+                        // Personal Info
+                        dateOfBirth: document.getElementById('profileDob').value,
+                        height: document.getElementById('profileHeight').value,
+                        weight: document.getElementById('profileWeight').value,
+                        phone: document.getElementById('profilePhone').value,
+                        emergencyContact: {
+                            name: document.getElementById('profileEmergencyName').value,
+                            phone: document.getElementById('profileEmergencyPhone').value
+                        },
+
+                        // Fitness Background
+                        fitnessLevel: document.getElementById('profileFitnessLevel').value,
+                        exerciseTypes: Array.from(document.querySelectorAll('input[name="profileExerciseTypes"]:checked')).map(cb => cb.value),
+                        injuries: document.getElementById('profileInjuries').value.trim(),
+                        previousTrainer: document.getElementById('profilePreviousTrainer').value,
+
+                        // Goals
+                        goals: Array.from(document.querySelectorAll('input[name="profileGoals"]:checked')).map(cb => cb.value),
+                        goalDetails: document.getElementById('profileGoalDetails').value.trim(),
+                        trainingFrequency: document.getElementById('profileTrainingFrequency').value,
+                        additionalInfo: document.getElementById('profileAdditionalInfo').value.trim(),
+
+                        // PAR-Q
+                        parq: {
+                            q1: document.querySelector('input[name="profileParq1"]:checked')?.value === 'yes',
+                            q2: document.querySelector('input[name="profileParq2"]:checked')?.value === 'yes',
+                            q3: document.querySelector('input[name="profileParq3"]:checked')?.value === 'yes',
+                            q4: document.querySelector('input[name="profileParq4"]:checked')?.value === 'yes',
+                            q5: document.querySelector('input[name="profileParq5"]:checked')?.value === 'yes',
+                            q6: document.querySelector('input[name="profileParq6"]:checked')?.value === 'yes',
+                            q7: document.querySelector('input[name="profileParq7"]:checked')?.value === 'yes',
+                            details: document.getElementById('profileParqDetails').value.trim(),
+                            consentGiven: document.getElementById('profileParqConsent').checked,
+                            completedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        },
+
+                        onboardingComplete: true,
+                        profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    // Save to Firestore
+                    await db.collection('users').doc(currentUserId).set(formData, { merge: true });
+
+                    showToast('Profile saved successfully!');
+                    updateProfileStatus(true);
+                    submitBtn.textContent = 'Save Profile';
+                    submitBtn.disabled = false;
+
+                } catch (error) {
+                    console.error('Error saving profile:', error);
+                    showToast('Failed to save profile. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Profile';
+                }
+            });
+
+            // Update profile status display
+            function updateProfileStatus(isComplete) {
+                const statusEl = document.getElementById('profileStatus');
+                if (isComplete) {
+                    statusEl.textContent = 'Profile completed. You can update your information anytime.';
+                    statusEl.className = 'profile-status completed';
+                } else {
+                    statusEl.textContent = 'Please complete your profile to help us personalise your training.';
+                    statusEl.className = 'profile-status pending';
+                }
+            }
+
+            // Load existing profile data when switching to Profile tab
+            async function loadProfileData() {
+                if (!currentUserId) return;
+
+                try {
+                    const userData = await getUserData(currentUserId);
+                    if (userData) {
+                        // Check if profile is complete
+                        updateProfileStatus(userData.onboardingComplete || false);
+
+                        // Pre-fill form fields if data exists
+                        if (userData.dateOfBirth) document.getElementById('profileDob').value = userData.dateOfBirth;
+                        if (userData.height) document.getElementById('profileHeight').value = userData.height;
+                        if (userData.weight) document.getElementById('profileWeight').value = userData.weight;
+                        if (userData.phone) document.getElementById('profilePhone').value = userData.phone;
+                        if (userData.emergencyContact) {
+                            if (userData.emergencyContact.name) document.getElementById('profileEmergencyName').value = userData.emergencyContact.name;
+                            if (userData.emergencyContact.phone) document.getElementById('profileEmergencyPhone').value = userData.emergencyContact.phone;
+                        }
+                        if (userData.fitnessLevel) document.getElementById('profileFitnessLevel').value = userData.fitnessLevel;
+                        if (userData.exerciseTypes) {
+                            userData.exerciseTypes.forEach(type => {
+                                const checkbox = document.querySelector(`input[name="profileExerciseTypes"][value="${type}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            });
+                        }
+                        if (userData.injuries) document.getElementById('profileInjuries').value = userData.injuries;
+                        if (userData.previousTrainer) document.getElementById('profilePreviousTrainer').value = userData.previousTrainer;
+                        if (userData.goals) {
+                            userData.goals.forEach(goal => {
+                                const checkbox = document.querySelector(`input[name="profileGoals"][value="${goal}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            });
+                        }
+                        if (userData.goalDetails) document.getElementById('profileGoalDetails').value = userData.goalDetails;
+                        if (userData.trainingFrequency) document.getElementById('profileTrainingFrequency').value = userData.trainingFrequency;
+                        if (userData.additionalInfo) document.getElementById('profileAdditionalInfo').value = userData.additionalInfo;
+                        if (userData.parq) {
+                            if (userData.parq.q1) document.querySelector('input[name="profileParq1"][value="yes"]').checked = true;
+                            else if (userData.parq.q1 === false) document.querySelector('input[name="profileParq1"][value="no"]').checked = true;
+                            if (userData.parq.q2) document.querySelector('input[name="profileParq2"][value="yes"]').checked = true;
+                            else if (userData.parq.q2 === false) document.querySelector('input[name="profileParq2"][value="no"]').checked = true;
+                            if (userData.parq.q3) document.querySelector('input[name="profileParq3"][value="yes"]').checked = true;
+                            else if (userData.parq.q3 === false) document.querySelector('input[name="profileParq3"][value="no"]').checked = true;
+                            if (userData.parq.q4) document.querySelector('input[name="profileParq4"][value="yes"]').checked = true;
+                            else if (userData.parq.q4 === false) document.querySelector('input[name="profileParq4"][value="no"]').checked = true;
+                            if (userData.parq.q5) document.querySelector('input[name="profileParq5"][value="yes"]').checked = true;
+                            else if (userData.parq.q5 === false) document.querySelector('input[name="profileParq5"][value="no"]').checked = true;
+                            if (userData.parq.q6) document.querySelector('input[name="profileParq6"][value="yes"]').checked = true;
+                            else if (userData.parq.q6 === false) document.querySelector('input[name="profileParq6"][value="no"]').checked = true;
+                            if (userData.parq.q7) document.querySelector('input[name="profileParq7"][value="yes"]').checked = true;
+                            else if (userData.parq.q7 === false) document.querySelector('input[name="profileParq7"][value="no"]').checked = true;
+                            if (userData.parq.details) document.getElementById('profileParqDetails').value = userData.parq.details;
+                            if (userData.parq.consentGiven) document.getElementById('profileParqConsent').checked = true;
+
+                            // Show PAR-Q details if any yes answers
+                            const hasYes = userData.parq.q1 || userData.parq.q2 || userData.parq.q3 ||
+                                          userData.parq.q4 || userData.parq.q5 || userData.parq.q6 || userData.parq.q7;
+                            document.getElementById('profileParqDetailsGroup').style.display = hasYes ? 'block' : 'none';
+                        }
+                    } else {
+                        updateProfileStatus(false);
+                    }
+                } catch (error) {
+                    console.error('Error loading profile data:', error);
+                }
+            }
+
+            // Load profile data when Profile tab is clicked
+            document.querySelector('.client-nav-item[data-section="profile"]').addEventListener('click', function() {
+                loadProfileData();
             });
 
             // Toast notification
