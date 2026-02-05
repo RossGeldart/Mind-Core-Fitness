@@ -336,9 +336,11 @@
 
                 try {
                     // Check if email exists in Firestore users collection
-                    const snapshot = await db.collection('users')
+                    // First try to find clients needing password setup (works without auth)
+                    let snapshot = await db.collection('users')
                         .where('email', '==', email)
                         .where('role', '==', 'client')
+                        .where('needsPasswordSetup', '==', true)
                         .limit(1)
                         .get();
 
