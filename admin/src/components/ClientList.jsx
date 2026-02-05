@@ -62,9 +62,22 @@ export default function ClientList() {
     return (client.totalSessions || 0) - completed;
   };
 
-  // Get booked sessions count
+  // Get booked sessions count (upcoming only, not completed)
   const getBookedCount = (clientId) => {
-    return sessions.filter(s => s.clientId === clientId).length;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    return sessions.filter(s => {
+      if (s.clientId !== clientId) return false;
+      // Only count future sessions
+      if (s.date > today) return true;
+      if (s.date === today && s.time >= currentTime) return true;
+      return false;
+    }).length;
   };
 
   const formatDate = (timestamp) => {
