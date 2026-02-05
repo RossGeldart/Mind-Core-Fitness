@@ -1,6 +1,4 @@
 {
-  "buildCommand": "cd admin && npm install && npm run build",
-  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -25,20 +23,16 @@
   ],
   "rewrites": [
     {
+      "source": "/admin/assets/:path*",
+      "destination": "/admin/dist/assets/:path*"
+    },
+    {
       "source": "/admin",
       "destination": "/admin/dist/index.html"
     },
     {
-      "source": "/admin/",
+      "source": "/admin/:path*",
       "destination": "/admin/dist/index.html"
-    },
-    {
-      "source": "/admin/dashboard",
-      "destination": "/admin/dist/index.html"
-    },
-    {
-      "source": "/admin/assets/:path*",
-      "destination": "/admin/dist/assets/:path*"
     }
   ],
   "redirects": [
