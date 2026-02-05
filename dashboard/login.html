@@ -35,15 +35,15 @@
 
             <div id="loginError" class="login-error"></div>
 
-            <form id="loginForm" class="login-form">
+            <form id="loginForm" class="login-form" autocomplete="on">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    <input type="email" id="email" name="email" required placeholder="your@email.com" autocomplete="username">
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
                 </div>
 
                 <button type="submit" class="login-btn" id="loginBtn">
@@ -63,7 +63,7 @@
             <div id="resetForm" style="display: none;">
                 <p style="margin-bottom: 16px; color: var(--text-muted);">Enter your email to receive a password reset link.</p>
                 <div class="form-group">
-                    <input type="email" id="resetEmail" placeholder="your@email.com" style="width: 100%;">
+                    <input type="email" id="resetEmail" placeholder="your@email.com" style="width: 100%;" autocomplete="email">
                 </div>
                 <button class="login-btn" id="resetBtn" style="margin-bottom: 12px;">Send Reset Link</button>
                 <button class="btn btn-secondary" id="backToLogin" style="width: 100%;">Back to Login</button>
@@ -77,7 +77,7 @@
                 <div id="setupStep1">
                     <div class="form-group">
                         <label for="setupEmail">Email Address</label>
-                        <input type="email" id="setupEmail" placeholder="your@email.com" required>
+                        <input type="email" id="setupEmail" placeholder="your@email.com" required autocomplete="email">
                     </div>
                     <button class="login-btn" id="checkEmailBtn" style="margin-bottom: 12px;">Continue</button>
                 </div>
@@ -88,11 +88,11 @@
                     </div>
                     <div class="form-group">
                         <label for="setupPassword">Create Password</label>
-                        <input type="password" id="setupPassword" placeholder="At least 6 characters" required minlength="6">
+                        <input type="password" id="setupPassword" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
                     </div>
                     <div class="form-group">
                         <label for="setupPasswordConfirm">Confirm Password</label>
-                        <input type="password" id="setupPasswordConfirm" placeholder="Confirm your password" required>
+                        <input type="password" id="setupPasswordConfirm" placeholder="Confirm your password" required autocomplete="new-password">
                     </div>
                     <button class="login-btn" id="createAccountBtn" style="margin-bottom: 12px;">Create Account</button>
                 </div>
