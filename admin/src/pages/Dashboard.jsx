@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ClientList from '../components/ClientList';
@@ -8,14 +8,59 @@ import './Dashboard.css';
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState('schedule');
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { currentUser, logout, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+  const startY = useRef(0);
+  const isPulling = useRef(false);
 
   useEffect(() => {
     if (!loading && (!currentUser || !isAdmin)) {
       navigate('/');
     }
   }, [currentUser, isAdmin, loading, navigate]);
+
+  // Pull-to-refresh handlers
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY.current = e.touches[0].clientY;
+        isPulling.current = true;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isPulling.current) return;
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - startY.current;
+      if (diff > 0 && window.scrollY === 0) {
+        setPullDistance(Math.min(diff * 0.5, 80));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (pullDistance > 60) {
+        setIsRefreshing(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      } else {
+        setPullDistance(0);
+      }
+      isPulling.current = false;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance]);
 
   const handleLogout = async () => {
     try {
@@ -40,6 +85,15 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
+      {/* Pull to refresh indicator */}
+      {pullDistance > 0 && (
+        <div className="pull-indicator" style={{ height: pullDistance }}>
+          <div className={`pull-spinner ${isRefreshing ? 'spinning' : ''}`}>
+            {isRefreshing ? '↻' : '↓'}
+          </div>
+          <span>{isRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}</span>
+        </div>
+      )}
       <header className="dashboard-header">
         <div className="header-left">
           <h1>Mind Core Fitness</h1>
