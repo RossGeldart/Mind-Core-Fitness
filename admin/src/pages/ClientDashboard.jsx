@@ -293,8 +293,48 @@ export default function ClientDashboard() {
     }
   };
 
+  // Calculate countdown to next session
+  const getNextSessionCountdown = () => {
+    const upcoming = getUpcomingSessions();
+    if (upcoming.length === 0) return null;
+
+    const nextSession = upcoming[0];
+    const now = new Date();
+    const sessionDate = new Date(nextSession.date + 'T' + nextSession.time);
+    const diff = sessionDate - now;
+
+    if (diff <= 0) return null;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return { days, hours, minutes, session: nextSession };
+  };
+
   if (authLoading || loading) {
-    return <div className="client-loading">Loading...</div>;
+    return (
+      <div className="client-dashboard">
+        <header className="client-header">
+          <div className="header-content">
+            <div className="skeleton skeleton-logo"></div>
+          </div>
+        </header>
+        <main className="client-main">
+          <div className="skeleton-welcome">
+            <div className="skeleton skeleton-title"></div>
+            <div className="skeleton skeleton-btn-small"></div>
+          </div>
+          <div className="skeleton-actions">
+            <div className="skeleton skeleton-btn"></div>
+            <div className="skeleton skeleton-btn"></div>
+          </div>
+          <div className="skeleton skeleton-card-large"></div>
+          <div className="skeleton skeleton-card-medium"></div>
+          <div className="skeleton skeleton-card-medium"></div>
+        </main>
+      </div>
+    );
   }
 
   if (!currentUser || !isClient || !clientData) {
@@ -305,6 +345,8 @@ export default function ClientDashboard() {
   const remaining = clientData.totalSessions - completed;
   const upcomingSessions = getUpcomingSessions();
   const availableDates = showRescheduleModal ? getAvailableDates() : [];
+  const countdown = getNextSessionCountdown();
+  const progressPercent = clientData.totalSessions > 0 ? (completed / clientData.totalSessions) * 100 : 0;
 
   return (
     <div className="client-dashboard">
@@ -364,20 +406,78 @@ export default function ClientDashboard() {
           </button>
         </div>
 
+        {/* Countdown to Next Session */}
+        {countdown && (
+          <div className="countdown-card">
+            <div className="countdown-header">
+              <span className="countdown-label">Next Session</span>
+              <span className="countdown-date">{formatDate(countdown.session.date)}</span>
+            </div>
+            <div className="countdown-timer">
+              {countdown.days > 0 && (
+                <div className="countdown-unit">
+                  <span className="countdown-value">{countdown.days}</span>
+                  <span className="countdown-text">days</span>
+                </div>
+              )}
+              <div className="countdown-unit">
+                <span className="countdown-value">{countdown.hours}</span>
+                <span className="countdown-text">hrs</span>
+              </div>
+              <div className="countdown-unit">
+                <span className="countdown-value">{countdown.minutes}</span>
+                <span className="countdown-text">min</span>
+              </div>
+            </div>
+            <div className="countdown-time">at {formatTime(countdown.session.time)}</div>
+          </div>
+        )}
+
         <div className="block-info-card">
-          <h3>Your Training Block</h3>
-          <div className="block-stats">
-            <div className="stat">
-              <span className="stat-value">{remaining}</span>
-              <span className="stat-label">Sessions Remaining</span>
+          <div className="block-header-row">
+            <h3>Your Training Block</h3>
+          </div>
+          <div className="progress-section">
+            <div className="progress-ring-container">
+              <svg className="progress-ring" viewBox="0 0 100 100">
+                <circle
+                  className="progress-ring-bg"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  fill="none"
+                  strokeWidth="8"
+                />
+                <circle
+                  className="progress-ring-fill"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  fill="none"
+                  strokeWidth="8"
+                  strokeDasharray={`${2 * Math.PI * 42}`}
+                  strokeDashoffset={`${2 * Math.PI * 42 * (1 - progressPercent / 100)}`}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="progress-ring-text">
+                <span className="progress-percent">{Math.round(progressPercent)}%</span>
+                <span className="progress-label">complete</span>
+              </div>
             </div>
-            <div className="stat">
-              <span className="stat-value">{completed}</span>
-              <span className="stat-label">Completed</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">{clientData.totalSessions}</span>
-              <span className="stat-label">Total Package</span>
+            <div className="progress-stats">
+              <div className="progress-stat">
+                <span className="progress-stat-value">{completed}</span>
+                <span className="progress-stat-label">Completed</span>
+              </div>
+              <div className="progress-stat">
+                <span className="progress-stat-value">{remaining}</span>
+                <span className="progress-stat-label">Remaining</span>
+              </div>
+              <div className="progress-stat">
+                <span className="progress-stat-value">{clientData.totalSessions}</span>
+                <span className="progress-stat-label">Total</span>
+              </div>
             </div>
           </div>
           <div className="block-dates">
