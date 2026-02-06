@@ -52,7 +52,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>Mind Core Fitness</h1>
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="login-logo" />
           <p>Client Portal</p>
         </div>
 
