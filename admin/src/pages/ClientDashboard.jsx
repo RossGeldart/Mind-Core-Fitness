@@ -152,6 +152,9 @@ export default function ClientDashboard() {
           <button className="forms-btn" onClick={() => navigate('/client/forms')}>
             Forms & Questionnaires
           </button>
+          <button className="tools-btn" onClick={() => navigate('/client/tools')}>
+            Tools & Calculators
+          </button>
         </div>
 
         <div className="block-info-card">
