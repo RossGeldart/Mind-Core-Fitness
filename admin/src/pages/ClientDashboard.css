@@ -104,7 +104,7 @@
 
 .client-dashboard {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-body);
   scroll-behavior: smooth;
 }
 
@@ -114,7 +114,7 @@
   justify-content: center;
   min-height: 100vh;
   font-family: 'Roboto', sans-serif;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Skeleton Loading */
@@ -128,7 +128,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background: var(--bg-skeleton);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
@@ -183,12 +183,12 @@
 
 /* Countdown Card */
 .countdown-card {
-  background: linear-gradient(135deg, #99313c 0%, #7a2730 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
-  color: white;
-  box-shadow: 0 8px 24px rgba(153, 49, 60, 0.3);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-primary);
   animation: cardEntrance 0.5s ease-out 0.1s backwards;
 }
 
@@ -247,7 +247,7 @@
 }
 
 .client-header {
-  background: #1a1a1a;
+  background: var(--bg-header);
   padding: 16px 20px;
   position: sticky;
   top: 0;
@@ -259,8 +259,40 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0 10px;
+}
+
+.header-content .theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-content .theme-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-content .theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Empty placeholder for right side to center logo */
+.header-content::after {
+  content: '';
+  width: 40px;
 }
 
 .header-logo {
@@ -291,15 +323,15 @@
 .welcome-section h2 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.5rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .welcome-section .logout-btn {
   padding: 8px 16px;
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
@@ -308,8 +340,8 @@
 }
 
 .welcome-section .logout-btn:hover {
-  border-color: #99313c;
-  color: #99313c;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .quick-actions {
@@ -323,25 +355,25 @@
 .tools-btn {
   flex: 1;
   padding: 16px 18px;
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #99313c;
+  color: var(--color-primary);
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md), var(--shadow-sm);
   -webkit-tap-highlight-color: transparent;
 }
 
 .forms-btn:hover,
 .tools-btn:hover {
-  border-color: #99313c;
-  background: #fdf5f6;
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(153, 49, 60, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-primary), var(--shadow-sm);
 }
 
 .forms-btn:active,
@@ -351,11 +383,11 @@
 }
 
 .block-info-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md), var(--shadow-sm);
   animation: cardEntrance 0.5s ease-out 0.2s backwards;
 }
 
@@ -366,7 +398,7 @@
 .block-info-card h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.1rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -377,7 +409,7 @@
   gap: 24px;
   padding-bottom: 20px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .progress-ring-container {
@@ -394,11 +426,11 @@
 }
 
 .progress-ring-bg {
-  stroke: #f0f0f0;
+  stroke: var(--border-light);
 }
 
 .progress-ring-fill {
-  stroke: #99313c;
+  stroke: var(--color-primary);
   transition: stroke-dashoffset 1s ease-out;
 }
 
@@ -415,14 +447,14 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #99313c;
+  color: var(--color-primary);
   line-height: 1;
 }
 
 .progress-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.7rem;
-  color: #999;
+  color: var(--text-tertiary);
   text-transform: uppercase;
 }
 
@@ -443,13 +475,13 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .progress-stat-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Legacy block-stats (keeping for backwards compat) */
@@ -471,13 +503,13 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #99313c;
+  color: var(--color-primary);
 }
 
 .stat-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .block-dates {
@@ -495,31 +527,31 @@
 .date-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .date-value {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #373737;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .sessions-section {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md), var(--shadow-sm);
   animation: cardEntrance 0.5s ease-out 0.3s backwards;
 }
 
 .completed-section {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md), var(--shadow-sm);
   animation: cardEntrance 0.5s ease-out 0.4s backwards;
 }
 
@@ -527,14 +559,14 @@
 .completed-section h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0 0 16px 0;
 }
 
 .no-sessions {
   text-align: center;
   padding: 30px 20px;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .no-sessions p {
@@ -559,9 +591,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background: #f9f9f9;
+  background: var(--bg-input);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   animation: cardEntrance 0.4s ease-out backwards;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -587,21 +619,26 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #373737;
+  color: var(--text-primary);
   margin-bottom: 4px;
+}
+
+.today-label {
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .session-time {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .cancel-btn {
   padding: 10px 16px;
   background: transparent;
-  border: 1px solid #d32f2f;
-  color: #d32f2f;
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
@@ -611,8 +648,8 @@
 }
 
 .cancel-btn:hover:not(:disabled) {
-  background: #d32f2f;
-  color: white;
+  background: var(--color-error);
+  color: var(--text-on-primary);
 }
 
 .cancel-btn:active:not(:disabled) {
@@ -626,8 +663,8 @@
 
 .completed-badge {
   padding: 6px 12px;
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--color-success-bg);
+  color: var(--color-success);
   border-radius: 20px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
@@ -637,7 +674,7 @@
 .more-sessions {
   text-align: center;
   padding: 12px;
-  color: #999;
+  color: var(--text-tertiary);
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
 }
@@ -661,13 +698,13 @@
 }
 
 .notification.approved {
-  background: #e8f5e9;
-  border: 1px solid #a5d6a7;
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
 }
 
 .notification.rejected {
-  background: #ffebee;
-  border: 1px solid #ef9a9a;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
 }
 
 .notification-content {
@@ -689,13 +726,13 @@
 }
 
 .notification.approved .notification-icon {
-  background: #2e7d32;
-  color: white;
+  background: var(--color-success);
+  color: var(--text-on-primary);
 }
 
 .notification.rejected .notification-icon {
-  background: #c62828;
-  color: white;
+  background: var(--color-error);
+  color: var(--text-on-primary);
 }
 
 .notification-text strong {
@@ -706,17 +743,17 @@
 }
 
 .notification.approved .notification-text strong {
-  color: #1b5e20;
+  color: var(--color-success);
 }
 
 .notification.rejected .notification-text strong {
-  color: #b71c1c;
+  color: var(--color-error);
 }
 
 .notification-text p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -724,14 +761,14 @@
   padding: 4px 8px;
   background: transparent;
   border: none;
-  color: #999;
+  color: var(--text-tertiary);
   font-size: 1rem;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .dismiss-btn:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* Session Actions */
@@ -743,8 +780,8 @@
 .reschedule-btn {
   padding: 10px 16px;
   background: transparent;
-  border: 1px solid #1976d2;
-  color: #1976d2;
+  border: 1px solid var(--color-info);
+  color: var(--color-info);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
@@ -754,8 +791,8 @@
 }
 
 .reschedule-btn:hover:not(:disabled) {
-  background: #1976d2;
-  color: white;
+  background: var(--color-info);
+  color: var(--text-on-primary);
 }
 
 .reschedule-btn:active:not(:disabled) {
@@ -771,8 +808,8 @@
   display: inline-block;
   margin-top: 6px;
   padding: 4px 10px;
-  background: #fff3e0;
-  color: #e65100;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
   border-radius: 12px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
@@ -786,7 +823,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -796,13 +833,13 @@
 }
 
 .reschedule-modal {
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -825,13 +862,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -839,14 +876,14 @@
   padding: 8px;
   background: transparent;
   border: none;
-  color: #999;
+  color: var(--text-tertiary);
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .close-modal-btn:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .modal-body {
@@ -854,7 +891,7 @@
 }
 
 .current-session-info {
-  background: #f5f5f5;
+  background: var(--bg-input);
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -863,19 +900,19 @@
 .current-session-info p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .current-session-info strong {
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .date-selection h4,
 .time-selection h4 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
@@ -894,8 +931,8 @@
   flex-direction: column;
   align-items: center;
   padding: 12px 8px;
-  background: #f9f9f9;
-  border: 2px solid #e0e0e0;
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -903,7 +940,7 @@
 }
 
 .date-btn:hover {
-  border-color: #99313c;
+  border-color: var(--color-primary);
   transform: translateY(-2px);
 }
 
@@ -912,14 +949,14 @@
 }
 
 .date-btn.selected {
-  background: #99313c;
-  border-color: #99313c;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .date-btn .date-day {
   font-family: 'Roboto', sans-serif;
   font-size: 0.7rem;
-  color: #999;
+  color: var(--text-tertiary);
   text-transform: uppercase;
 }
 
@@ -927,26 +964,26 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .date-btn .date-month {
   font-family: 'Roboto', sans-serif;
   font-size: 0.7rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .date-btn.selected .date-day,
 .date-btn.selected .date-num,
 .date-btn.selected .date-month {
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .no-dates,
 .no-slots {
   text-align: center;
   padding: 20px;
-  color: #999;
+  color: var(--text-tertiary);
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
 }
@@ -963,19 +1000,19 @@
 
 .time-btn {
   padding: 10px;
-  background: #f9f9f9;
-  border: 2px solid #e0e0e0;
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #373737;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .time-btn:hover {
-  border-color: #99313c;
+  border-color: var(--color-primary);
   transform: translateY(-1px);
 }
 
@@ -984,37 +1021,37 @@
 }
 
 .time-btn.selected {
-  background: #99313c;
-  border-color: #99313c;
-  color: white;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-on-primary);
 }
 
 .time-btn.morning {
-  background: #fff8e1;
+  background: var(--time-morning);
 }
 
 .time-btn.afternoon {
-  background: #e3f2fd;
+  background: var(--time-afternoon);
 }
 
 .time-btn.morning.selected,
 .time-btn.afternoon.selected {
-  background: #99313c;
+  background: var(--color-primary);
 }
 
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .cancel-modal-btn {
   flex: 1;
   padding: 14px;
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 8px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
@@ -1024,8 +1061,8 @@
 }
 
 .cancel-modal-btn:hover {
-  border-color: #999;
-  color: #333;
+  border-color: var(--text-tertiary);
+  color: var(--text-primary);
 }
 
 .cancel-modal-btn:active {
@@ -1035,9 +1072,9 @@
 .submit-reschedule-btn {
   flex: 1;
   padding: 14px;
-  background: #99313c;
+  background: var(--color-primary);
   border: none;
-  color: white;
+  color: var(--text-on-primary);
   border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
@@ -1048,9 +1085,9 @@
 }
 
 .submit-reschedule-btn:hover:not(:disabled) {
-  background: #7a2730;
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .submit-reschedule-btn:active:not(:disabled) {
@@ -1183,6 +1220,26 @@
   flex-shrink: 0;
 }
 
+.toast-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes checkDraw {
+  0% {
+    stroke-dashoffset: 30;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.success-check-icon .check-path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: checkDraw 0.4s ease-out 0.1s forwards;
+}
+
 .toast-message {
   flex: 1;
   font-family: 'Roboto', sans-serif;
@@ -1209,7 +1266,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #f5f5f5;
+  background: var(--bg-body);
   overflow: hidden;
   transition: height 0.1s ease-out;
   opacity: 0;
@@ -1224,7 +1281,7 @@
 }
 
 .refresh-spinner {
-  color: #99313c;
+  color: var(--color-primary);
   transition: transform 0.2s;
 }
 
@@ -1235,7 +1292,7 @@
 .refresh-text {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Swipeable Session Cards */
@@ -1295,7 +1352,7 @@
 .session-card {
   transition: transform 0.3s ease;
   position: relative;
-  background: #f9f9f9;
+  background: var(--bg-input);
 }
 
 /* Confirmation Modal - Bottom Sheet on Mobile */
@@ -1305,7 +1362,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1315,13 +1372,13 @@
 }
 
 .confirm-modal {
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px 20px 0 0;
   padding: 24px;
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
   width: 100%;
   max-width: 600px;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1330,7 +1387,7 @@
   display: block;
   width: 40px;
   height: 4px;
-  background: #ddd;
+  background: var(--border-color);
   border-radius: 2px;
   margin: 0 auto 16px;
 }
@@ -1357,7 +1414,7 @@
 .confirm-modal h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
   text-align: center;
 }
@@ -1365,7 +1422,7 @@
 .confirm-modal p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 24px 0;
   text-align: center;
   line-height: 1.5;
@@ -1379,9 +1436,9 @@
 .confirm-cancel-btn {
   flex: 1;
   padding: 14px;
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
-  color: #666;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 10px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
@@ -1390,7 +1447,7 @@
 }
 
 .confirm-cancel-btn:hover {
-  background: #e0e0e0;
+  background: var(--border-color);
 }
 
 .confirm-cancel-btn:active {
@@ -1400,9 +1457,9 @@
 .confirm-btn {
   flex: 1;
   padding: 14px;
-  background: #d32f2f;
+  background: var(--color-error);
   border: none;
-  color: white;
+  color: var(--text-on-primary);
   border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
@@ -1412,7 +1469,7 @@
 }
 
 .confirm-btn:hover {
-  background: #b71c1c;
+  filter: brightness(0.9);
 }
 
 .confirm-btn:active {
@@ -1435,7 +1492,7 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #ccc;
+    color: var(--text-tertiary);
     font-size: 1.2rem;
   }
 
@@ -1460,12 +1517,12 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #99313c 0%, #7a2730 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border: none;
-  color: white;
+  color: var(--text-on-primary);
   font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(153, 49, 60, 0.4);
+  box-shadow: var(--shadow-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -1475,7 +1532,7 @@
 
 .fab-main:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+  box-shadow: var(--shadow-lg);
 }
 
 .fab-main:active {
@@ -1484,7 +1541,7 @@
 
 .fab-main.open {
   transform: rotate(45deg);
-  background: #666;
+  background: var(--text-secondary);
 }
 
 .fab-main.open:hover {
@@ -1518,15 +1575,15 @@
   align-items: center;
   gap: 10px;
   padding: 12px 18px;
-  background: white;
+  background: var(--bg-card);
   border: none;
   border-radius: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   cursor: pointer;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #373737;
+  color: var(--text-primary);
   white-space: nowrap;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -1534,7 +1591,7 @@
 
 .fab-action:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 .fab-action:active {
@@ -1544,7 +1601,7 @@
 .fab-action svg {
   width: 20px;
   height: 20px;
-  color: #99313c;
+  color: var(--color-primary);
 }
 
 /* Staggered animation for FAB actions */

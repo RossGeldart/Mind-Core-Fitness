@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   SCHEDULE,
   DAYS,
@@ -51,7 +52,11 @@ export default function ClientDashboard() {
   // FAB state
   const [fabOpen, setFabOpen] = useState(false);
 
+  // Progress ring animation state
+  const [animateRing, setAnimateRing] = useState(false);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Toast notification helper
@@ -148,6 +153,14 @@ export default function ClientDashboard() {
     }
   }, [clientData]);
 
+  // Trigger progress ring animation on load
+  useEffect(() => {
+    if (!loading && clientData) {
+      const timer = setTimeout(() => setAnimateRing(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, clientData]);
+
   const fetchAllData = async () => {
     try {
       // Fetch client's sessions
@@ -239,6 +252,12 @@ export default function ClientDashboard() {
     if (session.date < today) return true;
     if (session.date === today && session.time < currentTime) return true;
     return false;
+  };
+
+  const isSessionToday = (session) => {
+    const now = new Date();
+    const today = formatDateKey(now);
+    return session.date === today && !isSessionPast(session);
   };
 
   const getCompletedCount = () => {
@@ -459,6 +478,21 @@ export default function ClientDashboard() {
     <div className="client-dashboard">
       <header className="client-header">
         <div className="header-content">
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+              </svg>
+            )}
+          </button>
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
         </div>
       </header>
@@ -477,7 +511,7 @@ export default function ClientDashboard() {
       </div>
 
       <main
-        className="client-main"
+        className="client-main page-transition-enter"
         ref={mainRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -566,14 +600,14 @@ export default function ClientDashboard() {
                   strokeWidth="8"
                 />
                 <circle
-                  className="progress-ring-fill"
+                  className={`progress-ring-fill ${animateRing ? 'animate' : ''}`}
                   cx="50"
                   cy="50"
                   r="42"
                   fill="none"
                   strokeWidth="8"
                   strokeDasharray={`${2 * Math.PI * 42}`}
-                  strokeDashoffset={`${2 * Math.PI * 42 * (1 - progressPercent / 100)}`}
+                  strokeDashoffset={animateRing ? `${2 * Math.PI * 42 * (1 - progressPercent / 100)}` : `${2 * Math.PI * 42}`}
                   strokeLinecap="round"
                 />
               </svg>
@@ -625,9 +659,21 @@ export default function ClientDashboard() {
         <div className="sessions-section">
           <h3>Upcoming Sessions ({upcomingSessions.length})</h3>
           {upcomingSessions.length === 0 ? (
-            <div className="no-sessions">
-              <p>No upcoming sessions scheduled</p>
-              <span>Contact your trainer to book sessions</span>
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="20" y="15" width="60" height="70" rx="4" />
+                  <line x1="20" y1="35" x2="80" y2="35" />
+                  <line x1="35" y1="15" x2="35" y2="35" />
+                  <line x1="65" y1="15" x2="65" y2="35" />
+                  <circle cx="40" cy="55" r="4" fill="currentColor" opacity="0.3" />
+                  <circle cx="60" cy="55" r="4" fill="currentColor" opacity="0.3" />
+                  <circle cx="40" cy="70" r="4" fill="currentColor" opacity="0.3" />
+                  <circle cx="60" cy="70" r="4" fill="currentColor" opacity="0.3" />
+                </svg>
+              </div>
+              <h4>No upcoming sessions</h4>
+              <p>Contact your trainer to book sessions</p>
             </div>
           ) : (
             <div className="sessions-list">
@@ -654,9 +700,12 @@ export default function ClientDashboard() {
                       Cancel
                     </button>
                   </div>
-                  <div className="session-card" onClick={() => swipedCardId === session.id && setSwipedCardId(null)}>
+                  <div className={`session-card ${isSessionToday(session) ? 'today-session' : ''}`} onClick={() => swipedCardId === session.id && setSwipedCardId(null)}>
                     <div className="session-info">
-                      <div className="session-date">{formatDate(session.date)}</div>
+                      <div className="session-date">
+                        {isSessionToday(session) && <span className="today-label">Today - </span>}
+                        {formatDate(session.date)}
+                      </div>
                       <div className="session-time">{formatTime(session.time)} ({session.duration} min)</div>
                       {hasPendingRequest(session.id) && (
                         <div className="pending-badge">Reschedule pending</div>
@@ -688,8 +737,16 @@ export default function ClientDashboard() {
         <div className="completed-section">
           <h3>Completed Sessions ({completed})</h3>
           {completed === 0 ? (
-            <div className="no-sessions">
-              <p>No completed sessions yet</p>
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="50" cy="50" r="35" />
+                  <path d="M35 50 L45 60 L65 40" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" />
+                  <path d="M50 25 L50 50 L65 55" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h4>No completed sessions yet</h4>
+              <p>Your completed sessions will appear here</p>
             </div>
           ) : (
             <div className="sessions-list completed">
@@ -789,7 +846,22 @@ export default function ClientDashboard() {
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
           <span className="toast-icon">
-            {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : 'ℹ'}
+            {toast.type === 'success' ? (
+              <svg className="success-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path className="check-path" d="M5 13 L9 17 L19 7" />
+              </svg>
+            ) : toast.type === 'error' ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <circle cx="12" cy="16" r="1" fill="currentColor" />
+              </svg>
+            )}
           </span>
           <span className="toast-message">{toast.message}</span>
           <button className="toast-close" onClick={() => setToast(null)}>✕</button>
