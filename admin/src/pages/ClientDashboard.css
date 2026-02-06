@@ -10,6 +10,58 @@
   }
 }
 
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes confirmBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -1054,5 +1106,306 @@
 
   .notification-content {
     flex-direction: column;
+  }
+}
+
+/* Ripple Effect */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: rippleEffect 0.6s linear;
+  pointer-events: none;
+}
+
+.cancel-btn .ripple,
+.confirm-btn .ripple {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.forms-btn .ripple,
+.tools-btn .ripple {
+  background: rgba(153, 49, 60, 0.2);
+}
+
+/* Toast Notifications */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  left: 24px;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+.toast-notification.success {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  color: white;
+}
+
+.toast-notification.error {
+  background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+  color: white;
+}
+
+.toast-notification.info {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+}
+
+.toast-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+}
+
+.toast-close {
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.toast-close:hover {
+  color: white;
+}
+
+/* Pull to Refresh */
+.pull-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f5f5f5;
+  overflow: hidden;
+  transition: height 0.1s ease-out;
+  opacity: 0;
+}
+
+.pull-refresh-indicator.visible {
+  opacity: 1;
+}
+
+.pull-refresh-indicator.refreshing {
+  height: 60px !important;
+}
+
+.refresh-spinner {
+  color: #99313c;
+  transition: transform 0.2s;
+}
+
+.refresh-spinner.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.refresh-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Swipeable Session Cards */
+.session-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.session-card-swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.session-card-wrapper.swiped .session-card-swipe-actions {
+  transform: translateX(0);
+}
+
+.session-card-wrapper.swiped .session-card {
+  transform: translateX(-160px);
+}
+
+.swipe-action-btn {
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.swipe-action-btn.reschedule {
+  background: #1976d2;
+  color: white;
+}
+
+.swipe-action-btn.cancel {
+  background: #d32f2f;
+  color: white;
+}
+
+.swipe-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.session-card {
+  transition: transform 0.3s ease;
+  position: relative;
+  background: #f9f9f9;
+}
+
+/* Confirmation Modal */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  animation: fadeInOverlay 0.2s ease-out;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: confirmBounce 0.3s ease-out;
+}
+
+.confirm-modal h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  color: #373737;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.confirm-modal p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.confirm-cancel-btn {
+  flex: 1;
+  padding: 14px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #666;
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.confirm-cancel-btn:active {
+  transform: scale(0.97);
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 14px;
+  background: #d32f2f;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-btn:hover {
+  background: #b71c1c;
+}
+
+.confirm-btn:active {
+  transform: scale(0.97);
+}
+
+/* Mobile specific for swipe */
+@media (max-width: 480px) {
+  .session-card-wrapper .session-actions {
+    display: none;
+  }
+
+  .session-card-wrapper .session-card {
+    padding-right: 40px;
+  }
+
+  .session-card-wrapper .session-card::after {
+    content: '←';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+    font-size: 1.2rem;
+  }
+
+  .session-card-wrapper.swiped .session-card::after {
+    opacity: 0;
   }
 }
