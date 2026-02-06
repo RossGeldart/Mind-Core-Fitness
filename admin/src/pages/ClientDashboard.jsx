@@ -138,7 +138,8 @@ export default function ClientDashboard() {
     <div className="client-dashboard">
       <header className="client-header">
         <div className="header-content">
-          <h1>Mind Core Fitness</h1>
+          <div className="header-spacer"></div>
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
           <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
       </header>
