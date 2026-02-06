@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, doc, deleteDoc, updateDoc, Timestamp, query, orderBy } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { db, secondaryAuth } from '../config/firebase';
 import './ClientList.css';
 
 export default function ClientList() {
@@ -128,13 +129,15 @@ export default function ClientList() {
     setEditForm({
       name: client.name,
       email: client.email,
+      password: '',
       weeksInBlock: client.weeksInBlock,
       totalSessions: client.totalSessions,
       sessionsRemaining: client.sessionsRemaining,
       sessionDuration: client.sessionDuration || 45,
       startDate: formatDateForInput(client.startDate),
       endDate: formatDateForInput(client.endDate),
-      status: client.status
+      status: client.status,
+      hasPortalAccess: !!client.uid
     });
   };
 
@@ -166,7 +169,34 @@ export default function ClientList() {
 
   const handleSaveEdit = async (clientId) => {
     try {
-      await updateDoc(doc(db, 'clients', clientId), {
+      const client = clients.find(c => c.id === clientId);
+      let newUid = client?.uid;
+
+      // If password provided and client doesn't have portal access, create Firebase Auth account
+      if (editForm.password && editForm.password.length >= 6 && !client?.uid) {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            secondaryAuth,
+            editForm.email.trim().toLowerCase(),
+            editForm.password
+          );
+          await signOut(secondaryAuth);
+          newUid = userCredential.user.uid;
+        } catch (authError) {
+          console.error('Error creating auth account:', authError);
+          if (authError.code === 'auth/email-already-in-use') {
+            alert('This email already has a portal account. Password not changed.');
+          } else if (authError.code === 'auth/weak-password') {
+            alert('Password must be at least 6 characters.');
+            return;
+          } else {
+            alert('Failed to create portal account: ' + authError.message);
+            return;
+          }
+        }
+      }
+
+      const updateData = {
         name: editForm.name.trim(),
         email: editForm.email.trim().toLowerCase(),
         weeksInBlock: parseInt(editForm.weeksInBlock),
@@ -175,13 +205,21 @@ export default function ClientList() {
         startDate: Timestamp.fromDate(new Date(editForm.startDate)),
         endDate: Timestamp.fromDate(new Date(editForm.endDate)),
         status: editForm.status
-      });
+      };
+
+      // Add UID if we created a new account
+      if (newUid && !client?.uid) {
+        updateData.uid = newUid;
+      }
+
+      await updateDoc(doc(db, 'clients', clientId), updateData);
 
       setClients(clients.map(c =>
         c.id === clientId
           ? {
               ...c,
               ...editForm,
+              uid: newUid || c.uid,
               weeksInBlock: parseInt(editForm.weeksInBlock),
               totalSessions: parseInt(editForm.totalSessions),
               sessionDuration: parseInt(editForm.sessionDuration),
@@ -191,6 +229,10 @@ export default function ClientList() {
           : c
       ));
       setEditingClient(null);
+
+      if (newUid && !client?.uid) {
+        alert('Portal access created! Client can now log in.');
+      }
     } catch (error) {
       console.error('Error updating client:', error);
       alert('Failed to update client');
@@ -287,6 +329,24 @@ export default function ClientList() {
                   value={editForm.endDate}
                   onChange={handleEditChange}
                 />
+              </div>
+              <div className="edit-row password-row">
+                {editForm.hasPortalAccess ? (
+                  <div className="portal-status has-access">
+                    ✓ Has portal access
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      name="password"
+                      value={editForm.password}
+                      onChange={handleEditChange}
+                      placeholder="Set portal password (min 6 chars)"
+                    />
+                    <span className="password-hint">Set password to enable client portal</span>
+                  </>
+                )}
               </div>
               <div className="edit-actions">
                 <button className="save-edit-btn" onClick={() => handleSaveEdit(client.id)}>
