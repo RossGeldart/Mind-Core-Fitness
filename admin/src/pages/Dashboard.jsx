@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
@@ -22,6 +24,38 @@ export default function Dashboard() {
       navigate('/');
     }
   }, [currentUser, isAdmin, loading, navigate]);
+
+  // Cleanup orphaned sessions (sessions with no matching client)
+  useEffect(() => {
+    const cleanupOrphanedSessions = async () => {
+      if (!currentUser || !isAdmin) return;
+
+      try {
+        const [clientsSnapshot, sessionsSnapshot] = await Promise.all([
+          getDocs(collection(db, 'clients')),
+          getDocs(collection(db, 'sessions'))
+        ]);
+
+        const clientIds = new Set(clientsSnapshot.docs.map(doc => doc.id));
+        const orphanedSessions = sessionsSnapshot.docs.filter(
+          sessionDoc => !clientIds.has(sessionDoc.data().clientId)
+        );
+
+        if (orphanedSessions.length > 0) {
+          console.log(`Cleaning up ${orphanedSessions.length} orphaned sessions...`);
+          const deletePromises = orphanedSessions.map(sessionDoc =>
+            deleteDoc(doc(db, 'sessions', sessionDoc.id))
+          );
+          await Promise.all(deletePromises);
+          console.log('Orphaned sessions cleaned up successfully');
+        }
+      } catch (error) {
+        console.error('Error cleaning up orphaned sessions:', error);
+      }
+    };
+
+    cleanupOrphanedSessions();
+  }, [currentUser, isAdmin]);
 
   // Pull-to-refresh handlers
   useEffect(() => {
