@@ -16,7 +16,7 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 10px;
 }
 
@@ -31,35 +31,19 @@
 .back-btn {
   padding: 8px 16px;
   background: transparent;
-  border: 1px solid #666;
-  color: #999;
+  border: 1px solid #ddd;
+  color: #666;
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
+  margin-bottom: 16px;
 }
 
 .back-btn:hover {
-  border-color: #999;
-  color: white;
-}
-
-.logout-btn {
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid #666;
-  color: #999;
-  border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
-  border-color: #999;
-  color: white;
+  border-color: #99313c;
+  color: #99313c;
 }
 
 .forms-main {
