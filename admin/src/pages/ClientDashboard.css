@@ -1300,6 +1300,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 8px;
+  background: var(--bg-card);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .session-card-swipe-actions {
@@ -1311,6 +1313,8 @@
   align-items: stretch;
   transform: translateX(100%);
   transition: transform 0.3s ease;
+  background: var(--bg-card);
+  z-index: 1;
 }
 
 .session-card-wrapper.swiped .session-card-swipe-actions {
@@ -1331,17 +1335,33 @@
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .swipe-action-btn.reschedule {
-  background: #1976d2;
-  color: white;
+  background: #1976d2 !important;
+  color: white !important;
+}
+
+.swipe-action-btn.reschedule:active,
+.swipe-action-btn.reschedule:focus {
+  background: #1565c0 !important;
+  color: white !important;
 }
 
 .swipe-action-btn.cancel {
-  background: #d32f2f;
-  color: white;
+  background: #d32f2f !important;
+  color: white !important;
+}
+
+.swipe-action-btn.cancel:active,
+.swipe-action-btn.cancel:focus {
+  background: #c62828 !important;
+  color: white !important;
 }
 
 .swipe-action-btn:disabled {
