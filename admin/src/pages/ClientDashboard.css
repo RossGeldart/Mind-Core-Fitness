@@ -1692,6 +1692,20 @@
   }
 }
 
+/* FAB Backdrop Blur */
+.fab-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 899;
+  animation: fadeInOverlay 0.25s ease-out;
+}
+
 /* Floating Action Button */
 .fab-container {
   position: fixed;
