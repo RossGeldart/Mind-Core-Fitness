@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  browserLocalPersistence,
+  setPersistence
+} from 'firebase/auth';
 import { auth, ADMIN_UID } from '../config/firebase';
 
 const AuthContext = createContext();
@@ -24,6 +30,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
+    // Set persistence to local (survives browser restarts)
+    await setPersistence(auth, browserLocalPersistence);
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     if (userCredential.user.uid !== ADMIN_UID) {
       await signOut(auth);
