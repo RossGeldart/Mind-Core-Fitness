@@ -88,8 +88,13 @@ export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays,
   // Check if it's a holiday
   if (holidays.some(h => h.date === dateKey)) return false;
 
-  // Check if time is blocked
-  if (blockedTimes.some(bt => bt.date === dateKey && bt.time === time)) return false;
+  // Check if any time during the session is blocked
+  // For a 45-min session starting at 9:15, check 9:15, 9:30, and 9:45
+  const slotsToCheck = Math.ceil(sessionDuration / 15);
+  for (let i = 0; i < slotsToCheck; i++) {
+    const checkTime = addMinutesToTime(time, i * 15);
+    if (blockedTimes.some(bt => bt.date === dateKey && bt.time === checkTime)) return false;
+  }
 
   // Check if slot is in the past
   const now = new Date();
