@@ -37,6 +37,8 @@
   padding: 20px;
   border: 1px solid #e0e0e0;
   transition: box-shadow 0.2s;
+  position: relative;
+  z-index: 1;
 }
 
 .client-card:hover {
