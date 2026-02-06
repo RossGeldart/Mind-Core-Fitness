@@ -138,15 +138,14 @@ export default function ClientDashboard() {
     <div className="client-dashboard">
       <header className="client-header">
         <div className="header-content">
-          <div className="header-spacer"></div>
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
-          <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
       </header>
 
       <main className="client-main">
         <div className="welcome-section">
           <h2>Welcome, {clientData.name.split(' ')[0]}</h2>
+          <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
 
         <div className="quick-actions">

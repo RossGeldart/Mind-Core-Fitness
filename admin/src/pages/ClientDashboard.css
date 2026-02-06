@@ -25,12 +25,8 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 10px;
-}
-
-.header-spacer {
-  width: 80px;
 }
 
 .header-logo {
@@ -41,24 +37,6 @@
   border: 2px solid #99313c;
 }
 
-.logout-btn {
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid #666;
-  color: #999;
-  border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 80px;
-}
-
-.logout-btn:hover {
-  border-color: #999;
-  color: white;
-}
-
 .client-main {
   max-width: 600px;
   margin: 0 auto;
@@ -67,6 +45,9 @@
 
 .welcome-section {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .welcome-section h2 {
@@ -74,6 +55,23 @@
   font-size: 1.5rem;
   color: #373737;
   margin: 0;
+}
+
+.welcome-section .logout-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.welcome-section .logout-btn:hover {
+  border-color: #99313c;
+  color: #99313c;
 }
 
 .quick-actions {
