@@ -596,24 +596,65 @@ export default function ClientDashboard() {
           </div>
         )}
 
-        {/* Live Countdown to Next Session */}
+        {/* Circular Ring Countdown Timer */}
         {liveCountdown && (
-          <div className="countdown-card">
-            <div className="countdown-timer-live">
-              {liveCountdown.days > 0 && (
-                <>
-                  <span className="countdown-number">{String(liveCountdown.days).padStart(2, '0')}</span>
-                  <span className="countdown-separator">:</span>
-                </>
-              )}
-              <span className="countdown-number">{String(liveCountdown.hours).padStart(2, '0')}</span>
-              <span className="countdown-separator">:</span>
-              <span className="countdown-number">{String(liveCountdown.minutes).padStart(2, '0')}</span>
-              <span className="countdown-separator">:</span>
-              <span className="countdown-number countdown-seconds">{String(liveCountdown.seconds).padStart(2, '0')}</span>
+          <div className="ring-timer-container">
+            <div className="ring-timer">
+              {/* SVG Ring with 60 tick marks */}
+              <svg className="ring-timer-svg" viewBox="0 0 200 200">
+                {/* Generate 60 tick marks */}
+                {[...Array(60)].map((_, i) => {
+                  const angle = (i * 6 - 90) * (Math.PI / 180); // Start from top (12 o'clock)
+                  const innerRadius = 85;
+                  const outerRadius = 96;
+                  const x1 = 100 + innerRadius * Math.cos(angle);
+                  const y1 = 100 + innerRadius * Math.sin(angle);
+                  const x2 = 100 + outerRadius * Math.cos(angle);
+                  const y2 = 100 + outerRadius * Math.sin(angle);
+
+                  // Calculate which ticks should be white (elapsed) vs red (remaining)
+                  // Counterclockwise from 12 o'clock, ticks turn white as seconds pass
+                  const currentSecond = liveCountdown.seconds;
+                  const ticksElapsed = 60 - currentSecond; // Number of ticks that should be white
+                  // Counterclockwise: tick 0 is at 12 o'clock, tick 1 is at 11:59, etc.
+                  const isElapsed = i < ticksElapsed;
+
+                  return (
+                    <line
+                      key={i}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      className={`ring-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
+                      strokeWidth={i % 5 === 0 ? "3" : "2"}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Center content - Logo and countdown */}
+              <div className="ring-timer-center">
+                <div className="ring-timer-logo">
+                  <img src="/Logo.PNG" alt="Mind Core Fitness" />
+                </div>
+                <div className="ring-timer-countdown">
+                  {liveCountdown.days > 0 && (
+                    <>
+                      <span className="timer-digit">{String(liveCountdown.days).padStart(2, '0')}</span>
+                      <span className="timer-colon">:</span>
+                    </>
+                  )}
+                  <span className="timer-digit">{String(liveCountdown.hours).padStart(2, '0')}</span>
+                  <span className="timer-colon">:</span>
+                  <span className="timer-digit">{String(liveCountdown.minutes).padStart(2, '0')}</span>
+                  <span className="timer-colon">:</span>
+                  <span className="timer-digit timer-seconds">{String(liveCountdown.seconds).padStart(2, '0')}</span>
+                </div>
+                <div className="ring-timer-label">until next session</div>
+              </div>
             </div>
-            <div className="countdown-label-text">until next session</div>
-            <div className="countdown-session-info">
+            <div className="ring-timer-session-info">
               {formatDate(liveCountdown.session.date)} at {formatTime(liveCountdown.session.time)}
             </div>
           </div>
