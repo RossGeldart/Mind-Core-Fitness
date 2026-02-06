@@ -91,10 +91,21 @@ export default function ClientList() {
   };
 
   const handleDelete = async (clientId, clientName) => {
-    if (window.confirm(`Are you sure you want to delete ${clientName}?`)) {
+    if (window.confirm(`Are you sure you want to delete ${clientName}? This will also delete all their booked sessions.`)) {
       try {
+        // First, delete all sessions for this client
+        const clientSessions = sessions.filter(s => s.clientId === clientId);
+        const deletePromises = clientSessions.map(session =>
+          deleteDoc(doc(db, 'sessions', session.id))
+        );
+        await Promise.all(deletePromises);
+
+        // Then delete the client
         await deleteDoc(doc(db, 'clients', clientId));
+
+        // Update local state for both
         setClients(clients.filter(c => c.id !== clientId));
+        setSessions(sessions.filter(s => s.clientId !== clientId));
       } catch (error) {
         console.error('Error deleting client:', error);
         alert('Failed to delete client');
