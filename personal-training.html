@@ -1794,6 +1794,59 @@
             transform: translateY(0);
         }
 
+        /* Scroll Animations */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Stagger animation delays for gallery */
+        .gallery-item:nth-child(1) { transition-delay: 0s; }
+        .gallery-item:nth-child(2) { transition-delay: 0.1s; }
+        .gallery-item:nth-child(3) { transition-delay: 0.2s; }
+        .gallery-item:nth-child(4) { transition-delay: 0.15s; }
+        .gallery-item:nth-child(5) { transition-delay: 0.25s; }
+        .gallery-item:nth-child(6) { transition-delay: 0.3s; }
+
         /* Client Results Carousel */
         .client-results {
             background: var(--bg-color);
@@ -1933,10 +1986,18 @@
 
         /* Accessibility - Reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
-            .fade-in {
+            .fade-in,
+            .slide-up,
+            .slide-in-left,
+            .slide-in-right,
+            .scale-in {
                 opacity: 1;
                 transform: none;
                 transition: none;
+            }
+
+            .gallery-item {
+                transition-delay: 0s !important;
             }
 
             .pillar-card,
@@ -2189,37 +2250,37 @@
             </div>
 
             <div class="gallery-grid">
-                <div class="gallery-item large">
+                <div class="gallery-item large slide-up">
                     <picture>
                         <source srcset="Gym Studio 1.webp" type="image/webp">
                         <img src="Gym Studio 1.jpg" alt="Training Studio">
                     </picture>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 2.webp" type="image/webp">
                         <img src="Gym Studio 2.jpg" alt="Equipment">
                     </picture>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 3.webp" type="image/webp">
                         <img src="Gym Studio 3.jpg" alt="Training Area">
                     </picture>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item scale-in">
                     <picture>
                         <source srcset="Gym Studio 4.webp" type="image/webp">
                         <img src="Gym Studio 4.jpg" alt="Weights">
                     </picture>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 5.webp" type="image/webp">
                         <img src="Gym Studio 5.jpg" alt="Functional Area">
                     </picture>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 6.webp" type="image/webp">
                         <img src="Gym Studio 6.jpg" alt="Studio Space">
@@ -2672,7 +2733,7 @@
 
     <!-- Scroll Animation -->
     <script>
-        const fadeElements = document.querySelectorAll('.fade-in');
+        const animatedElements = document.querySelectorAll('.fade-in, .slide-up, .slide-in-left, .slide-in-right, .scale-in');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2680,18 +2741,18 @@
                 }
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-        fadeElements.forEach(el => observer.observe(el));
+        animatedElements.forEach(el => observer.observe(el));
 
         // Handle back-forward cache to prevent animation flash
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
-                fadeElements.forEach(function(el) {
+                animatedElements.forEach(function(el) {
                     el.classList.add('visible');
                     el.style.transition = 'none';
                 });
                 requestAnimationFrame(function() {
                     requestAnimationFrame(function() {
-                        fadeElements.forEach(function(el) {
+                        animatedElements.forEach(function(el) {
                             el.style.transition = '';
                         });
                     });
