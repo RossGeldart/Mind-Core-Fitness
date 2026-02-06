@@ -259,11 +259,14 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 10px;
+  position: relative;
 }
 
 .header-content .theme-toggle {
+  position: absolute;
+  left: 10px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -289,12 +292,6 @@
   height: 20px;
 }
 
-/* Empty placeholder for right side to center logo */
-.header-content::after {
-  content: '';
-  width: 40px;
-}
-
 .header-logo {
   height: 50px;
   width: 50px;
@@ -307,7 +304,7 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  padding-bottom: 100px; /* Space for FAB */
+  padding-bottom: 120px; /* Space for FAB */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; /* Momentum scrolling on iOS */
 }
@@ -1504,12 +1501,12 @@
 /* Floating Action Button */
 .fab-container {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 32px;
+  right: 20px;
   z-index: 900;
   display: flex;
   flex-direction: column-reverse;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
 }
 
@@ -1556,12 +1553,13 @@
 .fab-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 12px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px) scale(0.8);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 8px;
 }
 
 .fab-container.open .fab-actions {
@@ -1643,10 +1641,14 @@
   }
 
   .fab-container {
-    bottom: calc(24px + env(safe-area-inset-bottom));
+    bottom: calc(32px + env(safe-area-inset-bottom));
   }
 
   .toast-notification {
-    bottom: calc(24px + env(safe-area-inset-bottom));
+    bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+
+  .client-main {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
   }
 }
