@@ -54,20 +54,34 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 0;
+}
+
+.client-info {
+  background: #1a1a1a;
+  padding: 16px;
+  border-radius: 8px;
+  margin: -20px -20px 16px -20px;
+  width: calc(100% + 40px);
 }
 
 .client-info h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.1rem;
-  color: #373737;
+  color: #ffffff;
   margin: 0 0 4px 0;
 }
 
 .client-email {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.client-status {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 
 .status-badge {
@@ -77,16 +91,19 @@
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
   text-transform: uppercase;
+  border: 1px solid;
 }
 
 .status-badge.active {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.15);
+  color: #4caf50;
+  border-color: rgba(76, 175, 80, 0.3);
 }
 
 .status-badge.archived {
-  background: #f5f5f5;
-  color: #999;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .client-details {
