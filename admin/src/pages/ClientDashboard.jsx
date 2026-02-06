@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -32,8 +32,106 @@ export default function ClientDashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [pendingRequests, setPendingRequests] = useState([]);
 
+  // Toast notification state
+  const [toast, setToast] = useState(null);
+
+  // Pull to refresh state
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const mainRef = useRef(null);
+  const touchStartY = useRef(0);
+  const isPulling = useRef(false);
+
+  // Swipe state for session cards
+  const [swipedCardId, setSwipedCardId] = useState(null);
+
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState(null);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Toast notification helper
+  const showToast = useCallback((message, type = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  }, []);
+
+  // Ripple effect helper
+  const createRipple = (event) => {
+    const button = event.currentTarget;
+    const existingRipple = button.querySelector('.ripple');
+    if (existingRipple) existingRipple.remove();
+
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    const rect = button.getBoundingClientRect();
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${event.clientX - rect.left - radius}px`;
+    circle.style.top = `${event.clientY - rect.top - radius}px`;
+    circle.classList.add('ripple');
+
+    button.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+  };
+
+  // Pull to refresh handlers
+  const handleTouchStart = (e) => {
+    if (mainRef.current && mainRef.current.scrollTop === 0) {
+      touchStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isPulling.current || !mainRef.current) return;
+
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+
+    if (diff > 0 && mainRef.current.scrollTop === 0) {
+      e.preventDefault();
+      setPullDistance(Math.min(diff * 0.5, 80));
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 60 && !refreshing) {
+      setRefreshing(true);
+      await fetchAllData();
+      showToast('Refreshed!', 'success');
+      setRefreshing(false);
+    }
+    setPullDistance(0);
+    isPulling.current = false;
+  };
+
+  // Swipe handlers for session cards
+  const handleSwipeStart = (e, sessionId) => {
+    const touch = e.touches[0];
+    e.currentTarget.dataset.startX = touch.clientX;
+    e.currentTarget.dataset.startY = touch.clientY;
+  };
+
+  const handleSwipeMove = (e, sessionId) => {
+    const touch = e.touches[0];
+    const startX = parseFloat(e.currentTarget.dataset.startX);
+    const startY = parseFloat(e.currentTarget.dataset.startY);
+    const diffX = touch.clientX - startX;
+    const diffY = touch.clientY - startY;
+
+    // Only horizontal swipe
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+      e.preventDefault();
+      if (diffX < -50) {
+        setSwipedCardId(sessionId);
+      } else if (diffX > 50) {
+        setSwipedCardId(null);
+      }
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) {
@@ -148,20 +246,26 @@ export default function ClientDashboard() {
     return sessions.filter(s => !isSessionPast(s));
   };
 
-  const handleCancelSession = async (session) => {
-    if (!window.confirm(`Cancel your session on ${formatDate(session.date)} at ${formatTime(session.time)}?\n\nThis cannot be undone.`)) {
-      return;
-    }
-
-    setCancellingId(session.id);
-    try {
-      await deleteDoc(doc(db, 'sessions', session.id));
-      setSessions(sessions.filter(s => s.id !== session.id));
-    } catch (error) {
-      console.error('Error cancelling session:', error);
-      alert('Failed to cancel session. Please try again.');
-    }
-    setCancellingId(null);
+  const handleCancelSession = (session) => {
+    setConfirmModal({
+      title: 'Cancel Session?',
+      message: `Cancel your session on ${formatDate(session.date)} at ${formatTime(session.time)}? This cannot be undone.`,
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setCancellingId(session.id);
+        setSwipedCardId(null);
+        try {
+          await deleteDoc(doc(db, 'sessions', session.id));
+          setSessions(sessions.filter(s => s.id !== session.id));
+          showToast('Session cancelled', 'success');
+        } catch (error) {
+          console.error('Error cancelling session:', error);
+          showToast('Failed to cancel session. Please try again.', 'error');
+        }
+        setCancellingId(null);
+      },
+      onCancel: () => setConfirmModal(null)
+    });
   };
 
   const handleLogout = async () => {
@@ -272,12 +376,12 @@ export default function ClientDashboard() {
         dismissed: false
       });
 
-      alert('Reschedule request submitted! You will be notified when your trainer responds.');
       closeRescheduleModal();
+      showToast('Reschedule request submitted! You\'ll be notified when your trainer responds.', 'success');
       fetchAllData(); // Refresh to show pending request
     } catch (error) {
       console.error('Error submitting reschedule request:', error);
-      alert('Failed to submit request. Please try again.');
+      showToast('Failed to submit request. Please try again.', 'error');
     }
     setSubmitting(false);
   };
@@ -356,7 +460,26 @@ export default function ClientDashboard() {
         </div>
       </header>
 
-      <main className="client-main">
+      {/* Pull to refresh indicator */}
+      <div
+        className={`pull-refresh-indicator ${pullDistance > 0 ? 'visible' : ''} ${refreshing ? 'refreshing' : ''}`}
+        style={{ height: pullDistance }}
+      >
+        <div className={`refresh-spinner ${refreshing ? 'spinning' : ''}`}>
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+        </div>
+        <span className="refresh-text">{refreshing ? 'Refreshing...' : 'Pull to refresh'}</span>
+      </div>
+
+      <main
+        className="client-main"
+        ref={mainRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="welcome-section">
           <h2>Welcome, {clientData.name.split(' ')[0]}</h2>
           <button className="logout-btn" onClick={handleLogout}>Log Out</button>
@@ -488,10 +611,10 @@ export default function ClientDashboard() {
         </div>
 
         <div className="quick-actions">
-          <button className="forms-btn" onClick={() => navigate('/client/forms')}>
+          <button className="forms-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/forms'); }}>
             Forms & Questionnaires
           </button>
-          <button className="tools-btn" onClick={() => navigate('/client/tools')}>
+          <button className="tools-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/tools'); }}>
             Tools & Calculators
           </button>
         </div>
@@ -506,29 +629,52 @@ export default function ClientDashboard() {
           ) : (
             <div className="sessions-list">
               {upcomingSessions.map(session => (
-                <div key={session.id} className="session-card">
-                  <div className="session-info">
-                    <div className="session-date">{formatDate(session.date)}</div>
-                    <div className="session-time">{formatTime(session.time)} ({session.duration} min)</div>
-                    {hasPendingRequest(session.id) && (
-                      <div className="pending-badge">Reschedule pending</div>
-                    )}
-                  </div>
-                  <div className="session-actions">
+                <div
+                  key={session.id}
+                  className={`session-card-wrapper ${swipedCardId === session.id ? 'swiped' : ''}`}
+                  onTouchStart={(e) => handleSwipeStart(e, session.id)}
+                  onTouchMove={(e) => handleSwipeMove(e, session.id)}
+                >
+                  <div className="session-card-swipe-actions">
                     <button
-                      className="reschedule-btn"
-                      onClick={() => openRescheduleModal(session)}
+                      className="swipe-action-btn reschedule ripple-btn"
+                      onClick={(e) => { createRipple(e); setSwipedCardId(null); openRescheduleModal(session); }}
                       disabled={hasPendingRequest(session.id)}
                     >
                       Reschedule
                     </button>
                     <button
-                      className="cancel-btn"
-                      onClick={() => handleCancelSession(session)}
+                      className="swipe-action-btn cancel ripple-btn"
+                      onClick={(e) => { createRipple(e); handleCancelSession(session); }}
                       disabled={cancellingId === session.id}
                     >
-                      {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
+                      Cancel
                     </button>
+                  </div>
+                  <div className="session-card" onClick={() => swipedCardId === session.id && setSwipedCardId(null)}>
+                    <div className="session-info">
+                      <div className="session-date">{formatDate(session.date)}</div>
+                      <div className="session-time">{formatTime(session.time)} ({session.duration} min)</div>
+                      {hasPendingRequest(session.id) && (
+                        <div className="pending-badge">Reschedule pending</div>
+                      )}
+                    </div>
+                    <div className="session-actions">
+                      <button
+                        className="reschedule-btn ripple-btn"
+                        onClick={(e) => { e.stopPropagation(); createRipple(e); openRescheduleModal(session); }}
+                        disabled={hasPendingRequest(session.id)}
+                      >
+                        Reschedule
+                      </button>
+                      <button
+                        className="cancel-btn ripple-btn"
+                        onClick={(e) => { e.stopPropagation(); createRipple(e); handleCancelSession(session); }}
+                        disabled={cancellingId === session.id}
+                      >
+                        {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -630,6 +776,35 @@ export default function ClientDashboard() {
                 disabled={!selectedDate || !selectedTime || submitting}
               >
                 {submitting ? 'Submitting...' : 'Request Reschedule'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`toast-notification ${toast.type}`}>
+          <span className="toast-icon">
+            {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : 'ℹ'}
+          </span>
+          <span className="toast-message">{toast.message}</span>
+          <button className="toast-close" onClick={() => setToast(null)}>✕</button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="confirm-modal-overlay" onClick={confirmModal.onCancel}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{confirmModal.title}</h3>
+            <p>{confirmModal.message}</p>
+            <div className="confirm-modal-actions">
+              <button className="confirm-cancel-btn ripple-btn" onClick={(e) => { createRipple(e); confirmModal.onCancel(); }}>
+                Keep Session
+              </button>
+              <button className="confirm-btn ripple-btn" onClick={(e) => { createRipple(e); confirmModal.onConfirm(); }}>
+                Yes, Cancel
               </button>
             </div>
           </div>
