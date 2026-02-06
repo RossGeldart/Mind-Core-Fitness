@@ -131,13 +131,13 @@ export default function ClientForms() {
     <div className="client-forms-page">
       <header className="client-header">
         <div className="header-content">
-          <button className="back-btn" onClick={() => navigate('/client')}>&larr; Back</button>
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
-          <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
       </header>
 
       <main className="forms-main">
+        <button className="back-btn" onClick={() => navigate('/client')}>&larr; Back</button>
+
         {!activeForm ? (
           <>
             <div className="forms-intro">
