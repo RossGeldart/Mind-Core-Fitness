@@ -483,7 +483,7 @@ export default function ClientDashboard() {
                   <p className="no-dates">No available dates within your training block</p>
                 ) : (
                   <div className="dates-grid">
-                    {availableDates.slice(0, 14).map((date, index) => (
+                    {availableDates.map((date, index) => (
                       <button
                         key={index}
                         className={`date-btn ${selectedDate && formatDateKey(selectedDate) === formatDateKey(date) ? 'selected' : ''}`}
