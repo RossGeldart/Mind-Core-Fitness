@@ -261,35 +261,6 @@
   align-items: center;
   justify-content: center;
   padding: 0 10px;
-  position: relative;
-}
-
-.header-content .theme-toggle {
-  position: absolute;
-  left: 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.header-content .theme-toggle:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.header-content .theme-toggle svg {
-  width: 20px;
-  height: 20px;
 }
 
 .header-logo {
@@ -322,6 +293,38 @@
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0;
+}
+
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-section .theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-section .theme-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.welcome-section .theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .welcome-section .logout-btn {
