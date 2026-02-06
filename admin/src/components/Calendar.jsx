@@ -94,10 +94,6 @@ export default function Calendar() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [showClientPicker, setShowClientPicker] = useState(false);
-  const [showHolidayModal, setShowHolidayModal] = useState(false);
-  const [holidayDate, setHolidayDate] = useState('');
-  const [holidayEndDate, setHolidayEndDate] = useState('');
-  const [holidayMode, setHolidayMode] = useState('single'); // 'single' or 'range'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -447,65 +443,27 @@ export default function Calendar() {
     }
   };
 
-  const handleAddHoliday = async () => {
-    if (!holidayDate) return;
+  // Toggle day availability (mark as holiday or remove holiday)
+  const handleToggleDayAvailability = async (date) => {
+    const dateKey = formatDateKey(date);
+    const existingHoliday = holidays.find(h => h.date === dateKey);
 
     try {
-      const newHolidays = [];
-
-      if (holidayMode === 'range' && holidayEndDate) {
-        // Add all dates in the range
-        const start = new Date(holidayDate);
-        const end = new Date(holidayEndDate);
-
-        if (end < start) {
-          alert('End date must be after start date');
-          return;
-        }
-
-        const current = new Date(start);
-        while (current <= end) {
-          const dateKey = formatDateKey(current);
-          // Check if holiday already exists
-          if (!holidays.some(h => h.date === dateKey)) {
-            const docRef = await addDoc(collection(db, 'holidays'), {
-              date: dateKey,
-              createdAt: Timestamp.now()
-            });
-            newHolidays.push({ id: docRef.id, date: dateKey });
-          }
-          current.setDate(current.getDate() + 1);
-        }
-
-        setHolidays([...holidays, ...newHolidays]);
-        alert(`Added ${newHolidays.length} holiday(s)`);
+      if (existingHoliday) {
+        // Remove holiday - make day available
+        await deleteDoc(doc(db, 'holidays', existingHoliday.id));
+        setHolidays(holidays.filter(h => h.id !== existingHoliday.id));
       } else {
-        // Single date
-        if (holidays.some(h => h.date === holidayDate)) {
-          alert('This date is already marked as a holiday');
-          return;
-        }
+        // Add holiday - make day unavailable
         const docRef = await addDoc(collection(db, 'holidays'), {
-          date: holidayDate,
+          date: dateKey,
           createdAt: Timestamp.now()
         });
-        setHolidays([...holidays, { id: docRef.id, date: holidayDate }]);
+        setHolidays([...holidays, { id: docRef.id, date: dateKey }]);
       }
-
-      setHolidayDate('');
-      setHolidayEndDate('');
     } catch (error) {
-      console.error('Error adding holiday:', error);
-      alert('Failed to add holiday');
-    }
-  };
-
-  const handleRemoveHoliday = async (holidayId) => {
-    try {
-      await deleteDoc(doc(db, 'holidays', holidayId));
-      setHolidays(holidays.filter(h => h.id !== holidayId));
-    } catch (error) {
-      console.error('Error removing holiday:', error);
+      console.error('Error toggling day availability:', error);
+      alert('Failed to update day availability');
     }
   };
 
@@ -529,9 +487,6 @@ export default function Calendar() {
           <button onClick={() => navigateWeek(1)}>&rarr;</button>
         </div>
         <h3>{weekLabel}</h3>
-        <button className="holiday-btn" onClick={() => setShowHolidayModal(true)}>
-          Holidays
-        </button>
       </div>
 
       {/* Client Selector */}
@@ -574,7 +529,7 @@ export default function Calendar() {
             <div
               key={index}
               className={`day-card ${selectedDay === index ? 'selected' : ''} ${isToday ? 'today' : ''} ${holiday ? 'holiday' : ''}`}
-              onClick={() => !holiday && setSelectedDay(selectedDay === index ? null : index)}
+              onClick={() => setSelectedDay(selectedDay === index ? null : index)}
             >
               <div className="day-card-header">
                 <span className="day-name">{DAY_SHORT[index]}</span>
@@ -593,13 +548,29 @@ export default function Calendar() {
       </div>
 
       {/* Time Slots Panel */}
-      {selectedDay !== null && weekDates[selectedDay] && !isHoliday(weekDates[selectedDay]) && (
+      {selectedDay !== null && weekDates[selectedDay] && (
         <div className="time-panel">
           <div className="time-panel-header">
             <h4>{DAY_LABELS[selectedDay]} {weekDates[selectedDay].getDate()}</h4>
             <button className="close-panel" onClick={() => setSelectedDay(null)}>&times;</button>
           </div>
 
+          {/* Availability Toggle */}
+          <div className="availability-toggle">
+            <button
+              className={`toggle-availability-btn ${isHoliday(weekDates[selectedDay]) ? 'unavailable' : 'available'}`}
+              onClick={() => handleToggleDayAvailability(weekDates[selectedDay])}
+            >
+              {isHoliday(weekDates[selectedDay]) ? 'Mark Day Available' : 'Mark Day Unavailable'}
+            </button>
+          </div>
+
+          {isHoliday(weekDates[selectedDay]) ? (
+            <div className="day-unavailable-message">
+              <p>This day is marked as unavailable</p>
+              <span>Tap the button above to make it available again</span>
+            </div>
+          ) : (
           <div className="time-slots">
             {generateTimeSlotsForDay(DAYS[selectedDay]).map(({ time, period }, idx, arr) => {
               const session = getSessionAtSlot(weekDates[selectedDay], time);
@@ -632,6 +603,7 @@ export default function Calendar() {
               );
             })}
           </div>
+          )}
         </div>
       )}
 
@@ -672,83 +644,6 @@ export default function Calendar() {
         </div>
       )}
 
-      {/* Holiday Modal */}
-      {showHolidayModal && (
-        <div className="modal-overlay" onClick={() => setShowHolidayModal(false)}>
-          <div className="modal-content holiday-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Manage Holidays</h3>
-              <button className="close-btn" onClick={() => setShowHolidayModal(false)}>&times;</button>
-            </div>
-
-            {/* Mode Toggle */}
-            <div className="holiday-mode-toggle">
-              <button
-                className={`mode-btn ${holidayMode === 'single' ? 'active' : ''}`}
-                onClick={() => setHolidayMode('single')}
-              >
-                Single Day
-              </button>
-              <button
-                className={`mode-btn ${holidayMode === 'range' ? 'active' : ''}`}
-                onClick={() => setHolidayMode('range')}
-              >
-                Date Range
-              </button>
-            </div>
-
-            <div className="holiday-form">
-              <div className="date-inputs">
-                <div className="date-field">
-                  <label>{holidayMode === 'range' ? 'Start Date' : 'Date'}</label>
-                  <input
-                    type="date"
-                    value={holidayDate}
-                    onChange={e => setHolidayDate(e.target.value)}
-                  />
-                </div>
-                {holidayMode === 'range' && (
-                  <div className="date-field">
-                    <label>End Date</label>
-                    <input
-                      type="date"
-                      value={holidayEndDate}
-                      onChange={e => setHolidayEndDate(e.target.value)}
-                      min={holidayDate}
-                    />
-                  </div>
-                )}
-              </div>
-              <button className="add-holiday-btn" onClick={handleAddHoliday}>
-                {holidayMode === 'range' ? 'Add Range' : 'Add Day'}
-              </button>
-            </div>
-
-            <div className="holiday-list">
-              <div className="holiday-list-header">
-                <span>Scheduled Holidays ({holidays.length})</span>
-              </div>
-              {holidays.length === 0 ? (
-                <p className="no-items">No holidays set</p>
-              ) : (
-                [...holidays]
-                  .sort((a, b) => a.date.localeCompare(b.date))
-                  .map(holiday => (
-                    <div key={holiday.id} className="holiday-item">
-                      <span>{new Date(holiday.date).toLocaleDateString('en-GB', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric'
-                      })}</span>
-                      <button onClick={() => handleRemoveHoliday(holiday.id)}>Remove</button>
-                    </div>
-                  ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
