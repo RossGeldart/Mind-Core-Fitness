@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { db, secondaryAuth } from '../config/firebase';
 import './AddClientForm.css';
 
 export default function AddClientForm({ onClose, onClientAdded }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -62,7 +64,18 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     setLoading(true);
 
     try {
+      // Create Firebase Auth account for client using secondary auth
+      const userCredential = await createUserWithEmailAndPassword(
+        secondaryAuth,
+        formData.email.trim().toLowerCase(),
+        formData.password
+      );
+
+      // Sign out from secondary auth immediately (cleanup)
+      await signOut(secondaryAuth);
+
       const clientData = {
+        uid: userCredential.user.uid,
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         weeksInBlock: parseInt(formData.weeksInBlock),
@@ -79,7 +92,13 @@ export default function AddClientForm({ onClose, onClientAdded }) {
       onClientAdded();
     } catch (err) {
       console.error('Error adding client:', err);
-      setError('Failed to add client. Please try again.');
+      if (err.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please use a different email.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters.');
+      } else {
+        setError('Failed to add client. Please try again.');
+      }
     }
 
     setLoading(false);
@@ -127,6 +146,23 @@ export default function AddClientForm({ onClose, onClientAdded }) {
                 placeholder="john@example.com"
                 required
               />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group full-width">
+              <label htmlFor="password">Client Portal Password</label>
+              <input
+                type="text"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Set a password for client login"
+                minLength="6"
+                required
+              />
+              <span className="helper-text">Minimum 6 characters. Share this with your client.</span>
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
@@ -9,8 +9,19 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, currentUser, isAdmin, isClient, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      if (isAdmin) {
+        navigate('/dashboard');
+      } else if (isClient) {
+        navigate('/client');
+      }
+    }
+  }, [authLoading, currentUser, isAdmin, isClient, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,12 +30,11 @@ export default function Login() {
 
     try {
       await login(email, password, rememberMe);
-      navigate('/dashboard');
+      // Navigation will happen via the useEffect above after auth state updates
     } catch (err) {
       setError(err.message || 'Failed to log in');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -32,7 +42,7 @@ export default function Login() {
       <div className="login-card">
         <div className="login-header">
           <h1>Mind Core Fitness</h1>
-          <p>Admin Portal</p>
+          <p>Client Portal</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
