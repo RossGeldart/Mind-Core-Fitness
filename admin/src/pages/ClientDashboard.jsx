@@ -732,6 +732,12 @@ export default function ClientDashboard() {
           </button>
         </div>
 
+        <div className="quick-actions" style={{ marginTop: '-8px' }}>
+          <button className="forms-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/personal-bests'); }} style={{ flex: '1 1 100%' }}>
+            Personal Bests & Progress
+          </button>
+        </div>
+
         <div className="sessions-section">
           <h3>Upcoming Sessions ({upcomingSessions.length})</h3>
           {upcomingSessions.length === 0 ? (
@@ -1008,6 +1014,17 @@ export default function ClientDashboard() {
               <polyline points="10 9 9 9 8 9"/>
             </svg>
             Forms & Questionnaires
+          </button>
+          <button
+            className="fab-action ripple-btn"
+            onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/personal-bests'); }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 20V10"/>
+              <path d="M18 20V4"/>
+              <path d="M6 20v-4"/>
+            </svg>
+            Personal Bests
           </button>
         </div>
       </div>

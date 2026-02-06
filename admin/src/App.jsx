@@ -8,6 +8,7 @@ import AddClient from './pages/AddClient';
 import ClientDashboard from './pages/ClientDashboard';
 import ClientForms from './pages/ClientForms';
 import ClientTools from './pages/ClientTools';
+import PersonalBests from './pages/PersonalBests';
 import './styles/theme.css';
 
 // Scroll to top on route change
@@ -52,6 +53,7 @@ function App() {
             <Route path="/client" element={<ClientDashboard />} />
             <Route path="/client/forms" element={<ClientForms />} />
             <Route path="/client/tools" element={<ClientTools />} />
+            <Route path="/client/personal-bests" element={<PersonalBests />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
