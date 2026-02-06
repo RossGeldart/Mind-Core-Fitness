@@ -1805,6 +1805,10 @@
   transition-delay: 0.1s;
 }
 
+.fab-container.open .fab-action:nth-child(3) {
+  transition-delay: 0.15s;
+}
+
 /* Hide inline quick-actions on mobile when FAB is shown */
 @media (max-width: 480px) {
   .quick-actions {
