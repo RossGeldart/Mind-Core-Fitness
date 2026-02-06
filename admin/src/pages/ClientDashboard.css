@@ -64,6 +64,135 @@
   color: #666;
 }
 
+/* Skeleton Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.skeleton-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.skeleton-title {
+  width: 180px;
+  height: 28px;
+}
+
+.skeleton-btn-small {
+  width: 70px;
+  height: 36px;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.skeleton-btn {
+  flex: 1;
+  height: 52px;
+  border-radius: 12px;
+}
+
+.skeleton-card-large {
+  height: 280px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+.skeleton-card-medium {
+  height: 180px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+
+/* Countdown Card */
+.countdown-card {
+  background: linear-gradient(135deg, #99313c 0%, #7a2730 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: white;
+  box-shadow: 0 8px 24px rgba(153, 49, 60, 0.3);
+  animation: cardEntrance 0.5s ease-out 0.1s backwards;
+}
+
+.countdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.countdown-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.countdown-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.countdown-unit {
+  text-align: center;
+}
+
+.countdown-value {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.countdown-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.countdown-time {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
 .client-header {
   background: #1a1a1a;
   padding: 16px 20px;
@@ -137,17 +266,17 @@
 .forms-btn,
 .tools-btn {
   flex: 1;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: white;
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   color: #99313c;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -155,8 +284,8 @@
 .tools-btn:hover {
   border-color: #99313c;
   background: #fdf5f6;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(153, 49, 60, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .forms-btn:active,
@@ -167,20 +296,107 @@
 
 .block-info-card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: cardEntrance 0.5s ease-out 0.15s backwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  animation: cardEntrance 0.5s ease-out 0.2s backwards;
+}
+
+.block-header-row {
+  margin-bottom: 20px;
 }
 
 .block-info-card h3 {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #373737;
-  margin: 0 0 16px 0;
+  margin: 0;
 }
 
+/* Progress Ring Section */
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.progress-ring-container {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  stroke: #f0f0f0;
+}
+
+.progress-ring-fill {
+  stroke: #99313c;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.progress-ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-percent {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #99313c;
+  line-height: 1;
+}
+
+.progress-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.progress-stats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-stat-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #373737;
+}
+
+.progress-stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Legacy block-stats (keeping for backwards compat) */
 .block-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -235,20 +451,20 @@
 
 .sessions-section {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: cardEntrance 0.5s ease-out 0.25s backwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  animation: cardEntrance 0.5s ease-out 0.3s backwards;
 }
 
 .completed-section {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: cardEntrance 0.5s ease-out 0.35s backwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  animation: cardEntrance 0.5s ease-out 0.4s backwards;
 }
 
 .sessions-section h3,
