@@ -183,6 +183,24 @@
   font-weight: bold;
 }
 
+.cancel-session-btn {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid #d32f2f;
+  background: transparent;
+  color: #d32f2f;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-session-btn:hover {
+  background: #d32f2f;
+  color: white;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .schedule {

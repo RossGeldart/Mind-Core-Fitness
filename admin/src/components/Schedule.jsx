@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import './Schedule.css';
 
@@ -100,6 +100,20 @@ export default function Schedule() {
     setLoading(false);
   };
 
+  const handleCancelSession = async (session) => {
+    if (!window.confirm(`Cancel ${session.clientName}'s session at ${formatTime(session.time)} on ${formatDateLabel(session.date)}?`)) {
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, 'sessions', session.id));
+      setSessions(sessions.filter(s => s.id !== session.id));
+    } catch (error) {
+      console.error('Error cancelling session:', error);
+      alert('Failed to cancel session');
+    }
+  };
+
   if (loading) {
     return <div className="schedule-loading">Loading schedule...</div>;
   }
@@ -160,7 +174,16 @@ export default function Schedule() {
                         <strong>{session.clientName}</strong>
                         <span>{session.duration}min session</span>
                       </div>
-                      {completed && <div className="completed-badge">✓</div>}
+                      {completed ? (
+                        <div className="completed-badge">✓</div>
+                      ) : (
+                        <button
+                          className="cancel-session-btn"
+                          onClick={() => handleCancelSession(session)}
+                        >
+                          Cancel
+                        </button>
+                      )}
                     </div>
                   );
                 })}
