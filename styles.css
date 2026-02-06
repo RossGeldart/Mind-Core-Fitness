@@ -422,6 +422,9 @@ body {
     border-radius: 16px;
     border: 1px solid var(--card-border);
     background: #ffffff;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .option-card.visible {
