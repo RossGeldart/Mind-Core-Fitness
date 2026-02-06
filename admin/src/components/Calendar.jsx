@@ -290,7 +290,13 @@ export default function Calendar() {
     if (!dayName) return false;
 
     if (isHoliday(date)) return false;
-    if (isTimeBlocked(date, time)) return false;
+
+    // Check if any time during the session is blocked
+    const slotsToCheck = Math.ceil(clientDuration / 15);
+    for (let i = 0; i < slotsToCheck; i++) {
+      const checkTime = addMinutesToTime(time, i * 15);
+      if (isTimeBlocked(date, checkTime)) return false;
+    }
 
     const dateKey = formatDateKey(date);
     const existingSession = sessions.find(s => s.date === dateKey && s.time === time);
