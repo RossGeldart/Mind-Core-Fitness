@@ -131,8 +131,11 @@ export default function PersonalBests() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [editingBenchmarks, setEditingBenchmarks] = useState(false);
   const [editingMetrics, setEditingMetrics] = useState(false);
+  const [editingTargets, setEditingTargets] = useState(false);
   const [benchmarkForm, setBenchmarkForm] = useState({});
   const [metricsForm, setMetricsForm] = useState({});
+  const [targets, setTargets] = useState({});
+  const [targetsForm, setTargetsForm] = useState({});
   const [toast, setToast] = useState(null);
 
   // History compare state
@@ -176,6 +179,18 @@ export default function PersonalBests() {
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       data.sort((a, b) => a.month.localeCompare(b.month));
       setRecords(data);
+
+      // Fetch targets
+      const targetsQ = query(
+        collection(db, 'personalBestTargets'),
+        where('clientId', '==', clientData.id)
+      );
+      const targetsSnapshot = await getDocs(targetsQ);
+      if (!targetsSnapshot.empty) {
+        const targetsData = targetsSnapshot.docs[0].data();
+        setTargets(targetsData.targets || {});
+        setTargetsForm(targetsData.targets || {});
+      }
     } catch (error) {
       console.error('Error fetching personal bests:', error);
     }
@@ -261,6 +276,53 @@ export default function PersonalBests() {
     }));
   };
 
+  const handleTargetChange = (exerciseKey, field, value) => {
+    setTargetsForm(prev => ({
+      ...prev,
+      [exerciseKey]: {
+        ...prev[exerciseKey],
+        [field]: field === 'targetType' ? value : (value === '' ? '' : parseFloat(value)),
+      }
+    }));
+  };
+
+  const handleSaveTargets = async () => {
+    setSaving(true);
+    try {
+      const docId = `targets_${clientData.id}`;
+      await setDoc(doc(db, 'personalBestTargets', docId), {
+        clientId: clientData.id,
+        targets: targetsForm,
+        updatedAt: Timestamp.now(),
+      });
+      setTargets(targetsForm);
+      showToast('Targets saved!', 'success');
+      setEditingTargets(false);
+    } catch (error) {
+      console.error('Error saving targets:', error);
+      showToast('Failed to save targets.', 'error');
+    }
+    setSaving(false);
+  };
+
+  // Get progress toward target (0 to 1)
+  const getTargetProgress = (exerciseKey, benchData) => {
+    const target = targets[exerciseKey];
+    if (!target || !target.targetValue || !benchData) return null;
+
+    let currentVal = 0;
+    if (target.targetType === 'weight') {
+      currentVal = benchData.weight || 0;
+    } else if (target.targetType === 'reps') {
+      currentVal = benchData.reps || 0;
+    } else if (target.targetType === 'time') {
+      currentVal = benchData.time || 0;
+    }
+
+    if (target.targetValue === 0) return null;
+    return Math.min(currentVal / target.targetValue, 1);
+  };
+
   // Carousel touch handlers
   const handleCarouselTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -319,10 +381,16 @@ export default function PersonalBests() {
   const previousVal = getComparableValue(currentExercise, previousBench);
   const percentChange = calcPercentChange(currentVal, previousVal);
 
-  // Ring ticks: fill based on percentage (0-100% maps to 0-60 ticks)
-  const ringFill = previousVal > 0 && currentVal > 0
-    ? Math.min(Math.max((currentVal / previousVal) * 30, 0), 60) // 30 ticks = 100% (same as last month), up to 60
-    : currentVal > 0 ? 30 : 0;
+  // Ring ticks: fill based on progress toward target (0-100% = 0-60 ticks)
+  const targetProgress = getTargetProgress(currentExercise.key, currentBench);
+  const hasTarget = targetProgress !== null;
+  const targetHit = targetProgress !== null && targetProgress >= 1;
+  const ringFill = hasTarget
+    ? Math.round(targetProgress * 60)
+    : (currentVal > 0 ? 15 : 0); // Fallback: small fill if no target set
+
+  // Get current target info for display
+  const currentTarget = targets[currentExercise.key];
 
   return (
     <div className="pb-page">
@@ -392,7 +460,7 @@ export default function PersonalBests() {
                             <line
                               key={i}
                               x1={x1} y1={y1} x2={x2} y2={y2}
-                              className={`pb-ring-tick ${isFilled ? 'filled' : 'empty'}`}
+                              className={`pb-ring-tick ${isFilled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
                               strokeWidth={i % 5 === 0 ? "3" : "2"}
                             />
                           );
@@ -416,6 +484,14 @@ export default function PersonalBests() {
                         )}
                         {percentChange === null && currentBench && (
                           <div className="pb-ring-change neutral">New entry</div>
+                        )}
+                        {currentTarget && (
+                          <div className={`pb-ring-target ${targetHit ? 'hit' : ''}`}>
+                            Target: {currentTarget.targetValue}{currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? ' reps' : 's'}
+                          </div>
+                        )}
+                        {!currentTarget && (
+                          <div className="pb-ring-target none">No target set</div>
                         )}
                       </div>
                     </div>
@@ -458,11 +534,18 @@ export default function PersonalBests() {
             )}
 
             {/* Edit / Add Benchmarks */}
-            {!editingBenchmarks ? (
-              <button className="pb-edit-btn" onClick={() => setEditingBenchmarks(true)}>
-                {currentRecord?.benchmarks ? 'Edit This Month\'s Benchmarks' : 'Add This Month\'s Benchmarks'}
-              </button>
-            ) : (
+            {!editingBenchmarks && !editingTargets && (
+              <div className="pb-action-buttons">
+                <button className="pb-edit-btn" onClick={() => setEditingBenchmarks(true)}>
+                  {currentRecord?.benchmarks ? 'Edit This Month\'s Benchmarks' : 'Add This Month\'s Benchmarks'}
+                </button>
+                <button className="pb-edit-btn pb-target-btn" onClick={() => setEditingTargets(true)}>
+                  {Object.keys(targets).length > 0 ? 'Edit Targets' : 'Set Targets'}
+                </button>
+              </div>
+            )}
+
+            {editingBenchmarks && (
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Benchmarks - {formatMonthLabel(currentMonth)}</h3>
@@ -521,6 +604,84 @@ export default function PersonalBests() {
                   }}>Cancel</button>
                   <button className="pb-save-btn" onClick={handleSaveBenchmarks} disabled={saving}>
                     {saving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Targets */}
+            {editingTargets && (
+              <div className="pb-edit-card">
+                <div className="pb-edit-header">
+                  <h3>Set Your Targets</h3>
+                  <button className="pb-edit-close" onClick={() => {
+                    setEditingTargets(false);
+                    setTargetsForm(targets);
+                  }}>&times;</button>
+                </div>
+                <div className="pb-edit-body">
+                  <p className="pb-target-hint">Choose one target per exercise — either a weight to hit or reps to reach. The ring will fill as you get closer.</p>
+                  {EXERCISES.map(ex => {
+                    const targetType = targetsForm[ex.key]?.targetType || (ex.unit === 'time' ? 'time' : 'weight');
+                    return (
+                      <div key={ex.key} className="pb-edit-exercise">
+                        <div className="pb-edit-exercise-name">{ex.name}</div>
+                        {ex.unit === 'weight' ? (
+                          <>
+                            <div className="pb-target-type-toggle">
+                              <button
+                                type="button"
+                                className={targetType === 'weight' ? 'active' : ''}
+                                onClick={() => handleTargetChange(ex.key, 'targetType', 'weight')}
+                              >
+                                Target Weight
+                              </button>
+                              <button
+                                type="button"
+                                className={targetType === 'reps' ? 'active' : ''}
+                                onClick={() => handleTargetChange(ex.key, 'targetType', 'reps')}
+                              >
+                                Target Reps
+                              </button>
+                            </div>
+                            <div className="pb-edit-row">
+                              <div className="pb-edit-field full">
+                                <label>{targetType === 'weight' ? 'Target Weight (kg)' : 'Target Reps'}</label>
+                                <input
+                                  type="number"
+                                  step={targetType === 'weight' ? '0.5' : '1'}
+                                  value={targetsForm[ex.key]?.targetValue ?? ''}
+                                  onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                                  placeholder="0"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="pb-edit-row">
+                            <div className="pb-edit-field full">
+                              <label>Target Time (seconds)</label>
+                              <input
+                                type="number"
+                                step="1"
+                                value={targetsForm[ex.key]?.targetValue ?? ''}
+                                onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                                placeholder="0"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="pb-edit-actions">
+                  <button className="pb-cancel-btn" onClick={() => {
+                    setEditingTargets(false);
+                    setTargetsForm(targets);
+                  }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveTargets} disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Targets'}
                   </button>
                 </div>
               </div>
