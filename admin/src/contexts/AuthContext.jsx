@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   browserLocalPersistence,
+  browserSessionPersistence,
   setPersistence
 } from 'firebase/auth';
 import { auth, ADMIN_UID } from '../config/firebase';
@@ -29,9 +30,10 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  const login = async (email, password) => {
-    // Set persistence to local (survives browser restarts)
-    await setPersistence(auth, browserLocalPersistence);
+  const login = async (email, password, rememberMe = true) => {
+    // Set persistence based on remember me checkbox
+    const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+    await setPersistence(auth, persistence);
 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     if (userCredential.user.uid !== ADMIN_UID) {
