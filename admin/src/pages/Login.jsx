@@ -23,6 +23,17 @@ export default function Login() {
     }
   }, [authLoading, currentUser, isAdmin, isClient, navigate]);
 
+  // Show loading screen while checking auth state
+  if (authLoading) {
+    return (
+      <div className="login-container">
+        <div className="login-loading">
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="loading-logo" />
+        </div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
