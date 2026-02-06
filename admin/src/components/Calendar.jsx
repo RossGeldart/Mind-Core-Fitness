@@ -91,6 +91,7 @@ export default function Calendar() {
   const [clients, setClients] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [holidays, setHolidays] = useState([]);
+  const [blockedTimes, setBlockedTimes] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [showClientPicker, setShowClientPicker] = useState(false);
@@ -213,6 +214,10 @@ export default function Calendar() {
       const holidaysSnapshot = await getDocs(collection(db, 'holidays'));
       const holidaysData = holidaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setHolidays(holidaysData);
+
+      const blockedTimesSnapshot = await getDocs(collection(db, 'blockedTimes'));
+      const blockedTimesData = blockedTimesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setBlockedTimes(blockedTimesData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -236,6 +241,40 @@ export default function Calendar() {
     return holidays.some(h => h.date === dateKey);
   };
 
+  const isTimeBlocked = (date, time) => {
+    const dateKey = formatDateKey(date);
+    return blockedTimes.some(bt => bt.date === dateKey && bt.time === time);
+  };
+
+  const getBlockedTime = (date, time) => {
+    const dateKey = formatDateKey(date);
+    return blockedTimes.find(bt => bt.date === dateKey && bt.time === time);
+  };
+
+  const handleToggleBlockedTime = async (date, time) => {
+    const dateKey = formatDateKey(date);
+    const existingBlock = blockedTimes.find(bt => bt.date === dateKey && bt.time === time);
+
+    try {
+      if (existingBlock) {
+        // Remove blocked time - make slot available
+        await deleteDoc(doc(db, 'blockedTimes', existingBlock.id));
+        setBlockedTimes(blockedTimes.filter(bt => bt.id !== existingBlock.id));
+      } else {
+        // Add blocked time
+        const docRef = await addDoc(collection(db, 'blockedTimes'), {
+          date: dateKey,
+          time: time,
+          createdAt: Timestamp.now()
+        });
+        setBlockedTimes([...blockedTimes, { id: docRef.id, date: dateKey, time: time }]);
+      }
+    } catch (error) {
+      console.error('Error toggling blocked time:', error);
+      alert('Failed to update time slot');
+    }
+  };
+
   const getSessionsForDate = (date) => {
     const dateKey = formatDateKey(date);
     return sessions.filter(s => s.date === dateKey);
@@ -251,6 +290,7 @@ export default function Calendar() {
     if (!dayName) return false;
 
     if (isHoliday(date)) return false;
+    if (isTimeBlocked(date, time)) return false;
 
     const dateKey = formatDateKey(date);
     const existingSession = sessions.find(s => s.date === dateKey && s.time === time);
@@ -574,6 +614,7 @@ export default function Calendar() {
           <div className="time-slots">
             {generateTimeSlotsForDay(DAYS[selectedDay]).map(({ time, period }, idx, arr) => {
               const session = getSessionAtSlot(weekDates[selectedDay], time);
+              const blocked = isTimeBlocked(weekDates[selectedDay], time);
               const available = selectedClient && isSlotAvailable(weekDates[selectedDay], time, selectedClient.sessionDuration || 45);
               const showPeriodLabel = idx === 0 || arr[idx - 1]?.period !== period;
 
@@ -584,21 +625,34 @@ export default function Calendar() {
                       {period === 'morning' ? 'Morning' : 'Afternoon'}
                     </div>
                   )}
-                  <button
-                    className={`time-slot ${session ? 'booked' : ''} ${available ? 'available' : ''} ${!session && !available && selectedClient ? 'unavailable' : ''}`}
-                    onClick={() => handleSlotClick(weekDates[selectedDay], time)}
-                  >
-                    <span className="slot-time">{formatTime(time)}</span>
-                    {session ? (
-                      <span className="slot-client">{session.clientName} ({session.duration}m)</span>
-                    ) : available ? (
-                      <span className="slot-available">Available</span>
-                    ) : selectedClient ? (
-                      <span className="slot-unavailable">Unavailable</span>
-                    ) : (
-                      <span className="slot-empty">Select client to book</span>
-                    )}
-                  </button>
+                  <div className="time-slot-row">
+                    <button
+                      className={`time-slot ${session ? 'booked' : ''} ${blocked ? 'blocked' : ''} ${available ? 'available' : ''} ${!session && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
+                      onClick={() => !blocked && handleSlotClick(weekDates[selectedDay], time)}
+                      disabled={blocked}
+                    >
+                      <span className="slot-time">{formatTime(time)}</span>
+                      {session ? (
+                        <span className="slot-client">{session.clientName} ({session.duration}m)</span>
+                      ) : blocked ? (
+                        <span className="slot-blocked">Blocked</span>
+                      ) : available ? (
+                        <span className="slot-available">Available</span>
+                      ) : selectedClient ? (
+                        <span className="slot-unavailable">Unavailable</span>
+                      ) : (
+                        <span className="slot-empty">Select client to book</span>
+                      )}
+                    </button>
+                    <button
+                      className={`block-toggle-btn ${blocked ? 'is-blocked' : ''}`}
+                      onClick={() => handleToggleBlockedTime(weekDates[selectedDay], time)}
+                      disabled={!!session}
+                      title={blocked ? 'Unblock this time' : 'Block this time'}
+                    >
+                      {blocked ? '✓' : '✕'}
+                    </button>
+                  </div>
                 </div>
               );
             })}

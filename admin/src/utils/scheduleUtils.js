@@ -79,7 +79,7 @@ export const getDayName = (date) => {
 };
 
 // Check if a time slot is available
-export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays, excludeSessionId = null) => {
+export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = []) => {
   const dayName = getDayName(date);
   if (!dayName) return false;
 
@@ -87,6 +87,9 @@ export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays,
 
   // Check if it's a holiday
   if (holidays.some(h => h.date === dateKey)) return false;
+
+  // Check if time is blocked
+  if (blockedTimes.some(bt => bt.date === dateKey && bt.time === time)) return false;
 
   // Check if slot is in the past
   const now = new Date();
@@ -131,10 +134,10 @@ export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays,
 };
 
 // Get all available slots for a specific date
-export const getAvailableSlotsForDate = (date, sessionDuration, sessions, holidays, excludeSessionId = null) => {
+export const getAvailableSlotsForDate = (date, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = []) => {
   const dayName = getDayName(date);
   if (!dayName) return [];
 
   const allSlots = generateTimeSlotsForDay(dayName);
-  return allSlots.filter(slot => isSlotAvailable(date, slot.time, sessionDuration, sessions, holidays, excludeSessionId));
+  return allSlots.filter(slot => isSlotAvailable(date, slot.time, sessionDuration, sessions, holidays, excludeSessionId, blockedTimes));
 };
