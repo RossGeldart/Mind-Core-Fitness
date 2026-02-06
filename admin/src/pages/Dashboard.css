@@ -189,6 +189,179 @@
   background: #7a2730;
 }
 
+/* Nav Badge */
+.nav-btn.has-badge {
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #d32f2f;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* Requests View */
+.requests-view {
+  max-width: 600px;
+}
+
+.no-requests {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.no-requests p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #373737;
+  margin: 0 0 8px 0;
+}
+
+.no-requests span {
+  font-family: 'Roboto', sans-serif;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.request-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.request-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.request-header .client-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #373737;
+}
+
+.request-header .request-time {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.request-details {
+  margin-bottom: 16px;
+}
+
+.request-change {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.from-session,
+.to-session {
+  flex: 1;
+}
+
+.request-change .label {
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.request-change .value {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: #373737;
+  font-weight: 500;
+}
+
+.request-change .arrow {
+  font-size: 1.2rem;
+  color: #99313c;
+}
+
+.request-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.approve-btn {
+  flex: 1;
+  padding: 12px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.approve-btn:hover:not(:disabled) {
+  background: #1b5e20;
+}
+
+.approve-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reject-btn {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  color: #c62828;
+  border: 1px solid #c62828;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reject-btn:hover:not(:disabled) {
+  background: #c62828;
+  color: white;
+}
+
+.reject-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Coming Soon */
 .coming-soon {
   background: white;

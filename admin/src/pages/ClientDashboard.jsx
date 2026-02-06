@@ -1,14 +1,36 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, deleteDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  SCHEDULE,
+  DAYS,
+  formatTime as formatTimeUtil,
+  formatDateKey,
+  getAvailableSlotsForDate,
+  isWeekday,
+  getDayName
+} from '../utils/scheduleUtils';
 import './ClientDashboard.css';
 
 export default function ClientDashboard() {
   const [sessions, setSessions] = useState([]);
+  const [allSessions, setAllSessions] = useState([]); // All sessions for availability check
+  const [holidays, setHolidays] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
+
+  // Reschedule modal state
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [rescheduleSession, setRescheduleSession] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState([]);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -20,31 +42,58 @@ export default function ClientDashboard() {
 
   useEffect(() => {
     if (clientData) {
-      fetchSessions();
+      fetchAllData();
     }
   }, [clientData]);
 
-  const fetchSessions = async () => {
+  const fetchAllData = async () => {
     try {
+      // Fetch client's sessions
       const sessionsQuery = query(
         collection(db, 'sessions'),
         where('clientId', '==', clientData.id)
       );
-      const snapshot = await getDocs(sessionsQuery);
-      const sessionsData = snapshot.docs.map(doc => ({
+      const sessionsSnapshot = await getDocs(sessionsQuery);
+      const sessionsData = sessionsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-
-      // Sort by date and time
       sessionsData.sort((a, b) => {
         if (a.date !== b.date) return a.date.localeCompare(b.date);
         return a.time.localeCompare(b.time);
       });
-
       setSessions(sessionsData);
+
+      // Fetch all sessions for availability check
+      const allSessionsSnapshot = await getDocs(collection(db, 'sessions'));
+      setAllSessions(allSessionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      // Fetch holidays
+      const holidaysSnapshot = await getDocs(collection(db, 'holidays'));
+      setHolidays(holidaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      // Fetch pending reschedule requests for this client
+      const requestsQuery = query(
+        collection(db, 'rescheduleRequests'),
+        where('clientId', '==', clientData.id)
+      );
+      const requestsSnapshot = await getDocs(requestsQuery);
+      const requestsData = requestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPendingRequests(requestsData.filter(r => r.status === 'pending'));
+
+      // Get recent notifications (approved/rejected in last 7 days)
+      const recentNotifications = requestsData.filter(r => {
+        if (r.status === 'pending') return false;
+        if (!r.respondedAt) return false;
+        const respondedDate = r.respondedAt.toDate ? r.respondedAt.toDate() : new Date(r.respondedAt);
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        return respondedDate > sevenDaysAgo && !r.dismissed;
+      });
+      setNotifications(recentNotifications);
+
     } catch (error) {
-      console.error('Error fetching sessions:', error);
+      console.error('Error fetching data:', error);
     }
     setLoading(false);
   };
@@ -78,10 +127,7 @@ export default function ClientDashboard() {
 
   const isSessionPast = (session) => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const today = `${year}-${month}-${day}`;
+    const today = formatDateKey(now);
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     if (session.date < today) return true;
@@ -122,6 +168,119 @@ export default function ClientDashboard() {
     }
   };
 
+  // Check if session already has a pending reschedule request
+  const hasPendingRequest = (sessionId) => {
+    return pendingRequests.some(r => r.sessionId === sessionId);
+  };
+
+  // Reschedule functions
+  const openRescheduleModal = (session) => {
+    setRescheduleSession(session);
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setAvailableSlots([]);
+    setShowRescheduleModal(true);
+  };
+
+  const closeRescheduleModal = () => {
+    setShowRescheduleModal(false);
+    setRescheduleSession(null);
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setAvailableSlots([]);
+  };
+
+  const getBlockStartDate = () => {
+    if (!clientData.startDate) return new Date();
+    return clientData.startDate.toDate ? clientData.startDate.toDate() : new Date(clientData.startDate);
+  };
+
+  const getBlockEndDate = () => {
+    if (!clientData.endDate) return new Date();
+    return clientData.endDate.toDate ? clientData.endDate.toDate() : new Date(clientData.endDate);
+  };
+
+  const getAvailableDates = () => {
+    const dates = [];
+    const startDate = new Date();
+    const endDate = getBlockEndDate();
+
+    // Start from tomorrow
+    const current = new Date(startDate);
+    current.setDate(current.getDate() + 1);
+
+    while (current <= endDate) {
+      if (isWeekday(current)) {
+        const dateKey = formatDateKey(current);
+        const isHoliday = holidays.some(h => h.date === dateKey);
+        if (!isHoliday) {
+          dates.push(new Date(current));
+        }
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setSelectedTime(null);
+
+    // Get available slots for this date
+    const sessionDuration = rescheduleSession?.duration || clientData.sessionDuration || 45;
+    const slots = getAvailableSlotsForDate(
+      date,
+      sessionDuration,
+      allSessions,
+      holidays,
+      rescheduleSession?.id // Exclude current session from conflict check
+    );
+    setAvailableSlots(slots);
+  };
+
+  const handleSubmitReschedule = async () => {
+    if (!selectedDate || !selectedTime || !rescheduleSession) return;
+
+    setSubmitting(true);
+    try {
+      // Create reschedule request
+      await addDoc(collection(db, 'rescheduleRequests'), {
+        sessionId: rescheduleSession.id,
+        clientId: clientData.id,
+        clientName: clientData.name,
+        originalDate: rescheduleSession.date,
+        originalTime: rescheduleSession.time,
+        requestedDate: formatDateKey(selectedDate),
+        requestedTime: selectedTime,
+        duration: rescheduleSession.duration,
+        status: 'pending',
+        createdAt: Timestamp.now(),
+        respondedAt: null,
+        dismissed: false
+      });
+
+      alert('Reschedule request submitted! You will be notified when your trainer responds.');
+      closeRescheduleModal();
+      fetchAllData(); // Refresh to show pending request
+    } catch (error) {
+      console.error('Error submitting reschedule request:', error);
+      alert('Failed to submit request. Please try again.');
+    }
+    setSubmitting(false);
+  };
+
+  const dismissNotification = async (notificationId) => {
+    try {
+      await updateDoc(doc(db, 'rescheduleRequests', notificationId), {
+        dismissed: true
+      });
+      setNotifications(notifications.filter(n => n.id !== notificationId));
+    } catch (error) {
+      console.error('Error dismissing notification:', error);
+    }
+  };
+
   if (authLoading || loading) {
     return <div className="client-loading">Loading...</div>;
   }
@@ -133,6 +292,7 @@ export default function ClientDashboard() {
   const completed = getCompletedCount();
   const remaining = clientData.totalSessions - completed;
   const upcomingSessions = getUpcomingSessions();
+  const availableDates = showRescheduleModal ? getAvailableDates() : [];
 
   return (
     <div className="client-dashboard">
@@ -147,6 +307,41 @@ export default function ClientDashboard() {
           <h2>Welcome, {clientData.name.split(' ')[0]}</h2>
           <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
+
+        {/* Notifications */}
+        {notifications.length > 0 && (
+          <div className="notifications-section">
+            {notifications.map(notification => (
+              <div
+                key={notification.id}
+                className={`notification ${notification.status}`}
+              >
+                <div className="notification-content">
+                  <span className="notification-icon">
+                    {notification.status === 'approved' ? '✓' : '✗'}
+                  </span>
+                  <div className="notification-text">
+                    <strong>
+                      {notification.status === 'approved' ? 'Reschedule Approved!' : 'Reschedule Declined'}
+                    </strong>
+                    <p>
+                      {notification.status === 'approved'
+                        ? `Your session has been moved to ${formatDate(notification.requestedDate)} at ${formatTime(notification.requestedTime)}`
+                        : `Your request to reschedule from ${formatDate(notification.originalDate)} was declined. Please contact your trainer.`
+                      }
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="dismiss-btn"
+                  onClick={() => dismissNotification(notification.id)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="quick-actions">
           <button className="forms-btn" onClick={() => navigate('/client/forms')}>
@@ -203,14 +398,26 @@ export default function ClientDashboard() {
                   <div className="session-info">
                     <div className="session-date">{formatDate(session.date)}</div>
                     <div className="session-time">{formatTime(session.time)} ({session.duration} min)</div>
+                    {hasPendingRequest(session.id) && (
+                      <div className="pending-badge">Reschedule pending</div>
+                    )}
                   </div>
-                  <button
-                    className="cancel-btn"
-                    onClick={() => handleCancelSession(session)}
-                    disabled={cancellingId === session.id}
-                  >
-                    {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
-                  </button>
+                  <div className="session-actions">
+                    <button
+                      className="reschedule-btn"
+                      onClick={() => openRescheduleModal(session)}
+                      disabled={hasPendingRequest(session.id)}
+                    >
+                      Reschedule
+                    </button>
+                    <button
+                      className="cancel-btn"
+                      onClick={() => handleCancelSession(session)}
+                      disabled={cancellingId === session.id}
+                    >
+                      {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -243,6 +450,79 @@ export default function ClientDashboard() {
           )}
         </div>
       </main>
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && rescheduleSession && (
+        <div className="modal-overlay" onClick={closeRescheduleModal}>
+          <div className="reschedule-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Reschedule Session</h3>
+              <button className="close-modal-btn" onClick={closeRescheduleModal}>✕</button>
+            </div>
+
+            <div className="modal-body">
+              <div className="current-session-info">
+                <p>Current: <strong>{formatDate(rescheduleSession.date)}</strong> at <strong>{formatTime(rescheduleSession.time)}</strong></p>
+              </div>
+
+              <div className="date-selection">
+                <h4>Select New Date</h4>
+                {availableDates.length === 0 ? (
+                  <p className="no-dates">No available dates within your training block</p>
+                ) : (
+                  <div className="dates-grid">
+                    {availableDates.slice(0, 14).map((date, index) => (
+                      <button
+                        key={index}
+                        className={`date-btn ${selectedDate && formatDateKey(selectedDate) === formatDateKey(date) ? 'selected' : ''}`}
+                        onClick={() => handleDateSelect(date)}
+                      >
+                        <span className="date-day">{date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
+                        <span className="date-num">{date.getDate()}</span>
+                        <span className="date-month">{date.toLocaleDateString('en-GB', { month: 'short' })}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {selectedDate && (
+                <div className="time-selection">
+                  <h4>Select Time</h4>
+                  {availableSlots.length === 0 ? (
+                    <p className="no-slots">No available slots on this date</p>
+                  ) : (
+                    <div className="times-grid">
+                      {availableSlots.map((slot, index) => (
+                        <button
+                          key={index}
+                          className={`time-btn ${selectedTime === slot.time ? 'selected' : ''} ${slot.period}`}
+                          onClick={() => setSelectedTime(slot.time)}
+                        >
+                          {formatTime(slot.time)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button className="cancel-modal-btn" onClick={closeRescheduleModal}>
+                Cancel
+              </button>
+              <button
+                className="submit-reschedule-btn"
+                onClick={handleSubmitReschedule}
+                disabled={!selectedDate || !selectedTime || submitting}
+              >
+                {submitting ? 'Submitting...' : 'Request Reschedule'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
