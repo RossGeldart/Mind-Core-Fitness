@@ -1,0 +1,511 @@
+.client-tools-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.client-header {
+  background: #1a1a1a;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.header-logo {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #99313c;
+}
+
+.back-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.back-btn:hover {
+  border-color: #99313c;
+  color: #99313c;
+}
+
+.tools-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tools-intro {
+  margin-bottom: 24px;
+}
+
+.tools-intro h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  color: #373737;
+  margin: 0 0 8px 0;
+}
+
+.tools-intro p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+.tool-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tool-header {
+  padding: 20px;
+  background: #1a1a1a;
+  color: white;
+}
+
+.tool-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  margin: 0 0 4px 0;
+}
+
+.tool-header p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.calculator-form {
+  padding: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #373737;
+  margin-bottom: 8px;
+}
+
+.toggle-group {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.toggle-group button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-group button:first-child {
+  border-right: 1px solid #ddd;
+}
+
+.toggle-group button.active {
+  background: #99313c;
+  color: white;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #99313c;
+}
+
+.input-with-unit {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-unit input {
+  flex: 1;
+  min-width: 0;
+}
+
+.height-imperial {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.height-imperial input {
+  flex: 1;
+  min-width: 0;
+}
+
+.unit-toggle {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.unit-toggle button {
+  padding: 8px 10px;
+  border: none;
+  background: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.unit-toggle button:first-child {
+  border-right: 1px solid #ddd;
+}
+
+.unit-toggle button.active {
+  background: #99313c;
+  color: white;
+}
+
+.goal-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.goal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.goal-btn:hover {
+  border-color: #99313c;
+}
+
+.goal-btn.active {
+  border-color: #99313c;
+  background: #fdf5f6;
+}
+
+.goal-icon {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #99313c;
+}
+
+.goal-btn span:last-child {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #373737;
+}
+
+.deficit-section {
+  padding-top: 8px;
+}
+
+.deficit-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.deficit-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deficit-btn:hover {
+  border-color: #99313c;
+}
+
+.deficit-btn.active {
+  border-color: #99313c;
+  background: #fdf5f6;
+}
+
+.deficit-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #373737;
+}
+
+.deficit-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.deficit-rate {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: #99313c;
+  font-weight: 500;
+}
+
+.calculate-btn {
+  width: 100%;
+  padding: 14px;
+  background: #99313c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.calculate-btn:hover:not(:disabled) {
+  background: #7a2730;
+}
+
+.calculate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Results Section */
+.results-section {
+  padding: 24px;
+  border-top: 1px solid #e0e0e0;
+  background: #fafafa;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.results-header h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #373737;
+  margin: 0;
+}
+
+.goal-badge {
+  padding: 6px 12px;
+  background: #99313c;
+  color: white;
+  border-radius: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.calories-display {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.calories-value {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #99313c;
+  line-height: 1;
+}
+
+.calories-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.macros-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.macro-card {
+  text-align: center;
+  padding: 16px 12px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-top: 3px solid;
+}
+
+.macro-card.protein {
+  border-color: #e91e63;
+}
+
+.macro-card.carbs {
+  border-color: #2196f3;
+}
+
+.macro-card.fats {
+  border-color: #ff9800;
+}
+
+.macro-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #373737;
+}
+
+.macro-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.macro-calories {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.results-info {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+}
+
+.info-row:first-child {
+  border-bottom: 1px solid #eee;
+}
+
+.info-row span:first-child {
+  color: #666;
+}
+
+.info-row span:last-child {
+  color: #373737;
+  font-weight: 500;
+}
+
+.results-note {
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.results-note p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: #e65100;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .tools-main {
+    padding: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-options,
+  .deficit-options {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-btn,
+  .deficit-btn {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .macros-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calories-value {
+    font-size: 2.5rem;
+  }
+}
