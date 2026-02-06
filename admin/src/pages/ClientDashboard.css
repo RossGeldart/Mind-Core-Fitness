@@ -1,3 +1,55 @@
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+}
+
 .client-dashboard {
   min-height: 100vh;
   background: #f5f5f5;
@@ -48,6 +100,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .welcome-section h2 {
@@ -78,6 +131,7 @@
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
+  animation: fadeIn 0.4s ease-out 0.1s backwards;
 }
 
 .forms-btn,
@@ -92,14 +146,23 @@
   font-size: 0.9rem;
   color: #99313c;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .forms-btn:hover,
 .tools-btn:hover {
   border-color: #99313c;
   background: #fdf5f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.forms-btn:active,
+.tools-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .block-info-card {
@@ -108,6 +171,7 @@
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: cardEntrance 0.5s ease-out 0.15s backwards;
 }
 
 .block-info-card h3 {
@@ -169,13 +233,22 @@
   font-weight: 500;
 }
 
-.sessions-section,
+.sessions-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: cardEntrance 0.5s ease-out 0.25s backwards;
+}
+
 .completed-section {
   background: white;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: cardEntrance 0.5s ease-out 0.35s backwards;
 }
 
 .sessions-section h3,
@@ -217,7 +290,18 @@
   background: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
+  animation: cardEntrance 0.4s ease-out backwards;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.session-card:nth-child(1) { animation-delay: 0.05s; }
+.session-card:nth-child(2) { animation-delay: 0.1s; }
+.session-card:nth-child(3) { animation-delay: 0.15s; }
+.session-card:nth-child(4) { animation-delay: 0.2s; }
+.session-card:nth-child(5) { animation-delay: 0.25s; }
+.session-card:nth-child(6) { animation-delay: 0.3s; }
+.session-card:nth-child(7) { animation-delay: 0.35s; }
+.session-card:nth-child(8) { animation-delay: 0.4s; }
 
 .session-card.completed {
   opacity: 0.7;
@@ -250,12 +334,17 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cancel-btn:hover:not(:disabled) {
   background: #d32f2f;
   color: white;
+}
+
+.cancel-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .cancel-btn:disabled {
@@ -296,6 +385,7 @@
   padding: 16px;
   border-radius: 12px;
   gap: 12px;
+  animation: cardEntrance 0.4s ease-out;
 }
 
 .notification.approved {
@@ -387,12 +477,17 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .reschedule-btn:hover:not(:disabled) {
   background: #1976d2;
   color: white;
+}
+
+.reschedule-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .reschedule-btn:disabled {
@@ -421,20 +516,36 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 0;
+  animation: fadeInOverlay 0.25s ease-out;
 }
 
 .reschedule-modal {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px 20px 0 0;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Desktop: Center the modal */
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+
+  .reschedule-modal {
+    border-radius: 16px;
+    max-width: 500px;
+    animation: cardEntrance 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 .modal-header {
@@ -515,11 +626,17 @@
   border: 2px solid #e0e0e0;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .date-btn:hover {
   border-color: #99313c;
+  transform: translateY(-2px);
+}
+
+.date-btn:active {
+  transform: scale(0.95);
 }
 
 .date-btn.selected {
@@ -581,11 +698,17 @@
   font-size: 0.85rem;
   color: #373737;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .time-btn:hover {
   border-color: #99313c;
+  transform: translateY(-1px);
+}
+
+.time-btn:active {
+  transform: scale(0.95);
 }
 
 .time-btn.selected {
@@ -624,12 +747,17 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cancel-modal-btn:hover {
   border-color: #999;
   color: #333;
+}
+
+.cancel-modal-btn:active {
+  transform: scale(0.97);
 }
 
 .submit-reschedule-btn {
@@ -643,11 +771,19 @@
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .submit-reschedule-btn:hover:not(:disabled) {
   background: #7a2730;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+}
+
+.submit-reschedule-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  box-shadow: none;
 }
 
 .submit-reschedule-btn:disabled {
