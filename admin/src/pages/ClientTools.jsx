@@ -167,7 +167,7 @@ export default function ClientTools() {
         </div>
       </header>
 
-      <main className="tools-main">
+      <main className="tools-main page-transition-enter">
         <button className="back-btn" onClick={() => navigate('/client')}>&larr; Back</button>
 
         <div className="tools-intro">

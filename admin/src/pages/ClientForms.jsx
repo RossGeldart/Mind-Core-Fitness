@@ -135,7 +135,7 @@ export default function ClientForms() {
         </div>
       </header>
 
-      <main className="forms-main">
+      <main className="forms-main page-transition-enter">
         <button className="back-btn" onClick={() => navigate('/client')}>&larr; Back</button>
 
         {!activeForm ? (
