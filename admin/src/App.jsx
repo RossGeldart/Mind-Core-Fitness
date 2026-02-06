@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -7,6 +7,17 @@ import AddClient from './pages/AddClient';
 import ClientDashboard from './pages/ClientDashboard';
 import ClientForms from './pages/ClientForms';
 import ClientTools from './pages/ClientTools';
+
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 // Component to handle redirect from 404.html
 function RedirectHandler() {
@@ -29,6 +40,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter basename="/login">
+        <ScrollToTop />
         <RedirectHandler />
         <Routes>
           <Route path="/" element={<Login />} />
