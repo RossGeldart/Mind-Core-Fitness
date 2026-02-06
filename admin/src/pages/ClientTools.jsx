@@ -43,7 +43,6 @@ export default function ClientTools() {
     if (formData.weightUnit === 'lbs') {
       weightKg = weightKg * 0.453592;
     }
-    const weightLbs = formData.weightUnit === 'lbs' ? parseFloat(formData.weight) : weightKg * 2.20462;
 
     // Convert height to cm
     let heightCm;
@@ -78,7 +77,7 @@ export default function ClientTools() {
 
     // Adjust calories based on goal
     let targetCalories = tdee;
-    let proteinPerLb;
+    let proteinPerKg;
 
     switch (formData.goal) {
       case 'lose':
@@ -89,15 +88,15 @@ export default function ClientTools() {
           harsh: 750
         };
         targetCalories = tdee - deficits[formData.deficitLevel];
-        proteinPerLb = 1.1; // Higher protein to preserve muscle
+        proteinPerKg = 2.0; // Higher protein to preserve muscle during deficit
         break;
       case 'build':
         targetCalories = tdee + 300; // Moderate surplus
-        proteinPerLb = 1.1;
+        proteinPerKg = 2.0;
         break;
       case 'maintain':
       default:
-        proteinPerLb = 0.9;
+        proteinPerKg = 1.8;
         break;
     }
 
@@ -106,7 +105,7 @@ export default function ClientTools() {
     targetCalories = Math.max(targetCalories, minCalories);
 
     // Calculate macros
-    const proteinGrams = Math.round(weightLbs * proteinPerLb);
+    const proteinGrams = Math.round(weightKg * proteinPerKg);
     const proteinCalories = proteinGrams * 4;
 
     // Fats: 25% of calories
