@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, deleteDoc, query, where, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
@@ -15,11 +16,38 @@ export default function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
   const [processingRequest, setProcessingRequest] = useState(null);
+  const [toast, setToast] = useState(null);
   const { currentUser, logout, isAdmin, loading } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const startY = useRef(0);
   const isPulling = useRef(false);
   const mainRef = useRef(null);
+
+  // Toast notification helper
+  const showToast = useCallback((message, type = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  }, []);
+
+  // Ripple effect helper
+  const createRipple = (event) => {
+    const button = event.currentTarget;
+    const existingRipple = button.querySelector('.ripple');
+    if (existingRipple) existingRipple.remove();
+
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    const rect = button.getBoundingClientRect();
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${event.clientX - rect.left - radius}px`;
+    circle.style.top = `${event.clientY - rect.top - radius}px`;
+    circle.classList.add('ripple');
+
+    button.appendChild(circle);
+  };
 
   useEffect(() => {
     if (!loading && (!currentUser || !isAdmin)) {
@@ -192,9 +220,10 @@ export default function Dashboard() {
 
       // Remove from local state
       setRescheduleRequests(rescheduleRequests.filter(r => r.id !== request.id));
+      showToast(`Approved reschedule for ${request.clientName}`, 'success');
     } catch (error) {
       console.error('Error approving request:', error);
-      alert('Failed to approve request. Please try again.');
+      showToast('Failed to approve request', 'error');
     }
     setProcessingRequest(null);
   };
@@ -214,9 +243,10 @@ export default function Dashboard() {
 
       // Remove from local state
       setRescheduleRequests(rescheduleRequests.filter(r => r.id !== request.id));
+      showToast(`Request from ${request.clientName} rejected`, 'info');
     } catch (error) {
       console.error('Error rejecting request:', error);
-      alert('Failed to reject request. Please try again.');
+      showToast('Failed to reject request', 'error');
     }
     setProcessingRequest(null);
   };
@@ -281,6 +311,21 @@ export default function Dashboard() {
           </button>
         </nav>
         <div className="header-actions">
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+              </svg>
+            )}
+          </button>
           <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing}>
             {isRefreshing ? '↻' : '⟳'}
           </button>
@@ -289,6 +334,32 @@ export default function Dashboard() {
           </button>
         </div>
       </header>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="toast-container">
+          <div className={`toast ${toast.type}`}>
+            <span className="toast-icon">
+              {toast.type === 'success' && (
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+              )}
+              {toast.type === 'error' && (
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+              )}
+              {toast.type === 'info' && (
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+              )}
+            </span>
+            <span className="toast-message">{toast.message}</span>
+          </div>
+        </div>
+      )}
 
       <main className="dashboard-main">
         {activeView === 'schedule' && (
@@ -333,6 +404,13 @@ export default function Dashboard() {
 
             {rescheduleRequests.length === 0 ? (
               <div className="no-requests">
+                <div className="empty-icon">
+                  <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="20" y="25" width="60" height="50" rx="4" />
+                    <path d="M20 35 L50 55 L80 35" />
+                    <circle cx="50" cy="70" r="3" fill="currentColor" />
+                  </svg>
+                </div>
                 <p>No pending requests</p>
                 <span>When clients request to reschedule, they will appear here</span>
               </div>
