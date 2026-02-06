@@ -234,7 +234,7 @@ export default function ClientDashboard() {
 
     // Get available slots for this date
     const sessionDuration = rescheduleSession?.duration || clientData.sessionDuration || 45;
-    const slots = getAvailableSlotsForDate(
+    let slots = getAvailableSlotsForDate(
       date,
       sessionDuration,
       allSessions,
@@ -242,6 +242,12 @@ export default function ClientDashboard() {
       rescheduleSession?.id, // Exclude current session from conflict check
       blockedTimes
     );
+
+    // If same date as original session, filter out the original time slot
+    if (rescheduleSession && formatDateKey(date) === rescheduleSession.date) {
+      slots = slots.filter(slot => slot.time !== rescheduleSession.time);
+    }
+
     setAvailableSlots(slots);
   };
 
