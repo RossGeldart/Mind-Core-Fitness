@@ -1,0 +1,12 @@
+# Mind Core Fitness - robots.txt
+# https://www.mindcorefitness.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin/login areas from indexing
+Disallow: /login/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://www.mindcorefitness.com/sitemap.xml

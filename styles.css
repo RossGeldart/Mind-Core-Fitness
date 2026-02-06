@@ -79,6 +79,16 @@
     color: #ffffff;
 }
 
+.nav-link.nav-login {
+    background: var(--accent-color);
+    color: #ffffff;
+    margin-left: 8px;
+}
+
+.nav-link.nav-login:hover {
+    background: #7a2730;
+}
+
 /* Hamburger Menu */
 .hamburger {
     display: none;
@@ -150,6 +160,14 @@
 
     .nav-link:hover {
         background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.nav-login {
+        margin-left: 0;
+        margin-top: 16px;
+        border-bottom: none;
+        border-radius: 6px;
+        text-align: center;
     }
 }
 

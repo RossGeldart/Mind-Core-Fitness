@@ -27,6 +27,82 @@
     <meta name="twitter:description" content="Transform your fitness with Mind Core Fitness. Expert 1-2-1 personal training, online coaching, and the free 30-day core challenge.">
     <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
 
+    <!-- Structured Data - Local Business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Mind Core Fitness",
+      "description": "Expert personal training and online coaching focused on core strength, fitness transformation, and building sustainable healthy habits.",
+      "url": "https://www.mindcorefitness.com",
+      "logo": "https://www.mindcorefitness.com/Logo.PNG",
+      "image": "https://www.mindcorefitness.com/Logo.PNG",
+      "telephone": "",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Elgin",
+        "addressRegion": "Moray",
+        "addressCountry": "GB"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 57.6533,
+        "longitude": -3.3147
+      },
+      "priceRange": "$$",
+      "openingHours": "Mo-Fr 06:00-20:00, Sa 08:00-14:00",
+      "sameAs": [
+        "https://www.facebook.com/mindcorefitness",
+        "https://www.instagram.com/mindcorefitness"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Fitness Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "1-2-1 Personal Training",
+              "description": "Private personal training sessions in a fully-equipped studio"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Online Coaching",
+              "description": "Remote fitness coaching with personalized workout plans"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "30-Day Core Challenge",
+              "description": "Free fitness challenge to kickstart your core training"
+            }
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- Structured Data - Website -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Mind Core Fitness",
+      "url": "https://www.mindcorefitness.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.mindcorefitness.com/blog?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#99313c">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,42 +111,19 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="Logo.PNG">
 
-    <!-- Vercel Web Analytics -->
-<script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ECBK32DRR"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-0ECBK32DRR');
-    </script>
-
-    <!-- Meta Pixel Code -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1512543690146167');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
-
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="Logo.PNG" as="image">
+
+    <!-- Load fonts with display=swap for faster text rendering -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="social-share.css">
 </head>
@@ -89,6 +142,7 @@
                 <a href="online-coaching.html" class="nav-link">Online Coaching</a>
                 <a href="free-challenge.html" class="nav-link">Free Challenge</a>
                 <a href="blog.html" class="nav-link">Blog</a>
+                <a href="/login" class="nav-link nav-login">Client Log In</a>
             </nav>
 
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -186,7 +240,7 @@
             <div class="hero-cards">
                 <a href="personal-training.html" class="hero-card option-card">
                     <div class="hero-card-image">
-                        <img src="Gym Studio 1.jpg" alt="Personal Training Studio">
+                        <img src="Gym Studio 1.jpg" alt="Personal Training Studio" loading="lazy" width="400" height="300">
                         <span class="option-badge">Most Popular</span>
                     </div>
                     <div class="hero-card-content">
@@ -206,7 +260,7 @@
                 </a>
                 <a href="12-week-core-programme.html" class="hero-card option-card">
                     <div class="hero-card-image">
-                        <img src="Core 1.jpg" alt="Core Programme">
+                        <img src="Core 1.jpg" alt="Core Programme" loading="lazy" width="400" height="300">
                         <span class="option-badge">Best Value</span>
                     </div>
                     <div class="hero-card-content">
@@ -230,7 +284,7 @@
             <div class="standard-cards">
                 <a href="online-coaching.html" class="standard-card option-card">
                     <div class="standard-card-image">
-                        <img src="Everfit.png" alt="Online Coaching App">
+                        <img src="Everfit.png" alt="Online Coaching App" loading="lazy" width="300" height="200">
                     </div>
                     <div class="standard-card-content">
                         <span class="standard-card-title">Online Personal Training</span>
@@ -245,7 +299,7 @@
                 </a>
                 <a href="workbook.html" class="standard-card option-card featured">
                     <div class="standard-card-image">
-                        <img src="downloads/front-cover-square.jpeg" alt="Mind Core Mindset Workbook">
+                        <img src="downloads/front-cover-square.jpeg" alt="Mind Core Mindset Workbook" loading="lazy" width="300" height="300">
                         <span class="option-badge">New Release</span>
                     </div>
                     <div class="standard-card-content">
@@ -261,7 +315,7 @@
                 </a>
                 <a href="free-challenge.html" class="standard-card option-card free">
                     <div class="standard-card-image">
-                        <img src="blog/images/forearm-plank.avif" alt="30 Day Core Challenge">
+                        <img src="blog/images/forearm-plank.avif" alt="30 Day Core Challenge" loading="lazy" width="300" height="200">
                         <span class="option-badge free-badge">Free</span>
                     </div>
                     <div class="standard-card-content">
@@ -280,7 +334,7 @@
             <!-- Quick Links - Tertiary Options -->
             <div class="quick-links">
                 <a href="core-buddy.html" class="quick-link option-card">
-                    <img src="Logo.PNG" alt="Core Buddy" class="quick-link-icon">
+                    <img src="Logo.PNG" alt="Core Buddy" class="quick-link-icon" loading="lazy" width="48" height="48">
                     <div class="quick-link-content">
                         <span class="quick-link-title">Core Buddy</span>
                         <span class="quick-link-desc">AI-powered fitness companion</span>
@@ -298,7 +352,7 @@
                     <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
                 <a href="#" class="quick-link option-card" id="getInTouchBtn" onclick="openContactModal(event)">
-                    <img src="Client Bond.jpg" alt="Get in Touch" class="quick-link-icon">
+                    <img src="Client Bond.jpg" alt="Get in Touch" class="quick-link-icon" loading="lazy" width="48" height="48">
                     <div class="quick-link-content">
                         <span class="quick-link-title">Get In Touch</span>
                         <span class="quick-link-desc">Have questions? Let's chat</span>
@@ -306,7 +360,7 @@
                     <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
                 <a href="blog.html" class="quick-link option-card">
-                    <img src="blog/images/beyond-the-mat.avif" alt="Blog" class="quick-link-icon">
+                    <img src="blog/images/beyond-the-mat.avif" alt="Blog" class="quick-link-icon" loading="lazy" width="48" height="48">
                     <div class="quick-link-content">
                         <span class="quick-link-title">Read Our Blog</span>
                         <span class="quick-link-desc">Tips, workouts, and insights</span>
@@ -324,7 +378,7 @@
             <h2 class="section-title">The Mind Core Mindset Workbook</h2>
             <div class="workbook-content">
                 <div class="workbook-image">
-                    <img src="downloads/front-cover-square.jpeg" alt="The Mind Core Mindset Workbook - 6-Month Transformation Journal" class="book-cover">
+                    <img src="downloads/front-cover-square.jpeg" alt="The Mind Core Mindset Workbook - 6-Month Transformation Journal" class="book-cover" loading="lazy" width="400" height="400">
                 </div>
                 <div class="workbook-details">
                     <p class="workbook-tagline">Stop waiting. Start becoming.</p>
@@ -351,7 +405,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"So far I have lost 25 kilos and still going. Ross is a good motivator, pushing me onwards to better and more physical workouts even at my tender age of 53. The monthly weigh ins are a very strong motivator to get to my target."</p>
                     <div class="testimonial-author">
-                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Scott Grant</strong>
                             <span>Lost 25 Kilos • 1-2-1 Training</span>
@@ -362,7 +416,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"Since signing up, it's been the kick up the arse I've desperately needed. Ross makes the sessions varied and challenging yet fun. I feel so much more motivated, fitter and stronger. Thanks Ross!"</p>
                     <div class="testimonial-author">
-                        <img src="Emily Paterson.jpg" alt="Emily Paterson">
+                        <img src="Emily Paterson.jpg" alt="Emily Paterson" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Emily Paterson</strong>
                             <span>Building Strength • 1-2-1 Training</span>
@@ -373,7 +427,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"I really enjoyed this. I need to be accountable and have support or I won't do anything. I completed this every day and before work so it clearly works! My core is so much better now."</p>
                     <div class="testimonial-author">
-                        <img src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts">
+                        <img src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Paula Coutts</strong>
                             <span>30-Day Core Challenge</span>
@@ -384,7 +438,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"Intense but deeply satisfying—pushed beyond limits into new gears I didn't know I had. Exactly the kick I needed to stay disciplined for my well-being."</p>
                     <div class="testimonial-author">
-                        <img src="Baz Duncan.jpg" alt="Lee Bazzie Duncan">
+                        <img src="Baz Duncan.jpg" alt="Lee Bazzie Duncan" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
                             <span>Staying Disciplined • 1-2-1 Training</span>
@@ -395,7 +449,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"I thought it was great. I liked the different lengths of exercises, some 12, some 16 minutes. My core definitely feels stronger and I can't wait to continue. You checked in with us every day which was magic!"</p>
                     <div class="testimonial-author">
-                        <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes">
+                        <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Sharon Hughes</strong>
                             <span>30-Day Core Challenge</span>
@@ -406,7 +460,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"The sessions were intense and challenging at times, but Ross kept me going. Even on the days when my mental health made things tough, Ross was always there to reassure me. This made a huge difference mentally too."</p>
                     <div class="testimonial-author">
-                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
+                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch" loading="lazy" width="60" height="60">
                         <div class="testimonial-author-info">
                             <strong>Christopher Snedden Murdoch</strong>
                             <span>Mental & Physical Progress • 1-2-1 Training</span>
@@ -634,5 +688,44 @@
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+
+    <!-- Deferred Analytics - Load after page content -->
+    <script>
+        // Vercel Web Analytics
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <!-- Google Analytics - Deferred -->
+    <script>
+        window.addEventListener('load', function() {
+            var ga = document.createElement('script');
+            ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-0ECBK32DRR';
+            ga.async = true;
+            document.head.appendChild(ga);
+            ga.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-0ECBK32DRR');
+            };
+        });
+    </script>
+
+    <!-- Meta Pixel - Deferred -->
+    <script>
+        window.addEventListener('load', function() {
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '1512543690146167');
+            fbq('track', 'PageView');
+        });
+    </script>
 </body>
 </html>

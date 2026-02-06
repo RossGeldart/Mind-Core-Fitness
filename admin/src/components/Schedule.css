@@ -1,0 +1,225 @@
+.schedule {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.schedule-loading {
+  padding: 60px;
+  text-align: center;
+  color: #666;
+}
+
+/* Today's Summary */
+.today-summary {
+  background: #99313c;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.today-summary h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.today-count .session-count {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.today-count .no-sessions {
+  font-family: 'Roboto', sans-serif;
+  opacity: 0.8;
+}
+
+.today-stats {
+  display: flex;
+  gap: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.completed-count {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.remaining-count {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* No Upcoming */
+.no-upcoming {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Sessions List */
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.date-group {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.date-group.today {
+  border-color: #99313c;
+  border-width: 2px;
+}
+
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.date-group.today .date-header {
+  background: #fce4ec;
+}
+
+.date-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #373737;
+}
+
+.date-group.today .date-label {
+  color: #99313c;
+}
+
+.date-count {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.date-sessions {
+  padding: 8px;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.session-card:hover {
+  background: #f9f9f9;
+}
+
+.session-time {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #99313c;
+  min-width: 70px;
+}
+
+.session-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.session-details strong {
+  font-family: 'Montserrat', sans-serif;
+  color: #373737;
+  font-size: 0.95rem;
+}
+
+.session-details span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Completed Sessions */
+.session-card.completed {
+  opacity: 0.6;
+  background: #f0f0f0;
+}
+
+.session-card.completed .session-time {
+  color: #4caf50;
+  text-decoration: line-through;
+}
+
+.session-card.completed .session-details strong {
+  text-decoration: line-through;
+}
+
+.completed-badge {
+  margin-left: auto;
+  background: #4caf50;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.cancel-session-btn {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid #d32f2f;
+  background: transparent;
+  color: #d32f2f;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-session-btn:hover {
+  background: #d32f2f;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .schedule {
+    padding: 16px;
+  }
+
+  .today-summary {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .session-card {
+    padding: 12px 8px;
+  }
+
+  .session-time {
+    font-size: 0.9rem;
+    min-width: 60px;
+  }
+}

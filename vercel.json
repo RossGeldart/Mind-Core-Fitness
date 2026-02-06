@@ -1,13 +1,12 @@
 {
-  "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/login/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
@@ -21,11 +20,48 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/dashboard",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/calendar",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/clients",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/add-client",
+      "destination": "/login/index.html"
+    },
+    {
+      "source": "/login/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": ".*text/html.*"
+        }
+      ],
+      "destination": "/login/index.html"
+    }
+  ],
   "redirects": [
     {
-      "source": "/:path*.html",
-      "destination": "/:path*",
-      "permanent": true
+      "source": "/admin",
+      "destination": "/login",
+      "permanent": false
     },
     {
       "source": "/quick",
