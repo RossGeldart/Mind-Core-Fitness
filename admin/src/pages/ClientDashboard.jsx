@@ -983,6 +983,9 @@ export default function ClientDashboard() {
         </div>
       )}
 
+      {/* FAB Backdrop Blur */}
+      {fabOpen && <div className="fab-backdrop" onClick={() => setFabOpen(false)} />}
+
       {/* Floating Action Button (Mobile) */}
       <div className={`fab-container ${fabOpen ? 'open' : ''}`}>
         <button
