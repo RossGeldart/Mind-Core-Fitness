@@ -55,6 +55,9 @@ export default function ClientDashboard() {
   // Progress ring animation state
   const [animateRing, setAnimateRing] = useState(false);
 
+  // Live countdown state
+  const [liveCountdown, setLiveCountdown] = useState(null);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -161,6 +164,39 @@ export default function ClientDashboard() {
       return () => clearTimeout(timer);
     }
   }, [loading, clientData]);
+
+  // Live countdown timer - updates every second
+  useEffect(() => {
+    const updateCountdown = () => {
+      const upcoming = getUpcomingSessions();
+      if (upcoming.length === 0) {
+        setLiveCountdown(null);
+        return;
+      }
+
+      const nextSession = upcoming[0];
+      const now = new Date();
+      const sessionDate = new Date(nextSession.date + 'T' + nextSession.time);
+      const diff = sessionDate - now;
+
+      if (diff <= 0) {
+        setLiveCountdown(null);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setLiveCountdown({ days, hours, minutes, seconds, session: nextSession });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [sessions, loading]);
 
   const fetchAllData = async () => {
     try {
@@ -560,30 +596,26 @@ export default function ClientDashboard() {
           </div>
         )}
 
-        {/* Countdown to Next Session */}
-        {countdown && (
+        {/* Live Countdown to Next Session */}
+        {liveCountdown && (
           <div className="countdown-card">
-            <div className="countdown-header">
-              <span className="countdown-label">Next Session</span>
-              <span className="countdown-date">{formatDate(countdown.session.date)}</span>
-            </div>
-            <div className="countdown-timer">
-              {countdown.days > 0 && (
-                <div className="countdown-unit">
-                  <span className="countdown-value">{countdown.days}</span>
-                  <span className="countdown-text">days</span>
-                </div>
+            <div className="countdown-timer-live">
+              {liveCountdown.days > 0 && (
+                <>
+                  <span className="countdown-number">{String(liveCountdown.days).padStart(2, '0')}</span>
+                  <span className="countdown-separator">:</span>
+                </>
               )}
-              <div className="countdown-unit">
-                <span className="countdown-value">{countdown.hours}</span>
-                <span className="countdown-text">hrs</span>
-              </div>
-              <div className="countdown-unit">
-                <span className="countdown-value">{countdown.minutes}</span>
-                <span className="countdown-text">min</span>
-              </div>
+              <span className="countdown-number">{String(liveCountdown.hours).padStart(2, '0')}</span>
+              <span className="countdown-separator">:</span>
+              <span className="countdown-number">{String(liveCountdown.minutes).padStart(2, '0')}</span>
+              <span className="countdown-separator">:</span>
+              <span className="countdown-number countdown-seconds">{String(liveCountdown.seconds).padStart(2, '0')}</span>
             </div>
-            <div className="countdown-time">at {formatTime(countdown.session.time)}</div>
+            <div className="countdown-label-text">until next session</div>
+            <div className="countdown-session-info">
+              {formatDate(liveCountdown.session.date)} at {formatTime(liveCountdown.session.time)}
+            </div>
           </div>
         )}
 
