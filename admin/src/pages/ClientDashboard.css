@@ -185,65 +185,65 @@
 .countdown-card {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px 20px;
   margin-bottom: 20px;
   color: var(--text-on-primary);
   box-shadow: var(--shadow-primary);
   animation: cardEntrance 0.5s ease-out 0.1s backwards;
+  text-align: center;
 }
 
-.countdown-header {
+.countdown-timer-live {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  justify-content: center;
+  align-items: baseline;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-.countdown-label {
+.countdown-number {
+  font-size: 2.8rem;
+  line-height: 1;
+  min-width: 2ch;
+  display: inline-block;
+  text-align: center;
+}
+
+.countdown-separator {
+  font-size: 2.2rem;
+  opacity: 0.7;
+  margin: 0 2px;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.countdown-seconds {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.countdown-label-text {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  opacity: 0.9;
-  text-transform: uppercase;
+  font-size: 1rem;
+  opacity: 0.95;
+  margin-bottom: 12px;
   letter-spacing: 0.5px;
 }
 
-.countdown-date {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.countdown-timer {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-bottom: 12px;
-}
-
-.countdown-unit {
-  text-align: center;
-}
-
-.countdown-value {
-  display: block;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.countdown-text {
+.countdown-session-info {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   opacity: 0.8;
-  text-transform: uppercase;
-}
-
-.countdown-time {
-  text-align: center;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
-  opacity: 0.9;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .client-header {
