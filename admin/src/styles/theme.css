@@ -8,9 +8,11 @@
 
   /* Backgrounds */
   --bg-body: #f5f5f5;
+  --bg-secondary: #f5f5f5;
   --bg-card: #ffffff;
   --bg-card-elevated: #ffffff;
   --bg-header: #1a1a1a;
+  --header-bg: #1a1a1a;
   --bg-input: #f9f9f9;
   --bg-skeleton: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
 
@@ -28,17 +30,26 @@
   /* Status colors */
   --color-success: #2e7d32;
   --color-success-bg: #e8f5e9;
+  --success-bg: #e8f5e9;
+  --success-text: #2e7d32;
   --color-error: #d32f2f;
   --color-error-bg: #ffebee;
   --color-warning: #e65100;
   --color-warning-bg: #fff3e0;
+  --warning-bg: #fff3e0;
+  --warning-border: #ffcc80;
+  --warning-text: #e65100;
   --color-info: #1976d2;
   --color-info-bg: #e3f2fd;
+  --info-bg: #e3f2fd;
+  --info-border: #90caf9;
+  --info-text: #1565c0;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-primary: 0 6px 20px rgba(153, 49, 60, 0.4);
 
   /* Overlays */
@@ -57,9 +68,11 @@
 
   /* Backgrounds */
   --bg-body: #121212;
+  --bg-secondary: #121212;
   --bg-card: #1e1e1e;
   --bg-card-elevated: #2d2d2d;
   --bg-header: #0d0d0d;
+  --header-bg: #0d0d0d;
   --bg-input: #2d2d2d;
   --bg-skeleton: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
 
@@ -77,17 +90,26 @@
   /* Status colors */
   --color-success: #4caf50;
   --color-success-bg: rgba(76, 175, 80, 0.15);
+  --success-bg: rgba(76, 175, 80, 0.15);
+  --success-text: #4caf50;
   --color-error: #f44336;
   --color-error-bg: rgba(244, 67, 54, 0.15);
   --color-warning: #ff9800;
   --color-warning-bg: rgba(255, 152, 0, 0.15);
+  --warning-bg: rgba(255, 152, 0, 0.15);
+  --warning-border: rgba(255, 152, 0, 0.3);
+  --warning-text: #ff9800;
   --color-info: #42a5f5;
   --color-info-bg: rgba(66, 165, 245, 0.15);
+  --info-bg: rgba(66, 165, 245, 0.15);
+  --info-border: rgba(66, 165, 245, 0.3);
+  --info-text: #42a5f5;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-primary: 0 6px 20px rgba(199, 95, 107, 0.3);
 
   /* Overlays */

@@ -730,6 +730,21 @@ export default function ClientDashboard() {
                         {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
                       </button>
                     </div>
+                    {/* Mobile swipe hint */}
+                    <div className="swipe-hint">
+                      <span className="swipe-hint-text">Swipe</span>
+                      <span className="swipe-hint-chevrons">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
