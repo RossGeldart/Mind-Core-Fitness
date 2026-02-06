@@ -7,7 +7,8 @@ import {
   browserSessionPersistence,
   setPersistence
 } from 'firebase/auth';
-import { auth, ADMIN_UID } from '../config/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db, ADMIN_UID } from '../config/firebase';
 
 const AuthContext = createContext();
 
@@ -18,12 +19,48 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
-      setIsAdmin(user?.uid === ADMIN_UID);
+
+      if (user) {
+        if (user.uid === ADMIN_UID) {
+          setIsAdmin(true);
+          setIsClient(false);
+          setClientData(null);
+        } else {
+          // Check if this user is a client
+          setIsAdmin(false);
+          try {
+            const clientsQuery = query(
+              collection(db, 'clients'),
+              where('uid', '==', user.uid)
+            );
+            const snapshot = await getDocs(clientsQuery);
+            if (!snapshot.empty) {
+              const clientDoc = snapshot.docs[0];
+              setIsClient(true);
+              setClientData({ id: clientDoc.id, ...clientDoc.data() });
+            } else {
+              setIsClient(false);
+              setClientData(null);
+            }
+          } catch (error) {
+            console.error('Error fetching client data:', error);
+            setIsClient(false);
+            setClientData(null);
+          }
+        }
+      } else {
+        setIsAdmin(false);
+        setIsClient(false);
+        setClientData(null);
+      }
+
       setLoading(false);
     });
 
@@ -36,10 +73,6 @@ export function AuthProvider({ children }) {
     await setPersistence(auth, persistence);
 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    if (userCredential.user.uid !== ADMIN_UID) {
-      await signOut(auth);
-      throw new Error('Access denied. Admin only.');
-    }
     return userCredential;
   };
 
@@ -50,6 +83,8 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     isAdmin,
+    isClient,
+    clientData,
     login,
     logout,
     loading

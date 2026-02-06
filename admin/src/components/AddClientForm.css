@@ -79,6 +79,10 @@ form {
   flex-direction: column;
 }
 
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
 .form-group label {
   margin-bottom: 8px;
   color: #373737;

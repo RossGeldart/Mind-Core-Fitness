@@ -15,5 +15,9 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
+// Secondary app for creating user accounts without logging out admin
+const secondaryApp = initializeApp(firebaseConfig, "secondary");
+export const secondaryAuth = getAuth(secondaryApp);
+
 // Admin UID - only this user can access the dashboard
 export const ADMIN_UID = "EYdciKDOi3UYBLk1u8hHams5tmO2";

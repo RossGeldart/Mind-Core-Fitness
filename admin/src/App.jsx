@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AddClient from './pages/AddClient';
+import ClientDashboard from './pages/ClientDashboard';
 
 // Component to handle redirect from 404.html
 function RedirectHandler() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/add-client" element={<AddClient />} />
+          <Route path="/client" element={<ClientDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
