@@ -118,6 +118,10 @@
   stroke: var(--color-primary);
 }
 
+.pb-ring-tick.hit {
+  stroke: var(--color-success);
+}
+
 .pb-ring-tick.empty {
   stroke: var(--border-color);
 }
@@ -181,6 +185,25 @@
 .pb-ring-change.neutral {
   color: var(--text-tertiary);
   background: var(--bg-input);
+}
+
+/* Target label in ring */
+.pb-ring-target {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.pb-ring-target.hit {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.pb-ring-target.none {
+  font-style: italic;
+  opacity: 0.7;
 }
 
 /* Carousel Dots */
@@ -325,6 +348,14 @@
   margin: 0;
 }
 
+/* ====== Action Buttons ====== */
+.pb-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
 /* ====== Edit Button ====== */
 .pb-edit-btn {
   display: block;
@@ -339,7 +370,7 @@
   color: var(--color-primary);
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -352,6 +383,50 @@
 
 .pb-edit-btn:active {
   transform: scale(0.97);
+}
+
+.pb-target-btn {
+  border-style: solid;
+  border-width: 1px;
+  font-size: 0.85rem;
+  padding: 14px;
+}
+
+/* Target type toggle */
+.pb-target-type-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.pb-target-type-toggle button {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-input);
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-target-type-toggle button.active {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+
+.pb-target-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 20px 0;
+  line-height: 1.5;
 }
 
 /* ====== Edit Card ====== */
