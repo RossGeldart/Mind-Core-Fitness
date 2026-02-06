@@ -26,15 +26,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 10px;
 }
 
 .header-spacer {
-  width: 70px;
+  width: 80px;
 }
 
 .header-logo {
-  height: 40px;
-  width: auto;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #99313c;
 }
 
 .logout-btn {
@@ -47,6 +51,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 80px;
 }
 
 .logout-btn:hover {

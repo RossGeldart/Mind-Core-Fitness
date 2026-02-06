@@ -17,11 +17,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 10px;
 }
 
 .header-logo {
-  height: 40px;
-  width: auto;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #99313c;
 }
 
 .back-btn {
