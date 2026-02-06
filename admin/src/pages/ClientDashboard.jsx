@@ -99,14 +99,15 @@ export default function ClientDashboard() {
     const currentY = e.touches[0].clientY;
     const diff = currentY - touchStartY.current;
 
-    if (diff > 0 && mainRef.current.scrollTop === 0) {
+    // Only start showing indicator after 20px of pull (reduces accidental triggers)
+    if (diff > 20 && mainRef.current.scrollTop === 0) {
       e.preventDefault();
-      setPullDistance(Math.min(diff * 0.5, 80));
+      setPullDistance(Math.min((diff - 20) * 0.35, 80));
     }
   };
 
   const handleTouchEnd = async () => {
-    if (pullDistance > 60 && !refreshing) {
+    if (pullDistance > 55 && !refreshing) {
       setRefreshing(true);
       await fetchAllData();
       showToast('Refreshed!', 'success');
