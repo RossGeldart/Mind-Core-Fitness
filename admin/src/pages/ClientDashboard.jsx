@@ -149,6 +149,12 @@ export default function ClientDashboard() {
           <h2>Welcome, {clientData.name.split(' ')[0]}</h2>
         </div>
 
+        <div className="quick-actions">
+          <button className="forms-btn" onClick={() => navigate('/client/forms')}>
+            Forms & Questionnaires
+          </button>
+        </div>
+
         <div className="block-info-card">
           <h3>Your Training Block</h3>
           <div className="block-stats">
