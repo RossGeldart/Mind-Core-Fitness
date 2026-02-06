@@ -105,6 +105,7 @@
 .client-dashboard {
   min-height: 100vh;
   background: #f5f5f5;
+  scroll-behavior: smooth;
 }
 
 .client-loading {
@@ -274,6 +275,9 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  padding-bottom: 100px; /* Space for FAB */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling on iOS */
 }
 
 .welcome-section {
@@ -1294,7 +1298,7 @@
   background: #f9f9f9;
 }
 
-/* Confirmation Modal */
+/* Confirmation Modal - Bottom Sheet on Mobile */
 .confirm-modal-overlay {
   position: fixed;
   top: 0;
@@ -1303,21 +1307,51 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 2000;
-  padding: 20px;
+  padding: 0;
   animation: fadeInOverlay 0.2s ease-out;
 }
 
 .confirm-modal {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px 20px 0 0;
   padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   width: 100%;
-  max-width: 340px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: confirmBounce 0.3s ease-out;
+  max-width: 600px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.confirm-modal::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* Desktop: Center the confirmation modal */
+@media (min-width: 768px) {
+  .confirm-modal-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+
+  .confirm-modal {
+    border-radius: 16px;
+    max-width: 340px;
+    padding-bottom: 24px;
+    animation: confirmBounce 0.3s ease-out;
+  }
+
+  .confirm-modal::before {
+    display: none;
+  }
 }
 
 .confirm-modal h3 {
@@ -1407,5 +1441,155 @@
 
   .session-card-wrapper.swiped .session-card::after {
     opacity: 0;
+  }
+}
+
+/* Floating Action Button */
+.fab-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+
+.fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #99313c 0%, #7a2730 100%);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(153, 49, 60, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab-main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+}
+
+.fab-main:active {
+  transform: scale(0.95);
+}
+
+.fab-main.open {
+  transform: rotate(45deg);
+  background: #666;
+}
+
+.fab-main.open:hover {
+  transform: rotate(45deg) scale(1.05);
+}
+
+.fab-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1;
+}
+
+.fab-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab-container.open .fab-actions {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.fab-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: white;
+  border: none;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #373737;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab-action:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.fab-action:active {
+  transform: scale(0.95);
+}
+
+.fab-action svg {
+  width: 20px;
+  height: 20px;
+  color: #99313c;
+}
+
+/* Staggered animation for FAB actions */
+.fab-container.open .fab-action:nth-child(1) {
+  transition-delay: 0.05s;
+}
+
+.fab-container.open .fab-action:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+/* Hide inline quick-actions on mobile when FAB is shown */
+@media (max-width: 480px) {
+  .quick-actions {
+    display: none;
+  }
+}
+
+/* Show inline quick-actions on desktop, hide FAB */
+@media (min-width: 481px) {
+  .fab-container {
+    display: none;
+  }
+}
+
+/* Smooth scrolling for scrollable containers */
+.dates-grid,
+.times-grid,
+.sessions-list {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS safe area for bottom sheet modals */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .confirm-modal,
+  .reschedule-modal .modal-footer {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .fab-container {
+    bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .toast-notification {
+    bottom: calc(24px + env(safe-area-inset-bottom));
   }
 }
