@@ -204,6 +204,36 @@
   border-color: #99313c;
 }
 
+.password-row {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.password-row input {
+  width: 100%;
+}
+
+.password-hint {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+.portal-status {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  width: 100%;
+  text-align: center;
+}
+
+.portal-status.has-access {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
 .edit-actions {
   display: flex;
   gap: 8px;
