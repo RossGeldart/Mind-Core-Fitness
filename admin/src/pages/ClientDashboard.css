@@ -259,11 +259,14 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 10px;
+  position: relative;
 }
 
 .header-content .theme-toggle {
+  position: absolute;
+  left: 10px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -287,12 +290,6 @@
 .header-content .theme-toggle svg {
   width: 20px;
   height: 20px;
-}
-
-/* Empty placeholder for right side to center logo */
-.header-content::after {
-  content: '';
-  width: 40px;
 }
 
 .header-logo {
