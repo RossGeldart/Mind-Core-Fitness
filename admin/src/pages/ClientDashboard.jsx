@@ -397,15 +397,6 @@ export default function ClientDashboard() {
           </div>
         )}
 
-        <div className="quick-actions">
-          <button className="forms-btn" onClick={() => navigate('/client/forms')}>
-            Forms & Questionnaires
-          </button>
-          <button className="tools-btn" onClick={() => navigate('/client/tools')}>
-            Tools & Calculators
-          </button>
-        </div>
-
         {/* Countdown to Next Session */}
         {countdown && (
           <div className="countdown-card">
@@ -494,6 +485,15 @@ export default function ClientDashboard() {
               <span className="date-value">{clientData.sessionDuration} minutes</span>
             </div>
           </div>
+        </div>
+
+        <div className="quick-actions">
+          <button className="forms-btn" onClick={() => navigate('/client/forms')}>
+            Forms & Questionnaires
+          </button>
+          <button className="tools-btn" onClick={() => navigate('/client/tools')}>
+            Tools & Calculators
+          </button>
         </div>
 
         <div className="sessions-section">
