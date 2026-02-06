@@ -1,10 +1,33 @@
+/* Page Transition */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .client-forms-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
 }
 
 .client-header {
-  background: #1a1a1a;
+  background: var(--header-bg);
   padding: 16px 20px;
   position: sticky;
   top: 0;
@@ -25,14 +48,14 @@
   width: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #99313c;
+  border: 2px solid var(--color-primary);
 }
 
 .back-btn {
   padding: 8px 16px;
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
@@ -42,31 +65,33 @@
 }
 
 .back-btn:hover {
-  border-color: #99313c;
-  color: #99313c;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .forms-main {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  animation: pageEnter 0.4s ease-out;
 }
 
 .forms-intro {
   margin-bottom: 24px;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .forms-intro h2 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.5rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .forms-intro p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -77,15 +102,21 @@
 }
 
 .form-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
   gap: 16px;
+  animation: fadeIn 0.4s ease-out backwards;
 }
+
+.form-card:nth-child(1) { animation-delay: 0.05s; }
+.form-card:nth-child(2) { animation-delay: 0.1s; }
+.form-card:nth-child(3) { animation-delay: 0.15s; }
+.form-card:nth-child(4) { animation-delay: 0.2s; }
 
 .form-card.completed {
   border-left: 4px solid #4caf50;
@@ -98,14 +129,14 @@
 .form-card-info h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .form-card-info p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -113,8 +144,8 @@
   display: inline-block;
   margin-top: 8px;
   padding: 4px 10px;
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--success-bg);
+  color: var(--success-text);
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -122,7 +153,7 @@
 
 .form-card button {
   padding: 10px 20px;
-  background: #99313c;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -135,15 +166,16 @@
 }
 
 .form-card button:hover {
-  background: #7a2730;
+  background: var(--color-primary-dark);
 }
 
 /* Form Container */
 .form-container {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
+  animation: fadeIn 0.4s ease-out;
 }
 
 .form-header {
@@ -151,7 +183,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  background: #1a1a1a;
+  background: var(--header-bg);
   color: white;
 }
 
@@ -190,7 +222,7 @@
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 0.9rem;
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .form-group textarea,
@@ -198,19 +230,26 @@
 .form-group input[type="text"] {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  background: var(--bg-input);
+  color: var(--text-primary);
 }
 
 .form-group textarea:focus,
 .form-group select:focus,
 .form-group input:focus {
   outline: none;
-  border-color: #99313c;
+  border-color: var(--color-primary);
+}
+
+.form-group textarea::placeholder,
+.form-group input::placeholder {
+  color: var(--text-tertiary);
 }
 
 .form-group textarea {
@@ -220,8 +259,8 @@
 
 /* PAR-Q Specific */
 .parq-intro {
-  background: #fff3e0;
-  border: 1px solid #ffcc80;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -230,7 +269,7 @@
 .parq-intro p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #e65100;
+  color: var(--warning-text);
   margin: 0;
 }
 
@@ -241,7 +280,7 @@
 .parq-question {
   margin-bottom: 16px;
   padding: 16px;
-  background: #f9f9f9;
+  background: var(--bg-secondary);
   border-radius: 8px;
 }
 
@@ -256,22 +295,22 @@
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  accent-color: #99313c;
+  accent-color: var(--color-primary);
   flex-shrink: 0;
 }
 
 .parq-question span {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #373737;
+  color: var(--text-primary);
   line-height: 1.5;
 }
 
 .parq-declaration {
   margin: 24px 0;
   padding: 20px;
-  background: #e3f2fd;
-  border: 1px solid #90caf9;
+  background: var(--info-bg);
+  border: 1px solid var(--info-border);
   border-radius: 8px;
 }
 
@@ -286,14 +325,14 @@
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  accent-color: #99313c;
+  accent-color: var(--color-primary);
   flex-shrink: 0;
 }
 
 .parq-declaration span {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #1565c0;
+  color: var(--info-text);
   line-height: 1.5;
 }
 
@@ -303,14 +342,14 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .cancel-btn {
   padding: 12px 24px;
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
@@ -319,13 +358,13 @@
 }
 
 .cancel-btn:hover {
-  border-color: #999;
-  color: #333;
+  border-color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .save-btn {
   padding: 12px 24px;
-  background: #99313c;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -337,7 +376,7 @@
 }
 
 .save-btn:hover:not(:disabled) {
-  background: #7a2730;
+  background: var(--color-primary-dark);
 }
 
 .save-btn:disabled {

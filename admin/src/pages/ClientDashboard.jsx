@@ -99,14 +99,15 @@ export default function ClientDashboard() {
     const currentY = e.touches[0].clientY;
     const diff = currentY - touchStartY.current;
 
-    if (diff > 0 && mainRef.current.scrollTop === 0) {
+    // Only start showing indicator after 20px of pull (reduces accidental triggers)
+    if (diff > 20 && mainRef.current.scrollTop === 0) {
       e.preventDefault();
-      setPullDistance(Math.min(diff * 0.5, 80));
+      setPullDistance(Math.min((diff - 20) * 0.35, 80));
     }
   };
 
   const handleTouchEnd = async () => {
-    if (pullDistance > 60 && !refreshing) {
+    if (pullDistance > 55 && !refreshing) {
       setRefreshing(true);
       await fetchAllData();
       showToast('Refreshed!', 'success');
@@ -728,6 +729,21 @@ export default function ClientDashboard() {
                       >
                         {cancellingId === session.id ? 'Cancelling...' : 'Cancel'}
                       </button>
+                    </div>
+                    {/* Mobile swipe hint */}
+                    <div className="swipe-hint">
+                      <span className="swipe-hint-text">Swipe</span>
+                      <span className="swipe-hint-chevrons">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 </div>
