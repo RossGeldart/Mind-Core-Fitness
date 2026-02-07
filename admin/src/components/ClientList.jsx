@@ -130,8 +130,9 @@ export default function ClientList() {
       name: client.name,
       email: client.email,
       password: '',
-      weeksInBlock: client.weeksInBlock,
-      totalSessions: client.totalSessions,
+      clientType: client.clientType || 'block',
+      weeksInBlock: client.weeksInBlock || '',
+      totalSessions: client.totalSessions || '',
       sessionsRemaining: client.sessionsRemaining,
       sessionDuration: client.sessionDuration || 45,
       startDate: formatDateForInput(client.startDate),
@@ -197,17 +198,28 @@ export default function ClientList() {
         }
       }
 
+      const isBlock = editForm.clientType === 'block';
+
       const updateData = {
         name: editForm.name.trim(),
         email: editForm.email.trim().toLowerCase(),
-        weeksInBlock: parseInt(editForm.weeksInBlock),
-        totalSessions: parseInt(editForm.totalSessions),
-        sessionDuration: parseInt(editForm.sessionDuration),
-        startDate: Timestamp.fromDate(new Date(editForm.startDate)),
-        endDate: Timestamp.fromDate(new Date(editForm.endDate)),
+        clientType: editForm.clientType,
         status: editForm.status,
-        circuitAccess: editForm.circuitAccess
       };
+
+      if (isBlock) {
+        updateData.weeksInBlock = parseInt(editForm.weeksInBlock) || 0;
+        updateData.totalSessions = parseInt(editForm.totalSessions) || 0;
+        updateData.sessionDuration = parseInt(editForm.sessionDuration);
+        updateData.circuitAccess = editForm.circuitAccess;
+        if (editForm.startDate) updateData.startDate = Timestamp.fromDate(new Date(editForm.startDate));
+        if (editForm.endDate) updateData.endDate = Timestamp.fromDate(new Date(editForm.endDate));
+      } else {
+        // Switching to circuit — ensure circuit fields exist
+        const client = clients.find(c => c.id === clientId);
+        if (client?.circuitStrikes === undefined) updateData.circuitStrikes = 0;
+        if (client?.circuitBanUntil === undefined) updateData.circuitBanUntil = null;
+      }
 
       // Add UID if we created a new account
       if (newUid && !client?.uid) {
@@ -276,6 +288,24 @@ export default function ClientList() {
         <div key={client.id} className={`client-card ${client.status === 'archived' ? 'archived' : ''}`}>
           {editingClient === client.id ? (
             <div className="edit-form">
+              {/* Client Type Toggle */}
+              <div className="edit-type-toggle">
+                {[
+                  { value: 'block', label: 'Block' },
+                  { value: 'circuit_vip', label: 'VIP' },
+                  { value: 'circuit_dropin', label: 'Drop-in' },
+                ].map(t => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    className={`edit-type-btn ${editForm.clientType === t.value ? 'active' : ''}`}
+                    onClick={() => setEditForm(prev => ({ ...prev, clientType: t.value }))}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
               <div className="edit-row">
                 <input
                   type="text"
@@ -292,46 +322,53 @@ export default function ClientList() {
                   placeholder="Email"
                 />
               </div>
-              <div className="edit-row">
-                <input
-                  type="number"
-                  name="weeksInBlock"
-                  value={editForm.weeksInBlock}
-                  onChange={handleEditChange}
-                  placeholder="Weeks"
-                  min="1"
-                />
-                <input
-                  type="number"
-                  name="totalSessions"
-                  value={editForm.totalSessions}
-                  onChange={handleEditChange}
-                  placeholder="Total Sessions"
-                  min="1"
-                />
-                <select
-                  name="sessionDuration"
-                  value={editForm.sessionDuration}
-                  onChange={handleEditChange}
-                >
-                  <option value="30">30 min</option>
-                  <option value="45">45 min</option>
-                </select>
-              </div>
-              <div className="edit-row">
-                <input
-                  type="date"
-                  name="startDate"
-                  value={editForm.startDate}
-                  onChange={handleEditChange}
-                />
-                <input
-                  type="date"
-                  name="endDate"
-                  value={editForm.endDate}
-                  onChange={handleEditChange}
-                />
-              </div>
+
+              {/* Block-specific fields */}
+              {editForm.clientType === 'block' && (
+                <>
+                  <div className="edit-row">
+                    <input
+                      type="number"
+                      name="weeksInBlock"
+                      value={editForm.weeksInBlock}
+                      onChange={handleEditChange}
+                      placeholder="Weeks"
+                      min="1"
+                    />
+                    <input
+                      type="number"
+                      name="totalSessions"
+                      value={editForm.totalSessions}
+                      onChange={handleEditChange}
+                      placeholder="Total Sessions"
+                      min="1"
+                    />
+                    <select
+                      name="sessionDuration"
+                      value={editForm.sessionDuration}
+                      onChange={handleEditChange}
+                    >
+                      <option value="30">30 min</option>
+                      <option value="45">45 min</option>
+                    </select>
+                  </div>
+                  <div className="edit-row">
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={editForm.startDate}
+                      onChange={handleEditChange}
+                    />
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={editForm.endDate}
+                      onChange={handleEditChange}
+                    />
+                  </div>
+                </>
+              )}
+
               <div className="edit-row password-row">
                 {editForm.hasPortalAccess ? (
                   <div className="portal-status has-access">
@@ -350,16 +387,20 @@ export default function ClientList() {
                   </>
                 )}
               </div>
-              <div className="edit-row circuit-row">
-                <label className="circuit-access-toggle">
-                  <input
-                    type="checkbox"
-                    checked={editForm.circuitAccess}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, circuitAccess: e.target.checked }))}
-                  />
-                  <span>Circuit Class Access</span>
-                </label>
-              </div>
+
+              {/* Circuit access toggle - only for block clients */}
+              {editForm.clientType === 'block' && (
+                <div className="edit-row circuit-row">
+                  <label className="circuit-access-toggle">
+                    <input
+                      type="checkbox"
+                      checked={editForm.circuitAccess}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, circuitAccess: e.target.checked }))}
+                    />
+                    <span>Circuit Class Access</span>
+                  </label>
+                </div>
+              )}
               <div className="edit-actions">
                 <button className="save-edit-btn" onClick={() => handleSaveEdit(client.id)}>
                   Save
@@ -373,7 +414,14 @@ export default function ClientList() {
             <>
               <div className="client-header">
                 <div className="client-info">
-                  <h3>{client.name}</h3>
+                  <h3>
+                    {client.name}
+                    {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin') && (
+                      <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : 'dropin'}`}>
+                        {client.clientType === 'circuit_vip' ? 'VIP' : 'Drop-in'}
+                      </span>
+                    )}
+                  </h3>
                   <span className="client-email">{client.email}</span>
                 </div>
                 <div className="client-status">
@@ -383,34 +431,51 @@ export default function ClientList() {
                 </div>
               </div>
 
-              <div className="client-details">
-                <div className="detail-item">
-                  <span className="detail-label">Block</span>
-                  <span className="detail-value">{client.weeksInBlock} weeks</span>
+              {(!client.clientType || client.clientType === 'block') ? (
+                <div className="client-details">
+                  <div className="detail-item">
+                    <span className="detail-label">Block</span>
+                    <span className="detail-value">{client.weeksInBlock} weeks</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Sessions</span>
+                    <span className="detail-value">
+                      {getSessionsRemaining(client)} / {client.totalSessions} remaining
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Booked</span>
+                    <span className="detail-value">{getBookedCount(client.id)} sessions</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Duration</span>
+                    <span className="detail-value">{client.sessionDuration || 45} min</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Start</span>
+                    <span className="detail-value">{formatDate(client.startDate)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">End</span>
+                    <span className="detail-value">{formatDate(client.endDate)}</span>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Sessions</span>
-                  <span className="detail-value">
-                    {getSessionsRemaining(client)} / {client.totalSessions} remaining
-                  </span>
+              ) : (
+                <div className="client-details circuit-details">
+                  <div className="detail-item">
+                    <span className="detail-label">Type</span>
+                    <span className="detail-value">{client.clientType === 'circuit_vip' ? 'Monthly VIP' : 'Drop-in'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Strikes</span>
+                    <span className="detail-value">{client.circuitStrikes || 0}/3</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Joined</span>
+                    <span className="detail-value">{formatDate(client.createdAt)}</span>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <span className="detail-label">Booked</span>
-                  <span className="detail-value">{getBookedCount(client.id)} sessions</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Duration</span>
-                  <span className="detail-value">{client.sessionDuration || 45} min</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Start</span>
-                  <span className="detail-value">{formatDate(client.startDate)}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">End</span>
-                  <span className="detail-value">{formatDate(client.endDate)}</span>
-                </div>
-              </div>
+              )}
 
               <div className="client-actions">
                 <button className="action-btn edit" onClick={() => handleEdit(client)}>
