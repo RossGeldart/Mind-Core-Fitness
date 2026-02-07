@@ -148,16 +148,19 @@
 }
 
 .circuit-tick {
-  transition: stroke 0.3s ease;
-}
-
-.circuit-tick.elapsed {
-  stroke: var(--text-on-header, #fff);
-  opacity: 0.3;
+  transition: stroke 0.15s ease-out;
 }
 
 .circuit-tick.remaining {
-  stroke: var(--color-primary);
+  stroke: #d32f2f;
+}
+
+.circuit-tick.elapsed {
+  stroke: #ffffff;
+}
+
+[data-theme="light"] .circuit-tick.elapsed {
+  stroke: #2d2d2d;
 }
 
 .circuit-ring-center {
