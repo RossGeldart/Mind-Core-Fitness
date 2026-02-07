@@ -12,7 +12,11 @@ import CircuitManagement from '../components/CircuitManagement';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const [activeView, setActiveView] = useState('schedule');
+  const [activeView, setActiveViewState] = useState(() => localStorage.getItem('adminActiveView') || 'schedule');
+  const setActiveView = (view) => {
+    setActiveViewState(view);
+    localStorage.setItem('adminActiveView', view);
+  };
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
