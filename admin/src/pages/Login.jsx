@@ -9,7 +9,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, currentUser, isAdmin, isClient, loading: authLoading } = useAuth();
+  const { login, currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -18,10 +18,15 @@ export default function Login() {
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
-        navigate('/client');
+        const type = clientData?.clientType;
+        if (type === 'circuit_vip' || type === 'circuit_dropin') {
+          navigate('/client/circuit');
+        } else {
+          navigate('/client');
+        }
       }
     }
-  }, [authLoading, currentUser, isAdmin, isClient, navigate]);
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
 
   // Show loading screen while checking auth state
   if (authLoading) {
