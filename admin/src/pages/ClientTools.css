@@ -729,6 +729,32 @@
   transform: scale(0.97);
 }
 
+/* Snack Instructions */
+.snack-instructions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.snack-instructions-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.snack-instructions p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* Daily Quote Generator */
 .quote-generator {
   padding: 24px;
