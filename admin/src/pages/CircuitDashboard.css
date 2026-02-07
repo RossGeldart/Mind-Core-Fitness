@@ -431,6 +431,128 @@
   border-radius: 50%;
 }
 
+/* ====== VIP Promo Card ====== */
+.circuit-vip-promo {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-md), var(--shadow-sm);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: circuitCardIn 0.5s ease-out 0.4s backwards;
+  border: 1px solid rgba(255, 193, 7, 0.25);
+}
+
+.circuit-vip-promo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ffc107, #ffab00, #ffc107);
+}
+
+.vip-promo-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ffc107, #ffab00);
+  color: #1a1a1a;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.circuit-vip-promo h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.vip-promo-price {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+}
+
+.vip-promo-price strong {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.3rem;
+  color: #ffc107;
+}
+
+.vip-promo-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.vip-promo-perks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
+.vip-promo-perks li {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 5px 0 5px 24px;
+  position: relative;
+}
+
+.vip-promo-perks li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: #ffc107;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.vip-promo-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: #25D366;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vip-promo-wa-btn:hover {
+  background: #1ebe57;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.vip-promo-wa-btn:active {
+  transform: scale(0.97);
+}
+
+.vip-promo-wa-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 /* ====== FAB ====== */
 .circuit-fab {
   position: fixed;
