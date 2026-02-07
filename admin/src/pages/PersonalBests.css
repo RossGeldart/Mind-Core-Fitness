@@ -673,14 +673,20 @@
 
 .pb-metric-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   padding: 14px 0;
   border-bottom: 1px solid var(--border-light);
 }
 
 .pb-metric-row:last-child {
   border-bottom: none;
+}
+
+.pb-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .pb-metric-left {
@@ -735,6 +741,46 @@
 .pb-metric-change.same {
   color: var(--text-tertiary);
   background: var(--bg-input);
+}
+
+/* Progress Bar */
+.pb-metric-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pb-metric-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pb-metric-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-primary);
+  transition: width 0.6s ease-out;
+  min-width: 0;
+}
+
+.pb-metric-bar-fill.hit {
+  background: var(--color-success);
+}
+
+.pb-metric-percent {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  min-width: 36px;
+  text-align: right;
+}
+
+.pb-metric-percent.hit {
+  color: var(--color-success);
 }
 
 /* ====== History Section ====== */
