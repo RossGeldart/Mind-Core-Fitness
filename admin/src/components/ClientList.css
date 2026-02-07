@@ -320,6 +320,29 @@
   border-color: var(--text-secondary);
 }
 
+/* Circuit Access Toggle */
+.circuit-row {
+  padding: 4px 0;
+}
+
+.circuit-access-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.circuit-access-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .client-details {

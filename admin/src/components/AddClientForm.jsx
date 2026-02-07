@@ -4,11 +4,19 @@ import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { db, secondaryAuth } from '../config/firebase';
 import './AddClientForm.css';
 
+const CLIENT_TYPES = [
+  { value: 'block', label: 'Block (1-2-1)' },
+  { value: 'circuit_vip', label: 'Circuit VIP' },
+  { value: 'circuit_dropin', label: 'Circuit Drop-in' },
+];
+
 export default function AddClientForm({ onClose, onClientAdded }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    clientType: 'block',
+    circuitAccess: false,
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -38,7 +46,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
       if (!isNaN(weeks) && weeks > 0) {
         const end = new Date(start);
         end.setDate(end.getDate() + (weeks * 7));
-        // Use local date format to avoid timezone issues
         const year = end.getFullYear();
         const month = (end.getMonth() + 1).toString().padStart(2, '0');
         const day = end.getDate().toString().padStart(2, '0');
@@ -51,10 +58,10 @@ export default function AddClientForm({ onClose, onClientAdded }) {
   }, [formData.startDate, formData.weeksInBlock]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -64,31 +71,39 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     setLoading(true);
 
     try {
-      // Create Firebase Auth account for client using secondary auth
       const userCredential = await createUserWithEmailAndPassword(
         secondaryAuth,
         formData.email.trim().toLowerCase(),
         formData.password
       );
-
-      // Sign out from secondary auth immediately (cleanup)
       await signOut(secondaryAuth);
 
-      const clientData = {
+      const isBlock = formData.clientType === 'block';
+
+      const clientDoc = {
         uid: userCredential.user.uid,
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
-        weeksInBlock: parseInt(formData.weeksInBlock),
-        totalSessions: parseInt(formData.numberOfSessions),
-        sessionsRemaining: parseInt(formData.numberOfSessions),
-        sessionDuration: parseInt(formData.sessionDuration),
-        startDate: Timestamp.fromDate(new Date(formData.startDate)),
-        endDate: Timestamp.fromDate(new Date(formData.endDate)),
+        clientType: formData.clientType,
         status: 'active',
         createdAt: Timestamp.now()
       };
 
-      await addDoc(collection(db, 'clients'), clientData);
+      if (isBlock) {
+        clientDoc.circuitAccess = formData.circuitAccess;
+        clientDoc.weeksInBlock = parseInt(formData.weeksInBlock);
+        clientDoc.totalSessions = parseInt(formData.numberOfSessions);
+        clientDoc.sessionsRemaining = parseInt(formData.numberOfSessions);
+        clientDoc.sessionDuration = parseInt(formData.sessionDuration);
+        clientDoc.startDate = Timestamp.fromDate(new Date(formData.startDate));
+        clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
+      } else {
+        // Circuit members get strike tracking
+        clientDoc.circuitStrikes = 0;
+        clientDoc.circuitBanUntil = null;
+      }
+
+      await addDoc(collection(db, 'clients'), clientDoc);
       onClientAdded();
     } catch (err) {
       console.error('Error adding client:', err);
@@ -110,6 +125,8 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     }
   };
 
+  const isBlock = formData.clientType === 'block';
+
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
@@ -121,6 +138,25 @@ export default function AddClientForm({ onClose, onClientAdded }) {
         {error && <div className="form-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {/* Client Type Selector */}
+          <div className="form-row">
+            <div className="form-group full-width">
+              <label>Client Type</label>
+              <div className="client-type-toggle">
+                {CLIENT_TYPES.map(t => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    className={`type-btn ${formData.clientType === t.value ? 'active' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, clientType: t.value }))}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="name">Client Name</label>
@@ -166,76 +202,95 @@ export default function AddClientForm({ onClose, onClientAdded }) {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="weeksInBlock">Weeks in Block</label>
-              <input
-                type="number"
-                id="weeksInBlock"
-                name="weeksInBlock"
-                value={formData.weeksInBlock}
-                onChange={handleChange}
-                placeholder="8"
-                min="1"
-                required
-              />
-            </div>
+          {/* Block-specific fields */}
+          {isBlock && (
+            <>
+              <div className="form-row">
+                <div className="form-group full-width">
+                  <label className="circuit-toggle-label">
+                    <input
+                      type="checkbox"
+                      name="circuitAccess"
+                      checked={formData.circuitAccess}
+                      onChange={handleChange}
+                    />
+                    <span>Also allow Circuit Class access</span>
+                  </label>
+                </div>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="numberOfSessions">Number of Sessions</label>
-              <input
-                type="number"
-                id="numberOfSessions"
-                name="numberOfSessions"
-                value={formData.numberOfSessions}
-                onChange={handleChange}
-                placeholder="16"
-                min="1"
-                required
-              />
-            </div>
-          </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="weeksInBlock">Weeks in Block</label>
+                  <input
+                    type="number"
+                    id="weeksInBlock"
+                    name="weeksInBlock"
+                    value={formData.weeksInBlock}
+                    onChange={handleChange}
+                    placeholder="8"
+                    min="1"
+                    required
+                  />
+                </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="sessionDuration">Session Duration</label>
-              <select
-                id="sessionDuration"
-                name="sessionDuration"
-                value={formData.sessionDuration}
-                onChange={handleChange}
-                required
-              >
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-              </select>
-            </div>
+                <div className="form-group">
+                  <label htmlFor="numberOfSessions">Number of Sessions</label>
+                  <input
+                    type="number"
+                    id="numberOfSessions"
+                    name="numberOfSessions"
+                    value={formData.numberOfSessions}
+                    onChange={handleChange}
+                    placeholder="16"
+                    min="1"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="startDate">Start Date</label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                required
-              />
-            </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="sessionDuration">Session Duration</label>
+                  <select
+                    id="sessionDuration"
+                    name="sessionDuration"
+                    value={formData.sessionDuration}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="30">30 minutes</option>
+                    <option value="45">45 minutes</option>
+                  </select>
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="endDate">End Date (auto-calculated)</label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                required
-              />
-              <span className="helper-text">Calculated from start date + weeks</span>
-            </div>
-          </div>
+                <div className="form-group">
+                  <label htmlFor="startDate">Start Date</label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="endDate">End Date (auto-calculated)</label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleChange}
+                    required
+                  />
+                  <span className="helper-text">Calculated from start date + weeks</span>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="form-actions">
             <button type="button" className="cancel-btn" onClick={onClose}>

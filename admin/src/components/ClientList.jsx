@@ -137,7 +137,8 @@ export default function ClientList() {
       startDate: formatDateForInput(client.startDate),
       endDate: formatDateForInput(client.endDate),
       status: client.status,
-      hasPortalAccess: !!client.uid
+      hasPortalAccess: !!client.uid,
+      circuitAccess: !!client.circuitAccess
     });
   };
 
@@ -204,7 +205,8 @@ export default function ClientList() {
         sessionDuration: parseInt(editForm.sessionDuration),
         startDate: Timestamp.fromDate(new Date(editForm.startDate)),
         endDate: Timestamp.fromDate(new Date(editForm.endDate)),
-        status: editForm.status
+        status: editForm.status,
+        circuitAccess: editForm.circuitAccess
       };
 
       // Add UID if we created a new account
@@ -347,6 +349,16 @@ export default function ClientList() {
                     <span className="password-hint">Set password to enable client portal</span>
                   </>
                 )}
+              </div>
+              <div className="edit-row circuit-row">
+                <label className="circuit-access-toggle">
+                  <input
+                    type="checkbox"
+                    checked={editForm.circuitAccess}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, circuitAccess: e.target.checked }))}
+                  />
+                  <span>Circuit Class Access</span>
+                </label>
               </div>
               <div className="edit-actions">
                 <button className="save-edit-btn" onClick={() => handleSaveEdit(client.id)}>

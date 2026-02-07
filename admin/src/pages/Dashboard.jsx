@@ -8,6 +8,7 @@ import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
 import Availability from '../components/Availability';
+import CircuitManagement from '../components/CircuitManagement';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -309,6 +310,12 @@ export default function Dashboard() {
           >
             Slots
           </button>
+          <button
+            className={`nav-btn ${activeView === 'circuits' ? 'active' : ''}`}
+            onClick={() => setActiveView('circuits')}
+          >
+            Circuits
+          </button>
         </nav>
         <div className="header-actions">
           <button
@@ -472,6 +479,15 @@ export default function Dashboard() {
               <h2>Available Slots</h2>
             </div>
             <Availability />
+          </div>
+        )}
+
+        {activeView === 'circuits' && (
+          <div className="circuits-view">
+            <div className="view-header">
+              <h2>Circuit Management</h2>
+            </div>
+            <CircuitManagement />
           </div>
         )}
       </main>

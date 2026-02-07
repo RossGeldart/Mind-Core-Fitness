@@ -9,6 +9,8 @@ import ClientDashboard from './pages/ClientDashboard';
 import ClientForms from './pages/ClientForms';
 import ClientTools from './pages/ClientTools';
 import PersonalBests from './pages/PersonalBests';
+import CircuitDashboard from './pages/CircuitDashboard';
+import CircuitBooking from './pages/CircuitBooking';
 import './styles/theme.css';
 
 // Scroll to top on route change
@@ -54,6 +56,8 @@ function App() {
             <Route path="/client/forms" element={<ClientForms />} />
             <Route path="/client/tools" element={<ClientTools />} />
             <Route path="/client/personal-bests" element={<PersonalBests />} />
+            <Route path="/client/circuit" element={<CircuitDashboard />} />
+            <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
