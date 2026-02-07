@@ -261,7 +261,12 @@ export default function MacroCalculator() {
             </button>
           </div>
 
-          {showResults && results && (
+          {showResults && results && (() => {
+            const totalCal = results.proteinCalories + results.carbCalories + results.fatCalories;
+            const proteinPct = Math.round((results.proteinCalories / totalCal) * 100);
+            const carbsPct = Math.round((results.carbCalories / totalCal) * 100);
+            const fatsPct = 100 - proteinPct - carbsPct;
+            return (
             <div className="results-section">
               <div className="results-header">
                 <h4>Your Daily Targets</h4>
@@ -271,18 +276,38 @@ export default function MacroCalculator() {
                 <span className="calories-value">{results.targetCalories}</span>
                 <span className="calories-label">calories/day</span>
               </div>
+
+              <div className="macro-percentage-bar">
+                <div className="macro-bar-track">
+                  <div className="macro-bar-segment protein" style={{ width: `${proteinPct}%` }}>
+                    {proteinPct >= 12 && <span>{proteinPct}%</span>}
+                  </div>
+                  <div className="macro-bar-segment carbs" style={{ width: `${carbsPct}%` }}>
+                    {carbsPct >= 12 && <span>{carbsPct}%</span>}
+                  </div>
+                  <div className="macro-bar-segment fats" style={{ width: `${fatsPct}%` }}>
+                    {fatsPct >= 12 && <span>{fatsPct}%</span>}
+                  </div>
+                </div>
+                <div className="macro-bar-legend">
+                  <div className="legend-item"><span className="legend-dot protein"></span>Protein {proteinPct}%</div>
+                  <div className="legend-item"><span className="legend-dot carbs"></span>Carbs {carbsPct}%</div>
+                  <div className="legend-item"><span className="legend-dot fats"></span>Fats {fatsPct}%</div>
+                </div>
+              </div>
+
               <div className="macros-grid">
-                <div className="macro-card protein">
+                <div className="macro-card protein" style={{ animationDelay: '0.1s' }}>
                   <div className="macro-value">{results.protein}g</div>
                   <div className="macro-label">Protein</div>
                   <div className="macro-calories">{results.proteinCalories} cal</div>
                 </div>
-                <div className="macro-card carbs">
+                <div className="macro-card carbs" style={{ animationDelay: '0.2s' }}>
                   <div className="macro-value">{results.carbs}g</div>
                   <div className="macro-label">Carbs</div>
                   <div className="macro-calories">{results.carbCalories} cal</div>
                 </div>
-                <div className="macro-card fats">
+                <div className="macro-card fats" style={{ animationDelay: '0.3s' }}>
                   <div className="macro-value">{results.fats}g</div>
                   <div className="macro-label">Fats</div>
                   <div className="macro-calories">{results.fatCalories} cal</div>
@@ -291,18 +316,19 @@ export default function MacroCalculator() {
               <div className="results-info">
                 <div className="info-row">
                   <span>Basal Metabolic Rate (BMR)</span>
-                  <span>{results.bmr} cal</span>
+                  <span className="info-value">{results.bmr} cal</span>
                 </div>
                 <div className="info-row">
                   <span>Total Daily Energy Expenditure (TDEE)</span>
-                  <span>{results.tdee} cal</span>
+                  <span className="info-value">{results.tdee} cal</span>
                 </div>
               </div>
               <div className="results-note">
                 <p>These are estimated values. Individual results may vary based on metabolism, body composition, and other factors. Consult with your trainer for personalized guidance.</p>
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       </main>
     </div>

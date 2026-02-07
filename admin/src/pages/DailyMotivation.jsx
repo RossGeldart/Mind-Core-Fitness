@@ -104,9 +104,31 @@ export default function DailyMotivation() {
     if (dailyQuote) return;
 
     setQuoteAnimating(true);
-    const randomIndex = Math.floor(Math.random() * MOTIVATION_QUOTES.length);
-    const selectedQuote = MOTIVATION_QUOTES[randomIndex];
     const today = new Date().toISOString().split('T')[0];
+
+    // Load used indices from Firestore to avoid repeats
+    let usedIndices = [];
+    try {
+      const clientDoc = await getDoc(doc(db, 'clients', clientData.id));
+      if (clientDoc.exists()) {
+        usedIndices = clientDoc.data().quoteUsedIndices || [];
+      }
+    } catch (error) {
+      // Continue with empty array if fetch fails
+    }
+
+    // If all quotes have been shown, reset the cycle
+    if (usedIndices.length >= MOTIVATION_QUOTES.length) {
+      usedIndices = [];
+    }
+
+    // Pick a random index from the remaining unused ones
+    const availableIndices = MOTIVATION_QUOTES
+      .map((_, i) => i)
+      .filter(i => !usedIndices.includes(i));
+    const randomPick = Math.floor(Math.random() * availableIndices.length);
+    const selectedIndex = availableIndices[randomPick];
+    const selectedQuote = MOTIVATION_QUOTES[selectedIndex];
 
     const quoteData = {
       text: selectedQuote.text,
@@ -116,7 +138,8 @@ export default function DailyMotivation() {
 
     try {
       await setDoc(doc(db, 'clients', clientData.id), {
-        dailyQuote: quoteData
+        dailyQuote: quoteData,
+        quoteUsedIndices: [...usedIndices, selectedIndex]
       }, { merge: true });
 
       setTimeout(() => {
@@ -156,7 +179,12 @@ export default function DailyMotivation() {
 
           <div className="quote-generator">
             {quoteLoading ? (
-              <div className="quote-loading">Loading...</div>
+              <div className="quote-skeleton">
+                <div className="skeleton-icon"></div>
+                <div className="skeleton-line long"></div>
+                <div className="skeleton-line medium"></div>
+                <div className="skeleton-line short"></div>
+              </div>
             ) : dailyQuote ? (
               <div className="quote-result">
                 <div className="quote-icon">
@@ -179,18 +207,21 @@ export default function DailyMotivation() {
               </div>
             ) : (
               <div className="quote-empty">
-                <div className="quote-empty-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                <div className="quote-empty-graphic">
+                  <svg viewBox="0 0 80 80" fill="none">
+                    <circle cx="40" cy="40" r="36" stroke="var(--border-color)" strokeWidth="2" strokeDasharray="4 4"/>
+                    <path d="M28 48h8l4-8V28H24v12h8zm16 0h8l4-8V28H40v12h8z" fill="var(--color-primary)" opacity="0.2"/>
+                    <path d="M28 48h8l4-8V28H24v12h8zm16 0h8l4-8V28H40v12h8z" stroke="var(--color-primary)" strokeWidth="1.5"/>
                   </svg>
                 </div>
-                <p>Ready for today's inspiration?</p>
+                <h4 className="quote-empty-title">Your Daily Inspiration</h4>
+                <p>Tap below to reveal today's motivational quote — a new one every day to keep you going.</p>
               </div>
             )}
 
             {!dailyQuote && !quoteLoading && (
               <button className="quote-generate-btn" onClick={generateDailyQuote} disabled={quoteAnimating}>
-                Get Inspired
+                {quoteAnimating ? 'Finding your quote...' : 'Get Inspired'}
               </button>
             )}
           </div>
