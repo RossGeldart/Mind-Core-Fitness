@@ -48,6 +48,7 @@ function formatPlankTime(seconds) {
 
 function formatWeight(weight, reps) {
   if (!weight && weight !== 0) return '-';
+  if (!reps && reps !== 0) return `${weight}kg`;
   return `${weight}kg x ${reps}`;
 }
 
@@ -290,12 +291,23 @@ export default function PersonalBests() {
     setSaving(true);
     try {
       const docId = `targets_${clientData.id}`;
+      // Ensure every target has a targetType set (default based on exercise type)
+      const targetsToSave = {};
+      EXERCISES.forEach(ex => {
+        if (targetsForm[ex.key]?.targetValue) {
+          targetsToSave[ex.key] = {
+            ...targetsForm[ex.key],
+            targetType: targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight'),
+          };
+        }
+      });
       await setDoc(doc(db, 'personalBestTargets', docId), {
         clientId: clientData.id,
-        targets: targetsForm,
+        targets: targetsToSave,
         updatedAt: Timestamp.now(),
       });
-      setTargets(targetsForm);
+      setTargets(targetsToSave);
+      setTargetsForm(targetsToSave);
       showToast('Targets saved!', 'success');
       setEditingTargets(false);
     } catch (error) {
@@ -487,7 +499,7 @@ export default function PersonalBests() {
                         )}
                         {currentTarget && (
                           <div className={`pb-ring-target ${targetHit ? 'hit' : ''}`}>
-                            Target: {currentTarget.targetValue}{currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? ' reps' : 's'}
+                            Target: {currentTarget.targetValue}{currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? ' reps' : currentTarget.targetType === 'time' ? 's' : 'kg'}
                           </div>
                         )}
                         {!currentTarget && (
