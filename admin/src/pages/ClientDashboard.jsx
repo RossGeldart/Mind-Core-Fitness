@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, deleteDoc, doc, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, deleteDoc, doc, addDoc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -60,6 +60,9 @@ export default function ClientDashboard() {
 
   // Live countdown state
   const [liveCountdown, setLiveCountdown] = useState(null);
+
+  // Daily quote state
+  const [dailyQuote, setDailyQuote] = useState(null);
 
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -260,6 +263,18 @@ export default function ClientDashboard() {
       if (!achSnapshot.empty) {
         const badges = achSnapshot.docs[0].data().badges || [];
         setAchievementCount(badges.length);
+      }
+
+      // Fetch daily quote
+      const today = new Date().toISOString().split('T')[0];
+      const clientDoc = await getDoc(doc(db, 'clients', clientData.id));
+      if (clientDoc.exists()) {
+        const data = clientDoc.data();
+        if (data.dailyQuote && data.dailyQuote.date === today) {
+          setDailyQuote(data.dailyQuote);
+        } else {
+          setDailyQuote(null);
+        }
       }
 
     } catch (error) {
@@ -762,6 +777,34 @@ export default function ClientDashboard() {
               <span className="achievements-label">{achievementCount === 1 ? 'Target Achieved' : 'Targets Achieved'}</span>
             </div>
             <svg className="achievements-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+          </div>
+        )}
+
+        {/* Daily Quote Card */}
+        {dailyQuote ? (
+          <div className="daily-quote-card">
+            <div className="daily-quote-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+              </svg>
+            </div>
+            <div className="daily-quote-content">
+              <div className="daily-quote-text">{dailyQuote.text}</div>
+              <div className="daily-quote-author">— {dailyQuote.author}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="daily-quote-cta" onClick={() => navigate('/client/tools')}>
+            <div className="daily-quote-cta-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+              </svg>
+            </div>
+            <div className="daily-quote-cta-text">
+              <span className="daily-quote-cta-title">Get More Inspiration</span>
+              <span className="daily-quote-cta-sub">Tap to get today's motivation</span>
+            </div>
+            <svg className="daily-quote-cta-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
           </div>
         )}
 
