@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './ClientTools.css';
@@ -86,6 +86,7 @@ export default function ProteinSnacks() {
   const [currentSnack, setCurrentSnack] = useState(null);
   const [snackFilter, setSnackFilter] = useState('all');
   const [snackAnimating, setSnackAnimating] = useState(false);
+  const remainingSnacks = useRef([]);
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) {
@@ -93,15 +94,29 @@ export default function ProteinSnacks() {
     }
   }, [currentUser, isClient, authLoading, navigate]);
 
+  const shuffleArray = (arr) => {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const generateRandomSnack = () => {
     const filtered = snackFilter === 'all'
       ? PROTEIN_SNACKS
       : PROTEIN_SNACKS.filter(s => s.category === snackFilter);
 
+    // If deck is empty or filter changed, reshuffle
+    if (remainingSnacks.current.length === 0) {
+      remainingSnacks.current = shuffleArray(filtered);
+    }
+
     setSnackAnimating(true);
     setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * filtered.length);
-      setCurrentSnack(filtered[randomIndex]);
+      const nextSnack = remainingSnacks.current.pop();
+      setCurrentSnack(nextSnack);
       setSnackAnimating(false);
     }, 300);
   };
@@ -156,7 +171,7 @@ export default function ProteinSnacks() {
                 <button
                   key={filter.value}
                   className={`snack-filter-btn ${snackFilter === filter.value ? 'active' : ''}`}
-                  onClick={() => { setSnackFilter(filter.value); setCurrentSnack(null); }}
+                  onClick={() => { setSnackFilter(filter.value); setCurrentSnack(null); remainingSnacks.current = []; }}
                 >
                   {filter.label}
                 </button>

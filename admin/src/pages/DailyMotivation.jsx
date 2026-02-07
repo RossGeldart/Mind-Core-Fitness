@@ -104,9 +104,31 @@ export default function DailyMotivation() {
     if (dailyQuote) return;
 
     setQuoteAnimating(true);
-    const randomIndex = Math.floor(Math.random() * MOTIVATION_QUOTES.length);
-    const selectedQuote = MOTIVATION_QUOTES[randomIndex];
     const today = new Date().toISOString().split('T')[0];
+
+    // Load used indices from Firestore to avoid repeats
+    let usedIndices = [];
+    try {
+      const clientDoc = await getDoc(doc(db, 'clients', clientData.id));
+      if (clientDoc.exists()) {
+        usedIndices = clientDoc.data().quoteUsedIndices || [];
+      }
+    } catch (error) {
+      // Continue with empty array if fetch fails
+    }
+
+    // If all quotes have been shown, reset the cycle
+    if (usedIndices.length >= MOTIVATION_QUOTES.length) {
+      usedIndices = [];
+    }
+
+    // Pick a random index from the remaining unused ones
+    const availableIndices = MOTIVATION_QUOTES
+      .map((_, i) => i)
+      .filter(i => !usedIndices.includes(i));
+    const randomPick = Math.floor(Math.random() * availableIndices.length);
+    const selectedIndex = availableIndices[randomPick];
+    const selectedQuote = MOTIVATION_QUOTES[selectedIndex];
 
     const quoteData = {
       text: selectedQuote.text,
@@ -116,7 +138,8 @@ export default function DailyMotivation() {
 
     try {
       await setDoc(doc(db, 'clients', clientData.id), {
-        dailyQuote: quoteData
+        dailyQuote: quoteData,
+        quoteUsedIndices: [...usedIndices, selectedIndex]
       }, { merge: true });
 
       setTimeout(() => {
