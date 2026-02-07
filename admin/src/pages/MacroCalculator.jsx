@@ -72,20 +72,24 @@ export default function MacroCalculator() {
 
     let targetCalories = tdee;
     let proteinPerKg;
+    let fatPct;
 
     switch (formData.goal) {
       case 'lose':
         const deficits = { light: 250, moderate: 500, harsh: 750 };
         targetCalories = tdee - deficits[formData.deficitLevel];
-        proteinPerKg = 2.0;
+        proteinPerKg = 2.2;
+        fatPct = 0.30;
         break;
       case 'build':
         targetCalories = tdee + 300;
         proteinPerKg = 2.0;
+        fatPct = 0.22;
         break;
       case 'maintain':
       default:
         proteinPerKg = 1.8;
+        fatPct = 0.25;
         break;
     }
 
@@ -94,10 +98,10 @@ export default function MacroCalculator() {
 
     const proteinGrams = Math.round(weightKg * proteinPerKg);
     const proteinCalories = proteinGrams * 4;
-    const fatCalories = targetCalories * 0.25;
+    const fatCalories = targetCalories * fatPct;
     const fatGrams = Math.round(fatCalories / 9);
     const carbCalories = targetCalories - proteinCalories - fatCalories;
-    const carbGrams = Math.round(carbCalories / 4);
+    const carbGrams = Math.max(0, Math.round(carbCalories / 4));
 
     setResults({
       bmr: Math.round(bmr),
