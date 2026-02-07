@@ -86,7 +86,6 @@ export default function ProteinSnacks() {
   const [currentSnack, setCurrentSnack] = useState(null);
   const [snackFilter, setSnackFilter] = useState('all');
   const [snackAnimating, setSnackAnimating] = useState(false);
-  const [snacksSeenCount, setSnacksSeenCount] = useState(0);
   const remainingSnacks = useRef([]);
 
   useEffect(() => {
@@ -118,7 +117,6 @@ export default function ProteinSnacks() {
     setTimeout(() => {
       const nextSnack = remainingSnacks.current.pop();
       setCurrentSnack(nextSnack);
-      setSnacksSeenCount(prev => prev + 1);
       setSnackAnimating(false);
     }, 300);
   };
@@ -173,7 +171,7 @@ export default function ProteinSnacks() {
                 <button
                   key={filter.value}
                   className={`snack-filter-btn ${snackFilter === filter.value ? 'active' : ''}`}
-                  onClick={() => { setSnackFilter(filter.value); setCurrentSnack(null); remainingSnacks.current = []; setSnacksSeenCount(0); }}
+                  onClick={() => { setSnackFilter(filter.value); setCurrentSnack(null); remainingSnacks.current = []; }}
                 >
                   {filter.label}
                 </button>
@@ -217,15 +215,6 @@ export default function ProteinSnacks() {
                     <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
                   </svg>
                 </div>
-              </div>
-            )}
-
-            {snacksSeenCount > 0 && (
-              <div className="snack-counter">
-                <span className="snack-counter-value">{snacksSeenCount}</span>
-                <span className="snack-counter-label">
-                  of {snackFilter === 'all' ? PROTEIN_SNACKS.length : PROTEIN_SNACKS.filter(s => s.category === snackFilter).length} snacks seen
-                </span>
               </div>
             )}
 
