@@ -395,6 +395,19 @@ export default function PersonalBests() {
     return Math.max(0, Math.min((currentVal - startVal) / range, 1));
   };
 
+  // Get progress toward metric target (0 to 1), handles both increase and decrease goals
+  const getMetricTargetProgress = (metricKey) => {
+    const mTarget = metricTargets[metricKey];
+    if (!mTarget || !mTarget.targetValue) return null;
+    const currentVal = currentRecord?.bodyMetrics?.[metricKey];
+    if (currentVal == null) return null;
+    const startVal = mTarget.startValue || 0;
+    const targetVal = mTarget.targetValue;
+    const range = targetVal - startVal;
+    if (range === 0) return currentVal === targetVal ? 1 : 0;
+    return Math.max(0, Math.min((currentVal - startVal) / range, 1));
+  };
+
   // Carousel touch handlers
   const handleCarouselTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -774,26 +787,43 @@ export default function PersonalBests() {
                       const value = currentRecord?.bodyMetrics?.[metric.key];
                       const change = getMetricChange(metric.key);
                       const mTarget = metricTargets[metric.key];
+                      const mProgress = getMetricTargetProgress(metric.key);
+                      const mHit = mProgress !== null && mProgress >= 1;
                       return (
                         <div key={metric.key} className="pb-metric-row">
-                          <div className="pb-metric-left">
-                            <span className="pb-metric-name">{metric.name}</span>
-                            {mTarget && (
-                              <span className="pb-metric-target-label">
-                                Target: {mTarget.targetValue} {metric.suffix}
+                          <div className="pb-metric-top">
+                            <div className="pb-metric-left">
+                              <span className="pb-metric-name">{metric.name}</span>
+                              {mTarget && (
+                                <span className="pb-metric-target-label">
+                                  Target: {mTarget.targetValue} {metric.suffix}
+                                </span>
+                              )}
+                            </div>
+                            <div className="pb-metric-values">
+                              <span className="pb-metric-current">
+                                {value != null ? `${value} ${metric.suffix}` : '-'}
                               </span>
-                            )}
+                              {change !== null && (
+                                <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
+                                  {change > 0 ? '+' : ''}{change} {metric.suffix}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div className="pb-metric-values">
-                            <span className="pb-metric-current">
-                              {value != null ? `${value} ${metric.suffix}` : '-'}
-                            </span>
-                            {change !== null && (
-                              <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
-                                {change > 0 ? '+' : ''}{change} {metric.suffix}
+                          {mProgress !== null && (
+                            <div className="pb-metric-progress">
+                              <div className="pb-metric-bar">
+                                <div
+                                  className={`pb-metric-bar-fill ${mHit ? 'hit' : ''}`}
+                                  style={{ width: `${Math.round(mProgress * 100)}%` }}
+                                />
+                              </div>
+                              <span className={`pb-metric-percent ${mHit ? 'hit' : ''}`}>
+                                {mHit ? 'Hit!' : `${Math.round(mProgress * 100)}%`}
                               </span>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
