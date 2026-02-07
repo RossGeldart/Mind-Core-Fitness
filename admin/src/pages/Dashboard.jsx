@@ -129,23 +129,34 @@ export default function Dashboard() {
     };
 
     const handleTouchStart = (e) => {
+      // Only allow pull-to-refresh if solidly at top (not during momentum scroll)
       if (getScrollTop() <= 0) {
         startY.current = e.touches[0].clientY;
-        isPulling.current = true;
+        isPulling.current = false; // Don't set true yet — wait for confirmed downward pull
       }
     };
 
     const handleTouchMove = (e) => {
-      if (!isPulling.current) return;
+      const scrollTop = getScrollTop();
       const currentY = e.touches[0].clientY;
       const diff = currentY - startY.current;
-      if (diff > 0 && getScrollTop() <= 0) {
-        setPullDistance(Math.min(diff * 0.5, 80));
+
+      // Must be at the very top and pulling downward
+      if (scrollTop > 5 || diff <= 0) {
+        isPulling.current = false;
+        setPullDistance(0);
+        return;
+      }
+
+      // Require 20px deadzone before activating pull gesture
+      if (diff > 20 && scrollTop <= 0) {
+        isPulling.current = true;
+        setPullDistance(Math.min((diff - 20) * 0.4, 80));
       }
     };
 
     const handleTouchEnd = () => {
-      if (pullDistance > 60) {
+      if (isPulling.current && pullDistance > 60) {
         setIsRefreshing(true);
         setTimeout(() => {
           window.location.reload();
