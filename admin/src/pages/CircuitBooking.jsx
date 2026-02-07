@@ -422,9 +422,9 @@ export default function CircuitBooking() {
                     className="cb-slot-release-btn"
                     onClick={handleReleaseSlot}
                     disabled={saving || pastCancelDeadline}
-                    title={pastCancelDeadline ? 'Cancellation deadline passed' : 'Release this slot'}
+                    title={pastCancelDeadline ? 'Cancellation deadline passed' : 'Cancel this slot'}
                   >
-                    {pastCancelDeadline ? 'Locked' : 'Release'}
+                    {pastCancelDeadline ? 'Locked' : 'Cancel'}
                   </button>
                 )}
               </div>
