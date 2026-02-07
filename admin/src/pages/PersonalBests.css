@@ -429,6 +429,41 @@
   line-height: 1.5;
 }
 
+.pb-target-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 24px 0 16px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.pb-target-section-title:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.pb-edit-exercise-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.pb-edit-current-best {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: var(--bg-input);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
 /* ====== Edit Card ====== */
 .pb-edit-card {
   background: var(--bg-card);
@@ -648,10 +683,22 @@
   border-bottom: none;
 }
 
+.pb-metric-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .pb-metric-name {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
+}
+
+.pb-metric-target-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
 }
 
 .pb-metric-values {
