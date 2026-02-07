@@ -136,6 +136,7 @@ export default function PersonalBests() {
   const [benchmarkForm, setBenchmarkForm] = useState({});
   const [metricsForm, setMetricsForm] = useState({});
   const [targets, setTargets] = useState({});
+  const [metricTargets, setMetricTargets] = useState({});
   const [targetsForm, setTargetsForm] = useState({});
   const [toast, setToast] = useState(null);
 
@@ -190,7 +191,14 @@ export default function PersonalBests() {
       if (!targetsSnapshot.empty) {
         const targetsData = targetsSnapshot.docs[0].data();
         setTargets(targetsData.targets || {});
-        setTargetsForm(targetsData.targets || {});
+        setMetricTargets(targetsData.metricTargets || {});
+        // Build combined form state
+        const combinedForm = { ...(targetsData.targets || {}) };
+        const mTargets = targetsData.metricTargets || {};
+        BODY_METRICS.forEach(m => {
+          if (mTargets[m.key]) combinedForm[`metric_${m.key}`] = mTargets[m.key];
+        });
+        setTargetsForm(combinedForm);
       }
     } catch (error) {
       console.error('Error fetching personal bests:', error);
@@ -291,24 +299,58 @@ export default function PersonalBests() {
     setSaving(true);
     try {
       const docId = `targets_${clientData.id}`;
-      // Ensure every target has a targetType set (default based on exercise type)
+      // Auto-capture startValue from the latest benchmark data
+      const latestBenchmarks = currentRecord?.benchmarks || {};
       const targetsToSave = {};
       EXERCISES.forEach(ex => {
         if (targetsForm[ex.key]?.targetValue) {
+          const tType = targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight');
+          // Get start value from latest benchmark based on target type
+          let autoStart = 0;
+          const bench = latestBenchmarks[ex.key];
+          if (bench) {
+            if (tType === 'weight') autoStart = bench.weight || 0;
+            else if (tType === 'reps') autoStart = bench.reps || 0;
+            else if (tType === 'time') autoStart = bench.time || 0;
+          }
           targetsToSave[ex.key] = {
-            ...targetsForm[ex.key],
-            targetType: targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight'),
-            startValue: targetsForm[ex.key].startValue || 0,
+            targetType: tType,
+            targetValue: targetsForm[ex.key].targetValue,
+            startValue: autoStart,
+          };
+        }
+      });
+      // Save metric targets too
+      const metricTargetsToSave = {};
+      BODY_METRICS.forEach(m => {
+        if (targetsForm[`metric_${m.key}`]?.targetValue) {
+          const currentVal = currentRecord?.bodyMetrics?.[m.key] || 0;
+          metricTargetsToSave[m.key] = {
+            targetValue: targetsForm[`metric_${m.key}`].targetValue,
+            startValue: currentVal,
           };
         }
       });
       await setDoc(doc(db, 'personalBestTargets', docId), {
         clientId: clientData.id,
         targets: targetsToSave,
+        metricTargets: metricTargetsToSave,
         updatedAt: Timestamp.now(),
       });
       setTargets(targetsToSave);
-      setTargetsForm(targetsToSave);
+      setMetricTargets(metricTargetsToSave);
+      setTargetsForm(prev => {
+        const updated = {};
+        // Keep exercise targets
+        EXERCISES.forEach(ex => {
+          if (targetsToSave[ex.key]) updated[ex.key] = targetsToSave[ex.key];
+        });
+        // Keep metric targets
+        BODY_METRICS.forEach(m => {
+          if (metricTargetsToSave[m.key]) updated[`metric_${m.key}`] = metricTargetsToSave[m.key];
+        });
+        return updated;
+      });
       showToast('Targets saved!', 'success');
       setEditingTargets(false);
     } catch (error) {
@@ -638,13 +680,26 @@ export default function PersonalBests() {
                   }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
-                  <p className="pb-target-hint">Enter your current best and set a target. The ring tracks your progress from where you are now to where you want to be.</p>
+                  <p className="pb-target-hint">Set a target for each exercise. Your current best is captured automatically from your latest benchmarks.</p>
+
+                  <h4 className="pb-target-section-title">Strength Targets</h4>
                   {EXERCISES.map(ex => {
                     const targetType = targetsForm[ex.key]?.targetType || (ex.unit === 'time' ? 'time' : 'weight');
                     const unitLabel = targetType === 'weight' ? 'kg' : targetType === 'reps' ? 'reps' : 'seconds';
+                    // Show the auto-captured start value from latest benchmark
+                    const bench = currentRecord?.benchmarks?.[ex.key];
+                    let currentBestDisplay = '-';
+                    if (bench) {
+                      if (targetType === 'weight' && bench.weight) currentBestDisplay = `${bench.weight}kg`;
+                      else if (targetType === 'reps' && bench.reps) currentBestDisplay = `${bench.reps} reps`;
+                      else if (targetType === 'time' && bench.time) currentBestDisplay = `${bench.time}s`;
+                    }
                     return (
                       <div key={ex.key} className="pb-edit-exercise">
-                        <div className="pb-edit-exercise-name">{ex.name}</div>
+                        <div className="pb-edit-exercise-header">
+                          <div className="pb-edit-exercise-name">{ex.name}</div>
+                          <div className="pb-edit-current-best">Current: {currentBestDisplay}</div>
+                        </div>
                         {ex.unit === 'weight' && (
                           <div className="pb-target-type-toggle">
                             <button
@@ -664,23 +719,38 @@ export default function PersonalBests() {
                           </div>
                         )}
                         <div className="pb-edit-row">
-                          <div className="pb-edit-field">
-                            <label>Current Best ({unitLabel})</label>
-                            <input
-                              type="number"
-                              step={targetType === 'weight' ? '0.5' : targetType === 'time' ? '1' : '1'}
-                              value={targetsForm[ex.key]?.startValue ?? ''}
-                              onChange={(e) => handleTargetChange(ex.key, 'startValue', e.target.value)}
-                              placeholder="0"
-                            />
-                          </div>
-                          <div className="pb-edit-field">
+                          <div className="pb-edit-field full">
                             <label>Target ({unitLabel})</label>
                             <input
                               type="number"
                               step={targetType === 'weight' ? '0.5' : targetType === 'time' ? '1' : '1'}
                               value={targetsForm[ex.key]?.targetValue ?? ''}
                               onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  <h4 className="pb-target-section-title">Body Metric Targets</h4>
+                  {BODY_METRICS.map(m => {
+                    const currentVal = currentRecord?.bodyMetrics?.[m.key];
+                    return (
+                      <div key={m.key} className="pb-edit-exercise">
+                        <div className="pb-edit-exercise-header">
+                          <div className="pb-edit-exercise-name">{m.name}</div>
+                          <div className="pb-edit-current-best">Current: {currentVal != null ? `${currentVal} ${m.suffix}` : '-'}</div>
+                        </div>
+                        <div className="pb-edit-row">
+                          <div className="pb-edit-field full">
+                            <label>Target ({m.suffix})</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={targetsForm[`metric_${m.key}`]?.targetValue ?? ''}
+                              onChange={(e) => handleTargetChange(`metric_${m.key}`, 'targetValue', e.target.value)}
                               placeholder="0"
                             />
                           </div>
@@ -714,9 +784,17 @@ export default function PersonalBests() {
                   {BODY_METRICS.map(metric => {
                     const value = currentRecord?.bodyMetrics?.[metric.key];
                     const change = getMetricChange(metric.key);
+                    const mTarget = metricTargets[metric.key];
                     return (
                       <div key={metric.key} className="pb-metric-row">
-                        <span className="pb-metric-name">{metric.name}</span>
+                        <div className="pb-metric-left">
+                          <span className="pb-metric-name">{metric.name}</span>
+                          {mTarget && (
+                            <span className="pb-metric-target-label">
+                              Target: {mTarget.targetValue} {metric.suffix}
+                            </span>
+                          )}
+                        </div>
                         <div className="pb-metric-values">
                           <span className="pb-metric-current">
                             {value != null ? `${value} ${metric.suffix}` : '-'}
