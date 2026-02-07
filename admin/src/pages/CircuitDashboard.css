@@ -148,16 +148,19 @@
 }
 
 .circuit-tick {
-  transition: stroke 0.3s ease;
-}
-
-.circuit-tick.elapsed {
-  stroke: var(--text-on-header, #fff);
-  opacity: 0.3;
+  transition: stroke 0.15s ease-out;
 }
 
 .circuit-tick.remaining {
-  stroke: var(--color-primary);
+  stroke: #d32f2f;
+}
+
+.circuit-tick.elapsed {
+  stroke: #ffffff;
+}
+
+[data-theme="light"] .circuit-tick.elapsed {
+  stroke: #2d2d2d;
 }
 
 .circuit-ring-center {
@@ -168,6 +171,22 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.circuit-ring-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--color-primary);
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.circuit-ring-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .circuit-ring-label {
@@ -222,6 +241,10 @@
   .circuit-ring {
     width: 320px;
     height: 320px;
+  }
+  .circuit-ring-logo {
+    width: 70px;
+    height: 70px;
   }
   .circuit-digit {
     font-size: 1.8rem;
