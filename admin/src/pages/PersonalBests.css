@@ -392,6 +392,23 @@
   padding: 14px;
 }
 
+.pb-reset-btn {
+  background: transparent !important;
+  border: 1px solid #d32f2f !important;
+  color: #d32f2f !important;
+  font-size: 0.8rem;
+  padding: 10px 14px;
+}
+
+.pb-reset-btn:hover {
+  background: #d32f2f !important;
+  color: white !important;
+}
+
+.pb-reset-btn:disabled {
+  opacity: 0.5;
+}
+
 /* Target type toggle */
 .pb-target-type-toggle {
   display: flex;

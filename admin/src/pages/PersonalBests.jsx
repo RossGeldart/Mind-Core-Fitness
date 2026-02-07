@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -461,6 +461,25 @@ export default function PersonalBests() {
     setSaving(false);
   };
 
+  // Reset all targets (strength + metric)
+  const handleResetTargets = async () => {
+    if (!window.confirm('Reset all goals? This will clear all strength and body metric targets. Your recorded benchmarks and measurements will NOT be affected.')) return;
+    setSaving(true);
+    try {
+      const targetDocRef = doc(db, 'personalBestTargets', `targets_${clientData.id}`);
+      await deleteDoc(targetDocRef);
+      setTargets({});
+      setMetricTargets({});
+      setTargetsForm({});
+      setMetricTargetsForm({});
+      showToast('All goals have been reset', 'success');
+    } catch (error) {
+      console.error('Error resetting targets:', error);
+      showToast('Failed to reset goals', 'error');
+    }
+    setSaving(false);
+  };
+
   // Get progress toward target (0 to 1) based on range from start to target
   const getTargetProgress = (exerciseKey, benchData) => {
     const target = targets[exerciseKey];
@@ -721,6 +740,11 @@ export default function PersonalBests() {
                 <button className="pb-edit-btn pb-target-btn" onClick={() => setEditingTargets(true)}>
                   {Object.keys(targets).length > 0 ? 'Edit Targets' : 'Set Targets'}
                 </button>
+                {(Object.keys(targets).length > 0 || Object.keys(metricTargets).length > 0) && (
+                  <button className="pb-edit-btn pb-reset-btn" onClick={handleResetTargets} disabled={saving}>
+                    Reset All Goals
+                  </button>
+                )}
               </div>
             )}
 
@@ -934,6 +958,11 @@ export default function PersonalBests() {
                   <button className="pb-edit-btn pb-target-btn" onClick={() => setEditingMetricTargets(true)}>
                     {Object.keys(metricTargets).length > 0 ? 'Edit Targets' : 'Set Targets'}
                   </button>
+                  {(Object.keys(targets).length > 0 || Object.keys(metricTargets).length > 0) && (
+                    <button className="pb-edit-btn pb-reset-btn" onClick={handleResetTargets} disabled={saving}>
+                      Reset All Goals
+                    </button>
+                  )}
                 </div>
               </>
             )}
