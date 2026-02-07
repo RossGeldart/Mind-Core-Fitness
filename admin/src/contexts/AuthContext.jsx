@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
   browserLocalPersistence,
   browserSessionPersistence,
   setPersistence
@@ -80,6 +81,10 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   };
 
+  const resetPassword = (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
   const value = {
     currentUser,
     isAdmin,
@@ -87,6 +92,7 @@ export function AuthProvider({ children }) {
     clientData,
     login,
     logout,
+    resetPassword,
     loading
   };
 
