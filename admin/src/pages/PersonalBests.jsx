@@ -298,6 +298,7 @@ export default function PersonalBests() {
           targetsToSave[ex.key] = {
             ...targetsForm[ex.key],
             targetType: targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight'),
+            startValue: targetsForm[ex.key].startValue || 0,
           };
         }
       });
@@ -317,10 +318,13 @@ export default function PersonalBests() {
     setSaving(false);
   };
 
-  // Get progress toward target (0 to 1)
+  // Get progress toward target (0 to 1) based on range from start to target
   const getTargetProgress = (exerciseKey, benchData) => {
     const target = targets[exerciseKey];
     if (!target || !target.targetValue || !benchData) return null;
+
+    const startVal = target.startValue || 0;
+    const targetVal = target.targetValue;
 
     let currentVal = 0;
     if (target.targetType === 'weight') {
@@ -331,8 +335,9 @@ export default function PersonalBests() {
       currentVal = benchData.time || 0;
     }
 
-    if (target.targetValue === 0) return null;
-    return Math.min(currentVal / target.targetValue, 1);
+    const range = targetVal - startVal;
+    if (range <= 0) return currentVal >= targetVal ? 1 : 0;
+    return Math.max(0, Math.min((currentVal - startVal) / range, 1));
   };
 
   // Carousel touch handlers
@@ -499,7 +504,8 @@ export default function PersonalBests() {
                         )}
                         {currentTarget && (
                           <div className={`pb-ring-target ${targetHit ? 'hit' : ''}`}>
-                            Target: {currentTarget.targetValue}{currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? ' reps' : currentTarget.targetType === 'time' ? 's' : 'kg'}
+                            {targetHit ? 'Target hit!' : `${currentTarget.startValue || 0} → ${currentTarget.targetValue}`}{' '}
+                            {currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? 'reps' : currentTarget.targetType === 'time' ? 's' : 'kg'}
                           </div>
                         )}
                         {!currentTarget && (
@@ -632,57 +638,53 @@ export default function PersonalBests() {
                   }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
-                  <p className="pb-target-hint">Choose one target per exercise — either a weight to hit or reps to reach. The ring will fill as you get closer.</p>
+                  <p className="pb-target-hint">Enter your current best and set a target. The ring tracks your progress from where you are now to where you want to be.</p>
                   {EXERCISES.map(ex => {
                     const targetType = targetsForm[ex.key]?.targetType || (ex.unit === 'time' ? 'time' : 'weight');
+                    const unitLabel = targetType === 'weight' ? 'kg' : targetType === 'reps' ? 'reps' : 'seconds';
                     return (
                       <div key={ex.key} className="pb-edit-exercise">
                         <div className="pb-edit-exercise-name">{ex.name}</div>
-                        {ex.unit === 'weight' ? (
-                          <>
-                            <div className="pb-target-type-toggle">
-                              <button
-                                type="button"
-                                className={targetType === 'weight' ? 'active' : ''}
-                                onClick={() => handleTargetChange(ex.key, 'targetType', 'weight')}
-                              >
-                                Target Weight
-                              </button>
-                              <button
-                                type="button"
-                                className={targetType === 'reps' ? 'active' : ''}
-                                onClick={() => handleTargetChange(ex.key, 'targetType', 'reps')}
-                              >
-                                Target Reps
-                              </button>
-                            </div>
-                            <div className="pb-edit-row">
-                              <div className="pb-edit-field full">
-                                <label>{targetType === 'weight' ? 'Target Weight (kg)' : 'Target Reps'}</label>
-                                <input
-                                  type="number"
-                                  step={targetType === 'weight' ? '0.5' : '1'}
-                                  value={targetsForm[ex.key]?.targetValue ?? ''}
-                                  onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
-                                  placeholder="0"
-                                />
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="pb-edit-row">
-                            <div className="pb-edit-field full">
-                              <label>Target Time (seconds)</label>
-                              <input
-                                type="number"
-                                step="1"
-                                value={targetsForm[ex.key]?.targetValue ?? ''}
-                                onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
-                                placeholder="0"
-                              />
-                            </div>
+                        {ex.unit === 'weight' && (
+                          <div className="pb-target-type-toggle">
+                            <button
+                              type="button"
+                              className={targetType === 'weight' ? 'active' : ''}
+                              onClick={() => handleTargetChange(ex.key, 'targetType', 'weight')}
+                            >
+                              Weight
+                            </button>
+                            <button
+                              type="button"
+                              className={targetType === 'reps' ? 'active' : ''}
+                              onClick={() => handleTargetChange(ex.key, 'targetType', 'reps')}
+                            >
+                              Reps
+                            </button>
                           </div>
                         )}
+                        <div className="pb-edit-row">
+                          <div className="pb-edit-field">
+                            <label>Current Best ({unitLabel})</label>
+                            <input
+                              type="number"
+                              step={targetType === 'weight' ? '0.5' : targetType === 'time' ? '1' : '1'}
+                              value={targetsForm[ex.key]?.startValue ?? ''}
+                              onChange={(e) => handleTargetChange(ex.key, 'startValue', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                          <div className="pb-edit-field">
+                            <label>Target ({unitLabel})</label>
+                            <input
+                              type="number"
+                              step={targetType === 'weight' ? '0.5' : targetType === 'time' ? '1' : '1'}
+                              value={targetsForm[ex.key]?.targetValue ?? ''}
+                              onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
