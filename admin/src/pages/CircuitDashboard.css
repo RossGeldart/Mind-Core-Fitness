@@ -173,6 +173,22 @@
   text-align: center;
 }
 
+.circuit-ring-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--color-primary);
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.circuit-ring-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .circuit-ring-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
@@ -225,6 +241,10 @@
   .circuit-ring {
     width: 320px;
     height: 320px;
+  }
+  .circuit-ring-logo {
+    width: 70px;
+    height: 70px;
   }
   .circuit-digit {
     font-size: 1.8rem;

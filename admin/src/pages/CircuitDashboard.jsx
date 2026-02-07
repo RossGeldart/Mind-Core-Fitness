@@ -209,6 +209,9 @@ export default function CircuitDashboard() {
                 })}
               </svg>
               <div className="circuit-ring-center">
+                <div className="circuit-ring-logo">
+                  <img src="/Logo.PNG" alt="Mind Core Fitness" />
+                </div>
                 <div className="circuit-ring-label">Next Class</div>
                 <div className="circuit-ring-countdown">
                   {liveCountdown.days > 0 && (
