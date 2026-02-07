@@ -73,7 +73,47 @@ export default function CircuitBooking() {
       const sessionDoc = await getDoc(sessionRef);
 
       if (sessionDoc.exists()) {
-        setSession({ id: sessionDoc.id, ...sessionDoc.data() });
+        const existingSession = { id: sessionDoc.id, ...sessionDoc.data() };
+
+        // Check for VIPs added after session was created and auto-slot them
+        const vipQ = query(
+          collection(db, 'clients'),
+          where('clientType', '==', 'circuit_vip'),
+          where('status', '==', 'active')
+        );
+        const vipSnap = await getDocs(vipQ);
+        const vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        const slottedMemberIds = existingSession.slots
+          .filter(s => s.memberId)
+          .map(s => s.memberId);
+        const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id));
+
+        if (missingVips.length > 0) {
+          const updatedSlots = [...existingSession.slots];
+          let changed = false;
+
+          for (const vip of missingVips) {
+            const availIdx = updatedSlots.findIndex(s => s.status === 'available');
+            if (availIdx === -1) break;
+            updatedSlots[availIdx] = {
+              slotNumber: updatedSlots[availIdx].slotNumber,
+              memberId: vip.id,
+              memberName: vip.name,
+              memberType: 'circuit_vip',
+              status: 'confirmed',
+              bookedAt: Timestamp.now(),
+            };
+            changed = true;
+          }
+
+          if (changed) {
+            await updateDoc(sessionRef, { slots: updatedSlots });
+            existingSession.slots = updatedSlots;
+          }
+        }
+
+        setSession(existingSession);
       } else {
         // Auto-create session with VIPs pre-slotted
         const vipQ = query(
