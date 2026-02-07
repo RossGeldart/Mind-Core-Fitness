@@ -168,6 +168,57 @@
   cursor: not-allowed;
 }
 
+.forgot-link {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: center;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.forgot-link:hover {
+  color: var(--color-primary);
+}
+
+.reset-sent {
+  text-align: center;
+  padding: 10px 0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.reset-sent-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  color: var(--color-primary);
+}
+
+.reset-sent-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.reset-sent p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+}
+
+.reset-sent span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
 .back-link {
   display: block;
   text-align: center;
