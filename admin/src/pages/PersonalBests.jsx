@@ -140,6 +140,8 @@ export default function PersonalBests() {
   const [targetsForm, setTargetsForm] = useState({});
   const [editingMetricTargets, setEditingMetricTargets] = useState(false);
   const [metricTargetsForm, setMetricTargetsForm] = useState({});
+  const [achievements, setAchievements] = useState([]);
+  const [celebration, setCelebration] = useState(null);
   const [toast, setToast] = useState(null);
 
   // History compare state
@@ -197,6 +199,16 @@ export default function PersonalBests() {
         setTargetsForm(targetsData.targets || {});
         setMetricTargetsForm(targetsData.metricTargets || {});
       }
+
+      // Fetch achievements
+      const achQ = query(
+        collection(db, 'achievements'),
+        where('clientId', '==', clientData.id)
+      );
+      const achSnapshot = await getDocs(achQ);
+      if (!achSnapshot.empty) {
+        setAchievements(achSnapshot.docs[0].data().badges || []);
+      }
     } catch (error) {
       console.error('Error fetching personal bests:', error);
     }
@@ -219,6 +231,80 @@ export default function PersonalBests() {
     }
   }, [currentRecord?.id]);
 
+  // Check for new achievements after saving benchmarks or metrics
+  const checkAndSaveAchievements = async (type, dataMap) => {
+    const newBadges = [];
+
+    if (type === 'strength') {
+      EXERCISES.forEach(ex => {
+        const target = targets[ex.key];
+        if (!target || !target.targetValue) return;
+        const bench = dataMap[ex.key];
+        if (!bench) return;
+        let currentVal = 0;
+        if (target.targetType === 'weight') currentVal = bench.weight || 0;
+        else if (target.targetType === 'reps') currentVal = bench.reps || 0;
+        else if (target.targetType === 'time') currentVal = bench.time || 0;
+        const startVal = target.startValue || 0;
+        const targetVal = target.targetValue;
+        const range = targetVal - startVal;
+        const progress = range === 0 ? (currentVal >= targetVal ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+        if (progress >= 1) {
+          const alreadyAchieved = achievements.some(
+            a => a.type === 'strength' && a.key === ex.key && a.targetValue === targetVal
+          );
+          if (!alreadyAchieved) {
+            const unitLabel = target.targetType === 'weight' ? 'kg' : target.targetType === 'reps' ? ' reps' : 's';
+            newBadges.push({
+              type: 'strength', key: ex.key, targetType: target.targetType,
+              targetValue: targetVal, achievedMonth: currentMonth,
+              label: `${ex.name} ${targetVal}${unitLabel}`,
+            });
+          }
+        }
+      });
+    } else {
+      BODY_METRICS.forEach(m => {
+        const mTarget = metricTargets[m.key];
+        if (!mTarget || !mTarget.targetValue) return;
+        const currentVal = dataMap[m.key];
+        if (currentVal == null) return;
+        const startVal = mTarget.startValue || 0;
+        const targetVal = mTarget.targetValue;
+        const range = targetVal - startVal;
+        const progress = range === 0 ? (currentVal === targetVal ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+        if (progress >= 1) {
+          const alreadyAchieved = achievements.some(
+            a => a.type === 'metric' && a.key === m.key && a.targetValue === targetVal
+          );
+          if (!alreadyAchieved) {
+            newBadges.push({
+              type: 'metric', key: m.key,
+              targetValue: targetVal, achievedMonth: currentMonth,
+              label: `${m.name} ${targetVal}${m.suffix}`,
+            });
+          }
+        }
+      });
+    }
+
+    if (newBadges.length > 0) {
+      const allBadges = [...achievements, ...newBadges];
+      await setDoc(doc(db, 'achievements', clientData.id), {
+        clientId: clientData.id,
+        badges: allBadges,
+        updatedAt: Timestamp.now(),
+      });
+      setAchievements(allBadges);
+      setCelebration(newBadges);
+      setTimeout(() => setCelebration(null), 5000);
+    }
+  };
+
+  const hasAchievement = (type, key) => {
+    return achievements.some(a => a.type === type && a.key === key);
+  };
+
   const handleSaveBenchmarks = async () => {
     setSaving(true);
     try {
@@ -232,6 +318,7 @@ export default function PersonalBests() {
         createdAt: existing.createdAt || Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
+      await checkAndSaveAchievements('strength', benchmarkForm);
       showToast('Benchmarks saved!', 'success');
       setEditingBenchmarks(false);
       await fetchRecords();
@@ -255,6 +342,7 @@ export default function PersonalBests() {
         createdAt: existing.createdAt || Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
+      await checkAndSaveAchievements('metric', metricsForm);
       showToast('Body metrics saved!', 'success');
       setEditingMetrics(false);
       await fetchRecords();
@@ -553,7 +641,12 @@ export default function PersonalBests() {
                       </svg>
                       <div className="pb-ring-center">
                         <div className="pb-ring-category">{currentExercise.category}</div>
-                        <div className="pb-ring-exercise">{currentExercise.name}</div>
+                        <div className="pb-ring-exercise">
+                          {currentExercise.name}
+                          {hasAchievement('strength', currentExercise.key) && (
+                            <svg className="pb-badge-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                          )}
+                        </div>
                         <div className="pb-ring-value">
                           {currentBench
                             ? currentExercise.unit === 'time'
@@ -793,7 +886,12 @@ export default function PersonalBests() {
                         <div key={metric.key} className="pb-metric-row">
                           <div className="pb-metric-top">
                             <div className="pb-metric-left">
-                              <span className="pb-metric-name">{metric.name}</span>
+                              <span className="pb-metric-name">
+                                {metric.name}
+                                {hasAchievement('metric', metric.key) && (
+                                  <svg className="pb-badge-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                )}
+                              </span>
                               {mTarget && (
                                 <span className="pb-metric-target-label">
                                   Target: {mTarget.targetValue} {metric.suffix}
@@ -1119,6 +1217,26 @@ export default function PersonalBests() {
           </div>
         )}
       </main>
+
+      {/* Achievement Celebration */}
+      {celebration && (
+        <div className="pb-celebration-overlay" onClick={() => setCelebration(null)}>
+          <div className="pb-celebration-card">
+            <div className="pb-celebration-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <h3 className="pb-celebration-title">
+              {celebration.length === 1 ? 'Target Achieved!' : `${celebration.length} Targets Achieved!`}
+            </h3>
+            <div className="pb-celebration-badges">
+              {celebration.map((badge, i) => (
+                <div key={i} className="pb-celebration-badge">{badge.label}</div>
+              ))}
+            </div>
+            <p className="pb-celebration-sub">Tap to dismiss</p>
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toast && (

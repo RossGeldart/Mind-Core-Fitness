@@ -52,6 +52,9 @@ export default function ClientDashboard() {
   // FAB state
   const [fabOpen, setFabOpen] = useState(false);
 
+  // Achievements
+  const [achievementCount, setAchievementCount] = useState(0);
+
   // Progress ring animation state
   const [animateRing, setAnimateRing] = useState(false);
 
@@ -247,6 +250,17 @@ export default function ClientDashboard() {
         return respondedDate > sevenDaysAgo && !r.dismissed;
       });
       setNotifications(recentNotifications);
+
+      // Fetch achievements count
+      const achQ = query(
+        collection(db, 'achievements'),
+        where('clientId', '==', clientData.id)
+      );
+      const achSnapshot = await getDocs(achQ);
+      if (!achSnapshot.empty) {
+        const badges = achSnapshot.docs[0].data().badges || [];
+        setAchievementCount(badges.length);
+      }
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -737,6 +751,19 @@ export default function ClientDashboard() {
             Personal Bests & Progress
           </button>
         </div>
+
+        {achievementCount > 0 && (
+          <div className="achievements-summary" onClick={() => navigate('/client/personal-bests')}>
+            <div className="achievements-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div className="achievements-text">
+              <span className="achievements-count">{achievementCount}</span>
+              <span className="achievements-label">{achievementCount === 1 ? 'Target Achieved' : 'Targets Achieved'}</span>
+            </div>
+            <svg className="achievements-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+          </div>
+        )}
 
         <div className="sessions-section">
           <h3>Upcoming Sessions ({upcomingSessions.length})</h3>
