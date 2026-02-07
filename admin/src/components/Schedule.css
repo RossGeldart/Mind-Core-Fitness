@@ -1,14 +1,14 @@
 .schedule {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
 }
 
 .schedule-loading {
   padding: 60px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Today's Summary */
@@ -60,7 +60,7 @@
 .no-upcoming {
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: var(--text-tertiary);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -72,7 +72,7 @@
 }
 
 .date-group {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -87,18 +87,18 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .date-group.today .date-header {
-  background: #fce4ec;
+  background: var(--color-primary-light, #fce4ec);
 }
 
 .date-label {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .date-group.today .date-label {
@@ -108,7 +108,7 @@
 .date-count {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .date-sessions {
@@ -125,7 +125,7 @@
 }
 
 .session-card:hover {
-  background: #f9f9f9;
+  background: var(--bg-secondary);
 }
 
 .session-time {
@@ -144,20 +144,20 @@
 
 .session-details strong {
   font-family: 'Montserrat', sans-serif;
-  color: #373737;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .session-details span {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Completed Sessions */
 .session-card.completed {
   opacity: 0.6;
-  background: #f0f0f0;
+  background: var(--bg-secondary);
 }
 
 .session-card.completed .session-time {

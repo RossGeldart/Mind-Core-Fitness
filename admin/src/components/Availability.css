@@ -1,14 +1,14 @@
 .availability {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
 }
 
 .availability-loading {
   padding: 60px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Header */
@@ -18,7 +18,7 @@
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -26,7 +26,7 @@
 .availability-header h3 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
-  color: #373737;
+  color: var(--text-primary);
   margin: 0;
   text-align: center;
   flex: 1;
@@ -39,8 +39,9 @@
 
 .availability-nav button {
   padding: 10px 16px;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
@@ -59,16 +60,17 @@
   gap: 8px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .duration-selector select {
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  background: white;
+  background: var(--bg-card);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -85,7 +87,7 @@
 }
 
 .day-column {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -100,14 +102,14 @@
 }
 
 .day-header {
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   padding: 12px;
   text-align: center;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .day-column.today .day-header {
-  background: #fce4ec;
+  background: var(--color-primary-light, #fce4ec);
 }
 
 .day-name {
@@ -115,7 +117,7 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
-  color: #373737;
+  color: var(--text-primary);
 }
 
 .day-column.today .day-name {
@@ -126,7 +128,7 @@
   display: block;
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
@@ -149,7 +151,7 @@
 
 .no-slots {
   text-align: center;
-  color: #999;
+  color: var(--text-tertiary);
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   padding: 20px 0;
@@ -163,7 +165,7 @@
   color: #4caf50;
   margin-bottom: 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .slots-list {
