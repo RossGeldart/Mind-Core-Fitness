@@ -138,6 +138,8 @@ export default function PersonalBests() {
   const [targets, setTargets] = useState({});
   const [metricTargets, setMetricTargets] = useState({});
   const [targetsForm, setTargetsForm] = useState({});
+  const [editingMetricTargets, setEditingMetricTargets] = useState(false);
+  const [metricTargetsForm, setMetricTargetsForm] = useState({});
   const [toast, setToast] = useState(null);
 
   // History compare state
@@ -192,13 +194,8 @@ export default function PersonalBests() {
         const targetsData = targetsSnapshot.docs[0].data();
         setTargets(targetsData.targets || {});
         setMetricTargets(targetsData.metricTargets || {});
-        // Build combined form state
-        const combinedForm = { ...(targetsData.targets || {}) };
-        const mTargets = targetsData.metricTargets || {};
-        BODY_METRICS.forEach(m => {
-          if (mTargets[m.key]) combinedForm[`metric_${m.key}`] = mTargets[m.key];
-        });
-        setTargetsForm(combinedForm);
+        setTargetsForm(targetsData.targets || {});
+        setMetricTargetsForm(targetsData.metricTargets || {});
       }
     } catch (error) {
       console.error('Error fetching personal bests:', error);
@@ -299,13 +296,11 @@ export default function PersonalBests() {
     setSaving(true);
     try {
       const docId = `targets_${clientData.id}`;
-      // Auto-capture startValue from the latest benchmark data
       const latestBenchmarks = currentRecord?.benchmarks || {};
       const targetsToSave = {};
       EXERCISES.forEach(ex => {
         if (targetsForm[ex.key]?.targetValue) {
           const tType = targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight');
-          // Get start value from latest benchmark based on target type
           let autoStart = 0;
           const bench = latestBenchmarks[ex.key];
           if (bench) {
@@ -320,41 +315,59 @@ export default function PersonalBests() {
           };
         }
       });
-      // Save metric targets too
+      await setDoc(doc(db, 'personalBestTargets', docId), {
+        clientId: clientData.id,
+        targets: targetsToSave,
+        metricTargets: metricTargets, // Preserve existing metric targets
+        updatedAt: Timestamp.now(),
+      });
+      setTargets(targetsToSave);
+      setTargetsForm(targetsToSave);
+      showToast('Targets saved!', 'success');
+      setEditingTargets(false);
+    } catch (error) {
+      console.error('Error saving targets:', error);
+      showToast('Failed to save targets.', 'error');
+    }
+    setSaving(false);
+  };
+
+  const handleMetricTargetChange = (metricKey, value) => {
+    setMetricTargetsForm(prev => ({
+      ...prev,
+      [metricKey]: {
+        ...prev[metricKey],
+        targetValue: value === '' ? '' : parseFloat(value),
+      }
+    }));
+  };
+
+  const handleSaveMetricTargets = async () => {
+    setSaving(true);
+    try {
+      const docId = `targets_${clientData.id}`;
       const metricTargetsToSave = {};
       BODY_METRICS.forEach(m => {
-        if (targetsForm[`metric_${m.key}`]?.targetValue) {
+        if (metricTargetsForm[m.key]?.targetValue) {
           const currentVal = currentRecord?.bodyMetrics?.[m.key] || 0;
           metricTargetsToSave[m.key] = {
-            targetValue: targetsForm[`metric_${m.key}`].targetValue,
+            targetValue: metricTargetsForm[m.key].targetValue,
             startValue: currentVal,
           };
         }
       });
       await setDoc(doc(db, 'personalBestTargets', docId), {
         clientId: clientData.id,
-        targets: targetsToSave,
+        targets: targets, // Preserve existing strength targets
         metricTargets: metricTargetsToSave,
         updatedAt: Timestamp.now(),
       });
-      setTargets(targetsToSave);
       setMetricTargets(metricTargetsToSave);
-      setTargetsForm(prev => {
-        const updated = {};
-        // Keep exercise targets
-        EXERCISES.forEach(ex => {
-          if (targetsToSave[ex.key]) updated[ex.key] = targetsToSave[ex.key];
-        });
-        // Keep metric targets
-        BODY_METRICS.forEach(m => {
-          if (metricTargetsToSave[m.key]) updated[`metric_${m.key}`] = metricTargetsToSave[m.key];
-        });
-        return updated;
-      });
-      showToast('Targets saved!', 'success');
-      setEditingTargets(false);
+      setMetricTargetsForm(metricTargetsToSave);
+      showToast('Metric targets saved!', 'success');
+      setEditingMetricTargets(false);
     } catch (error) {
-      console.error('Error saving targets:', error);
+      console.error('Error saving metric targets:', error);
       showToast('Failed to save targets.', 'error');
     }
     setSaving(false);
@@ -682,7 +695,6 @@ export default function PersonalBests() {
                 <div className="pb-edit-body">
                   <p className="pb-target-hint">Set a target for each exercise. Your current best is captured automatically from your latest benchmarks.</p>
 
-                  <h4 className="pb-target-section-title">Strength Targets</h4>
                   {EXERCISES.map(ex => {
                     const targetType = targetsForm[ex.key]?.targetType || (ex.unit === 'time' ? 'time' : 'weight');
                     const unitLabel = targetType === 'weight' ? 'kg' : targetType === 'reps' ? 'reps' : 'seconds';
@@ -734,30 +746,6 @@ export default function PersonalBests() {
                     );
                   })}
 
-                  <h4 className="pb-target-section-title">Body Metric Targets</h4>
-                  {BODY_METRICS.map(m => {
-                    const currentVal = currentRecord?.bodyMetrics?.[m.key];
-                    return (
-                      <div key={m.key} className="pb-edit-exercise">
-                        <div className="pb-edit-exercise-header">
-                          <div className="pb-edit-exercise-name">{m.name}</div>
-                          <div className="pb-edit-current-best">Current: {currentVal != null ? `${currentVal} ${m.suffix}` : '-'}</div>
-                        </div>
-                        <div className="pb-edit-row">
-                          <div className="pb-edit-field full">
-                            <label>Target ({m.suffix})</label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={targetsForm[`metric_${m.key}`]?.targetValue ?? ''}
-                              onChange={(e) => handleTargetChange(`metric_${m.key}`, 'targetValue', e.target.value)}
-                              placeholder="0"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
                 </div>
                 <div className="pb-edit-actions">
                   <button className="pb-cancel-btn" onClick={() => {
@@ -776,44 +764,53 @@ export default function PersonalBests() {
         {/* ====== BODY METRICS TAB ====== */}
         {activeTab === 'metrics' && (
           <div className="pb-metrics-section">
-            {!editingMetrics ? (
-              <div className="pb-metrics-card">
-                <h3>Body Measurements</h3>
-                <p className="pb-metrics-month">{formatMonthLabel(currentMonth)}</p>
-                <div className="pb-metrics-list">
-                  {BODY_METRICS.map(metric => {
-                    const value = currentRecord?.bodyMetrics?.[metric.key];
-                    const change = getMetricChange(metric.key);
-                    const mTarget = metricTargets[metric.key];
-                    return (
-                      <div key={metric.key} className="pb-metric-row">
-                        <div className="pb-metric-left">
-                          <span className="pb-metric-name">{metric.name}</span>
-                          {mTarget && (
-                            <span className="pb-metric-target-label">
-                              Target: {mTarget.targetValue} {metric.suffix}
+            {!editingMetrics && !editingMetricTargets && (
+              <>
+                <div className="pb-metrics-card">
+                  <h3>Body Measurements</h3>
+                  <p className="pb-metrics-month">{formatMonthLabel(currentMonth)}</p>
+                  <div className="pb-metrics-list">
+                    {BODY_METRICS.map(metric => {
+                      const value = currentRecord?.bodyMetrics?.[metric.key];
+                      const change = getMetricChange(metric.key);
+                      const mTarget = metricTargets[metric.key];
+                      return (
+                        <div key={metric.key} className="pb-metric-row">
+                          <div className="pb-metric-left">
+                            <span className="pb-metric-name">{metric.name}</span>
+                            {mTarget && (
+                              <span className="pb-metric-target-label">
+                                Target: {mTarget.targetValue} {metric.suffix}
+                              </span>
+                            )}
+                          </div>
+                          <div className="pb-metric-values">
+                            <span className="pb-metric-current">
+                              {value != null ? `${value} ${metric.suffix}` : '-'}
                             </span>
-                          )}
+                            {change !== null && (
+                              <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
+                                {change > 0 ? '+' : ''}{change} {metric.suffix}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="pb-metric-values">
-                          <span className="pb-metric-current">
-                            {value != null ? `${value} ${metric.suffix}` : '-'}
-                          </span>
-                          {change !== null && (
-                            <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
-                              {change > 0 ? '+' : ''}{change} {metric.suffix}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-                <button className="pb-edit-btn" onClick={() => setEditingMetrics(true)}>
-                  {currentRecord?.bodyMetrics ? 'Edit This Month\'s Measurements' : 'Add This Month\'s Measurements'}
-                </button>
-              </div>
-            ) : (
+                <div className="pb-action-buttons">
+                  <button className="pb-edit-btn" onClick={() => setEditingMetrics(true)}>
+                    {currentRecord?.bodyMetrics ? 'Edit This Month\'s Measurements' : 'Add This Month\'s Measurements'}
+                  </button>
+                  <button className="pb-edit-btn pb-target-btn" onClick={() => setEditingMetricTargets(true)}>
+                    {Object.keys(metricTargets).length > 0 ? 'Edit Targets' : 'Set Targets'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {editingMetrics && (
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Measurements - {formatMonthLabel(currentMonth)}</h3>
@@ -845,6 +842,53 @@ export default function PersonalBests() {
                   }}>Cancel</button>
                   <button className="pb-save-btn" onClick={handleSaveMetrics} disabled={saving}>
                     {saving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {editingMetricTargets && (
+              <div className="pb-edit-card">
+                <div className="pb-edit-header">
+                  <h3>Body Metric Targets</h3>
+                  <button className="pb-edit-close" onClick={() => {
+                    setEditingMetricTargets(false);
+                    setMetricTargetsForm(metricTargets);
+                  }}>&times;</button>
+                </div>
+                <div className="pb-edit-body">
+                  <p className="pb-target-hint">Set targets for your body measurements. Your current measurement is captured automatically.</p>
+                  {BODY_METRICS.map(m => {
+                    const currentVal = currentRecord?.bodyMetrics?.[m.key];
+                    return (
+                      <div key={m.key} className="pb-edit-exercise">
+                        <div className="pb-edit-exercise-header">
+                          <div className="pb-edit-exercise-name">{m.name}</div>
+                          <div className="pb-edit-current-best">Current: {currentVal != null ? `${currentVal} ${m.suffix}` : '-'}</div>
+                        </div>
+                        <div className="pb-edit-row">
+                          <div className="pb-edit-field full">
+                            <label>Target ({m.suffix})</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={metricTargetsForm[m.key]?.targetValue ?? ''}
+                              onChange={(e) => handleMetricTargetChange(m.key, e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="pb-edit-actions">
+                  <button className="pb-cancel-btn" onClick={() => {
+                    setEditingMetricTargets(false);
+                    setMetricTargetsForm(metricTargets);
+                  }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveMetricTargets} disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Targets'}
                   </button>
                 </div>
               </div>
