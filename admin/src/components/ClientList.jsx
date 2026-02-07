@@ -12,6 +12,7 @@ export default function ClientList() {
   const [editForm, setEditForm] = useState({});
   const [expandedClient, setExpandedClient] = useState(null);
   const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
 
   useEffect(() => {
     fetchData();
@@ -290,41 +291,25 @@ export default function ClientList() {
     return 'Block';
   };
 
-  const filtered = clients.filter(c =>
+  const searched = clients.filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.email?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
+  const blockClients = searched.filter(c => !isCircuit(c));
+  const circuitClients = searched.filter(c => isCircuit(c));
+
+  const filtered = typeFilter === 'block' ? blockClients
+    : typeFilter === 'circuit' ? circuitClients
+    : searched;
 
   const toggleExpand = (clientId) => {
     if (editingClient) return;
     setExpandedClient(prev => prev === clientId ? null : clientId);
   };
 
-  return (
-    <div className="client-list">
-      {/* Search Bar */}
-      <div className="client-search">
-        <svg className="client-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Search clients..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="client-search-input"
-        />
-        {search && (
-          <button className="client-search-clear" onClick={() => setSearch('')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
-        )}
-      </div>
-
-      <div className="client-count">{filtered.length} client{filtered.length !== 1 ? 's' : ''}</div>
-
-      {/* Client Name Rows */}
-      {filtered.map(client => {
+  const renderClientRow = (client) => {
         const isExpanded = expandedClient === client.id;
         const isEditing = editingClient === client.id;
         const isBlock = !client.clientType || client.clientType === 'block';
@@ -489,7 +474,71 @@ export default function ClientList() {
             )}
           </div>
         );
-      })}
+  };
+
+  return (
+    <div className="client-list">
+      {/* Search Bar */}
+      <div className="client-search">
+        <svg className="client-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search clients..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="client-search-input"
+        />
+        {search && (
+          <button className="client-search-clear" onClick={() => setSearch('')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        )}
+      </div>
+
+      {/* Type Filter Tabs */}
+      <div className="client-type-filter">
+        {[
+          { value: 'all', label: 'All', count: searched.length },
+          { value: 'block', label: 'Block', count: blockClients.length },
+          { value: 'circuit', label: 'Circuit', count: circuitClients.length },
+        ].map(tab => (
+          <button
+            key={tab.value}
+            className={`client-filter-btn ${typeFilter === tab.value ? 'active' : ''}`}
+            onClick={() => setTypeFilter(tab.value)}
+          >
+            {tab.label}
+            <span className="client-filter-count">{tab.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Grouped or flat list */}
+      {typeFilter === 'all' ? (
+        <>
+          {blockClients.length > 0 && (
+            <>
+              <div className="client-section-header">Block Members <span>{blockClients.length}</span></div>
+              {blockClients.map(renderClientRow)}
+            </>
+          )}
+          {circuitClients.length > 0 && (
+            <>
+              <div className="client-section-header">Circuit Members <span>{circuitClients.length}</span></div>
+              {circuitClients.map(renderClientRow)}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {filtered.length === 0 && (
+            <div className="client-section-empty">No {typeFilter} clients found</div>
+          )}
+          {filtered.map(renderClientRow)}
+        </>
+      )}
     </div>
   );
 }
