@@ -111,10 +111,10 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(26, 26, 26, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .nav-logo {
@@ -122,13 +122,13 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            color: var(--text-color);
+            color: #ffffff;
         }
 
         .nav-logo img {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
 
         .nav-logo span {
@@ -146,7 +146,7 @@
         }
 
         .nav-links a {
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.85);
             font-family: 'Roboto', sans-serif;
             font-weight: 400;
             font-size: 0.85rem;
@@ -155,7 +155,7 @@
         }
 
         .nav-links a:hover {
-            color: var(--accent-color);
+            color: #ffffff;
         }
 
         /* Mobile Menu */
@@ -172,7 +172,7 @@
         .mobile-menu-toggle span {
             width: 24px;
             height: 2px;
-            background: var(--text-color);
+            background: #ffffff;
             transition: all 0.3s ease;
         }
 
@@ -360,14 +360,14 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: rgba(255, 255, 255, 0.98);
+                background: rgba(26, 26, 26, 0.95);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
                 gap: 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             }
 
             .nav-links.show {
