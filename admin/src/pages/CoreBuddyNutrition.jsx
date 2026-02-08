@@ -39,7 +39,7 @@ export default function CoreBuddyNutrition() {
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
   const [scannerActive, setScannerActive] = useState(false);
-  const [scanDetected, setScanDetected] = useState(null); // { code, countdown }
+  const [scanDetected, setScanDetected] = useState(null); // barcode string or null
   const [manualBarcode, setManualBarcode] = useState('');
   const [barcodeLooking, setBarcodeLooking] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -267,7 +267,7 @@ export default function CoreBuddyNutrition() {
       if (avgError < 0.15) {
         const code = result.codeResult.code;
         Quagga.offDetected();
-        setScanDetected({ code, countdown: 3 });
+        setScanDetected(code);
       }
     });
   };
@@ -394,19 +394,15 @@ export default function CoreBuddyNutrition() {
     );
   };
 
-  // Scan detection countdown (3 → 2 → 1 → fetch)
+  // Brief delay after barcode detected, then fetch
   useEffect(() => {
     if (!scanDetected) return;
-    if (scanDetected.countdown <= 0) {
-      const code = scanDetected.code;
+    const timer = setTimeout(() => {
+      const code = scanDetected;
       stopScanner();
       setScanDetected(null);
       fetchProductByBarcode(code);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setScanDetected(prev => prev ? { ...prev, countdown: prev.countdown - 1 } : null);
-    }, 1000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, [scanDetected]);
 
@@ -697,19 +693,9 @@ export default function CoreBuddyNutrition() {
                   {scannerActive && !scanDetected && <div className="nut-scan-line" />}
                   {scanDetected && (
                     <div className="nut-scan-detected-overlay">
-                      <div className="nut-scan-detected-ring">
-                        <svg viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
-                          <circle cx="50" cy="50" r="42" fill="none" stroke="#4caf50" strokeWidth="4"
-                            strokeDasharray={`${(2 * Math.PI * 42)}`}
-                            strokeDashoffset={`${(2 * Math.PI * 42) * (scanDetected.countdown / 3)}`}
-                            strokeLinecap="round"
-                            style={{ transition: 'stroke-dashoffset 1s linear', transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
-                        </svg>
-                        <span className="nut-scan-detected-count">{scanDetected.countdown}</span>
-                      </div>
-                      <p className="nut-scan-detected-code">{scanDetected.code}</p>
+                      <svg className="nut-scan-detected-tick" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
                       <p className="nut-scan-detected-label">Barcode found!</p>
+                      <p className="nut-scan-detected-code">{scanDetected}</p>
                     </div>
                   )}
                 </div>
