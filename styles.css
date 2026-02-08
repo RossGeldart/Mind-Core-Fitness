@@ -377,7 +377,7 @@ body {
 /* Options Section */
 .options-section {
     padding: 100px 20px;
-    background: var(--background);
+    background: #f9f8f8;
 }
 
 .question {
@@ -439,11 +439,10 @@ body {
 .showcase-band:nth-child(4) { transition-delay: 0.2s; }
 .showcase-band:nth-child(5) { transition-delay: 0.25s; }
 
-/* Staggered animation delays for quick links */
-.quick-links .quick-link:nth-child(1) { transition-delay: 0s; }
-.quick-links .quick-link:nth-child(2) { transition-delay: 0.1s; }
-.quick-links .quick-link:nth-child(3) { transition-delay: 0.2s; }
-.quick-links .quick-link:nth-child(4) { transition-delay: 0.3s; }
+.quick-links .quick-link:nth-child(1) { transition-delay: 0.3s; }
+.quick-links .quick-link:nth-child(2) { transition-delay: 0.38s; }
+.quick-links .quick-link:nth-child(3) { transition-delay: 0.46s; }
+.quick-links .quick-link:nth-child(4) { transition-delay: 0.54s; }
 
 /* Staggered animation delays for social links */
 .social-links .social-link:nth-child(1) { transition-delay: 0s; }
@@ -453,8 +452,8 @@ body {
 
 .option-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-    border-color: #ddd;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    border-color: #d8d8d8;
 }
 
 .option-card:active {
@@ -464,23 +463,26 @@ body {
 .option-card:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
+    background: #fdf8f8;
 }
 
 .option-card.featured {
     border: 1.5px solid var(--accent-color);
+    border-left: 3px solid var(--accent-color);
 }
 
 .option-card.free {
     border: 1.5px solid #2d8a4e;
+    border-left: 3px solid #2d8a4e;
 }
 
-/* Option Badge - Flag/Bookmark Style */
+/* Option Badge - Tab Style */
 .option-badge {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 0;
+    left: 20px;
     display: inline-block;
-    padding: 6px 10px;
+    padding: 6px 12px 8px;
     background: var(--accent-color);
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
@@ -488,13 +490,14 @@ body {
     font-size: 0.6rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    border-radius: 4px;
+    border-radius: 0 0 6px 6px;
     z-index: 2;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 10px rgba(153, 49, 60, 0.25);
 }
 
 .option-badge.free-badge {
     background: #2d8a4e;
+    box-shadow: 0 3px 10px rgba(45, 138, 78, 0.25);
 }
 
 /* Showcase Sections - Full Width Service Bands */
@@ -649,6 +652,19 @@ body {
     content: "✓";
     position: absolute;
     left: 0;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    opacity: 0.12;
+}
+
+.hero-card-features li::after {
+    content: "✓";
+    position: absolute;
+    left: 4px;
+    top: 2px;
     color: var(--accent-color);
     font-weight: 700;
 }
@@ -662,7 +678,7 @@ body {
     color: #ffffff;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     border-radius: 8px;
     width: fit-content;
     transition: all 0.3s ease;
@@ -692,11 +708,22 @@ body {
 }
 
 /* Quick Links - Tertiary Options */
+.quick-links-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    max-width: 1060px;
+    margin: 0 auto 16px;
+}
+
 .quick-links {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    max-width: 900px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    max-width: 1060px;
     margin: 0 auto;
 }
 
@@ -706,6 +733,11 @@ body {
     gap: 16px;
     padding: 16px 20px;
     border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-link:hover {
+    background: #faf5f6;
 }
 
 .quick-link-icon {
@@ -728,6 +760,11 @@ body {
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 2px;
+    transition: color 0.2s ease;
+}
+
+.quick-link:hover .quick-link-title {
+    color: var(--accent-color);
 }
 
 .quick-link-desc {
@@ -1436,7 +1473,11 @@ body {
 
     .quick-links {
         grid-template-columns: 1fr;
-        max-width: 500px;
+        max-width: 560px;
+    }
+
+    .quick-links-label {
+        max-width: 560px;
     }
 }
 
@@ -1514,7 +1555,11 @@ body {
     /* Quick Links Mobile */
     .quick-links {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 10px;
+    }
+
+    .quick-links-label {
+        text-align: center;
     }
 
     .quick-link {
@@ -1618,6 +1663,14 @@ body {
     }
 
     .showcase-bg img {
+        transition: none;
+    }
+
+    .hero-card-cta,
+    .hero-card-cta::after,
+    .standard-card-cta,
+    .standard-card-cta::before,
+    .quick-link-title {
         transition: none;
     }
 
