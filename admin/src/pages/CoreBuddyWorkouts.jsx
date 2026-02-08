@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { storage } from '../config/firebase';
+import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 
 const TICK_COUNT = 60;
+const WEEKLY_TARGET = 5;
 
 const LEVELS = [
   { key: 'beginner', label: 'Beginner', work: 30, rest: 30, desc: '30s work / 30s rest' },
@@ -67,10 +69,46 @@ export default function CoreBuddyWorkouts() {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
+  // Weekly workout count
+  const [weeklyCount, setWeeklyCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   // Auth guard
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
+
+  // Load workout stats
+  useEffect(() => {
+    if (!currentUser) return;
+    const loadStats = async () => {
+      try {
+        const logsRef = collection(db, 'workoutLogs');
+        // Get start of current week (Monday)
+        const now = new Date();
+        const day = now.getDay();
+        const mondayOffset = day === 0 ? -6 : 1 - day;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() + mondayOffset);
+        monday.setHours(0, 0, 0, 0);
+
+        const q = query(logsRef,
+          where('clientId', '==', currentUser.uid),
+          where('completedAt', '>=', Timestamp.fromDate(monday))
+        );
+        const snap = await getDocs(q);
+        setWeeklyCount(snap.size);
+
+        // Total all-time
+        const totalQ = query(logsRef, where('clientId', '==', currentUser.uid));
+        const totalSnap = await getDocs(totalQ);
+        setTotalCount(totalSnap.size);
+      } catch (err) {
+        console.error('Error loading workout stats:', err);
+      }
+    };
+    loadStats();
+  }, [currentUser, view]);
 
   // Load exercises from Firebase Storage
   const loadExercises = async () => {
@@ -209,6 +247,7 @@ export default function CoreBuddyWorkouts() {
         const nextRound = currentRound + 1;
         if (nextRound > rounds) {
           setView('complete');
+          saveWorkoutLog();
           return;
         }
         setCurrentRound(nextRound);
@@ -219,6 +258,26 @@ export default function CoreBuddyWorkouts() {
       setPhase('work');
       setTimeLeft(levelConfig.work);
       playGo();
+    }
+  };
+
+  // Save completed workout to Firestore
+  const saveWorkoutLog = async () => {
+    if (!currentUser) return;
+    try {
+      await addDoc(collection(db, 'workoutLogs'), {
+        clientId: currentUser.uid,
+        level,
+        duration,
+        exerciseCount: workout.length,
+        rounds,
+        exercises: workout.map(e => e.name),
+        completedAt: Timestamp.now(),
+      });
+      setWeeklyCount(c => c + 1);
+      setTotalCount(c => c + 1);
+    } catch (err) {
+      console.error('Error saving workout log:', err);
     }
   };
 
@@ -320,22 +379,68 @@ export default function CoreBuddyWorkouts() {
         <main className="wk-main">
           <button className="nut-back-btn" onClick={() => navigate(-1)}>&larr; Back</button>
           <div className="wk-menu-cards">
+            {/* Random Workout Card */}
             <button className="wk-menu-card" onClick={() => { setView('setup'); loadExercises(); }}>
-              <div className="wk-menu-card-icon wk-icon-random">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              <div className="wk-menu-ring-wrap">
+                <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                  {[...Array(TICK_COUNT)].map((_, i) => {
+                    const angle = (i * 6 - 90) * (Math.PI / 180);
+                    const x1 = 100 + 78 * Math.cos(angle);
+                    const y1 = 100 + 78 * Math.sin(angle);
+                    const x2 = 100 + 94 * Math.cos(angle);
+                    const y2 = 100 + 94 * Math.sin(angle);
+                    const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                        className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
+                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                    );
+                  })}
+                </svg>
+                <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+              </div>
+              <div className="wk-menu-card-stats">
+                <span className="wk-menu-stat-big">{weeklyCount}</span>
+                <span className="wk-menu-stat-label">this week</span>
               </div>
               <h3>Random Workout</h3>
-              <p>Interval-based workout generated from your exercise library</p>
+              <p>Interval-based HIIT from your exercise library</p>
             </button>
+
+            {/* Build a Programme Card */}
             <button className="wk-menu-card wk-card-disabled">
-              <div className="wk-menu-card-icon wk-icon-build">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              <div className="wk-menu-ring-wrap">
+                <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                  {[...Array(TICK_COUNT)].map((_, i) => {
+                    const angle = (i * 6 - 90) * (Math.PI / 180);
+                    const x1 = 100 + 78 * Math.cos(angle);
+                    const y1 = 100 + 78 * Math.sin(angle);
+                    const x2 = 100 + 94 * Math.cos(angle);
+                    const y2 = 100 + 94 * Math.sin(angle);
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                        className="wk-menu-tick-locked"
+                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                    );
+                  })}
+                </svg>
+                <div className="wk-menu-ring-lock">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
               </div>
               <h3>Build a Programme</h3>
               <p>Coming soon</p>
-              <span className="wk-coming-soon-badge">Soon</span>
             </button>
           </div>
+
+          {totalCount > 0 && (
+            <div className="wk-menu-total">
+              <span className="wk-menu-total-num">{totalCount}</span>
+              <span className="wk-menu-total-label">total workouts completed</span>
+            </div>
+          )}
         </main>
         {toastEl}
       </div>
