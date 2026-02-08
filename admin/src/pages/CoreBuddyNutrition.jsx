@@ -4,7 +4,7 @@ import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import './CoreBuddyNutrition.css';
 
 const TICK_COUNT = 60;
@@ -208,14 +208,36 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== BARCODE SCANNER ====================
+  const BARCODE_FORMATS = [
+    Html5QrcodeSupportedFormats.EAN_13,
+    Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.UPC_A,
+    Html5QrcodeSupportedFormats.UPC_E,
+    Html5QrcodeSupportedFormats.CODE_128,
+    Html5QrcodeSupportedFormats.CODE_39,
+    Html5QrcodeSupportedFormats.ITF,
+  ];
+
   const startScanner = async () => {
     setScannerActive(true);
     try {
-      const html5Qrcode = new Html5Qrcode('barcode-reader');
+      const html5Qrcode = new Html5Qrcode('barcode-reader', {
+        formatsToSupport: BARCODE_FORMATS,
+        verbose: false,
+      });
       html5QrcodeRef.current = html5Qrcode;
       await html5Qrcode.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 120 } },
+        {
+          fps: 15,
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const w = Math.min(viewfinderWidth * 0.85, 320);
+            const h = Math.min(viewfinderHeight * 0.35, 140);
+            return { width: Math.round(w), height: Math.round(h) };
+          },
+          aspectRatio: 1.0,
+          disableFlip: false,
+        },
         async (decodedText) => {
           await html5Qrcode.stop();
           html5QrcodeRef.current = null;
@@ -227,7 +249,7 @@ export default function CoreBuddyNutrition() {
     } catch (err) {
       console.error('Scanner error:', err);
       setScannerActive(false);
-      showToast('Could not access camera', 'error');
+      showToast('Could not access camera. Check permissions.', 'error');
     }
   };
 
@@ -633,14 +655,17 @@ export default function CoreBuddyNutrition() {
             {/* SCAN MODE */}
             {addMode === 'scan' && !scannedProduct && (
               <div className="nut-scan-area">
-                <div id="barcode-reader" className="nut-scanner-view" />
+                <div className="nut-scanner-wrapper">
+                  <div id="barcode-reader" className="nut-scanner-view" />
+                  {scannerActive && <div className="nut-scan-line" />}
+                </div>
                 {!scannerActive && (
                   <button className="nut-scan-start-btn" onClick={startScanner}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
                     Open Camera
                   </button>
                 )}
-                {scannerActive && <p className="nut-scan-hint">Point camera at barcode...</p>}
+                {scannerActive && <p className="nut-scan-hint">Align barcode within the frame</p>}
 
                 <div className="nut-barcode-divider">
                   <span>or enter barcode manually</span>

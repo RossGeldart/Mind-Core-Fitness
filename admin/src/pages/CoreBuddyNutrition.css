@@ -756,11 +756,38 @@
   text-align: center;
 }
 
-.nut-scanner-view {
+.nut-scanner-wrapper {
+  position: relative;
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
+  background: #000;
+}
+
+.nut-scanner-view {
+  width: 100%;
+}
+
+/* Hide the default html5-qrcode UI elements */
+.nut-scanner-view #qr-shaded-region {
+  border-color: var(--color-primary) !important;
+}
+
+.nut-scan-line {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(153, 49, 60, 0.8), 0 0 20px rgba(153, 49, 60, 0.4);
+  z-index: 10;
+  animation: scanLine 2s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0%, 100% { top: 25%; opacity: 0.9; }
+  50% { top: 75%; opacity: 1; }
 }
 
 .nut-scan-start-btn {
