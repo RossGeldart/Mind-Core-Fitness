@@ -40,6 +40,8 @@ export default function CoreBuddyWorkouts() {
   // Exercises from Firebase Storage
   const [allExercises, setAllExercises] = useState([]);
   const [loadingExercises, setLoadingExercises] = useState(false);
+  const loadingRef = useRef(false);
+  const exercisesRef = useRef([]);
 
   // Generated workout
   const [workout, setWorkout] = useState([]); // [{ name, videoUrl }]
@@ -72,11 +74,25 @@ export default function CoreBuddyWorkouts() {
 
   // Load exercises from Firebase Storage
   const loadExercises = async () => {
-    if (allExercises.length > 0) return allExercises;
+    if (exercisesRef.current.length > 0) return exercisesRef.current;
+    if (loadingRef.current) {
+      // Wait for the in-progress load to finish
+      while (loadingRef.current) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+      return exercisesRef.current;
+    }
+    loadingRef.current = true;
     setLoadingExercises(true);
     try {
       const coreRef = ref(storage, 'core');
       const result = await listAll(coreRef);
+      if (result.items.length === 0) {
+        showToast('No exercises found in storage. Upload videos to core/ folder.', 'error');
+        loadingRef.current = false;
+        setLoadingExercises(false);
+        return [];
+      }
       const exercises = await Promise.all(
         result.items.map(async (item) => {
           const url = await getDownloadURL(item);
@@ -84,12 +100,20 @@ export default function CoreBuddyWorkouts() {
           return { name, videoUrl: url };
         })
       );
+      exercisesRef.current = exercises;
       setAllExercises(exercises);
+      loadingRef.current = false;
       setLoadingExercises(false);
       return exercises;
     } catch (err) {
       console.error('Error loading exercises:', err);
-      showToast('Failed to load exercises. Check your connection.', 'error');
+      const msg = err.code === 'storage/unauthorized'
+        ? 'Storage access denied. Check Firebase Storage rules allow read access.'
+        : err.code === 'storage/object-not-found'
+        ? 'core/ folder not found in Firebase Storage.'
+        : `Failed to load exercises: ${err.message || err.code || 'Unknown error'}`;
+      showToast(msg, 'error');
+      loadingRef.current = false;
       setLoadingExercises(false);
       return [];
     }
@@ -263,6 +287,13 @@ export default function CoreBuddyWorkouts() {
     return completed / totalExercises;
   };
 
+  // Toast element - rendered at the end of every view
+  const toastEl = toast && (
+    <div className={`toast-notification ${toast.type}`}>
+      {toast.message}
+    </div>
+  );
+
   if (authLoading) {
     return <div className="cb-loading"><div className="cb-loading-spinner" /></div>;
   }
@@ -306,6 +337,7 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
         </main>
+        {toastEl}
       </div>
     );
   }
@@ -360,6 +392,7 @@ export default function CoreBuddyWorkouts() {
             {loadingExercises ? 'Loading exercises...' : 'Randomise Workout'}
           </button>
         </main>
+        {toastEl}
       </div>
     );
   }
@@ -389,6 +422,7 @@ export default function CoreBuddyWorkouts() {
           </div>
           <p className="wk-spin-text">Generating workout...</p>
         </div>
+        {toastEl}
       </div>
     );
   }
