@@ -17,10 +17,11 @@ const EQUIPMENT = [
 ];
 
 const FOCUS_AREAS = [
-  { key: 'core', label: 'Core' },
-  { key: 'upper', label: 'Upper Body' },
-  { key: 'lower', label: 'Lower Body' },
-  { key: 'fullbody', label: 'Full Body' },
+  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z' },
+  { key: 'upper', label: 'Upper', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z' },
+  { key: 'lower', label: 'Lower', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z' },
+  { key: 'fullbody', label: 'Full Body', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm-2 8h4l1 4h2l-1 4h-2l-1 4h-2l-1-4H8l-1-4h2l1-4z' },
+  { key: 'mix', label: 'Mix It Up', icon: 'M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm-.83 9.41l-1.42 1.42L17.96 20.54l1.42-1.42-5.71-5.71z' },
 ];
 
 const LEVELS = [
@@ -187,8 +188,13 @@ export default function CoreBuddyWorkouts() {
     // New structure: exercises/{equipment}/{focus}/
     // Legacy fallback: core/ (for existing bodyweight core videos)
     const paths = [];
+    const focusKeys = focusArea === 'mix'
+      ? ['core', 'upper', 'lower', 'fullbody']
+      : [focusArea];
     for (const eq of selectedEquipment) {
-      paths.push(`exercises/${eq}/${focusArea}`);
+      for (const fk of focusKeys) {
+        paths.push(`exercises/${eq}/${fk}`);
+      }
     }
     return paths;
   };
@@ -678,12 +684,13 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-setup-section">
             <h2>Focus Area</h2>
-            <div className="wk-focus-options">
+            <div className="wk-focus-grid">
               {FOCUS_AREAS.map(f => (
                 <button key={f.key}
-                  className={`wk-focus-btn${focusArea === f.key ? ' active' : ''}`}
+                  className={`wk-equip-btn${focusArea === f.key ? ' active' : ''}${f.key === 'mix' ? ' wk-mix-btn' : ''}`}
                   onClick={() => setFocusArea(f.key)}>
-                  {f.label}
+                  <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={f.icon} /></svg>
+                  <span>{f.label}</span>
                 </button>
               ))}
             </div>
