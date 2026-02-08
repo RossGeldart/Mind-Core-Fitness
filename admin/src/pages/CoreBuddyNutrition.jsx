@@ -13,6 +13,21 @@ function getTodayKey() {
   return new Date().toISOString().split('T')[0];
 }
 
+const MEALS = [
+  { key: 'breakfast', label: 'Breakfast', icon: '🌅' },
+  { key: 'lunch', label: 'Lunch', icon: '☀️' },
+  { key: 'dinner', label: 'Dinner', icon: '🌙' },
+  { key: 'snacks', label: 'Snacks', icon: '🍎' },
+];
+
+function getDefaultMeal() {
+  const h = new Date().getHours();
+  if (h < 11) return 'breakfast';
+  if (h < 14) return 'lunch';
+  if (h < 17) return 'snacks';
+  return 'dinner';
+}
+
 export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -41,6 +56,9 @@ export default function CoreBuddyNutrition() {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() };
   });
+
+  // Meal selector
+  const [selectedMeal, setSelectedMeal] = useState(getDefaultMeal);
 
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
@@ -235,7 +253,7 @@ export default function CoreBuddyNutrition() {
 
   // ==================== FOOD LOGGING ====================
   const addFoodEntry = (entry) => {
-    const newEntries = [...todayLog.entries, { ...entry, id: Date.now(), addedAt: new Date().toISOString() }];
+    const newEntries = [...todayLog.entries, { ...entry, meal: selectedMeal, id: Date.now(), addedAt: new Date().toISOString() }];
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
@@ -648,21 +666,32 @@ export default function CoreBuddyNutrition() {
           {renderMacroRing('Calories', 'Calories', totals.calories, targets.calories, 'ring-cals')}
         </div>
 
-        {/* Add Food Buttons (today only) */}
-        {isToday && <div className="nut-add-buttons">
-          <button className="nut-add-btn nut-add-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-            <span>Scan</span>
-          </button>
-          <button className="nut-add-btn nut-add-search" onClick={() => { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <span>Search</span>
-          </button>
-          <button className="nut-add-btn nut-add-manual" onClick={() => { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>Manual</span>
-          </button>
-        </div>}
+        {/* Meal Selector + Add Food (today only) */}
+        {isToday && <>
+          <div className="nut-meal-selector">
+            {MEALS.map(m => (
+              <button key={m.key} className={`nut-meal-pill${selectedMeal === m.key ? ' active' : ''}`}
+                onClick={() => setSelectedMeal(m.key)}>
+                <span className="nut-meal-icon">{m.icon}</span>
+                <span>{m.label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="nut-add-buttons">
+            <button className="nut-add-btn nut-add-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <span>Scan</span>
+            </button>
+            <button className="nut-add-btn nut-add-search" onClick={() => { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Search</span>
+            </button>
+            <button className="nut-add-btn nut-add-manual" onClick={() => { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Manual</span>
+            </button>
+          </div>
+        </>}
 
         {/* Water Tracker (today only) */}
         {isToday && (
@@ -748,42 +777,59 @@ export default function CoreBuddyNutrition() {
           </div>
         )}
 
-        {/* Food Log */}
+        {/* Meal Sections */}
         <div className="nut-log-section">
-          <h3>{isToday ? "Today's Log" : 'Log'}</h3>
           {todayLog.entries.length === 0 ? (
             <div className="nut-log-empty">
               <p>{isToday ? 'No food logged yet today. Add your first meal above!' : 'No food logged on this day.'}</p>
             </div>
           ) : (
-            <div className="nut-log-list">
-              {todayLog.entries.map(entry => (
-                <div key={entry.id} className="nut-log-item">
-                  <div className="nut-log-item-info">
-                    <span className="nut-log-item-name">{entry.name}</span>
-                    {entry.serving && <span className="nut-log-item-serving">{entry.serving}</span>}
+            <div className="nut-meals-list">
+              {MEALS.map(m => {
+                const items = todayLog.entries.filter(e => (e.meal || 'snacks') === m.key);
+                if (items.length === 0) return null;
+                const mealTotals = items.reduce((acc, e) => ({
+                  protein: acc.protein + (e.protein || 0),
+                  carbs: acc.carbs + (e.carbs || 0),
+                  fats: acc.fats + (e.fats || 0),
+                  calories: acc.calories + (e.calories || 0)
+                }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+                return (
+                  <div key={m.key} className="nut-meal-card">
+                    <div className="nut-meal-card-header">
+                      <span className="nut-meal-card-icon">{m.icon}</span>
+                      <span className="nut-meal-card-title">{m.label}</span>
+                      <span className="nut-meal-card-cal">{mealTotals.calories} cal</span>
+                    </div>
+                    <div className="nut-log-list">
+                      {items.map(entry => (
+                        <div key={entry.id} className="nut-log-item">
+                          <div className="nut-log-item-info">
+                            <span className="nut-log-item-name">{entry.name}</span>
+                            {entry.serving && <span className="nut-log-item-serving">{entry.serving}</span>}
+                          </div>
+                          <div className="nut-log-item-macros">
+                            <span className="nut-macro-p">{entry.protein}p</span>
+                            <span className="nut-macro-c">{entry.carbs}c</span>
+                            <span className="nut-macro-f">{entry.fats}f</span>
+                            <span className="nut-macro-cal">{entry.calories}</span>
+                          </div>
+                          {isToday && (
+                            <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="nut-meal-card-totals">
+                      <span className="nut-macro-p">{mealTotals.protein}g P</span>
+                      <span className="nut-macro-c">{mealTotals.carbs}g C</span>
+                      <span className="nut-macro-f">{mealTotals.fats}g F</span>
+                    </div>
                   </div>
-                  <div className="nut-log-item-macros">
-                    <span className="nut-macro-p">{entry.protein}p</span>
-                    <span className="nut-macro-c">{entry.carbs}c</span>
-                    <span className="nut-macro-f">{entry.fats}f</span>
-                    <span className="nut-macro-cal">{entry.calories}</span>
-                  </div>
-                  {isToday && (
-                    <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-          {!isToday && todayLog.entries.length > 0 && (
-            <div className="nut-log-summary">
-              <span className="nut-macro-p">{totals.protein}g P</span>
-              <span className="nut-macro-c">{totals.carbs}g C</span>
-              <span className="nut-macro-f">{totals.fats}g F</span>
-              <span className="nut-macro-cal">{totals.calories} cal</span>
+                );
+              })}
             </div>
           )}
         </div>

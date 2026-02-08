@@ -444,6 +444,109 @@
   margin-top: 4px;
 }
 
+/* ==================== MEAL SELECTOR ==================== */
+.nut-meal-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.3s ease-out 0.05s backwards;
+}
+
+.nut-meal-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.nut-meal-pill .nut-meal-icon {
+  font-size: 0.85rem;
+}
+
+.nut-meal-pill.active {
+  border-color: var(--color-primary);
+  background: rgba(153, 49, 60, 0.08);
+  color: var(--color-primary);
+}
+
+/* ==================== MEAL CARDS ==================== */
+.nut-meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nut-meal-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.nut-meal-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nut-meal-card-icon {
+  font-size: 1rem;
+}
+
+.nut-meal-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.nut-meal-card-cal {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.nut-meal-card .nut-log-list {
+  padding: 0;
+  gap: 0;
+}
+
+.nut-meal-card .nut-log-item {
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 16px;
+}
+
+.nut-meal-card .nut-log-item:last-child {
+  border-bottom: none;
+}
+
+.nut-meal-card-totals {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
 /* ==================== ADD FOOD BUTTONS ==================== */
 .nut-add-buttons {
   display: grid;
