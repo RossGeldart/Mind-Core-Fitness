@@ -808,6 +808,60 @@
   50% { top: 75%; opacity: 1; }
 }
 
+/* Detected overlay */
+.nut-scan-detected-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: fadeIn 0.3s ease-out;
+  border-radius: 12px;
+}
+
+.nut-scan-detected-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.nut-scan-detected-ring svg {
+  width: 100%;
+  height: 100%;
+}
+
+.nut-scan-detected-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #4caf50;
+}
+
+.nut-scan-detected-code {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  color: #fff;
+  letter-spacing: 2px;
+  margin: 0 0 4px 0;
+}
+
+.nut-scan-detected-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4caf50;
+  margin: 0;
+}
+
 .nut-scan-start-btn {
   display: flex;
   align-items: center;
