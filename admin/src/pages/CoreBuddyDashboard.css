@@ -404,8 +404,8 @@
 
 .cb-mini-ring {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,10 +428,22 @@
   color: var(--text-secondary);
 }
 
-.cb-ring-protein { color: #4caf50; }
-.cb-ring-carbs { color: #2196f3; }
-.cb-ring-fats { color: #ff9800; }
-.cb-ring-cals { color: var(--color-primary); }
+/* Tick colours per mini ring */
+.cb-ring-protein .cb-tick-filled { stroke: #4caf50; }
+.cb-ring-protein .cb-tick-empty { stroke: rgba(76, 175, 80, 0.15); }
+.cb-ring-protein span { color: #4caf50; }
+
+.cb-ring-carbs .cb-tick-filled { stroke: #2196f3; }
+.cb-ring-carbs .cb-tick-empty { stroke: rgba(33, 150, 243, 0.15); }
+.cb-ring-carbs span { color: #2196f3; }
+
+.cb-ring-fats .cb-tick-filled { stroke: #ff9800; }
+.cb-ring-fats .cb-tick-empty { stroke: rgba(255, 152, 0, 0.15); }
+.cb-ring-fats span { color: #ff9800; }
+
+.cb-ring-cals .cb-tick-filled { stroke: var(--color-primary); }
+.cb-ring-cals .cb-tick-empty { stroke: rgba(153, 49, 60, 0.15); }
+.cb-ring-cals span { color: var(--color-primary); }
 
 /* Week Dots Preview */
 .cb-week-dots {
