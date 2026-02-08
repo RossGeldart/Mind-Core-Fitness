@@ -53,7 +53,7 @@ export default function ClientDashboard() {
   const [fabOpen, setFabOpen] = useState(false);
 
   // Achievements
-  const [achievementCount, setAchievementCount] = useState(0);
+  const [achievements, setAchievements] = useState([]);
 
   // Progress ring animation state
   const [animateRing, setAnimateRing] = useState(false);
@@ -254,7 +254,7 @@ export default function ClientDashboard() {
       });
       setNotifications(recentNotifications);
 
-      // Fetch achievements count
+      // Fetch achievements
       const achQ = query(
         collection(db, 'achievements'),
         where('clientId', '==', clientData.id)
@@ -262,7 +262,7 @@ export default function ClientDashboard() {
       const achSnapshot = await getDocs(achQ);
       if (!achSnapshot.empty) {
         const badges = achSnapshot.docs[0].data().badges || [];
-        setAchievementCount(badges.length);
+        setAchievements(badges);
       }
 
       // Fetch daily quote
@@ -767,16 +767,30 @@ export default function ClientDashboard() {
           </button>
         </div>
 
-        {achievementCount > 0 && (
-          <div className="achievements-summary" onClick={() => navigate('/client/personal-bests')}>
-            <div className="achievements-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        {achievements.length > 0 && (
+          <div className="achievements-card">
+            <div className="achievements-card-header">
+              <div className="achievements-card-title">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span>Targets Achieved</span>
+              </div>
+              <span className="achievements-card-count">{achievements.length}</span>
             </div>
-            <div className="achievements-text">
-              <span className="achievements-count">{achievementCount}</span>
-              <span className="achievements-label">{achievementCount === 1 ? 'Target Achieved' : 'Targets Achieved'}</span>
+            <div className="achievements-card-list">
+              {[...achievements].reverse().slice(0, 3).map((badge, i) => (
+                <div key={i} className="achievements-card-item">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span className="achievements-card-label">{badge.label}</span>
+                  <span className="achievements-card-date">{badge.achievedMonth}</span>
+                </div>
+              ))}
             </div>
-            <svg className="achievements-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+            {achievements.length > 3 && (
+              <button className="achievements-card-viewall" onClick={() => navigate('/client/personal-bests')}>
+                View all {achievements.length} achievements
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+              </button>
+            )}
           </div>
         )}
 

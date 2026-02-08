@@ -302,7 +302,15 @@ export default function PersonalBests() {
   };
 
   const hasAchievement = (type, key) => {
-    return achievements.some(a => a.type === type && a.key === key);
+    if (type === 'strength') {
+      const target = targets[key];
+      if (!target || !target.targetValue) return false;
+      return achievements.some(a => a.type === 'strength' && a.key === key && a.targetValue === target.targetValue);
+    } else {
+      const mTarget = metricTargets[key];
+      if (!mTarget || !mTarget.targetValue) return false;
+      return achievements.some(a => a.type === 'metric' && a.key === key && a.targetValue === mTarget.targetValue);
+    }
   };
 
   const handleSaveBenchmarks = async () => {
@@ -1063,6 +1071,33 @@ export default function PersonalBests() {
               </div>
             ) : (
               <>
+                {/* Achievements Wall */}
+                {achievements.length > 0 && (
+                  <div className="pb-achievements-wall">
+                    <h4 className="pb-achievements-wall-title">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      Targets Achieved
+                    </h4>
+                    <div className="pb-achievements-list">
+                      {[...achievements].reverse().map((badge, i) => (
+                        <div key={i} className="pb-achievement-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                          <div className="pb-achievement-star">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                          </div>
+                          <div className="pb-achievement-info">
+                            <span className="pb-achievement-label">{badge.label}</span>
+                            <span className="pb-achievement-date">{formatMonthLabel(badge.achievedMonth)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Compare toggle */}
                 <div className="pb-history-controls">
                   <button
