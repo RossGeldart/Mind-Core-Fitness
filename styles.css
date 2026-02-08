@@ -505,7 +505,7 @@ body {
 
 /* Service Blocks - Full Width Sections */
 .service-block {
-    padding: 80px 20px 0;
+    padding: 80px 20px 80px;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -608,10 +608,10 @@ body {
     list-style: none;
     padding: 0;
     margin: 0 auto 28px;
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .service-features li {
@@ -1472,17 +1472,11 @@ body {
 
     /* Service Blocks Tablet */
     .service-block {
-        padding: 60px 16px 0;
+        padding: 60px 16px 60px;
     }
 
     .service-text {
         padding-bottom: 32px;
-    }
-
-    .service-features {
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
     }
 
     .quick-links {
@@ -1543,7 +1537,7 @@ body {
 
     /* Service Blocks Mobile */
     .service-block {
-        padding: 50px 16px 0;
+        padding: 50px 16px 50px;
     }
 
     .service-text {
