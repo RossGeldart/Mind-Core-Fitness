@@ -151,7 +151,7 @@ export default function CoreBuddyDashboard() {
           {/* 1. Nutrition / Macros */}
           <button
             className="cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn"
-            onClick={(e) => { createRipple(e); showToast('Nutrition tracking coming soon!', 'info'); }}
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
           >
             <div className="cb-card-top-row">
               <div className="cb-card-icon cb-icon-nutrition">
