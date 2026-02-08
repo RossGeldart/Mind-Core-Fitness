@@ -226,20 +226,25 @@ export default function CoreBuddyNutrition() {
 
   const saveTargets = async () => {
     if (!calcResults) return;
-    const newTargets = {
-      clientId: clientData.id,
-      calories: calcResults.calories,
-      protein: calcResults.protein,
-      carbs: calcResults.carbs,
-      fats: calcResults.fats,
-      waterGoal: 8,
-      goal: formData.goal,
-      updatedAt: Timestamp.now()
-    };
-    await setDoc(doc(db, 'nutritionTargets', clientData.id), newTargets);
-    setTargets(newTargets);
-    setView('dashboard');
-    showToast('Macro targets saved!', 'success');
+    try {
+      const newTargets = {
+        clientId: clientData.id,
+        calories: calcResults.calories,
+        protein: calcResults.protein,
+        carbs: calcResults.carbs,
+        fats: calcResults.fats,
+        waterGoal: 8,
+        goal: formData.goal,
+        updatedAt: Timestamp.now()
+      };
+      await setDoc(doc(db, 'nutritionTargets', clientData.id), newTargets);
+      setTargets(newTargets);
+      setView('dashboard');
+      showToast('Macro targets saved!', 'success');
+    } catch (err) {
+      console.error('Error saving targets:', err);
+      showToast('Failed to save targets. Please try again.', 'error');
+    }
   };
 
   const isFormValid = () => {
@@ -629,6 +634,12 @@ export default function CoreBuddyNutrition() {
             </div>
           )}
         </main>
+
+        {toast && (
+          <div className={`toast-notification ${toast.type}`}>
+            {toast.message}
+          </div>
+        )}
       </div>
     );
   }
