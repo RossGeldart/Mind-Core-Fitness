@@ -21,7 +21,9 @@ export default function Login() {
         navigate('/dashboard');
       } else if (isClient) {
         const type = clientData?.clientType;
-        if (type === 'circuit_vip' || type === 'circuit_dropin') {
+        if (type === 'core_buddy') {
+          navigate('/client/core-buddy');
+        } else if (type === 'circuit_vip' || type === 'circuit_dropin') {
           navigate('/client/circuit');
         } else {
           navigate('/client');

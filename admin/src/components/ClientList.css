@@ -557,6 +557,11 @@
   color: #42a5f5;
 }
 
+.client-type-badge.core-buddy {
+  background: rgba(153, 49, 60, 0.15);
+  color: var(--color-primary);
+}
+
 /* ====== Edit Form Type Toggle ====== */
 .edit-type-toggle {
   display: flex;
