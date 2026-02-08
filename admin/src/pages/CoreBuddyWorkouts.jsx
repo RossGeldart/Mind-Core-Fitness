@@ -494,7 +494,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== COUNTDOWN VIEW (3-2-1) ====================
   if (view === 'countdown') {
     return (
-      <div className="wk-page wk-page-center wk-page-dark" data-theme="dark">
+      <div className="wk-page wk-page-center wk-page-dark" data-theme={isDark ? 'dark' : 'light'}>
         <div className="wk-countdown-big">
           <span className="wk-countdown-num">{startCountdown}</span>
           <span className="wk-countdown-label">GET READY</span>
@@ -512,7 +512,7 @@ export default function CoreBuddyWorkouts() {
       : null;
 
     return (
-      <div className="wk-page wk-page-workout" data-theme="dark">
+      <div className="wk-page wk-page-workout" data-theme={isDark ? 'dark' : 'light'}>
         {/* Video */}
         <div className="wk-video-container">
           {phase === 'work' ? (
@@ -559,6 +559,9 @@ export default function CoreBuddyWorkouts() {
             ) : (
               <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
             )}
+          </button>
+          <button className="wk-ctrl-btn wk-ctrl-skip" onClick={() => { setTimeLeft(0); }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><rect x="15" y="4" width="4" height="16"/></svg>
           </button>
           <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView('menu'); }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
