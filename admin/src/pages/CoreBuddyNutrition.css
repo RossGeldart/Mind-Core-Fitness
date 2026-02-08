@@ -763,15 +763,32 @@
   overflow: hidden;
   margin-bottom: 16px;
   background: #000;
+  min-height: 250px;
 }
 
+/* Quagga2 injects video + canvas */
 .nut-scanner-view {
   width: 100%;
+  position: relative;
 }
 
-/* Hide the default html5-qrcode UI elements */
-.nut-scanner-view #qr-shaded-region {
-  border-color: var(--color-primary) !important;
+.nut-scanner-view video {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+.nut-scanner-view canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hide the Quagga2 debug canvas (drawingBuffer) */
+.nut-scanner-view canvas.drawingBuffer {
+  display: none;
 }
 
 .nut-scan-line {
@@ -783,6 +800,7 @@
   box-shadow: 0 0 8px rgba(153, 49, 60, 0.8), 0 0 20px rgba(153, 49, 60, 0.4);
   z-index: 10;
   animation: scanLine 2s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @keyframes scanLine {
