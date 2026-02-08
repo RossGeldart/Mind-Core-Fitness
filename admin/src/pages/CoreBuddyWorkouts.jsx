@@ -859,6 +859,19 @@ export default function CoreBuddyWorkouts() {
           )}
         </div>
 
+        {/* Spotify Player */}
+        <div className="wk-spotify">
+          <iframe
+            src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO3FJyYF?utm_source=generator&theme=0"
+            width="100%"
+            height="80"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title="Spotify Playlist"
+          />
+        </div>
+
         {/* Exercise info */}
         <div className="wk-exercise-info">
           <span className="wk-exercise-counter">{currentExIndex + 1} / {workout.length}</span>
