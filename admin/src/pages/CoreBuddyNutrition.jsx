@@ -39,6 +39,8 @@ export default function CoreBuddyNutrition() {
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
   const [scannerActive, setScannerActive] = useState(false);
+  const [manualBarcode, setManualBarcode] = useState('');
+  const [barcodeLooking, setBarcodeLooking] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -238,6 +240,7 @@ export default function CoreBuddyNutrition() {
   };
 
   const fetchProductByBarcode = async (barcode) => {
+    setBarcodeLooking(true);
     try {
       const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
       const data = await res.json();
@@ -256,13 +259,15 @@ export default function CoreBuddyNutrition() {
           per100g: true
         });
         setServingMultiplier(1);
+        setManualBarcode('');
       } else {
         showToast('Product not found. Try manual entry.', 'error');
       }
     } catch (err) {
       console.error('Barcode lookup error:', err);
-      showToast('Failed to look up product', 'error');
+      showToast('Failed to look up product. Check your connection.', 'error');
     }
+    setBarcodeLooking(false);
   };
 
   // ==================== FOOD SEARCH ====================
@@ -632,6 +637,20 @@ export default function CoreBuddyNutrition() {
                   </button>
                 )}
                 {scannerActive && <p className="nut-scan-hint">Point camera at barcode...</p>}
+
+                <div className="nut-barcode-divider">
+                  <span>or enter barcode manually</span>
+                </div>
+                <div className="nut-barcode-manual">
+                  <input type="text" inputMode="numeric" value={manualBarcode}
+                    onChange={e => setManualBarcode(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && manualBarcode.trim() && fetchProductByBarcode(manualBarcode.trim())}
+                    placeholder="Enter barcode number" />
+                  <button onClick={() => manualBarcode.trim() && fetchProductByBarcode(manualBarcode.trim())}
+                    disabled={!manualBarcode.trim() || barcodeLooking}>
+                    {barcodeLooking ? '...' : 'Look Up'}
+                  </button>
+                </div>
               </div>
             )}
 

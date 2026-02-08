@@ -797,6 +797,69 @@
   50% { opacity: 0.5; }
 }
 
+/* Manual Barcode Entry */
+.nut-barcode-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+
+.nut-barcode-divider::before,
+.nut-barcode-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.nut-barcode-divider span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.nut-barcode-manual {
+  display: flex;
+  gap: 8px;
+}
+
+.nut-barcode-manual input {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.nut-barcode-manual input:focus {
+  border-color: var(--color-primary);
+}
+
+.nut-barcode-manual button {
+  padding: 12px 18px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.nut-barcode-manual button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Product Result */
 .nut-product-result {
   text-align: center;
