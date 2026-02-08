@@ -198,7 +198,7 @@ export default function CoreBuddyDashboard() {
           {/* 2. Workouts */}
           <button
             className="cb-feature-card cb-card-workouts ripple-btn"
-            onClick={(e) => { createRipple(e); showToast('Workouts coming soon!', 'info'); }}
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
             <div className="cb-card-icon cb-icon-workouts">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
