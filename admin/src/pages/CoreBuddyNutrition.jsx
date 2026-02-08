@@ -4,7 +4,7 @@ import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import Quagga from '@ericblade/quagga2';
 import './CoreBuddyNutrition.css';
 
 const TICK_COUNT = 60;
@@ -52,7 +52,7 @@ export default function CoreBuddyNutrition() {
   const [toast, setToast] = useState(null);
 
   const scannerRef = useRef(null);
-  const html5QrcodeRef = useRef(null);
+  const quaggaRunning = useRef(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -207,56 +207,75 @@ export default function CoreBuddyNutrition() {
     saveLog(newLog);
   };
 
-  // ==================== BARCODE SCANNER ====================
-  const BARCODE_FORMATS = [
-    Html5QrcodeSupportedFormats.EAN_13,
-    Html5QrcodeSupportedFormats.EAN_8,
-    Html5QrcodeSupportedFormats.UPC_A,
-    Html5QrcodeSupportedFormats.UPC_E,
-    Html5QrcodeSupportedFormats.CODE_128,
-    Html5QrcodeSupportedFormats.CODE_39,
-    Html5QrcodeSupportedFormats.ITF,
-  ];
-
-  const startScanner = async () => {
+  // ==================== BARCODE SCANNER (Quagga2) ====================
+  const startScanner = () => {
     setScannerActive(true);
-    try {
-      const html5Qrcode = new Html5Qrcode('barcode-reader', {
-        formatsToSupport: BARCODE_FORMATS,
-        verbose: false,
-      });
-      html5QrcodeRef.current = html5Qrcode;
-      await html5Qrcode.start(
-        { facingMode: 'environment' },
-        {
-          fps: 15,
-          qrbox: (viewfinderWidth, viewfinderHeight) => {
-            const w = Math.min(viewfinderWidth * 0.85, 320);
-            const h = Math.min(viewfinderHeight * 0.35, 140);
-            return { width: Math.round(w), height: Math.round(h) };
-          },
-          aspectRatio: 1.0,
-          disableFlip: false,
-        },
-        async (decodedText) => {
-          await html5Qrcode.stop();
-          html5QrcodeRef.current = null;
-          setScannerActive(false);
-          fetchProductByBarcode(decodedText);
-        },
-        () => {}
-      );
-    } catch (err) {
-      console.error('Scanner error:', err);
+    const target = document.querySelector('#barcode-reader');
+    if (!target) {
       setScannerActive(false);
-      showToast('Could not access camera. Check permissions.', 'error');
+      showToast('Scanner container not found.', 'error');
+      return;
     }
+
+    Quagga.init({
+      inputStream: {
+        type: 'LiveStream',
+        target,
+        constraints: {
+          facingMode: 'environment',
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+        },
+      },
+      locator: {
+        patchSize: 'medium',
+        halfSample: true,
+      },
+      numOfWorkers: navigator.hardwareConcurrency || 2,
+      decoder: {
+        readers: [
+          'ean_reader',
+          'ean_8_reader',
+          'upc_reader',
+          'upc_e_reader',
+          'code_128_reader',
+          'code_39_reader',
+        ],
+      },
+      locate: true,
+    }, (err) => {
+      if (err) {
+        console.error('Quagga init error:', err);
+        setScannerActive(false);
+        showToast('Could not access camera. Check permissions.', 'error');
+        return;
+      }
+      Quagga.start();
+      quaggaRunning.current = true;
+    });
+
+    Quagga.onDetected((result) => {
+      // Confidence check - only accept high-confidence reads
+      const errors = result.codeResult.decodedCodes
+        ?.filter(d => d.error !== undefined)
+        ?.map(d => d.error) || [];
+      const avgError = errors.length > 0
+        ? errors.reduce((a, b) => a + b, 0) / errors.length
+        : 1;
+
+      if (avgError < 0.15) {
+        const code = result.codeResult.code;
+        stopScanner();
+        fetchProductByBarcode(code);
+      }
+    });
   };
 
-  const stopScanner = async () => {
-    if (html5QrcodeRef.current) {
-      try { await html5QrcodeRef.current.stop(); } catch (e) {}
-      html5QrcodeRef.current = null;
+  const stopScanner = () => {
+    if (quaggaRunning.current) {
+      Quagga.stop();
+      Quagga.offDetected();
+      quaggaRunning.current = false;
     }
     setScannerActive(false);
   };
@@ -377,8 +396,9 @@ export default function CoreBuddyNutrition() {
   // Cleanup scanner on unmount
   useEffect(() => {
     return () => {
-      if (html5QrcodeRef.current) {
-        try { html5QrcodeRef.current.stop(); } catch (e) {}
+      if (quaggaRunning.current) {
+        try { Quagga.stop(); Quagga.offDetected(); } catch (e) {}
+        quaggaRunning.current = false;
       }
     };
   }, []);
