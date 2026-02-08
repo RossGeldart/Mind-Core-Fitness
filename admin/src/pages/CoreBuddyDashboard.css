@@ -282,14 +282,16 @@
 /* Cards with preview rows stack vertically */
 .cb-card-has-preview {
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 0;
+  text-align: center;
 }
 
 .cb-card-top-row {
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
 }
 
 .cb-card-top-row .cb-card-content {
@@ -445,38 +447,44 @@
 .cb-ring-cals .cb-tick-empty { stroke: rgba(153, 49, 60, 0.15); }
 .cb-ring-cals span { color: var(--color-primary); }
 
-/* Week Dots Preview */
-.cb-week-dots {
+/* Week Rings Preview */
+.cb-week-rings {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
-.cb-week-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border-color);
+.cb-week-ring {
+  position: relative;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
 }
 
-.cb-week-dot span {
+.cb-week-ring svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cb-week-ring span {
+  position: relative;
+  z-index: 1;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.5rem;
-  font-weight: 600;
+  font-size: 0.45rem;
+  font-weight: 700;
   color: var(--text-tertiary);
 }
 
-.cb-week-dot.active {
-  border-color: var(--color-primary);
-  background: rgba(153, 49, 60, 0.1);
+.cb-week-ring-active span {
+  color: #ff9800;
 }
 
-.cb-week-dot.active span {
-  color: var(--color-primary);
-}
+.cb-week-tick-filled { stroke: #ff9800; }
+.cb-week-tick-empty { stroke: rgba(255, 152, 0, 0.12); }
 
 /* Coming Soon Badge */
 .cb-coming-soon {

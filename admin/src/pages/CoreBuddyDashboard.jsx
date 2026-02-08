@@ -246,12 +246,29 @@ export default function CoreBuddyDashboard() {
               <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>
             <div className="cb-card-preview-row">
-              <div className="cb-week-dots">
-                {['M','T','W','T','F','S','S'].map((day, i) => (
-                  <div key={i} className={`cb-week-dot ${i < 3 ? 'active' : ''}`}>
-                    <span>{day}</span>
-                  </div>
-                ))}
+              <div className="cb-week-rings">
+                {['M','T','W','T','F','S','S'].map((day, i) => {
+                  const filled = i < 3 ? [55, 42, 30][i] : 0;
+                  return (
+                    <div key={i} className={`cb-week-ring ${i < 3 ? 'cb-week-ring-active' : ''}`}>
+                      <svg viewBox="0 0 100 100">
+                        {[...Array(60)].map((_, t) => {
+                          const angle = (t * 6 - 90) * (Math.PI / 180);
+                          const x1 = 50 + 38 * Math.cos(angle);
+                          const y1 = 50 + 38 * Math.sin(angle);
+                          const x2 = 50 + 46 * Math.cos(angle);
+                          const y2 = 50 + 46 * Math.sin(angle);
+                          return (
+                            <line key={t} x1={x1} y1={y1} x2={x2} y2={y2}
+                              className={t < filled ? 'cb-week-tick-filled' : 'cb-week-tick-empty'}
+                              strokeWidth={t % 5 === 0 ? '3' : '2'} />
+                          );
+                        })}
+                      </svg>
+                      <span>{day}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <p className="cb-card-desc">Weekly streaks and habit tracking</p>
