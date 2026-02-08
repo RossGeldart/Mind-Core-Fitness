@@ -142,7 +142,8 @@ export default function ClientList() {
       endDate: formatDateForInput(client.endDate),
       status: client.status,
       hasPortalAccess: !!client.uid,
-      circuitAccess: !!client.circuitAccess
+      circuitAccess: !!client.circuitAccess,
+      coreBuddyAccess: !!client.coreBuddyAccess
     });
   };
 
@@ -208,6 +209,7 @@ export default function ClientList() {
         email: editForm.email.trim().toLowerCase(),
         clientType: editForm.clientType,
         status: editForm.status,
+        coreBuddyAccess: editForm.coreBuddyAccess,
       };
 
       if (isBlock) {
@@ -288,6 +290,7 @@ export default function ClientList() {
   const getTypeLabel = (client) => {
     if (client.clientType === 'circuit_vip') return 'VIP';
     if (client.clientType === 'circuit_dropin') return 'Drop-in';
+    if (client.clientType === 'core_buddy') return 'Core Buddy';
     return 'Block';
   };
 
@@ -297,11 +300,14 @@ export default function ClientList() {
   );
 
   const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
-  const blockClients = searched.filter(c => !isCircuit(c));
+  const isCoreBuddy = (c) => c.clientType === 'core_buddy';
+  const blockClients = searched.filter(c => !isCircuit(c) && !isCoreBuddy(c));
   const circuitClients = searched.filter(c => isCircuit(c));
+  const coreBuddyClients = searched.filter(c => isCoreBuddy(c));
 
   const filtered = typeFilter === 'block' ? blockClients
     : typeFilter === 'circuit' ? circuitClients
+    : typeFilter === 'core_buddy' ? coreBuddyClients
     : searched;
 
   const toggleExpand = (clientId) => {
@@ -328,8 +334,8 @@ export default function ClientList() {
                 </div>
               </div>
               <div className="client-name-row-right">
-                {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin') && (
-                  <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : 'dropin'}`}>
+                {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin' || client.clientType === 'core_buddy') && (
+                  <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : client.clientType === 'core_buddy' ? 'core-buddy' : 'dropin'}`}>
                     {getTypeLabel(client)}
                   </span>
                 )}
@@ -351,6 +357,7 @@ export default function ClientList() {
                         { value: 'block', label: 'Block' },
                         { value: 'circuit_vip', label: 'VIP' },
                         { value: 'circuit_dropin', label: 'Drop-in' },
+                        { value: 'core_buddy', label: 'Core Buddy' },
                       ].map(t => (
                         <button
                           key={t.value}
@@ -401,6 +408,15 @@ export default function ClientList() {
                         <label className="circuit-access-toggle">
                           <input type="checkbox" checked={editForm.circuitAccess} onChange={(e) => setEditForm(prev => ({ ...prev, circuitAccess: e.target.checked }))} />
                           <span>Circuit Class Access</span>
+                        </label>
+                      </div>
+                    )}
+
+                    {editForm.clientType !== 'core_buddy' && (
+                      <div className="edit-row circuit-row">
+                        <label className="circuit-access-toggle">
+                          <input type="checkbox" checked={editForm.coreBuddyAccess} onChange={(e) => setEditForm(prev => ({ ...prev, coreBuddyAccess: e.target.checked }))} />
+                          <span>Core Buddy Access</span>
                         </label>
                       </div>
                     )}
@@ -503,6 +519,7 @@ export default function ClientList() {
           { value: 'all', label: 'All', count: searched.length },
           { value: 'block', label: 'Block', count: blockClients.length },
           { value: 'circuit', label: 'Circuit', count: circuitClients.length },
+          { value: 'core_buddy', label: 'Core Buddy', count: coreBuddyClients.length },
         ].map(tab => (
           <button
             key={tab.value}
