@@ -33,8 +33,14 @@ export default function CoreBuddyNutrition() {
   const [calcResults, setCalcResults] = useState(null);
 
   // Daily log
+  const [selectedDate, setSelectedDate] = useState(getTodayKey());
   const [todayLog, setTodayLog] = useState({ entries: [], water: 0 });
   const [totals, setTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
 
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
@@ -65,7 +71,7 @@ export default function CoreBuddyNutrition() {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
 
-  // Load targets + today's log
+  // Load targets on mount
   useEffect(() => {
     if (!clientData?.id) return;
     const load = async () => {
@@ -77,13 +83,6 @@ export default function CoreBuddyNutrition() {
         } else {
           setView('setup');
         }
-
-        const todayKey = getTodayKey();
-        const logDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${todayKey}`));
-        if (logDoc.exists()) {
-          const data = logDoc.data();
-          setTodayLog({ entries: data.entries || [], water: data.water || 0 });
-        }
       } catch (err) {
         console.error('Error loading nutrition data:', err);
         setView('setup');
@@ -91,6 +90,26 @@ export default function CoreBuddyNutrition() {
     };
     load();
   }, [clientData?.id]);
+
+  // Load log when selectedDate changes
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const loadLog = async () => {
+      try {
+        const logDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`));
+        if (logDoc.exists()) {
+          const data = logDoc.data();
+          setTodayLog({ entries: data.entries || [], water: data.water || 0 });
+        } else {
+          setTodayLog({ entries: [], water: 0 });
+        }
+      } catch (err) {
+        console.error('Error loading log:', err);
+        setTodayLog({ entries: [], water: 0 });
+      }
+    };
+    loadLog();
+  }, [clientData?.id, selectedDate]);
 
   // Recalc totals when entries change
   useEffect(() => {
@@ -105,11 +124,10 @@ export default function CoreBuddyNutrition() {
 
   // Save log to Firestore
   const saveLog = async (newLog) => {
-    const todayKey = getTodayKey();
     try {
-      await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${todayKey}`), {
+      await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`), {
         clientId: clientData.id,
-        date: todayKey,
+        date: selectedDate,
         entries: newLog.entries,
         water: newLog.water,
         updatedAt: Timestamp.now()
@@ -118,6 +136,33 @@ export default function CoreBuddyNutrition() {
       console.error('Error saving nutrition log:', err);
     }
   };
+
+  const isToday = selectedDate === getTodayKey();
+
+  // ==================== CALENDAR HELPERS ====================
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+
+  const formatDisplayDate = (dateStr) => {
+    if (dateStr === getTodayKey()) return 'Today';
+    const d = new Date(dateStr + 'T12:00:00');
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (dateStr === yesterday.toISOString().split('T')[0]) return 'Yesterday';
+    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  };
+
+  const shiftDate = (days) => {
+    const d = new Date(selectedDate + 'T12:00:00');
+    d.setDate(d.getDate() + days);
+    const key = d.toISOString().split('T')[0];
+    if (key > getTodayKey()) return;
+    setSelectedDate(key);
+  };
+
+  const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   // ==================== MACRO CALCULATOR ====================
   const calculateMacros = () => {
@@ -603,8 +648,8 @@ export default function CoreBuddyNutrition() {
           {renderMacroRing('Calories', 'Calories', totals.calories, targets.calories, 'ring-cals')}
         </div>
 
-        {/* Add Food Buttons */}
-        <div className="nut-add-buttons">
+        {/* Add Food Buttons (today only) */}
+        {isToday && <div className="nut-add-buttons">
           <button className="nut-add-btn nut-add-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
             <span>Scan</span>
@@ -617,38 +662,98 @@ export default function CoreBuddyNutrition() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>Manual</span>
           </button>
+        </div>}
+
+        {/* Water Tracker (today only) */}
+        {isToday && (
+          <div className="nut-water-section">
+            <div className="nut-water-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+              </svg>
+              <span>Water</span>
+              <span className="nut-water-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</span>
+            </div>
+            <div className="nut-water-glasses">
+              {[...Array(targets?.waterGoal || 8)].map((_, i) => (
+                <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
+                  <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                  </svg>
+                </div>
+              ))}
+            </div>
+            <div className="nut-water-btns">
+              <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
+              <button onClick={addWater}>+</button>
+            </div>
+          </div>
+        )}
+
+        {/* Date Navigation */}
+        <div className="nut-date-nav">
+          <button className="nut-date-arrow" onClick={() => shiftDate(-1)} aria-label="Previous day">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button className="nut-date-label" onClick={() => { setCalendarOpen(!calendarOpen); setCalendarMonth({ year: new Date(selectedDate + 'T12:00:00').getFullYear(), month: new Date(selectedDate + 'T12:00:00').getMonth() }); }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>{formatDisplayDate(selectedDate)}</span>
+          </button>
+          <button className="nut-date-arrow" onClick={() => shiftDate(1)} disabled={selectedDate >= getTodayKey()} aria-label="Next day">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
 
-        {/* Water Tracker */}
-        <div className="nut-water-section">
-          <div className="nut-water-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            </svg>
-            <span>Water</span>
-            <span className="nut-water-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</span>
+        {/* Calendar Dropdown */}
+        {calendarOpen && (
+          <div className="nut-calendar">
+            <div className="nut-cal-header">
+              <button onClick={() => setCalendarMonth(p => {
+                let m = p.month - 1, y = p.year;
+                if (m < 0) { m = 11; y--; }
+                return { year: y, month: m };
+              })}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <span>{MONTH_NAMES[calendarMonth.month]} {calendarMonth.year}</span>
+              <button onClick={() => setCalendarMonth(p => {
+                let m = p.month + 1, y = p.year;
+                if (m > 11) { m = 0; y++; }
+                return { year: y, month: m };
+              })} disabled={calendarMonth.year === new Date().getFullYear() && calendarMonth.month >= new Date().getMonth()}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+            <div className="nut-cal-days-header">
+              {DAY_LABELS.map(d => <span key={d}>{d}</span>)}
+            </div>
+            <div className="nut-cal-grid">
+              {[...Array(getFirstDayOfMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => (
+                <span key={`e${i}`} />
+              ))}
+              {[...Array(getDaysInMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => {
+                const day = i + 1;
+                const dateKey = `${calendarMonth.year}-${String(calendarMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isFuture = dateKey > getTodayKey();
+                const isSelected = dateKey === selectedDate;
+                const isTodayDate = dateKey === getTodayKey();
+                return (
+                  <button key={day} className={`nut-cal-day${isSelected ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
+                    disabled={isFuture} onClick={() => { setSelectedDate(dateKey); setCalendarOpen(false); }}>
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="nut-water-glasses">
-            {[...Array(targets?.waterGoal || 8)].map((_, i) => (
-              <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
-                <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                </svg>
-              </div>
-            ))}
-          </div>
-          <div className="nut-water-btns">
-            <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
-            <button onClick={addWater}>+</button>
-          </div>
-        </div>
+        )}
 
-        {/* Today's Food Log */}
+        {/* Food Log */}
         <div className="nut-log-section">
-          <h3>Today's Log</h3>
+          <h3>{isToday ? "Today's Log" : 'Log'}</h3>
           {todayLog.entries.length === 0 ? (
             <div className="nut-log-empty">
-              <p>No food logged yet today. Add your first meal above!</p>
+              <p>{isToday ? 'No food logged yet today. Add your first meal above!' : 'No food logged on this day.'}</p>
             </div>
           ) : (
             <div className="nut-log-list">
@@ -664,11 +769,21 @@ export default function CoreBuddyNutrition() {
                     <span className="nut-macro-f">{entry.fats}f</span>
                     <span className="nut-macro-cal">{entry.calories}</span>
                   </div>
-                  <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
+                  {isToday && (
+                    <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  )}
                 </div>
               ))}
+            </div>
+          )}
+          {!isToday && todayLog.entries.length > 0 && (
+            <div className="nut-log-summary">
+              <span className="nut-macro-p">{totals.protein}g P</span>
+              <span className="nut-macro-c">{totals.carbs}g C</span>
+              <span className="nut-macro-f">{totals.fats}g F</span>
+              <span className="nut-macro-cal">{totals.calories} cal</span>
             </div>
           )}
         </div>
