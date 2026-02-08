@@ -562,12 +562,6 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
 
-          {totalCount > 0 && (
-            <div className="wk-menu-total">
-              <span className="wk-menu-total-num">{totalCount}</span>
-              <span className="wk-menu-total-label">total workouts completed</span>
-            </div>
-          )}
         </main>
         {toastEl}
       </div>
