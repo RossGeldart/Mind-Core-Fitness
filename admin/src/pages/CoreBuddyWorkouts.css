@@ -869,18 +869,15 @@
 
 /* Spotify Mini Player */
 .wk-spotify {
-  width: 100%;
   flex-shrink: 0;
-  background: #000;
-  border-radius: 0;
-  overflow: hidden;
+  padding: 10px 12px 0;
   line-height: 0;
 }
 
 .wk-spotify iframe {
   display: block;
   border: none;
-  border-radius: 0;
+  border-radius: 12px;
 }
 
 /* Video Container */
