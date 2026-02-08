@@ -15,6 +15,7 @@ import PersonalBests from './pages/PersonalBests';
 import CircuitDashboard from './pages/CircuitDashboard';
 import CircuitBooking from './pages/CircuitBooking';
 import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
+import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
 import './styles/theme.css';
 
 // Scroll to top on route change
@@ -66,6 +67,7 @@ function App() {
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
+            <Route path="/client/core-buddy/nutrition" element={<CoreBuddyNutrition />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

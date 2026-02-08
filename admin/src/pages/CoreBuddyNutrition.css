@@ -1,0 +1,1105 @@
+/* Core Buddy Nutrition */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardEntrance {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Page */
+.nut-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  padding-bottom: 40px;
+}
+
+.nut-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.nut-back-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.nut-back-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.nut-settings-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nut-settings-btn:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.1);
+}
+
+/* ==================== SETUP / CALCULATOR ==================== */
+.nut-setup-intro {
+  margin-bottom: 24px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.nut-setup-intro h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.nut-setup-intro p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.nut-calc-form {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  animation: cardEntrance 0.4s ease-out 0.1s backwards;
+}
+
+.nut-form-group {
+  margin-bottom: 18px;
+}
+
+.nut-form-group label {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.nut-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.nut-form-group input[type="number"],
+.nut-form-group input[type="text"],
+.nut-form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.nut-form-group input:focus,
+.nut-form-group select:focus {
+  border-color: var(--color-primary);
+}
+
+.nut-toggle-group {
+  display: flex;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.nut-toggle-group button {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-toggle-group button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.nut-input-unit {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nut-input-unit input {
+  flex: 1;
+  min-width: 0;
+}
+
+.nut-unit-toggle {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.nut-unit-toggle button {
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-unit-toggle button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.nut-height-imperial {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.nut-height-imperial input {
+  flex: 1;
+  min-width: 0;
+}
+
+.nut-goal-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.nut-goal-options button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-secondary);
+}
+
+.nut-goal-options button.active {
+  border-color: var(--color-primary);
+  background: rgba(153, 49, 60, 0.08);
+  color: var(--color-primary);
+}
+
+.nut-goal-icon {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.nut-goal-options button span:last-child {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.nut-deficit-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.nut-deficit-options button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 8px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-secondary);
+}
+
+.nut-deficit-options button.active {
+  border-color: var(--color-primary);
+  background: rgba(153, 49, 60, 0.08);
+  color: var(--color-primary);
+}
+
+.nut-deficit-options button strong {
+  font-size: 0.8rem;
+}
+
+.nut-deficit-options button span {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.nut-calc-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+}
+
+.nut-calc-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nut-calc-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+}
+
+/* Calculator Results */
+.nut-calc-results {
+  margin-top: 24px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  animation: cardEntrance 0.4s ease-out;
+}
+
+.nut-calc-results h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.nut-calc-rings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.nut-calc-info {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  margin-bottom: 16px;
+}
+
+.nut-calc-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.nut-calc-info-row span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nut-save-targets-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-save-targets-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+}
+
+/* ==================== MACRO RINGS ==================== */
+.nut-rings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.nut-ring-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nut-ring-svg {
+  width: 130px;
+  height: 130px;
+}
+
+/* Tick colours per ring type */
+.ring-protein .nut-tick-filled { stroke: #4caf50; }
+.ring-protein .nut-tick-empty { stroke: rgba(76, 175, 80, 0.15); }
+.ring-carbs .nut-tick-filled { stroke: #2196f3; }
+.ring-carbs .nut-tick-empty { stroke: rgba(33, 150, 243, 0.15); }
+.ring-fats .nut-tick-filled { stroke: #ff9800; }
+.ring-fats .nut-tick-empty { stroke: rgba(255, 152, 0, 0.15); }
+.ring-cals .nut-tick-filled { stroke: var(--color-primary); }
+.ring-cals .nut-tick-empty { stroke: rgba(153, 49, 60, 0.15); }
+
+.nut-ring-center {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nut-ring-value {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.nut-ring-target {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.nut-ring-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.ring-protein .nut-ring-label { color: #4caf50; }
+.ring-carbs .nut-ring-label { color: #2196f3; }
+.ring-fats .nut-ring-label { color: #ff9800; }
+.ring-cals .nut-ring-label { color: var(--color-primary); }
+
+.nut-ring-pct {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* ==================== ADD FOOD BUTTONS ==================== */
+.nut-add-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.4s ease-out 0.1s backwards;
+}
+
+.nut-add-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-secondary);
+}
+
+.nut-add-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nut-add-btn span {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.nut-add-scan svg { color: var(--color-primary); }
+.nut-add-search svg { color: #2196f3; }
+.nut-add-manual svg { color: #4caf50; }
+
+.nut-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(153, 49, 60, 0.2);
+}
+
+.nut-add-btn:active {
+  transform: translateY(0);
+}
+
+/* ==================== WATER TRACKER ==================== */
+.nut-water-section {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.4s ease-out 0.2s backwards;
+}
+
+.nut-water-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.nut-water-header svg {
+  width: 20px;
+  height: 20px;
+  color: #2196f3;
+}
+
+.nut-water-header span:first-of-type {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nut-water-count {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-left: auto;
+}
+
+.nut-water-glasses {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.nut-water-glass {
+  width: 28px;
+  height: 28px;
+  color: var(--border-color);
+  transition: all 0.3s;
+}
+
+.nut-water-glass.filled {
+  color: #2196f3;
+}
+
+.nut-water-glass svg {
+  width: 100%;
+  height: 100%;
+}
+
+.nut-water-btns {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.nut-water-btns button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nut-water-btns button:hover:not(:disabled) {
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.nut-water-btns button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ==================== FOOD LOG ==================== */
+.nut-log-section {
+  animation: fadeIn 0.4s ease-out 0.3s backwards;
+}
+
+.nut-log-section h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.nut-log-empty {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.nut-log-empty p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.nut-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nut-log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.nut-log-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nut-log-item-name {
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nut-log-item-serving {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.nut-log-item-macros {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.nut-macro-p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.nut-macro-c {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #2196f3;
+}
+
+.nut-macro-f {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.nut-macro-cal {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.nut-log-delete {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.nut-log-delete:hover {
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.08);
+}
+
+/* ==================== MODAL ==================== */
+.nut-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.nut-modal {
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.nut-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.nut-modal-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.nut-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Scanner */
+.nut-scan-area {
+  text-align: center;
+}
+
+.nut-scanner-view {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.nut-scan-start-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nut-scan-start-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nut-scan-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Product Result */
+.nut-product-result {
+  text-align: center;
+}
+
+.nut-product-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.nut-product-result h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.nut-product-brand {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0 0 12px 0;
+}
+
+.nut-product-per {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin: 0 0 8px 0;
+}
+
+.nut-product-macros {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+
+.nut-serving-adjust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.nut-serving-adjust label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.nut-serving-adjust input {
+  width: 80px;
+  padding: 8px 10px;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.nut-serving-adjust input:focus {
+  border-color: var(--color-primary);
+}
+
+.nut-product-total {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+}
+
+.nut-product-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.nut-btn-primary {
+  flex: 1;
+  padding: 12px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nut-btn-primary:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.nut-btn-secondary {
+  flex: 1;
+  padding: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-btn-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Search */
+.nut-search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.nut-search-bar input {
+  flex: 1;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.nut-search-bar input:focus {
+  border-color: var(--color-primary);
+}
+
+.nut-search-bar button {
+  padding: 12px 18px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nut-search-bar button:disabled {
+  opacity: 0.5;
+}
+
+.nut-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.nut-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.nut-search-item:hover {
+  border-color: var(--color-primary);
+}
+
+.nut-search-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.nut-search-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nut-search-item-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nut-search-item-brand {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.nut-search-item-macros {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.nut-search-empty {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  padding: 20px;
+}
+
+/* Manual Entry */
+.nut-manual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nut-manual-macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.nut-manual-macros .nut-form-group {
+  margin-bottom: 0;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (min-width: 400px) {
+  .nut-ring-svg {
+    width: 140px;
+    height: 140px;
+  }
+
+  .nut-ring-center {
+    width: 140px;
+    height: 140px;
+  }
+
+  .nut-ring-value {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .nut-rings-grid {
+    gap: 10px;
+  }
+
+  .nut-ring-svg {
+    width: 115px;
+    height: 115px;
+  }
+
+  .nut-ring-center {
+    width: 115px;
+    height: 115px;
+  }
+
+  .nut-ring-value {
+    font-size: 0.95rem;
+  }
+
+  .nut-ring-target {
+    font-size: 0.55rem;
+  }
+
+  .nut-goal-options,
+  .nut-deficit-options {
+    grid-template-columns: 1fr;
+  }
+}
