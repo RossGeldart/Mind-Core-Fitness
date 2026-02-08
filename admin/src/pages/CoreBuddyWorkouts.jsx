@@ -10,6 +10,19 @@ import './CoreBuddyWorkouts.css';
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
 
+const EQUIPMENT = [
+  { key: 'bodyweight', label: 'Bodyweight', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' },
+  { key: 'dumbbells', label: 'Dumbbells', icon: 'M6 5H3v14h3V5zm12 0h-3v14h3V5zm-9 3H7v8h2V8zm7 0h-2v8h2V8zm-5 0h-2v8h2V8z' },
+  { key: 'kettlebells', label: 'Kettlebells', icon: 'M12 2C9.24 2 7 4.24 7 7c0 1.1.36 2.12.97 2.95C6.76 11.08 6 12.96 6 15c0 3.87 2.69 7 6 7s6-3.13 6-7c0-2.04-.76-3.92-1.97-5.05.61-.83.97-1.85.97-2.95 0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z' },
+];
+
+const FOCUS_AREAS = [
+  { key: 'core', label: 'Core' },
+  { key: 'upper', label: 'Upper Body' },
+  { key: 'lower', label: 'Lower Body' },
+  { key: 'fullbody', label: 'Full Body' },
+];
+
 const LEVELS = [
   { key: 'beginner', label: 'Beginner', work: 30, rest: 30, desc: '30s work / 30s rest' },
   { key: 'intermediate', label: 'Intermediate', work: 40, rest: 20, desc: '40s work / 20s rest' },
@@ -36,6 +49,8 @@ export default function CoreBuddyWorkouts() {
   const [view, setView] = useState('menu');
 
   // Setup
+  const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
+  const [focusArea, setFocusArea] = useState('core');
   const [level, setLevel] = useState('intermediate');
   const [duration, setDuration] = useState(15);
 
@@ -167,11 +182,20 @@ export default function CoreBuddyWorkouts() {
     loadStats();
   }, [currentUser, view]);
 
+  // Build storage paths from equipment + focus selection
+  const getStoragePaths = () => {
+    // New structure: exercises/{equipment}/{focus}/
+    // Legacy fallback: core/ (for existing bodyweight core videos)
+    const paths = [];
+    for (const eq of selectedEquipment) {
+      paths.push(`exercises/${eq}/${focusArea}`);
+    }
+    return paths;
+  };
+
   // Load exercises from Firebase Storage
   const loadExercises = async () => {
-    if (exercisesRef.current.length > 0) return exercisesRef.current;
     if (loadingRef.current) {
-      // Wait for the in-progress load to finish
       while (loadingRef.current) {
         await new Promise(r => setTimeout(r, 200));
       }
@@ -180,16 +204,52 @@ export default function CoreBuddyWorkouts() {
     loadingRef.current = true;
     setLoadingExercises(true);
     try {
-      const coreRef = ref(storage, 'core');
-      const result = await listAll(coreRef);
-      if (result.items.length === 0) {
-        showToast('No exercises found in storage. Upload videos to core/ folder.', 'error');
+      const paths = getStoragePaths();
+      const allItems = [];
+
+      for (const path of paths) {
+        try {
+          const folderRef = ref(storage, path);
+          const result = await listAll(folderRef);
+          allItems.push(...result.items);
+        } catch (err) {
+          // Folder might not exist yet - that's OK, skip it
+          console.warn(`Folder ${path} not found, skipping.`);
+        }
+      }
+
+      // Legacy fallback: if bodyweight + core selected and no new-structure files found,
+      // try the old core/ folder
+      if (allItems.length === 0 && selectedEquipment.includes('bodyweight') && focusArea === 'core') {
+        try {
+          const legacyRef = ref(storage, 'core');
+          const legacyResult = await listAll(legacyRef);
+          allItems.push(...legacyResult.items);
+        } catch (err) {
+          console.warn('Legacy core/ folder not found either.');
+        }
+      }
+
+      if (allItems.length === 0) {
+        const eqLabel = selectedEquipment.map(e => EQUIPMENT.find(eq => eq.key === e)?.label).join(' + ');
+        const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label;
+        showToast(`No exercises found for ${eqLabel} / ${focusLabel}. Upload videos to Firebase Storage.`, 'error');
         loadingRef.current = false;
         setLoadingExercises(false);
         return [];
       }
+
+      // Deduplicate by file name (same exercise in multiple equipment folders)
+      const seen = new Set();
+      const uniqueItems = allItems.filter(item => {
+        const name = item.name.replace(/\.mp4$/i, '');
+        if (seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      });
+
       const exercises = await Promise.all(
-        result.items.map(async (item) => {
+        uniqueItems.map(async (item) => {
           const url = await getDownloadURL(item);
           const name = item.name.replace(/\.mp4$/i, '');
           return { name, videoUrl: url };
@@ -204,8 +264,6 @@ export default function CoreBuddyWorkouts() {
       console.error('Error loading exercises:', err);
       const msg = err.code === 'storage/unauthorized'
         ? 'Storage access denied. Check Firebase Storage rules allow read access.'
-        : err.code === 'storage/object-not-found'
-        ? 'core/ folder not found in Firebase Storage.'
         : `Failed to load exercises: ${err.message || err.code || 'Unknown error'}`;
       showToast(msg, 'error');
       loadingRef.current = false;
@@ -217,6 +275,8 @@ export default function CoreBuddyWorkouts() {
   // Generate random workout
   const generateWorkout = async () => {
     setView('spinning');
+    // Clear cache so new selections load fresh exercises
+    exercisesRef.current = [];
     const exercises = await loadExercises();
     if (exercises.length === 0) {
       setView('setup');
@@ -326,6 +386,8 @@ export default function CoreBuddyWorkouts() {
         clientId: currentUser.uid,
         level,
         duration,
+        equipment: selectedEquipment,
+        focus: focusArea,
         exerciseCount: workout.length,
         rounds,
         exercises: workout.map(e => e.name),
@@ -439,7 +501,7 @@ export default function CoreBuddyWorkouts() {
           <button className="nut-back-btn" onClick={() => navigate(-1)}>&larr; Back</button>
           <div className="wk-menu-cards">
             {/* Random Workout Card */}
-            <button className="wk-menu-card" onClick={() => { setView('setup'); loadExercises(); }}>
+            <button className="wk-menu-card" onClick={() => setView('setup')}>
               <div className="wk-menu-ring-wrap">
                 <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
                   {[...Array(TICK_COUNT)].map((_, i) => {
@@ -593,7 +655,42 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           <div className="wk-setup-section">
-            <h2>Select Level</h2>
+            <h2>Equipment</h2>
+            <div className="wk-equip-options">
+              {EQUIPMENT.map(eq => {
+                const isSelected = selectedEquipment.includes(eq.key);
+                return (
+                  <button key={eq.key}
+                    className={`wk-equip-btn${isSelected ? ' active' : ''}`}
+                    onClick={() => {
+                      setSelectedEquipment(prev => {
+                        if (isSelected && prev.length === 1) return prev; // Must keep at least one
+                        return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
+                      });
+                    }}>
+                    <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={eq.icon} /></svg>
+                    <span>{eq.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="wk-setup-section">
+            <h2>Focus Area</h2>
+            <div className="wk-focus-options">
+              {FOCUS_AREAS.map(f => (
+                <button key={f.key}
+                  className={`wk-focus-btn${focusArea === f.key ? ' active' : ''}`}
+                  onClick={() => setFocusArea(f.key)}>
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="wk-setup-section">
+            <h2>Level</h2>
             <div className="wk-level-cards">
               {LEVELS.map(l => (
                 <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
@@ -605,7 +702,7 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           <div className="wk-setup-section">
-            <h2>Set Time</h2>
+            <h2>Time</h2>
             <div className="wk-time-options">
               {TIME_OPTIONS.map(t => (
                 <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}`} onClick={() => setDuration(t)}>
