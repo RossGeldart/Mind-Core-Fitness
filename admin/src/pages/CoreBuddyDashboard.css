@@ -279,6 +279,38 @@
   font-family: inherit;
 }
 
+/* Cards with preview rows stack vertically */
+.cb-card-has-preview {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.cb-card-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cb-card-top-row .cb-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.cb-card-preview-row {
+  padding: 14px 0 6px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.cb-card-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  padding-top: 4px;
+}
+
 .cb-feature-card:nth-child(1) { animation: cardEntrance 0.4s ease-out 0.15s backwards; }
 .cb-feature-card:nth-child(2) { animation: cardEntrance 0.4s ease-out 0.22s backwards; }
 .cb-feature-card:nth-child(3) { animation: cardEntrance 0.4s ease-out 0.29s backwards; }
@@ -365,19 +397,15 @@
 }
 
 /* Mini Macro Rings Preview */
-.cb-card-preview {
-  flex-shrink: 0;
-}
-
 .cb-mini-rings {
   display: flex;
-  gap: 4px;
+  gap: 10px;
 }
 
 .cb-mini-ring {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -395,7 +423,7 @@
   position: relative;
   z-index: 1;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
@@ -408,12 +436,12 @@
 /* Week Dots Preview */
 .cb-week-dots {
   display: flex;
-  gap: 4px;
+  gap: 8px;
 }
 
 .cb-week-dot {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1.5px solid var(--border-color);
   display: flex;

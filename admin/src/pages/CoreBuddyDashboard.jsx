@@ -150,19 +150,21 @@ export default function CoreBuddyDashboard() {
 
           {/* 1. Nutrition / Macros */}
           <button
-            className="cb-feature-card cb-card-nutrition ripple-btn"
+            className="cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn"
             onClick={(e) => { createRipple(e); showToast('Nutrition tracking coming soon!', 'info'); }}
           >
-            <div className="cb-card-icon cb-icon-nutrition">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
-              </svg>
+            <div className="cb-card-top-row">
+              <div className="cb-card-icon cb-icon-nutrition">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+                </svg>
+              </div>
+              <div className="cb-card-content">
+                <h3>Today's Nutrition</h3>
+              </div>
+              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>
-            <div className="cb-card-content">
-              <h3>Today's Nutrition</h3>
-              <p>Track macros, scan barcodes, log water</p>
-            </div>
-            <div className="cb-card-preview">
+            <div className="cb-card-preview-row">
               <div className="cb-mini-rings">
                 <div className="cb-mini-ring cb-ring-protein">
                   <svg viewBox="0 0 36 36">
@@ -194,7 +196,7 @@ export default function CoreBuddyDashboard() {
                 </div>
               </div>
             </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
           </button>
 
           {/* 2. Workouts */}
@@ -233,19 +235,21 @@ export default function CoreBuddyDashboard() {
 
           {/* 4. Consistency */}
           <button
-            className="cb-feature-card cb-card-consistency ripple-btn"
+            className="cb-feature-card cb-card-consistency cb-card-has-preview ripple-btn"
             onClick={(e) => { createRipple(e); showToast('Consistency tracking coming soon!', 'info'); }}
           >
-            <div className="cb-card-icon cb-icon-consistency">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
-              </svg>
+            <div className="cb-card-top-row">
+              <div className="cb-card-icon cb-icon-consistency">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
+                </svg>
+              </div>
+              <div className="cb-card-content">
+                <h3>Consistency</h3>
+              </div>
+              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>
-            <div className="cb-card-content">
-              <h3>Consistency</h3>
-              <p>Weekly streaks and habit tracking</p>
-            </div>
-            <div className="cb-card-preview">
+            <div className="cb-card-preview-row">
               <div className="cb-week-dots">
                 {['M','T','W','T','F','S','S'].map((day, i) => (
                   <div key={i} className={`cb-week-dot ${i < 3 ? 'active' : ''}`}>
@@ -254,7 +258,7 @@ export default function CoreBuddyDashboard() {
                 ))}
               </div>
             </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            <p className="cb-card-desc">Weekly streaks and habit tracking</p>
           </button>
 
           {/* 5. Leaderboard */}
