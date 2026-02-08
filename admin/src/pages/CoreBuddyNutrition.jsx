@@ -39,6 +39,7 @@ export default function CoreBuddyNutrition() {
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
   const [scannerActive, setScannerActive] = useState(false);
+  const [scanDetected, setScanDetected] = useState(null); // { code, countdown }
   const [manualBarcode, setManualBarcode] = useState('');
   const [barcodeLooking, setBarcodeLooking] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -265,8 +266,8 @@ export default function CoreBuddyNutrition() {
 
       if (avgError < 0.15) {
         const code = result.codeResult.code;
-        stopScanner();
-        fetchProductByBarcode(code);
+        Quagga.offDetected();
+        setScanDetected({ code, countdown: 3 });
       }
     });
   };
@@ -392,6 +393,22 @@ export default function CoreBuddyNutrition() {
       </div>
     );
   };
+
+  // Scan detection countdown (3 → 2 → 1 → fetch)
+  useEffect(() => {
+    if (!scanDetected) return;
+    if (scanDetected.countdown <= 0) {
+      const code = scanDetected.code;
+      stopScanner();
+      setScanDetected(null);
+      fetchProductByBarcode(code);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setScanDetected(prev => prev ? { ...prev, countdown: prev.countdown - 1 } : null);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [scanDetected]);
 
   // Cleanup scanner on unmount
   useEffect(() => {
@@ -663,11 +680,11 @@ export default function CoreBuddyNutrition() {
 
       {/* ==================== ADD FOOD MODAL ==================== */}
       {addMode && (
-        <div className="nut-modal-overlay" onClick={() => { stopScanner(); setAddMode(null); setScannedProduct(null); }}>
+        <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
           <div className="nut-modal" onClick={e => e.stopPropagation()}>
             <div className="nut-modal-header">
               <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : 'Manual Entry'}</h3>
-              <button className="nut-modal-close" onClick={() => { stopScanner(); setAddMode(null); setScannedProduct(null); }}>
+              <button className="nut-modal-close" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
@@ -677,7 +694,24 @@ export default function CoreBuddyNutrition() {
               <div className="nut-scan-area">
                 <div className="nut-scanner-wrapper">
                   <div id="barcode-reader" className="nut-scanner-view" />
-                  {scannerActive && <div className="nut-scan-line" />}
+                  {scannerActive && !scanDetected && <div className="nut-scan-line" />}
+                  {scanDetected && (
+                    <div className="nut-scan-detected-overlay">
+                      <div className="nut-scan-detected-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
+                          <circle cx="50" cy="50" r="42" fill="none" stroke="#4caf50" strokeWidth="4"
+                            strokeDasharray={`${(2 * Math.PI * 42)}`}
+                            strokeDashoffset={`${(2 * Math.PI * 42) * (scanDetected.countdown / 3)}`}
+                            strokeLinecap="round"
+                            style={{ transition: 'stroke-dashoffset 1s linear', transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }} />
+                        </svg>
+                        <span className="nut-scan-detected-count">{scanDetected.countdown}</span>
+                      </div>
+                      <p className="nut-scan-detected-code">{scanDetected.code}</p>
+                      <p className="nut-scan-detected-label">Barcode found!</p>
+                    </div>
+                  )}
                 </div>
                 {!scannerActive && (
                   <button className="nut-scan-start-btn" onClick={startScanner}>
@@ -685,7 +719,7 @@ export default function CoreBuddyNutrition() {
                     Open Camera
                   </button>
                 )}
-                {scannerActive && <p className="nut-scan-hint">Align barcode within the frame</p>}
+                {scannerActive && !scanDetected && <p className="nut-scan-hint">Align barcode within the frame</p>}
 
                 <div className="nut-barcode-divider">
                   <span>or enter barcode manually</span>
