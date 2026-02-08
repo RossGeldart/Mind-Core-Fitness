@@ -652,19 +652,6 @@ body {
     content: "✓";
     position: absolute;
     left: 0;
-    top: 3px;
-    width: 18px;
-    height: 18px;
-    background: var(--accent-color);
-    border-radius: 50%;
-    opacity: 0.12;
-}
-
-.hero-card-features li::after {
-    content: "✓";
-    position: absolute;
-    left: 4px;
-    top: 2px;
     color: var(--accent-color);
     font-weight: 700;
 }
@@ -1666,10 +1653,7 @@ body {
         transition: none;
     }
 
-    .hero-card-cta,
-    .hero-card-cta::after,
-    .standard-card-cta,
-    .standard-card-cta::before,
+    .showcase-cta,
     .quick-link-title {
         transition: none;
     }
