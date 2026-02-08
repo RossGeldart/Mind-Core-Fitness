@@ -69,9 +69,12 @@ export default function CoreBuddyWorkouts() {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // Weekly workout count
+  // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
   // Auth guard
   useEffect(() => {
@@ -86,9 +89,20 @@ export default function CoreBuddyWorkouts() {
         const logsRef = collection(db, 'workoutLogs');
         const q = query(logsRef, where('clientId', '==', currentUser.uid));
         const snap = await getDocs(q);
-        setTotalCount(snap.size);
+        const docs = snap.docs.map(d => d.data());
 
-        // Filter weekly client-side to avoid needing a composite index
+        setTotalCount(docs.length);
+
+        // Total minutes
+        const mins = docs.reduce((sum, d) => sum + (d.duration || 0), 0);
+        setTotalMinutes(mins);
+
+        // Level breakdown
+        const levels = { beginner: 0, intermediate: 0, advanced: 0 };
+        docs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
+        setLevelBreakdown(levels);
+
+        // Weekly count (Monday-based)
         const now = new Date();
         const day = now.getDay();
         const mondayOffset = day === 0 ? -6 : 1 - day;
@@ -97,13 +111,55 @@ export default function CoreBuddyWorkouts() {
         monday.setHours(0, 0, 0, 0);
         const mondayMs = monday.getTime();
 
-        const weekly = snap.docs.filter(d => {
-          const ts = d.data().completedAt;
+        const weekly = docs.filter(d => {
+          const ts = d.completedAt;
           if (!ts) return false;
           const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
           return ms >= mondayMs;
         });
         setWeeklyCount(weekly.length);
+
+        // Streak: consecutive weeks (going backwards) with at least 1 workout
+        const timestamps = docs
+          .map(d => d.completedAt)
+          .filter(Boolean)
+          .map(ts => ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime())
+          .sort((a, b) => b - a);
+
+        if (timestamps.length === 0) {
+          setStreak(0);
+        } else {
+          // Build set of ISO week keys (YYYY-WW) for each workout
+          const weekKeys = new Set();
+          timestamps.forEach(ms => {
+            const d = new Date(ms);
+            const dayOfWeek = d.getDay();
+            const monOff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const mon = new Date(d);
+            mon.setDate(d.getDate() + monOff);
+            mon.setHours(0, 0, 0, 0);
+            weekKeys.add(mon.getTime());
+          });
+
+          // Walk backwards from current week
+          const sortedWeeks = [...weekKeys].sort((a, b) => b - a);
+          let streakCount = 0;
+          const currentMonday = new Date(now);
+          const cmOff = now.getDay() === 0 ? -6 : 1 - now.getDay();
+          currentMonday.setDate(now.getDate() + cmOff);
+          currentMonday.setHours(0, 0, 0, 0);
+          let checkMs = currentMonday.getTime();
+
+          for (let i = 0; i < 200; i++) {
+            if (sortedWeeks.includes(checkMs)) {
+              streakCount++;
+              checkMs -= 7 * 24 * 60 * 60 * 1000;
+            } else {
+              break;
+            }
+          }
+          setStreak(streakCount);
+        }
       } catch (err) {
         console.error('Error loading workout stats:', err);
       }
@@ -277,6 +333,8 @@ export default function CoreBuddyWorkouts() {
       });
       setWeeklyCount(c => c + 1);
       setTotalCount(c => c + 1);
+      setTotalMinutes(m => m + duration);
+      setLevelBreakdown(lb => ({ ...lb, [level]: (lb[level] || 0) + 1 }));
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
@@ -469,6 +527,70 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main">
           <button className="nut-back-btn" onClick={() => setView('menu')}>&larr; Back</button>
+
+          {/* Stats Hero */}
+          <div className="wk-stats-hero">
+            <div className="wk-stats-ring-wrap">
+              <svg className="wk-stats-ring-svg" viewBox="0 0 200 200">
+                {[...Array(TICK_COUNT)].map((_, i) => {
+                  const angle = (i * 6 - 90) * (Math.PI / 180);
+                  const x1 = 100 + 78 * Math.cos(angle);
+                  const y1 = 100 + 78 * Math.sin(angle);
+                  const x2 = 100 + 94 * Math.cos(angle);
+                  const y2 = 100 + 94 * Math.sin(angle);
+                  const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
+                  return (
+                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                      className={i < filled ? 'wk-stats-tick-filled' : 'wk-stats-tick-empty'}
+                      strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                  );
+                })}
+              </svg>
+              <img src="/Logo.PNG" alt="" className="wk-stats-ring-logo" />
+            </div>
+            <div className="wk-stats-ring-label">
+              <span className="wk-stats-ring-count">{weeklyCount}</span>
+              <span className="wk-stats-ring-sep">/</span>
+              <span className="wk-stats-ring-target">{WEEKLY_TARGET}</span>
+              <span className="wk-stats-ring-text">THIS WEEK</span>
+            </div>
+
+            <div className="wk-stats-cards">
+              <div className="wk-stats-card">
+                <span className="wk-stats-card-num">{totalCount}</span>
+                <span className="wk-stats-card-label">Workouts</span>
+              </div>
+              <div className="wk-stats-card">
+                <span className="wk-stats-card-num">{totalMinutes}</span>
+                <span className="wk-stats-card-label">Minutes</span>
+              </div>
+              <div className="wk-stats-card">
+                <span className="wk-stats-card-num">{streak}</span>
+                <span className="wk-stats-card-label">{streak === 1 ? 'Week' : 'Weeks'}</span>
+              </div>
+            </div>
+
+            {totalCount > 0 && (() => {
+              const total = levelBreakdown.beginner + levelBreakdown.intermediate + levelBreakdown.advanced;
+              if (total === 0) return null;
+              const bPct = Math.round((levelBreakdown.beginner / total) * 100);
+              const iPct = Math.round((levelBreakdown.intermediate / total) * 100);
+              const aPct = 100 - bPct - iPct;
+              return (
+                <div className="wk-stats-level-bar">
+                  {bPct > 0 && <div className="wk-stats-level-seg wk-seg-beginner" style={{ width: `${bPct}%` }}>
+                    {bPct >= 15 && <span>B {bPct}%</span>}
+                  </div>}
+                  {iPct > 0 && <div className="wk-stats-level-seg wk-seg-intermediate" style={{ width: `${iPct}%` }}>
+                    {iPct >= 15 && <span>I {iPct}%</span>}
+                  </div>}
+                  {aPct > 0 && <div className="wk-stats-level-seg wk-seg-advanced" style={{ width: `${aPct}%` }}>
+                    {aPct >= 15 && <span>A {aPct}%</span>}
+                  </div>}
+                </div>
+              );
+            })()}
+          </div>
 
           <div className="wk-setup-section">
             <h2>Select Level</h2>
