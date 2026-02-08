@@ -166,34 +166,30 @@ export default function CoreBuddyDashboard() {
             </div>
             <div className="cb-card-preview-row">
               <div className="cb-mini-rings">
-                <div className="cb-mini-ring cb-ring-protein">
-                  <svg viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.15" />
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="94.25" strokeDashoffset="70" strokeLinecap="round" transform="rotate(-90 18 18)" />
-                  </svg>
-                  <span>P</span>
-                </div>
-                <div className="cb-mini-ring cb-ring-carbs">
-                  <svg viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.15" />
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="94.25" strokeDashoffset="50" strokeLinecap="round" transform="rotate(-90 18 18)" />
-                  </svg>
-                  <span>C</span>
-                </div>
-                <div className="cb-mini-ring cb-ring-fats">
-                  <svg viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.15" />
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="94.25" strokeDashoffset="40" strokeLinecap="round" transform="rotate(-90 18 18)" />
-                  </svg>
-                  <span>F</span>
-                </div>
-                <div className="cb-mini-ring cb-ring-cals">
-                  <svg viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.15" />
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="94.25" strokeDashoffset="60" strokeLinecap="round" transform="rotate(-90 18 18)" />
-                  </svg>
-                  <span>Cal</span>
-                </div>
+                {[
+                  { cls: 'cb-ring-protein', label: 'P', filled: 15 },
+                  { cls: 'cb-ring-carbs', label: 'C', filled: 28 },
+                  { cls: 'cb-ring-fats', label: 'F', filled: 38 },
+                  { cls: 'cb-ring-cals', label: 'Cal', filled: 22 },
+                ].map((ring) => (
+                  <div key={ring.cls} className={`cb-mini-ring ${ring.cls}`}>
+                    <svg viewBox="0 0 100 100">
+                      {[...Array(60)].map((_, i) => {
+                        const angle = (i * 6 - 90) * (Math.PI / 180);
+                        const x1 = 50 + 38 * Math.cos(angle);
+                        const y1 = 50 + 38 * Math.sin(angle);
+                        const x2 = 50 + 46 * Math.cos(angle);
+                        const y2 = 50 + 46 * Math.sin(angle);
+                        return (
+                          <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                            className={i < ring.filled ? 'cb-tick-filled' : 'cb-tick-empty'}
+                            strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                        );
+                      })}
+                    </svg>
+                    <span>{ring.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
             <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
