@@ -759,11 +759,11 @@
 .nut-scanner-wrapper {
   position: relative;
   width: 100%;
+  max-height: 220px;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
   background: #000;
-  min-height: 250px;
 }
 
 /* Quagga2 injects video + canvas */
@@ -776,6 +776,8 @@
   width: 100%;
   display: block;
   border-radius: 12px;
+  object-fit: cover;
+  max-height: 220px;
 }
 
 .nut-scanner-view canvas {
