@@ -601,7 +601,7 @@ export default function PersonalBests() {
       </header>
 
       <main className="pb-main page-transition-enter">
-        <button className="back-btn" onClick={() => navigate('/client')}>&larr; Back</button>
+        <button className="back-btn" onClick={() => navigate(-1)}>&larr; Back</button>
 
         <div className="pb-intro">
           <h2>Personal Bests</h2>
