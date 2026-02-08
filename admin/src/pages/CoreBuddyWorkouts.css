@@ -726,8 +726,6 @@
 }
 
 .wk-ctrl-btn {
-  width: 60px;
-  height: 60px;
   border-radius: 50%;
   border: 2px solid var(--border-color);
   background: var(--bg-card);
@@ -749,9 +747,20 @@
   transform: scale(0.95);
 }
 
+/* Pause/Play - largest, center */
+.wk-ctrl-pause {
+  width: 68px;
+  height: 68px;
+}
+
+/* Stop and Skip - same size, flanking pause */
+.wk-ctrl-skip,
+.wk-ctrl-stop {
+  width: 50px;
+  height: 50px;
+}
+
 .wk-ctrl-skip {
-  width: 54px;
-  height: 54px;
   border-color: var(--text-tertiary);
   color: var(--text-secondary);
 }
@@ -762,8 +771,6 @@
 }
 
 .wk-ctrl-stop {
-  width: 48px;
-  height: 48px;
   border-color: rgba(244, 67, 54, 0.3);
   color: #f44336;
 }
@@ -938,13 +945,14 @@
     padding: 6px 0 12px;
   }
 
-  .wk-ctrl-btn {
-    width: 52px;
-    height: 52px;
+  .wk-ctrl-pause {
+    width: 58px;
+    height: 58px;
   }
 
+  .wk-ctrl-skip,
   .wk-ctrl-stop {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
   }
 }
