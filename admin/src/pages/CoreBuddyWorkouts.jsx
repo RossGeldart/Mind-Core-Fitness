@@ -84,25 +84,26 @@ export default function CoreBuddyWorkouts() {
     const loadStats = async () => {
       try {
         const logsRef = collection(db, 'workoutLogs');
-        // Get start of current week (Monday)
+        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        setTotalCount(snap.size);
+
+        // Filter weekly client-side to avoid needing a composite index
         const now = new Date();
         const day = now.getDay();
         const mondayOffset = day === 0 ? -6 : 1 - day;
         const monday = new Date(now);
         monday.setDate(now.getDate() + mondayOffset);
         monday.setHours(0, 0, 0, 0);
+        const mondayMs = monday.getTime();
 
-        const q = query(logsRef,
-          where('clientId', '==', currentUser.uid),
-          where('completedAt', '>=', Timestamp.fromDate(monday))
-        );
-        const snap = await getDocs(q);
-        setWeeklyCount(snap.size);
-
-        // Total all-time
-        const totalQ = query(logsRef, where('clientId', '==', currentUser.uid));
-        const totalSnap = await getDocs(totalQ);
-        setTotalCount(totalSnap.size);
+        const weekly = snap.docs.filter(d => {
+          const ts = d.data().completedAt;
+          if (!ts) return false;
+          const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+          return ms >= mondayMs;
+        });
+        setWeeklyCount(weekly.length);
       } catch (err) {
         console.error('Error loading workout stats:', err);
       }
