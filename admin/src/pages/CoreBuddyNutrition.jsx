@@ -239,29 +239,39 @@ export default function CoreBuddyNutrition() {
     setScannerActive(false);
   };
 
+  const parseProduct = (p) => {
+    const n = p.nutriments || {};
+    return {
+      name: p.product_name || p.product_name_en || 'Unknown Product',
+      brand: p.brands || '',
+      image: p.image_small_url || p.image_url || null,
+      servingSize: p.serving_size || '100g',
+      protein: Math.round(n.proteins_100g || n.proteins || 0),
+      carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
+      fats: Math.round(n.fat_100g || n.fat || 0),
+      calories: Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || (n['energy_100g'] ? n['energy_100g'] / 4.184 : 0)),
+      per100g: true
+    };
+  };
+
   const fetchProductByBarcode = async (barcode) => {
     setBarcodeLooking(true);
     try {
-      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const url = `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (data.status === 1 && data.product) {
-        const p = data.product;
-        const n = p.nutriments || {};
-        setScannedProduct({
-          name: p.product_name || 'Unknown Product',
-          brand: p.brands || '',
-          image: p.image_small_url || null,
-          servingSize: p.serving_size || '100g',
-          protein: Math.round(n.proteins_100g || 0),
-          carbs: Math.round(n.carbohydrates_100g || 0),
-          fats: Math.round(n.fat_100g || 0),
-          calories: Math.round(n['energy-kcal_100g'] || 0),
-          per100g: true
-        });
-        setServingMultiplier(1);
-        setManualBarcode('');
+      if (data.status === 'success' || data.status === 1 || data.product) {
+        const product = parseProduct(data.product);
+        if (product.calories === 0 && product.protein === 0 && product.carbs === 0) {
+          showToast('Product found but no nutrition data available.', 'error');
+        } else {
+          setScannedProduct(product);
+          setServingMultiplier(1);
+          setManualBarcode('');
+        }
       } else {
-        showToast('Product not found. Try manual entry.', 'error');
+        showToast('Product not found. Try search or manual entry.', 'error');
       }
     } catch (err) {
       console.error('Barcode lookup error:', err);
@@ -275,26 +285,20 @@ export default function CoreBuddyNutrition() {
     if (!searchQuery.trim()) return;
     setSearchLoading(true);
     try {
-      const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=10`);
+      const url = `https://world.openfoodfacts.net/api/v2/search?search_terms=${encodeURIComponent(searchQuery)}&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments&page_size=10`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const results = (data.products || []).map(p => {
-        const n = p.nutriments || {};
-        return {
-          name: p.product_name || 'Unknown',
-          brand: p.brands || '',
-          image: p.image_small_url || null,
-          servingSize: p.serving_size || '100g',
-          protein: Math.round(n.proteins_100g || 0),
-          carbs: Math.round(n.carbohydrates_100g || 0),
-          fats: Math.round(n.fat_100g || 0),
-          calories: Math.round(n['energy-kcal_100g'] || 0),
-          per100g: true
-        };
-      }).filter(p => p.name !== 'Unknown');
+      const results = (data.products || [])
+        .map(p => parseProduct(p))
+        .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0));
       setSearchResults(results);
+      if (results.length === 0) {
+        showToast('No results found. Try a different search.', 'info');
+      }
     } catch (err) {
       console.error('Search error:', err);
-      showToast('Search failed. Try again.', 'error');
+      showToast('Search failed. Check your connection.', 'error');
     }
     setSearchLoading(false);
   };
