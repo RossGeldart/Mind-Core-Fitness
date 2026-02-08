@@ -291,7 +291,7 @@
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-columns: 1fr 1fr;
             gap: 60px;
             align-items: center;
         }
@@ -406,7 +406,6 @@
 
         .hero-image img {
             width: 100%;
-            max-width: 400px;
             border-radius: 20px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
@@ -1381,10 +1380,12 @@
                 margin-bottom: 28px;
             }
 
-            .hero-image img {
-                max-width: 340px;
-                width: 90%;
+            .hero-image {
+                max-width: 500px;
                 margin: 0 auto;
+            }
+
+            .hero-image img {
                 border-radius: 16px;
                 box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
             }
@@ -1555,9 +1556,8 @@
                 padding: 110px 20px 50px;
             }
 
-            .hero-image img {
-                max-width: 300px;
-                width: 85%;
+            .hero-image {
+                max-width: 400px;
             }
 
             .hero h1 {
