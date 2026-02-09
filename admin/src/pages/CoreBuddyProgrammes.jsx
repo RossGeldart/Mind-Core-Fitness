@@ -424,6 +424,7 @@ export default function CoreBuddyProgrammes() {
       setActiveProgramme(data);
     } catch (err) {
       console.error('Error saving programme:', err);
+      showToast('Failed to save. Check Firestore rules for clientProgrammes.', 'error');
     }
   };
 
