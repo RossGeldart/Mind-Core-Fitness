@@ -635,7 +635,7 @@ export default function CoreBuddyWorkouts() {
               </div>
               <div className="wk-stats-card">
                 <span className="wk-stats-card-num">{streak}</span>
-                <span className="wk-stats-card-label">{streak === 1 ? 'Week' : 'Weeks'}</span>
+                <span className="wk-stats-card-label">Weeks</span>
               </div>
             </div>
 
