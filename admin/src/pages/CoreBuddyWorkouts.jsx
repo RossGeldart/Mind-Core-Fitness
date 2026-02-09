@@ -255,7 +255,7 @@ export default function CoreBuddyWorkouts() {
       // Deduplicate by file name (same exercise in multiple equipment folders)
       const seen = new Set();
       const uniqueItems = allItems.filter(item => {
-        const name = item.name.replace(/\.mp4$/i, '');
+        const name = item.name.replace(/\.(mp4|gif)$/i, '');
         if (seen.has(name)) return false;
         seen.add(name);
         return true;
@@ -264,8 +264,9 @@ export default function CoreBuddyWorkouts() {
       const exercises = await Promise.all(
         uniqueItems.map(async (item) => {
           const url = await getDownloadURL(item);
-          const name = item.name.replace(/\.mp4$/i, '');
-          return { name, videoUrl: url };
+          const name = item.name.replace(/\.(mp4|gif)$/i, '');
+          const isGif = /\.gif$/i.test(item.name);
+          return { name, videoUrl: url, isGif };
         })
       );
       exercisesRef.current = exercises;
@@ -845,15 +846,11 @@ export default function CoreBuddyWorkouts() {
         {/* Video */}
         <div className="wk-video-container">
           {phase === 'work' ? (
-            <video
-              key={currentEx.videoUrl}
-              className="wk-video"
-              src={currentEx.videoUrl}
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
+            currentEx.isGif ? (
+              <img key={currentEx.videoUrl} className="wk-video" src={currentEx.videoUrl} alt={currentEx.name} />
+            ) : (
+              <video key={currentEx.videoUrl} className="wk-video" src={currentEx.videoUrl} autoPlay loop muted playsInline />
+            )
           ) : (
             <div className="wk-rest-screen">
               <span className="wk-rest-label">REST</span>
