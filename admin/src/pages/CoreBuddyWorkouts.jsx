@@ -511,7 +511,7 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
-          <button className="nut-back-btn" onClick={() => navigate(-1)}>&larr; Back</button>
+          <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
           <div className="wk-menu-cards">
             {/* Random Workout Card */}
             <button className="wk-menu-card" onClick={() => setView('setup')}>
