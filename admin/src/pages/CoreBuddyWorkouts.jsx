@@ -193,11 +193,18 @@ export default function CoreBuddyWorkouts() {
   // Build storage paths from equipment + focus selection
   const getStoragePaths = () => {
     // New structure: exercises/{equipment}/{focus}/
+    // fullbody = pull from both upper/ and lower/
+    // mix = pull from all folders (core, upper, lower)
     // Legacy fallback: core/ (for existing bodyweight core videos)
     const paths = [];
-    const focusKeys = focusArea === 'mix'
-      ? ['core', 'upper', 'lower', 'fullbody']
-      : [focusArea];
+    let focusKeys;
+    if (focusArea === 'mix') {
+      focusKeys = ['core', 'upper', 'lower'];
+    } else if (focusArea === 'fullbody') {
+      focusKeys = ['upper', 'lower'];
+    } else {
+      focusKeys = [focusArea];
+    }
     for (const eq of selectedEquipment) {
       for (const fk of focusKeys) {
         paths.push(`exercises/${eq}/${fk}`);

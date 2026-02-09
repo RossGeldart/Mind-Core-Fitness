@@ -64,6 +64,10 @@ export default function ClientDashboard() {
   // Daily quote state
   const [dailyQuote, setDailyQuote] = useState(null);
 
+  // Session notes state
+  const [sessionNotes, setSessionNotes] = useState([]);
+  const [expandedNote, setExpandedNote] = useState(null);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -275,6 +279,19 @@ export default function ClientDashboard() {
         } else {
           setDailyQuote(null);
         }
+      }
+
+      // Fetch session notes (block clients only)
+      try {
+        const notesQuery = query(
+          collection(db, 'sessionNotes'),
+          where('clientId', '==', clientData.id),
+          orderBy('createdAt', 'desc')
+        );
+        const notesSnapshot = await getDocs(notesQuery);
+        setSessionNotes(notesSnapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (e) {
+        console.error('Error fetching session notes:', e);
       }
 
     } catch (error) {
@@ -751,6 +768,76 @@ export default function ClientDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Session Notes Card */}
+        {sessionNotes.length > 0 && (
+          <div className="session-notes-card">
+            <div className="session-notes-header">
+              <div className="session-notes-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Session Notes</span>
+              </div>
+              <span className="session-notes-count">{sessionNotes.length}</span>
+            </div>
+            <div className="session-notes-list">
+              {sessionNotes.slice(0, expandedNote === 'show-all' ? undefined : 3).map((note, i) => (
+                <div
+                  key={note.id}
+                  className={`session-note-item ${expandedNote === note.id ? 'expanded' : ''}`}
+                  onClick={() => setExpandedNote(expandedNote === note.id ? null : note.id)}
+                >
+                  <div className="session-note-top">
+                    <span className="session-note-date">{note.date}</span>
+                    <svg className={`session-note-chevron ${expandedNote === note.id ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </div>
+                  {note.sessionNotes && (
+                    <p className="session-note-preview">{expandedNote === note.id ? note.sessionNotes : note.sessionNotes.length > 80 ? note.sessionNotes.slice(0, 80) + '...' : note.sessionNotes}</p>
+                  )}
+                  {expandedNote === note.id && (
+                    <div className="session-note-details">
+                      {note.whatWentWell && (
+                        <div className="session-note-section went-well">
+                          <span className="session-note-label">What Went Well</span>
+                          <p>{note.whatWentWell}</p>
+                        </div>
+                      )}
+                      {note.whatWentWrong && (
+                        <div className="session-note-section went-wrong">
+                          <span className="session-note-label">What Went Wrong</span>
+                          <p>{note.whatWentWrong}</p>
+                        </div>
+                      )}
+                      {note.whatsNext && (
+                        <div className="session-note-section whats-next">
+                          <span className="session-note-label">What's Next</span>
+                          <p>{note.whatsNext}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {sessionNotes.length > 3 && expandedNote === null && (
+              <button className="session-notes-viewall" onClick={() => setExpandedNote('show-all')}>
+                View all {sessionNotes.length} notes
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+              </button>
+            )}
+            {expandedNote === 'show-all' && sessionNotes.length > 3 && (
+              <button className="session-notes-viewall" onClick={() => setExpandedNote(null)}>
+                Show less
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style={{ transform: 'rotate(180deg)' }}><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="quick-actions">
           <button className="forms-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/forms'); }}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, doc, deleteDoc, updateDoc, Timestamp, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, updateDoc, addDoc, Timestamp, query, orderBy, where } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { db, secondaryAuth } from '../config/firebase';
 import './ClientList.css';
@@ -13,6 +13,14 @@ export default function ClientList() {
   const [expandedClient, setExpandedClient] = useState(null);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+
+  // Session Notes state
+  const [notesModal, setNotesModal] = useState(null); // { clientId, clientName }
+  const [notesForm, setNotesForm] = useState({ sessionNotes: '', whatWentWell: '', whatWentWrong: '', whatsNext: '' });
+  const [clientNotes, setClientNotes] = useState([]); // notes for current modal client
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesView, setNotesView] = useState('list'); // 'list' or 'add'
 
   useEffect(() => {
     fetchData();
@@ -274,6 +282,78 @@ export default function ClientList() {
     }
   };
 
+  // Session Notes functions
+  const openNotesModal = async (client) => {
+    setNotesModal({ clientId: client.id, clientName: client.name });
+    setNotesView('list');
+    setNotesForm({ sessionNotes: '', whatWentWell: '', whatWentWrong: '', whatsNext: '' });
+    setNotesLoading(true);
+    try {
+      const q = query(
+        collection(db, 'sessionNotes'),
+        where('clientId', '==', client.id),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      setClientNotes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+      setClientNotes([]);
+    }
+    setNotesLoading(false);
+  };
+
+  const closeNotesModal = () => {
+    setNotesModal(null);
+    setClientNotes([]);
+    setNotesView('list');
+  };
+
+  const handleSaveNote = async () => {
+    if (!notesModal) return;
+    const { sessionNotes, whatWentWell, whatWentWrong, whatsNext } = notesForm;
+    if (!sessionNotes.trim() && !whatWentWell.trim() && !whatWentWrong.trim() && !whatsNext.trim()) return;
+
+    setNotesSaving(true);
+    try {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      await addDoc(collection(db, 'sessionNotes'), {
+        clientId: notesModal.clientId,
+        date: dateStr,
+        sessionNotes: sessionNotes.trim(),
+        whatWentWell: whatWentWell.trim(),
+        whatWentWrong: whatWentWrong.trim(),
+        whatsNext: whatsNext.trim(),
+        createdAt: Timestamp.now()
+      });
+      setNotesForm({ sessionNotes: '', whatWentWell: '', whatWentWrong: '', whatsNext: '' });
+      // Refresh notes list
+      const q = query(
+        collection(db, 'sessionNotes'),
+        where('clientId', '==', notesModal.clientId),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      setClientNotes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      setNotesView('list');
+    } catch (error) {
+      console.error('Error saving note:', error);
+      alert('Failed to save note. Check Firestore rules for sessionNotes collection.');
+    }
+    setNotesSaving(false);
+  };
+
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm('Delete this session note?')) return;
+    try {
+      await deleteDoc(doc(db, 'sessionNotes', noteId));
+      setClientNotes(clientNotes.filter(n => n.id !== noteId));
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  };
+
   if (loading) {
     return <div className="client-list-loading">Loading clients...</div>;
   }
@@ -478,6 +558,16 @@ export default function ClientList() {
                     )}
 
                     <div className="client-actions">
+                      {isBlock && (
+                        <button className="action-btn notes" onClick={(e) => { e.stopPropagation(); openNotesModal(client); }}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                          </svg>
+                          Notes
+                        </button>
+                      )}
                       <button className="action-btn edit" onClick={(e) => { e.stopPropagation(); handleEdit(client); }}>Edit</button>
                       <button className="action-btn archive" onClick={(e) => { e.stopPropagation(); handleArchive(client.id); }}>
                         {client.status === 'archived' ? 'Reactivate' : 'Archive'}
@@ -555,6 +645,151 @@ export default function ClientList() {
           )}
           {filtered.map(renderClientRow)}
         </>
+      )}
+
+      {/* Session Notes Modal */}
+      {notesModal && (
+        <div className="notes-modal-overlay" onClick={closeNotesModal}>
+          <div className="notes-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="notes-modal-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                {notesModal.clientName}
+              </h3>
+              <button className="notes-modal-close" onClick={closeNotesModal}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            {notesView === 'list' ? (
+              <>
+                <div className="notes-modal-body">
+                  {notesLoading ? (
+                    <div className="notes-loading">Loading notes...</div>
+                  ) : clientNotes.length === 0 ? (
+                    <div className="notes-empty">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="40" height="40">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                      <p>No session notes yet</p>
+                      <span>Add notes after each session</span>
+                    </div>
+                  ) : (
+                    <div className="notes-list">
+                      {clientNotes.map(note => (
+                        <div key={note.id} className="note-card">
+                          <div className="note-card-header">
+                            <span className="note-date">{note.date}</span>
+                            <button className="note-delete-btn" onClick={() => handleDeleteNote(note.id)}>
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                              </svg>
+                            </button>
+                          </div>
+                          {note.sessionNotes && (
+                            <div className="note-section">
+                              <span className="note-section-label">Session Notes</span>
+                              <p>{note.sessionNotes}</p>
+                            </div>
+                          )}
+                          {note.whatWentWell && (
+                            <div className="note-section went-well">
+                              <span className="note-section-label">What Went Well</span>
+                              <p>{note.whatWentWell}</p>
+                            </div>
+                          )}
+                          {note.whatWentWrong && (
+                            <div className="note-section went-wrong">
+                              <span className="note-section-label">What Went Wrong</span>
+                              <p>{note.whatWentWrong}</p>
+                            </div>
+                          )}
+                          {note.whatsNext && (
+                            <div className="note-section whats-next">
+                              <span className="note-section-label">What's Next</span>
+                              <p>{note.whatsNext}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="notes-modal-footer">
+                  <button className="notes-add-btn" onClick={() => setNotesView('add')}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Session Notes
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="notes-modal-body">
+                  <div className="notes-form">
+                    <div className="notes-form-group">
+                      <label>Session Notes</label>
+                      <textarea
+                        value={notesForm.sessionNotes}
+                        onChange={(e) => setNotesForm(p => ({ ...p, sessionNotes: e.target.value }))}
+                        placeholder="Overview of the session..."
+                        rows="3"
+                      />
+                    </div>
+                    <div className="notes-form-group went-well">
+                      <label>
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        What Went Well
+                      </label>
+                      <textarea
+                        value={notesForm.whatWentWell}
+                        onChange={(e) => setNotesForm(p => ({ ...p, whatWentWell: e.target.value }))}
+                        placeholder="Positives from the session..."
+                        rows="2"
+                      />
+                    </div>
+                    <div className="notes-form-group went-wrong">
+                      <label>
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        What Went Wrong
+                      </label>
+                      <textarea
+                        value={notesForm.whatWentWrong}
+                        onChange={(e) => setNotesForm(p => ({ ...p, whatWentWrong: e.target.value }))}
+                        placeholder="Areas to improve..."
+                        rows="2"
+                      />
+                    </div>
+                    <div className="notes-form-group whats-next">
+                      <label>
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+                        What's Next
+                      </label>
+                      <textarea
+                        value={notesForm.whatsNext}
+                        onChange={(e) => setNotesForm(p => ({ ...p, whatsNext: e.target.value }))}
+                        placeholder="Goals for next session..."
+                        rows="2"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="notes-modal-footer">
+                  <button className="notes-cancel-btn" onClick={() => setNotesView('list')}>Back</button>
+                  <button className="notes-save-btn" onClick={handleSaveNote} disabled={notesSaving}>
+                    {notesSaving ? 'Saving...' : 'Save Notes'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
