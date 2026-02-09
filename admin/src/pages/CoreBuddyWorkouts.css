@@ -888,6 +888,9 @@
   background: #000;
   overflow: hidden;
   flex-shrink: 0;
+  margin: 10px 12px 0;
+  width: calc(100% - 24px);
+  border-radius: 12px;
 }
 
 .wk-video {
@@ -895,6 +898,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 12px;
 }
 
 .wk-rest-screen {
