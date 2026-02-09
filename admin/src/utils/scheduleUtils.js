@@ -6,7 +6,7 @@ export const SCHEDULE = {
   tuesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   wednesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   thursday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  friday: { morning: { start: '08:00', end: '10:00' }, afternoon: null }
+  friday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '12:00', end: '17:00' }, defaultBlocked: true }
 };
 
 export const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -79,21 +79,30 @@ export const getDayName = (date) => {
 };
 
 // Check if a time slot is available
-export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = []) => {
+export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = [], openedSlots = []) => {
   const dayName = getDayName(date);
   if (!dayName) return false;
 
   const dateKey = formatDateKey(date);
+  const schedule = SCHEDULE[dayName];
 
   // Check if it's a holiday
   if (holidays.some(h => h.date === dateKey)) return false;
 
-  // Check if any time during the session is blocked
-  // For a 45-min session starting at 9:15, check 9:15, 9:30, and 9:45
-  const slotsToCheck = Math.ceil(sessionDuration / 15);
-  for (let i = 0; i < slotsToCheck; i++) {
-    const checkTime = addMinutesToTime(time, i * 15);
-    if (blockedTimes.some(bt => bt.date === dateKey && bt.time === checkTime)) return false;
+  // For defaultBlocked days (e.g. Friday): slot must be explicitly opened
+  if (schedule.defaultBlocked) {
+    const slotsToCheck = Math.ceil(sessionDuration / 15);
+    for (let i = 0; i < slotsToCheck; i++) {
+      const checkTime = addMinutesToTime(time, i * 15);
+      if (!openedSlots.some(os => os.date === dateKey && os.time === checkTime)) return false;
+    }
+  } else {
+    // Normal days: check if any time during the session is blocked
+    const slotsToCheck = Math.ceil(sessionDuration / 15);
+    for (let i = 0; i < slotsToCheck; i++) {
+      const checkTime = addMinutesToTime(time, i * 15);
+      if (blockedTimes.some(bt => bt.date === dateKey && bt.time === checkTime)) return false;
+    }
   }
 
   // Check if slot is in the past
@@ -107,7 +116,6 @@ export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays,
 
   // Check if slot overlaps with any existing session
   const endTime = addMinutesToTime(time, sessionDuration);
-  const schedule = SCHEDULE[dayName];
 
   // Check if the slot fits within working hours
   const startsInMorning = schedule.morning && time >= schedule.morning.start && time < schedule.morning.end;
@@ -139,10 +147,10 @@ export const isSlotAvailable = (date, time, sessionDuration, sessions, holidays,
 };
 
 // Get all available slots for a specific date
-export const getAvailableSlotsForDate = (date, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = []) => {
+export const getAvailableSlotsForDate = (date, sessionDuration, sessions, holidays, excludeSessionId = null, blockedTimes = [], openedSlots = []) => {
   const dayName = getDayName(date);
   if (!dayName) return [];
 
   const allSlots = generateTimeSlotsForDay(dayName);
-  return allSlots.filter(slot => isSlotAvailable(date, slot.time, sessionDuration, sessions, holidays, excludeSessionId, blockedTimes));
+  return allSlots.filter(slot => isSlotAvailable(date, slot.time, sessionDuration, sessions, holidays, excludeSessionId, blockedTimes, openedSlots));
 };

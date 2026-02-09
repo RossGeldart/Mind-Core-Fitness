@@ -9,7 +9,7 @@ const SCHEDULE = {
   tuesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   wednesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   thursday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  friday: { morning: { start: '08:00', end: '10:00' }, afternoon: null }
+  friday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '12:00', end: '17:00' }, defaultBlocked: true }
 };
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -92,6 +92,7 @@ export default function Calendar() {
   const [sessions, setSessions] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [blockedTimes, setBlockedTimes] = useState([]);
+  const [openedSlots, setOpenedSlots] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [showClientPicker, setShowClientPicker] = useState(false);
@@ -218,6 +219,10 @@ export default function Calendar() {
       const blockedTimesSnapshot = await getDocs(collection(db, 'blockedTimes'));
       const blockedTimesData = blockedTimesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setBlockedTimes(blockedTimesData);
+
+      const openedSlotsSnapshot = await getDocs(collection(db, 'openedSlots'));
+      const openedSlotsData = openedSlotsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setOpenedSlots(openedSlotsData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -246,6 +251,16 @@ export default function Calendar() {
     return blockedTimes.some(bt => bt.date === dateKey && bt.time === time);
   };
 
+  const isTimeOpened = (date, time) => {
+    const dateKey = formatDateKey(date);
+    return openedSlots.some(os => os.date === dateKey && os.time === time);
+  };
+
+  const isDayDefaultBlocked = (date) => {
+    const dayName = DAYS[date.getDay() - 1];
+    return dayName && SCHEDULE[dayName]?.defaultBlocked;
+  };
+
   const getBlockedTime = (date, time) => {
     const dateKey = formatDateKey(date);
     return blockedTimes.find(bt => bt.date === dateKey && bt.time === time);
@@ -253,6 +268,32 @@ export default function Calendar() {
 
   const handleToggleBlockedTime = async (date, time) => {
     const dateKey = formatDateKey(date);
+
+    // For defaultBlocked days: toggle openedSlots instead
+    if (isDayDefaultBlocked(date)) {
+      const existingOpen = openedSlots.find(os => os.date === dateKey && os.time === time);
+      try {
+        if (existingOpen) {
+          // Remove opened slot - make it blocked again
+          await deleteDoc(doc(db, 'openedSlots', existingOpen.id));
+          setOpenedSlots(openedSlots.filter(os => os.id !== existingOpen.id));
+        } else {
+          // Open this slot
+          const docRef = await addDoc(collection(db, 'openedSlots'), {
+            date: dateKey,
+            time: time,
+            createdAt: Timestamp.now()
+          });
+          setOpenedSlots([...openedSlots, { id: docRef.id, date: dateKey, time: time }]);
+        }
+      } catch (error) {
+        console.error('Error toggling opened slot:', error);
+        alert('Failed to update time slot');
+      }
+      return;
+    }
+
+    // Normal days: toggle blockedTimes
     const existingBlock = blockedTimes.find(bt => bt.date === dateKey && bt.time === time);
 
     try {
@@ -291,11 +332,21 @@ export default function Calendar() {
 
     if (isHoliday(date)) return false;
 
-    // Check if any time during the session is blocked
+    const schedule = SCHEDULE[dayName];
     const slotsToCheck = Math.ceil(clientDuration / 15);
-    for (let i = 0; i < slotsToCheck; i++) {
-      const checkTime = addMinutesToTime(time, i * 15);
-      if (isTimeBlocked(date, checkTime)) return false;
+
+    if (schedule.defaultBlocked) {
+      // For defaultBlocked days: slot must be explicitly opened
+      for (let i = 0; i < slotsToCheck; i++) {
+        const checkTime = addMinutesToTime(time, i * 15);
+        if (!isTimeOpened(date, checkTime)) return false;
+      }
+    } else {
+      // Normal days: check if any time during the session is blocked
+      for (let i = 0; i < slotsToCheck; i++) {
+        const checkTime = addMinutesToTime(time, i * 15);
+        if (isTimeBlocked(date, checkTime)) return false;
+      }
     }
 
     const dateKey = formatDateKey(date);
@@ -303,7 +354,6 @@ export default function Calendar() {
     if (existingSession) return false;
 
     const endTime = addMinutesToTime(time, clientDuration);
-    const schedule = SCHEDULE[dayName];
 
     const isEndInMorning = schedule.morning && endTime <= schedule.morning.end;
     const isEndInAfternoon = schedule.afternoon && endTime <= schedule.afternoon.end;
@@ -618,9 +668,16 @@ export default function Calendar() {
             </div>
           ) : (
           <div className="time-slots">
+            {isDayDefaultBlocked(weekDates[selectedDay]) && (
+              <div className="default-blocked-notice">
+                Flex day — slots are closed by default. Tap the toggle to open slots.
+              </div>
+            )}
             {generateTimeSlotsForDay(DAYS[selectedDay]).map(({ time, period }, idx, arr) => {
               const session = getSessionAtSlot(weekDates[selectedDay], time);
-              const blocked = isTimeBlocked(weekDates[selectedDay], time);
+              const dayIsDefaultBlocked = isDayDefaultBlocked(weekDates[selectedDay]);
+              const blocked = dayIsDefaultBlocked ? !isTimeOpened(weekDates[selectedDay], time) : isTimeBlocked(weekDates[selectedDay], time);
+              const opened = dayIsDefaultBlocked && isTimeOpened(weekDates[selectedDay], time);
               const available = selectedClient && isSlotAvailable(weekDates[selectedDay], time, selectedClient.sessionDuration || 45);
               const showPeriodLabel = idx === 0 || arr[idx - 1]?.period !== period;
 
@@ -633,30 +690,32 @@ export default function Calendar() {
                   )}
                   <div className="time-slot-row">
                     <button
-                      className={`time-slot ${session ? 'booked' : ''} ${blocked ? 'blocked' : ''} ${available ? 'available' : ''} ${!session && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
+                      className={`time-slot ${session ? 'booked' : ''} ${blocked && !session ? 'blocked' : ''} ${opened && !session ? 'opened' : ''} ${available ? 'available' : ''} ${!session && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
                       onClick={() => !blocked && handleSlotClick(weekDates[selectedDay], time)}
-                      disabled={blocked}
+                      disabled={blocked && !session}
                     >
                       <span className="slot-time">{formatTime(time)}</span>
                       {session ? (
                         <span className="slot-client">{session.clientName} ({session.duration}m)</span>
                       ) : blocked ? (
-                        <span className="slot-blocked">Blocked</span>
+                        <span className="slot-blocked">{dayIsDefaultBlocked ? 'Closed' : 'Blocked'}</span>
                       ) : available ? (
                         <span className="slot-available">Available</span>
                       ) : selectedClient ? (
                         <span className="slot-unavailable">Unavailable</span>
+                      ) : opened ? (
+                        <span className="slot-available">Open</span>
                       ) : (
                         <span className="slot-empty">Select client to book</span>
                       )}
                     </button>
                     <button
-                      className={`block-toggle-btn ${blocked ? 'is-blocked' : ''}`}
+                      className={`block-toggle-btn ${dayIsDefaultBlocked ? (opened ? 'is-opened' : '') : (blocked ? 'is-blocked' : '')}`}
                       onClick={() => handleToggleBlockedTime(weekDates[selectedDay], time)}
                       disabled={!!session}
-                      title={blocked ? 'Unblock this time' : 'Block this time'}
+                      title={dayIsDefaultBlocked ? (opened ? 'Close this slot' : 'Open this slot') : (blocked ? 'Unblock this time' : 'Block this time')}
                     >
-                      {blocked ? '✓' : '✕'}
+                      {dayIsDefaultBlocked ? (opened ? '✓' : '+') : (blocked ? '✓' : '✕')}
                     </button>
                   </div>
                 </div>

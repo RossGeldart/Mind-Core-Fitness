@@ -529,6 +529,34 @@
   cursor: not-allowed;
 }
 
+.block-toggle-btn.is-opened {
+  background: #2e7d32;
+  border-color: #2e7d32;
+  color: white;
+}
+
+.block-toggle-btn.is-opened:hover:not(:disabled) {
+  background: #1b5e20;
+  border-color: #1b5e20;
+}
+
+.time-slot.opened {
+  background: #e8f5e9;
+  border-color: #81c784;
+  color: #2e7d32;
+}
+
+.default-blocked-notice {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
 .slot-time {
   font-weight: 600;
   font-size: 0.95rem;
