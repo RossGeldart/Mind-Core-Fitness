@@ -158,6 +158,8 @@ export default function CoreBuddyWorkouts() {
           });
 
           // Walk backwards from current week
+          // If current week has no workouts yet, start from last week
+          // (don't break the streak just because the new week only just started)
           const sortedWeeks = [...weekKeys].sort((a, b) => b - a);
           let streakCount = 0;
           const currentMonday = new Date(now);
@@ -165,6 +167,11 @@ export default function CoreBuddyWorkouts() {
           currentMonday.setDate(now.getDate() + cmOff);
           currentMonday.setHours(0, 0, 0, 0);
           let checkMs = currentMonday.getTime();
+
+          // If no workout this week, skip to last week without breaking streak
+          if (!sortedWeeks.includes(checkMs)) {
+            checkMs -= 7 * 24 * 60 * 60 * 1000;
+          }
 
           for (let i = 0; i < 200; i++) {
             if (sortedWeeks.includes(checkMs)) {
