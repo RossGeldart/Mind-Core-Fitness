@@ -20,6 +20,7 @@ export default function ClientDashboard() {
   const [allSessions, setAllSessions] = useState([]); // All sessions for availability check
   const [holidays, setHolidays] = useState([]);
   const [blockedTimes, setBlockedTimes] = useState([]);
+  const [openedSlots, setOpenedSlots] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
@@ -239,6 +240,9 @@ export default function ClientDashboard() {
       const blockedTimesSnapshot = await getDocs(collection(db, 'blockedTimes'));
       setBlockedTimes(blockedTimesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
+      const openedSlotsSnapshot = await getDocs(collection(db, 'openedSlots'));
+      setOpenedSlots(openedSlotsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
       // Fetch pending reschedule requests for this client
       const requestsQuery = query(
         collection(db, 'rescheduleRequests'),
@@ -455,7 +459,8 @@ export default function ClientDashboard() {
       allSessions,
       holidays,
       rescheduleSession?.id, // Exclude current session from conflict check
-      blockedTimes
+      blockedTimes,
+      openedSlots
     );
 
     // If same date as original session, filter out the original time slot

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import './Availability.css';
 
@@ -9,7 +9,7 @@ const SCHEDULE = {
   tuesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   wednesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
   thursday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  friday: { morning: { start: '08:00', end: '10:00' }, afternoon: null }
+  friday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '12:00', end: '17:00' }, defaultBlocked: true }
 };
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -87,6 +87,8 @@ export default function Availability() {
   const [weekDates, setWeekDates] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [holidays, setHolidays] = useState([]);
+  const [blockedTimes, setBlockedTimes] = useState([]);
+  const [openedSlots, setOpenedSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sessionDuration, setSessionDuration] = useState(45);
 
@@ -107,6 +109,12 @@ export default function Availability() {
       const holidaysSnapshot = await getDocs(collection(db, 'holidays'));
       const holidaysData = holidaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setHolidays(holidaysData);
+
+      const blockedTimesSnapshot = await getDocs(collection(db, 'blockedTimes'));
+      setBlockedTimes(blockedTimesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const openedSlotsSnapshot = await getDocs(collection(db, 'openedSlots'));
+      setOpenedSlots(openedSlotsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -135,6 +143,23 @@ export default function Availability() {
     if (isHoliday(date)) return false;
 
     const dateKey = formatDateKey(date);
+    const schedule = SCHEDULE[dayName];
+
+    const slotsToCheck = Math.ceil(sessionDuration / 15);
+
+    // For defaultBlocked days: slot must be explicitly opened
+    if (schedule.defaultBlocked) {
+      for (let i = 0; i < slotsToCheck; i++) {
+        const checkTime = addMinutesToTime(time, i * 15);
+        if (!openedSlots.some(os => os.date === dateKey && os.time === checkTime)) return false;
+      }
+    } else {
+      // Normal days: check if any time is blocked
+      for (let i = 0; i < slotsToCheck; i++) {
+        const checkTime = addMinutesToTime(time, i * 15);
+        if (blockedTimes.some(bt => bt.date === dateKey && bt.time === checkTime)) return false;
+      }
+    }
 
     // Check if slot is in the past
     const now = new Date();
@@ -147,7 +172,6 @@ export default function Availability() {
 
     // Check if slot overlaps with any existing session
     const endTime = addMinutesToTime(time, sessionDuration);
-    const schedule = SCHEDULE[dayName];
 
     // Check if the slot fits within working hours
     const startsInMorning = schedule.morning && time >= schedule.morning.start && time < schedule.morning.end;
