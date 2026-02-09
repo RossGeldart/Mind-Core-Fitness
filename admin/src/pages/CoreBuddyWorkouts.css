@@ -870,7 +870,7 @@
 /* Spotify Mini Player */
 .wk-spotify {
   flex-shrink: 0;
-  padding: 10px 12px 0;
+  padding: 12px 12px 0;
   line-height: 0;
 }
 
@@ -888,7 +888,7 @@
   background: #000;
   overflow: hidden;
   flex-shrink: 0;
-  margin: 10px 12px 0;
+  margin: 12px 12px 0;
   width: calc(100% - 24px);
   border-radius: 12px;
 }
