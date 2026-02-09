@@ -691,7 +691,7 @@ export default function Calendar() {
                   <div className="time-slot-row">
                     <button
                       className={`time-slot ${session ? 'booked' : ''} ${blocked && !session ? 'blocked' : ''} ${opened && !session ? 'opened' : ''} ${available ? 'available' : ''} ${!session && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
-                      onClick={() => !blocked && handleSlotClick(weekDates[selectedDay], time)}
+                      onClick={() => (!blocked || session) && handleSlotClick(weekDates[selectedDay], time)}
                       disabled={blocked && !session}
                     >
                       <span className="slot-time">{formatTime(time)}</span>
