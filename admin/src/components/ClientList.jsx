@@ -291,11 +291,16 @@ export default function ClientList() {
     try {
       const q = query(
         collection(db, 'sessionNotes'),
-        where('clientId', '==', client.id),
-        orderBy('createdAt', 'desc')
+        where('clientId', '==', client.id)
       );
       const snapshot = await getDocs(q);
-      setClientNotes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      const notes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      notes.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
+      setClientNotes(notes);
     } catch (error) {
       console.error('Error fetching notes:', error);
       setClientNotes([]);
@@ -331,11 +336,16 @@ export default function ClientList() {
       // Refresh notes list
       const q = query(
         collection(db, 'sessionNotes'),
-        where('clientId', '==', notesModal.clientId),
-        orderBy('createdAt', 'desc')
+        where('clientId', '==', notesModal.clientId)
       );
       const snapshot = await getDocs(q);
-      setClientNotes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      const notes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      notes.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
+      setClientNotes(notes);
       setNotesView('list');
     } catch (error) {
       console.error('Error saving note:', error);
