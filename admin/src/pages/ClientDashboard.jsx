@@ -286,11 +286,16 @@ export default function ClientDashboard() {
       try {
         const notesQuery = query(
           collection(db, 'sessionNotes'),
-          where('clientId', '==', clientData.id),
-          orderBy('createdAt', 'desc')
+          where('clientId', '==', clientData.id)
         );
         const notesSnapshot = await getDocs(notesQuery);
-        setSessionNotes(notesSnapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        const notes = notesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        notes.sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
+          return bTime - aTime;
+        });
+        setSessionNotes(notes);
       } catch (e) {
         console.error('Error fetching session notes:', e);
       }
