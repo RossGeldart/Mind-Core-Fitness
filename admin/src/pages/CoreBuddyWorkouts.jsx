@@ -7,9 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
-// Add randomiser card image: drop file into admin/src/assets/ and uncomment:
-// import randomiserCardImg from '../assets/randomiser-card-workout.JPG';
-let randomiserCardImg;
+import randomiserCardImg from '../assets/randomiser-card.jpg';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
