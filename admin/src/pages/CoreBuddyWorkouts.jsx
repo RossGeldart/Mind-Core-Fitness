@@ -74,6 +74,9 @@ export default function CoreBuddyWorkouts() {
   const [isPaused, setIsPaused] = useState(false);
   const [startCountdown, setStartCountdown] = useState(0);
 
+  // GIF looping
+  const gifRef = useRef(null);
+
   // Audio
   const beepRef = useRef(null);
   const goRef = useRef(null);
@@ -459,6 +462,25 @@ export default function CoreBuddyWorkouts() {
       osc.stop(ctx.currentTime + 0.3);
     } catch (e) {}
   };
+
+  // Restart GIF loop (in case the GIF file doesn't loop infinitely)
+  useEffect(() => {
+    if (view !== 'workout' || phase !== 'work') return;
+    const ex = workout[currentExIndex];
+    if (!ex?.isGif) return;
+
+    const interval = setInterval(() => {
+      const img = gifRef.current;
+      if (!img) return;
+      const src = img.getAttribute('src');
+      img.removeAttribute('src');
+      setTimeout(() => {
+        if (gifRef.current) gifRef.current.setAttribute('src', src);
+      }, 0);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [view, phase, currentExIndex, currentRound, workout]);
 
   // Render countdown ring
   const renderCountdownRing = (current, total, colorClass) => {
@@ -854,7 +876,7 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-video-container">
           {phase === 'work' ? (
             currentEx.isGif ? (
-              <img key={currentEx.videoUrl} className="wk-video" src={currentEx.videoUrl} alt={currentEx.name} />
+              <img ref={gifRef} key={currentEx.videoUrl} className="wk-video" src={currentEx.videoUrl} alt={currentEx.name} />
             ) : (
               <video key={currentEx.videoUrl} className="wk-video" src={currentEx.videoUrl} autoPlay loop muted playsInline />
             )
