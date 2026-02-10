@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -149,6 +149,9 @@ export default function PersonalBests() {
   const [compareA, setCompareA] = useState('');
   const [compareB, setCompareB] = useState('');
 
+  // Core Buddy PB state
+  const [cbPBs, setCbPBs] = useState({});
+
   // Touch/swipe state for carousel
   const carouselRef = useRef(null);
   const touchStartX = useRef(0);
@@ -157,6 +160,7 @@ export default function PersonalBests() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();
+  const isBlockClient = !clientData?.clientType || clientData.clientType === 'block';
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -170,8 +174,23 @@ export default function PersonalBests() {
   }, [currentUser, isClient, authLoading, navigate]);
 
   useEffect(() => {
-    if (clientData) {
+    if (!clientData) return;
+    if (isBlockClient) {
       fetchRecords();
+    } else {
+      // Core Buddy clients: load from coreBuddyPBs
+      const loadCBPBs = async () => {
+        try {
+          const pbDoc = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
+          if (pbDoc.exists()) {
+            setCbPBs(pbDoc.data().exercises || {});
+          }
+        } catch (err) {
+          console.error('Error loading Core Buddy PBs:', err);
+        }
+        setLoading(false);
+      };
+      loadCBPBs();
     }
   }, [clientData]);
 
@@ -605,9 +624,71 @@ export default function PersonalBests() {
 
         <div className="pb-intro">
           <h2>Personal Bests</h2>
-          <p>Track your strength benchmarks and body measurements each month.</p>
+          <p>{isBlockClient
+            ? 'Track your strength benchmarks and body measurements each month.'
+            : 'Your all-time best lifts from programme workouts.'
+          }</p>
         </div>
 
+        {/* ====== CORE BUDDY PB VIEW ====== */}
+        {!isBlockClient && (
+          <div className="pb-cb-section">
+            {Object.keys(cbPBs).length === 0 ? (
+              <div className="pb-empty">
+                <div className="pb-cb-empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                  </svg>
+                </div>
+                <h4>No personal bests yet</h4>
+                <p>Complete weight-based workouts to start tracking your personal bests.</p>
+              </div>
+            ) : (
+              <div className="pb-cb-grid">
+                {Object.entries(cbPBs)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([name, data], i) => (
+                  <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                    <div className="pb-cb-card-ring">
+                      <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
+                        {[...Array(60)].map((_, j) => {
+                          const angle = (j * 6 - 90) * (Math.PI / 180);
+                          const x1 = 40 + 30 * Math.cos(angle);
+                          const y1 = 40 + 30 * Math.sin(angle);
+                          const x2 = 40 + 37 * Math.cos(angle);
+                          const y2 = 40 + 37 * Math.sin(angle);
+                          return (
+                            <line key={j} x1={x1} y1={y1} x2={x2} y2={y2}
+                              className="pb-ring-tick filled"
+                              strokeWidth={j % 5 === 0 ? '2' : '1.5'} />
+                          );
+                        })}
+                      </svg>
+                      <div className="pb-cb-ring-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="pb-cb-card-info">
+                      <h4 className="pb-cb-card-name">{name}</h4>
+                      <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
+                      {data.achievedAt && (
+                        <div className="pb-cb-card-date">
+                          {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
+                            .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ====== BLOCK CLIENT PB VIEW ====== */}
+        {isBlockClient && <>
         {/* Tab Navigation */}
         <div className="pb-tabs">
           <button
@@ -1280,6 +1361,7 @@ export default function PersonalBests() {
             )}
           </div>
         )}
+        </>}
       </main>
 
       {/* Achievement Celebration */}

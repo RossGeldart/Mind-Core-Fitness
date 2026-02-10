@@ -578,9 +578,9 @@ export default function CoreBuddyProgrammes() {
     updated[currentExIdx] = { ...exLog, sets: [...exLog.sets, setData] };
     setSessionLogs(updated);
 
-    // Check PB for weighted exercises
-    if (exLog.type === 'weighted' && exLog.pbKey && setData.weight > 0) {
-      await checkPB(exLog.pbKey, setData.weight, setData.reps);
+    // Check PB for weighted exercises (tracked by exercise name)
+    if (exLog.type === 'weighted' && setData.weight > 0) {
+      await checkPB(exLog.name, setData.weight, setData.reps);
     }
 
     // Advance to next set or next exercise
@@ -658,28 +658,20 @@ export default function CoreBuddyProgrammes() {
     setView('sessionComplete');
   };
 
-  // Check and update PB
-  const checkPB = async (pbKey, weight, reps) => {
+  // Check and update PB (all-time bests stored by exercise name)
+  const checkPB = async (exerciseName, weight, reps) => {
     if (!clientData) return;
     try {
-      const now = new Date();
-      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      const docId = `${clientData.id}_${currentMonth}`;
-
-      // Get current month's PB doc
-      const pbDoc = await getDoc(doc(db, 'personalBests', docId));
+      const docId = clientData.id;
+      const pbDoc = await getDoc(doc(db, 'coreBuddyPBs', docId));
       const existing = pbDoc.exists() ? pbDoc.data() : null;
-      const currentBenchmarks = existing?.benchmarks || {};
-      const currentPB = currentBenchmarks[pbKey];
+      const currentExercises = existing?.exercises || {};
+      const currentPB = currentExercises[exerciseName];
 
       let isNewPB = false;
       if (!currentPB) {
         isNewPB = true;
-      } else if (pbKey === 'plank') {
-        // Time-based comparison handled separately
-        return;
       } else {
-        // Compare by weight first, then reps
         if (weight > (currentPB.weight || 0)) {
           isNewPB = true;
         } else if (weight === (currentPB.weight || 0) && reps > (currentPB.reps || 0)) {
@@ -688,13 +680,13 @@ export default function CoreBuddyProgrammes() {
       }
 
       if (isNewPB) {
-        const updatedBenchmarks = { ...currentBenchmarks, [pbKey]: { weight, reps } };
-        await setDoc(doc(db, 'personalBests', docId), {
+        const updatedExercises = {
+          ...currentExercises,
+          [exerciseName]: { weight, reps, achievedAt: Timestamp.now() },
+        };
+        await setDoc(doc(db, 'coreBuddyPBs', docId), {
           clientId: clientData.id,
-          month: currentMonth,
-          benchmarks: updatedBenchmarks,
-          bodyMetrics: existing?.bodyMetrics || {},
-          createdAt: existing?.createdAt || Timestamp.now(),
+          exercises: updatedExercises,
           updatedAt: Timestamp.now(),
         });
         showToast(`New PB! ${weight}kg × ${reps} reps`, 'success');
