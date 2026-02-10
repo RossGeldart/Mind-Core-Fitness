@@ -1,17 +1,60 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
+
+const TICK_COUNT = 60;
+const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
+const HABIT_COUNT = 5;
+
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function getWorkoutMilestone(total) {
+  let prev = 0;
+  for (const m of WORKOUT_MILESTONES) {
+    if (total < m) return { prev, next: m };
+    prev = m;
+  }
+  return { prev: WORKOUT_MILESTONES[WORKOUT_MILESTONES.length - 1], next: total + 100 };
+}
+
+// Programme templates (must match CoreBuddyProgrammes)
+const TEMPLATE_META = {
+  fullbody_4wk: { duration: 4, daysPerWeek: 3 },
+  fullbody_8wk: { duration: 8, daysPerWeek: 3 },
+  fullbody_12wk: { duration: 12, daysPerWeek: 3 },
+  core_4wk: { duration: 4, daysPerWeek: 3 },
+  core_8wk: { duration: 8, daysPerWeek: 3 },
+  core_12wk: { duration: 12, daysPerWeek: 3 },
+  upper_4wk: { duration: 4, daysPerWeek: 3 },
+  lower_4wk: { duration: 4, daysPerWeek: 3 },
+};
 
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
-  // 24hr countdown state
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [ticksElapsed, setTicksElapsed] = useState(0);
+  // Ring stats
+  const [programmePct, setProgrammePct] = useState(0);
+  const [programmeName, setProgrammeName] = useState('');
+  const [totalWorkouts, setTotalWorkouts] = useState(0);
+  const [habitWeekPct, setHabitWeekPct] = useState(0);
+  const [statsLoaded, setStatsLoaded] = useState(false);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -27,28 +70,61 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, currentUser, navigate]);
 
-  // 24hr countdown - time remaining in the day
+  // Load ring stats
   useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const endOfDay = new Date(now);
-      endOfDay.setHours(23, 59, 59, 999);
+    if (!currentUser || !clientData) return;
+    const loadStats = async () => {
+      try {
+        // 1. Programme progress
+        const progSnap = await getDoc(doc(db, 'clientProgrammes', clientData.id));
+        if (progSnap.exists()) {
+          const prog = progSnap.data();
+          const meta = TEMPLATE_META[prog.templateId];
+          if (meta) {
+            const completed = Object.keys(prog.completedSessions || {}).length;
+            const total = meta.duration * meta.daysPerWeek;
+            setProgrammePct(total > 0 ? Math.round((completed / total) * 100) : 0);
+            const name = prog.templateId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            setProgrammeName(name);
+          }
+        }
 
-      const diff = endOfDay - now;
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        // 2. Total randomiser workouts
+        const logsRef = collection(db, 'workoutLogs');
+        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const logsSnap = await getDocs(q);
+        const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
+        setTotalWorkouts(randomiserCount);
 
-      setTimeLeft({ hours, minutes, seconds });
-
-      // Calculate ticks elapsed out of 60 based on seconds
-      setTicksElapsed(60 - seconds);
+        // 3. Habit completion this week
+        const monday = getMonday(new Date());
+        const habitRef = collection(db, 'habitLogs');
+        const hq = query(habitRef, where('clientId', '==', currentUser.uid));
+        const habitSnap = await getDocs(hq);
+        let weekCompleted = 0;
+        let weekTotal = 0;
+        habitSnap.docs.forEach(d => {
+          const data = d.data();
+          const logDate = new Date(data.date + 'T00:00:00');
+          if (logDate >= monday) {
+            const habits = data.habits || {};
+            weekCompleted += Object.values(habits).filter(Boolean).length;
+            weekTotal += HABIT_COUNT;
+          }
+        });
+        // For days with no log yet this week, count them as 0/HABIT_COUNT
+        const today = new Date();
+        const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // Mon=1 .. Sun=7
+        const totalPossible = dayOfWeek * HABIT_COUNT;
+        setHabitWeekPct(totalPossible > 0 ? Math.round((weekCompleted / totalPossible) * 100) : 0);
+      } catch (err) {
+        console.error('Error loading dashboard stats:', err);
+      } finally {
+        setStatsLoaded(true);
+      }
     };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    loadStats();
+  }, [currentUser, clientData]);
 
   // Ripple effect
   const createRipple = (event) => {
@@ -67,6 +143,20 @@ export default function CoreBuddyDashboard() {
   };
 
   const firstName = clientData?.name?.split(' ')[0] || 'there';
+
+  // Calculate ring ticks
+  const programmeTicks = Math.round((programmePct / 100) * TICK_COUNT);
+  const { prev: wPrev, next: wNext } = getWorkoutMilestone(totalWorkouts);
+  const workoutPct = wNext > wPrev ? ((totalWorkouts - wPrev) / (wNext - wPrev)) * 100 : 100;
+  const workoutTicks = Math.round((workoutPct / 100) * TICK_COUNT);
+  const habitTicks = Math.round((habitWeekPct / 100) * TICK_COUNT);
+
+  // Ring definitions: outer to inner
+  const rings = [
+    { label: 'Programme', innerR: 85, outerR: 96, ticks: programmeTicks, cls: 'cb-conc-programme' },
+    { label: 'Workouts', innerR: 69, outerR: 80, ticks: workoutTicks, cls: 'cb-conc-workouts' },
+    { label: 'Habits', innerR: 53, outerR: 64, ticks: habitTicks, cls: 'cb-conc-habits' },
+  ];
 
   if (authLoading) {
     return (
@@ -104,45 +194,55 @@ export default function CoreBuddyDashboard() {
           <h2>Hey {firstName}</h2>
         </div>
 
-        {/* 24hr Countdown Ring */}
+        {/* Concentric Stats Rings */}
         <div className="cb-ring-container">
           <div className="cb-ring">
             <svg className="cb-ring-svg" viewBox="0 0 200 200">
-              {[...Array(60)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const innerRadius = 85;
-                const outerRadius = 96;
-                const x1 = 100 + innerRadius * Math.cos(angle);
-                const y1 = 100 + innerRadius * Math.sin(angle);
-                const x2 = 100 + outerRadius * Math.cos(angle);
-                const y2 = 100 + outerRadius * Math.sin(angle);
-                const isElapsed = i < ticksElapsed;
-
-                return (
-                  <line
-                    key={i}
-                    x1={x1} y1={y1} x2={x2} y2={y2}
-                    className={`ring-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
-                    strokeWidth={i % 5 === 0 ? '3' : '2'}
-                  />
-                );
-              })}
+              {rings.map((ring) => (
+                [...Array(TICK_COUNT)].map((_, i) => {
+                  const angle = (i * 6 - 90) * (Math.PI / 180);
+                  const x1 = 100 + ring.innerR * Math.cos(angle);
+                  const y1 = 100 + ring.innerR * Math.sin(angle);
+                  const x2 = 100 + ring.outerR * Math.cos(angle);
+                  const y2 = 100 + ring.outerR * Math.sin(angle);
+                  const filled = i < ring.ticks;
+                  return (
+                    <line
+                      key={`${ring.cls}-${i}`}
+                      x1={x1} y1={y1} x2={x2} y2={y2}
+                      className={`${ring.cls} ${filled ? 'conc-filled' : 'conc-empty'}`}
+                      strokeWidth={i % 5 === 0 ? '3' : '2'}
+                    />
+                  );
+                })
+              ))}
             </svg>
             <div className="cb-ring-center">
               <div className="cb-ring-logo">
                 <img src="/Logo.PNG" alt="Mind Core Fitness" />
               </div>
-              <div className="cb-ring-countdown">
-                <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="cb-timer-colon">:</span>
-                <span className="cb-timer-digit">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="cb-timer-colon">:</span>
-                <span className="cb-timer-digit cb-timer-seconds">{String(timeLeft.seconds).padStart(2, '0')}</span>
-              </div>
-              <div className="cb-ring-label">remaining today</div>
+              {statsLoaded && (
+                <span className="cb-ring-total">{totalWorkouts}</span>
+              )}
+              <span className="cb-ring-label">workouts</span>
             </div>
           </div>
-          <p className="cb-ring-tagline">You have 24 hours a day... <strong>make it count</strong> with Core Buddy</p>
+
+          {/* Ring Legend */}
+          <div className="cb-ring-legend">
+            <div className="cb-legend-item">
+              <span className="cb-legend-dot cb-dot-programme" />
+              <span className="cb-legend-text">Programme {programmePct}%</span>
+            </div>
+            <div className="cb-legend-item">
+              <span className="cb-legend-dot cb-dot-workouts" />
+              <span className="cb-legend-text">{totalWorkouts} / {wNext} workouts</span>
+            </div>
+            <div className="cb-legend-item">
+              <span className="cb-legend-dot cb-dot-habits" />
+              <span className="cb-legend-text">Habits {habitWeekPct}%</span>
+            </div>
+          </div>
         </div>
 
         {/* Feature Cards */}
@@ -248,50 +348,22 @@ export default function CoreBuddyDashboard() {
 
           {/* 5. Consistency */}
           <button
-            className="cb-feature-card cb-card-consistency cb-card-has-preview ripple-btn"
-            onClick={(e) => { createRipple(e); showToast('Consistency tracking coming soon!', 'info'); }}
+            className="cb-feature-card cb-card-consistency ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
           >
-            <div className="cb-card-top-row">
-              <div className="cb-card-icon cb-icon-consistency">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
-                </svg>
-              </div>
-              <div className="cb-card-content">
-                <h3>Consistency</h3>
-              </div>
-              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            <div className="cb-card-icon cb-icon-consistency">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
+              </svg>
             </div>
-            <div className="cb-card-preview-row">
-              <div className="cb-week-rings">
-                {['M','T','W','T','F','S','S'].map((day, i) => {
-                  const filled = i < 3 ? [55, 42, 30][i] : 0;
-                  return (
-                    <div key={i} className={`cb-week-ring ${i < 3 ? 'cb-week-ring-active' : ''}`}>
-                      <svg viewBox="0 0 100 100">
-                        {[...Array(60)].map((_, t) => {
-                          const angle = (t * 6 - 90) * (Math.PI / 180);
-                          const x1 = 50 + 38 * Math.cos(angle);
-                          const y1 = 50 + 38 * Math.sin(angle);
-                          const x2 = 50 + 46 * Math.cos(angle);
-                          const y2 = 50 + 46 * Math.sin(angle);
-                          return (
-                            <line key={t} x1={x1} y1={y1} x2={x2} y2={y2}
-                              className={t < filled ? 'cb-week-tick-filled' : 'cb-week-tick-empty'}
-                              strokeWidth={t % 5 === 0 ? '3' : '2'} />
-                          );
-                        })}
-                      </svg>
-                      <span>{day}</span>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="cb-card-content">
+              <h3>Consistency</h3>
+              <p>Weekly streaks and habit tracking</p>
             </div>
-            <p className="cb-card-desc">Weekly streaks and habit tracking</p>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 5. Leaderboard */}
+          {/* 6. Leaderboard */}
           <button
             className="cb-feature-card cb-card-leaderboard cb-card-locked ripple-btn"
             onClick={(e) => { createRipple(e); showToast('Leaderboard coming soon!', 'info'); }}

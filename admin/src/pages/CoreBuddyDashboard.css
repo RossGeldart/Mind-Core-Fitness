@@ -10,11 +10,6 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes colonBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
@@ -133,7 +128,7 @@
   text-align: center;
 }
 
-/* 24hr Countdown Ring */
+/* Concentric Stats Rings */
 .cb-ring-container {
   display: flex;
   flex-direction: column;
@@ -157,25 +152,39 @@
   left: 0;
   width: 100%;
   height: 100%;
-  transform: scaleX(-1);
 }
 
-.cb-ring .ring-tick {
-  transition: stroke 0.15s ease-out;
+/* Concentric ring colours — Programme (outer, amber) */
+.cb-conc-programme.conc-filled {
+  stroke: #f59e0b;
+  filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
 }
 
-.cb-ring .ring-tick.remaining {
+.cb-conc-programme.conc-empty {
+  stroke: rgba(245, 158, 11, 0.15);
+}
+
+/* Concentric ring colours — Workouts (middle, brand red) */
+.cb-conc-workouts.conc-filled {
   stroke: var(--color-primary);
+  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.4));
 }
 
-.cb-ring .ring-tick.elapsed {
-  stroke: #ffffff;
+.cb-conc-workouts.conc-empty {
+  stroke: rgba(153, 49, 60, 0.15);
 }
 
-[data-theme="light"] .cb-ring .ring-tick.elapsed {
-  stroke: #2d2d2d;
+/* Concentric ring colours — Habits (inner, green) */
+.cb-conc-habits.conc-filled {
+  stroke: #4caf50;
+  filter: drop-shadow(0 0 2px rgba(76, 175, 80, 0.4));
 }
 
+.cb-conc-habits.conc-empty {
+  stroke: rgba(76, 175, 80, 0.15);
+}
+
+/* Ring Center */
 .cb-ring-center {
   position: relative;
   z-index: 1;
@@ -183,17 +192,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 130px;
-  height: 130px;
+  width: 100px;
+  height: 100px;
 }
 
 .cb-ring-logo {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--color-primary);
-  margin-bottom: 6px;
+  border: 2px solid var(--color-primary);
+  margin-bottom: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -203,55 +212,54 @@
   object-fit: cover;
 }
 
-.cb-ring-countdown {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
+.cb-ring-total {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
-}
-
-.cb-timer-digit {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: var(--text-primary);
-  min-width: 2ch;
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-.cb-timer-colon {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  margin: 0 1px;
-  animation: colonBlink 1s ease-in-out infinite;
-}
-
-.cb-timer-seconds {
-  color: var(--color-primary);
+  line-height: 1;
 }
 
 .cb-ring-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-top: 3px;
+  margin-top: 1px;
 }
 
-.cb-ring-tagline {
+/* Ring Legend */
+.cb-ring-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cb-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cb-dot-programme { background: #f59e0b; }
+.cb-dot-workouts { background: var(--color-primary); }
+.cb-dot-habits { background: #4caf50; }
+
+.cb-legend-text {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  text-align: center;
-  margin-top: 16px;
-  line-height: 1.5;
-  max-width: 320px;
-}
-
-.cb-ring-tagline strong {
-  color: var(--color-primary);
-  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Feature Cards */
@@ -318,6 +326,7 @@
 .cb-feature-card:nth-child(3) { animation: cardEntrance 0.4s ease-out 0.29s backwards; }
 .cb-feature-card:nth-child(4) { animation: cardEntrance 0.4s ease-out 0.36s backwards; }
 .cb-feature-card:nth-child(5) { animation: cardEntrance 0.4s ease-out 0.43s backwards; }
+.cb-feature-card:nth-child(6) { animation: cardEntrance 0.4s ease-out 0.50s backwards; }
 
 .cb-feature-card:hover {
   transform: translateY(-2px);
@@ -452,45 +461,6 @@
 .cb-ring-cals .cb-tick-empty { stroke: rgba(153, 49, 60, 0.15); }
 .cb-ring-cals span { color: var(--color-primary); }
 
-/* Week Rings Preview */
-.cb-week-rings {
-  display: flex;
-  gap: 6px;
-}
-
-.cb-week-ring {
-  position: relative;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cb-week-ring svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.cb-week-ring span {
-  position: relative;
-  z-index: 1;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.45rem;
-  font-weight: 700;
-  color: var(--text-tertiary);
-}
-
-.cb-week-ring-active span {
-  color: #ff9800;
-}
-
-.cb-week-tick-filled { stroke: #ff9800; }
-.cb-week-tick-empty { stroke: rgba(255, 152, 0, 0.12); }
-
 /* Coming Soon Badge */
 .cb-coming-soon {
   flex-shrink: 0;
@@ -574,16 +544,16 @@
   }
 
   .cb-ring-center {
-    width: 150px;
-    height: 150px;
+    width: 110px;
+    height: 110px;
   }
 
   .cb-ring-logo {
-    width: 65px;
-    height: 65px;
+    width: 52px;
+    height: 52px;
   }
 
-  .cb-timer-digit {
+  .cb-ring-total {
     font-size: 1.4rem;
   }
 
