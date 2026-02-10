@@ -69,11 +69,11 @@ export default function CoreBuddyConsistency() {
 
   // Load all habit logs
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !clientData) return;
     const load = async () => {
       try {
         const logsRef = collection(db, 'habitLogs');
-        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const q = query(logsRef, where('clientId', '==', clientData.id));
         const snap = await getDocs(q);
         const logs = {};
         snap.docs.forEach(d => {
@@ -113,7 +113,7 @@ export default function CoreBuddyConsistency() {
       }
     };
     load();
-  }, [currentUser]);
+  }, [currentUser, clientData]);
 
   const todayLog = habitLogs[todayStr] || { habits: {} };
 
@@ -141,17 +141,17 @@ export default function CoreBuddyConsistency() {
     try {
       const current = todayLog.habits || {};
       const updated = { ...current, [habitKey]: !current[habitKey] };
-      const docId = todayLog._id || `${currentUser.uid}_${todayStr}`;
+      const docId = todayLog._id || `${clientData.id}_${todayStr}`;
 
       await setDoc(doc(db, 'habitLogs', docId), {
-        clientId: currentUser.uid,
+        clientId: clientData.id,
         date: todayStr,
         habits: updated,
       });
 
       setHabitLogs(prev => ({
         ...prev,
-        [todayStr]: { clientId: currentUser.uid, date: todayStr, habits: updated, _id: docId },
+        [todayStr]: { clientId: clientData.id, date: todayStr, habits: updated, _id: docId },
       }));
 
       // All habits complete — trigger celebration
