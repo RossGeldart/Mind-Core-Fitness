@@ -448,36 +448,74 @@
 .nut-meal-selector {
   display: flex;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   animation: fadeIn 0.3s ease-out 0.05s backwards;
 }
 
 .nut-meal-pill {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 10px 6px;
+  gap: 6px;
+  padding: 12px 6px;
   background: var(--bg-card);
   border: 1.5px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.72rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-secondary);
+  letter-spacing: 0.3px;
 }
 
-.nut-meal-pill .nut-meal-icon {
-  font-size: 0.85rem;
+.nut-meal-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nut-meal-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Meal icon colour tints */
+.nut-meal-icon-breakfast {
+  background: rgba(255, 152, 0, 0.12);
+  color: #ff9800;
+}
+
+.nut-meal-icon-lunch {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.nut-meal-icon-dinner {
+  background: rgba(103, 58, 183, 0.1);
+  color: #7c3aed;
+}
+
+.nut-meal-icon-snacks {
+  background: rgba(233, 30, 99, 0.1);
+  color: #e91e63;
 }
 
 .nut-meal-pill.active {
   border-color: var(--color-primary);
   background: rgba(153, 49, 60, 0.08);
   color: var(--color-primary);
+}
+
+.nut-meal-pill:hover:not(.active) {
+  border-color: rgba(153, 49, 60, 0.15);
+  transform: translateY(-1px);
 }
 
 /* ==================== MEAL CARDS ==================== */
@@ -503,7 +541,18 @@
 }
 
 .nut-meal-card-icon {
-  font-size: 1rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nut-meal-card-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .nut-meal-card-title {
@@ -560,30 +609,51 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 10px;
+  gap: 8px;
+  padding: 18px 10px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: var(--text-secondary);
 }
 
-.nut-add-btn svg {
-  width: 24px;
-  height: 24px;
+.nut-add-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nut-add-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 .nut-add-btn span {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-.nut-add-scan svg { color: var(--color-primary); }
-.nut-add-search svg { color: #2196f3; }
-.nut-add-manual svg { color: #4caf50; }
+.nut-add-scan .nut-add-icon {
+  background: rgba(153, 49, 60, 0.1);
+  color: var(--color-primary);
+}
+
+.nut-add-search .nut-add-icon {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.nut-add-manual .nut-add-icon {
+  background: rgba(76, 175, 80, 0.12);
+  color: #4caf50;
+}
 
 .nut-add-btn:hover {
   transform: translateY(-2px);
@@ -626,8 +696,9 @@
 }
 
 .nut-water-count {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--text-tertiary);
   margin-left: auto;
 }
@@ -665,10 +736,11 @@
 .nut-water-btns button {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 12px;
   border: 1.5px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-secondary);
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
@@ -681,6 +753,7 @@
 .nut-water-btns button:hover:not(:disabled) {
   border-color: #2196f3;
   color: #2196f3;
+  background: rgba(33, 150, 243, 0.08);
 }
 
 .nut-water-btns button:disabled {
