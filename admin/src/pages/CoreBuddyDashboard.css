@@ -360,6 +360,11 @@
   color: #2196f3;
 }
 
+.cb-icon-achievements {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
 .cb-icon-consistency {
   background: rgba(255, 152, 0, 0.1);
   color: #ff9800;

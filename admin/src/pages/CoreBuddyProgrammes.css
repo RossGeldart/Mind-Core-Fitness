@@ -1048,6 +1048,97 @@
   background: var(--color-error);
 }
 
+/* ==================== BADGE CELEBRATION ==================== */
+@keyframes celebrationIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes badgeGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
+  50% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.9)); }
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.pg-badge-celebration {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+}
+
+.pg-badge-celebration-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 36px 28px;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  animation: celebrationIn 0.5s ease-out;
+  border: 2px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.15);
+}
+
+.pg-badge-celebration-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  color: #f59e0b;
+  animation: badgeGlow 2s ease-in-out infinite, badgePulse 2s ease-in-out infinite;
+}
+
+.pg-badge-celebration-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pg-badge-celebration-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.pg-badge-celebration-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pg-badge-celebration-item {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+.pg-badge-celebration-dismiss {
+  background: none;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 8px 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (min-width: 400px) {
   .pg-dash-ring-wrap {
