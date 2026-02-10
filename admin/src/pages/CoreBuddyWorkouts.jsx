@@ -565,13 +565,13 @@ export default function CoreBuddyWorkouts() {
   stackTouch.current.lastIdx = activeCardIdx;
 
   const handleStackTouchStart = (e) => {
-    stackTouch.current = { startY: e.touches[0].clientY, dragging: true, didDrag: false, lastDrag: 0, lastIdx: activeCardIdx };
+    stackTouch.current = { startX: e.touches[0].clientX, dragging: true, didDrag: false, lastDrag: 0, lastIdx: activeCardIdx };
     setStackDrag(0);
   };
 
   const handleStackTouchMove = (e) => {
     if (!stackTouch.current.dragging) return;
-    const delta = stackTouch.current.startY - e.touches[0].clientY;
+    const delta = stackTouch.current.startX - e.touches[0].clientX;
     if (Math.abs(delta) > 15) stackTouch.current.didDrag = true;
     stackTouch.current.lastDrag = delta;
     setStackDrag(delta);
@@ -600,10 +600,10 @@ export default function CoreBuddyWorkouts() {
       : 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
 
     if (pos === 0) {
-      // Active card — fully visible, slides up on swipe and fades out
+      // Active card — fully visible, slides left on swipe and fades out
       const p = Math.max(0, progress);
       return {
-        transform: `translateY(${-p * 100}%) scale(${1 - p * 0.05})`,
+        transform: `translateX(${-p * 100}%) scale(${1 - p * 0.05})`,
         opacity: 1 - p * 0.8,
         zIndex: 10,
         transition,
@@ -611,16 +611,16 @@ export default function CoreBuddyWorkouts() {
     } else if (pos === 1) {
       // Next card — hidden directly behind active, same position
       return {
-        transform: 'translateY(0) scale(1)',
+        transform: 'translateX(0) scale(1)',
         opacity: 1,
         zIndex: 5,
         transition,
       };
     } else if (pos === -1) {
-      // Previous card — off-screen above, slides back on swipe down and fades in
+      // Previous card — off-screen left, slides back on swipe right and fades in
       const p = Math.max(0, -progress);
       return {
-        transform: `translateY(${-100 + p * 100}%) scale(${0.95 + p * 0.05})`,
+        transform: `translateX(${-100 + p * 100}%) scale(${0.95 + p * 0.05})`,
         opacity: p,
         zIndex: 15,
         transition,
