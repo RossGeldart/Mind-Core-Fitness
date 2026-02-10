@@ -26,8 +26,23 @@ import './styles/theme.css';
 function ScrollToTop() {
   const { pathname } = useLocation();
 
+  // Disable browser's automatic scroll restoration
   useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  useEffect(() => {
+    // Immediate scroll
     window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // Also scroll after a frame to override any browser restoration
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
   }, [pathname]);
 
   return null;
