@@ -10,6 +10,7 @@ const CLIENT_TYPES = [
   { value: 'block', label: 'Block (1-2-1)' },
   { value: 'circuit_vip', label: 'Circuit VIP' },
   { value: 'circuit_dropin', label: 'Circuit Drop-in' },
+  { value: 'core_buddy', label: 'Core Buddy' },
 ];
 
 export default function AddClient() {
