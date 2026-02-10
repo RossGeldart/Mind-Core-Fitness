@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -47,6 +47,10 @@ export default function CoreBuddyConsistency() {
   const [saving, setSaving] = useState(false);
   const [streak, setStreak] = useState(0);
   const [toast, setToast] = useState(null);
+  const [justChecked, setJustChecked] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const particlesRef = useRef([]);
+  const confettiRef = useRef([]);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -115,6 +119,24 @@ export default function CoreBuddyConsistency() {
 
   const toggleHabit = async (habitKey) => {
     if (!currentUser || saving) return;
+    const wasChecked = todayLog.habits?.[habitKey] || false;
+
+    // Trigger check animation (only when checking, not unchecking)
+    if (!wasChecked) {
+      particlesRef.current = [...Array(10)].map((_, i) => {
+        const angle = (i / 10) * 2 * Math.PI;
+        const dist = 18 + Math.random() * 20;
+        return {
+          tx: Math.cos(angle) * dist,
+          ty: Math.sin(angle) * dist,
+          size: 3 + Math.random() * 4,
+          duration: 0.4 + Math.random() * 0.3,
+        };
+      });
+      setJustChecked(habitKey);
+      setTimeout(() => setJustChecked(null), 700);
+    }
+
     setSaving(true);
     try {
       const current = todayLog.habits || {};
@@ -131,6 +153,25 @@ export default function CoreBuddyConsistency() {
         ...prev,
         [todayStr]: { clientId: currentUser.uid, date: todayStr, habits: updated, _id: docId },
       }));
+
+      // All habits complete — trigger celebration
+      const completedCount = Object.values(updated).filter(Boolean).length;
+      if (completedCount === DEFAULT_HABITS.length && !wasChecked) {
+        confettiRef.current = [...Array(50)].map((_, i) => ({
+          x: 5 + Math.random() * 90,
+          delay: Math.random() * 0.6,
+          color: ['#4caf50', '#ff9800', '#2196f3', '#e91e63', '#ffeb3b', '#9c27b0'][i % 6],
+          drift: (Math.random() - 0.5) * 120,
+          spin: Math.random() * 720 - 360,
+          duration: 1.5 + Math.random() * 1.5,
+          width: 4 + Math.random() * 8,
+          height: 4 + Math.random() * 10,
+        }));
+        setTimeout(() => {
+          setShowCelebration(true);
+          setTimeout(() => setShowCelebration(false), 3500);
+        }, 500);
+      }
     } catch (err) {
       console.error('Error saving habit:', err);
       showToast('Failed to save. Try again.', 'error');
@@ -195,7 +236,8 @@ export default function CoreBuddyConsistency() {
                 return (
                   <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
                     className={i < todayTicks ? 'cbc-tick-filled' : 'cbc-tick-empty'}
-                    strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                    strokeWidth={i % 5 === 0 ? '3' : '2'}
+                    style={{ transitionDelay: `${i * 20}ms` }} />
                 );
               })}
             </svg>
@@ -219,20 +261,35 @@ export default function CoreBuddyConsistency() {
           <div className="cbc-habits">
             {DEFAULT_HABITS.map((habit) => {
               const checked = todayLog.habits?.[habit.key] || false;
+              const isJustChecked = justChecked === habit.key;
               return (
                 <button
                   key={habit.key}
-                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''}`}
+                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   onClick={() => toggleHabit(habit.key)}
                   disabled={saving}
                 >
                   <div className="cbc-habit-check">
                     {checked ? (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12" className={`cbc-check-path ${isJustChecked ? 'cbc-check-animate' : ''}`} />
+                      </svg>
                     ) : (
                       <div className="cbc-habit-circle" />
                     )}
                   </div>
+                  {isJustChecked && (
+                    <div className="cbc-particles">
+                      {particlesRef.current.map((p, i) => (
+                        <span key={i} className="cbc-particle" style={{
+                          '--tx': `${p.tx}px`,
+                          '--ty': `${p.ty}px`,
+                          '--size': `${p.size}px`,
+                          animationDuration: `${p.duration}s`,
+                        }} />
+                      ))}
+                    </div>
+                  )}
                   <div className="cbc-habit-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path d={habit.icon} />
@@ -285,6 +342,34 @@ export default function CoreBuddyConsistency() {
           </div>
         </div>
       </main>
+
+      {/* All-done celebration */}
+      {showCelebration && (
+        <div className="cbc-celebration" onClick={() => setShowCelebration(false)}>
+          <div className="cbc-confetti-container">
+            {confettiRef.current.map((c, i) => (
+              <span key={i} className="cbc-confetti-piece" style={{
+                '--x': `${c.x}%`,
+                '--delay': `${c.delay}s`,
+                '--color': c.color,
+                '--drift': `${c.drift}px`,
+                '--spin': `${c.spin}deg`,
+                '--duration': `${c.duration}s`,
+                width: `${c.width}px`,
+                height: `${c.height}px`,
+              }} />
+            ))}
+          </div>
+          <div className="cbc-celebration-card">
+            <svg className="cbc-celebration-icon" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <h2 className="cbc-celebration-title">Crushed it!</h2>
+            <p className="cbc-celebration-sub">All habits complete today</p>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
