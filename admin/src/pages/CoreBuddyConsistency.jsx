@@ -1,0 +1,296 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import './CoreBuddyConsistency.css';
+
+const TICK_COUNT = 60;
+
+const DEFAULT_HABITS = [
+  { key: 'trained', label: 'Trained', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
+  { key: 'protein', label: 'Hit Protein', icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z' },
+  { key: 'steps', label: '10k Steps', icon: 'M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7' },
+  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
+  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z' },
+];
+
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function getWeekDates(monday) {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+}
+
+export default function CoreBuddyConsistency() {
+  const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const [habitLogs, setHabitLogs] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  const today = new Date();
+  const todayStr = formatDate(today);
+  const monday = getMonday(today);
+  const weekDates = getWeekDates(monday);
+  const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  useEffect(() => {
+    if (!authLoading && (!currentUser || !isClient)) navigate('/');
+  }, [currentUser, isClient, authLoading, navigate]);
+
+  // Load all habit logs
+  useEffect(() => {
+    if (!currentUser) return;
+    const load = async () => {
+      try {
+        const logsRef = collection(db, 'habitLogs');
+        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        const logs = {};
+        snap.docs.forEach(d => {
+          const data = d.data();
+          logs[data.date] = { ...data, _id: d.id };
+        });
+        setHabitLogs(logs);
+
+        // Calculate streak
+        let s = 0;
+        const checkDate = new Date(today);
+        while (true) {
+          const dateStr = formatDate(checkDate);
+          const log = logs[dateStr];
+          if (log) {
+            const completed = Object.values(log.habits || {}).filter(Boolean).length;
+            if (completed >= 3) {
+              s++;
+              checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+              break;
+            }
+          } else {
+            // If today has no log yet, don't break streak
+            if (dateStr === todayStr) {
+              checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+        }
+        setStreak(s);
+      } catch (err) {
+        console.error('Error loading habit logs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [currentUser]);
+
+  const todayLog = habitLogs[todayStr] || { habits: {} };
+
+  const toggleHabit = async (habitKey) => {
+    if (!currentUser || saving) return;
+    setSaving(true);
+    try {
+      const current = todayLog.habits || {};
+      const updated = { ...current, [habitKey]: !current[habitKey] };
+      const docId = todayLog._id || `${currentUser.uid}_${todayStr}`;
+
+      await setDoc(doc(db, 'habitLogs', docId), {
+        clientId: currentUser.uid,
+        date: todayStr,
+        habits: updated,
+      });
+
+      setHabitLogs(prev => ({
+        ...prev,
+        [todayStr]: { clientId: currentUser.uid, date: todayStr, habits: updated, _id: docId },
+      }));
+    } catch (err) {
+      console.error('Error saving habit:', err);
+      showToast('Failed to save. Try again.', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Weekly stats
+  const weeklyStats = weekDates.map(date => {
+    const dateStr = formatDate(date);
+    const log = habitLogs[dateStr];
+    const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
+    return { date, dateStr, completed, total: DEFAULT_HABITS.length };
+  });
+
+  const weeklyCompleted = weeklyStats.reduce((sum, d) => sum + d.completed, 0);
+  const weeklyTotal = weeklyStats.reduce((sum, d) => sum + d.total, 0);
+  const weeklyPct = weeklyTotal > 0 ? Math.round((weeklyCompleted / weeklyTotal) * 100) : 0;
+  const weeklyTicks = Math.round((weeklyPct / 100) * TICK_COUNT);
+
+  const todayCompleted = Object.values(todayLog.habits || {}).filter(Boolean).length;
+  const todayPct = Math.round((todayCompleted / DEFAULT_HABITS.length) * 100);
+  const todayTicks = Math.round((todayPct / 100) * TICK_COUNT);
+
+  if (authLoading || loading) {
+    return (
+      <div className="cbc-loading">
+        <div className="cbc-loading-spinner" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'}>
+      {/* Header */}
+      <header className="cbc-header">
+        <button className="cbc-back" onClick={() => navigate('/client/core-buddy')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 className="cbc-title">Consistency</h1>
+        <button className="cbc-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+          {isDark ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          )}
+        </button>
+      </header>
+
+      <main className="cbc-main">
+        {/* Today's Progress Ring */}
+        <div className="cbc-ring-section">
+          <div className="cbc-progress-ring">
+            <svg viewBox="0 0 200 200">
+              {[...Array(TICK_COUNT)].map((_, i) => {
+                const angle = (i * 6 - 90) * (Math.PI / 180);
+                const x1 = 100 + 78 * Math.cos(angle);
+                const y1 = 100 + 78 * Math.sin(angle);
+                const x2 = 100 + 94 * Math.cos(angle);
+                const y2 = 100 + 94 * Math.sin(angle);
+                return (
+                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                    className={i < todayTicks ? 'cbc-tick-filled' : 'cbc-tick-empty'}
+                    strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                );
+              })}
+            </svg>
+            <div className="cbc-ring-center">
+              <span className="cbc-ring-pct">{todayPct}%</span>
+              <span className="cbc-ring-label">today</span>
+            </div>
+          </div>
+
+          {/* Streak */}
+          <div className="cbc-streak">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff9800" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span className="cbc-streak-count">{streak}</span>
+            <span className="cbc-streak-label">day streak</span>
+          </div>
+        </div>
+
+        {/* Today's Habits */}
+        <div className="cbc-section">
+          <h2 className="cbc-section-title">Today's Habits</h2>
+          <div className="cbc-habits">
+            {DEFAULT_HABITS.map((habit) => {
+              const checked = todayLog.habits?.[habit.key] || false;
+              return (
+                <button
+                  key={habit.key}
+                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''}`}
+                  onClick={() => toggleHabit(habit.key)}
+                  disabled={saving}
+                >
+                  <div className="cbc-habit-check">
+                    {checked ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    ) : (
+                      <div className="cbc-habit-circle" />
+                    )}
+                  </div>
+                  <div className="cbc-habit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d={habit.icon} />
+                    </svg>
+                  </div>
+                  <span className="cbc-habit-label">{habit.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Weekly Overview */}
+        <div className="cbc-section">
+          <h2 className="cbc-section-title">This Week</h2>
+          <div className="cbc-week-grid">
+            {weeklyStats.map((day, i) => {
+              const isToday = day.dateStr === todayStr;
+              const pct = day.total > 0 ? day.completed / day.total : 0;
+              const filled = Math.round(pct * TICK_COUNT);
+              return (
+                <div key={i} className={`cbc-day-ring ${isToday ? 'cbc-day-today' : ''} ${day.completed > 0 ? 'cbc-day-active' : ''}`}>
+                  <svg viewBox="0 0 100 100">
+                    {[...Array(TICK_COUNT)].map((_, t) => {
+                      const angle = (t * 6 - 90) * (Math.PI / 180);
+                      const x1 = 50 + 38 * Math.cos(angle);
+                      const y1 = 50 + 38 * Math.sin(angle);
+                      const x2 = 50 + 46 * Math.cos(angle);
+                      const y2 = 50 + 46 * Math.sin(angle);
+                      return (
+                        <line key={t} x1={x1} y1={y1} x2={x2} y2={y2}
+                          className={t < filled ? 'cbc-day-tick-filled' : 'cbc-day-tick-empty'}
+                          strokeWidth={t % 5 === 0 ? '3' : '2'} />
+                      );
+                    })}
+                  </svg>
+                  <span className="cbc-day-label">{dayLabels[i]}</span>
+                  <span className="cbc-day-count">{day.completed}/{day.total}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Weekly summary bar */}
+          <div className="cbc-week-summary">
+            <div className="cbc-week-summary-bar">
+              <div className="cbc-week-summary-fill" style={{ width: `${weeklyPct}%` }} />
+            </div>
+            <span className="cbc-week-summary-text">{weeklyCompleted} / {weeklyTotal} habits this week ({weeklyPct}%)</span>
+          </div>
+        </div>
+      </main>
+
+      {toast && (
+        <div className={`toast-notification ${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,412 @@
+/* Core Buddy Consistency / Habit Tracking */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading */
+.cbc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-body);
+}
+
+.cbc-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: #4caf50;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Page */
+.cbc-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  padding-bottom: 40px;
+}
+
+/* Header */
+.cbc-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-header);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  gap: 12px;
+}
+
+.cbc-back {
+  background: none;
+  border: none;
+  color: var(--text-on-header);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.cbc-back:hover { opacity: 1; }
+
+.cbc-title {
+  flex: 1;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-on-header);
+  letter-spacing: 0.5px;
+}
+
+.cbc-theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text-on-header);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.cbc-theme-toggle:hover { opacity: 1; }
+
+/* Main */
+.cbc-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Progress Ring Section */
+.cbc-ring-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 8px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.cbc-progress-ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cbc-progress-ring svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cbc-tick-filled {
+  stroke: #4caf50;
+  filter: drop-shadow(0 0 3px rgba(76, 175, 80, 0.5));
+}
+
+.cbc-tick-empty {
+  stroke: var(--border-color);
+}
+
+.cbc-ring-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cbc-ring-pct {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #4caf50;
+}
+
+.cbc-ring-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* Streak */
+.cbc-streak {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 152, 0, 0.08);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 20px;
+}
+
+.cbc-streak-count {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ff9800;
+}
+
+.cbc-streak-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Section */
+.cbc-section {
+  padding: 20px 0;
+  animation: fadeIn 0.4s ease-out 0.1s backwards;
+}
+
+.cbc-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Habit Buttons */
+.cbc-habits {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cbc-habit-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-habit-btn:active {
+  transform: scale(0.98);
+}
+
+.cbc-habit-done {
+  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(76, 175, 80, 0.06);
+}
+
+.cbc-habit-check {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cbc-habit-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  transition: border-color 0.2s;
+}
+
+.cbc-habit-done .cbc-habit-check {
+  color: #4caf50;
+}
+
+.cbc-habit-done .cbc-habit-circle {
+  border-color: #4caf50;
+  background: #4caf50;
+}
+
+.cbc-habit-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.cbc-habit-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cbc-habit-done .cbc-habit-icon {
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.cbc-habit-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.cbc-habit-done .cbc-habit-label {
+  color: #4caf50;
+}
+
+/* Weekly Day Rings */
+.cbc-week-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.cbc-day-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.cbc-day-ring svg {
+  width: 42px;
+  height: 42px;
+}
+
+.cbc-day-tick-filled {
+  stroke: #4caf50;
+}
+
+.cbc-day-tick-empty {
+  stroke: rgba(76, 175, 80, 0.12);
+}
+
+.cbc-day-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.cbc-day-today .cbc-day-label {
+  color: #4caf50;
+}
+
+.cbc-day-count {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.5rem;
+  color: var(--text-tertiary);
+}
+
+.cbc-day-active .cbc-day-count {
+  color: #4caf50;
+}
+
+/* Weekly Summary Bar */
+.cbc-week-summary {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cbc-week-summary-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cbc-week-summary-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #66bb6a);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.cbc-week-summary-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* Toast */
+.toast-notification {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (min-width: 400px) {
+  .cbc-progress-ring {
+    width: 180px;
+    height: 180px;
+  }
+
+  .cbc-ring-pct {
+    font-size: 1.8rem;
+  }
+
+  .cbc-day-ring svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .cbc-habit-btn {
+    padding: 18px;
+  }
+}
+
+@media (min-width: 500px) {
+  .cbc-main {
+    padding: 0 24px;
+  }
+}
