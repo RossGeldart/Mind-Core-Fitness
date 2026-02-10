@@ -340,24 +340,7 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 3. Progress / PBs */}
-          <button
-            className="cb-feature-card cb-card-progress ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
-          >
-            <div className="cb-card-icon cb-icon-progress">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-            <div className="cb-card-content">
-              <h3>My Progress</h3>
-              <p>Track personal bests and body metrics</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-
-          {/* 4. Daily Habits */}
+          {/* 3. Daily Habits */}
           <button
             className="cb-feature-card cb-card-consistency ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
@@ -370,6 +353,23 @@ export default function CoreBuddyDashboard() {
             <div className="cb-card-content">
               <h3>Daily Habits</h3>
               <p>Check off your daily habits and build streaks</p>
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* 4. Progress / PBs */}
+          <button
+            className="cb-feature-card cb-card-progress ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
+          >
+            <div className="cb-card-icon cb-icon-progress">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div className="cb-card-content">
+              <h3>My Progress</h3>
+              <p>Track personal bests and body metrics</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
