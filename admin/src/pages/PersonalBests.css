@@ -1372,6 +1372,10 @@
 }
 
 /* ====== Core Buddy Target Features ====== */
+@keyframes targetPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(153, 49, 60, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(153, 49, 60, 0); }
+}
 .pb-ring-tick.hit {
   stroke: var(--color-success);
 }
@@ -1416,8 +1420,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1.5px solid var(--border-color);
-  background: var(--bg-body);
+  border: 1.5px solid var(--color-primary);
+  background: var(--color-primary-light);
   color: var(--color-primary);
   cursor: pointer;
   display: flex;
@@ -1425,12 +1429,14 @@
   justify-content: center;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  animation: targetPulse 2s ease-in-out infinite;
 }
 
 .pb-cb-target-btn:hover {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
-  transform: scale(1.05);
+  transform: scale(1.1);
+  animation: none;
 }
 
 .pb-cb-achievements-link {
