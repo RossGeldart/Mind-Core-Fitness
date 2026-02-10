@@ -11,6 +11,18 @@ import programmeCardImg from '../assets/programme-card-workout.JPG';
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
 
+// Programme templates (must match CoreBuddyProgrammes / CoreBuddyDashboard)
+const TEMPLATE_META = {
+  fullbody_4wk: { duration: 4, daysPerWeek: 3 },
+  fullbody_8wk: { duration: 8, daysPerWeek: 3 },
+  fullbody_12wk: { duration: 12, daysPerWeek: 3 },
+  core_4wk: { duration: 4, daysPerWeek: 3 },
+  core_8wk: { duration: 8, daysPerWeek: 3 },
+  core_12wk: { duration: 12, daysPerWeek: 3 },
+  upper_4wk: { duration: 4, daysPerWeek: 3 },
+  lower_4wk: { duration: 4, daysPerWeek: 3 },
+};
+
 const EQUIPMENT = [
   { key: 'bodyweight', label: 'Bodyweight', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' },
   { key: 'dumbbells', label: 'Dumbbells', icon: 'M6 5H3v14h3V5zm12 0h-3v14h3V5zm-9 3H7v8h2V8zm7 0h-2v8h2V8zm-5 0h-2v8h2V8z' },
@@ -96,6 +108,7 @@ export default function CoreBuddyWorkouts() {
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
   const [programmeWeeklyCount, setProgrammeWeeklyCount] = useState(0);
+  const [programmePct, setProgrammePct] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -145,14 +158,22 @@ export default function CoreBuddyWorkouts() {
         });
         setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
 
-        // Only count programme workouts from the current active programme
+        // Programme: weekly count + overall progress
         let progCount = 0;
         if (clientData) {
           try {
             const progSnap = await getDoc(doc(db, 'clientProgrammes', clientData.id));
             if (progSnap.exists()) {
-              const activeTemplateId = progSnap.data().templateId;
+              const prog = progSnap.data();
+              const activeTemplateId = prog.templateId;
               progCount = weekly.filter(d => d.type === 'programme' && d.programmeId === activeTemplateId).length;
+              // Overall programme progress (matches dashboard calculation)
+              const meta = TEMPLATE_META[activeTemplateId];
+              if (meta) {
+                const completed = Object.keys(prog.completedSessions || {}).length;
+                const total = meta.duration * meta.daysPerWeek;
+                setProgrammePct(total > 0 ? Math.round((completed / total) * 100) : 0);
+              }
             }
           } catch (e) {
             // Fallback: no active programme, show 0
@@ -611,7 +632,7 @@ export default function CoreBuddyWorkouts() {
                       const y1 = 100 + 78 * Math.sin(angle);
                       const x2 = 100 + 94 * Math.cos(angle);
                       const y2 = 100 + 94 * Math.sin(angle);
-                      const filled = Math.round((Math.min(programmeWeeklyCount, 3) / 3) * TICK_COUNT);
+                      const filled = Math.round((programmePct / 100) * TICK_COUNT);
                       return (
                         <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
                           className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
@@ -621,10 +642,10 @@ export default function CoreBuddyWorkouts() {
                   </svg>
                   <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
                 </div>
-                {programmeWeeklyCount > 0 && (
+                {programmePct > 0 && (
                   <div className="wk-menu-card-stats">
-                    <span className="wk-menu-stat-big">{programmeWeeklyCount}</span>
-                    <span className="wk-menu-stat-label">this week</span>
+                    <span className="wk-menu-stat-big">{programmePct}%</span>
+                    <span className="wk-menu-stat-label">complete</span>
                   </div>
                 )}
                 <h3>Pick a Programme</h3>
