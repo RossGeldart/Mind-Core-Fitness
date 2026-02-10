@@ -102,17 +102,18 @@
 
 /* ==================== MENU VIEW ==================== */
 
-/* Carousel Layout */
+/* Carousel Layout — fixed height fills viewport exactly */
 .wk-main-carousel {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 56px);
+  height: calc(100dvh - 56px);
   padding-bottom: 0 !important;
   overflow: hidden;
 }
 
 /* Motivational heading */
 .wk-carousel-heading {
+  flex-shrink: 0;
   text-align: center;
   padding: 4px 16px 0;
   animation: fadeIn 0.4s ease-out;
@@ -135,18 +136,16 @@
   letter-spacing: 0.5px;
 }
 
-/* Carousel container */
+/* Carousel container — fills remaining space between heading and dots */
 .wk-carousel {
   position: relative;
   overflow: hidden;
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  min-height: 0;
 }
 
 .wk-carousel-track {
@@ -156,7 +155,7 @@
   height: 100%;
 }
 
-/* Each slide is 82% wide — leaves a peek of the next card */
+/* Each slide is 84% wide — shows a peek of the next card on the right */
 .wk-carousel-slide {
   flex: 0 0 84%;
   width: 84%;
@@ -166,12 +165,13 @@
   align-items: stretch;
 }
 
-/* Dot indicators - tight under cards */
+/* Dot indicators — tight directly under cards */
 .wk-carousel-dots {
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding: 10px 0 16px;
+  padding: 10px 0 20px;
 }
 
 .wk-carousel-dot {
@@ -283,7 +283,14 @@
 .wk-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0.8) 75%, rgb(0, 0, 0) 88%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.1) 40%,
+    rgba(0, 0, 0, 0.4) 60%,
+    rgba(0, 0, 0, 0.75) 78%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
   z-index: 1;
 }
 
@@ -297,8 +304,8 @@
 }
 
 .wk-card-has-bg {
-  justify-content: flex-end;
-  padding: 0 16px 24px;
+  justify-content: center;
+  padding: 20px 16px 28px;
   border: none;
 }
 
