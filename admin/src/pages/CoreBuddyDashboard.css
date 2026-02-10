@@ -254,25 +254,32 @@
   font-weight: 500;
 }
 
-/* Concentric Stats Rings */
-.cb-stats-container {
+/* Stats Rings Row — 3 separate rings */
+.cb-stats-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 0 20px;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 0 16px;
   animation: fadeIn 0.5s ease-out 0.2s backwards;
 }
 
-.cb-stats-ring {
+.cb-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cb-stat-ring {
   position: relative;
-  width: 220px;
-  height: 220px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.cb-stats-ring-svg {
+.cb-stat-ring svg {
   position: absolute;
   top: 0;
   left: 0;
@@ -280,113 +287,37 @@
   height: 100%;
 }
 
-/* Concentric ring colours — Programme (outer, amber) */
-.cb-conc-programme.conc-filled {
-  stroke: #f59e0b;
-  filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4));
-}
-
-.cb-conc-programme.conc-empty {
-  stroke: rgba(245, 158, 11, 0.15);
-}
-
-/* Concentric ring colours — Workouts (middle, brand red) */
-.cb-conc-workouts.conc-filled {
-  stroke: var(--color-primary);
-  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.4));
-}
-
-.cb-conc-workouts.conc-empty {
-  stroke: rgba(153, 49, 60, 0.15);
-}
-
-/* Concentric ring colours — Habits (inner, green) */
-.cb-conc-habits.conc-filled {
-  stroke: #4caf50;
-  filter: drop-shadow(0 0 2px rgba(76, 175, 80, 0.4));
-}
-
-.cb-conc-habits.conc-empty {
-  stroke: rgba(76, 175, 80, 0.15);
-}
-
-/* Stats Ring Center */
-.cb-stats-center {
+.cb-stat-value {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90px;
-  height: 90px;
-}
-
-.cb-stats-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--color-primary);
-  margin-bottom: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.cb-stats-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cb-stats-total {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
-  line-height: 1;
 }
 
-.cb-stats-label {
+.cb-stat-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.5rem;
+  font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 1px;
+  letter-spacing: 0.5px;
 }
 
-/* Ring Legend */
-.cb-ring-legend {
-  display: flex;
-  gap: 16px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+/* Programme ring — amber */
+.cb-stat-programme .cb-stat-filled { stroke: #f59e0b; }
+.cb-stat-programme .cb-stat-empty { stroke: rgba(245, 158, 11, 0.15); }
+.cb-stat-programme .cb-stat-value { color: #f59e0b; }
 
-.cb-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+/* Workouts ring — brand red */
+.cb-stat-workouts .cb-stat-filled { stroke: var(--color-primary); }
+.cb-stat-workouts .cb-stat-empty { stroke: rgba(153, 49, 60, 0.15); }
+.cb-stat-workouts .cb-stat-value { color: var(--color-primary); }
 
-.cb-legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.cb-dot-programme { background: #f59e0b; }
-.cb-dot-workouts { background: var(--color-primary); }
-.cb-dot-habits { background: #4caf50; }
-
-.cb-legend-text {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
+/* Habits ring — green */
+.cb-stat-habits .cb-stat-filled { stroke: #4caf50; }
+.cb-stat-habits .cb-stat-empty { stroke: rgba(76, 175, 80, 0.15); }
+.cb-stat-habits .cb-stat-value { color: #4caf50; }
 
 /* Feature Cards */
 .cb-features {
@@ -683,23 +614,17 @@
     font-size: 1.4rem;
   }
 
-  .cb-stats-ring {
-    width: 260px;
-    height: 260px;
+  .cb-stat-ring {
+    width: 90px;
+    height: 90px;
   }
 
-  .cb-stats-center {
-    width: 100px;
-    height: 100px;
+  .cb-stat-value {
+    font-size: 0.95rem;
   }
 
-  .cb-stats-logo {
-    width: 46px;
-    height: 46px;
-  }
-
-  .cb-stats-total {
-    font-size: 1.2rem;
+  .cb-stats-row {
+    gap: 24px;
   }
 
   .cb-feature-card {
