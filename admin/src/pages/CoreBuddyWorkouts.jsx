@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, Timestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -143,7 +143,21 @@ export default function CoreBuddyWorkouts() {
           return ms >= mondayMs;
         });
         setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
-        setProgrammeWeeklyCount(weekly.filter(d => d.type === 'programme').length);
+
+        // Only count programme workouts from the current active programme
+        let progCount = 0;
+        if (clientData) {
+          try {
+            const progSnap = await getDoc(doc(db, 'clientProgrammes', clientData.id));
+            if (progSnap.exists()) {
+              const activeTemplateId = progSnap.data().templateId;
+              progCount = weekly.filter(d => d.type === 'programme' && d.programmeId === activeTemplateId).length;
+            }
+          } catch (e) {
+            // Fallback: no active programme, show 0
+          }
+        }
+        setProgrammeWeeklyCount(progCount);
 
         // Streak: consecutive weeks (going backwards) with at least 1 randomiser workout
         const timestamps = randomiserDocs
@@ -198,7 +212,7 @@ export default function CoreBuddyWorkouts() {
       }
     };
     loadStats();
-  }, [currentUser, view]);
+  }, [currentUser, clientData, view]);
 
   // Build storage paths from equipment + focus selection
   const getStoragePaths = () => {
