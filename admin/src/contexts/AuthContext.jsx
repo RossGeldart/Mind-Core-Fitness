@@ -85,11 +85,16 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   };
 
+  const updateClientData = (fields) => {
+    setClientData(prev => prev ? { ...prev, ...fields } : prev);
+  };
+
   const value = {
     currentUser,
     isAdmin,
     isClient,
     clientData,
+    updateClientData,
     login,
     logout,
     resetPassword,

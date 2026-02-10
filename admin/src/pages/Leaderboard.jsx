@@ -118,7 +118,7 @@ export default function Leaderboard() {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
+  const { currentUser, isClient, clientData, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -146,6 +146,7 @@ export default function Leaderboard() {
     setTogglingOptIn(true);
     try {
       await updateDoc(doc(db, 'clients', clientData.id), { leaderboardOptIn: true });
+      updateClientData({ leaderboardOptIn: true });
       setOptedIn(true);
       showToast('You\'re on the leaderboard!', 'success');
     } catch (err) {
@@ -161,6 +162,7 @@ export default function Leaderboard() {
     setShowLeaveModal(false);
     try {
       await updateDoc(doc(db, 'clients', clientData.id), { leaderboardOptIn: false });
+      updateClientData({ leaderboardOptIn: false });
       setOptedIn(false);
       setRankings([]);
       showToast('You\'ve left the leaderboard', 'info');
