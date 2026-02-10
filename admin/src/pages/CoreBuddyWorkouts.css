@@ -156,6 +156,56 @@
   line-height: 1.4;
 }
 
+/* Card Background Image */
+.wk-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.wk-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.75) 100%);
+  z-index: 1;
+}
+
+.wk-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.wk-card-has-bg h3 {
+  color: #fff;
+}
+
+.wk-card-has-bg p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.wk-card-has-bg .wk-menu-stat-big {
+  color: #fff;
+}
+
+.wk-card-has-bg .wk-menu-stat-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.wk-card-has-bg .wk-menu-tick-empty {
+  stroke: rgba(255, 255, 255, 0.25);
+}
+
+.wk-card-has-bg .wk-menu-ring-logo {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
 /* Menu Card Ring */
 .wk-menu-ring-wrap {
   position: relative;

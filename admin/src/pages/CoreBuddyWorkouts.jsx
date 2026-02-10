@@ -7,6 +7,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 
+// Card background images — drop images into src/assets/images/cards/
+// e.g. programme.jpg, random.jpg, etc.
+const cardImages = import.meta.glob('../assets/images/cards/*.{jpg,jpeg,png,webp}', { eager: true });
+function getCardImage(name) {
+  const match = Object.entries(cardImages).find(([path]) => path.toLowerCase().includes(name));
+  return match ? match[1].default : null;
+}
+
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
 
@@ -544,6 +552,7 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
+    const programmeImg = getCardImage('programme');
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="cb-header">
@@ -593,33 +602,41 @@ export default function CoreBuddyWorkouts() {
             </button>
 
             {/* Pick a Programme Card */}
-            <button className="wk-menu-card" onClick={() => navigate('/client/core-buddy/programmes')}>
-              <div className="wk-menu-ring-wrap">
-                <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                  {[...Array(TICK_COUNT)].map((_, i) => {
-                    const angle = (i * 6 - 90) * (Math.PI / 180);
-                    const x1 = 100 + 78 * Math.cos(angle);
-                    const y1 = 100 + 78 * Math.sin(angle);
-                    const x2 = 100 + 94 * Math.cos(angle);
-                    const y2 = 100 + 94 * Math.sin(angle);
-                    const filled = Math.round((Math.min(programmeWeeklyCount, 3) / 3) * TICK_COUNT);
-                    return (
-                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                        className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
-                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
-                    );
-                  })}
-                </svg>
-                <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
-              </div>
-              {programmeWeeklyCount > 0 && (
-                <div className="wk-menu-card-stats">
-                  <span className="wk-menu-stat-big">{programmeWeeklyCount}</span>
-                  <span className="wk-menu-stat-label">this week</span>
-                </div>
+            <button className={`wk-menu-card${programmeImg ? ' wk-card-has-bg' : ''}`} onClick={() => navigate('/client/core-buddy/programmes')}>
+              {programmeImg && (
+                <>
+                  <img src={programmeImg} alt="" className="wk-card-bg" />
+                  <div className="wk-card-overlay" />
+                </>
               )}
-              <h3>Pick a Programme</h3>
-              <p>Structured set & rep programmes with progressive overload</p>
+              <div className="wk-card-content">
+                <div className="wk-menu-ring-wrap">
+                  <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                    {[...Array(TICK_COUNT)].map((_, i) => {
+                      const angle = (i * 6 - 90) * (Math.PI / 180);
+                      const x1 = 100 + 78 * Math.cos(angle);
+                      const y1 = 100 + 78 * Math.sin(angle);
+                      const x2 = 100 + 94 * Math.cos(angle);
+                      const y2 = 100 + 94 * Math.sin(angle);
+                      const filled = Math.round((Math.min(programmeWeeklyCount, 3) / 3) * TICK_COUNT);
+                      return (
+                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                          className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
+                          strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                      );
+                    })}
+                  </svg>
+                  <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+                </div>
+                {programmeWeeklyCount > 0 && (
+                  <div className="wk-menu-card-stats">
+                    <span className="wk-menu-stat-big">{programmeWeeklyCount}</span>
+                    <span className="wk-menu-stat-label">this week</span>
+                  </div>
+                )}
+                <h3>Pick a Programme</h3>
+                <p>Structured set & rep programmes with progressive overload</p>
+              </div>
             </button>
           </div>
 
