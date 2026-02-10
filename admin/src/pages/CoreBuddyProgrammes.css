@@ -664,7 +664,7 @@
 /* Video Demo */
 .pg-video-container {
   position: relative;
-  margin: 8px 12px 0;
+  margin: 8px 12px 12px;
   border-radius: 14px;
   overflow: hidden;
   background: #000;
