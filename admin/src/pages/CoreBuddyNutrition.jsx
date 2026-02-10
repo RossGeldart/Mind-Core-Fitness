@@ -101,6 +101,7 @@ export default function CoreBuddyNutrition() {
 
   const scannerRef = useRef(null);
   const quaggaRunning = useRef(false);
+  const searchInputRef = useRef(null);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -390,7 +391,7 @@ export default function CoreBuddyNutrition() {
   const fetchProductByBarcode = async (barcode) => {
     setBarcodeLooking(true);
     try {
-      const url = `https://world.openfoodfacts.net/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -418,7 +419,7 @@ export default function CoreBuddyNutrition() {
     if (!searchQuery.trim()) return;
     setSearchLoading(true);
     try {
-      const url = `https://world.openfoodfacts.net/api/v2/search?search_terms=${encodeURIComponent(searchQuery)}&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments&page_size=10`;
+      const url = `https://world.openfoodfacts.org/api/v2/search?search_terms=${encodeURIComponent(searchQuery)}&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments&page_size=10`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -962,8 +963,9 @@ export default function CoreBuddyNutrition() {
             {addMode === 'search' && !scannedProduct && (
               <div className="nut-search-area">
                 <div className="nut-search-bar">
-                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                  <input type="text" ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && searchFood()}
+                    onFocus={() => setTimeout(() => searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)}
                     placeholder="Search food or product..." autoFocus />
                   <button onClick={searchFood} disabled={searchLoading}>
                     {searchLoading ? '...' : 'Search'}
