@@ -349,7 +349,7 @@ export default function Leaderboard() {
     return (
       <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="lb-header">
-          <button className="lb-back" onClick={() => navigate('/client')}>
+          <button className="lb-back" onClick={() => navigate('/client/core-buddy')}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <h1 className="lb-title">Leaderboard</h1>
@@ -415,7 +415,7 @@ export default function Leaderboard() {
   return (
     <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
       <header className="lb-header">
-        <button className="lb-back" onClick={() => navigate('/client')}>
+        <button className="lb-back" onClick={() => navigate('/client/core-buddy')}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <h1 className="lb-title">Leaderboard</h1>
