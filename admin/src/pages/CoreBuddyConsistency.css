@@ -203,6 +203,7 @@
 }
 
 .cbc-habit-btn {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -213,8 +214,9 @@
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  overflow: visible;
 }
 
 .cbc-habit-btn:active {
@@ -382,6 +384,157 @@
   gap: 8px;
   animation: fadeIn 0.3s ease-out;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Checkmark Draw Animation ===== */
+.cbc-check-path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+}
+
+.cbc-check-animate {
+  animation: checkDraw 0.35s ease-out forwards;
+}
+
+@keyframes checkDraw {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* ===== Habit Card Bounce ===== */
+.cbc-habit-just-checked {
+  animation: habitBounce 0.45s ease-out;
+  z-index: 5;
+}
+
+@keyframes habitBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.04); }
+  50% { transform: scale(0.97); }
+  75% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+/* ===== Particle Burst ===== */
+.cbc-particles {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.cbc-particle {
+  position: absolute;
+  width: var(--size, 5px);
+  height: var(--size, 5px);
+  background: #4caf50;
+  border-radius: 50%;
+  animation: particleBurst 0.55s ease-out both;
+}
+
+@keyframes particleBurst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* ===== Ring Tick Animation ===== */
+.cbc-tick-filled,
+.cbc-tick-empty {
+  transition: stroke 0.3s ease, filter 0.3s ease;
+}
+
+/* ===== All-Done Celebration ===== */
+.cbc-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  animation: celebrationFadeIn 0.3s ease-out;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@keyframes celebrationFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cbc-confetti-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cbc-confetti-piece {
+  position: absolute;
+  top: -10px;
+  left: var(--x, 50%);
+  background: var(--color, #4caf50);
+  border-radius: 2px;
+  animation: confettiFall var(--duration, 2s) ease-in var(--delay, 0s) both;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+  85% { opacity: 1; }
+  100% {
+    transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(var(--spin, 360deg));
+    opacity: 0;
+  }
+}
+
+.cbc-celebration-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 48px;
+  background: var(--bg-card);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 20px;
+  animation: celebrationCardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(76, 175, 80, 0.15);
+}
+
+@keyframes celebrationCardPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.cbc-celebration-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 12px;
+  animation: celebrationCheckPop 0.5s ease-out 0.4s backwards;
+}
+
+@keyframes celebrationCheckPop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.cbc-celebration-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4caf50;
+  margin: 0 0 4px;
+}
+
+.cbc-celebration-sub {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 /* Responsive */
