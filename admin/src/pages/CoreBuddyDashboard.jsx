@@ -376,8 +376,8 @@ export default function CoreBuddyDashboard() {
 
           {/* 6. Leaderboard */}
           <button
-            className="cb-feature-card cb-card-leaderboard cb-card-locked ripple-btn"
-            onClick={(e) => { createRipple(e); showToast('Leaderboard coming soon!', 'info'); }}
+            className="cb-feature-card cb-card-leaderboard ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
           >
             <div className="cb-card-icon cb-icon-leaderboard">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -388,7 +388,6 @@ export default function CoreBuddyDashboard() {
               <h3>Leaderboard</h3>
               <p>Compete with your Core Buddies</p>
             </div>
-            <span className="cb-coming-soon">Coming Soon</span>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
