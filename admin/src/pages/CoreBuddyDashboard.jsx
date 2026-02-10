@@ -10,15 +10,6 @@ const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
 const HABIT_COUNT = 5;
 
-function getMonday(date) {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
 function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
@@ -123,27 +114,17 @@ export default function CoreBuddyDashboard() {
         const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
         setTotalWorkouts(randomiserCount);
 
-        // 3. Habit completion this week
-        const monday = getMonday(new Date());
+        // 3. Habit completion today
+        const todayStr = formatDate(new Date());
         const habitRef = collection(db, 'habitLogs');
-        const hq = query(habitRef, where('clientId', '==', clientData.id));
+        const hq = query(habitRef, where('clientId', '==', clientData.id), where('date', '==', todayStr));
         const habitSnap = await getDocs(hq);
-        let weekCompleted = 0;
-        let weekTotal = 0;
-        habitSnap.docs.forEach(d => {
-          const data = d.data();
-          const logDate = new Date(data.date + 'T00:00:00');
-          if (logDate >= monday) {
-            const habits = data.habits || {};
-            weekCompleted += Object.values(habits).filter(Boolean).length;
-            weekTotal += HABIT_COUNT;
-          }
-        });
-        // For days with no log yet this week, count them as 0/HABIT_COUNT
-        const today = new Date();
-        const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // Mon=1 .. Sun=7
-        const totalPossible = dayOfWeek * HABIT_COUNT;
-        setHabitWeekPct(totalPossible > 0 ? Math.round((weekCompleted / totalPossible) * 100) : 0);
+        let todayCompleted = 0;
+        if (!habitSnap.empty) {
+          const habits = habitSnap.docs[0].data().habits || {};
+          todayCompleted = Object.values(habits).filter(Boolean).length;
+        }
+        setHabitWeekPct(Math.round((todayCompleted / HABIT_COUNT) * 100));
       } catch (err) {
         console.error('Error loading dashboard stats:', err);
       } finally {
@@ -181,7 +162,7 @@ export default function CoreBuddyDashboard() {
   const statRings = [
     { label: 'Programme', value: `${programmePct}%`, ticks: programmeTicks, cls: 'cb-stat-programme' },
     { label: 'Workouts', value: `${totalWorkouts}`, ticks: workoutTicks, cls: 'cb-stat-workouts' },
-    { label: 'Habits', value: `${habitWeekPct}%`, ticks: habitTicks, cls: 'cb-stat-habits' },
+    { label: 'Habits Today', value: `${habitWeekPct}%`, ticks: habitTicks, cls: 'cb-stat-habits' },
   ];
 
   if (authLoading) {
