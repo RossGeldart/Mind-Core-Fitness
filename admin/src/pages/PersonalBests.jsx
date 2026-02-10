@@ -160,6 +160,16 @@ export default function PersonalBests() {
   const carouselRef = useRef(null);
   const touchStartX = useRef(0);
   const touchDelta = useRef(0);
+  const slideDirection = useRef('right');
+
+  const goToSlide = useCallback((newIndex) => {
+    setCurrentSlide(prev => {
+      const clamped = Math.max(0, Math.min(EXERCISES.length - 1, newIndex));
+      if (clamped === prev) return prev;
+      slideDirection.current = clamped > prev ? 'right' : 'left';
+      return clamped;
+    });
+  }, []);
 
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark } = useTheme();
@@ -621,10 +631,10 @@ export default function PersonalBests() {
   };
 
   const handleCarouselTouchEnd = () => {
-    if (touchDelta.current < -50 && currentSlide < EXERCISES.length - 1) {
-      setCurrentSlide(prev => prev + 1);
-    } else if (touchDelta.current > 50 && currentSlide > 0) {
-      setCurrentSlide(prev => prev - 1);
+    if (touchDelta.current < -50) {
+      goToSlide(currentSlide + 1);
+    } else if (touchDelta.current > 50) {
+      goToSlide(currentSlide - 1);
     }
     touchDelta.current = 0;
   };
@@ -888,7 +898,7 @@ export default function PersonalBests() {
                   onTouchMove={handleCarouselTouchMove}
                   onTouchEnd={handleCarouselTouchEnd}
                 >
-                  <div className="pb-ring-container">
+                  <div className={`pb-ring-container slide-from-${slideDirection.current}`} key={currentSlide}>
                     <div className="pb-ring">
                       <svg className="pb-ring-svg" viewBox="0 0 200 200">
                         {[...Array(60)].map((_, i) => {
@@ -954,7 +964,7 @@ export default function PersonalBests() {
                       <button
                         key={i}
                         className={`pb-dot ${i === currentSlide ? 'active' : ''}`}
-                        onClick={() => setCurrentSlide(i)}
+                        onClick={() => goToSlide(i)}
                       />
                     ))}
                   </div>
@@ -962,14 +972,14 @@ export default function PersonalBests() {
                   {/* Arrow buttons */}
                   <button
                     className="pb-carousel-arrow left"
-                    onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+                    onClick={() => goToSlide(currentSlide - 1)}
                     disabled={currentSlide === 0}
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                   </button>
                   <button
                     className="pb-carousel-arrow right"
-                    onClick={() => setCurrentSlide(prev => Math.min(EXERCISES.length - 1, prev + 1))}
+                    onClick={() => goToSlide(currentSlide + 1)}
                     disabled={currentSlide === EXERCISES.length - 1}
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>

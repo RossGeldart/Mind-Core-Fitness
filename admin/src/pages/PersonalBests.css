@@ -79,10 +79,20 @@
 }
 
 /* ====== Carousel & Ring ====== */
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideFromLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 .pb-carousel {
   position: relative;
   padding: 10px 0 20px;
-  animation: fadeIn 0.5s ease-out;
+  overflow: hidden;
 }
 
 .pb-ring-container {
@@ -90,6 +100,14 @@
   justify-content: center;
   align-items: center;
   padding: 10px 0;
+}
+
+.pb-ring-container.slide-from-right {
+  animation: slideFromRight 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pb-ring-container.slide-from-left {
+  animation: slideFromLeft 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pb-ring {
