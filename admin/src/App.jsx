@@ -20,6 +20,7 @@ import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
 import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
+import Leaderboard from './pages/Leaderboard';
 import './styles/theme.css';
 
 // Scroll to top on route change
@@ -91,6 +92,7 @@ function App() {
             <Route path="/client/core-buddy/programmes" element={<CoreBuddyProgrammes />} />
             <Route path="/client/core-buddy/achievements" element={<CoreBuddyAchievements />} />
             <Route path="/client/core-buddy/consistency" element={<CoreBuddyConsistency />} />
+            <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
