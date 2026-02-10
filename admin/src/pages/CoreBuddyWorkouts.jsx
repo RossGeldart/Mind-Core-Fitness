@@ -561,9 +561,10 @@ export default function CoreBuddyWorkouts() {
     return completed / totalExercises;
   };
 
-  // ==================== CARD STACK LOGIC ====================
-  const STACK_CARDS = 2;
-  const SWIPE_THRESHOLD = 70;
+  // ==================== CAROUSEL LOGIC ====================
+  const CARD_COUNT = 2;
+  const SWIPE_THRESHOLD = 50;
+  const carouselRef = useRef(null);
   stackTouch.current.lastIdx = activeCardIdx;
 
   // Trigger cascade + count-up on card swap
@@ -584,26 +585,26 @@ export default function CoreBuddyWorkouts() {
     return () => clearTimeout(t);
   }, [displayedStat, activeCardIdx, weeklyCount, programmePct]);
 
-  const handleStackTouchStart = (e) => {
+  const handleCarouselTouchStart = (e) => {
     stackTouch.current = { startX: e.touches[0].clientX, dragging: true, didDrag: false, lastDrag: 0, lastIdx: activeCardIdx };
     setStackDrag(0);
   };
 
-  const handleStackTouchMove = (e) => {
+  const handleCarouselTouchMove = (e) => {
     if (!stackTouch.current.dragging) return;
     const delta = stackTouch.current.startX - e.touches[0].clientX;
-    if (Math.abs(delta) > 15) stackTouch.current.didDrag = true;
+    if (Math.abs(delta) > 10) stackTouch.current.didDrag = true;
     stackTouch.current.lastDrag = delta;
     setStackDrag(delta);
   };
 
-  const handleStackTouchEnd = () => {
+  const handleCarouselTouchEnd = () => {
     if (!stackTouch.current.dragging) return;
     stackTouch.current.dragging = false;
     const drag = stackTouch.current.lastDrag;
     const idx = stackTouch.current.lastIdx;
 
-    if (drag > SWIPE_THRESHOLD && idx < STACK_CARDS - 1) {
+    if (drag > SWIPE_THRESHOLD && idx < CARD_COUNT - 1) {
       commitCardSwap(idx + 1);
     } else if (drag < -SWIPE_THRESHOLD && idx > 0) {
       commitCardSwap(idx - 1);
@@ -611,51 +612,16 @@ export default function CoreBuddyWorkouts() {
     setStackDrag(0);
   };
 
-  const getCardStyle = (index) => {
-    const pos = index - activeCardIdx;
+  // Carousel: compute translateX for the track based on active card + drag offset
+  const getCarouselTrackStyle = () => {
     const dragging = stackTouch.current.dragging;
-    const progress = Math.max(-1, Math.min(1, stackDrag / 300));
-    const springCurve = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
-    const transition = dragging
-      ? 'none'
-      : `transform 0.35s ${springCurve}, box-shadow 0.35s ease`;
-
-    if (pos === 0) {
-      // Active (front) card — lifts on drag, deals off to the left
-      const p = Math.max(0, progress);
-      const lift = Math.min(p * 1.5, 1); // 0→1 as you drag
-      return {
-        transform: `translateX(${-p * 85}%) translateY(${p * 8 - lift * 4}px) rotate(${-p * 14}deg) scale(${1 + lift * 0.03})`,
-        zIndex: 10,
-        boxShadow: lift > 0 ? `0 ${8 + lift * 16}px ${20 + lift * 30}px rgba(0,0,0,${0.2 + lift * 0.15})` : undefined,
-        transition,
-      };
-    } else if (pos === 1) {
-      // Next card — fanned behind, bigger peek, slides forward on swipe
-      const p = Math.max(0, progress);
-      return {
-        transform: `translateX(${18 * (1 - p)}px) translateY(${6 * (1 - p)}px) rotate(${5 * (1 - p)}deg) scale(${0.95 + 0.05 * p})`,
-        zIndex: 5,
-        transition,
-      };
-    } else if (pos === -1) {
-      // Previous card — deals back in from the left
-      const p = Math.max(0, -progress);
-      return {
-        transform: `translateX(${-85 * (1 - p)}%) translateY(${8 * (1 - p)}px) rotate(${-14 * (1 - p)}deg)`,
-        zIndex: p > 0.3 ? 15 : 5,
-        transition,
-      };
-    }
-    return { visibility: 'hidden', pointerEvents: 'none' };
-  };
-
-  // Parallax offset for background image during drag
-  const getParallaxStyle = (index) => {
-    const pos = index - activeCardIdx;
-    if (pos !== 0 || !stackTouch.current.dragging) return {};
-    const shift = -(stackDrag / 300) * 15; // image lags behind card
-    return { transform: `translateX(${shift}px)` };
+    const dragPx = dragging ? -stackDrag : 0;
+    const baseOffset = -activeCardIdx * 100;
+    const dragPercent = dragging ? (dragPx / (carouselRef.current?.offsetWidth || 360)) * 100 : 0;
+    return {
+      transform: `translateX(calc(${baseOffset}% + ${dragPercent}%))`,
+      transition: dragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+    };
   };
 
   // Toast element - rendered at the end of every view
@@ -690,100 +656,115 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
         </header>
-        <main className="wk-main wk-main-stack">
+        <main className="wk-main wk-main-carousel">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
+
+          {/* Carousel */}
           <div
-            className="wk-card-stack"
-            onTouchStart={handleStackTouchStart}
-            onTouchMove={handleStackTouchMove}
-            onTouchEnd={handleStackTouchEnd}
+            className="wk-carousel"
+            ref={carouselRef}
+            onTouchStart={handleCarouselTouchStart}
+            onTouchMove={handleCarouselTouchMove}
+            onTouchEnd={handleCarouselTouchEnd}
           >
-            {/* Card 0: Random Workout */}
-            <button
-              className={`wk-menu-card wk-card-has-bg wk-stacked${activeCardIdx === 0 ? ' wk-card-landed' : ''}`}
-              style={getCardStyle(0)}
-              onClick={() => { if (!stackTouch.current.didDrag) setView('setup'); }}
-            >
-              <img src={randomiserImg} alt="" className="wk-card-bg" style={getParallaxStyle(0)} />
-              <div className="wk-card-overlay" />
-              <div className="wk-card-content">
-                <div className={`wk-menu-ring-wrap${activeCardIdx === 0 ? ' wk-ring-glow' : ''}`} key={`ring0-${cardLanded}`}>
-                  <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                    {[...Array(TICK_COUNT)].map((_, i) => {
-                      const angle = (i * 6 - 90) * (Math.PI / 180);
-                      const x1 = 100 + 78 * Math.cos(angle);
-                      const y1 = 100 + 78 * Math.sin(angle);
-                      const x2 = 100 + 94 * Math.cos(angle);
-                      const y2 = 100 + 94 * Math.sin(angle);
-                      const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
-                      return (
-                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                          className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 0 ? ' wk-tick-cascade' : ''}`}
-                          strokeWidth={i % 5 === 0 ? '3' : '2'}
-                          style={activeCardIdx === 0 ? { animationDelay: `${i * 0.018}s` } : undefined} />
-                      );
-                    })}
-                  </svg>
-                  <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
-                </div>
-                <div className="wk-menu-card-stats">
-                  <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 0 ? displayedStat : weeklyCount}</span>
-                  <span className="wk-menu-stat-label">this week</span>
-                </div>
-                <h3>Random Workout</h3>
-                <p>Interval-based HIIT from your exercise library</p>
-              </div>
-            </button>
-
-            {/* Card 1: Pick a Programme */}
-            <button
-              className={`wk-menu-card wk-card-has-bg wk-stacked${activeCardIdx === 1 ? ' wk-card-landed' : ''}`}
-              style={getCardStyle(1)}
-              onClick={() => { if (!stackTouch.current.didDrag) navigate('/client/core-buddy/programmes'); }}
-            >
-              <img src={programmeImg} alt="" className="wk-card-bg" style={getParallaxStyle(1)} />
-              <div className="wk-card-overlay" />
-              <div className="wk-card-content">
-                <div className={`wk-menu-ring-wrap${activeCardIdx === 1 ? ' wk-ring-glow' : ''}`} key={`ring1-${cardLanded}`}>
-                  <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                    {[...Array(TICK_COUNT)].map((_, i) => {
-                      const angle = (i * 6 - 90) * (Math.PI / 180);
-                      const x1 = 100 + 78 * Math.cos(angle);
-                      const y1 = 100 + 78 * Math.sin(angle);
-                      const x2 = 100 + 94 * Math.cos(angle);
-                      const y2 = 100 + 94 * Math.sin(angle);
-                      const filled = Math.round((programmePct / 100) * TICK_COUNT);
-                      return (
-                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                          className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 1 ? ' wk-tick-cascade' : ''}`}
-                          strokeWidth={i % 5 === 0 ? '3' : '2'}
-                          style={activeCardIdx === 1 ? { animationDelay: `${i * 0.018}s` } : undefined} />
-                      );
-                    })}
-                  </svg>
-                  <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
-                </div>
-                {programmePct > 0 && (
-                  <div className="wk-menu-card-stats">
-                    <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 1 ? displayedStat : programmePct}%</span>
-                    <span className="wk-menu-stat-label">complete</span>
-                  </div>
-                )}
-                <h3>Pick a Programme</h3>
-                <p>Structured set & rep programmes with progressive overload</p>
-              </div>
-            </button>
-
-            {/* Dot indicators */}
-            <div className="wk-stack-dots">
-              {[...Array(STACK_CARDS)].map((_, i) => (
+            <div className="wk-carousel-track" style={getCarouselTrackStyle()}>
+              {/* Card 0: Random Workout */}
+              <div className="wk-carousel-slide">
                 <button
-                  key={i}
-                  className={`wk-stack-dot${activeCardIdx === i ? ' active' : ''}`}
-                  onClick={() => { if (activeCardIdx !== i) commitCardSwap(i); }}
-                />
-              ))}
+                  className={`wk-menu-card wk-card-has-bg${activeCardIdx === 0 ? ' wk-card-landed' : ''}`}
+                  onClick={() => { if (!stackTouch.current.didDrag) setView('setup'); }}
+                >
+                  <img src={randomiserImg} alt="" className="wk-card-bg" />
+                  <div className="wk-card-overlay" />
+                  <div className="wk-card-content">
+                    <div className={`wk-menu-ring-wrap${activeCardIdx === 0 ? ' wk-ring-glow' : ''}`} key={`ring0-${cardLanded}`}>
+                      <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                        {[...Array(TICK_COUNT)].map((_, i) => {
+                          const angle = (i * 6 - 90) * (Math.PI / 180);
+                          const x1 = 100 + 78 * Math.cos(angle);
+                          const y1 = 100 + 78 * Math.sin(angle);
+                          const x2 = 100 + 94 * Math.cos(angle);
+                          const y2 = 100 + 94 * Math.sin(angle);
+                          const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
+                          return (
+                            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                              className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 0 ? ' wk-tick-cascade' : ''}`}
+                              strokeWidth={i % 5 === 0 ? '3' : '2'}
+                              style={activeCardIdx === 0 ? { animationDelay: `${i * 0.018}s` } : undefined} />
+                          );
+                        })}
+                      </svg>
+                      <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+                    </div>
+                    <div className="wk-menu-card-stats">
+                      <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 0 ? displayedStat : weeklyCount}</span>
+                      <span className="wk-menu-stat-label">this week</span>
+                    </div>
+                    <h3>Random Workout</h3>
+                    <p>Interval-based HIIT from your exercise library</p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Card 1: Pick a Programme */}
+              <div className="wk-carousel-slide">
+                <button
+                  className={`wk-menu-card wk-card-has-bg${activeCardIdx === 1 ? ' wk-card-landed' : ''}`}
+                  onClick={() => { if (!stackTouch.current.didDrag) navigate('/client/core-buddy/programmes'); }}
+                >
+                  <img src={programmeImg} alt="" className="wk-card-bg" />
+                  <div className="wk-card-overlay" />
+                  <div className="wk-card-content">
+                    <div className={`wk-menu-ring-wrap${activeCardIdx === 1 ? ' wk-ring-glow' : ''}`} key={`ring1-${cardLanded}`}>
+                      <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                        {[...Array(TICK_COUNT)].map((_, i) => {
+                          const angle = (i * 6 - 90) * (Math.PI / 180);
+                          const x1 = 100 + 78 * Math.cos(angle);
+                          const y1 = 100 + 78 * Math.sin(angle);
+                          const x2 = 100 + 94 * Math.cos(angle);
+                          const y2 = 100 + 94 * Math.sin(angle);
+                          const filled = Math.round((programmePct / 100) * TICK_COUNT);
+                          return (
+                            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                              className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 1 ? ' wk-tick-cascade' : ''}`}
+                              strokeWidth={i % 5 === 0 ? '3' : '2'}
+                              style={activeCardIdx === 1 ? { animationDelay: `${i * 0.018}s` } : undefined} />
+                          );
+                        })}
+                      </svg>
+                      <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+                    </div>
+                    {programmePct > 0 && (
+                      <div className="wk-menu-card-stats">
+                        <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 1 ? displayedStat : programmePct}%</span>
+                        <span className="wk-menu-stat-label">complete</span>
+                      </div>
+                    )}
+                    <h3>Pick a Programme</h3>
+                    <p>Structured set & rep programmes with progressive overload</p>
+                  </div>
+                </button>
+              </div>
             </div>
+
+            {/* Swipe hint (only on first card) */}
+            {activeCardIdx === 0 && (
+              <div className="wk-swipe-hint">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                <span>Swipe</span>
+              </div>
+            )}
+          </div>
+
+          {/* Dot indicators */}
+          <div className="wk-carousel-dots">
+            {[...Array(CARD_COUNT)].map((_, i) => (
+              <button
+                key={i}
+                className={`wk-carousel-dot${activeCardIdx === i ? ' active' : ''}`}
+                onClick={() => { if (activeCardIdx !== i) commitCardSwap(i); }}
+              />
+            ))}
           </div>
         </main>
         {toastEl}
