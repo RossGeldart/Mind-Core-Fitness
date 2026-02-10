@@ -32,6 +32,10 @@ const LEVELS = [
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, c => c.toUpperCase());
+}
+
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -274,7 +278,7 @@ export default function CoreBuddyWorkouts() {
       const exercises = await Promise.all(
         uniqueItems.map(async (item) => {
           const url = await getDownloadURL(item);
-          const name = item.name.replace(/\.(mp4|gif)$/i, '');
+          const name = toTitleCase(item.name.replace(/\.(mp4|gif)$/i, ''));
           const isGif = /\.gif$/i.test(item.name);
           return { name, videoUrl: url, isGif };
         })
