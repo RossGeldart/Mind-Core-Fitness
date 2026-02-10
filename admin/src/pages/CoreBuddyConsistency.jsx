@@ -249,7 +249,7 @@ export default function CoreBuddyConsistency() {
 
           {/* Streak */}
           <div className="cbc-streak">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff9800" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             <span className="cbc-streak-count">{streak}</span>
             <span className="cbc-streak-label">day streak</span>
           </div>

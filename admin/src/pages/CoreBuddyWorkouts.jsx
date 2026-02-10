@@ -107,11 +107,11 @@ export default function CoreBuddyWorkouts() {
 
   // Load workout stats
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !clientData) return;
     const loadStats = async () => {
       try {
         const logsRef = collection(db, 'workoutLogs');
-        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const q = query(logsRef, where('clientId', '==', clientData.id));
         const snap = await getDocs(q);
         const docs = snap.docs.map(d => d.data());
 
@@ -428,7 +428,7 @@ export default function CoreBuddyWorkouts() {
     if (!currentUser) return;
     try {
       await addDoc(collection(db, 'workoutLogs'), {
-        clientId: currentUser.uid,
+        clientId: clientData.id,
         level,
         duration,
         equipment: selectedEquipment,

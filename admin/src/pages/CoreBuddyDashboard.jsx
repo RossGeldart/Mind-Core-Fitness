@@ -118,7 +118,7 @@ export default function CoreBuddyDashboard() {
 
         // 2. Total randomiser workouts
         const logsRef = collection(db, 'workoutLogs');
-        const q = query(logsRef, where('clientId', '==', currentUser.uid));
+        const q = query(logsRef, where('clientId', '==', clientData.id));
         const logsSnap = await getDocs(q);
         const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
         setTotalWorkouts(randomiserCount);
