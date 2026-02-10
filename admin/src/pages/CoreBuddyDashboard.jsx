@@ -49,6 +49,10 @@ export default function CoreBuddyDashboard() {
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
+  // 24hr countdown state
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [ticksElapsed, setTicksElapsed] = useState(0);
+
   // Ring stats
   const [programmePct, setProgrammePct] = useState(0);
   const [programmeName, setProgrammeName] = useState('');
@@ -69,6 +73,29 @@ export default function CoreBuddyDashboard() {
       navigate('/');
     }
   }, [authLoading, currentUser, navigate]);
+
+  // 24hr countdown - time remaining in the day
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const endOfDay = new Date(now);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const diff = endOfDay - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ hours, minutes, seconds });
+
+      // Calculate ticks elapsed out of 60 based on seconds
+      setTicksElapsed(60 - seconds);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Load ring stats
   useEffect(() => {
@@ -194,10 +221,51 @@ export default function CoreBuddyDashboard() {
           <h2>Hey {firstName}</h2>
         </div>
 
-        {/* Concentric Stats Rings */}
+        {/* 24hr Countdown Ring */}
         <div className="cb-ring-container">
           <div className="cb-ring">
             <svg className="cb-ring-svg" viewBox="0 0 200 200">
+              {[...Array(60)].map((_, i) => {
+                const angle = (i * 6 - 90) * (Math.PI / 180);
+                const innerRadius = 85;
+                const outerRadius = 96;
+                const x1 = 100 + innerRadius * Math.cos(angle);
+                const y1 = 100 + innerRadius * Math.sin(angle);
+                const x2 = 100 + outerRadius * Math.cos(angle);
+                const y2 = 100 + outerRadius * Math.sin(angle);
+                const isElapsed = i < ticksElapsed;
+
+                return (
+                  <line
+                    key={i}
+                    x1={x1} y1={y1} x2={x2} y2={y2}
+                    className={`ring-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
+                    strokeWidth={i % 5 === 0 ? '3' : '2'}
+                  />
+                );
+              })}
+            </svg>
+            <div className="cb-ring-center">
+              <div className="cb-ring-logo">
+                <img src="/Logo.PNG" alt="Mind Core Fitness" />
+              </div>
+              <div className="cb-ring-countdown">
+                <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>
+                <span className="cb-timer-colon">:</span>
+                <span className="cb-timer-digit">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                <span className="cb-timer-colon">:</span>
+                <span className="cb-timer-digit cb-timer-seconds">{String(timeLeft.seconds).padStart(2, '0')}</span>
+              </div>
+              <div className="cb-ring-label">remaining today</div>
+            </div>
+          </div>
+          <p className="cb-ring-tagline">You have 24 hours a day... <strong>make it count</strong> with Core Buddy</p>
+        </div>
+
+        {/* Concentric Stats Rings */}
+        <div className="cb-stats-container">
+          <div className="cb-stats-ring">
+            <svg className="cb-stats-ring-svg" viewBox="0 0 200 200">
               {rings.map((ring) => (
                 [...Array(TICK_COUNT)].map((_, i) => {
                   const angle = (i * 6 - 90) * (Math.PI / 180);
@@ -217,14 +285,14 @@ export default function CoreBuddyDashboard() {
                 })
               ))}
             </svg>
-            <div className="cb-ring-center">
-              <div className="cb-ring-logo">
+            <div className="cb-stats-center">
+              <div className="cb-stats-logo">
                 <img src="/Logo.PNG" alt="Mind Core Fitness" />
               </div>
               {statsLoaded && (
-                <span className="cb-ring-total">{totalWorkouts}</span>
+                <span className="cb-stats-total">{totalWorkouts}</span>
               )}
-              <span className="cb-ring-label">workouts</span>
+              <span className="cb-stats-label">workouts</span>
             </div>
           </div>
 
