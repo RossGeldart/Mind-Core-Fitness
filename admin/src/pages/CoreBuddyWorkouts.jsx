@@ -592,7 +592,7 @@ export default function CoreBuddyWorkouts() {
               <p>Interval-based HIIT from your exercise library</p>
             </button>
 
-            {/* Build a Programme Card */}
+            {/* Pick a Programme Card */}
             <button className="wk-menu-card" onClick={() => navigate('/client/core-buddy/programmes')}>
               <div className="wk-menu-ring-wrap">
                 <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
@@ -618,7 +618,7 @@ export default function CoreBuddyWorkouts() {
                   <span className="wk-menu-stat-label">this week</span>
                 </div>
               )}
-              <h3>Build a Programme</h3>
+              <h3>Pick a Programme</h3>
               <p>Structured set & rep programmes with progressive overload</p>
             </button>
           </div>
