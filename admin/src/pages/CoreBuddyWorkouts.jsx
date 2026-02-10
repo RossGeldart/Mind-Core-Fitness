@@ -6,14 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
-
-// Card background images — drop images into src/assets/images/cards/
-// e.g. programme.jpg, random.jpg, etc.
-const cardImages = import.meta.glob('../assets/images/cards/*.{jpg,jpeg,png,webp}', { eager: true });
-function getCardImage(name) {
-  const match = Object.entries(cardImages).find(([path]) => path.toLowerCase().includes(name));
-  return match ? match[1].default : null;
-}
+import programmeCardImg from '../assets/programme-card-workout.JPG';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -552,7 +545,7 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
-    const programmeImg = getCardImage('programme');
+    const programmeImg = programmeCardImg;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="cb-header">
