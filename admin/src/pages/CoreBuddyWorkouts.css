@@ -113,11 +113,8 @@
 .wk-card-stack {
   position: relative;
   flex: 1;
-  perspective: 1200px;
-  perspective-origin: center 40%;
   overflow: hidden;
-  touch-action: none;
-  -webkit-touch-callout: none;
+  touch-action: pan-x;
   -webkit-user-select: none;
   user-select: none;
   margin: 8px 0 0;
@@ -134,8 +131,8 @@
   min-height: unset !important;
   margin: 0;
   border-radius: 16px;
-  transform-origin: center center;
-  will-change: transform, opacity;
+  transform-origin: center top;
+  will-change: transform;
   animation: none !important;
 }
 
