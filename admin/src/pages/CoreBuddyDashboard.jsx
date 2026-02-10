@@ -215,7 +215,7 @@ export default function CoreBuddyDashboard() {
           {/* 3. Progress / PBs */}
           <button
             className="cb-feature-card cb-card-progress ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/personal-bests'); }}
+            onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
           >
             <div className="cb-card-icon cb-icon-progress">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

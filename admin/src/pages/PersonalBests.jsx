@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -160,7 +160,9 @@ export default function PersonalBests() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();
-  const isBlockClient = !clientData?.clientType || clientData.clientType === 'block';
+  const [searchParams] = useSearchParams();
+  const coreBuddyMode = searchParams.get('mode') === 'corebuddy';
+  const isBlockClient = !coreBuddyMode && (!clientData?.clientType || clientData.clientType === 'block');
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
