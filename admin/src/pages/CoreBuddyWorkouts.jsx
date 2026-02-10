@@ -94,6 +94,7 @@ export default function CoreBuddyWorkouts() {
 
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
+  const [programmeWeeklyCount, setProgrammeWeeklyCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -140,7 +141,8 @@ export default function CoreBuddyWorkouts() {
           const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
           return ms >= mondayMs;
         });
-        setWeeklyCount(weekly.length);
+        setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
+        setProgrammeWeeklyCount(weekly.filter(d => d.type === 'programme').length);
 
         // Streak: consecutive weeks (going backwards) with at least 1 workout
         const timestamps = docs
@@ -585,15 +587,22 @@ export default function CoreBuddyWorkouts() {
                     const y1 = 100 + 78 * Math.sin(angle);
                     const x2 = 100 + 94 * Math.cos(angle);
                     const y2 = 100 + 94 * Math.sin(angle);
+                    const filled = Math.round((Math.min(programmeWeeklyCount, 3) / 3) * TICK_COUNT);
                     return (
                       <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                        className="wk-menu-tick-empty"
+                        className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
                         strokeWidth={i % 5 === 0 ? '3' : '2'} />
                     );
                   })}
                 </svg>
                 <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
               </div>
+              {programmeWeeklyCount > 0 && (
+                <div className="wk-menu-card-stats">
+                  <span className="wk-menu-stat-big">{programmeWeeklyCount}</span>
+                  <span className="wk-menu-stat-label">this week</span>
+                </div>
+              )}
               <h3>Build a Programme</h3>
               <p>Structured set & rep programmes with progressive overload</p>
             </button>
