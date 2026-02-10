@@ -7,6 +7,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
+// Add randomiser card image: drop file into admin/src/assets/ and uncomment:
+// import randomiserCardImg from '../assets/randomiser-card-workout.JPG';
+let randomiserCardImg;
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -567,6 +570,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
     const programmeImg = programmeCardImg;
+    const randomiserImg = randomiserCardImg || null;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="cb-header">
@@ -588,31 +592,39 @@ export default function CoreBuddyWorkouts() {
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
           <div className="wk-menu-cards">
             {/* Random Workout Card */}
-            <button className="wk-menu-card" onClick={() => setView('setup')}>
-              <div className="wk-menu-ring-wrap">
-                <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                  {[...Array(TICK_COUNT)].map((_, i) => {
-                    const angle = (i * 6 - 90) * (Math.PI / 180);
-                    const x1 = 100 + 78 * Math.cos(angle);
-                    const y1 = 100 + 78 * Math.sin(angle);
-                    const x2 = 100 + 94 * Math.cos(angle);
-                    const y2 = 100 + 94 * Math.sin(angle);
-                    const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
-                    return (
-                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                        className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
-                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
-                    );
-                  })}
-                </svg>
-                <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+            <button className={`wk-menu-card${randomiserImg ? ' wk-card-has-bg' : ''}`} onClick={() => setView('setup')}>
+              {randomiserImg && (
+                <>
+                  <img src={randomiserImg} alt="" className="wk-card-bg" />
+                  <div className="wk-card-overlay" />
+                </>
+              )}
+              <div className="wk-card-content">
+                <div className="wk-menu-ring-wrap">
+                  <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
+                    {[...Array(TICK_COUNT)].map((_, i) => {
+                      const angle = (i * 6 - 90) * (Math.PI / 180);
+                      const x1 = 100 + 78 * Math.cos(angle);
+                      const y1 = 100 + 78 * Math.sin(angle);
+                      const x2 = 100 + 94 * Math.cos(angle);
+                      const y2 = 100 + 94 * Math.sin(angle);
+                      const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
+                      return (
+                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                          className={i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}
+                          strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                      );
+                    })}
+                  </svg>
+                  <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
+                </div>
+                <div className="wk-menu-card-stats">
+                  <span className="wk-menu-stat-big">{weeklyCount}</span>
+                  <span className="wk-menu-stat-label">this week</span>
+                </div>
+                <h3>Random Workout</h3>
+                <p>Interval-based HIIT from your exercise library</p>
               </div>
-              <div className="wk-menu-card-stats">
-                <span className="wk-menu-stat-big">{weeklyCount}</span>
-                <span className="wk-menu-stat-label">this week</span>
-              </div>
-              <h3>Random Workout</h3>
-              <p>Interval-based HIIT from your exercise library</p>
             </button>
 
             {/* Pick a Programme Card */}
