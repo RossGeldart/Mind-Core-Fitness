@@ -10,6 +10,11 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes colonBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
@@ -128,7 +133,7 @@
   text-align: center;
 }
 
-/* Concentric Stats Rings */
+/* 24hr Countdown Ring */
 .cb-ring-container {
   display: flex;
   flex-direction: column;
@@ -147,6 +152,127 @@
 }
 
 .cb-ring-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+.cb-ring .ring-tick {
+  transition: stroke 0.15s ease-out;
+}
+
+.cb-ring .ring-tick.remaining {
+  stroke: var(--color-primary);
+}
+
+.cb-ring .ring-tick.elapsed {
+  stroke: #ffffff;
+}
+
+[data-theme="light"] .cb-ring .ring-tick.elapsed {
+  stroke: #2d2d2d;
+}
+
+.cb-ring-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 130px;
+}
+
+.cb-ring-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--color-primary);
+  margin-bottom: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cb-ring-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cb-ring-countdown {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+}
+
+.cb-timer-digit {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  min-width: 2ch;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.cb-timer-colon {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin: 0 1px;
+  animation: colonBlink 1s ease-in-out infinite;
+}
+
+.cb-timer-seconds {
+  color: var(--color-primary);
+}
+
+.cb-ring-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+.cb-ring-tagline {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.cb-ring-tagline strong {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* Concentric Stats Rings */
+.cb-stats-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0 20px;
+  animation: fadeIn 0.5s ease-out 0.2s backwards;
+}
+
+.cb-stats-ring {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-stats-ring-svg {
   position: absolute;
   top: 0;
   left: 0;
@@ -184,21 +310,21 @@
   stroke: rgba(76, 175, 80, 0.15);
 }
 
-/* Ring Center */
-.cb-ring-center {
+/* Stats Ring Center */
+.cb-stats-center {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
 }
 
-.cb-ring-logo {
-  width: 48px;
-  height: 48px;
+.cb-stats-logo {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--color-primary);
@@ -206,23 +332,23 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.cb-ring-logo img {
+.cb-stats-logo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.cb-ring-total {
+.cb-stats-total {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-primary);
   line-height: 1;
 }
 
-.cb-ring-label {
+.cb-stats-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -544,17 +670,36 @@
   }
 
   .cb-ring-center {
-    width: 110px;
-    height: 110px;
+    width: 150px;
+    height: 150px;
   }
 
   .cb-ring-logo {
-    width: 52px;
-    height: 52px;
+    width: 65px;
+    height: 65px;
   }
 
-  .cb-ring-total {
+  .cb-timer-digit {
     font-size: 1.4rem;
+  }
+
+  .cb-stats-ring {
+    width: 260px;
+    height: 260px;
+  }
+
+  .cb-stats-center {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cb-stats-logo {
+    width: 46px;
+    height: 46px;
+  }
+
+  .cb-stats-total {
+    font-size: 1.2rem;
   }
 
   .cb-feature-card {
