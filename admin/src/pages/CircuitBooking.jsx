@@ -45,6 +45,7 @@ export default function CircuitBooking() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [session, setSession] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [toast, setToast] = useState(null);
 
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
@@ -75,54 +76,63 @@ export default function CircuitBooking() {
       if (sessionDoc.exists()) {
         const existingSession = { id: sessionDoc.id, ...sessionDoc.data() };
 
-        // Check for VIPs added after session was created and auto-slot them
-        const vipQ = query(
-          collection(db, 'clients'),
-          where('clientType', '==', 'circuit_vip'),
-          where('status', '==', 'active')
-        );
-        const vipSnap = await getDocs(vipQ);
-        const vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Try to auto-slot any new VIPs, but don't fail the whole page if this errors
+        try {
+          const vipQ = query(
+            collection(db, 'clients'),
+            where('clientType', '==', 'circuit_vip'),
+            where('status', '==', 'active')
+          );
+          const vipSnap = await getDocs(vipQ);
+          const vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        const slottedMemberIds = existingSession.slots
-          .filter(s => s.memberId)
-          .map(s => s.memberId);
-        const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id));
+          const slottedMemberIds = existingSession.slots
+            .filter(s => s.memberId)
+            .map(s => s.memberId);
+          const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id));
 
-        if (missingVips.length > 0) {
-          const updatedSlots = [...existingSession.slots];
-          let changed = false;
+          if (missingVips.length > 0) {
+            const updatedSlots = [...existingSession.slots];
+            let changed = false;
 
-          for (const vip of missingVips) {
-            const availIdx = updatedSlots.findIndex(s => s.status === 'available');
-            if (availIdx === -1) break;
-            updatedSlots[availIdx] = {
-              slotNumber: updatedSlots[availIdx].slotNumber,
-              memberId: vip.id,
-              memberName: vip.name,
-              memberType: 'circuit_vip',
-              status: 'confirmed',
-              bookedAt: Timestamp.now(),
-            };
-            changed = true;
+            for (const vip of missingVips) {
+              const availIdx = updatedSlots.findIndex(s => s.status === 'available');
+              if (availIdx === -1) break;
+              updatedSlots[availIdx] = {
+                slotNumber: updatedSlots[availIdx].slotNumber,
+                memberId: vip.id,
+                memberName: vip.name,
+                memberType: 'circuit_vip',
+                status: 'confirmed',
+                bookedAt: Timestamp.now(),
+              };
+              changed = true;
+            }
+
+            if (changed) {
+              await updateDoc(sessionRef, { slots: updatedSlots });
+              existingSession.slots = updatedSlots;
+            }
           }
-
-          if (changed) {
-            await updateDoc(sessionRef, { slots: updatedSlots });
-            existingSession.slots = updatedSlots;
-          }
+        } catch (vipError) {
+          console.error('VIP auto-slot check failed (non-critical):', vipError);
         }
 
         setSession(existingSession);
       } else {
-        // Auto-create session with VIPs pre-slotted
-        const vipQ = query(
-          collection(db, 'clients'),
-          where('clientType', '==', 'circuit_vip'),
-          where('status', '==', 'active')
-        );
-        const vipSnap = await getDocs(vipQ);
-        const vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Auto-create session — try to pre-slot VIPs but fall back to empty slots
+        let vips = [];
+        try {
+          const vipQ = query(
+            collection(db, 'clients'),
+            where('clientType', '==', 'circuit_vip'),
+            where('status', '==', 'active')
+          );
+          const vipSnap = await getDocs(vipQ);
+          vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (vipError) {
+          console.error('VIP query failed, creating session with empty slots:', vipError);
+        }
 
         const slots = [];
         for (let i = 0; i < 8; i++) {
@@ -160,6 +170,7 @@ export default function CircuitBooking() {
       }
     } catch (error) {
       console.error('Error loading session:', error);
+      setLoadError(true);
       showToast('Failed to load session', 'error');
     }
     setLoading(false);
@@ -345,7 +356,33 @@ export default function CircuitBooking() {
     );
   }
 
-  if (!session) return null;
+  if (!session) {
+    return (
+      <div className={`cb-page ${isDark ? 'dark' : ''}`}>
+        <header className="cb-header">
+          <button className="cb-back-btn" onClick={() => navigate('/client/circuit')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <h1>Class Booking</h1>
+          <div className="cb-header-spacer" />
+        </header>
+        <main className="cb-main">
+          <div className="cb-error-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <circle cx="12" cy="16" r="1" fill="currentColor"/>
+            </svg>
+            <h3>Couldn't load booking</h3>
+            <p>Something went wrong. Please try again.</p>
+            <button className="cb-retry-btn" onClick={() => { setLoading(true); setLoadError(false); loadSession(); }}>
+              Retry
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   const myCurrentSlot = session.slots.find(s => s.memberId === clientData.id);
   const onWaitlist = session.waitlist?.some(w => w.memberId === clientData.id);
