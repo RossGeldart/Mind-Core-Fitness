@@ -597,31 +597,28 @@ export default function CoreBuddyWorkouts() {
     const progress = Math.max(-1, Math.min(1, stackDrag / 400));
     const transition = dragging
       ? 'none'
-      : 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+      : 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
 
     if (pos === 0) {
-      // Active card — fully visible, slides left on swipe and fades out
+      // Active card — slides left off-screen on swipe, solid the whole way
       const p = Math.max(0, progress);
       return {
-        transform: `translateX(${-p * 100}%) scale(${1 - p * 0.05})`,
-        opacity: 1 - p * 0.8,
+        transform: `translateX(${-p * 100}%)`,
         zIndex: 10,
         transition,
       };
     } else if (pos === 1) {
-      // Next card — hidden directly behind active, same position
+      // Next card — sits behind active, revealed as active slides away
       return {
-        transform: 'translateX(0) scale(1)',
-        opacity: 1,
+        transform: 'translateX(0)',
         zIndex: 5,
         transition,
       };
     } else if (pos === -1) {
-      // Previous card — off-screen left, slides back on swipe right and fades in
+      // Previous card — off-screen left, slides back over active on swipe right
       const p = Math.max(0, -progress);
       return {
-        transform: `translateX(${-100 + p * 100}%) scale(${0.95 + p * 0.05})`,
-        opacity: p,
+        transform: `translateX(${-100 + p * 100}%)`,
         zIndex: 15,
         transition,
       };
