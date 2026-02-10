@@ -115,6 +115,11 @@ export default function CoreBuddyWorkouts() {
   const [streak, setStreak] = useState(0);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
+  // Card stack state
+  const [activeCardIdx, setActiveCardIdx] = useState(0);
+  const [stackDrag, setStackDrag] = useState(0);
+  const stackTouch = useRef({ startY: 0, dragging: false, didDrag: false, lastDrag: 0, lastIdx: 0 });
+
   // Auth guard
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
@@ -554,6 +559,84 @@ export default function CoreBuddyWorkouts() {
     return completed / totalExercises;
   };
 
+  // ==================== CARD STACK LOGIC ====================
+  const STACK_CARDS = 2;
+  const SWIPE_THRESHOLD = 80;
+  stackTouch.current.lastIdx = activeCardIdx;
+
+  const handleStackTouchStart = (e) => {
+    stackTouch.current = { startY: e.touches[0].clientY, dragging: true, didDrag: false, lastDrag: 0, lastIdx: activeCardIdx };
+    setStackDrag(0);
+  };
+
+  const handleStackTouchMove = (e) => {
+    if (!stackTouch.current.dragging) return;
+    const delta = stackTouch.current.startY - e.touches[0].clientY;
+    if (Math.abs(delta) > 8) stackTouch.current.didDrag = true;
+    stackTouch.current.lastDrag = delta;
+    setStackDrag(delta);
+  };
+
+  const handleStackTouchEnd = () => {
+    if (!stackTouch.current.dragging) return;
+    stackTouch.current.dragging = false;
+    const drag = stackTouch.current.lastDrag;
+    const idx = stackTouch.current.lastIdx;
+
+    if (drag > SWIPE_THRESHOLD && idx < STACK_CARDS - 1) {
+      setActiveCardIdx(idx + 1);
+    } else if (drag < -SWIPE_THRESHOLD && idx > 0) {
+      setActiveCardIdx(idx - 1);
+    }
+    setStackDrag(0);
+  };
+
+  const getCardStyle = (index) => {
+    const pos = index - activeCardIdx;
+    const dragging = stackTouch.current.dragging;
+    const progress = Math.max(-1, Math.min(1, stackDrag / 300));
+    const transition = dragging
+      ? 'none'
+      : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+
+    let ty = 0, tz = 0, sc = 1, op = 1, zi = 0;
+
+    if (pos === 0) {
+      // Active card — slides up & recedes on swipe up
+      const p = Math.max(0, progress);
+      ty = -p * 110;
+      tz = -p * 200;
+      sc = 1 - p * 0.12;
+      op = 1 - p * 0.4;
+      zi = progress < -0.1 ? 5 : 10;
+    } else if (pos === 1) {
+      // Next card — behind, comes forward on swipe up
+      const p = Math.max(0, progress);
+      tz = -100 + p * 100;
+      sc = 0.92 + p * 0.08;
+      op = 0.7 + p * 0.3;
+      zi = 5;
+    } else if (pos === -1) {
+      // Previous card — above & behind, comes back on swipe down
+      const p = Math.max(0, -progress);
+      ty = -110 + p * 110;
+      tz = -200 + p * 200;
+      sc = 0.85 + p * 0.15;
+      op = 0.3 + p * 0.7;
+      zi = -progress > 0.1 ? 15 : 1;
+    } else {
+      return { visibility: 'hidden', pointerEvents: 'none' };
+    }
+
+    return {
+      transform: `translateY(${ty}%) translateZ(${tz}px) scale(${sc})`,
+      opacity: op,
+      zIndex: zi,
+      transition,
+      pointerEvents: pos === 0 ? 'auto' : 'none',
+    };
+  };
+
   // Toast element - rendered at the end of every view
   const toastEl = toast && (
     <div className={`toast-notification ${toast.type}`}>
@@ -586,17 +669,22 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
         </header>
-        <main className="wk-main">
+        <main className="wk-main wk-main-stack">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
-          <div className="wk-menu-cards">
-            {/* Random Workout Card */}
-            <button className={`wk-menu-card${randomiserImg ? ' wk-card-has-bg' : ''}`} onClick={() => setView('setup')}>
-              {randomiserImg && (
-                <>
-                  <img src={randomiserImg} alt="" className="wk-card-bg" />
-                  <div className="wk-card-overlay" />
-                </>
-              )}
+          <div
+            className="wk-card-stack"
+            onTouchStart={handleStackTouchStart}
+            onTouchMove={handleStackTouchMove}
+            onTouchEnd={handleStackTouchEnd}
+          >
+            {/* Card 0: Random Workout */}
+            <button
+              className="wk-menu-card wk-card-has-bg wk-stacked"
+              style={getCardStyle(0)}
+              onClick={() => { if (!stackTouch.current.didDrag) setView('setup'); }}
+            >
+              <img src={randomiserImg} alt="" className="wk-card-bg" />
+              <div className="wk-card-overlay" />
               <div className="wk-card-content">
                 <div className="wk-menu-ring-wrap">
                   <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
@@ -625,14 +713,14 @@ export default function CoreBuddyWorkouts() {
               </div>
             </button>
 
-            {/* Pick a Programme Card */}
-            <button className={`wk-menu-card${programmeImg ? ' wk-card-has-bg' : ''}`} onClick={() => navigate('/client/core-buddy/programmes')}>
-              {programmeImg && (
-                <>
-                  <img src={programmeImg} alt="" className="wk-card-bg" />
-                  <div className="wk-card-overlay" />
-                </>
-              )}
+            {/* Card 1: Pick a Programme */}
+            <button
+              className="wk-menu-card wk-card-has-bg wk-stacked"
+              style={getCardStyle(1)}
+              onClick={() => { if (!stackTouch.current.didDrag) navigate('/client/core-buddy/programmes'); }}
+            >
+              <img src={programmeImg} alt="" className="wk-card-bg" />
+              <div className="wk-card-overlay" />
               <div className="wk-card-content">
                 <div className="wk-menu-ring-wrap">
                   <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
@@ -662,8 +750,18 @@ export default function CoreBuddyWorkouts() {
                 <p>Structured set & rep programmes with progressive overload</p>
               </div>
             </button>
-          </div>
 
+            {/* Dot indicators */}
+            <div className="wk-stack-dots">
+              {[...Array(STACK_CARDS)].map((_, i) => (
+                <button
+                  key={i}
+                  className={`wk-stack-dot${activeCardIdx === i ? ' active' : ''}`}
+                  onClick={() => setActiveCardIdx(i)}
+                />
+              ))}
+            </div>
+          </div>
         </main>
         {toastEl}
       </div>
