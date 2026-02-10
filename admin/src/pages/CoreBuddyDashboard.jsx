@@ -171,18 +171,17 @@ export default function CoreBuddyDashboard() {
 
   const firstName = clientData?.name?.split(' ')[0] || 'there';
 
-  // Calculate ring ticks
+  // Calculate ring ticks for 3 stat rings
   const programmeTicks = Math.round((programmePct / 100) * TICK_COUNT);
   const { prev: wPrev, next: wNext } = getWorkoutMilestone(totalWorkouts);
-  const workoutPct = wNext > wPrev ? ((totalWorkouts - wPrev) / (wNext - wPrev)) * 100 : 100;
+  const workoutPct = wNext > wPrev ? Math.round(((totalWorkouts - wPrev) / (wNext - wPrev)) * 100) : 100;
   const workoutTicks = Math.round((workoutPct / 100) * TICK_COUNT);
   const habitTicks = Math.round((habitWeekPct / 100) * TICK_COUNT);
 
-  // Ring definitions: outer to inner
-  const rings = [
-    { label: 'Programme', innerR: 85, outerR: 96, ticks: programmeTicks, cls: 'cb-conc-programme' },
-    { label: 'Workouts', innerR: 69, outerR: 80, ticks: workoutTicks, cls: 'cb-conc-workouts' },
-    { label: 'Habits', innerR: 53, outerR: 64, ticks: habitTicks, cls: 'cb-conc-habits' },
+  const statRings = [
+    { label: 'Programme', value: `${programmePct}%`, ticks: programmeTicks, cls: 'cb-stat-programme' },
+    { label: 'Workouts', value: `${totalWorkouts}`, ticks: workoutTicks, cls: 'cb-stat-workouts' },
+    { label: 'Habits', value: `${habitWeekPct}%`, ticks: habitTicks, cls: 'cb-stat-habits' },
   ];
 
   if (authLoading) {
@@ -262,56 +261,36 @@ export default function CoreBuddyDashboard() {
           <p className="cb-ring-tagline">You have 24 hours a day... <strong>make it count</strong> with Core Buddy</p>
         </div>
 
-        {/* Concentric Stats Rings */}
-        <div className="cb-stats-container">
-          <div className="cb-stats-ring">
-            <svg className="cb-stats-ring-svg" viewBox="0 0 200 200">
-              {rings.map((ring) => (
-                [...Array(TICK_COUNT)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const x1 = 100 + ring.innerR * Math.cos(angle);
-                  const y1 = 100 + ring.innerR * Math.sin(angle);
-                  const x2 = 100 + ring.outerR * Math.cos(angle);
-                  const y2 = 100 + ring.outerR * Math.sin(angle);
-                  const filled = i < ring.ticks;
-                  return (
-                    <line
-                      key={`${ring.cls}-${i}`}
-                      x1={x1} y1={y1} x2={x2} y2={y2}
-                      className={`${ring.cls} ${filled ? 'conc-filled' : 'conc-empty'}`}
-                      strokeWidth={i % 5 === 0 ? '3' : '2'}
-                    />
-                  );
-                })
-              ))}
-            </svg>
-            <div className="cb-stats-center">
-              <div className="cb-stats-logo">
-                <img src="/Logo.PNG" alt="Mind Core Fitness" />
+        {/* Stats Rings Row */}
+        {statsLoaded && (
+          <div className="cb-stats-row">
+            {statRings.map((ring) => (
+              <div key={ring.cls} className="cb-stat-item">
+                <div className={`cb-stat-ring ${ring.cls}`}>
+                  <svg viewBox="0 0 100 100">
+                    {[...Array(TICK_COUNT)].map((_, i) => {
+                      const angle = (i * 6 - 90) * (Math.PI / 180);
+                      const x1 = 50 + 38 * Math.cos(angle);
+                      const y1 = 50 + 38 * Math.sin(angle);
+                      const x2 = 50 + 46 * Math.cos(angle);
+                      const y2 = 50 + 46 * Math.sin(angle);
+                      return (
+                        <line
+                          key={i}
+                          x1={x1} y1={y1} x2={x2} y2={y2}
+                          className={i < ring.ticks ? 'cb-stat-filled' : 'cb-stat-empty'}
+                          strokeWidth={i % 5 === 0 ? '3' : '2'}
+                        />
+                      );
+                    })}
+                  </svg>
+                  <span className="cb-stat-value">{ring.value}</span>
+                </div>
+                <span className="cb-stat-label">{ring.label}</span>
               </div>
-              {statsLoaded && (
-                <span className="cb-stats-total">{totalWorkouts}</span>
-              )}
-              <span className="cb-stats-label">workouts</span>
-            </div>
+            ))}
           </div>
-
-          {/* Ring Legend */}
-          <div className="cb-ring-legend">
-            <div className="cb-legend-item">
-              <span className="cb-legend-dot cb-dot-programme" />
-              <span className="cb-legend-text">Programme {programmePct}%</span>
-            </div>
-            <div className="cb-legend-item">
-              <span className="cb-legend-dot cb-dot-workouts" />
-              <span className="cb-legend-text">{totalWorkouts} / {wNext} workouts</span>
-            </div>
-            <div className="cb-legend-item">
-              <span className="cb-legend-dot cb-dot-habits" />
-              <span className="cb-legend-text">Habits {habitWeekPct}%</span>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Feature Cards */}
         <div className="cb-features">
