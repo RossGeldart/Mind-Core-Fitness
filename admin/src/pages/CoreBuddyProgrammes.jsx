@@ -683,7 +683,7 @@ export default function CoreBuddyProgrammes() {
     try {
       const template = getActiveTemplate();
       await addDoc(collection(db, 'workoutLogs'), {
-        clientId: currentUser.uid,
+        clientId: clientData.id,
         type: 'programme',
         programmeId: template?.id,
         programmeName: template?.name,
