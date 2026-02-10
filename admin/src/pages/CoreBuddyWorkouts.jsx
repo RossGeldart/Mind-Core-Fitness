@@ -115,15 +115,16 @@ export default function CoreBuddyWorkouts() {
         const snap = await getDocs(q);
         const docs = snap.docs.map(d => d.data());
 
-        setTotalCount(docs.length);
+        const randomiserDocs = docs.filter(d => d.type !== 'programme');
+        setTotalCount(randomiserDocs.length);
 
-        // Total minutes
-        const mins = docs.reduce((sum, d) => sum + (d.duration || 0), 0);
+        // Total minutes (randomiser only)
+        const mins = randomiserDocs.reduce((sum, d) => sum + (d.duration || 0), 0);
         setTotalMinutes(mins);
 
-        // Level breakdown
+        // Level breakdown (randomiser only)
         const levels = { beginner: 0, intermediate: 0, advanced: 0 };
-        docs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
+        randomiserDocs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
         setLevelBreakdown(levels);
 
         // Weekly count (Monday-based)
@@ -144,8 +145,8 @@ export default function CoreBuddyWorkouts() {
         setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
         setProgrammeWeeklyCount(weekly.filter(d => d.type === 'programme').length);
 
-        // Streak: consecutive weeks (going backwards) with at least 1 workout
-        const timestamps = docs
+        // Streak: consecutive weeks (going backwards) with at least 1 randomiser workout
+        const timestamps = randomiserDocs
           .map(d => d.completedAt)
           .filter(Boolean)
           .map(ts => ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime())

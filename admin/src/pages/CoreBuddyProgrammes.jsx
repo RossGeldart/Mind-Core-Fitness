@@ -355,6 +355,11 @@ export default function CoreBuddyProgrammes() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const sessionVideoRef = useRef(null);
 
+  // Scroll to top on view change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   // Toast
   const [toast, setToast] = useState(null);
   const showToast = useCallback((message, type = 'info') => {
