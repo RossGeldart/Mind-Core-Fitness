@@ -207,7 +207,7 @@ export default function CoreBuddyDashboard() {
             </div>
             <div className="cb-card-content">
               <h3>Workouts</h3>
-              <p>Randomise or build your own session</p>
+              <p>Randomise or pick a programme</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
