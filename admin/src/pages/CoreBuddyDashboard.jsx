@@ -126,7 +126,7 @@ export default function CoreBuddyDashboard() {
         // 3. Habit completion this week
         const monday = getMonday(new Date());
         const habitRef = collection(db, 'habitLogs');
-        const hq = query(habitRef, where('clientId', '==', currentUser.uid));
+        const hq = query(habitRef, where('clientId', '==', clientData.id));
         const habitSnap = await getDocs(hq);
         let weekCompleted = 0;
         let weekTotal = 0;
