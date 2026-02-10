@@ -1,13 +1,42 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 
 const TICK_COUNT = 60;
+
+// Exercise group mapping for badge categorization
+const EXERCISE_GROUPS = {
+  'Dumbbell Floor Press': 'push', 'Seated Dumbbell Shoulder Press': 'push',
+  'Seated Dumbbell Arnold Press': 'push', 'Dumbbell Overhead Tricep Extension': 'push',
+  'Skullcrushers': 'push', 'Dumbbell Lateral Raise': 'push', 'Dumbbell Front Raise': 'push',
+  'Dumbbell Bent Over Row': 'pull', 'Single Arm Bent Over Row': 'pull',
+  'Bicep Curl': 'pull', 'Hammer Curl': 'pull',
+  'Dumbbell Bent Over Rear Delt Fly': 'pull', 'Renegade Row': 'pull',
+  'Dumbbell Goblet Squats': 'lower', 'Romanian Deadlifts': 'lower',
+  'Forward Dumbbell Lunges': 'lower', 'Dumbbell Sumo Squats': 'lower',
+  'Weighted Calf Raises': 'lower', '1 Legged RDL': 'lower',
+  'Dumbbell Box Step Ups': 'lower', 'Dumbbell Squat Pulses': 'lower',
+  'Dumbbell Reverse Lunges': 'lower', 'Kettlebell Romanian Deadlift': 'lower',
+  'Russian Twists Dumbbell': 'core', 'Kettlebell Russian Twist': 'core',
+  'Kettlebell Side Bends': 'core', 'Kneeling Kettlebell Halo': 'core',
+};
+
+const VOLUME_MILESTONES = [
+  { threshold: 1000, label: '1 Tonne' },
+  { threshold: 5000, label: '5 Tonne' },
+  { threshold: 10000, label: '10 Tonne' },
+  { threshold: 25000, label: '25 Tonne' },
+  { threshold: 50000, label: '50 Tonne' },
+  { threshold: 100000, label: '100 Tonne' },
+  { threshold: 250000, label: '250 Tonne' },
+  { threshold: 500000, label: '500 Tonne' },
+  { threshold: 1000000, label: '1 Million kg' },
+];
 
 // ==================== PROGRAMME TEMPLATES ====================
 const TEMPLATES = [
@@ -355,6 +384,10 @@ export default function CoreBuddyProgrammes() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const sessionVideoRef = useRef(null);
 
+  // Badge celebration state
+  const [badgeCelebration, setBadgeCelebration] = useState(null); // { badges: [...] }
+  const [sessionBadges, setSessionBadges] = useState([]); // badges earned during this session
+
   // Scroll to top on view change
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -637,6 +670,15 @@ export default function CoreBuddyProgrammes() {
     const updated = { ...activeProgramme, completedSessions };
     await saveProgramme(updated);
 
+    // Calculate session volume (weight × reps for all weighted exercises)
+    const sessionVolume = logs.reduce((sum, l) =>
+      sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+
+    // Update total volume and check milestones
+    if (sessionVolume > 0) {
+      await updateVolume(sessionVolume);
+    }
+
     // Also log to workoutLogs for the randomiser stats
     try {
       const template = getActiveTemplate();
@@ -648,17 +690,69 @@ export default function CoreBuddyProgrammes() {
         week: sessionWeek,
         day: sessionDay + 1,
         exerciseCount: logs.length,
-        duration: Math.round(logs.reduce((sum, l) => sum + l.sets.length * 1.5, 0)), // rough estimate
+        duration: Math.round(logs.reduce((sum, l) => sum + l.sets.length * 1.5, 0)),
+        volume: Math.round(sessionVolume),
         completedAt: Timestamp.now(),
       });
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
 
+    // Show badge celebration if any badges earned during session
+    if (sessionBadges.length > 0) {
+      setBadgeCelebration({ badges: [...sessionBadges] });
+      setSessionBadges([]);
+    }
+
     setView('sessionComplete');
   };
 
+  // Update cumulative volume and check milestone badges
+  const updateVolume = async (sessionVolume) => {
+    if (!clientData) return;
+    try {
+      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
+      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
+      const oldVolume = achData.totalVolume || 0;
+      const newVolume = oldVolume + sessionVolume;
+
+      // Check for new volume milestone badges
+      const newMilestoneBadges = [];
+      VOLUME_MILESTONES.forEach(milestone => {
+        if (newVolume >= milestone.threshold && oldVolume < milestone.threshold) {
+          const alreadyEarned = achData.badges.some(
+            b => b.type === 'volume_milestone' && b.milestone === milestone.threshold
+          );
+          if (!alreadyEarned) {
+            newMilestoneBadges.push({
+              type: 'volume_milestone',
+              milestone: milestone.threshold,
+              label: milestone.label,
+              achievedAt: Timestamp.now(),
+            });
+          }
+        }
+      });
+
+      const allBadges = [...achData.badges, ...newMilestoneBadges];
+      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
+        clientId: clientData.id,
+        badges: allBadges,
+        totalVolume: Math.round(newVolume),
+        updatedAt: Timestamp.now(),
+      });
+
+      // Add milestone badges to session celebration
+      if (newMilestoneBadges.length > 0) {
+        setSessionBadges(prev => [...prev, ...newMilestoneBadges]);
+      }
+    } catch (err) {
+      console.error('Error updating volume:', err);
+    }
+  };
+
   // Check and update PB (all-time bests stored by exercise name)
+  // Also checks targets and awards badges
   const checkPB = async (exerciseName, weight, reps) => {
     if (!clientData) return;
     try {
@@ -691,9 +785,52 @@ export default function CoreBuddyProgrammes() {
         });
         showToast(`New PB! ${weight}kg × ${reps} reps`, 'success');
         playBeep();
+
+        // Check if this PB hits a target → award badge
+        await checkTargetBadge(exerciseName, weight);
       }
     } catch (err) {
       console.error('Error checking PB:', err);
+    }
+  };
+
+  // Check if new PB weight meets/exceeds a target and award badge
+  const checkTargetBadge = async (exerciseName, newWeight) => {
+    if (!clientData) return;
+    try {
+      const targetDoc = await getDoc(doc(db, 'coreBuddyTargets', clientData.id));
+      if (!targetDoc.exists()) return;
+      const targets = targetDoc.data().targets || {};
+      const target = targets[exerciseName];
+      if (!target || newWeight < target.targetWeight) return;
+
+      // Check if badge already earned
+      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
+      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
+      const alreadyEarned = achData.badges.some(
+        b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
+      );
+      if (alreadyEarned) return;
+
+      // Award the badge
+      const newBadge = {
+        type: 'pb_target',
+        exercise: exerciseName,
+        group: EXERCISE_GROUPS[exerciseName] || 'push',
+        targetWeight: target.targetWeight,
+        achievedAt: Timestamp.now(),
+      };
+      const updatedBadges = [...achData.badges, newBadge];
+      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
+        ...achData,
+        badges: updatedBadges,
+        updatedAt: Timestamp.now(),
+      });
+
+      // Track for session celebration
+      setSessionBadges(prev => [...prev, newBadge]);
+    } catch (err) {
+      console.error('Error checking target badge:', err);
     }
   };
 
@@ -1167,7 +1304,7 @@ export default function CoreBuddyProgrammes() {
             </div>
             {totalVolume > 0 && (
               <div className="pg-done-stat">
-                <span className="pg-done-stat-num">{Math.round(totalVolume)}</span>
+                <span className="pg-done-stat-num">{Math.round(totalVolume).toLocaleString()}</span>
                 <span className="pg-done-stat-label">Volume (kg)</span>
               </div>
             )}
@@ -1177,6 +1314,33 @@ export default function CoreBuddyProgrammes() {
             Back to Programme
           </button>
         </div>
+
+        {/* Badge Celebration Overlay */}
+        {badgeCelebration && (
+          <div className="pg-badge-celebration" onClick={() => setBadgeCelebration(null)}>
+            <div className="pg-badge-celebration-card" onClick={e => e.stopPropagation()}>
+              <div className="pg-badge-celebration-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <h3 className="pg-badge-celebration-title">
+                {badgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${badgeCelebration.badges.length} Badges Earned!`}
+              </h3>
+              <div className="pg-badge-celebration-list">
+                {badgeCelebration.badges.map((badge, i) => (
+                  <div key={i} className="pg-badge-celebration-item">
+                    {badge.type === 'pb_target'
+                      ? `${badge.exercise} — ${badge.targetWeight}kg`
+                      : badge.label}
+                  </div>
+                ))}
+              </div>
+              <button className="pg-badge-celebration-dismiss" onClick={() => setBadgeCelebration(null)}>
+                Tap to dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
         {toastEl}
       </div>
     );

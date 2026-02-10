@@ -1371,6 +1371,192 @@
   color: var(--text-tertiary);
 }
 
+/* ====== Core Buddy Target Features ====== */
+.pb-ring-tick.hit {
+  stroke: var(--color-success);
+}
+
+.pb-ring-tick.empty {
+  stroke: var(--border-color);
+}
+
+.pb-cb-badge-earned {
+  color: #f59e0b !important;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+}
+
+.pb-cb-target-info {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.pb-cb-target-info.hit {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.pb-cb-target-info.earned {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.pb-cb-card {
+  position: relative;
+}
+
+.pb-cb-card-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.pb-cb-target-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-cb-target-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: scale(1.05);
+}
+
+.pb-cb-achievements-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-cb-achievements-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.pb-cb-achievements-link svg:first-child {
+  color: #f59e0b;
+}
+
+/* Target Setting Modal */
+.pb-cb-target-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+  padding: 20px;
+}
+
+.pb-cb-target-modal {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 340px;
+  width: 100%;
+  animation: cardEntrance 0.3s ease-out;
+  box-shadow: var(--shadow-lg);
+}
+
+.pb-cb-target-modal h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.pb-cb-target-exercise-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.pb-cb-target-current {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border-radius: 10px;
+}
+
+.pb-cb-target-current strong {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  color: var(--text-primary);
+}
+
+.pb-cb-target-input-wrap {
+  margin-bottom: 20px;
+}
+
+.pb-cb-target-input-wrap label {
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.pb-cb-target-input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+
+.pb-cb-target-input:focus {
+  border-color: var(--color-primary);
+}
+
+.pb-cb-target-actions {
+  display: flex;
+  gap: 12px;
+}
+
 /* ====== Celebration Overlay ====== */
 @keyframes celebrationIn {
   from { opacity: 0; transform: scale(0.8); }

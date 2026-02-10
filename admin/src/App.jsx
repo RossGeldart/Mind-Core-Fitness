@@ -18,6 +18,7 @@ import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
 import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
 import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
+import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
 import './styles/theme.css';
 
 // Scroll to top on route change
@@ -72,6 +73,7 @@ function App() {
             <Route path="/client/core-buddy/nutrition" element={<CoreBuddyNutrition />} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/programmes" element={<CoreBuddyProgrammes />} />
+            <Route path="/client/core-buddy/achievements" element={<CoreBuddyAchievements />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

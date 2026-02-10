@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -151,6 +151,10 @@ export default function PersonalBests() {
 
   // Core Buddy PB state
   const [cbPBs, setCbPBs] = useState({});
+  const [cbTargets, setCbTargets] = useState({});
+  const [cbAchievements, setCbAchievements] = useState(null);
+  const [cbTargetExercise, setCbTargetExercise] = useState(null); // exercise name being targeted
+  const [cbTargetInput, setCbTargetInput] = useState('');
 
   // Touch/swipe state for carousel
   const carouselRef = useRef(null);
@@ -180,13 +184,17 @@ export default function PersonalBests() {
     if (isBlockClient) {
       fetchRecords();
     } else {
-      // Core Buddy clients: load from coreBuddyPBs
+      // Core Buddy clients: load PBs, targets, and achievements
       const loadCBPBs = async () => {
         try {
-          const pbDoc = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
-          if (pbDoc.exists()) {
-            setCbPBs(pbDoc.data().exercises || {});
-          }
+          const [pbSnap, targetSnap, achSnap] = await Promise.all([
+            getDoc(doc(db, 'coreBuddyPBs', clientData.id)),
+            getDoc(doc(db, 'coreBuddyTargets', clientData.id)),
+            getDoc(doc(db, 'coreBuddyAchievements', clientData.id)),
+          ]);
+          if (pbSnap.exists()) setCbPBs(pbSnap.data().exercises || {});
+          if (targetSnap.exists()) setCbTargets(targetSnap.data().targets || {});
+          if (achSnap.exists()) setCbAchievements(achSnap.data());
         } catch (err) {
           console.error('Error loading Core Buddy PBs:', err);
         }
@@ -234,6 +242,64 @@ export default function PersonalBests() {
       console.error('Error fetching personal bests:', error);
     }
     setLoading(false);
+  };
+
+  // Core Buddy: save a target for an exercise
+  const handleSaveCbTarget = async () => {
+    if (!cbTargetExercise || !cbTargetInput || !clientData) return;
+    const targetWeight = parseFloat(cbTargetInput);
+    const currentPB = cbPBs[cbTargetExercise];
+    if (!currentPB || targetWeight <= currentPB.weight) {
+      showToast('Target must be higher than current PB', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const newTargets = {
+        ...cbTargets,
+        [cbTargetExercise]: {
+          targetWeight,
+          setAt: Timestamp.now(),
+          currentPBWhenSet: currentPB.weight,
+        },
+      };
+      await setDoc(doc(db, 'coreBuddyTargets', clientData.id), {
+        clientId: clientData.id,
+        targets: newTargets,
+        updatedAt: Timestamp.now(),
+      });
+      setCbTargets(newTargets);
+      setCbTargetExercise(null);
+      setCbTargetInput('');
+      showToast('Target set!', 'success');
+    } catch (err) {
+      console.error('Error saving target:', err);
+      showToast('Failed to save target', 'error');
+    }
+    setSaving(false);
+  };
+
+  // Core Buddy: check if a PB badge was earned for an exercise
+  const hasCbBadge = (exerciseName) => {
+    if (!cbAchievements?.badges) return false;
+    const target = cbTargets[exerciseName];
+    if (!target) return false;
+    return cbAchievements.badges.some(
+      b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
+    );
+  };
+
+  // Core Buddy: get progress toward target (0-1)
+  const getCbTargetProgress = (exerciseName) => {
+    const target = cbTargets[exerciseName];
+    if (!target) return null;
+    const currentPB = cbPBs[exerciseName];
+    if (!currentPB) return 0;
+    const start = target.currentPBWhenSet || 0;
+    const end = target.targetWeight;
+    const range = end - start;
+    if (range <= 0) return currentPB.weight >= end ? 1 : 0;
+    return Math.max(0, Math.min((currentPB.weight - start) / range, 1));
   };
 
   const currentMonth = getCurrentMonth();
@@ -649,41 +715,137 @@ export default function PersonalBests() {
               <div className="pb-cb-grid">
                 {Object.entries(cbPBs)
                   .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([name, data], i) => (
-                  <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                    <div className="pb-cb-card-ring">
-                      <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
-                        {[...Array(60)].map((_, j) => {
-                          const angle = (j * 6 - 90) * (Math.PI / 180);
-                          const x1 = 40 + 30 * Math.cos(angle);
-                          const y1 = 40 + 30 * Math.sin(angle);
-                          const x2 = 40 + 37 * Math.cos(angle);
-                          const y2 = 40 + 37 * Math.sin(angle);
-                          return (
-                            <line key={j} x1={x1} y1={y1} x2={x2} y2={y2}
-                              className="pb-ring-tick filled"
-                              strokeWidth={j % 5 === 0 ? '2' : '1.5'} />
-                          );
-                        })}
-                      </svg>
-                      <div className="pb-cb-ring-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                  .map(([name, data], i) => {
+                  const target = cbTargets[name];
+                  const progress = getCbTargetProgress(name);
+                  const targetHit = progress !== null && progress >= 1;
+                  const badgeEarned = hasCbBadge(name);
+                  const ringFill = progress !== null ? Math.round(progress * 60) : 60;
+
+                  return (
+                    <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <div className="pb-cb-card-ring">
+                        <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
+                          {[...Array(60)].map((_, j) => {
+                            const angle = (j * 6 - 90) * (Math.PI / 180);
+                            const x1 = 40 + 30 * Math.cos(angle);
+                            const y1 = 40 + 30 * Math.sin(angle);
+                            const x2 = 40 + 37 * Math.cos(angle);
+                            const y2 = 40 + 37 * Math.sin(angle);
+                            const filled = j < ringFill;
+                            return (
+                              <line key={j} x1={x1} y1={y1} x2={x2} y2={y2}
+                                className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
+                                strokeWidth={j % 5 === 0 ? '2' : '1.5'} />
+                            );
+                          })}
                         </svg>
+                        <div className="pb-cb-ring-icon">
+                          {badgeEarned ? (
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                          ) : (
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="pb-cb-card-info">
+                        <h4 className="pb-cb-card-name">{name}</h4>
+                        <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
+                        {data.achievedAt && (
+                          <div className="pb-cb-card-date">
+                            {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
+                              .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </div>
+                        )}
+                        {/* Target info */}
+                        {target && !targetHit && (
+                          <div className="pb-cb-target-info">
+                            Target: {target.targetWeight}kg ({Math.round((progress || 0) * 100)}%)
+                          </div>
+                        )}
+                        {target && targetHit && !badgeEarned && (
+                          <div className="pb-cb-target-info hit">Target hit!</div>
+                        )}
+                        {badgeEarned && (
+                          <div className="pb-cb-target-info earned">Badge earned!</div>
+                        )}
+                      </div>
+                      {/* Set Target button */}
+                      <div className="pb-cb-card-action">
+                        {!target ? (
+                          <button className="pb-cb-target-btn" onClick={() => {
+                            setCbTargetExercise(name);
+                            setCbTargetInput('');
+                          }}>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10" />
+                              <circle cx="12" cy="12" r="6" />
+                              <circle cx="12" cy="12" r="2" />
+                            </svg>
+                          </button>
+                        ) : targetHit && badgeEarned ? (
+                          <button className="pb-cb-target-btn" onClick={() => {
+                            setCbTargetExercise(name);
+                            setCbTargetInput('');
+                          }}>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M12 5v14M5 12h14" />
+                            </svg>
+                          </button>
+                        ) : null}
                       </div>
                     </div>
-                    <div className="pb-cb-card-info">
-                      <h4 className="pb-cb-card-name">{name}</h4>
-                      <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
-                      {data.achievedAt && (
-                        <div className="pb-cb-card-date">
-                          {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
-                            .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </div>
-                      )}
-                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Achievements link */}
+            {Object.keys(cbPBs).length > 0 && (
+              <button className="pb-cb-achievements-link" onClick={() => navigate('/client/core-buddy/achievements')}>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                View Achievements
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            )}
+
+            {/* Target Setting Modal */}
+            {cbTargetExercise && (
+              <div className="pb-cb-target-modal-overlay" onClick={() => setCbTargetExercise(null)}>
+                <div className="pb-cb-target-modal" onClick={e => e.stopPropagation()}>
+                  <h3>Set Target</h3>
+                  <p className="pb-cb-target-exercise-name">{cbTargetExercise}</p>
+                  <div className="pb-cb-target-current">
+                    Current PB: <strong>{cbPBs[cbTargetExercise]?.weight}kg</strong>
                   </div>
-                ))}
+                  <div className="pb-cb-target-input-wrap">
+                    <label>Your target (kg)</label>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      step="0.5"
+                      value={cbTargetInput}
+                      onChange={e => setCbTargetInput(e.target.value)}
+                      placeholder={String((cbPBs[cbTargetExercise]?.weight || 0) + 5)}
+                      className="pb-cb-target-input"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="pb-cb-target-actions">
+                    <button className="pb-cancel-btn" onClick={() => setCbTargetExercise(null)}>Cancel</button>
+                    <button className="pb-save-btn" onClick={handleSaveCbTarget} disabled={saving}>
+                      {saving ? 'Saving...' : 'Set Target'}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
