@@ -661,6 +661,74 @@
   border-radius: 12px;
 }
 
+/* Video Demo */
+.pg-video-container {
+  position: relative;
+  margin: 8px 12px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+  max-height: 240px;
+}
+
+.pg-video {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+}
+
+.pg-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.pg-play-icon {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.pg-video-hint {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Last Week Reference */
+.pg-last-week {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-primary-alpha, rgba(153, 49, 60, 0.1));
+  border-radius: 8px;
+  border-left: 3px solid var(--color-primary);
+}
+
+.pg-last-week-label {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.pg-last-week-value {
+  font-family: var(--font-numbers, 'Orbitron', monospace);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
 /* Exercise Card */
 .pg-exercise-card {
   margin: 16px;

@@ -18,33 +18,33 @@ const TEMPLATES = [
     duration: 4,
     daysPerWeek: 3,
     level: 'All Levels',
-    description: 'Build total body strength with compound movements and bodyweight finishers',
+    description: 'Build total body strength with compound dumbbell movements and bodyweight finishers',
     repProg: 2,
     timeProg: 5,
     days: [
       { name: 'Day 1', label: 'Push Focus', exercises: [
-        { name: 'Goblet Squat', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'squat' },
-        { name: 'DB Bench Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'chestPress' },
-        { name: 'DB Shoulder Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'shoulderPress' },
-        { name: 'Tricep Dips', type: 'reps', sets: 3, baseReps: 12 },
-        { name: 'Mountain Climbers', type: 'reps', sets: 3, baseReps: 20 },
-        { name: 'Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank' },
+        { name: 'Dumbbell Floor Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'chestPress', storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
+        { name: 'Seated Dumbbell Shoulder Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'shoulderPress', storagePath: 'exercises/dumbbells/upper/seated dumbbell shoulder press.mp4' },
+        { name: 'Dumbbell Goblet Squats', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'squat', storagePath: 'exercises/dumbbells/lower/dumbbell goblet squats.mp4' },
+        { name: 'Press Up', type: 'reps', sets: 3, baseReps: 12, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+        { name: 'Mountain Climbers', type: 'reps', sets: 3, baseReps: 20, storagePath: 'exercises/bodyweight/core/Mountain Climbers.mp4' },
+        { name: 'Forearm Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
       ]},
       { name: 'Day 2', label: 'Pull Focus', exercises: [
-        { name: 'Deadlift', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'deadlift' },
-        { name: 'DB Row', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'seatedRow' },
-        { name: 'Lat Pulldown', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'latPulldown' },
-        { name: 'Bicep Curls', type: 'weighted', sets: 3, baseReps: 12 },
-        { name: 'Russian Twists', type: 'reps', sets: 3, baseReps: 20 },
-        { name: 'Side Plank', type: 'timed', sets: 2, baseTime: 25 },
+        { name: 'Dumbbell Bent Over Row', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'seatedRow', storagePath: 'exercises/dumbbells/upper/dumbbell bent over row.mp4' },
+        { name: 'Bicep Curl', type: 'weighted', sets: 3, baseReps: 12, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
+        { name: 'Romanian Deadlifts', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'deadlift', storagePath: 'exercises/dumbbells/lower/romanian deadlifts.GIF' },
+        { name: 'Reverse Lunge', type: 'reps', sets: 3, baseReps: 12, storagePath: 'exercises/bodyweight/lower/reverse lunge.GIF' },
+        { name: 'Russian Twist', type: 'reps', sets: 3, baseReps: 20, storagePath: 'exercises/bodyweight/core/Russian Twist.mp4' },
+        { name: 'Side Plank', type: 'timed', sets: 2, baseTime: 25, storagePath: 'exercises/bodyweight/core/Side Plank.mp4' },
       ]},
       { name: 'Day 3', label: 'Legs & Core', exercises: [
-        { name: 'Walking Lunges', type: 'weighted', sets: 3, baseReps: 12 },
-        { name: 'Step Ups', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Calf Raises', type: 'weighted', sets: 3, baseReps: 15 },
-        { name: 'Box Jumps', type: 'reps', sets: 3, baseReps: 10 },
-        { name: 'Burpees', type: 'reps', sets: 3, baseReps: 10 },
-        { name: 'Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank' },
+        { name: 'Forward Dumbbell Lunges', type: 'weighted', sets: 3, baseReps: 12, storagePath: 'exercises/dumbbells/lower/forward dumbbell lunges.GIF' },
+        { name: 'Dumbbell Sumo Squats', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/lower/dumbbell sumo squats.GIF' },
+        { name: 'Weighted Calf Raises', type: 'weighted', sets: 3, baseReps: 15, storagePath: 'exercises/dumbbells/lower/weighted calf raises.GIF' },
+        { name: 'Box Step Ups', type: 'reps', sets: 3, baseReps: 10, storagePath: 'exercises/bodyweight/lower/box step ups.GIF' },
+        { name: 'Burpee', type: 'reps', sets: 3, baseReps: 10, storagePath: 'exercises/bodyweight/core/Burpee.mp4' },
+        { name: 'Forearm Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
       ]},
     ],
   },
@@ -60,28 +60,28 @@ const TEMPLATES = [
     timeProg: 3,
     days: [
       { name: 'Day 1', label: 'Strength', exercises: [
-        { name: 'Goblet Squat', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'squat' },
-        { name: 'DB Bench Press', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'chestPress' },
-        { name: 'DB Row', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'seatedRow' },
-        { name: 'DB Shoulder Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'shoulderPress' },
-        { name: 'Mountain Climbers', type: 'reps', sets: 3, baseReps: 20 },
-        { name: 'Plank', type: 'timed', sets: 3, baseTime: 35, pbKey: 'plank' },
+        { name: 'Dumbbell Goblet Squats', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'squat', storagePath: 'exercises/dumbbells/lower/dumbbell goblet squats.mp4' },
+        { name: 'Dumbbell Floor Press', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'chestPress', storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
+        { name: 'Dumbbell Bent Over Row', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'seatedRow', storagePath: 'exercises/dumbbells/upper/dumbbell bent over row.mp4' },
+        { name: 'Seated Dumbbell Shoulder Press', type: 'weighted', sets: 3, baseReps: 10, pbKey: 'shoulderPress', storagePath: 'exercises/dumbbells/upper/seated dumbbell shoulder press.mp4' },
+        { name: 'Mountain Climbers', type: 'reps', sets: 3, baseReps: 20, storagePath: 'exercises/bodyweight/core/Mountain Climbers.mp4' },
+        { name: 'Forearm Plank', type: 'timed', sets: 3, baseTime: 35, pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
       ]},
       { name: 'Day 2', label: 'Power', exercises: [
-        { name: 'Deadlift', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'deadlift' },
-        { name: 'Walking Lunges', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Lat Pulldown', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'latPulldown' },
-        { name: 'Bicep Curls', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Box Jumps', type: 'reps', sets: 3, baseReps: 8 },
-        { name: 'Russian Twists', type: 'reps', sets: 3, baseReps: 20 },
+        { name: 'Romanian Deadlifts', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'deadlift', storagePath: 'exercises/dumbbells/lower/romanian deadlifts.GIF' },
+        { name: 'Forward Dumbbell Lunges', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/lower/forward dumbbell lunges.GIF' },
+        { name: 'Single Arm Bent Over Row', type: 'weighted', sets: 4, baseReps: 8, storagePath: 'exercises/dumbbells/upper/single arm bent over row.mp4' },
+        { name: 'Hammer Curl', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/upper/hammer curl.mp4' },
+        { name: 'Bulgarian Split Squats', type: 'reps', sets: 3, baseReps: 10, storagePath: 'exercises/bodyweight/lower/bulgarian split squats.GIF' },
+        { name: 'Russian Twist', type: 'reps', sets: 3, baseReps: 20, storagePath: 'exercises/bodyweight/core/Russian Twist.mp4' },
       ]},
       { name: 'Day 3', label: 'Endurance', exercises: [
-        { name: 'Step Ups', type: 'weighted', sets: 3, baseReps: 12 },
-        { name: 'Calf Raises', type: 'weighted', sets: 3, baseReps: 15 },
-        { name: 'Tricep Dips', type: 'reps', sets: 3, baseReps: 12 },
-        { name: 'Push Ups', type: 'reps', sets: 3, baseReps: 15 },
-        { name: 'Burpees', type: 'reps', sets: 3, baseReps: 12 },
-        { name: 'Plank', type: 'timed', sets: 3, baseTime: 40, pbKey: 'plank' },
+        { name: 'Dumbbell Sumo Squats', type: 'weighted', sets: 3, baseReps: 12, storagePath: 'exercises/dumbbells/lower/dumbbell sumo squats.GIF' },
+        { name: 'Weighted Calf Raises', type: 'weighted', sets: 3, baseReps: 15, storagePath: 'exercises/dumbbells/lower/weighted calf raises.GIF' },
+        { name: 'Dumbbell Overhead Tricep Extension', type: 'weighted', sets: 3, baseReps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell overhead tricep extension.mp4' },
+        { name: 'Press Up', type: 'reps', sets: 3, baseReps: 15, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+        { name: 'Burpee', type: 'reps', sets: 3, baseReps: 12, storagePath: 'exercises/bodyweight/core/Burpee.mp4' },
+        { name: 'Forearm Plank', type: 'timed', sets: 3, baseTime: 40, pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
       ]},
     ],
   },
@@ -92,33 +92,33 @@ const TEMPLATES = [
     duration: 12,
     daysPerWeek: 3,
     level: 'Advanced',
-    description: 'Complete transformation programme: build, push, peak over three phases',
+    description: 'Complete transformation programme: push, pull, and legs over three phases',
     repProg: 1,
     timeProg: 2,
     days: [
       { name: 'Day 1', label: 'Upper Push', exercises: [
-        { name: 'DB Bench Press', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'chestPress' },
-        { name: 'DB Shoulder Press', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'shoulderPress' },
-        { name: 'Incline DB Press', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Tricep Dips', type: 'reps', sets: 3, baseReps: 12 },
-        { name: 'Push Ups', type: 'reps', sets: 3, baseReps: 15 },
-        { name: 'Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank' },
+        { name: 'Dumbbell Floor Press', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'chestPress', storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
+        { name: 'Seated Dumbbell Arnold Press', type: 'weighted', sets: 4, baseReps: 8, storagePath: 'exercises/dumbbells/upper/seated dumbbell arnold press.mp4' },
+        { name: 'Dumbbell Overhead Tricep Extension', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/upper/dumbbell overhead tricep extension.mp4' },
+        { name: 'Skullcrushers', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/upper/skullcrushers.mp4' },
+        { name: 'Press Up', type: 'reps', sets: 3, baseReps: 15, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+        { name: 'Forearm Plank', type: 'timed', sets: 3, baseTime: 30, pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
       ]},
       { name: 'Day 2', label: 'Lower Body', exercises: [
-        { name: 'Goblet Squat', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'squat' },
-        { name: 'Deadlift', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'deadlift' },
-        { name: 'Walking Lunges', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Calf Raises', type: 'weighted', sets: 3, baseReps: 15 },
-        { name: 'Box Jumps', type: 'reps', sets: 3, baseReps: 10 },
-        { name: 'Wall Sit', type: 'timed', sets: 3, baseTime: 30 },
+        { name: 'Dumbbell Goblet Squats', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'squat', storagePath: 'exercises/dumbbells/lower/dumbbell goblet squats.mp4' },
+        { name: 'Romanian Deadlifts', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'deadlift', storagePath: 'exercises/dumbbells/lower/romanian deadlifts.GIF' },
+        { name: 'Forward Dumbbell Lunges', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/lower/forward dumbbell lunges.GIF' },
+        { name: 'Weighted Calf Raises', type: 'weighted', sets: 3, baseReps: 15, storagePath: 'exercises/dumbbells/lower/weighted calf raises.GIF' },
+        { name: 'Jump Squats', type: 'reps', sets: 3, baseReps: 10, storagePath: 'exercises/bodyweight/lower/jump squats.GIF' },
+        { name: 'Hollow Body Hold', type: 'timed', sets: 3, baseTime: 30, storagePath: 'exercises/bodyweight/core/Hollow Body Hold.mp4' },
       ]},
       { name: 'Day 3', label: 'Upper Pull', exercises: [
-        { name: 'DB Row', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'seatedRow' },
-        { name: 'Lat Pulldown', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'latPulldown' },
-        { name: 'Bicep Curls', type: 'weighted', sets: 3, baseReps: 10 },
-        { name: 'Face Pulls', type: 'weighted', sets: 3, baseReps: 12 },
-        { name: 'Burpees', type: 'reps', sets: 3, baseReps: 10 },
-        { name: 'Side Plank', type: 'timed', sets: 2, baseTime: 25 },
+        { name: 'Dumbbell Bent Over Row', type: 'weighted', sets: 4, baseReps: 8, pbKey: 'seatedRow', storagePath: 'exercises/dumbbells/upper/dumbbell bent over row.mp4' },
+        { name: 'Single Arm Bent Over Row', type: 'weighted', sets: 4, baseReps: 8, storagePath: 'exercises/dumbbells/upper/single arm bent over row.mp4' },
+        { name: 'Bicep Curl', type: 'weighted', sets: 3, baseReps: 10, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
+        { name: 'Dumbbell Bent Over Rear Delt Fly', type: 'weighted', sets: 3, baseReps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell bent over rear delt fly.mp4' },
+        { name: 'Burpee', type: 'reps', sets: 3, baseReps: 10, storagePath: 'exercises/bodyweight/core/Burpee.mp4' },
+        { name: 'Side Plank', type: 'timed', sets: 2, baseTime: 25, storagePath: 'exercises/bodyweight/core/Side Plank.mp4' },
       ]},
     ],
   },
@@ -350,8 +350,10 @@ export default function CoreBuddyProgrammes() {
   const [timerValue, setTimerValue] = useState(0);
   const timerRef = useRef(null);
 
-  // Video URLs
+  // Video URLs and player state
   const [videoUrls, setVideoUrls] = useState({});
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const sessionVideoRef = useRef(null);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -481,6 +483,17 @@ export default function CoreBuddyProgrammes() {
     return { currentWeek: template.duration, completedThisWeek: template.daysPerWeek, nextDay: -1, totalCompleted, totalSessions, complete: true };
   };
 
+  // Get last week's data for an exercise (for auto-fill)
+  const getLastWeekData = (week, dayIdx, exerciseName) => {
+    if (!activeProgramme || week <= 1) return null;
+    const prevKey = `w${week - 1}d${dayIdx}`;
+    const prevSession = activeProgramme.completedSessions?.[prevKey];
+    if (!prevSession) return null;
+    const prevEx = prevSession.exercises?.find(e => e.name === exerciseName);
+    if (!prevEx?.sets?.length) return null;
+    return prevEx.sets[prevEx.sets.length - 1];
+  };
+
   // Start a session
   const startSession = (week, dayIdx) => {
     const template = getActiveTemplate();
@@ -490,10 +503,11 @@ export default function CoreBuddyProgrammes() {
     setCurrentExIdx(0);
     setCurrentSetIdx(0);
     setSessionLogs([]);
-    setWeightInput('');
     setRepsInput('');
     setTimerActive(false);
     setTimerValue(0);
+    setVideoPlaying(false);
+    setVideoUrls({});
 
     // Pre-init session logs structure
     const day = template.days[dayIdx];
@@ -502,6 +516,34 @@ export default function CoreBuddyProgrammes() {
       return { name: ex.name, type: ex.type, pbKey: ex.pbKey, targetSets: t.sets, targetReps: t.reps, targetTime: t.time, sets: [] };
     });
     setSessionLogs(targets);
+
+    // Auto-fill weight from last week for the first exercise
+    const firstEx = day.exercises[0];
+    const lastData = getLastWeekData(week, dayIdx, firstEx.name);
+    if (lastData?.weight && firstEx.type === 'weighted') {
+      setWeightInput(String(lastData.weight));
+    } else {
+      setWeightInput('');
+    }
+
+    // Fetch video URLs for all exercises in this session
+    const fetchVideos = async () => {
+      const urls = {};
+      for (const ex of day.exercises) {
+        if (ex.storagePath) {
+          try {
+            const storageRef = ref(storage, ex.storagePath);
+            const url = await getDownloadURL(storageRef);
+            urls[ex.name] = { url, isGif: /\.gif$/i.test(ex.storagePath) };
+          } catch (err) {
+            console.warn(`Video not found for ${ex.name}:`, err);
+          }
+        }
+      }
+      setVideoUrls(urls);
+    };
+    fetchVideos();
+
     setView('session');
   };
 
@@ -547,9 +589,21 @@ export default function CoreBuddyProgrammes() {
     } else {
       // Move to next exercise
       if (currentExIdx + 1 < sessionLogs.length) {
-        setCurrentExIdx(currentExIdx + 1);
+        const nextExIdx = currentExIdx + 1;
+        setCurrentExIdx(nextExIdx);
         setCurrentSetIdx(0);
-        setWeightInput('');
+        setVideoPlaying(false);
+
+        // Auto-fill weight from last week for the next exercise
+        const template = getActiveTemplate();
+        const nextEx = template?.days[sessionDay]?.exercises[nextExIdx];
+        const lastData = getLastWeekData(sessionWeek, sessionDay, nextEx?.name);
+        if (lastData?.weight && nextEx?.type === 'weighted') {
+          setWeightInput(String(lastData.weight));
+        } else {
+          setWeightInput('');
+        }
+
         setRepsInput('');
         setTimerActive(false);
         setTimerValue(0);
@@ -904,12 +958,27 @@ export default function CoreBuddyProgrammes() {
     const completedSets = exLog?.sets?.length || 0;
     const totalExercises = day.exercises.length;
     const overallProgress = ((currentExIdx + completedSets / targets.sets) / totalExercises);
+    const videoData = videoUrls[exercise.name];
+    const lastWeekData = getLastWeekData(sessionWeek, sessionDay, exercise.name);
 
     // For timed exercises, initialize timer value when entering new exercise/set
     if (exercise.type === 'timed' && timerValue === 0 && !timerActive && completedSets === currentSetIdx) {
       // Set timer to target time on first render of this set
       setTimeout(() => setTimerValue(targets.time), 0);
     }
+
+    const toggleVideo = () => {
+      if (videoData?.isGif) {
+        setVideoPlaying(!videoPlaying);
+      } else if (sessionVideoRef.current) {
+        if (videoPlaying) {
+          sessionVideoRef.current.pause();
+        } else {
+          sessionVideoRef.current.play();
+        }
+        setVideoPlaying(!videoPlaying);
+      }
+    };
 
     return (
       <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'}>
@@ -931,6 +1000,23 @@ export default function CoreBuddyProgrammes() {
           </div>
         </div>
 
+        {/* Video Demo */}
+        {videoData && (
+          <div className="pg-video-container" onClick={toggleVideo}>
+            {videoData.isGif ? (
+              <img className="pg-video" src={videoData.url} alt={exercise.name} />
+            ) : (
+              <video ref={sessionVideoRef} key={exercise.name} className="pg-video" src={videoData.url} loop muted playsInline />
+            )}
+            {!videoPlaying && (
+              <div className="pg-video-overlay">
+                <svg className="pg-play-icon" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span className="pg-video-hint">Tap for demo</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Spotify Player */}
         <div className="pg-spotify">
           <iframe
@@ -946,6 +1032,15 @@ export default function CoreBuddyProgrammes() {
           <span className={`pg-ex-type-badge pg-badge-${exercise.type}`}>
             {exercise.type === 'weighted' ? 'Weight + Reps' : exercise.type === 'timed' ? 'Timed' : 'Reps Only'}
           </span>
+
+          {/* Last week reference */}
+          {exercise.type === 'weighted' && lastWeekData && (
+            <div className="pg-last-week">
+              <span className="pg-last-week-label">Last week:</span>
+              <span className="pg-last-week-value">{lastWeekData.weight}kg x {lastWeekData.reps} reps</span>
+            </div>
+          )}
+
           <div className="pg-ex-set-info">
             <span className="pg-ex-set-num">Set {completedSets + 1} of {targets.sets}</span>
             <span className="pg-ex-target">
