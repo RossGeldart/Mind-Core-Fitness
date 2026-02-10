@@ -572,7 +572,7 @@ export default function CoreBuddyWorkouts() {
   const handleStackTouchMove = (e) => {
     if (!stackTouch.current.dragging) return;
     const delta = stackTouch.current.startY - e.touches[0].clientY;
-    if (Math.abs(delta) > 8) stackTouch.current.didDrag = true;
+    if (Math.abs(delta) > 15) stackTouch.current.didDrag = true;
     stackTouch.current.lastDrag = delta;
     setStackDrag(delta);
   };
@@ -594,47 +594,36 @@ export default function CoreBuddyWorkouts() {
   const getCardStyle = (index) => {
     const pos = index - activeCardIdx;
     const dragging = stackTouch.current.dragging;
-    const progress = Math.max(-1, Math.min(1, stackDrag / 300));
+    const progress = Math.max(-1, Math.min(1, stackDrag / 250));
     const transition = dragging
       ? 'none'
-      : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
-
-    let ty = 0, tz = 0, sc = 1, op = 1, zi = 0;
+      : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
 
     if (pos === 0) {
-      // Active card — slides up & recedes on swipe up
+      // Active card — fully visible, slides up on swipe
       const p = Math.max(0, progress);
-      ty = -p * 110;
-      tz = -p * 200;
-      sc = 1 - p * 0.12;
-      op = 1 - p * 0.4;
-      zi = progress < -0.1 ? 5 : 10;
+      return {
+        transform: `translateY(${-p * 100}%) scale(${1 - p * 0.05})`,
+        zIndex: 10,
+        transition,
+      };
     } else if (pos === 1) {
-      // Next card — behind, comes forward on swipe up
-      const p = Math.max(0, progress);
-      tz = -100 + p * 100;
-      sc = 0.92 + p * 0.08;
-      op = 0.7 + p * 0.3;
-      zi = 5;
+      // Next card — hidden directly behind active, same position
+      return {
+        transform: 'translateY(0) scale(1)',
+        zIndex: 5,
+        transition,
+      };
     } else if (pos === -1) {
-      // Previous card — above & behind, comes back on swipe down
+      // Previous card — off-screen above, slides back on swipe down
       const p = Math.max(0, -progress);
-      ty = -110 + p * 110;
-      tz = -200 + p * 200;
-      sc = 0.85 + p * 0.15;
-      op = 0.3 + p * 0.7;
-      zi = -progress > 0.1 ? 15 : 1;
-    } else {
-      return { visibility: 'hidden', pointerEvents: 'none' };
+      return {
+        transform: `translateY(${-100 + p * 100}%) scale(${0.95 + p * 0.05})`,
+        zIndex: 15,
+        transition,
+      };
     }
-
-    return {
-      transform: `translateY(${ty}%) translateZ(${tz}px) scale(${sc})`,
-      opacity: op,
-      zIndex: zi,
-      transition,
-      pointerEvents: pos === 0 ? 'auto' : 'none',
-    };
+    return { visibility: 'hidden', pointerEvents: 'none' };
   };
 
   // Toast element - rendered at the end of every view
