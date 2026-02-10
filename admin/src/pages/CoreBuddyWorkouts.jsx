@@ -613,10 +613,12 @@ export default function CoreBuddyWorkouts() {
   };
 
   // Carousel: compute translateX for the track based on active card + drag offset
+  // Each slide is 84% wide, so shift by 84% per card
+  const SLIDE_WIDTH_PCT = 84;
   const getCarouselTrackStyle = () => {
     const dragging = stackTouch.current.dragging;
     const dragPx = dragging ? -stackDrag : 0;
-    const baseOffset = -activeCardIdx * 100;
+    const baseOffset = -activeCardIdx * SLIDE_WIDTH_PCT;
     const dragPercent = dragging ? (dragPx / (carouselRef.current?.offsetWidth || 360)) * 100 : 0;
     return {
       transform: `translateX(calc(${baseOffset}% + ${dragPercent}%))`,
@@ -658,6 +660,12 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main wk-main-carousel">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
+
+          {/* Motivational heading */}
+          <div className="wk-carousel-heading">
+            <h2>Choose Your Workout</h2>
+            <p>No excuses. Just results.</p>
+          </div>
 
           {/* Carousel */}
           <div
@@ -703,6 +711,13 @@ export default function CoreBuddyWorkouts() {
                     <h3>Random Workout</h3>
                     <p>Interval-based HIIT from your exercise library</p>
                   </div>
+                  {/* Swipe hint inside card */}
+                  {activeCardIdx === 0 && (
+                    <div className="wk-swipe-hint">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                      <span>Swipe</span>
+                    </div>
+                  )}
                 </button>
               </div>
 
@@ -746,14 +761,6 @@ export default function CoreBuddyWorkouts() {
                 </button>
               </div>
             </div>
-
-            {/* Swipe hint (only on first card) */}
-            {activeCardIdx === 0 && (
-              <div className="wk-swipe-hint">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                <span>Swipe</span>
-              </div>
-            )}
           </div>
 
           {/* Dot indicators */}
