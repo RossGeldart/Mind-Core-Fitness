@@ -561,7 +561,7 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== CARD STACK LOGIC ====================
   const STACK_CARDS = 2;
-  const SWIPE_THRESHOLD = 80;
+  const SWIPE_THRESHOLD = 120;
   stackTouch.current.lastIdx = activeCardIdx;
 
   const handleStackTouchStart = (e) => {
@@ -594,16 +594,17 @@ export default function CoreBuddyWorkouts() {
   const getCardStyle = (index) => {
     const pos = index - activeCardIdx;
     const dragging = stackTouch.current.dragging;
-    const progress = Math.max(-1, Math.min(1, stackDrag / 250));
+    const progress = Math.max(-1, Math.min(1, stackDrag / 400));
     const transition = dragging
       ? 'none'
-      : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+      : 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
 
     if (pos === 0) {
-      // Active card — fully visible, slides up on swipe
+      // Active card — fully visible, slides up on swipe and fades out
       const p = Math.max(0, progress);
       return {
         transform: `translateY(${-p * 100}%) scale(${1 - p * 0.05})`,
+        opacity: 1 - p * 0.8,
         zIndex: 10,
         transition,
       };
@@ -611,14 +612,16 @@ export default function CoreBuddyWorkouts() {
       // Next card — hidden directly behind active, same position
       return {
         transform: 'translateY(0) scale(1)',
+        opacity: 1,
         zIndex: 5,
         transition,
       };
     } else if (pos === -1) {
-      // Previous card — off-screen above, slides back on swipe down
+      // Previous card — off-screen above, slides back on swipe down and fades in
       const p = Math.max(0, -progress);
       return {
         transform: `translateY(${-100 + p * 100}%) scale(${0.95 + p * 0.05})`,
+        opacity: p,
         zIndex: 15,
         transition,
       };
