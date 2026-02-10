@@ -594,32 +594,33 @@ export default function CoreBuddyWorkouts() {
   const getCardStyle = (index) => {
     const pos = index - activeCardIdx;
     const dragging = stackTouch.current.dragging;
-    const progress = Math.max(-1, Math.min(1, stackDrag / 400));
+    const progress = Math.max(-1, Math.min(1, stackDrag / 300));
     const transition = dragging
       ? 'none'
-      : 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+      : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
 
     if (pos === 0) {
-      // Active card — slides left off-screen on swipe, solid the whole way
+      // Active (front) card — deals off to the left with rotation on swipe
       const p = Math.max(0, progress);
       return {
-        transform: `translateX(${-p * 100}%)`,
+        transform: `translateX(${-p * 80}%) translateY(${p * 10}px) rotate(${-p * 12}deg)`,
         zIndex: 10,
         transition,
       };
     } else if (pos === 1) {
-      // Next card — sits behind active, revealed as active slides away
+      // Next card — fanned behind (peeking out), slides forward on swipe
+      const p = Math.max(0, progress);
       return {
-        transform: 'translateX(0)',
+        transform: `translateX(${8 * (1 - p)}px) translateY(${4 * (1 - p)}px) rotate(${3 * (1 - p)}deg) scale(${0.97 + 0.03 * p})`,
         zIndex: 5,
         transition,
       };
     } else if (pos === -1) {
-      // Previous card — off-screen left, slides back over active on swipe right
+      // Previous card — deals back in from the left
       const p = Math.max(0, -progress);
       return {
-        transform: `translateX(${-100 + p * 100}%)`,
-        zIndex: 15,
+        transform: `translateX(${-80 * (1 - p)}%) translateY(${10 * (1 - p)}px) rotate(${-12 * (1 - p)}deg)`,
+        zIndex: p > 0.3 ? 15 : 5,
         transition,
       };
     }
