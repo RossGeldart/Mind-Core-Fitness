@@ -1913,7 +1913,7 @@ export default function CoreBuddyWorkouts() {
                       <>
                         <span className="mg-session-tag mg-tag-strength">Strength</span>
                         <span className="mg-session-tag">{session.exercises.length} exercises</span>
-                        <span className="mg-session-tag">{session.exercises.reduce((sum, e) => sum + (e.sets || 0), 0)} sets</span>
+                        <span className="mg-session-tag">{(() => { const s = session.exercises.map(e => e.sets || 0); const min = Math.min(...s); const max = Math.max(...s); return min === max ? `${min} sets each` : `${min}-${max} sets each`; })()}</span>
                       </>
                     )}
                   </div>
@@ -2068,7 +2068,7 @@ export default function CoreBuddyWorkouts() {
 
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => { if (confirm('End workout early?')) setView('muscle_sessions'); }} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => { if (confirm('End workout early?')) setView('muscle_overview'); }} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <span className="mg-header-info">Exercise {mgExIdx + 1}/{totalExercises}</span>
