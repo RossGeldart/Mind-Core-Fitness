@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
+import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -76,7 +77,7 @@ const MUSCLE_GRADIENTS = {
 
 // Programme cards for carousel display
 const PROGRAMME_CARDS = [
-  { id: 'fullbody_4wk', name: '4-Week Full Body', focus: 'fullbody', duration: 4, level: 'All Levels', daysPerWeek: 3 },
+  { id: 'fullbody_4wk', name: '4-Week Full Body', focus: 'fullbody', duration: 4, level: 'All Levels', daysPerWeek: 3, image: progFullbody4wkImg },
   { id: 'fullbody_8wk', name: '8-Week Full Body', focus: 'fullbody', duration: 8, level: 'Intermediate', daysPerWeek: 3 },
   { id: 'fullbody_12wk', name: '12-Week Full Body', focus: 'fullbody', duration: 12, level: 'Advanced', daysPerWeek: 3 },
   { id: 'core_4wk', name: '4-Week Core', focus: 'core', duration: 4, level: 'Beginner', daysPerWeek: 3 },
@@ -1382,7 +1383,7 @@ export default function CoreBuddyWorkouts() {
               <button key={prog.id} className="wk-prog-hero-card"
                 onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
                 style={{ animationDelay: `${i * 0.06}s` }}>
-                <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
+                <img src={prog.image || programmeCardImg} alt="" className="wk-prog-hero-bg" />
                 <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
                 <div className="wk-prog-hero-content">
                   <div className="wk-prog-hero-top">
