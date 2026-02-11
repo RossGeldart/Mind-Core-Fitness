@@ -10,6 +10,12 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes waterPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
 /* Page */
 .nut-page {
   min-height: 100vh;
@@ -765,11 +771,12 @@
   width: 28px;
   height: 28px;
   color: var(--border-color);
-  transition: all 0.3s;
+  transition: color 0.3s ease;
 }
 
 .nut-water-glass.filled {
   color: #2196f3;
+  animation: waterPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nut-water-glass svg {
