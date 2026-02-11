@@ -16,6 +16,12 @@
   100% { transform: scale(1); }
 }
 
+@keyframes iconPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
 /* Page */
 .nut-page {
   min-height: 100vh;
@@ -528,6 +534,10 @@
   border-color: var(--color-primary);
   background: rgba(153, 49, 60, 0.08);
   color: var(--color-primary);
+}
+
+.nut-meal-pill.active .nut-meal-icon {
+  animation: iconPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nut-meal-pill:hover:not(.active) {
