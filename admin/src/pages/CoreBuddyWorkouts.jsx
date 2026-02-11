@@ -72,6 +72,208 @@ const MUSCLE_GROUPS = [
   { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z' },
 ];
 
+// Muscle group workout sessions (3 per group)
+const MUSCLE_GROUP_SESSIONS = {
+  chest: [
+    {
+      id: 'chest_strength', name: 'Chest Strength', desc: 'Heavy pressing for max strength',
+      exercises: [
+        { name: 'Dumbbell Floor Press', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
+        { name: 'Dumbbell Squeeze Press', type: 'weighted', sets: 3, reps: 10, storagePath: null },
+        { name: 'Incline Dumbbell Press', type: 'weighted', sets: 3, reps: 10, storagePath: null },
+        { name: 'Dumbbell Pullover', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Dumbbell Fly', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+      ],
+    },
+    {
+      id: 'chest_hypertrophy', name: 'Chest Hypertrophy', desc: 'Volume training for muscle growth',
+      exercises: [
+        { name: 'Dumbbell Floor Press', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
+        { name: 'Wide Press Up', type: 'reps', sets: 3, reps: 15, storagePath: null },
+        { name: 'Dumbbell Fly', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Incline Dumbbell Press', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Press Up', type: 'reps', sets: 3, reps: 20, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+      ],
+    },
+    {
+      id: 'chest_endurance', name: 'Chest Endurance', desc: 'Bodyweight pushing to failure',
+      exercises: [
+        { name: 'Press Up', type: 'reps', sets: 4, reps: 20, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+        { name: 'Wide Press Up', type: 'reps', sets: 3, reps: 15, storagePath: null },
+        { name: 'Diamond Press Up', type: 'reps', sets: 3, reps: 12, storagePath: null },
+        { name: 'Decline Press Up', type: 'reps', sets: 3, reps: 15, storagePath: null },
+        { name: 'Press Up Hold', type: 'timed', sets: 3, time: 30, storagePath: null },
+      ],
+    },
+  ],
+  back: [
+    {
+      id: 'back_strength', name: 'Back Strength', desc: 'Heavy rows for a thick back',
+      exercises: [
+        { name: 'Dumbbell Bent Over Row', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/dumbbell bent over row.mp4' },
+        { name: 'Single Arm Bent Over Row', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/single arm bent over row.mp4' },
+        { name: 'Dumbbell Bent Over Rear Delt Fly', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell bent over rear delt fly.mp4' },
+        { name: 'Dumbbell Pullover', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Dumbbell Shrug', type: 'weighted', sets: 3, reps: 15, storagePath: null },
+      ],
+    },
+    {
+      id: 'back_hypertrophy', name: 'Back Hypertrophy', desc: 'Width and thickness volume work',
+      exercises: [
+        { name: 'Renegade Row', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/renegade row.mp4' },
+        { name: 'Wide Dumbbell Bent Over Row', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Single Arm Bent Over Row', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/single arm bent over row.mp4' },
+        { name: 'Reverse Fly', type: 'weighted', sets: 3, reps: 15, storagePath: null },
+        { name: 'Prone Y-T-W Raises', type: 'reps', sets: 3, reps: 10, storagePath: null },
+      ],
+    },
+    {
+      id: 'back_endurance', name: 'Back Endurance', desc: 'Bodyweight back conditioning',
+      exercises: [
+        { name: 'Superman Hold', type: 'timed', sets: 4, time: 30, storagePath: 'exercises/bodyweight/upper/Superman Hold.mp4' },
+        { name: 'Prone Y-T-W Raises', type: 'reps', sets: 3, reps: 12, storagePath: null },
+        { name: 'Reverse Snow Angel', type: 'reps', sets: 3, reps: 12, storagePath: null },
+        { name: 'Bird Dog', type: 'reps', sets: 3, reps: 12, storagePath: 'exercises/bodyweight/core/Bird Dog.mp4' },
+        { name: 'Back Extension Hold', type: 'timed', sets: 3, time: 30, storagePath: null },
+      ],
+    },
+  ],
+  shoulders: [
+    {
+      id: 'shoulders_strength', name: 'Shoulder Strength', desc: 'Heavy pressing for boulder shoulders',
+      exercises: [
+        { name: 'Seated Dumbbell Shoulder Press', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/seated dumbbell shoulder press.mp4' },
+        { name: 'Seated Dumbbell Arnold Press', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/seated dumbbell arnold press.mp4' },
+        { name: 'Dumbbell Front Raise', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell front raise.mp4' },
+        { name: 'Dumbbell Bent Over Rear Delt Fly', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell bent over rear delt fly.mp4' },
+        { name: 'Dumbbell Shrug', type: 'weighted', sets: 3, reps: 15, storagePath: null },
+      ],
+    },
+    {
+      id: 'shoulders_hypertrophy', name: 'Shoulder Hypertrophy', desc: 'Volume and isolation for 3D delts',
+      exercises: [
+        { name: 'Seated Dumbbell Arnold Press', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/seated dumbbell arnold press.mp4' },
+        { name: 'Dumbbell Lateral Raise', type: 'weighted', sets: 4, reps: 15, storagePath: 'exercises/dumbbells/upper/dumbbell lateral raise.mp4' },
+        { name: 'Dumbbell Front Raise', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell front raise.mp4' },
+        { name: 'Dumbbell Bent Over Rear Delt Fly', type: 'weighted', sets: 3, reps: 15, storagePath: 'exercises/dumbbells/upper/dumbbell bent over rear delt fly.mp4' },
+        { name: 'Dumbbell Y-Raise', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+      ],
+    },
+    {
+      id: 'shoulders_endurance', name: 'Shoulder Endurance', desc: 'Bodyweight and high-rep work',
+      exercises: [
+        { name: 'Pike Push Ups', type: 'reps', sets: 4, reps: 12, storagePath: 'exercises/bodyweight/upper/pike push ups.mp4' },
+        { name: 'Dumbbell Lateral Raise', type: 'weighted', sets: 3, reps: 20, storagePath: 'exercises/dumbbells/upper/dumbbell lateral raise.mp4' },
+        { name: 'Wall Walks', type: 'reps', sets: 3, reps: 6, storagePath: null },
+        { name: 'Prone Y-T-W Raises', type: 'reps', sets: 3, reps: 10, storagePath: null },
+        { name: 'Shoulder Tap Hold', type: 'timed', sets: 3, time: 30, storagePath: null },
+      ],
+    },
+  ],
+  arms: [
+    {
+      id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps',
+      exercises: [
+        { name: 'Bicep Curl', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
+        { name: 'Hammer Curl', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/hammer curl.mp4' },
+        { name: 'Concentration Curl', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Wide Grip Bicep Curl', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Isometric Bicep Hold', type: 'timed', sets: 3, time: 20, storagePath: null },
+      ],
+    },
+    {
+      id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps',
+      exercises: [
+        { name: 'Dumbbell Overhead Tricep Extension', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/upper/dumbbell overhead tricep extension.mp4' },
+        { name: 'Skullcrushers', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/skullcrushers.mp4' },
+        { name: 'Tricep Dips', type: 'reps', sets: 3, reps: 15, storagePath: 'exercises/bodyweight/upper/tricep dips.mp4' },
+        { name: 'Tricep Kickback', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Diamond Press Up', type: 'reps', sets: 3, reps: 12, storagePath: null },
+      ],
+    },
+    {
+      id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps',
+      exercises: [
+        { name: 'Bicep Curl', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
+        { name: 'Tricep Kickback', type: 'weighted', sets: 3, reps: 12, storagePath: null },
+        { name: 'Hammer Curl', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/hammer curl.mp4' },
+        { name: 'Dumbbell Overhead Tricep Extension', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell overhead tricep extension.mp4' },
+        { name: 'Wrist Curl', type: 'weighted', sets: 3, reps: 15, storagePath: null },
+      ],
+    },
+  ],
+  legs: [
+    {
+      id: 'legs_quad', name: 'Quad Dominant', desc: 'Squats and lunges for quad power',
+      exercises: [
+        { name: 'Dumbbell Goblet Squats', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/lower/dumbbell goblet squats.mp4' },
+        { name: 'Forward Dumbbell Lunges', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/forward dumbbell lunges.mp4' },
+        { name: 'Dumbbell Squat Pulses', type: 'weighted', sets: 3, reps: 15, storagePath: 'exercises/dumbbells/lower/dumbbell squat pulses.mp4' },
+        { name: 'Bulgarian Split Squats', type: 'reps', sets: 3, reps: 12, storagePath: 'exercises/bodyweight/lower/bulgarian split squats.mp4' },
+        { name: 'Squat And Hold', type: 'timed', sets: 3, time: 30, storagePath: 'exercises/bodyweight/lower/squat and hold.mp4' },
+      ],
+    },
+    {
+      id: 'legs_ham_glute', name: 'Hamstring & Glute', desc: 'Posterior chain focus',
+      exercises: [
+        { name: 'Romanian Deadlifts', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/lower/romanian deadlifts.mp4' },
+        { name: '1 Legged RDL', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/lower/1 legged rdl.mp4' },
+        { name: 'Hip Thrusts', type: 'reps', sets: 3, reps: 15, storagePath: 'exercises/bodyweight/lower/hip thrusts.mp4' },
+        { name: 'Dumbbell Sumo Squats', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/dumbbell sumo squats.mp4' },
+        { name: 'Donkey Kicks', type: 'reps', sets: 3, reps: 15, storagePath: 'exercises/bodyweight/lower/donkey kicks.mp4' },
+      ],
+    },
+    {
+      id: 'legs_power', name: 'Power & Plyo', desc: 'Explosive leg training',
+      exercises: [
+        { name: 'Jump Squats', type: 'reps', sets: 4, reps: 12, storagePath: 'exercises/bodyweight/lower/jump squats.mp4' },
+        { name: 'Dumbbell Box Step Ups', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/dumbbell box step ups.mp4' },
+        { name: 'Skater Jumps', type: 'reps', sets: 3, reps: 15, storagePath: 'exercises/bodyweight/lower/skater jumps.mp4' },
+        { name: 'Dumbbell Reverse Lunges', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/dumbbell reverse lunges.mp4' },
+        { name: 'Weighted Calf Raises', type: 'weighted', sets: 4, reps: 15, storagePath: 'exercises/dumbbells/lower/weighted calf raises.mp4' },
+      ],
+    },
+  ],
+  core: [
+    {
+      id: 'core_lower_abs', name: 'Lower Abs Blast', desc: '40s work / 20s rest — 3 rounds',
+      interval: true, rounds: 3, work: 40, rest: 20,
+      exercises: [
+        { name: 'Leg Raises', storagePath: 'exercises/bodyweight/core/Leg Raises.mp4' },
+        { name: 'Reverse Crunch To Leg Raise', storagePath: 'exercises/bodyweight/core/Reverse Crunch To Leg Raise.mp4' },
+        { name: 'Flutter Kicks', storagePath: 'exercises/bodyweight/core/Flutter Kicks.mp4' },
+        { name: 'Dead Bug Single Leg Drop', storagePath: 'exercises/bodyweight/core/Dead Bug Single Leg Drop.mp4' },
+        { name: 'Hollow Body Hold', storagePath: 'exercises/bodyweight/core/Hollow Body Hold.mp4' },
+        { name: 'Hollow Hold Flutter Kicks', storagePath: 'exercises/bodyweight/core/Hollow Hold Flutter Kicks.mp4' },
+      ],
+    },
+    {
+      id: 'core_obliques', name: 'Obliques & Rotation', desc: '35s work / 25s rest — 3 rounds',
+      interval: true, rounds: 3, work: 35, rest: 25,
+      exercises: [
+        { name: 'Russian Twist', storagePath: 'exercises/bodyweight/core/Russian Twist.mp4' },
+        { name: 'Side Plank Rotation', storagePath: 'exercises/bodyweight/core/Side Plank Rotation.mp4' },
+        { name: 'Cross Body Mountain Climbers', storagePath: 'exercises/bodyweight/core/Cross Body Mountain Climbers.mp4' },
+        { name: 'Hip Dips Plank', storagePath: 'exercises/bodyweight/core/Hip Dips Plank.mp4' },
+        { name: 'Bicycle Crunch', storagePath: 'exercises/bodyweight/core/Bicycle Crunch.mp4' },
+        { name: 'Side Plank', storagePath: 'exercises/bodyweight/core/Side Plank.mp4' },
+      ],
+    },
+    {
+      id: 'core_weighted', name: 'Weighted Core', desc: '40s work / 20s rest — 3 rounds',
+      interval: true, rounds: 3, work: 40, rest: 20,
+      exercises: [
+        { name: 'Russian Twists Dumbbell', storagePath: 'exercises/dumbbells/core/russian twists dumbbell.mp4' },
+        { name: 'Kettlebell Russian Twist', storagePath: 'exercises/kettlebells/core/kettlebell russian twist.mp4' },
+        { name: 'Kettlebell Side Bends', storagePath: 'exercises/kettlebells/core/kettlebell side bends.mp4' },
+        { name: 'Kneeling Kettlebell Halo', storagePath: 'exercises/kettlebells/core/kneeling kettlebell halo.mp4' },
+        { name: 'Kettlebell Bird Dog Drag', storagePath: 'exercises/kettlebells/core/kettlebell bird dog drag.mp4' },
+        { name: 'Dumbbell Plank Pull Through', storagePath: null },
+      ],
+    },
+  ],
+};
+
 const EQUIPMENT = [
   { key: 'bodyweight', label: 'Bodyweight', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' },
   { key: 'dumbbells', label: 'Dumbbells', icon: 'M6 5H3v14h3V5zm12 0h-3v14h3V5zm-9 3H7v8h2V8zm7 0h-2v8h2V8zm-5 0h-2v8h2V8z' },
@@ -113,6 +315,7 @@ export default function CoreBuddyWorkouts() {
   const navigate = useNavigate();
 
   // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
+  //        | 'muscle_sessions' | 'muscle_workout' | 'muscle_complete'
   const [view, setView] = useState('menu');
 
   // Setup
@@ -153,6 +356,21 @@ export default function CoreBuddyWorkouts() {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // Muscle group workout state
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState(null);
+  const [selectedMuscleSession, setSelectedMuscleSession] = useState(null);
+  const [mgExIdx, setMgExIdx] = useState(0);
+  const [mgSetIdx, setMgSetIdx] = useState(0);
+  const [mgLogs, setMgLogs] = useState([]);
+  const [mgWeightInput, setMgWeightInput] = useState('');
+  const [mgRepsInput, setMgRepsInput] = useState('');
+  const [mgTimerActive, setMgTimerActive] = useState(false);
+  const [mgTimerValue, setMgTimerValue] = useState(0);
+  const [mgVideoPlaying, setMgVideoPlaying] = useState(false);
+  const [mgVideoUrls, setMgVideoUrls] = useState({});
+  const mgVideoRef = useRef(null);
+  const mgTimerRef = useRef(null);
 
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
@@ -530,6 +748,157 @@ export default function CoreBuddyWorkouts() {
     }
   };
 
+  // ==================== MUSCLE GROUP WORKOUT FUNCTIONS ====================
+
+  // Start a muscle group strength session
+  const startMuscleSession = async (session) => {
+    setSelectedMuscleSession(session);
+
+    if (session.interval) {
+      // Core interval session — load videos then use the randomiser flow
+      const exercises = [];
+      for (const ex of session.exercises) {
+        let videoUrl = null;
+        let isGif = false;
+        if (ex.storagePath) {
+          try {
+            const storageRef = ref(storage, ex.storagePath);
+            videoUrl = await getDownloadURL(storageRef);
+            isGif = /\.gif$/i.test(ex.storagePath);
+          } catch (e) { /* video not uploaded yet */ }
+        }
+        exercises.push({ name: ex.name, videoUrl, isGif });
+      }
+      setWorkout(exercises);
+      setRounds(session.rounds);
+      setLevelConfig({ work: session.work, rest: session.rest });
+      setView('preview');
+      return;
+    }
+
+    // Strength session — load videos and init logs
+    const urls = {};
+    for (const ex of session.exercises) {
+      if (ex.storagePath) {
+        try {
+          const storageRef = ref(storage, ex.storagePath);
+          urls[ex.name] = { url: await getDownloadURL(storageRef), isGif: /\.gif$/i.test(ex.storagePath) };
+        } catch (e) { /* placeholder — no video yet */ }
+      }
+    }
+    setMgVideoUrls(urls);
+
+    const logs = session.exercises.map(ex => ({
+      name: ex.name,
+      type: ex.type,
+      targetSets: ex.sets,
+      targetReps: ex.reps || 0,
+      targetTime: ex.time || 0,
+      sets: [],
+    }));
+    setMgLogs(logs);
+    setMgExIdx(0);
+    setMgSetIdx(0);
+    setMgWeightInput('');
+    setMgRepsInput('');
+    setMgVideoPlaying(false);
+    setMgTimerActive(false);
+    setMgTimerValue(0);
+    setView('muscle_workout');
+  };
+
+  // Toggle muscle group video playback
+  const toggleMgVideo = () => {
+    const vid = mgVideoRef.current;
+    if (!vid) return;
+    if (vid.paused) { vid.play(); setMgVideoPlaying(true); }
+    else { vid.pause(); setMgVideoPlaying(false); }
+  };
+
+  // Muscle group timer countdown
+  useEffect(() => {
+    if (view !== 'muscle_workout' || !mgTimerActive || mgTimerValue <= 0) {
+      if (view === 'muscle_workout' && mgTimerActive && mgTimerValue <= 0) {
+        setMgTimerActive(false);
+        playBeep();
+      }
+      return;
+    }
+    mgTimerRef.current = setTimeout(() => setMgTimerValue(v => v - 1), 1000);
+    return () => clearTimeout(mgTimerRef.current);
+  }, [view, mgTimerActive, mgTimerValue]);
+
+  // Log a set in muscle group workout
+  const mgLogSet = async () => {
+    const exLog = mgLogs[mgExIdx];
+    let setData = {};
+
+    if (exLog.type === 'weighted') {
+      const w = parseFloat(mgWeightInput) || 0;
+      const r = parseInt(mgRepsInput) || 0;
+      if (r === 0) { showToast('Enter your reps', 'error'); return; }
+      setData = { weight: w, reps: r };
+    } else if (exLog.type === 'reps') {
+      const r = parseInt(mgRepsInput) || 0;
+      if (r === 0) { showToast('Enter your reps', 'error'); return; }
+      setData = { reps: r };
+    } else if (exLog.type === 'timed') {
+      const elapsed = exLog.targetTime - mgTimerValue;
+      setData = { time: Math.max(elapsed, 1) };
+    }
+
+    const updated = [...mgLogs];
+    updated[mgExIdx] = { ...exLog, sets: [...exLog.sets, setData] };
+    setMgLogs(updated);
+
+    const nextSet = exLog.sets.length + 1;
+    if (nextSet < exLog.targetSets) {
+      setMgSetIdx(nextSet);
+      setMgRepsInput('');
+      setMgTimerActive(false);
+      setMgTimerValue(0);
+    } else {
+      // Move to next exercise
+      if (mgExIdx + 1 < mgLogs.length) {
+        const nextIdx = mgExIdx + 1;
+        setMgExIdx(nextIdx);
+        setMgSetIdx(0);
+        setMgWeightInput('');
+        setMgRepsInput('');
+        setMgVideoPlaying(false);
+        setMgTimerActive(false);
+        setMgTimerValue(0);
+      } else {
+        // All exercises done
+        await saveMgWorkoutLog(updated);
+        setView('muscle_complete');
+      }
+    }
+  };
+
+  // Save muscle group workout log
+  const saveMgWorkoutLog = async (logs) => {
+    if (!currentUser || !clientData) return;
+    try {
+      const volume = logs.reduce((sum, l) =>
+        sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+      await addDoc(collection(db, 'workoutLogs'), {
+        clientId: clientData.id,
+        type: 'muscle_group',
+        muscleGroup: selectedMuscleGroup,
+        sessionId: selectedMuscleSession?.id,
+        sessionName: selectedMuscleSession?.name,
+        exerciseCount: logs.length,
+        totalSets: logs.reduce((sum, l) => sum + l.sets.length, 0),
+        volume: Math.round(volume),
+        exercises: logs.map(l => ({ name: l.name, type: l.type, sets: l.sets })),
+        completedAt: Timestamp.now(),
+      });
+    } catch (err) {
+      console.error('Error saving muscle group workout log:', err);
+    }
+  };
+
   // Audio helpers (Web Audio API for beeps)
   const audioCtxRef = useRef(null);
   const getAudioCtx = () => {
@@ -754,13 +1123,13 @@ export default function CoreBuddyWorkouts() {
           {/* Muscle Groups Section */}
           <div className="wk-section-header">
             <h2>Muscle Groups</h2>
-            <span className="wk-section-count">Coming soon</span>
+            <span className="wk-section-count">{MUSCLE_GROUPS.length} groups</span>
           </div>
 
           <div className="wk-muscle-grid">
             {MUSCLE_GROUPS.map((mg, i) => (
               <button key={mg.key} className="wk-muscle-hero-card"
-                onClick={() => showToast(`${mg.label} workouts coming soon!`, 'info')}
+                onClick={() => { setSelectedMuscleGroup(mg.key); setView('muscle_sessions'); }}
                 style={{ animationDelay: `${i * 0.05}s` }}>
                 <img src={randomiserCardImg} alt="" className="wk-muscle-hero-bg" />
                 <div className="wk-muscle-hero-overlay" style={{ background: MUSCLE_GRADIENTS[mg.key] }} />
@@ -769,7 +1138,7 @@ export default function CoreBuddyWorkouts() {
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
                   </div>
                   <span className="wk-muscle-hero-name">{mg.label}</span>
-                  <span className="wk-muscle-hero-soon">Coming Soon</span>
+                  <span className="wk-muscle-hero-count">{MUSCLE_GROUP_SESSIONS[mg.key]?.length || 0} sessions</span>
                 </div>
               </button>
             ))}
@@ -966,8 +1335,8 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== PREVIEW VIEW ====================
   if (view === 'preview') {
-    const config = LEVELS.find(l => l.key === level);
-    const totalTime = workout.length * rounds * (config.work + config.rest);
+    const previewConfig = selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level);
+    const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
@@ -985,6 +1354,12 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
+          {selectedMuscleSession?.interval && (
+            <button className="nut-back-btn" onClick={() => setView('muscle_sessions')}>&larr; Back</button>
+          )}
+          {selectedMuscleSession?.interval && (
+            <h2 className="mg-preview-title">{selectedMuscleSession.name}</h2>
+          )}
           <div className="wk-preview-stats">
             <div className="wk-stat">
               <span className="wk-stat-val">{workout.length}</span>
@@ -999,7 +1374,7 @@ export default function CoreBuddyWorkouts() {
               <span className="wk-stat-label">Minutes</span>
             </div>
             <div className="wk-stat">
-              <span className="wk-stat-val">{config.work}/{config.rest}</span>
+              <span className="wk-stat-val">{previewConfig.work}/{previewConfig.rest}</span>
               <span className="wk-stat-label">Work/Rest</span>
             </div>
           </div>
@@ -1014,10 +1389,12 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           <div className="wk-preview-actions">
-            <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-              Reshuffle
-            </button>
+            {!selectedMuscleSession?.interval && (
+              <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                Reshuffle
+              </button>
+            )}
             <button className="wk-btn-primary" onClick={startWorkout}>
               Start Workout
             </button>
@@ -1164,7 +1541,294 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
           <div className="wk-complete-actions">
-            <button className="wk-btn-primary" onClick={() => setView('menu')}>Done</button>
+            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}>Done</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==================== MUSCLE GROUP SESSION SELECTION VIEW ====================
+  if (view === 'muscle_sessions') {
+    const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
+    const sessions = MUSCLE_GROUP_SESSIONS[selectedMuscleGroup] || [];
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
+          <div className="mg-sessions-header">
+            <div className="mg-sessions-icon" style={{ background: MUSCLE_GRADIENTS[selectedMuscleGroup] }}>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d={groupData?.icon} /></svg>
+            </div>
+            <h2>{groupData?.label} Workouts</h2>
+            <p>{sessions.length} sessions available</p>
+          </div>
+
+          <div className="mg-sessions-list">
+            {sessions.map((session, i) => (
+              <button key={session.id} className="mg-session-card"
+                onClick={() => startMuscleSession(session)}
+                style={{ animationDelay: `${i * 0.08}s` }}>
+                <div className="mg-session-info">
+                  <h3>{session.name}</h3>
+                  <p>{session.desc}</p>
+                  <div className="mg-session-meta">
+                    {session.interval ? (
+                      <>
+                        <span className="mg-session-tag mg-tag-interval">Interval</span>
+                        <span className="mg-session-tag">{session.exercises.length} exercises</span>
+                        <span className="mg-session-tag">{session.rounds} rounds</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="mg-session-tag mg-tag-strength">Strength</span>
+                        <span className="mg-session-tag">{session.exercises.length} exercises</span>
+                        <span className="mg-session-tag">{session.exercises.reduce((sum, e) => sum + (e.sets || 0), 0)} sets</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="mg-session-arrow">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </button>
+            ))}
+          </div>
+        </main>
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== MUSCLE GROUP STRENGTH WORKOUT VIEW ====================
+  if (view === 'muscle_workout') {
+    const session = selectedMuscleSession;
+    if (!session) return null;
+    const exercise = session.exercises[mgExIdx];
+    const exLog = mgLogs[mgExIdx];
+    if (!exercise || !exLog) return null;
+    const completedSets = exLog.sets.length;
+    const totalExercises = session.exercises.length;
+    const totalSetsAll = session.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
+    const completedSetsAll = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
+    const progressPct = (completedSetsAll / totalSetsAll) * 100;
+    const videoData = mgVideoUrls[exercise.name];
+
+    // Auto-init timer for timed exercises
+    if (exercise.type === 'timed' && mgTimerValue === 0 && !mgTimerActive && completedSets === mgSetIdx) {
+      setTimeout(() => setMgTimerValue(exercise.time), 0);
+    }
+
+    const logBtnText = completedSets + 1 < exercise.sets
+      ? 'Log Set'
+      : mgExIdx + 1 < totalExercises
+        ? 'Log Set \u2192 Next Exercise'
+        : 'Log Set \u2192 Complete';
+
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+        {/* Progress bar */}
+        <div className="mg-session-progress">
+          <div className="mg-session-progress-fill" style={{ width: `${progressPct}%` }} />
+        </div>
+
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => { if (confirm('End workout early?')) setView('muscle_sessions'); }} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span className="mg-header-info">Exercise {mgExIdx + 1}/{totalExercises}</span>
+            <div style={{ width: 22 }} />
+          </div>
+        </header>
+
+        <main className="wk-main">
+          {/* Video */}
+          {videoData ? (
+            <div className="mg-video-container" onClick={toggleMgVideo}>
+              {videoData.isGif ? (
+                <img className="mg-video" src={videoData.url} alt={exercise.name} />
+              ) : (
+                <video ref={mgVideoRef} key={exercise.name} className="mg-video" src={videoData.url} loop muted playsInline />
+              )}
+              {!mgVideoPlaying && !videoData.isGif && (
+                <div className="mg-video-overlay">
+                  <svg className="mg-play-icon" width="48" height="48" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span className="mg-video-hint">Tap for demo</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mg-video-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/><line x1="17" y1="17" x2="22" y2="17"/>
+              </svg>
+              <span>Video coming soon</span>
+            </div>
+          )}
+
+          {/* Spotify Player */}
+          <div className="wk-spotify">
+            <iframe
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO3FJyYF?utm_source=generator&theme=0"
+              width="100%"
+              height="80"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              title="Spotify Playlist"
+            />
+          </div>
+
+          {/* Exercise card */}
+          <div className="mg-exercise-card">
+            <h2 className="mg-ex-name">{exercise.name}</h2>
+            <span className={`mg-ex-type-badge ${exercise.type}`}>
+              {exercise.type === 'weighted' ? 'Weight + Reps' : exercise.type === 'reps' ? 'Reps Only' : 'Timed'}
+            </span>
+
+            <div className="mg-ex-set-info">
+              <span className="mg-ex-set-num">Set {completedSets + 1} of {exercise.sets}</span>
+              {exercise.type !== 'timed' && (
+                <span className="mg-ex-target">Target: {exercise.reps} reps</span>
+              )}
+              {exercise.type === 'timed' && (
+                <span className="mg-ex-target">Target: {exercise.time}s</span>
+              )}
+            </div>
+
+            {/* Input fields by type */}
+            {exercise.type === 'weighted' && (
+              <div className="mg-input-area">
+                <div className="mg-input-group">
+                  <label>Weight (kg)</label>
+                  <input type="number" inputMode="decimal" className="mg-input" value={mgWeightInput}
+                    onChange={e => setMgWeightInput(e.target.value)} placeholder="0" />
+                </div>
+                <div className="mg-input-group">
+                  <label>Reps</label>
+                  <input type="number" inputMode="numeric" className="mg-input" value={mgRepsInput}
+                    onChange={e => setMgRepsInput(e.target.value)} placeholder="0" />
+                </div>
+              </div>
+            )}
+
+            {exercise.type === 'reps' && (
+              <div className="mg-input-area">
+                <div className="mg-input-group mg-input-single">
+                  <label>Reps</label>
+                  <input type="number" inputMode="numeric" className="mg-input" value={mgRepsInput}
+                    onChange={e => setMgRepsInput(e.target.value)} placeholder="0" />
+                </div>
+              </div>
+            )}
+
+            {exercise.type === 'timed' && (
+              <div className="mg-timer-area">
+                <div className="mg-timer-display">
+                  <span className="mg-timer-value">{mgTimerValue}s</span>
+                </div>
+                {!mgTimerActive ? (
+                  <button className="mg-timer-btn" onClick={() => {
+                    if (mgTimerValue === 0) setMgTimerValue(exercise.time);
+                    setMgTimerActive(true);
+                  }}>
+                    {mgTimerValue < exercise.time && mgTimerValue > 0 ? 'Resume' : 'Start Timer'}
+                  </button>
+                ) : (
+                  <button className="mg-timer-btn mg-timer-stop" onClick={() => setMgTimerActive(false)}>
+                    Stop
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Log Set button */}
+            <button className="mg-log-set-btn" onClick={mgLogSet}>{logBtnText}</button>
+
+            {/* Completed sets */}
+            {exLog.sets.length > 0 && (
+              <div className="mg-completed-sets">
+                {exLog.sets.map((s, i) => (
+                  <div key={i} className="mg-completed-set">
+                    <span className="mg-completed-set-check">&#10003;</span>
+                    <span>Set {i + 1}: {s.weight != null ? `${s.weight}kg \u00D7 ${s.reps}` : s.reps != null ? `${s.reps} reps` : `${s.time}s`}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== MUSCLE GROUP COMPLETE VIEW ====================
+  if (view === 'muscle_complete') {
+    const totalSets = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
+    const totalVolume = mgLogs.reduce((sum, l) =>
+      sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+    const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
+    return (
+      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'}>
+        <div className="wk-complete">
+          <div className="wk-complete-ring">
+            <svg className="wk-complete-svg" viewBox="0 0 200 200">
+              {[...Array(TICK_COUNT)].map((_, i) => {
+                const angle = (i * 6 - 90) * (Math.PI / 180);
+                const x1 = 100 + 78 * Math.cos(angle);
+                const y1 = 100 + 78 * Math.sin(angle);
+                const x2 = 100 + 94 * Math.cos(angle);
+                const y2 = 100 + 94 * Math.sin(angle);
+                return (
+                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                    className="wk-tick-complete"
+                    strokeWidth={i % 5 === 0 ? '3.5' : '2'}
+                    style={{ animationDelay: `${i * 0.02}s` }} />
+                );
+              })}
+            </svg>
+            <div className="wk-complete-center">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </div>
+          <h2 className="wk-complete-title">{groupLabel} Complete!</h2>
+          <p className="mg-complete-session-name">{selectedMuscleSession?.name}</p>
+          <div className="wk-complete-stats">
+            <div className="wk-stat">
+              <span className="wk-stat-val">{mgLogs.length}</span>
+              <span className="wk-stat-label">Exercises</span>
+            </div>
+            <div className="wk-stat">
+              <span className="wk-stat-val">{totalSets}</span>
+              <span className="wk-stat-label">Sets</span>
+            </div>
+            {totalVolume > 0 && (
+              <div className="wk-stat">
+                <span className="wk-stat-val">{Math.round(totalVolume).toLocaleString()}</span>
+                <span className="wk-stat-label">Volume (kg)</span>
+              </div>
+            )}
+          </div>
+          <div className="wk-complete-actions">
+            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}>Done</button>
           </div>
         </div>
       </div>
