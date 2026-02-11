@@ -85,6 +85,9 @@ export default function CoreBuddyNutrition() {
   // Meal selector
   const [selectedMeal, setSelectedMeal] = useState(getDefaultMeal);
 
+  // Add food picker popup
+  const [addPickerMeal, setAddPickerMeal] = useState(null); // which meal's picker is open
+
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
   const [scannerActive, setScannerActive] = useState(false);
@@ -1015,9 +1018,34 @@ export default function CoreBuddyNutrition() {
                       <span className="nut-meal-card-title">{m.label}</span>
                       {items.length > 0 && <span className="nut-meal-card-cal">{mealTotals.calories} cal</span>}
                       {isToday && (
-                        <button className="nut-meal-add-btn" onClick={() => openAddForMeal(m.key)} aria-label={`Add to ${m.label}`}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
+                        <div className="nut-add-wrapper">
+                          <button className="nut-meal-add-btn" onClick={() => setAddPickerMeal(addPickerMeal === m.key ? null : m.key)} aria-label={`Add to ${m.label}`}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                          </button>
+                          {addPickerMeal === m.key && (
+                            <>
+                            <div className="nut-add-picker-backdrop" onClick={() => setAddPickerMeal(null)} />
+                            <div className="nut-add-picker">
+                              <button onClick={() => { setAddPickerMeal(null); openAddForMeal(m.key, 'scan'); }}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                                <span>Scan</span>
+                              </button>
+                              <button onClick={() => { setAddPickerMeal(null); openAddForMeal(m.key, 'search'); }}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <span>Search</span>
+                              </button>
+                              <button onClick={() => { setAddPickerMeal(null); openAddForMeal(m.key, 'manual'); }}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                <span>Manual</span>
+                              </button>
+                              <button onClick={() => { setAddPickerMeal(null); openAddForMeal(m.key, 'favourites'); }}>
+                                <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <span>Favs</span>
+                              </button>
+                            </div>
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
                     {/* Mini macro progress bars */}

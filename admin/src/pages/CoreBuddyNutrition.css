@@ -963,6 +963,82 @@
   transform: scale(0.9);
 }
 
+/* Add Food Picker Popup */
+.nut-add-wrapper {
+  position: relative;
+}
+
+.nut-add-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+}
+
+.nut-add-picker {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  animation: pickerPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pickerPop {
+  from { opacity: 0; transform: scale(0.85) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.nut-add-picker button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.nut-add-picker button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nut-add-picker button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nut-add-picker button:active {
+  transform: scale(0.93);
+  transition: transform 0.1s;
+}
+
+.nut-add-picker button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nut-add-picker button:nth-child(1) { color: var(--color-primary); }
+.nut-add-picker button:nth-child(2) { color: #2196f3; }
+.nut-add-picker button:nth-child(3) { color: #4caf50; }
+.nut-add-picker button:nth-child(4) { color: #ff9800; }
+
+.nut-add-picker button span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
 /* Mini Macro Progress Bars */
 .nut-meal-bars {
   padding: 10px 16px 8px;
