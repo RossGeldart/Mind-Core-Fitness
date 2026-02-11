@@ -345,6 +345,32 @@
   align-items: center;
   justify-content: center;
   padding: 0 10px;
+  position: relative;
+}
+
+.header-actions {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-actions button {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.header-actions button:hover {
+  color: var(--text-primary, #fff);
 }
 
 .header-logo {
