@@ -102,24 +102,14 @@
 
 /* ==================== MENU VIEW ==================== */
 
-/* Carousel Layout — fixed height fills viewport exactly */
-.wk-main-carousel {
-  display: flex;
-  flex-direction: column;
-  height: calc(100dvh - 56px);
-  padding-bottom: 0 !important;
-  overflow: hidden;
-}
-
-/* Motivational heading */
-.wk-carousel-heading {
-  flex-shrink: 0;
+/* Heading */
+.wk-menu-heading {
   text-align: center;
-  padding: 4px 16px 0;
+  padding: 4px 0 16px;
   animation: fadeIn 0.4s ease-out;
 }
 
-.wk-carousel-heading h2 {
+.wk-menu-heading h2 {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
@@ -128,7 +118,7 @@
   letter-spacing: -0.3px;
 }
 
-.wk-carousel-heading p {
+.wk-menu-heading p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
@@ -136,354 +126,459 @@
   letter-spacing: 0.5px;
 }
 
-/* Carousel container — fills remaining space between heading and dots */
-.wk-carousel {
-  position: relative;
-  overflow: hidden;
-  touch-action: pan-y;
-  -webkit-user-select: none;
-  user-select: none;
-  margin: 10px 0 0;
-  flex: 1;
-  min-height: 0;
-}
-
-.wk-carousel-track {
+/* ===== Active Programme Card ===== */
+.wk-active-prog {
   display: flex;
+  align-items: center;
+  gap: 16px;
   width: 100%;
-  will-change: transform;
-  height: 100%;
-}
-
-/* Each slide is 84% wide — shows a peek of the next card on the right */
-.wk-carousel-slide {
-  flex: 0 0 84%;
-  width: 84%;
-  padding: 0 6px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: stretch;
-}
-
-/* Dot indicators — tight directly under cards */
-.wk-carousel-dots {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 0 20px;
-}
-
-.wk-carousel-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border-color);
-  border: 1.5px solid var(--text-tertiary);
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.wk-carousel-dot.active {
+  padding: 16px 18px;
   background: var(--color-primary);
-  border-color: var(--color-primary);
-  transform: scale(1.3);
-  box-shadow: 0 0 6px rgba(153, 49, 60, 0.4);
-}
-
-/* Swipe hint - inside card overlay */
-@keyframes swipeHintSlide {
-  0%, 100% { transform: translateX(0); opacity: 0.5; }
-  50% { transform: translateX(6px); opacity: 1; }
-}
-
-.wk-swipe-hint {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  color: rgba(255, 255, 255, 0.65);
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  animation: swipeHintSlide 2s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.wk-swipe-hint svg {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.wk-menu-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: none;
   border-radius: 16px;
   cursor: pointer;
-  text-align: center;
-  transition: all 0.2s ease;
-  overflow: hidden;
+  margin-bottom: 20px;
+  animation: fadeIn 0.4s ease-out;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.15s, box-shadow 0.15s;
   font-family: inherit;
-  width: 100%;
-  flex: 1;
-  animation: cardEntrance 0.4s ease-out backwards;
 }
 
-.wk-menu-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: rgba(153, 49, 60, 0.25);
-}
-
-.wk-card-has-bg:hover {
-  border: none;
-}
-
-.wk-menu-card:active {
+.wk-active-prog:active {
   transform: scale(0.98);
 }
 
-.wk-menu-card h3 {
+.wk-active-prog-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wk-active-prog-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wk-ap-tick-filled {
+  stroke: #fff;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+.wk-ap-tick-empty {
+  stroke: rgba(255, 255, 255, 0.25);
+}
+
+.wk-ap-pct {
+  position: relative;
+  z-index: 1;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.wk-active-prog-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.wk-ap-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.wk-ap-name {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
+  color: #fff;
 }
 
-.wk-menu-card p {
+.wk-ap-cta {
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
-  color: var(--text-tertiary);
-  margin: 0;
-  line-height: 1.3;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* Card Background Image */
-.wk-card-bg {
+/* ===== Hero Card: Randomise Workout ===== */
+.wk-hero-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 280px;
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  animation: cardEntrance 0.4s ease-out;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s ease;
+}
+
+.wk-hero-card:active {
+  transform: scale(0.98);
+}
+
+.wk-hero-bg {
   position: absolute;
   inset: -10px;
   width: calc(100% + 20px);
   height: calc(100% + 20px);
   object-fit: cover;
   z-index: 0;
+  transition: transform 0.4s ease;
 }
 
-.wk-card-overlay {
+.wk-hero-card:hover .wk-hero-bg {
+  transform: scale(1.03);
+}
+
+.wk-hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.05) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
-    rgba(0, 0, 0, 0.4) 60%,
-    rgba(0, 0, 0, 0.75) 78%,
-    rgba(0, 0, 0, 0.92) 100%
+    160deg,
+    rgba(153, 49, 60, 0.15) 0%,
+    rgba(153, 49, 60, 0.3) 30%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.85) 80%,
+    rgba(0, 0, 0, 0.95) 100%
   );
   z-index: 1;
 }
 
-.wk-card-content {
+[data-theme="dark"] .wk-hero-overlay {
+  background: linear-gradient(
+    160deg,
+    rgba(199, 95, 107, 0.15) 0%,
+    rgba(199, 95, 107, 0.2) 30%,
+    rgba(0, 0, 0, 0.6) 55%,
+    rgba(0, 0, 0, 0.9) 80%,
+    rgba(0, 0, 0, 0.97) 100%
+  );
+}
+
+.wk-hero-content {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+  min-height: 280px;
+}
+
+.wk-hero-top {
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.wk-card-has-bg {
-  justify-content: center;
-  padding: 20px 16px 28px;
-  border: none;
-}
-
-.wk-card-has-bg h3 {
-  color: #fff;
-}
-
-.wk-card-has-bg p {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.wk-card-has-bg .wk-menu-stat-big {
-  color: #fff;
-}
-
-.wk-card-has-bg .wk-menu-stat-label {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.wk-card-has-bg .wk-menu-tick-empty {
-  stroke: rgba(255, 255, 255, 0.25);
-}
-
-.wk-card-has-bg .wk-menu-ring-logo {
-  border-color: rgba(255, 255, 255, 0.9);
-}
-
-/* Menu Card Ring */
-.wk-menu-ring-wrap {
+.wk-hero-ring {
   position: relative;
-  width: 110px;
-  height: 110px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.wk-menu-ring-svg {
+.wk-hero-ring svg {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.wk-menu-ring-logo {
-  position: relative;
-  z-index: 1;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid var(--color-primary);
-  object-fit: cover;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-}
-
-.wk-menu-tick-filled {
+.wk-hero-tick-filled {
   stroke: var(--color-primary);
-  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.4));
+  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.5));
 }
 
-.wk-menu-tick-empty {
-  stroke: var(--border-color);
+.wk-hero-tick-empty {
+  stroke: rgba(255, 255, 255, 0.2);
 }
 
-/* Cascade animation — ticks sweep in on card land */
-@keyframes tickCascadeIn {
-  0% { opacity: 0; transform: scale(0.3); }
-  60% { opacity: 1; transform: scale(1.15); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-.wk-tick-cascade {
-  animation: tickCascadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-  transform-origin: center;
-  transform-box: fill-box;
-}
-
-/* Ring glow pulse on card land */
-@keyframes ringGlowPulse {
-  0% { filter: drop-shadow(0 0 0px rgba(153, 49, 60, 0)); }
-  40% { filter: drop-shadow(0 0 18px rgba(153, 49, 60, 0.7)); }
-  100% { filter: drop-shadow(0 0 4px rgba(153, 49, 60, 0.15)); }
-}
-
-.wk-ring-glow .wk-menu-ring-svg {
-  animation: ringGlowPulse 0.8s ease-out;
-}
-
-/* Card landed bounce */
-@keyframes cardLandBounce {
-  0% { transform: scale(0.97); }
-  50% { transform: scale(1.025); }
-  100% { transform: scale(1); }
-}
-
-.wk-card-landed .wk-card-content {
-  animation: cardLandBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Stat number pop on count-up */
-@keyframes statPop {
-  0% { transform: scale(0.7); opacity: 0; }
-  60% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.wk-stat-pop {
-  animation: statPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.wk-menu-tick-locked {
-  stroke: var(--border-color);
-  opacity: 0.4;
-}
-
-.wk-menu-ring-lock {
+.wk-hero-ring-stat {
   position: relative;
   z-index: 1;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--bg-card-elevated);
-  border: 2px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-tertiary);
-}
-
-/* Menu Card Stats */
-.wk-menu-card-stats {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.wk-menu-stat-big {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #fff;
   line-height: 1;
 }
 
-.wk-menu-stat-label {
+.wk-hero-ring-stat small {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.wk-hero-week-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.wk-hero-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wk-hero-bottom h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.wk-hero-bottom p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.wk-hero-go {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 1px;
+}
+
+[data-theme="dark"] .wk-hero-go {
+  color: var(--color-primary);
+}
+
+/* ===== Section Headers ===== */
+.wk-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 24px 0 12px;
+}
+
+.wk-section-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.wk-section-count {
   font-family: 'Roboto', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
 
-/* Total workouts footer */
-.wk-menu-total {
+/* ===== Programme Carousel (Horizontal Scroll) ===== */
+.wk-prog-scroll {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 6px;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
   padding: 4px 0 16px;
-  animation: fadeIn 0.5s ease-out 0.3s backwards;
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  scrollbar-width: none;
 }
 
-.wk-menu-total-num {
+.wk-prog-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.wk-prog-card {
+  flex: 0 0 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.4s ease-out backwards;
+}
+
+.wk-prog-card:hover {
+  border-color: rgba(153, 49, 60, 0.3);
+  box-shadow: var(--shadow-md);
+}
+
+.wk-prog-card:active {
+  transform: scale(0.97);
+}
+
+.wk-prog-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wk-prog-icon-wrap svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-primary);
+}
+
+.wk-prog-duration {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+}
+
+.wk-prog-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.wk-prog-level {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.wk-prog-meta {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+}
+
+/* ===== Muscle Group Cards (Vertical Grid) ===== */
+.wk-muscle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding-bottom: 32px;
+}
+
+.wk-muscle-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.4s ease-out backwards;
+}
+
+.wk-muscle-card:hover {
+  border-color: rgba(153, 49, 60, 0.2);
+  box-shadow: var(--shadow-sm);
+}
+
+.wk-muscle-card:active {
+  transform: scale(0.97);
+}
+
+.wk-muscle-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wk-muscle-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+}
+
+.wk-muscle-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.wk-menu-total-label {
+.wk-muscle-soon {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
+  font-weight: 500;
   color: var(--text-tertiary);
+  background: var(--color-primary-light);
+  padding: 2px 8px;
+  border-radius: 8px;
 }
 
-.wk-card-disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
+/* ===== Dark Mode Glassmorphism for Menu ===== */
+[data-theme="dark"] .wk-prog-card {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .wk-muscle-card {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .wk-active-prog {
+  background: var(--color-primary-dark);
+  box-shadow: 0 6px 20px rgba(199, 95, 107, 0.3);
 }
 
 /* ==================== STATS HERO (Setup View) ==================== */
@@ -1414,6 +1509,12 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
+.wk-page .toast-notification.info {
+  background: var(--bg-card-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
 .wk-page .toast-notification.error {
   background: var(--color-error);
 }
@@ -1438,14 +1539,24 @@
     max-width: 380px;
   }
 
-  .wk-menu-ring-wrap {
-    width: 120px;
-    height: 120px;
+  .wk-hero-card {
+    min-height: 300px;
   }
 
-  .wk-menu-ring-logo {
-    width: 52px;
-    height: 52px;
+  .wk-hero-content {
+    min-height: 300px;
+  }
+
+  .wk-hero-bottom h3 {
+    font-size: 1.5rem;
+  }
+
+  .wk-prog-card {
+    flex: 0 0 150px;
+  }
+
+  .wk-muscle-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .wk-timer-ring-wrap {

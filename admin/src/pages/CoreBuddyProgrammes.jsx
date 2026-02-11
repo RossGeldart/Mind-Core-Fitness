@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
@@ -357,10 +357,12 @@ export default function CoreBuddyProgrammes() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Views: 'loading' | 'browse' | 'overview' | 'dashboard' | 'session' | 'sessionComplete'
   const [view, setView] = useState('loading');
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const didAutoSelectRef = useRef(false);
 
   // Active programme state
   const [activeProgramme, setActiveProgramme] = useState(null); // { templateId, startDate, completedSessions }
@@ -442,6 +444,20 @@ export default function CoreBuddyProgrammes() {
     };
     load();
   }, [clientData]);
+
+  // Auto-select template if navigated with state (from workouts page carousel)
+  useEffect(() => {
+    if (didAutoSelectRef.current) return;
+    if (view !== 'browse') return;
+    const templateId = location.state?.templateId;
+    if (!templateId) return;
+    const template = TEMPLATES.find(t => t.id === templateId);
+    if (template) {
+      didAutoSelectRef.current = true;
+      setSelectedTemplate(template);
+      setView('overview');
+    }
+  }, [view, location.state]);
 
   // Timer countdown effect
   useEffect(() => {
