@@ -376,13 +376,16 @@ export default function CoreBuddyNutrition() {
     setScannerActive(false);
   };
 
-  const parseServingSize = (raw) => {
+  const LIQUID_KEYWORDS = /\b(milk|semi.skimmed|skimmed|whole milk|oat milk|almond milk|soy milk|juice|smoothie|water|squash|cordial|cola|pepsi|fanta|lemonade|soda|beer|wine|cider|lager|spirit|whisky|vodka|rum|gin|brandy|cream|yoghurt drink|milkshake|coffee|tea|broth|stock|soup|sauce|ketchup|vinegar|oil|syrup|honey|custard|coconut water|kombucha|energy drink|protein shake)\b/i;
+
+  const hasLiquidSignal = (str) => /ml|cl|\dl(?!b)|litre|liter|fl\s?oz/i.test((str || '').replace(/\s/g, ''));
+
+  const parseServingValue = (raw) => {
     if (!raw) return { value: 100, unit: 'g' };
     const str = raw.toLowerCase().replace(/\s/g, '');
-    const isLiquid = /ml|cl|l(?!b)|litre|liter|fl/i.test(str);
     const numMatch = str.match(/([\d.]+)/);
     const value = numMatch ? parseFloat(numMatch[1]) : 100;
-    if (isLiquid) {
+    if (hasLiquidSignal(raw)) {
       if (/cl/.test(str)) return { value: value * 10, unit: 'ml' };
       if (/(?:^|\d)l(?!i)/.test(str) && !/ml/.test(str)) return { value: value * 1000, unit: 'ml' };
       return { value, unit: 'ml' };
@@ -390,16 +393,26 @@ export default function CoreBuddyNutrition() {
     return { value, unit: 'g' };
   };
 
+  const detectUnit = (p) => {
+    if (hasLiquidSignal(p.serving_size)) return 'ml';
+    if (hasLiquidSignal(p.quantity)) return 'ml';
+    const name = (p.product_name || p.product_name_en || '');
+    if (LIQUID_KEYWORDS.test(name)) return 'ml';
+    return 'g';
+  };
+
   const parseProduct = (p) => {
     const n = p.nutriments || {};
-    const serving = parseServingSize(p.serving_size);
+    const unit = detectUnit(p);
+    const serving = parseServingValue(p.serving_size);
+    const servingValue = unit === 'ml' ? (serving.unit === 'ml' ? serving.value : 100) : serving.value;
     return {
       name: p.product_name || p.product_name_en || 'Unknown Product',
       brand: p.brands || '',
       image: p.image_small_url || p.image_url || null,
       servingSize: p.serving_size || '100g',
-      servingValue: serving.value,
-      servingUnit: serving.unit,
+      servingValue,
+      servingUnit: unit,
       protein: Math.round(n.proteins_100g || n.proteins || 0),
       carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
       fats: Math.round(n.fat_100g || n.fat || 0),
@@ -411,7 +424,7 @@ export default function CoreBuddyNutrition() {
   const fetchProductByBarcode = async (barcode) => {
     setBarcodeLooking(true);
     try {
-      const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -473,7 +486,7 @@ export default function CoreBuddyNutrition() {
     setSearchLoading(true);
     try {
       const q = encodeURIComponent(searchQuery.trim());
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=10&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=10&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments`;
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -1052,7 +1065,7 @@ export default function CoreBuddyNutrition() {
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
                         {item.brand && <span className="nut-search-item-brand">{item.brand}</span>}
-                        <span className="nut-search-item-macros">{item.calories} cal · {item.protein}p · {item.carbs}c · {item.fats}f per 100g</span>
+                        <span className="nut-search-item-macros">{item.calories} cal · {item.protein}p · {item.carbs}c · {item.fats}f per 100{item.servingUnit || 'g'}</span>
                       </div>
                     </button>
                   ))}
