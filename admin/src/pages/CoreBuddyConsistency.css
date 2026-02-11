@@ -244,11 +244,7 @@
   transform: scale(0.98);
 }
 
-/* Done state */
-.cbc-habit-done {
-  border-color: rgba(153, 49, 60, 0.3);
-  background: rgba(153, 49, 60, 0.06);
-}
+/* Done state - card stays same, only tick changes */
 
 .cbc-habit-check {
   flex-shrink: 0;
@@ -268,12 +264,12 @@
 }
 
 .cbc-habit-done .cbc-habit-check {
-  color: var(--color-primary);
+  color: #4caf50;
 }
 
 .cbc-habit-done .cbc-habit-circle {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
+  border-color: #4caf50;
+  background: #4caf50;
 }
 
 /* Habit icon - default fallback */
@@ -314,9 +310,6 @@
   color: var(--text-primary);
 }
 
-.cbc-habit-done .cbc-habit-label {
-  color: var(--color-primary);
-}
 
 /* Dark mode habit cards - glassmorphism matching dashboard */
 [data-theme="dark"] .cbc-habit-btn {
@@ -327,11 +320,6 @@
   backdrop-filter: blur(12px);
 }
 
-/* Done state in dark mode */
-[data-theme="dark"] .cbc-habit-btn.cbc-habit-done {
-  border-color: rgba(199, 95, 107, 0.3);
-  background: rgba(199, 95, 107, 0.08);
-}
 
 /* Weekly Day Rings */
 .cbc-week-grid {
