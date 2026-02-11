@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -11,6 +11,38 @@ import programmeCardImg from '../assets/programme-card-workout.JPG';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
+
+// Volume milestones for badge tracking
+const VOLUME_MILESTONES = [
+  { threshold: 1000, label: '1 Tonne' },
+  { threshold: 5000, label: '5 Tonne' },
+  { threshold: 10000, label: '10 Tonne' },
+  { threshold: 25000, label: '25 Tonne' },
+  { threshold: 50000, label: '50 Tonne' },
+  { threshold: 100000, label: '100 Tonne' },
+  { threshold: 250000, label: '250 Tonne' },
+  { threshold: 500000, label: '500 Tonne' },
+  { threshold: 1000000, label: '1 Million kg' },
+];
+
+// Exercise group mapping for badge categorisation
+const EXERCISE_GROUPS = {
+  'Dumbbell Floor Press': 'push', 'Seated Dumbbell Shoulder Press': 'push', 'Seated Dumbbell Arnold Press': 'push',
+  'Dumbbell Overhead Tricep Extension': 'push', 'Skullcrushers': 'push', 'Dumbbell Lateral Raise': 'push',
+  'Dumbbell Front Raise': 'push', 'Dumbbell Squeeze Press': 'push', 'Incline Dumbbell Press': 'push',
+  'Dumbbell Fly': 'push', 'Dumbbell Pullover': 'push', 'Tricep Kickback': 'push',
+  'Dumbbell Shrug': 'push', 'Dumbbell Y-Raise': 'push',
+  'Dumbbell Bent Over Row': 'pull', 'Single Arm Bent Over Row': 'pull', 'Bicep Curl': 'pull',
+  'Hammer Curl': 'pull', 'Dumbbell Bent Over Rear Delt Fly': 'pull', 'Renegade Row': 'pull',
+  'Wide Dumbbell Bent Over Row': 'pull', 'Reverse Fly': 'pull', 'Concentration Curl': 'pull',
+  'Wide Grip Bicep Curl': 'pull', 'Wrist Curl': 'pull',
+  'Dumbbell Goblet Squats': 'lower', 'Romanian Deadlifts': 'lower', 'Forward Dumbbell Lunges': 'lower',
+  'Dumbbell Sumo Squats': 'lower', 'Weighted Calf Raises': 'lower', '1 Legged RDL': 'lower',
+  'Dumbbell Box Step Ups': 'lower', 'Dumbbell Squat Pulses': 'lower', 'Dumbbell Reverse Lunges': 'lower',
+  'Kettlebell Romanian Deadlift': 'lower',
+  'Russian Twists Dumbbell': 'core', 'Kettlebell Russian Twist': 'core', 'Kettlebell Side Bends': 'core',
+  'Kneeling Kettlebell Halo': 'core', 'Kettlebell Bird Dog Drag': 'core',
+};
 
 // Programme templates (must match CoreBuddyProgrammes / CoreBuddyDashboard)
 const TEMPLATE_META = {
@@ -371,6 +403,8 @@ export default function CoreBuddyWorkouts() {
   const [mgVideoUrls, setMgVideoUrls] = useState({});
   const mgVideoRef = useRef(null);
   const mgTimerRef = useRef(null);
+  const [mgSessionBadges, setMgSessionBadges] = useState([]);
+  const [mgBadgeCelebration, setMgBadgeCelebration] = useState(null);
 
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
@@ -748,6 +782,123 @@ export default function CoreBuddyWorkouts() {
     }
   };
 
+  // ==================== MUSCLE GROUP PB / VOLUME / BADGE FUNCTIONS ====================
+
+  const mgCheckPB = async (exerciseName, weight, reps) => {
+    if (!clientData || !weight) return;
+    try {
+      const docId = clientData.id;
+      const pbDoc = await getDoc(doc(db, 'coreBuddyPBs', docId));
+      const existing = pbDoc.exists() ? pbDoc.data() : null;
+      const currentExercises = existing?.exercises || {};
+      const currentPB = currentExercises[exerciseName];
+
+      let isNewPB = false;
+      if (!currentPB) {
+        isNewPB = true;
+      } else {
+        if (weight > (currentPB.weight || 0)) {
+          isNewPB = true;
+        } else if (weight === (currentPB.weight || 0) && reps > (currentPB.reps || 0)) {
+          isNewPB = true;
+        }
+      }
+
+      if (isNewPB) {
+        const updatedExercises = {
+          ...currentExercises,
+          [exerciseName]: { weight, reps, achievedAt: Timestamp.now() },
+        };
+        await setDoc(doc(db, 'coreBuddyPBs', docId), {
+          clientId: clientData.id,
+          exercises: updatedExercises,
+          updatedAt: Timestamp.now(),
+        });
+        showToast(`New PB! ${weight}kg \u00D7 ${reps} reps`, 'success');
+        playBeep();
+        await mgCheckTargetBadge(exerciseName, weight);
+      }
+    } catch (err) {
+      console.error('Error checking PB:', err);
+    }
+  };
+
+  const mgCheckTargetBadge = async (exerciseName, newWeight) => {
+    if (!clientData) return;
+    try {
+      const targetDoc = await getDoc(doc(db, 'coreBuddyTargets', clientData.id));
+      if (!targetDoc.exists()) return;
+      const targets = targetDoc.data().targets || {};
+      const target = targets[exerciseName];
+      if (!target || newWeight < target.targetWeight) return;
+
+      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
+      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
+      const alreadyEarned = achData.badges.some(
+        b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
+      );
+      if (alreadyEarned) return;
+
+      const newBadge = {
+        type: 'pb_target',
+        exercise: exerciseName,
+        group: EXERCISE_GROUPS[exerciseName] || 'push',
+        targetWeight: target.targetWeight,
+        achievedAt: Timestamp.now(),
+      };
+      const updatedBadges = [...achData.badges, newBadge];
+      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
+        ...achData,
+        badges: updatedBadges,
+        updatedAt: Timestamp.now(),
+      });
+      setMgSessionBadges(prev => [...prev, newBadge]);
+    } catch (err) {
+      console.error('Error checking target badge:', err);
+    }
+  };
+
+  const mgUpdateVolume = async (sessionVolume) => {
+    if (!clientData || sessionVolume <= 0) return;
+    try {
+      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
+      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
+      const oldVolume = achData.totalVolume || 0;
+      const newVolume = oldVolume + sessionVolume;
+
+      const newMilestoneBadges = [];
+      VOLUME_MILESTONES.forEach(milestone => {
+        if (newVolume >= milestone.threshold && oldVolume < milestone.threshold) {
+          const alreadyEarned = achData.badges.some(
+            b => b.type === 'volume_milestone' && b.milestone === milestone.threshold
+          );
+          if (!alreadyEarned) {
+            newMilestoneBadges.push({
+              type: 'volume_milestone',
+              milestone: milestone.threshold,
+              label: milestone.label,
+              achievedAt: Timestamp.now(),
+            });
+          }
+        }
+      });
+
+      const allBadges = [...achData.badges, ...newMilestoneBadges];
+      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
+        clientId: clientData.id,
+        badges: allBadges,
+        totalVolume: Math.round(newVolume),
+        updatedAt: Timestamp.now(),
+      });
+
+      if (newMilestoneBadges.length > 0) {
+        setMgSessionBadges(prev => [...prev, ...newMilestoneBadges]);
+      }
+    } catch (err) {
+      console.error('Error updating volume:', err);
+    }
+  };
+
   // ==================== MUSCLE GROUP WORKOUT FUNCTIONS ====================
 
   // Start a muscle group strength session
@@ -804,6 +955,8 @@ export default function CoreBuddyWorkouts() {
     setMgVideoPlaying(false);
     setMgTimerActive(false);
     setMgTimerValue(0);
+    setMgSessionBadges([]);
+    setMgBadgeCelebration(null);
     setView('muscle_workout');
   };
 
@@ -851,6 +1004,11 @@ export default function CoreBuddyWorkouts() {
     updated[mgExIdx] = { ...exLog, sets: [...exLog.sets, setData] };
     setMgLogs(updated);
 
+    // Check for new PB on weighted exercises
+    if (exLog.type === 'weighted' && setData.weight > 0) {
+      await mgCheckPB(exLog.name, setData.weight, setData.reps);
+    }
+
     const nextSet = exLog.sets.length + 1;
     if (nextSet < exLog.targetSets) {
       setMgSetIdx(nextSet);
@@ -882,6 +1040,7 @@ export default function CoreBuddyWorkouts() {
     try {
       const volume = logs.reduce((sum, l) =>
         sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+      const totalSets = logs.reduce((sum, l) => sum + l.sets.length, 0);
       await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         type: 'muscle_group',
@@ -889,11 +1048,22 @@ export default function CoreBuddyWorkouts() {
         sessionId: selectedMuscleSession?.id,
         sessionName: selectedMuscleSession?.name,
         exerciseCount: logs.length,
-        totalSets: logs.reduce((sum, l) => sum + l.sets.length, 0),
+        totalSets,
+        duration: Math.round(totalSets * 1.5),
         volume: Math.round(volume),
         exercises: logs.map(l => ({ name: l.name, type: l.type, sets: l.sets })),
         completedAt: Timestamp.now(),
       });
+
+      // Update cumulative volume and check milestones
+      if (volume > 0) {
+        await mgUpdateVolume(volume);
+      }
+
+      // Trigger badge celebration if any badges earned during session
+      if (mgSessionBadges.length > 0) {
+        setMgBadgeCelebration({ badges: [...mgSessionBadges] });
+      }
     } catch (err) {
       console.error('Error saving muscle group workout log:', err);
     }
@@ -1828,9 +1998,33 @@ export default function CoreBuddyWorkouts() {
             )}
           </div>
           <div className="wk-complete-actions">
-            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}>Done</button>
+            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}>Done</button>
           </div>
         </div>
+
+        {/* Badge celebration overlay */}
+        {mgBadgeCelebration && (
+          <div className="mg-badge-celebration" onClick={() => setMgBadgeCelebration(null)}>
+            <div className="mg-badge-celebration-card">
+              <div className="mg-badge-celebration-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#ffc107"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <h3 className="mg-badge-celebration-title">
+                {mgBadgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${mgBadgeCelebration.badges.length} Badges Earned!`}
+              </h3>
+              <div className="mg-badge-celebration-list">
+                {mgBadgeCelebration.badges.map((badge, i) => (
+                  <div key={i} className="mg-badge-celebration-item">
+                    {badge.type === 'pb_target'
+                      ? `${badge.exercise} \u2014 ${badge.targetWeight}kg`
+                      : badge.label}
+                  </div>
+                ))}
+              </div>
+              <button className="mg-badge-celebration-dismiss">Tap to dismiss</button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
