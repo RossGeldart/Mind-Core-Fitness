@@ -656,6 +656,464 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
+.wk-muscle-hero-count {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  padding: 3px 10px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ===== Muscle Group Session Selection View ===== */
+.mg-sessions-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0 24px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.mg-sessions-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mg-sessions-icon svg {
+  width: 32px;
+  height: 32px;
+  color: #fff;
+}
+
+.mg-sessions-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mg-sessions-header p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.mg-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 32px;
+}
+
+.mg-session-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  text-align: left;
+  animation: slideUp 0.3s ease-out backwards;
+  box-shadow: var(--shadow-sm);
+}
+
+.mg-session-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.mg-session-card:active {
+  transform: scale(0.98);
+}
+
+.mg-session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.mg-session-info h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mg-session-info p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.mg-session-meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.mg-session-tag {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: var(--bg-body);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mg-session-tag.mg-tag-strength {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.mg-session-tag.mg-tag-interval {
+  color: #42a5f5;
+  background: rgba(66, 165, 245, 0.1);
+}
+
+.mg-session-arrow {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.mg-session-card:hover .mg-session-arrow {
+  color: var(--color-primary);
+}
+
+/* ===== Muscle Group Workout View ===== */
+.mg-session-progress {
+  height: 4px;
+  background: var(--border-color);
+  width: 100%;
+}
+
+.mg-session-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.4s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+.mg-header-info {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.mg-video-container {
+  position: relative;
+  margin: 8px 12px 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+  max-height: 240px;
+}
+
+.mg-video {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+}
+
+.mg-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.mg-play-icon {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.mg-video-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mg-video-placeholder {
+  margin: 8px 12px 12px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 140px;
+  color: var(--text-tertiary);
+}
+
+.mg-video-placeholder span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Exercise Card */
+.mg-exercise-card {
+  margin: 0 0 32px;
+  padding: 24px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mg-ex-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0;
+}
+
+.mg-ex-type-badge {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.mg-ex-type-badge.weighted {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.mg-ex-type-badge.reps {
+  color: #42a5f5;
+  background: rgba(66, 165, 245, 0.1);
+}
+
+.mg-ex-type-badge.timed {
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+}
+
+.mg-ex-set-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mg-ex-set-num {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mg-ex-target {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Input Fields */
+.mg-input-area {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.mg-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mg-input-group.mg-input-single {
+  max-width: 140px;
+}
+
+.mg-input-group label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mg-input {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-body);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
+  -webkit-appearance: none;
+}
+
+.mg-input:focus {
+  border-color: var(--color-primary);
+}
+
+/* Timer for timed exercises */
+.mg-timer-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mg-timer-display {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease;
+}
+
+.mg-timer-value {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.mg-timer-btn {
+  padding: 10px 32px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mg-timer-stop {
+  background: #f44336;
+}
+
+/* Log Set Button */
+.mg-log-set-btn {
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 20px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mg-log-set-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(161, 47, 58, 0.5);
+}
+
+.mg-log-set-btn:active {
+  transform: translateY(0);
+}
+
+/* Completed Sets */
+.mg-completed-sets {
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.mg-completed-set {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+.mg-completed-set-check {
+  color: #4caf50;
+  font-weight: 700;
+}
+
+/* Muscle Group Complete View */
+.mg-complete-session-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  margin: -12px 0 0;
+}
+
+/* Preview title for core interval */
+.mg-preview-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: center;
+  padding-top: 8px;
+}
+
 /* ===== Dark Mode for Menu ===== */
 [data-theme="dark"] .wk-active-prog {
   background: var(--color-primary-dark);
