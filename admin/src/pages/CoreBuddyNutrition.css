@@ -692,91 +692,73 @@
 }
 
 /* ==================== ADD FOOD BUTTONS ==================== */
-.nut-add-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-  animation: fadeIn 0.4s ease-out 0.1s backwards;
+/* ==================== CARD ACTION BAR ==================== */
+.nut-card-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.nut-add-btn {
+[data-theme="dark"] .nut-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.nut-card-action {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 14px 10px;
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 14px;
+  gap: 4px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s, transform 0.15s;
   font-family: 'Montserrat', sans-serif;
-  color: var(--text-secondary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="dark"] .nut-add-btn {
-  background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.nut-add-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nut-add-icon svg {
+.nut-card-action svg {
   width: 22px;
   height: 22px;
 }
 
-.nut-add-btn span {
-  font-size: 0.7rem;
+.nut-card-action span {
+  font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
-.nut-add-scan .nut-add-icon {
-  background: radial-gradient(circle at 30% 30%, rgba(153, 49, 60, 0.16), rgba(153, 49, 60, 0.05));
+.nut-action-scan {
   color: var(--color-primary);
 }
 
-.nut-add-search .nut-add-icon {
-  background: radial-gradient(circle at 30% 30%, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0.05));
+.nut-action-search {
   color: #2196f3;
 }
 
-.nut-add-manual .nut-add-icon {
-  background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.18), rgba(76, 175, 80, 0.06));
+.nut-action-manual {
   color: #4caf50;
 }
 
-.nut-add-recent .nut-add-icon {
-  background: radial-gradient(circle at 30% 30%, rgba(255, 152, 0, 0.18), rgba(255, 152, 0, 0.06));
+.nut-action-fav {
   color: #ff9800;
 }
 
-.nut-add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-color: rgba(153, 49, 60, 0.15);
+.nut-card-action:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="dark"] .nut-add-btn:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
-  border-color: rgba(255, 255, 255, 0.1);
+[data-theme="dark"] .nut-card-action:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.nut-add-btn:active {
-  transform: scale(0.97);
+.nut-card-action:active {
+  transform: scale(0.92);
   transition: transform 0.1s ease;
 }
 
