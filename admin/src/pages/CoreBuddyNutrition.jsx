@@ -415,8 +415,9 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== FOOD SEARCH ====================
-  const scoreRelevance = (name, term) => {
+  const scoreRelevance = (name, brand, term) => {
     const n = name.toLowerCase().trim();
+    const b = brand.toLowerCase().trim();
     const t = term.toLowerCase().trim();
     let score = 0;
     // Exact match e.g. "Egg" or "Eggs"
@@ -425,6 +426,9 @@ export default function CoreBuddyNutrition() {
     if (n.endsWith(' ' + t) || n.endsWith(' ' + t + 's')) score += 40;
     // Name starts with term — term modifies something else (e.g. "Egg Noodles")
     if (n.startsWith(t + ' ') || n.startsWith(t + 's ')) score += 15;
+    // Brand matches a search word — boost branded matches (e.g. "Warburtons")
+    const words = t.split(/\s+/);
+    if (words.some(w => b === w || b.startsWith(w))) score += 30;
     // Shorter names are more specific/relevant
     score += Math.max(0, 30 - n.length);
     return score;
@@ -440,11 +444,15 @@ export default function CoreBuddyNutrition() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const term = searchQuery.trim().toLowerCase();
+      const searchWords = term.split(/\s+/).filter(Boolean);
       const results = (data.products || [])
         .map(p => parseProduct(p))
         .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
-        .filter(p => p.name.toLowerCase().includes(term))
-        .sort((a, b) => scoreRelevance(b.name, term) - scoreRelevance(a.name, term))
+        .filter(p => {
+          const combined = (p.name + ' ' + p.brand).toLowerCase();
+          return searchWords.every(w => combined.includes(w));
+        })
+        .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term))
         .slice(0, 15);
       setSearchResults(results);
       if (results.length === 0) {
