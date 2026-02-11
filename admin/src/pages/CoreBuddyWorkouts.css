@@ -422,7 +422,7 @@
   position: relative;
   flex: 0 0 85%;
   display: flex;
-  min-height: 260px;
+  aspect-ratio: 16 / 9;
   border: none;
   border-radius: 20px;
   overflow: hidden;
@@ -467,7 +467,6 @@
   justify-content: space-between;
   width: 100%;
   padding: 20px;
-  min-height: 260px;
 }
 
 .wk-prog-hero-top {
@@ -2375,11 +2374,7 @@
   }
 
   .wk-prog-hero-card {
-    min-height: 280px;
-  }
-
-  .wk-prog-hero-content {
-    min-height: 280px;
+    aspect-ratio: 16 / 9;
   }
 
   .wk-prog-hero-bottom h3 {
