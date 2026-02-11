@@ -99,10 +99,19 @@
 
 .nut-calc-form {
   background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   animation: cardEntrance 0.4s ease-out 0.1s backwards;
+}
+
+[data-theme="dark"] .nut-calc-form {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nut-form-group {
@@ -323,10 +332,19 @@
 .nut-calc-results {
   margin-top: 24px;
   background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   animation: cardEntrance 0.4s ease-out;
+}
+
+[data-theme="dark"] .nut-calc-results {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nut-calc-results h3 {
