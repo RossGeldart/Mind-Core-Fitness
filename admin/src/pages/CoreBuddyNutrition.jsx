@@ -8,6 +8,7 @@ import Quagga from '@ericblade/quagga2';
 import './CoreBuddyNutrition.css';
 
 const TICK_COUNT = 60;
+const searchCache = new Map();
 
 function getTodayKey() {
   return new Date().toISOString().split('T')[0];
@@ -101,6 +102,7 @@ export default function CoreBuddyNutrition() {
 
   const scannerRef = useRef(null);
   const quaggaRunning = useRef(false);
+  const searchAbort = useRef(null);
   const searchInputRef = useRef(null);
 
   const showToast = useCallback((message, type = 'info') => {
@@ -436,15 +438,27 @@ export default function CoreBuddyNutrition() {
 
   const searchFood = async () => {
     if (!searchQuery.trim()) return;
+    // Cancel any in-flight request
+    if (searchAbort.current) searchAbort.current.abort();
+    const controller = new AbortController();
+    searchAbort.current = controller;
+
+    const term = searchQuery.trim().toLowerCase();
+    const searchWords = term.split(/\s+/).filter(Boolean);
+
+    // Return cached results instantly if available
+    if (searchCache.has(term)) {
+      setSearchResults(searchCache.get(term));
+      return;
+    }
+
     setSearchLoading(true);
     try {
       const q = encodeURIComponent(searchQuery.trim());
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=50&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
-      const res = await fetch(url);
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=20&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const term = searchQuery.trim().toLowerCase();
-      const searchWords = term.split(/\s+/).filter(Boolean);
       const results = (data.products || [])
         .map(p => parseProduct(p))
         .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
@@ -454,11 +468,13 @@ export default function CoreBuddyNutrition() {
         })
         .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term))
         .slice(0, 15);
+      searchCache.set(term, results);
       setSearchResults(results);
       if (results.length === 0) {
         showToast('No results found. Try a different search.', 'info');
       }
     } catch (err) {
+      if (err.name === 'AbortError') return;
       console.error('Search error:', err);
       showToast('Search failed. Check your connection.', 'error');
     }
@@ -994,7 +1010,7 @@ export default function CoreBuddyNutrition() {
                 <div className="nut-search-results">
                   {searchResults.map((item, i) => (
                     <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); setServingMultiplier(1); }}>
-                      {item.image && <img src={item.image} alt="" />}
+                      {item.image && <img src={item.image} alt="" loading="lazy" />}
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
                         {item.brand && <span className="nut-search-item-brand">{item.brand}</span>}
