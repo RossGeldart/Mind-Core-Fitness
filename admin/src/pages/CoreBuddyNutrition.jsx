@@ -76,6 +76,7 @@ export default function CoreBuddyNutrition() {
   const [todayLog, setTodayLog] = useState({ entries: [], water: 0 });
   const [totals, setTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [waterPopupOpen, setWaterPopupOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() };
@@ -983,30 +984,17 @@ export default function CoreBuddyNutrition() {
       <div className="nut-light-zone">
         <div className="nut-light-content">
 
-          {/* Water Tracker (today only) */}
+          {/* Water Quick Button (today only) */}
           {isToday && (
-            <div className="nut-water-section">
-              <div className="nut-water-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                </svg>
-                <span>Water</span>
-                <span className="nut-water-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</span>
-              </div>
-              <div className="nut-water-glasses">
-                {[...Array(targets?.waterGoal || 8)].map((_, i) => (
-                  <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
-                    <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-              <div className="nut-water-btns">
-                <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
-                <button onClick={addWater}>+</button>
-              </div>
-            </div>
+            <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+              </svg>
+              <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
           )}
 
           {/* Meal Sections - always show all 4 */}
@@ -1092,6 +1080,39 @@ export default function CoreBuddyNutrition() {
           </div>
         </div>
       </div>
+
+      {/* ==================== WATER POPUP ==================== */}
+      {waterPopupOpen && (
+        <div className="nut-modal-overlay" onClick={() => setWaterPopupOpen(false)}>
+          <div className="nut-water-popup" onClick={e => e.stopPropagation()}>
+            <div className="nut-water-popup-header">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="20" height="20" style={{ color: '#2196f3' }}>
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+              </svg>
+              <span>Water Intake</span>
+              <button className="nut-modal-close" onClick={() => setWaterPopupOpen(false)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="nut-water-popup-body">
+              <div className="nut-water-glasses">
+                {[...Array(targets?.waterGoal || 8)].map((_, i) => (
+                  <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
+                    <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <div className="nut-water-popup-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</div>
+              <div className="nut-water-btns">
+                <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
+                <button onClick={addWater}>+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ==================== ADD FOOD MODAL ==================== */}
       {addMode && (
