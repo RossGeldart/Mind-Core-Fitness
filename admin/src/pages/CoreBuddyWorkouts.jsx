@@ -109,6 +109,14 @@ const MUSCLE_GROUP_SESSIONS = {
   chest: [
     {
       id: 'chest_strength', name: 'Chest Strength', desc: 'Heavy pressing for max strength',
+      level: 'Intermediate',
+      overview: 'A heavy pressing session designed to build raw chest strength. Focus on controlled negatives and powerful pressing movements.',
+      tips: [
+        'Go heavy \u2014 pick a weight where the last 2 reps are a real challenge',
+        'Control the negative (lowering phase) for 2-3 seconds',
+        'Keep your shoulder blades squeezed together throughout all pressing movements',
+        'Rest 90-120 seconds between sets to allow full recovery',
+      ],
       exercises: [
         { name: 'Dumbbell Floor Press', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
         { name: 'Dumbbell Squeeze Press', type: 'weighted', sets: 3, reps: 10, storagePath: null },
@@ -119,6 +127,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'chest_hypertrophy', name: 'Chest Hypertrophy', desc: 'Volume training for muscle growth',
+      level: 'Intermediate',
+      overview: 'A high-volume chest session focused on time under tension and muscle growth. Lighter weights, more reps, and slow controlled movements.',
+      tips: [
+        'Use moderate weight \u2014 you should feel the burn by rep 10',
+        'Squeeze your chest at the top of every rep for 1 second',
+        'Keep rest periods short at 60-90 seconds to keep the pump going',
+        'On press ups, go to failure on the final set',
+      ],
       exercises: [
         { name: 'Dumbbell Floor Press', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/dumbbell floor press.mp4' },
         { name: 'Wide Press Up', type: 'reps', sets: 3, reps: 15, storagePath: null },
@@ -129,6 +145,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'chest_endurance', name: 'Chest Endurance', desc: 'Bodyweight pushing to failure',
+      level: 'All Levels',
+      overview: 'No weights needed. This bodyweight-only session builds chest endurance and muscular stamina through high-rep push up variations.',
+      tips: [
+        'Focus on full range of motion \u2014 chest to floor on every rep',
+        'Keep your core tight and body in a straight line throughout',
+        'Scale down to knee press ups if you can\'t maintain form',
+        'Push through the burn \u2014 the last 5 reps are where the growth happens',
+      ],
       exercises: [
         { name: 'Press Up', type: 'reps', sets: 4, reps: 20, storagePath: 'exercises/bodyweight/upper/press up.mp4' },
         { name: 'Wide Press Up', type: 'reps', sets: 3, reps: 15, storagePath: null },
@@ -141,6 +165,14 @@ const MUSCLE_GROUP_SESSIONS = {
   back: [
     {
       id: 'back_strength', name: 'Back Strength', desc: 'Heavy rows for a thick back',
+      level: 'Intermediate',
+      overview: 'Build a thick, powerful back with heavy rowing movements. This session targets your lats, rhomboids, and traps for overall back development.',
+      tips: [
+        'Go heavy on rows \u2014 use a weight that challenges you by rep 6-8',
+        'Drive your elbows back and squeeze your shoulder blades together at the top',
+        'Keep a slight bend in your knees and hinge at the hips for bent over movements',
+        'Rest 90-120 seconds between sets for full recovery',
+      ],
       exercises: [
         { name: 'Dumbbell Bent Over Row', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/dumbbell bent over row.mp4' },
         { name: 'Single Arm Bent Over Row', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/single arm bent over row.mp4' },
@@ -151,6 +183,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'back_hypertrophy', name: 'Back Hypertrophy', desc: 'Width and thickness volume work',
+      level: 'Intermediate',
+      overview: 'A volume-focused back session combining rows and isolation moves to build width and thickness. Focus on the mind-muscle connection.',
+      tips: [
+        'Use moderate weight \u2014 feel the stretch and squeeze on every rep',
+        'On renegade rows, keep your hips square to the floor and avoid rotating',
+        'For reverse flys, use lighter weight and focus on squeezing your rear delts',
+        'Keep rest to 60-90 seconds to maintain intensity',
+      ],
       exercises: [
         { name: 'Renegade Row', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/renegade row.mp4' },
         { name: 'Wide Dumbbell Bent Over Row', type: 'weighted', sets: 3, reps: 12, storagePath: null },
@@ -161,6 +201,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'back_endurance', name: 'Back Endurance', desc: 'Bodyweight back conditioning',
+      level: 'All Levels',
+      overview: 'A bodyweight session to strengthen your posterior chain and improve posture. Great for back health, mobility, and muscular endurance.',
+      tips: [
+        'On superman holds, lift your arms and legs simultaneously and hold tight',
+        'Focus on slow, controlled movements \u2014 quality over speed',
+        'Breathe steadily throughout timed holds \u2014 don\'t hold your breath',
+        'Engage your glutes and lower back together on every movement',
+      ],
       exercises: [
         { name: 'Superman Hold', type: 'timed', sets: 4, time: 30, storagePath: 'exercises/bodyweight/upper/Superman Hold.mp4' },
         { name: 'Prone Y-T-W Raises', type: 'reps', sets: 3, reps: 12, storagePath: null },
@@ -173,6 +221,14 @@ const MUSCLE_GROUP_SESSIONS = {
   shoulders: [
     {
       id: 'shoulders_strength', name: 'Shoulder Strength', desc: 'Heavy pressing for boulder shoulders',
+      level: 'Intermediate',
+      overview: 'A heavy overhead pressing session to build strong, powerful shoulders. Compound movements first, followed by isolation work for all three delt heads.',
+      tips: [
+        'Go heavy on presses \u2014 pick a weight where you struggle on the last 2 reps',
+        'Brace your core and avoid arching your back during overhead movements',
+        'Press straight up and control the weight down slowly',
+        'Rest 90-120 seconds between pressing sets, 60 seconds for isolation moves',
+      ],
       exercises: [
         { name: 'Seated Dumbbell Shoulder Press', type: 'weighted', sets: 4, reps: 8, storagePath: 'exercises/dumbbells/upper/seated dumbbell shoulder press.mp4' },
         { name: 'Seated Dumbbell Arnold Press', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/upper/seated dumbbell arnold press.mp4' },
@@ -183,6 +239,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'shoulders_hypertrophy', name: 'Shoulder Hypertrophy', desc: 'Volume and isolation for 3D delts',
+      level: 'Intermediate',
+      overview: 'A high-volume session targeting all three heads of the deltoid for that 3D capped shoulder look. Moderate weight, high reps, constant tension.',
+      tips: [
+        'Use lighter weight than you think \u2014 shoulders respond best to high reps',
+        'On lateral raises, lead with your elbows and don\'t swing the weight',
+        'Pause at the top of each raise for a 1-second squeeze',
+        'Keep rest periods at 60 seconds to maximise the pump',
+      ],
       exercises: [
         { name: 'Seated Dumbbell Arnold Press', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/seated dumbbell arnold press.mp4' },
         { name: 'Dumbbell Lateral Raise', type: 'weighted', sets: 4, reps: 15, storagePath: 'exercises/dumbbells/upper/dumbbell lateral raise.mp4' },
@@ -193,6 +257,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'shoulders_endurance', name: 'Shoulder Endurance', desc: 'Bodyweight and high-rep work',
+      level: 'All Levels',
+      overview: 'A shoulder endurance session combining bodyweight movements with high-rep dumbbell work. Builds stamina, stability, and shoulder resilience.',
+      tips: [
+        'On pike push ups, walk your feet close to your hands to increase the angle',
+        'For high-rep lateral raises, use a very light weight and focus on form',
+        'Wall walks are advanced \u2014 scale to pike push ups if needed',
+        'Keep your core braced throughout to protect your lower back',
+      ],
       exercises: [
         { name: 'Pike Push Ups', type: 'reps', sets: 4, reps: 12, storagePath: 'exercises/bodyweight/upper/pike push ups.mp4' },
         { name: 'Dumbbell Lateral Raise', type: 'weighted', sets: 3, reps: 20, storagePath: 'exercises/dumbbells/upper/dumbbell lateral raise.mp4' },
@@ -205,6 +277,14 @@ const MUSCLE_GROUP_SESSIONS = {
   arms: [
     {
       id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps',
+      level: 'All Levels',
+      overview: 'An arm session dedicated entirely to biceps. Multiple curl variations target different parts of the bicep for maximum peak and thickness.',
+      tips: [
+        'Keep your elbows pinned to your sides \u2014 no swinging',
+        'Control the negative (lowering) for 2-3 seconds on every rep',
+        'Start with your heaviest weight and decrease as you fatigue',
+        'Squeeze hard at the top of each curl for a full contraction',
+      ],
       exercises: [
         { name: 'Bicep Curl', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
         { name: 'Hammer Curl', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/hammer curl.mp4' },
@@ -215,6 +295,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps',
+      level: 'All Levels',
+      overview: 'All-out tricep training with extensions, dips, and pressing movements. The triceps make up two-thirds of your arm \u2014 this session builds serious size.',
+      tips: [
+        'On overhead extensions, keep your elbows close to your head',
+        'For skullcrushers, lower the weight slowly to just above your forehead',
+        'On dips, lean slightly forward to reduce shoulder strain',
+        'Full lockout at the top of every extension for maximum tricep contraction',
+      ],
       exercises: [
         { name: 'Dumbbell Overhead Tricep Extension', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/upper/dumbbell overhead tricep extension.mp4' },
         { name: 'Skullcrushers', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/skullcrushers.mp4' },
@@ -225,6 +313,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps',
+      level: 'All Levels',
+      overview: 'A balanced arm session alternating between biceps and triceps. Superset style keeps the intensity high and maximises the pump.',
+      tips: [
+        'Superset each pair \u2014 do biceps then immediately hit triceps',
+        'Use moderate weight that lets you maintain strict form for all reps',
+        'Rest 60 seconds after each superset pair',
+        'Focus on the squeeze at the peak contraction of every rep',
+      ],
       exercises: [
         { name: 'Bicep Curl', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/upper/bicep curl.mp4' },
         { name: 'Tricep Kickback', type: 'weighted', sets: 3, reps: 12, storagePath: null },
@@ -237,6 +333,14 @@ const MUSCLE_GROUP_SESSIONS = {
   legs: [
     {
       id: 'legs_quad', name: 'Quad Dominant', desc: 'Squats and lunges for quad power',
+      level: 'All Levels',
+      overview: 'A quad-focused leg session built around squats and lunges. Heavy compound movements to build strong, powerful quads and overall leg strength.',
+      tips: [
+        'On goblet squats, hold the dumbbell close to your chest and sit deep',
+        'Keep your knees tracking over your toes \u2014 don\'t let them cave inward',
+        'Drive through your heels on all squatting movements',
+        'Rest 90-120 seconds between heavy sets, 60 seconds on bodyweight moves',
+      ],
       exercises: [
         { name: 'Dumbbell Goblet Squats', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/lower/dumbbell goblet squats.mp4' },
         { name: 'Forward Dumbbell Lunges', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/forward dumbbell lunges.mp4' },
@@ -247,6 +351,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_ham_glute', name: 'Hamstring & Glute', desc: 'Posterior chain focus',
+      level: 'Intermediate',
+      overview: 'Target the back of your legs with deadlift and hip hinge variations. This session builds a strong posterior chain \u2014 hamstrings, glutes, and lower back.',
+      tips: [
+        'On RDLs, push your hips back and feel the stretch in your hamstrings',
+        'Keep a slight bend in your knees throughout hip hinge movements',
+        'Squeeze your glutes hard at the top of every rep',
+        'For single leg work, start with your weaker side first',
+      ],
       exercises: [
         { name: 'Romanian Deadlifts', type: 'weighted', sets: 4, reps: 10, storagePath: 'exercises/dumbbells/lower/romanian deadlifts.mp4' },
         { name: '1 Legged RDL', type: 'weighted', sets: 3, reps: 10, storagePath: 'exercises/dumbbells/lower/1 legged rdl.mp4' },
@@ -257,6 +369,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_power', name: 'Power & Plyo', desc: 'Explosive leg training',
+      level: 'Intermediate',
+      overview: 'An explosive leg session combining plyometrics with weighted movements. Build power, speed, and athletic performance.',
+      tips: [
+        'On jump squats, land softly with bent knees to absorb the impact',
+        'Explode up on every rep \u2014 power comes from speed, not just weight',
+        'Keep rest periods at 60-90 seconds to maintain intensity',
+        'Focus on landing mechanics \u2014 knees out, chest up, soft landing',
+      ],
       exercises: [
         { name: 'Jump Squats', type: 'reps', sets: 4, reps: 12, storagePath: 'exercises/bodyweight/lower/jump squats.mp4' },
         { name: 'Dumbbell Box Step Ups', type: 'weighted', sets: 3, reps: 12, storagePath: 'exercises/dumbbells/lower/dumbbell box step ups.mp4' },
@@ -269,6 +389,14 @@ const MUSCLE_GROUP_SESSIONS = {
   core: [
     {
       id: 'core_lower_abs', name: 'Lower Abs Blast', desc: '40s work / 20s rest — 3 rounds',
+      level: 'Intermediate',
+      overview: 'An interval-based core burner targeting the lower abdominals. 40 seconds of work followed by 20 seconds of rest — keep the intensity high and your lower back pressed into the floor throughout.',
+      tips: [
+        'Press your lower back firmly into the floor on every rep',
+        'Exhale hard as you contract your abs — don\'t hold your breath',
+        'If your lower back lifts off the ground, reduce the range of motion',
+        'Focus on slow, controlled movements rather than speed',
+      ],
       interval: true, rounds: 3, work: 40, rest: 20,
       exercises: [
         { name: 'Leg Raises', storagePath: 'exercises/bodyweight/core/Leg Raises.mp4' },
@@ -281,6 +409,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_obliques', name: 'Obliques & Rotation', desc: '35s work / 25s rest — 3 rounds',
+      level: 'Intermediate',
+      overview: 'Target the obliques and rotational core muscles with this interval session. 35 seconds of work with 25 seconds rest — every exercise involves twisting, rotating, or side-bracing movements.',
+      tips: [
+        'Rotate from your ribcage, not just your arms',
+        'Keep your hips as still as possible during twisting exercises',
+        'Brace your core before each movement — think about squeezing a belt',
+        'On side planks, stack your hips and push the floor away',
+      ],
       interval: true, rounds: 3, work: 35, rest: 25,
       exercises: [
         { name: 'Russian Twist', storagePath: 'exercises/bodyweight/core/Russian Twist.mp4' },
@@ -293,6 +429,14 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_weighted', name: 'Weighted Core', desc: '40s work / 20s rest — 3 rounds',
+      level: 'Advanced',
+      overview: 'Add resistance to your core training with dumbbells and kettlebells. 40 seconds of weighted work followed by 20 seconds rest — this session builds serious core strength and stability.',
+      tips: [
+        'Start with a moderate weight — form is more important than load',
+        'Brace your entire core before picking up the weight each round',
+        'Keep movements controlled — no swinging or using momentum',
+        'If grip fails before core does, go slightly lighter next time',
+      ],
       interval: true, rounds: 3, work: 40, rest: 20,
       exercises: [
         { name: 'Russian Twists Dumbbell', storagePath: 'exercises/dumbbells/core/russian twists dumbbell.mp4' },
@@ -347,7 +491,7 @@ export default function CoreBuddyWorkouts() {
   const navigate = useNavigate();
 
   // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
-  //        | 'muscle_sessions' | 'muscle_workout' | 'muscle_complete'
+  //        | 'muscle_sessions' | 'muscle_overview' | 'muscle_workout' | 'muscle_complete'
   const [view, setView] = useState('menu');
 
   // Setup
@@ -1753,7 +1897,7 @@ export default function CoreBuddyWorkouts() {
           <div className="mg-sessions-list">
             {sessions.map((session, i) => (
               <button key={session.id} className="mg-session-card"
-                onClick={() => startMuscleSession(session)}
+                onClick={() => { setSelectedMuscleSession(session); setView('muscle_overview'); }}
                 style={{ animationDelay: `${i * 0.08}s` }}>
                 <div className="mg-session-info">
                   <h3>{session.name}</h3>
@@ -1780,6 +1924,110 @@ export default function CoreBuddyWorkouts() {
               </button>
             ))}
           </div>
+        </main>
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== MUSCLE GROUP SESSION OVERVIEW VIEW ====================
+  if (view === 'muscle_overview') {
+    const session = selectedMuscleSession;
+    if (!session) return null;
+    const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('muscle_sessions')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main mg-overview-main">
+          {/* 16:9 Hero Image */}
+          <div className="mg-overview-hero" style={{ background: MUSCLE_GRADIENTS[selectedMuscleGroup] }}>
+            <div className="mg-overview-hero-content">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="mg-overview-hero-icon"><path d={groupData?.icon} /></svg>
+            </div>
+          </div>
+
+          {/* Session Header */}
+          <div className="mg-overview-header">
+            <div className="mg-overview-title-row">
+              <h2>{session.name}</h2>
+              {session.level && <span className="mg-overview-level">{session.level}</span>}
+            </div>
+            <p className="mg-overview-desc">{session.desc}</p>
+          </div>
+
+          {/* Overview Description */}
+          {session.overview && (
+            <div className="mg-overview-section">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                About This Workout
+              </h3>
+              <p>{session.overview}</p>
+            </div>
+          )}
+
+          {/* Tips */}
+          {session.tips && session.tips.length > 0 && (
+            <div className="mg-overview-section">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Tips &amp; Form
+              </h3>
+              <ul className="mg-overview-tips">
+                {session.tips.map((tip, i) => (
+                  <li key={i}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Exercise List */}
+          <div className="mg-overview-section">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+              Exercises ({session.exercises.length})
+            </h3>
+            <div className="mg-overview-exercises">
+              {session.exercises.map((ex, i) => (
+                <div key={i} className="mg-overview-exercise">
+                  <span className="mg-overview-ex-num">{i + 1}</span>
+                  <div className="mg-overview-ex-info">
+                    <span className="mg-overview-ex-name">{ex.name}</span>
+                    {session.interval ? (
+                      <span className="mg-overview-ex-detail">{session.work}s work / {session.rest}s rest</span>
+                    ) : (
+                      <span className="mg-overview-ex-detail">
+                        {ex.sets} sets × {ex.reps ? `${ex.reps} reps` : `${ex.time}s`}
+                        {ex.type === 'weighted' && ' — weighted'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Start Button */}
+          <button className="mg-overview-start-btn" onClick={() => startMuscleSession(session)}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Start Workout
+          </button>
         </main>
         {toastEl}
       </div>
