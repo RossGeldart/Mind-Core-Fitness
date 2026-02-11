@@ -1451,8 +1451,10 @@ export default function CoreBuddyWorkouts() {
                   <div className="wk-muscle-hero-icon">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
                   </div>
-                  <span className="wk-muscle-hero-name">{mg.label}</span>
-                  <span className="wk-muscle-hero-count">{MUSCLE_GROUP_SESSIONS[mg.key]?.length || 0} sessions</span>
+                  <div className="wk-muscle-hero-text">
+                    <span className="wk-muscle-hero-name">{mg.label}</span>
+                    <span className="wk-muscle-hero-count">{MUSCLE_GROUP_SESSIONS[mg.key]?.length || 0} sessions</span>
+                  </div>
                 </div>
               </button>
             ))}

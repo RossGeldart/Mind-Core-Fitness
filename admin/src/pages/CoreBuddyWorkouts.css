@@ -559,8 +559,8 @@
 
 /* ===== Muscle Group Cards (Hero Grid) ===== */
 .wk-muscle-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   padding-bottom: 32px;
 }
@@ -568,7 +568,8 @@
 .wk-muscle-hero-card {
   position: relative;
   display: flex;
-  min-height: 160px;
+  width: 100%;
+  min-height: 140px;
   border: none;
   border-radius: 16px;
   overflow: hidden;
@@ -608,13 +609,12 @@
   position: relative;
   z-index: 2;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
   width: 100%;
-  padding: 20px 12px;
-  gap: 8px;
-  min-height: 160px;
+  padding: 20px 20px;
+  gap: 14px;
+  min-height: 140px;
 }
 
 .wk-muscle-hero-icon {
@@ -635,13 +635,20 @@
   color: #fff;
 }
 
+.wk-muscle-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .wk-muscle-hero-name {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: left;
 }
 
 .wk-muscle-hero-soon {
@@ -658,14 +665,10 @@
 
 .wk-muscle-hero-count {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.12);
-  padding: 3px 10px;
-  border-radius: 8px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.65);
+  text-align: left;
 }
 
 /* ===== Muscle Group Session Selection View ===== */
@@ -2383,16 +2386,12 @@
     font-size: 1.4rem;
   }
 
-  .wk-muscle-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .wk-muscle-hero-card {
-    min-height: 180px;
+    min-height: 150px;
   }
 
   .wk-muscle-hero-content {
-    min-height: 180px;
+    min-height: 150px;
   }
 
   .wk-timer-ring-wrap {
