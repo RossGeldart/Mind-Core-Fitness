@@ -1379,11 +1379,17 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           <div className="wk-prog-scroll">
-            {PROGRAMME_CARDS.map((prog, i) => (
+            {PROGRAMME_CARDS.map((prog, i) => prog.image ? (
+              <button key={prog.id} className="wk-prog-img-card"
+                onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
+                style={{ animationDelay: `${i * 0.06}s` }}>
+                <img src={prog.image} alt={prog.name} className="wk-prog-img" />
+              </button>
+            ) : (
               <button key={prog.id} className="wk-prog-hero-card"
                 onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
                 style={{ animationDelay: `${i * 0.06}s` }}>
-                <img src={prog.image || programmeCardImg} alt="" className="wk-prog-hero-bg" />
+                <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
                 <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
                 <div className="wk-prog-hero-content">
                   <div className="wk-prog-hero-top">

@@ -418,6 +418,33 @@
   display: none;
 }
 
+/* Image-only programme card (custom artwork) */
+.wk-prog-img-card {
+  flex: 0 0 85%;
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  background: none;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s ease;
+  animation: cardEntrance 0.4s ease-out backwards;
+}
+
+.wk-prog-img-card:active {
+  transform: scale(0.98);
+}
+
+.wk-prog-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+
 .wk-prog-hero-card {
   position: relative;
   flex: 0 0 85%;
