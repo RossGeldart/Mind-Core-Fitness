@@ -403,12 +403,10 @@ export default function CircuitBooking() {
 
   return (
     <div className={`cb-page ${isDark ? 'dark' : ''}`}>
-      <header className="cb-header">
-        <button className="cb-back-btn" onClick={() => navigate('/client/circuit')}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </button>
-        <h1>Class Booking</h1>
-        <div className="cb-header-spacer" />
+      <header className="client-header">
+        <div className="header-content">
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+        </div>
       </header>
 
       <main className="cb-main">

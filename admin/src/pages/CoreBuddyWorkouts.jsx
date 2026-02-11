@@ -630,19 +630,18 @@ export default function CoreBuddyWorkouts() {
     const randomiserImg = randomiserCardImg || null;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
-        <header className="cb-header">
-          <div className="cb-header-left">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
-            <span className="cb-header-title">Workouts</span>
-          </div>
-          <div className="cb-header-right">
-            <button className="cb-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-              {isDark ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
-            </button>
+        <header className="client-header">
+          <div className="header-content">
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
           </div>
         </header>
         <main className="wk-main">
@@ -783,19 +782,18 @@ export default function CoreBuddyWorkouts() {
   if (view === 'setup') {
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
-        <header className="cb-header">
-          <div className="cb-header-left">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
-            <span className="cb-header-title">Setup</span>
-          </div>
-          <div className="cb-header-right">
-            <button className="cb-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-              {isDark ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
-            </button>
+        <header className="client-header">
+          <div className="header-content">
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
           </div>
         </header>
         <main className="wk-main">
@@ -970,19 +968,18 @@ export default function CoreBuddyWorkouts() {
     const totalTime = workout.length * rounds * (config.work + config.rest);
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
-        <header className="cb-header">
-          <div className="cb-header-left">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
-            <span className="cb-header-title">Your Workout</span>
-          </div>
-          <div className="cb-header-right">
-            <button className="cb-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-              {isDark ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-              )}
-            </button>
+        <header className="client-header">
+          <div className="header-content">
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
           </div>
         </header>
         <main className="wk-main">

@@ -158,24 +158,23 @@ export default function CircuitDashboard() {
 
   return (
     <div className={`circuit-page ${isDark ? 'dark' : ''}`}>
-      <header className="circuit-header">
-        <div className="circuit-header-left">
-          {!isCircuitOnly && (
-            <button className="circuit-back-btn" onClick={() => navigate('/client')}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <header className="client-header">
+        <div className="header-content">
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <div className="header-actions">
+            <button onClick={toggleTheme} aria-label="Toggle theme">
+              {isDark ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              )}
             </button>
-          )}
-          <img src="/Logo.PNG" alt="MCF" className="circuit-header-logo" />
-        </div>
-        <div className="circuit-header-right">
-          <button className="circuit-icon-btn" onClick={toggleTheme}>
-            {isDark ? '\u2600' : '\u263E'}
-          </button>
-          {isCircuitOnly && (
-            <button className="circuit-icon-btn logout" onClick={logout}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-            </button>
-          )}
+            {isCircuitOnly && (
+              <button onClick={logout} aria-label="Log out">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
