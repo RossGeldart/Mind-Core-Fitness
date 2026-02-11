@@ -446,9 +446,10 @@ export default function CoreBuddyProgrammes() {
   }, [clientData]);
 
   // Auto-select template if navigated with state (from workouts page carousel)
+  // Must run after loading completes (view !== 'loading') and override dashboard view
   useEffect(() => {
     if (didAutoSelectRef.current) return;
-    if (view !== 'browse') return;
+    if (view === 'loading') return;
     const templateId = location.state?.templateId;
     if (!templateId) return;
     const template = TEMPLATES.find(t => t.id === templateId);
