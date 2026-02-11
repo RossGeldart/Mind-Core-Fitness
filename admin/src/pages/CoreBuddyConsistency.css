@@ -221,10 +221,10 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px;
+  padding: 18px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -306,7 +306,7 @@
 .cbc-habit-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
