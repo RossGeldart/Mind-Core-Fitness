@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 import randomiserCardImg from '../assets/randomiser-card.jpg';
+import programmeCardImg from '../assets/programme-card-workout.JPG';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -21,6 +22,24 @@ const TEMPLATE_META = {
   core_12wk: { duration: 12, daysPerWeek: 3 },
   upper_4wk: { duration: 4, daysPerWeek: 3 },
   lower_4wk: { duration: 4, daysPerWeek: 3 },
+};
+
+// Focus-based gradient tints for programme hero cards
+const FOCUS_GRADIENTS = {
+  fullbody: 'linear-gradient(160deg, rgba(153,49,60,0.15) 0%, rgba(153,49,60,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0.95) 100%)',
+  core: 'linear-gradient(160deg, rgba(30,80,120,0.2) 0%, rgba(30,80,120,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0.95) 100%)',
+  upper: 'linear-gradient(160deg, rgba(100,60,140,0.2) 0%, rgba(100,60,140,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0.95) 100%)',
+  lower: 'linear-gradient(160deg, rgba(40,120,80,0.2) 0%, rgba(40,120,80,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0.95) 100%)',
+};
+
+// Muscle-group gradient tints
+const MUSCLE_GRADIENTS = {
+  arms: 'linear-gradient(160deg, rgba(180,60,60,0.2) 0%, rgba(180,60,60,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
+  chest: 'linear-gradient(160deg, rgba(50,100,160,0.2) 0%, rgba(50,100,160,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
+  back: 'linear-gradient(160deg, rgba(80,130,60,0.2) 0%, rgba(80,130,60,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
+  shoulders: 'linear-gradient(160deg, rgba(160,100,40,0.2) 0%, rgba(160,100,40,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
+  legs: 'linear-gradient(160deg, rgba(100,50,140,0.2) 0%, rgba(100,50,140,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
+  core: 'linear-gradient(160deg, rgba(30,80,120,0.2) 0%, rgba(30,80,120,0.35) 30%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.9) 80%, rgba(0,0,0,0.96) 100%)',
 };
 
 // Programme cards for carousel display
@@ -706,18 +725,29 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-prog-scroll">
             {PROGRAMME_CARDS.map((prog, i) => (
-              <button key={prog.id} className="wk-prog-card"
+              <button key={prog.id} className="wk-prog-hero-card"
                 onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
-                style={{ animationDelay: `${i * 0.05}s` }}>
-                <div className="wk-prog-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d={FOCUS_ICONS[prog.focus]} /></svg>
+                style={{ animationDelay: `${i * 0.06}s` }}>
+                <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
+                <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
+                <div className="wk-prog-hero-content">
+                  <div className="wk-prog-hero-top">
+                    <span className="wk-prog-hero-badge">{prog.duration} WEEKS</span>
+                    <span className="wk-prog-hero-level">{prog.level}</span>
+                  </div>
+                  <div className="wk-prog-hero-bottom">
+                    <h3>{prog.name.toUpperCase()}</h3>
+                    <p>{prog.daysPerWeek}x per week &bull; {prog.focus === 'fullbody' ? 'Full Body' : prog.focus.charAt(0).toUpperCase() + prog.focus.slice(1)} Focus</p>
+                    <span className="wk-prog-hero-go">VIEW PROGRAMME &rarr;</span>
+                  </div>
                 </div>
-                <span className="wk-prog-duration">{prog.duration} WK</span>
-                <span className="wk-prog-name">{prog.name}</span>
-                <span className="wk-prog-level">{prog.level}</span>
-                <span className="wk-prog-meta">{prog.daysPerWeek}x / week</span>
               </button>
             ))}
+            {/* Swipe CTA */}
+            <div className="wk-swipe-cta">
+              <span>Swipe</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
           </div>
 
           {/* Muscle Groups Section */}
@@ -728,14 +758,18 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-muscle-grid">
             {MUSCLE_GROUPS.map((mg, i) => (
-              <button key={mg.key} className="wk-muscle-card"
+              <button key={mg.key} className="wk-muscle-hero-card"
                 onClick={() => showToast(`${mg.label} workouts coming soon!`, 'info')}
                 style={{ animationDelay: `${i * 0.05}s` }}>
-                <div className="wk-muscle-icon">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
+                <img src={randomiserCardImg} alt="" className="wk-muscle-hero-bg" />
+                <div className="wk-muscle-hero-overlay" style={{ background: MUSCLE_GRADIENTS[mg.key] }} />
+                <div className="wk-muscle-hero-content">
+                  <div className="wk-muscle-hero-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
+                  </div>
+                  <span className="wk-muscle-hero-name">{mg.label}</span>
+                  <span className="wk-muscle-hero-soon">Coming Soon</span>
                 </div>
-                <span className="wk-muscle-name">{mg.label}</span>
-                <span className="wk-muscle-soon">Coming Soon</span>
               </button>
             ))}
           </div>
