@@ -103,6 +103,7 @@ export default function CoreBuddyNutrition() {
   const scannerRef = useRef(null);
   const quaggaRunning = useRef(false);
   const searchAbort = useRef(null);
+  const debounceTimer = useRef(null);
   const searchInputRef = useRef(null);
 
   const showToast = useCallback((message, type = 'info') => {
@@ -455,7 +456,7 @@ export default function CoreBuddyNutrition() {
     setSearchLoading(true);
     try {
       const q = encodeURIComponent(searchQuery.trim());
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=20&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=10&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -467,7 +468,7 @@ export default function CoreBuddyNutrition() {
           return searchWords.every(w => combined.includes(w));
         })
         .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term))
-        .slice(0, 15);
+        .slice(0, 10);
       searchCache.set(term, results);
       setSearchResults(results);
       if (results.length === 0) {
@@ -480,6 +481,16 @@ export default function CoreBuddyNutrition() {
     }
     setSearchLoading(false);
   };
+
+  // Debounced search-as-you-type
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    if (!searchQuery.trim() || addMode !== 'search' || scannedProduct) return;
+    debounceTimer.current = setTimeout(() => {
+      searchFood();
+    }, 700);
+    return () => clearTimeout(debounceTimer.current);
+  }, [searchQuery]);
 
   // ==================== WATER TRACKER ====================
   const addWater = () => {
@@ -1000,7 +1011,7 @@ export default function CoreBuddyNutrition() {
               <div className="nut-search-area">
                 <div className="nut-search-bar">
                   <input type="text" ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && searchFood()}
+                    onKeyDown={e => { if (e.key === 'Enter') { clearTimeout(debounceTimer.current); searchFood(); } }}
                     onFocus={() => setTimeout(() => searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)}
                     placeholder="Search food or product..." autoFocus />
                   <button onClick={searchFood} disabled={searchLoading}>
