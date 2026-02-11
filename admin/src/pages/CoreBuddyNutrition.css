@@ -36,12 +36,52 @@
 .nut-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 40px;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 [data-theme="dark"] .nut-page {
   --bg-card: #1e1e1e;
   --bg-card-elevated: #2d2d2d;
+}
+
+/* ===== DARK ZONE (top) ===== */
+.nut-dark-zone {
+  background: linear-gradient(160deg, #1a1f2e 0%, #0f1118 100%);
+  padding-bottom: 32px;
+  position: relative;
+}
+
+[data-theme="dark"] .nut-dark-zone {
+  background: linear-gradient(160deg, #141821 0%, #0a0c12 100%);
+}
+
+.nut-dark-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== LIGHT ZONE (bottom sheet) ===== */
+.nut-light-zone {
+  flex: 1;
+  background: var(--bg-body);
+  border-radius: 24px 24px 0 0;
+  margin-top: -16px;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 40px;
+}
+
+[data-theme="dark"] .nut-light-zone {
+  background: #121212;
+}
+
+.nut-light-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 20px;
 }
 
 .nut-main {
@@ -63,6 +103,16 @@
   margin-bottom: 16px;
 }
 
+.nut-back-btn.nut-back-dark {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nut-back-btn.nut-back-dark:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
 [data-theme="dark"] .nut-back-btn {
   border-color: rgba(255, 255, 255, 0.1);
 }
@@ -70,6 +120,160 @@
 .nut-back-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+/* ===== WEEK CALENDAR STRIP ===== */
+.nut-week-strip {
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.nut-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.nut-week-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.nut-week-arrow:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.nut-week-arrow:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.nut-week-month-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.nut-week-month-label:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nut-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.nut-week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-week-day:hover:not(:disabled):not(.selected) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nut-week-day-letter {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nut-week-day-num {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.nut-week-day.selected .nut-week-day-num {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.nut-week-day.selected .nut-week-day-letter {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.nut-week-day.today:not(.selected) .nut-week-day-num {
+  border: 1.5px solid var(--color-primary);
+  color: #fff;
+}
+
+.nut-week-day.future {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* Calendar dropdown in dark zone */
+.nut-calendar-dark {
+  background: rgba(30, 35, 50, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
+.nut-calendar-dark .nut-cal-header span {
+  color: #fff;
+}
+
+.nut-calendar-dark .nut-cal-header button {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nut-calendar-dark .nut-cal-days-header span {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nut-calendar-dark .nut-cal-day {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.nut-calendar-dark .nut-cal-day:hover:not(:disabled):not(.selected) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nut-calendar-dark .nut-cal-day.today {
+  border-color: var(--color-primary);
 }
 
 .nut-settings-btn {
@@ -412,6 +616,15 @@
 }
 
 /* ==================== MACRO RINGS ==================== */
+.nut-rings-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 8px 0 0;
+  animation: fadeIn 0.4s ease-out 0.1s backwards;
+}
+
+/* Keep the old grid class for setup calc results */
 .nut-rings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -431,6 +644,46 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+/* Rings inside dark zone */
+.nut-rings-row .nut-ring-wrap {
+  align-items: center;
+}
+
+.nut-rings-row .nut-ring-svg {
+  width: 76px;
+  height: 76px;
+}
+
+.nut-rings-row .nut-ring-center {
+  width: 76px;
+  height: 76px;
+}
+
+.nut-rings-row .nut-ring-value {
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.nut-rings-row .nut-ring-target {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.nut-rings-row .nut-ring-label {
+  font-size: 0.5rem;
+  margin-top: 2px;
+}
+
+.nut-rings-row .nut-ring-pct {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+.nut-rings-row .nut-tick-empty {
+  opacity: 0.4;
 }
 
 .nut-ring-wrap {
@@ -663,6 +916,98 @@
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
+}
+
+/* Meal Add (+) Button */
+.nut-meal-add-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.nut-meal-add-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.nut-meal-add-btn:active {
+  transform: scale(0.9);
+}
+
+/* Mini Macro Progress Bars */
+.nut-meal-bars {
+  padding: 10px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nut-meal-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nut-meal-bar-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nut-meal-bar-track {
+  flex: 1;
+  height: 5px;
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.nut-meal-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease-out;
+  min-width: 0;
+}
+
+.bar-protein { background: #4caf50; }
+.bar-carbs { background: #2196f3; }
+.bar-fats { background: #ff9800; }
+.bar-cals { background: var(--color-primary); }
+
+.nut-meal-bar-val {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Empty meal state */
+.nut-meal-empty {
+  padding: 16px;
+  text-align: center;
+}
+
+.nut-meal-empty p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin: 0;
 }
 
 .nut-meal-card .nut-log-list {
@@ -1946,6 +2291,29 @@
   .nut-ring-value {
     font-size: 1.2rem;
   }
+
+  /* Larger rings on wider screens in the row */
+  .nut-rings-row .nut-ring-svg {
+    width: 90px;
+    height: 90px;
+  }
+
+  .nut-rings-row .nut-ring-center {
+    width: 90px;
+    height: 90px;
+  }
+
+  .nut-rings-row .nut-ring-value {
+    font-size: 0.9rem;
+  }
+
+  .nut-rings-row .nut-ring-target {
+    font-size: 0.52rem;
+  }
+
+  .nut-rings-row .nut-ring-label {
+    font-size: 0.52rem;
+  }
 }
 
 @media (max-width: 380px) {
@@ -1974,5 +2342,38 @@
   .nut-goal-options,
   .nut-deficit-options {
     grid-template-columns: 1fr;
+  }
+
+  /* Smaller rings on narrow screens in the row */
+  .nut-rings-row .nut-ring-svg {
+    width: 66px;
+    height: 66px;
+  }
+
+  .nut-rings-row .nut-ring-center {
+    width: 66px;
+    height: 66px;
+  }
+
+  .nut-rings-row .nut-ring-value {
+    font-size: 0.7rem;
+  }
+
+  .nut-rings-row .nut-ring-target {
+    font-size: 0.45rem;
+  }
+
+  .nut-rings-row .nut-ring-label {
+    font-size: 0.45rem;
+  }
+
+  .nut-week-day-num {
+    width: 28px;
+    height: 28px;
+    font-size: 0.78rem;
+  }
+
+  .nut-week-day-letter {
+    font-size: 0.55rem;
   }
 }

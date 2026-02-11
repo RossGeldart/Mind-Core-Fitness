@@ -840,158 +840,180 @@ export default function CoreBuddyNutrition() {
     );
   }
 
+  // ==================== WEEK CALENDAR HELPERS ====================
+  const getWeekDays = (dateStr) => {
+    const d = new Date(dateStr + 'T12:00:00');
+    const day = d.getDay(); // 0=Sun
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - ((day + 6) % 7));
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const dd = new Date(monday);
+      dd.setDate(monday.getDate() + i);
+      days.push(dd.toISOString().split('T')[0]);
+    }
+    return days;
+  };
+  const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  const openAddForMeal = (mealKey, mode = 'search') => {
+    setSelectedMeal(mealKey);
+    if (mode === 'scan') { setAddMode('scan'); setScannedProduct(null); }
+    else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }
+    else if (mode === 'favourites') { setAddMode('favourites'); }
+    else { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }
+  };
+
   // ==================== DASHBOARD VIEW ====================
+  const weekDays = getWeekDays(selectedDate);
+  const selDateObj = new Date(selectedDate + 'T12:00:00');
+  const weekMonthLabel = `${MONTH_NAMES[selDateObj.getMonth()]} ${selDateObj.getFullYear()}`;
+
   return (
     <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
-      <header className="cb-header">
-        <div className="cb-header-left">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
-          <span className="cb-header-title">Nutrition</span>
-        </div>
-        <div className="cb-header-right">
-          <button className="nut-settings-btn" onClick={() => { setView('setup'); setCalcResults(null); }} aria-label="Recalculate macros">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </button>
-          <button className="cb-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-            {isDark ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            )}
-          </button>
-        </div>
-      </header>
-
-      <main className="nut-main">
-        <button className="nut-back-btn" onClick={() => navigate(-1)}>&larr; Back</button>
-
-        {/* Macro Rings */}
-        <div className="nut-rings-grid">
-          {renderMacroRing('Protein', 'Protein', totals.protein, targets.protein, 'ring-protein')}
-          {renderMacroRing('Carbs', 'Carbs', totals.carbs, targets.carbs, 'ring-carbs')}
-          {renderMacroRing('Fats', 'Fats', totals.fats, targets.fats, 'ring-fats')}
-          {renderMacroRing('Calories', 'Calories', totals.calories, targets.calories, 'ring-cals')}
-
-          {/* Action bar inside the card */}
-          {isToday && (
-            <div className="nut-card-actions">
-              <button className="nut-card-action nut-action-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-                <span>Scan</span>
-              </button>
-              <button className="nut-card-action nut-action-search" onClick={() => { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <span>Search</span>
-              </button>
-              <button className="nut-card-action nut-action-manual" onClick={() => { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Manual</span>
-              </button>
-              {getFavourites().length > 0 && (
-                <button className="nut-card-action nut-action-fav" onClick={() => setAddMode('favourites')}>
-                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  <span>Favs</span>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Water Tracker (today only) */}
-        {isToday && (
-          <div className="nut-water-section">
-            <div className="nut-water-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-              </svg>
-              <span>Water</span>
-              <span className="nut-water-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</span>
-            </div>
-            <div className="nut-water-glasses">
-              {[...Array(targets?.waterGoal || 8)].map((_, i) => (
-                <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
-                  <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                  </svg>
-                </div>
-              ))}
-            </div>
-            <div className="nut-water-btns">
-              <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
-              <button onClick={addWater}>+</button>
-            </div>
+      {/* ===== DARK ZONE (top) ===== */}
+      <div className="nut-dark-zone">
+        <header className="cb-header">
+          <div className="cb-header-left">
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
+            <span className="cb-header-title">Nutrition</span>
           </div>
-        )}
+          <div className="cb-header-right">
+            <button className="nut-settings-btn" onClick={() => { setView('setup'); setCalcResults(null); }} aria-label="Recalculate macros">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+            <button className="cb-theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+              {isDark ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              )}
+            </button>
+          </div>
+        </header>
 
-        {/* Date Navigation */}
-        <div className="nut-date-nav">
-          <button className="nut-date-arrow" onClick={() => shiftDate(-1)} aria-label="Previous day">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button className="nut-date-label" onClick={() => { setCalendarOpen(!calendarOpen); setCalendarMonth({ year: new Date(selectedDate + 'T12:00:00').getFullYear(), month: new Date(selectedDate + 'T12:00:00').getMonth() }); }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>{formatDisplayDate(selectedDate)}</span>
-          </button>
-          <button className="nut-date-arrow" onClick={() => shiftDate(1)} disabled={selectedDate >= getTodayKey()} aria-label="Next day">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        </div>
+        <div className="nut-dark-content">
+          <button className="nut-back-btn nut-back-dark" onClick={() => navigate(-1)}>&larr; Back</button>
 
-        {/* Calendar Dropdown */}
-        {calendarOpen && (
-          <div className="nut-calendar">
-            <div className="nut-cal-header">
-              <button onClick={() => setCalendarMonth(p => {
-                let m = p.month - 1, y = p.year;
-                if (m < 0) { m = 11; y--; }
-                return { year: y, month: m };
-              })}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+          {/* Week Calendar Strip */}
+          <div className="nut-week-strip">
+            <div className="nut-week-header">
+              <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() - 7); const key = d.toISOString().split('T')[0]; setSelectedDate(key); }} aria-label="Previous week">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
-              <span>{MONTH_NAMES[calendarMonth.month]} {calendarMonth.year}</span>
-              <button onClick={() => setCalendarMonth(p => {
-                let m = p.month + 1, y = p.year;
-                if (m > 11) { m = 0; y++; }
-                return { year: y, month: m };
-              })} disabled={calendarMonth.year === new Date().getFullYear() && calendarMonth.month >= new Date().getMonth()}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              <button className="nut-week-month-label" onClick={() => { setCalendarOpen(!calendarOpen); setCalendarMonth({ year: selDateObj.getFullYear(), month: selDateObj.getMonth() }); }}>
+                {weekMonthLabel}
+              </button>
+              <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() + 7); const key = d.toISOString().split('T')[0]; if (key <= getTodayKey()) setSelectedDate(key); }} aria-label="Next week" disabled={weekDays[6] >= getTodayKey()}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
             </div>
-            <div className="nut-cal-days-header">
-              {DAY_LABELS.map(d => <span key={d}>{d}</span>)}
-            </div>
-            <div className="nut-cal-grid">
-              {[...Array(getFirstDayOfMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => (
-                <span key={`e${i}`} />
-              ))}
-              {[...Array(getDaysInMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => {
-                const day = i + 1;
-                const dateKey = `${calendarMonth.year}-${String(calendarMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const isFuture = dateKey > getTodayKey();
-                const isSelected = dateKey === selectedDate;
-                const isTodayDate = dateKey === getTodayKey();
+            <div className="nut-week-days">
+              {weekDays.map((dayKey, i) => {
+                const dayNum = new Date(dayKey + 'T12:00:00').getDate();
+                const isSel = dayKey === selectedDate;
+                const isFutureDay = dayKey > getTodayKey();
+                const isTodayDay = dayKey === getTodayKey();
                 return (
-                  <button key={day} className={`nut-cal-day${isSelected ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
-                    disabled={isFuture} onClick={() => { setSelectedDate(dateKey); setCalendarOpen(false); }}>
-                    {day}
+                  <button key={dayKey} className={`nut-week-day${isSel ? ' selected' : ''}${isTodayDay ? ' today' : ''}${isFutureDay ? ' future' : ''}`}
+                    disabled={isFutureDay} onClick={() => setSelectedDate(dayKey)}>
+                    <span className="nut-week-day-letter">{WEEK_LABELS[i]}</span>
+                    <span className="nut-week-day-num">{dayNum}</span>
                   </button>
                 );
               })}
             </div>
           </div>
-        )}
 
-        {/* Meal Sections */}
-        <div className="nut-log-section">
-          {todayLog.entries.length === 0 ? (
-            <div className="nut-log-empty">
-              <p>{isToday ? 'No food logged yet today. Add your first meal above!' : 'No food logged on this day.'}</p>
+          {/* Calendar Dropdown */}
+          {calendarOpen && (
+            <div className="nut-calendar nut-calendar-dark">
+              <div className="nut-cal-header">
+                <button onClick={() => setCalendarMonth(p => {
+                  let m = p.month - 1, y = p.year;
+                  if (m < 0) { m = 11; y--; }
+                  return { year: y, month: m };
+                })}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <span>{MONTH_NAMES[calendarMonth.month]} {calendarMonth.year}</span>
+                <button onClick={() => setCalendarMonth(p => {
+                  let m = p.month + 1, y = p.year;
+                  if (m > 11) { m = 0; y++; }
+                  return { year: y, month: m };
+                })} disabled={calendarMonth.year === new Date().getFullYear() && calendarMonth.month >= new Date().getMonth()}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div className="nut-cal-days-header">
+                {DAY_LABELS.map(d => <span key={d}>{d}</span>)}
+              </div>
+              <div className="nut-cal-grid">
+                {[...Array(getFirstDayOfMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => (
+                  <span key={`e${i}`} />
+                ))}
+                {[...Array(getDaysInMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => {
+                  const day = i + 1;
+                  const dateKey = `${calendarMonth.year}-${String(calendarMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  const isFuture = dateKey > getTodayKey();
+                  const isSelected = dateKey === selectedDate;
+                  const isTodayDate = dateKey === getTodayKey();
+                  return (
+                    <button key={day} className={`nut-cal-day${isSelected ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
+                      disabled={isFuture} onClick={() => { setSelectedDate(dateKey); setCalendarOpen(false); }}>
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          ) : (
+          )}
+
+          {/* Macro Rings - 4 across */}
+          <div className="nut-rings-row">
+            {renderMacroRing('Protein', 'Protein', totals.protein, targets.protein, 'ring-protein')}
+            {renderMacroRing('Carbs', 'Carbs', totals.carbs, targets.carbs, 'ring-carbs')}
+            {renderMacroRing('Fats', 'Fats', totals.fats, targets.fats, 'ring-fats')}
+            {renderMacroRing('Calories', 'kCal', totals.calories, targets.calories, 'ring-cals')}
+          </div>
+        </div>
+      </div>
+
+      {/* ===== LIGHT ZONE (bottom sheet) ===== */}
+      <div className="nut-light-zone">
+        <div className="nut-light-content">
+
+          {/* Water Tracker (today only) */}
+          {isToday && (
+            <div className="nut-water-section">
+              <div className="nut-water-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                <span>Water</span>
+                <span className="nut-water-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</span>
+              </div>
+              <div className="nut-water-glasses">
+                {[...Array(targets?.waterGoal || 8)].map((_, i) => (
+                  <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
+                    <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <div className="nut-water-btns">
+                <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
+                <button onClick={addWater}>+</button>
+              </div>
+            </div>
+          )}
+
+          {/* Meal Sections - always show all 4 */}
+          <div className="nut-log-section">
             <div className="nut-meals-list">
               {MEALS.map(m => {
                 const items = todayLog.entries.filter(e => (e.meal || 'snacks') === m.key);
-                if (items.length === 0) return null;
                 const mealTotals = items.reduce((acc, e) => ({
                   protein: acc.protein + (e.protein || 0),
                   carbs: acc.carbs + (e.carbs || 0),
@@ -1003,41 +1025,73 @@ export default function CoreBuddyNutrition() {
                     <div className="nut-meal-card-header">
                       <span className={`nut-meal-card-icon nut-meal-icon-${m.key}`}>{MEAL_ICONS[m.key]}</span>
                       <span className="nut-meal-card-title">{m.label}</span>
-                      <span className="nut-meal-card-cal">{mealTotals.calories} cal</span>
+                      {items.length > 0 && <span className="nut-meal-card-cal">{mealTotals.calories} cal</span>}
+                      {isToday && (
+                        <button className="nut-meal-add-btn" onClick={() => openAddForMeal(m.key)} aria-label={`Add to ${m.label}`}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                      )}
                     </div>
-                    <div className="nut-log-list">
-                      {items.map(entry => (
-                        <div key={entry.id} className="nut-log-item">
-                          <div className="nut-log-item-info">
-                            <span className="nut-log-item-name">{entry.name}</span>
-                            {entry.serving && <span className="nut-log-item-serving">{entry.serving}</span>}
-                          </div>
-                          <div className="nut-log-item-macros">
-                            <span className="nut-macro-p">{entry.protein}p</span>
-                            <span className="nut-macro-c">{entry.carbs}c</span>
-                            <span className="nut-macro-f">{entry.fats}f</span>
-                            <span className="nut-macro-cal">{entry.calories}</span>
-                          </div>
-                          {isToday && (
-                            <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                          )}
+                    {/* Mini macro progress bars */}
+                    {items.length > 0 && (
+                      <div className="nut-meal-bars">
+                        <div className="nut-meal-bar-row">
+                          <span className="nut-meal-bar-label nut-macro-p">P</span>
+                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-protein" style={{ width: `${Math.min(100, targets.protein > 0 ? (mealTotals.protein / targets.protein) * 100 : 0)}%` }} /></div>
+                          <span className="nut-meal-bar-val">{mealTotals.protein}g</span>
                         </div>
-                      ))}
-                    </div>
-                    <div className="nut-meal-card-totals">
-                      <span className="nut-macro-p">{mealTotals.protein}g P</span>
-                      <span className="nut-macro-c">{mealTotals.carbs}g C</span>
-                      <span className="nut-macro-f">{mealTotals.fats}g F</span>
-                    </div>
+                        <div className="nut-meal-bar-row">
+                          <span className="nut-meal-bar-label nut-macro-c">C</span>
+                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-carbs" style={{ width: `${Math.min(100, targets.carbs > 0 ? (mealTotals.carbs / targets.carbs) * 100 : 0)}%` }} /></div>
+                          <span className="nut-meal-bar-val">{mealTotals.carbs}g</span>
+                        </div>
+                        <div className="nut-meal-bar-row">
+                          <span className="nut-meal-bar-label nut-macro-f">F</span>
+                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-fats" style={{ width: `${Math.min(100, targets.fats > 0 ? (mealTotals.fats / targets.fats) * 100 : 0)}%` }} /></div>
+                          <span className="nut-meal-bar-val">{mealTotals.fats}g</span>
+                        </div>
+                        <div className="nut-meal-bar-row">
+                          <span className="nut-meal-bar-label nut-macro-cal">K</span>
+                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-cals" style={{ width: `${Math.min(100, targets.calories > 0 ? (mealTotals.calories / targets.calories) * 100 : 0)}%` }} /></div>
+                          <span className="nut-meal-bar-val">{mealTotals.calories}</span>
+                        </div>
+                      </div>
+                    )}
+                    {items.length > 0 && (
+                      <div className="nut-log-list">
+                        {items.map(entry => (
+                          <div key={entry.id} className="nut-log-item">
+                            <div className="nut-log-item-info">
+                              <span className="nut-log-item-name">{entry.name}</span>
+                              {entry.serving && <span className="nut-log-item-serving">{entry.serving}</span>}
+                            </div>
+                            <div className="nut-log-item-macros">
+                              <span className="nut-macro-p">{entry.protein}p</span>
+                              <span className="nut-macro-c">{entry.carbs}c</span>
+                              <span className="nut-macro-f">{entry.fats}f</span>
+                              <span className="nut-macro-cal">{entry.calories}</span>
+                            </div>
+                            {isToday && (
+                              <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {items.length === 0 && (
+                      <div className="nut-meal-empty">
+                        <p>{isToday ? 'Tap + to add food' : 'No entries'}</p>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
-          )}
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* ==================== ADD FOOD MODAL ==================== */}
       {addMode && (
