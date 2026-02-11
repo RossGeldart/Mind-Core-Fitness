@@ -96,6 +96,8 @@ export default function CoreBuddyNutrition() {
   const [manualForm, setManualForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
   const [scannedProduct, setScannedProduct] = useState(null);
   const [servingInput, setServingInput] = useState('100');
+  const [portionCount, setPortionCount] = useState(0);
+  const [servingMode, setServingMode] = useState('weight');
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -292,6 +294,8 @@ export default function CoreBuddyNutrition() {
     setAddMode(null);
     setScannedProduct(null);
     setServingInput('100');
+    setPortionCount(0);
+    setServingMode('weight');
     setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
     showToast('Food added!', 'success');
   };
@@ -401,18 +405,56 @@ export default function CoreBuddyNutrition() {
     return 'g';
   };
 
+  const COMMON_PORTIONS = [
+    { pattern: /\b(toast|bread|loaf|brioche|bagel|pitta|wrap|tortilla|crumpet|muffin|waffle|pancake)\b/i, label: 'slice', weight: 36 },
+    { pattern: /\begg\b/i, label: 'egg', weight: 60 },
+    { pattern: /\b(biscuit|cookie|digestive|hobnob|rich tea|oreo)\b/i, label: 'biscuit', weight: 13 },
+    { pattern: /\b(sausage|banger)\b/i, label: 'sausage', weight: 57 },
+    { pattern: /\b(rasher|bacon)\b/i, label: 'rasher', weight: 25 },
+    { pattern: /\b(rice cake)\b/i, label: 'cake', weight: 9 },
+    { pattern: /\b(cracker|ryvita)\b/i, label: 'cracker', weight: 10 },
+  ];
+
+  const parsePortion = (servingSize, productName) => {
+    const raw = servingSize || '';
+    // Try parsing serving_size like "1 slice (38g)" or "38g (1 slice)" or "per slice (36g)"
+    const parenMatch = raw.match(/\((\d+\.?\d*)\s*g\)/i);
+    const labelMatch = raw.match(/(?:^|per\s+)(\d*\s*[a-z][a-z\s]*?)(?:\s*\(|\s*-\s*|\s*$)/i);
+    if (parenMatch && labelMatch) {
+      const weight = parseFloat(parenMatch[1]);
+      let label = labelMatch[1].replace(/^\d+\s*/, '').trim();
+      if (label && weight > 0) return { label, weight };
+    }
+    // Try "38g / 1 slice" or "1 slice = 38g" formats
+    const altMatch = raw.match(/(\d+\.?\d*)\s*g\s*[\/=]\s*(\d*\s*[a-z][a-z\s]*)/i);
+    if (altMatch) {
+      const weight = parseFloat(altMatch[1]);
+      let label = altMatch[2].replace(/^\d+\s*/, '').trim();
+      if (label && weight > 0) return { label, weight };
+    }
+    // Fallback: match product name against common portions
+    const name = productName || '';
+    for (const { pattern, label, weight } of COMMON_PORTIONS) {
+      if (pattern.test(name)) return { label, weight };
+    }
+    return null;
+  };
+
   const parseProduct = (p) => {
     const n = p.nutriments || {};
     const unit = detectUnit(p);
     const serving = parseServingValue(p.serving_size);
     const servingValue = unit === 'ml' ? (serving.unit === 'ml' ? serving.value : 100) : serving.value;
+    const name = p.product_name || p.product_name_en || 'Unknown Product';
+    const portion = parsePortion(p.serving_size, name);
     return {
-      name: p.product_name || p.product_name_en || 'Unknown Product',
+      name,
       brand: p.brands || '',
       image: p.image_small_url || p.image_url || null,
       servingSize: p.serving_size || '100g',
       servingValue,
       servingUnit: unit,
+      portion,
       protein: Math.round(n.proteins_100g || n.proteins || 0),
       carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
       fats: Math.round(n.fat_100g || n.fat || 0),
@@ -434,7 +476,15 @@ export default function CoreBuddyNutrition() {
           showToast('Product found but no nutrition data available.', 'error');
         } else {
           setScannedProduct(product);
-          setServingInput(String(product.servingValue || 100));
+          if (product.portion) {
+            setPortionCount(1);
+            setServingInput(String(product.portion.weight));
+            setServingMode('portion');
+          } else {
+            setPortionCount(0);
+            setServingInput(String(product.servingValue || 100));
+            setServingMode('weight');
+          }
           setManualBarcode('');
         }
       } else {
@@ -1005,8 +1055,13 @@ export default function CoreBuddyNutrition() {
             {/* SCANNED PRODUCT RESULT */}
             {addMode === 'scan' && scannedProduct && (() => {
               const u = scannedProduct.servingUnit || 'g';
-              const mult = (parseFloat(servingInput) || 0) / 100;
+              const por = scannedProduct.portion;
+              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
+              const mult = effectiveWeight / 100;
               const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
+              const servingLabel = servingMode === 'portion' && por
+                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
+                : `${Math.round(effectiveWeight)}${u}`;
               return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
@@ -1019,15 +1074,35 @@ export default function CoreBuddyNutrition() {
                   <span className="nut-macro-f">{scannedProduct.fats}g F</span>
                   <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
                 </div>
-                <div className="nut-serving-adjust">
-                  <label>Serving ({u})</label>
-                  <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
-                </div>
-                <div className="nut-quick-amounts">
-                  {quickAmounts.map(amt => (
-                    <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
-                  ))}
-                </div>
+                {por && (
+                  <div className="nut-mode-toggle">
+                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
+                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
+                  </div>
+                )}
+                {servingMode === 'portion' && por ? (
+                  <div className="nut-portion-stepper">
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
+                    <div className="nut-stepper-display">
+                      <span className="nut-stepper-count">{portionCount}</span>
+                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
+                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
+                    </div>
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="nut-serving-adjust">
+                      <label>Serving ({u})</label>
+                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
+                    </div>
+                    <div className="nut-quick-amounts">
+                      {quickAmounts.map(amt => (
+                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div className="nut-product-total">
                   <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
                 </div>
@@ -1039,7 +1114,7 @@ export default function CoreBuddyNutrition() {
                     carbs: Math.round(scannedProduct.carbs * mult),
                     fats: Math.round(scannedProduct.fats * mult),
                     calories: Math.round(scannedProduct.calories * mult),
-                    serving: `${Math.round(parseFloat(servingInput) || 0)}${u}`
+                    serving: servingLabel
                   })}>Add</button>
                 </div>
               </div>
@@ -1060,7 +1135,7 @@ export default function CoreBuddyNutrition() {
                 </div>
                 <div className="nut-search-results">
                   {searchResults.map((item, i) => (
-                    <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); setServingInput(String(item.servingValue || 100)); }}>
+                    <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); if (item.portion) { setPortionCount(1); setServingInput(String(item.portion.weight)); setServingMode('portion'); } else { setPortionCount(0); setServingInput(String(item.servingValue || 100)); setServingMode('weight'); } }}>
                       {item.image && <img src={item.image} alt="" loading="lazy" />}
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
@@ -1079,8 +1154,13 @@ export default function CoreBuddyNutrition() {
             {/* SEARCH - SELECTED PRODUCT */}
             {addMode === 'search' && scannedProduct && (() => {
               const u = scannedProduct.servingUnit || 'g';
-              const mult = (parseFloat(servingInput) || 0) / 100;
+              const por = scannedProduct.portion;
+              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
+              const mult = effectiveWeight / 100;
               const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
+              const servingLabel = servingMode === 'portion' && por
+                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
+                : `${Math.round(effectiveWeight)}${u}`;
               return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
@@ -1093,15 +1173,35 @@ export default function CoreBuddyNutrition() {
                   <span className="nut-macro-f">{scannedProduct.fats}g F</span>
                   <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
                 </div>
-                <div className="nut-serving-adjust">
-                  <label>Serving ({u})</label>
-                  <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
-                </div>
-                <div className="nut-quick-amounts">
-                  {quickAmounts.map(amt => (
-                    <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
-                  ))}
-                </div>
+                {por && (
+                  <div className="nut-mode-toggle">
+                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
+                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
+                  </div>
+                )}
+                {servingMode === 'portion' && por ? (
+                  <div className="nut-portion-stepper">
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
+                    <div className="nut-stepper-display">
+                      <span className="nut-stepper-count">{portionCount}</span>
+                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
+                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
+                    </div>
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="nut-serving-adjust">
+                      <label>Serving ({u})</label>
+                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
+                    </div>
+                    <div className="nut-quick-amounts">
+                      {quickAmounts.map(amt => (
+                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div className="nut-product-total">
                   <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
                 </div>
@@ -1113,7 +1213,7 @@ export default function CoreBuddyNutrition() {
                     carbs: Math.round(scannedProduct.carbs * mult),
                     fats: Math.round(scannedProduct.fats * mult),
                     calories: Math.round(scannedProduct.calories * mult),
-                    serving: `${Math.round(parseFloat(servingInput) || 0)}${u}`
+                    serving: servingLabel
                   })}>Add</button>
                 </div>
               </div>
