@@ -640,14 +640,15 @@ export default function CoreBuddyNutrition() {
         <svg className="nut-ring-svg" viewBox="0 0 200 200">
           {[...Array(TICK_COUNT)].map((_, i) => {
             const angle = (i * 6 - 90) * (Math.PI / 180);
-            const x1 = 100 + 82 * Math.cos(angle);
-            const y1 = 100 + 82 * Math.sin(angle);
-            const x2 = 100 + 94 * Math.cos(angle);
-            const y2 = 100 + 94 * Math.sin(angle);
+            const x1 = 100 + 78 * Math.cos(angle);
+            const y1 = 100 + 78 * Math.sin(angle);
+            const x2 = 100 + 96 * Math.cos(angle);
+            const y2 = 100 + 96 * Math.sin(angle);
             return (
               <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
                 className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
-                strokeWidth={i % 5 === 0 ? '3' : '2'}
+                strokeWidth={i % 5 === 0 ? '4.5' : '3'}
+                strokeLinecap="round"
                 style={i < filled ? { animationDelay: `${i * 50}ms` } : undefined} />
             );
           })}
