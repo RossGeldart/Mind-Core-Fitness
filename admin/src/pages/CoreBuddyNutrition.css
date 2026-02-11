@@ -35,7 +35,7 @@
 /* Page */
 .nut-page {
   min-height: 100vh;
-  background: red !important;
+  background: var(--bg-body);
   padding-bottom: 40px;
 }
 
