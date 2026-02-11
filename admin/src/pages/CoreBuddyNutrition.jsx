@@ -285,12 +285,50 @@ export default function CoreBuddyNutrition() {
     return hasWeight && hasAge && hasHeight;
   };
 
+  // ==================== RECENT FOODS ====================
+  const RECENTS_KEY = 'nut_recent_foods';
+  const MAX_RECENTS = 15;
+
+  const getRecentFoods = () => {
+    try {
+      return JSON.parse(localStorage.getItem(RECENTS_KEY) || '[]');
+    } catch { return []; }
+  };
+
+  const saveToRecents = (entry) => {
+    const recents = getRecentFoods();
+    // Remove duplicate (same name, case-insensitive)
+    const filtered = recents.filter(r => r.name.toLowerCase() !== entry.name.toLowerCase());
+    const item = {
+      name: entry.name,
+      protein: entry.protein,
+      carbs: entry.carbs,
+      fats: entry.fats,
+      calories: entry.calories,
+      serving: entry.serving,
+      // Keep per100g info for re-adjusting servings
+      per100g: entry.per100g || null,
+      servingUnit: entry.servingUnit || 'g',
+      portion: entry.portion || null,
+    };
+    filtered.unshift(item);
+    localStorage.setItem(RECENTS_KEY, JSON.stringify(filtered.slice(0, MAX_RECENTS)));
+  };
+
   // ==================== FOOD LOGGING ====================
   const addFoodEntry = (entry) => {
     const newEntries = [...todayLog.entries, { ...entry, meal: selectedMeal, id: Date.now(), addedAt: new Date().toISOString() }];
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
+    // Save to recents with per100g data for re-adjusting later
+    const recentData = { ...entry };
+    if (scannedProduct) {
+      recentData.per100g = { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories };
+      recentData.servingUnit = scannedProduct.servingUnit || 'g';
+      recentData.portion = scannedProduct.portion || null;
+    }
+    saveToRecents(recentData);
     setAddMode(null);
     setScannedProduct(null);
     setServingInput('100');
@@ -858,6 +896,14 @@ export default function CoreBuddyNutrition() {
               </div>
               <span>Manual</span>
             </button>
+            {getRecentFoods().length > 0 && (
+              <button className="nut-add-btn nut-add-recent" onClick={() => setAddMode('recent')}>
+                <div className="nut-add-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <span>Recent</span>
+              </button>
+            )}
           </div>
         </>}
 
@@ -1008,7 +1054,7 @@ export default function CoreBuddyNutrition() {
         <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
           <div className="nut-modal" onClick={e => e.stopPropagation()}>
             <div className="nut-modal-header">
-              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : 'Manual Entry'}</h3>
+              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : addMode === 'recent' ? 'Recent Foods' : 'Manual Entry'}</h3>
               <button className="nut-modal-close" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
@@ -1259,6 +1305,138 @@ export default function CoreBuddyNutrition() {
                 })}>Add Food</button>
               </div>
             )}
+
+            {/* RECENT MODE */}
+            {addMode === 'recent' && !scannedProduct && (() => {
+              const recents = getRecentFoods();
+              return (
+                <div className="nut-recent-area">
+                  {recents.length === 0 ? (
+                    <p className="nut-search-empty">No recent foods yet. Add foods via scan, search, or manual entry.</p>
+                  ) : (
+                    <div className="nut-recent-list">
+                      {recents.map((item, i) => (
+                        <button key={i} className="nut-recent-item" onClick={() => {
+                          if (item.per100g) {
+                            const p100 = item.per100g;
+                            setScannedProduct({
+                              name: item.name,
+                              brand: '',
+                              image: null,
+                              servingSize: item.serving || '100g',
+                              servingValue: 100,
+                              servingUnit: item.servingUnit || 'g',
+                              portion: item.portion || null,
+                              protein: p100.protein,
+                              carbs: p100.carbs,
+                              fats: p100.fats,
+                              calories: p100.calories,
+                              per100g: true
+                            });
+                            if (item.portion) {
+                              setPortionCount(1);
+                              setServingInput(String(item.portion.weight));
+                              setServingMode('portion');
+                            } else {
+                              setPortionCount(0);
+                              setServingInput('100');
+                              setServingMode('weight');
+                            }
+                          } else {
+                            addFoodEntry({
+                              name: item.name,
+                              protein: item.protein,
+                              carbs: item.carbs,
+                              fats: item.fats,
+                              calories: item.calories,
+                              serving: item.serving || ''
+                            });
+                          }
+                        }}>
+                          <div className="nut-recent-item-info">
+                            <span className="nut-recent-item-name">{item.name}</span>
+                            <span className="nut-recent-item-serving">{item.serving || ''}</span>
+                          </div>
+                          <span className="nut-recent-item-macros">{item.calories} cal</span>
+                          {item.per100g ? (
+                            <span className="nut-recent-item-badge">Adjust</span>
+                          ) : (
+                            <span className="nut-recent-item-badge quick">Quick</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* RECENT - SELECTED PRODUCT (for adjustable re-add) */}
+            {addMode === 'recent' && scannedProduct && (() => {
+              const u = scannedProduct.servingUnit || 'g';
+              const por = scannedProduct.portion;
+              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
+              const mult = effectiveWeight / 100;
+              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
+              const servingLabel = servingMode === 'portion' && por
+                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
+                : `${Math.round(effectiveWeight)}${u}`;
+              return (
+              <div className="nut-product-result">
+                <h4>{scannedProduct.name}</h4>
+                <p className="nut-product-per">Per 100{u}:</p>
+                <div className="nut-product-macros">
+                  <span className="nut-macro-p">{scannedProduct.protein}g P</span>
+                  <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
+                  <span className="nut-macro-f">{scannedProduct.fats}g F</span>
+                  <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
+                </div>
+                {por && (
+                  <div className="nut-mode-toggle">
+                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
+                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
+                  </div>
+                )}
+                {servingMode === 'portion' && por ? (
+                  <div className="nut-portion-stepper">
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
+                    <div className="nut-stepper-display">
+                      <span className="nut-stepper-count">{portionCount}</span>
+                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
+                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
+                    </div>
+                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="nut-serving-adjust">
+                      <label>Serving ({u})</label>
+                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
+                    </div>
+                    <div className="nut-quick-amounts">
+                      {quickAmounts.map(amt => (
+                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
+                      ))}
+                    </div>
+                  </>
+                )}
+                <div className="nut-product-total">
+                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
+                </div>
+                <div className="nut-product-actions">
+                  <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Recents</button>
+                  <button className="nut-btn-primary" onClick={() => addFoodEntry({
+                    name: scannedProduct.name,
+                    protein: Math.round(scannedProduct.protein * mult),
+                    carbs: Math.round(scannedProduct.carbs * mult),
+                    fats: Math.round(scannedProduct.fats * mult),
+                    calories: Math.round(scannedProduct.calories * mult),
+                    serving: servingLabel
+                  })}>Add</button>
+                </div>
+              </div>
+              );
+            })()}
           </div>
         </div>
       )}
