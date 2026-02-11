@@ -47,7 +47,7 @@
 .nut-back-btn {
   padding: 8px 16px;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   color: var(--text-secondary);
   border-radius: 6px;
   font-family: 'Roboto', sans-serif;
@@ -55,6 +55,10 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 16px;
+}
+
+[data-theme="dark"] .nut-back-btn {
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .nut-back-btn:hover {
