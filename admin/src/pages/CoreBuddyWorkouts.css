@@ -219,7 +219,7 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 280px;
+  aspect-ratio: 16 / 9;
   border: none;
   border-radius: 20px;
   overflow: hidden;
@@ -2363,7 +2363,7 @@
   }
 
   .wk-hero-card {
-    min-height: 300px;
+    aspect-ratio: 16 / 9;
   }
 
   .wk-hero-content {
