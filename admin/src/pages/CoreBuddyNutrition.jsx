@@ -98,7 +98,6 @@ export default function CoreBuddyNutrition() {
   const [servingInput, setServingInput] = useState('100');
   const [portionCount, setPortionCount] = useState(0);
   const [servingMode, setServingMode] = useState('weight');
-  const [recentTab, setRecentTab] = useState('recents');
   const [favTick, setFavTick] = useState(0);
 
   // Toast
@@ -287,36 +286,6 @@ export default function CoreBuddyNutrition() {
     return hasWeight && hasAge && hasHeight;
   };
 
-  // ==================== RECENT FOODS ====================
-  const RECENTS_KEY = 'nut_recent_foods';
-  const MAX_RECENTS = 15;
-
-  const getRecentFoods = () => {
-    try {
-      return JSON.parse(localStorage.getItem(RECENTS_KEY) || '[]');
-    } catch { return []; }
-  };
-
-  const saveToRecents = (entry) => {
-    const recents = getRecentFoods();
-    // Remove duplicate (same name, case-insensitive)
-    const filtered = recents.filter(r => r.name.toLowerCase() !== entry.name.toLowerCase());
-    const item = {
-      name: entry.name,
-      protein: entry.protein,
-      carbs: entry.carbs,
-      fats: entry.fats,
-      calories: entry.calories,
-      serving: entry.serving,
-      // Keep per100g info for re-adjusting servings
-      per100g: entry.per100g || null,
-      servingUnit: entry.servingUnit || 'g',
-      portion: entry.portion || null,
-    };
-    filtered.unshift(item);
-    localStorage.setItem(RECENTS_KEY, JSON.stringify(filtered.slice(0, MAX_RECENTS)));
-  };
-
   // ==================== FAVOURITES ====================
   const FAVS_KEY = 'nut_favourite_foods';
 
@@ -358,14 +327,6 @@ export default function CoreBuddyNutrition() {
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
-    // Save to recents with per100g data for re-adjusting later
-    const recentData = { ...entry };
-    if (scannedProduct) {
-      recentData.per100g = { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories };
-      recentData.servingUnit = scannedProduct.servingUnit || 'g';
-      recentData.portion = scannedProduct.portion || null;
-    }
-    saveToRecents(recentData);
     setAddMode(null);
     setScannedProduct(null);
     setServingInput('100');
@@ -933,12 +894,12 @@ export default function CoreBuddyNutrition() {
               </div>
               <span>Manual</span>
             </button>
-            {(getRecentFoods().length > 0 || getFavourites().length > 0) && (
-              <button className="nut-add-btn nut-add-recent" onClick={() => { setAddMode('recent'); setRecentTab(getFavourites().length > 0 && getRecentFoods().length === 0 ? 'favourites' : 'recents'); }}>
+            {getFavourites().length > 0 && (
+              <button className="nut-add-btn nut-add-recent" onClick={() => setAddMode('favourites')}>
                 <div className="nut-add-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 </div>
-                <span>Recent</span>
+                <span>Favourites</span>
               </button>
             )}
           </div>
@@ -1091,7 +1052,7 @@ export default function CoreBuddyNutrition() {
         <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
           <div className="nut-modal" onClick={e => e.stopPropagation()}>
             <div className="nut-modal-header">
-              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : addMode === 'recent' ? 'Recent Foods' : 'Manual Entry'}</h3>
+              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : addMode === 'favourites' ? 'Favourites' : 'Manual Entry'}</h3>
               <button className="nut-modal-close" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
@@ -1375,11 +1336,9 @@ export default function CoreBuddyNutrition() {
               </div>
             )}
 
-            {/* RECENT / FAVOURITES MODE */}
-            {addMode === 'recent' && !scannedProduct && (() => {
-              const recents = getRecentFoods();
+            {/* FAVOURITES MODE */}
+            {addMode === 'favourites' && !scannedProduct && (() => {
               const favs = getFavourites();
-              const list = recentTab === 'favourites' ? favs : recents;
               const selectItem = (item) => {
                 if (item.per100g) {
                   const p100 = item.per100g;
@@ -1419,28 +1378,15 @@ export default function CoreBuddyNutrition() {
               };
               return (
                 <div className="nut-recent-area">
-                  <div className="nut-recent-tabs">
-                    <button className={recentTab === 'recents' ? 'active' : ''} onClick={() => setRecentTab('recents')}>
-                      Recents
-                    </button>
-                    <button className={recentTab === 'favourites' ? 'active' : ''} onClick={() => setRecentTab('favourites')}>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                      Favourites{favs.length > 0 ? ` (${favs.length})` : ''}
-                    </button>
-                  </div>
-                  {list.length === 0 ? (
-                    <p className="nut-search-empty">
-                      {recentTab === 'favourites'
-                        ? 'No favourites yet. Tap the star on any food to save it here.'
-                        : 'No recent foods yet. Add foods via scan, search, or manual entry.'}
-                    </p>
+                  {favs.length === 0 ? (
+                    <p className="nut-search-empty">No favourites yet. Tap the star on any food to save it here.</p>
                   ) : (
                     <div className="nut-recent-list">
-                      {list.map((item, i) => (
+                      {favs.map((item, i) => (
                         <div key={i} className="nut-recent-item-row">
-                          <button className={`nut-fav-star${isFavourite(item.name) ? ' active' : ''}`}
+                          <button className="nut-fav-star active"
                             onClick={(e) => { e.stopPropagation(); toggleFavourite(item); }}>
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill={isFavourite(item.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="currentColor" strokeWidth="2">
                               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                           </button>
@@ -1450,11 +1396,6 @@ export default function CoreBuddyNutrition() {
                               <span className="nut-recent-item-serving">{item.serving || ''}</span>
                             </div>
                             <span className="nut-recent-item-macros">{item.calories} cal</span>
-                            {item.per100g ? (
-                              <span className="nut-recent-item-badge">Adjust</span>
-                            ) : (
-                              <span className="nut-recent-item-badge quick">Quick</span>
-                            )}
                           </button>
                         </div>
                       ))}
@@ -1465,7 +1406,7 @@ export default function CoreBuddyNutrition() {
             })()}
 
             {/* RECENT - SELECTED PRODUCT (for adjustable re-add) */}
-            {addMode === 'recent' && scannedProduct && (() => {
+            {addMode === 'favourites' && scannedProduct && (() => {
               const u = scannedProduct.servingUnit || 'g';
               const por = scannedProduct.portion;
               const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
@@ -1533,7 +1474,7 @@ export default function CoreBuddyNutrition() {
                   <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
                 </div>
                 <div className="nut-product-actions">
-                  <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Recents</button>
+                  <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Favourites</button>
                   <button className="nut-btn-primary" onClick={() => addFoodEntry({
                     name: scannedProduct.name,
                     protein: Math.round(scannedProduct.protein * mult),
