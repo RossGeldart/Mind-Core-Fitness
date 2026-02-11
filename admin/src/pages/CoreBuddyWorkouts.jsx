@@ -6,7 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
-import randomiserCardImg from '../assets/randomiser-card.jpg';
+import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
 
 const TICK_COUNT = 60;
@@ -1310,7 +1310,6 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
-    const randomiserImg = randomiserCardImg || null;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
@@ -1369,36 +1368,7 @@ export default function CoreBuddyWorkouts() {
 
           {/* Hero Card: Randomise Workout */}
           <button className="wk-hero-card" onClick={() => setView('setup')}>
-            <img src={randomiserImg} alt="" className="wk-hero-bg" />
-            <div className="wk-hero-overlay" />
-            <div className="wk-hero-content">
-              <div className="wk-hero-top">
-                <div className="wk-hero-ring">
-                  <svg viewBox="0 0 200 200">
-                    {[...Array(TICK_COUNT)].map((_, i) => {
-                      const angle = (i * 6 - 90) * (Math.PI / 180);
-                      const x1 = 100 + 78 * Math.cos(angle);
-                      const y1 = 100 + 78 * Math.sin(angle);
-                      const x2 = 100 + 94 * Math.cos(angle);
-                      const y2 = 100 + 94 * Math.sin(angle);
-                      const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
-                      return (
-                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                          className={i < filled ? 'wk-hero-tick-filled' : 'wk-hero-tick-empty'}
-                          strokeWidth={i % 5 === 0 ? '3' : '2'} />
-                      );
-                    })}
-                  </svg>
-                  <span className="wk-hero-ring-stat">{weeklyCount}<small>/{WEEKLY_TARGET}</small></span>
-                </div>
-                <span className="wk-hero-week-label">this week</span>
-              </div>
-              <div className="wk-hero-bottom">
-                <h3>RANDOM WORKOUT</h3>
-                <p>Interval-based HIIT from your exercise library</p>
-                <span className="wk-hero-go">LET'S GO &rarr;</span>
-              </div>
-            </div>
+            <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
           </button>
 
           {/* Programmes Section */}
