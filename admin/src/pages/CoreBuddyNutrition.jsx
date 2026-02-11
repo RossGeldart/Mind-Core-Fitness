@@ -419,13 +419,17 @@ export default function CoreBuddyNutrition() {
     if (!searchQuery.trim()) return;
     setSearchLoading(true);
     try {
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
+      const q = encodeURIComponent(searchQuery.trim());
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=50&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      const term = searchQuery.trim().toLowerCase();
       const results = (data.products || [])
         .map(p => parseProduct(p))
-        .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0));
+        .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
+        .filter(p => p.name.toLowerCase().includes(term))
+        .slice(0, 15);
       setSearchResults(results);
       if (results.length === 0) {
         showToast('No results found. Try a different search.', 'info');
