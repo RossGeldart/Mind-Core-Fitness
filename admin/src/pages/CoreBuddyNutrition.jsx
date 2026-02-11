@@ -702,17 +702,8 @@ export default function CoreBuddyNutrition() {
           {renderMacroRing('Calories', 'Calories', totals.calories, targets.calories, 'ring-cals')}
         </div>
 
-        {/* Meal Selector + Add Food (today only) */}
+        {/* Add Food (today only) */}
         {isToday && <>
-          <div className="nut-meal-selector">
-            {MEALS.map(m => (
-              <button key={m.key} className={`nut-meal-pill${selectedMeal === m.key ? ' active' : ''}`}
-                onClick={() => setSelectedMeal(m.key)}>
-                <span className={`nut-meal-icon nut-meal-icon-${m.key}`}>{MEAL_ICONS[m.key]}</span>
-                <span>{m.label}</span>
-              </button>
-            ))}
-          </div>
           <div className="nut-add-buttons">
             <button className="nut-add-btn nut-add-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
               <div className="nut-add-icon">
