@@ -48,7 +48,7 @@
 
 /* ===== DARK ZONE (top) ===== */
 .nut-dark-zone {
-  background: #333331;
+  background: var(--bg-body);
   padding-bottom: 32px;
   position: relative;
   overflow: hidden;
@@ -62,9 +62,13 @@
   transform: translate(-50%, -50%);
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(161, 47, 58, 0.12) 0%, rgba(161, 47, 58, 0.04) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(161, 47, 58, 0.08) 0%, rgba(161, 47, 58, 0.03) 40%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+}
+
+[data-theme="dark"] .nut-dark-zone::after {
+  background: radial-gradient(circle, rgba(161, 47, 58, 0.14) 0%, rgba(161, 47, 58, 0.05) 40%, transparent 70%);
 }
 
 .nut-dark-content {
@@ -82,10 +86,6 @@
   position: relative;
   z-index: 2;
   padding-bottom: 40px;
-}
-
-[data-theme="dark"] .nut-light-zone {
-  background: #2a2a28;
 }
 
 .nut-light-content {
@@ -114,13 +114,13 @@
 }
 
 .nut-back-btn.nut-back-dark {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.7);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .nut-back-btn.nut-back-dark:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 [data-theme="dark"] .nut-back-btn {
@@ -150,9 +150,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--border-color);
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,8 +162,8 @@
 }
 
 .nut-week-arrow:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
+  border-color: var(--color-primary);
+  color: var(--text-primary);
 }
 
 .nut-week-arrow:disabled {
@@ -175,7 +175,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   background: none;
   border: none;
   cursor: pointer;
@@ -185,6 +185,10 @@
 }
 
 .nut-week-month-label:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .nut-week-month-label:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -208,6 +212,10 @@
 }
 
 .nut-week-day:hover:not(:disabled):not(.selected) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nut-week-day:hover:not(:disabled):not(.selected) {
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -217,14 +225,14 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--text-tertiary);
 }
 
 .nut-week-day-num {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   width: 32px;
   height: 32px;
   display: flex;
@@ -241,12 +249,12 @@
 }
 
 .nut-week-day.selected .nut-week-day-letter {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
 }
 
 .nut-week-day.today:not(.selected) .nut-week-day-num {
   border: 1.5px solid var(--color-primary);
-  color: #fff;
+  color: var(--color-primary);
 }
 
 .nut-week-day.future {
@@ -254,31 +262,39 @@
   cursor: not-allowed;
 }
 
-/* Calendar dropdown in dark zone */
+/* Calendar dropdown in top zone */
 .nut-calendar-dark {
-  background: rgba(30, 35, 50, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   margin-bottom: 16px;
 }
 
 .nut-calendar-dark .nut-cal-header span {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .nut-calendar-dark .nut-cal-header button {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nut-calendar-dark .nut-cal-header button {
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
 }
 
 .nut-calendar-dark .nut-cal-days-header span {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-tertiary);
 }
 
 .nut-calendar-dark .nut-cal-day {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
 }
 
 .nut-calendar-dark .nut-cal-day:hover:not(:disabled):not(.selected) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .nut-calendar-dark .nut-cal-day:hover:not(:disabled):not(.selected) {
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -289,7 +305,7 @@
 .nut-settings-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.8);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 6px;
   border-radius: 8px;
@@ -297,8 +313,12 @@
 }
 
 .nut-settings-btn:hover {
-  color: #ffffff;
-  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .nut-settings-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ==================== SETUP / CALCULATOR ==================== */
@@ -673,12 +693,12 @@
 
 .nut-rings-row .nut-ring-value {
   font-size: 0.8rem;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .nut-rings-row .nut-ring-target {
   font-size: 0.5rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-tertiary);
 }
 
 .nut-rings-row .nut-ring-label {
@@ -688,7 +708,7 @@
 
 .nut-rings-row .nut-ring-pct {
   font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-tertiary);
   margin-top: 2px;
 }
 
