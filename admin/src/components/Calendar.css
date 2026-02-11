@@ -52,8 +52,8 @@
 
 .calendar-nav button:hover,
 .holiday-btn:hover {
-  border-color: #99313c;
-  color: #99313c;
+  border-color: #A12F3A;
+  color: #A12F3A;
 }
 
 .holiday-btn {
@@ -104,9 +104,9 @@
 
 .selected-client button {
   padding: 8px 16px;
-  border: 1px solid #99313c;
+  border: 1px solid #A12F3A;
   background: transparent;
-  color: #99313c;
+  color: #A12F3A;
   border-radius: 6px;
   font-size: 0.85rem;
   cursor: pointer;
@@ -114,13 +114,13 @@
 }
 
 .selected-client button:hover {
-  background: #99313c;
+  background: #A12F3A;
   color: white;
 }
 
 .select-client-btn {
   padding: 12px 24px;
-  background: #99313c;
+  background: #A12F3A;
   color: white;
   border: none;
   border-radius: 6px;
@@ -136,7 +136,7 @@
 }
 
 .block-info {
-  color: #99313c;
+  color: #A12F3A;
   font-weight: 500;
 }
 
@@ -245,13 +245,13 @@
 }
 
 .day-card:hover {
-  border-color: #99313c;
+  border-color: #A12F3A;
   background: var(--bg-card);
 }
 
 .day-card.selected {
-  border-color: #99313c;
-  background: #99313c;
+  border-color: #A12F3A;
+  background: #A12F3A;
   color: white;
 }
 
@@ -445,12 +445,12 @@
 }
 
 .time-slot:hover {
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 .time-slot.booked {
-  background: #99313c;
-  border-color: #99313c;
+  background: #A12F3A;
+  border-color: #A12F3A;
   color: white;
 }
 
@@ -717,14 +717,14 @@
 }
 
 .mode-btn:hover {
-  border-color: #99313c;
-  color: #99313c;
+  border-color: #A12F3A;
+  color: #A12F3A;
 }
 
 .mode-btn.active {
-  background: #99313c;
+  background: #A12F3A;
   color: white;
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 .holiday-form {
@@ -767,12 +767,12 @@
 
 .date-field input:focus {
   outline: none;
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 .add-holiday-btn {
   padding: 12px 20px;
-  background: #99313c;
+  background: #A12F3A;
   color: white;
   border: none;
   border-radius: 6px;

@@ -2,9 +2,9 @@
 :root,
 [data-theme="light"] {
   /* Primary colors */
-  --color-primary: #99313c;
-  --color-primary-dark: #7a2730;
-  --color-primary-light: rgba(153, 49, 60, 0.1);
+  --color-primary: #A12F3A;
+  --color-primary-dark: #832630;
+  --color-primary-light: rgba(161, 47, 58, 0.1);
 
   /* Backgrounds */
   --bg-body: #f5f5f5;
@@ -50,7 +50,7 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-primary: 0 6px 20px rgba(153, 49, 60, 0.4);
+  --shadow-primary: 0 6px 20px rgba(161, 47, 58, 0.4);
 
   /* Overlays */
   --overlay-bg: rgba(0, 0, 0, 0.6);
@@ -63,16 +63,16 @@
 [data-theme="dark"] {
   /* Primary colors */
   --color-primary: #c75f6b;
-  --color-primary-dark: #99313c;
+  --color-primary-dark: #A12F3A;
   --color-primary-light: rgba(199, 95, 107, 0.15);
 
   /* Backgrounds */
-  --bg-body: #121212;
-  --bg-secondary: #121212;
-  --bg-card: #1e1e1e;
-  --bg-card-elevated: #2d2d2d;
-  --bg-header: #0d0d0d;
-  --header-bg: #0d0d0d;
+  --bg-body: #2a2a28;
+  --bg-secondary: #2a2a28;
+  --bg-card: #333331;
+  --bg-card-elevated: #3d3d3b;
+  --bg-header: #333331;
+  --header-bg: #333331;
   --bg-input: #2d2d2d;
   --bg-skeleton: linear-gradient(90deg, #2d2d2d 25%, #3d3d3d 50%, #2d2d2d 75%);
 
@@ -261,10 +261,10 @@
 /* Today Session Pulse */
 @keyframes todayPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(153, 49, 60, 0.4);
+    box-shadow: 0 0 0 0 rgba(161, 47, 58, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(153, 49, 60, 0);
+    box-shadow: 0 0 0 8px rgba(161, 47, 58, 0);
   }
 }
 

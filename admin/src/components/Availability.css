@@ -50,8 +50,8 @@
 }
 
 .availability-nav button:hover {
-  border-color: #99313c;
-  color: #99313c;
+  border-color: #A12F3A;
+  color: #A12F3A;
 }
 
 .duration-selector {
@@ -76,7 +76,7 @@
 
 .duration-selector select:focus {
   outline: none;
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 /* Grid */
@@ -93,7 +93,7 @@
 }
 
 .day-column.today {
-  border-color: #99313c;
+  border-color: #A12F3A;
   border-width: 2px;
 }
 
@@ -121,7 +121,7 @@
 }
 
 .day-column.today .day-name {
-  color: #99313c;
+  color: #A12F3A;
 }
 
 .day-date {

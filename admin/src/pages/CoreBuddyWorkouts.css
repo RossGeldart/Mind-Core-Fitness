@@ -43,7 +43,7 @@
 
 @keyframes pulseBorder {
   0%, 100% { border-color: var(--color-primary); }
-  50% { border-color: rgba(153, 49, 60, 0.3); }
+  50% { border-color: rgba(161, 47, 58, 0.3); }
 }
 
 /* Page Base */
@@ -254,8 +254,8 @@
   inset: 0;
   background: linear-gradient(
     160deg,
-    rgba(153, 49, 60, 0.15) 0%,
-    rgba(153, 49, 60, 0.3) 30%,
+    rgba(161, 47, 58, 0.15) 0%,
+    rgba(161, 47, 58, 0.3) 30%,
     rgba(0, 0, 0, 0.55) 55%,
     rgba(0, 0, 0, 0.85) 80%,
     rgba(0, 0, 0, 0.95) 100%
@@ -310,7 +310,7 @@
 
 .wk-hero-tick-filled {
   stroke: var(--color-primary);
-  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.5));
+  filter: drop-shadow(0 0 2px rgba(161, 47, 58, 0.5));
 }
 
 .wk-hero-tick-empty {
@@ -701,7 +701,7 @@
 
 .wk-stats-tick-filled {
   stroke: var(--color-primary);
-  filter: drop-shadow(0 0 3px rgba(153, 49, 60, 0.5));
+  filter: drop-shadow(0 0 3px rgba(161, 47, 58, 0.5));
 }
 
 .wk-stats-tick-empty {
@@ -859,7 +859,7 @@
 }
 
 .wk-equip-btn:hover {
-  border-color: rgba(153, 49, 60, 0.3);
+  border-color: rgba(161, 47, 58, 0.3);
 }
 
 .wk-equip-btn.active {
@@ -934,7 +934,7 @@
 }
 
 .wk-level-card:hover {
-  border-color: rgba(153, 49, 60, 0.3);
+  border-color: rgba(161, 47, 58, 0.3);
 }
 
 .wk-level-card.active {
@@ -987,7 +987,7 @@
 }
 
 .wk-time-btn:hover {
-  border-color: rgba(153, 49, 60, 0.3);
+  border-color: rgba(161, 47, 58, 0.3);
 }
 
 .wk-time-btn.active {
@@ -1038,7 +1038,7 @@
 
 .wk-randomise-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+  box-shadow: 0 8px 28px rgba(161, 47, 58, 0.5);
 }
 
 .wk-randomise-btn:active {
@@ -1230,7 +1230,7 @@
 
 .wk-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+  box-shadow: 0 8px 28px rgba(161, 47, 58, 0.5);
 }
 
 .wk-btn-primary:active {
@@ -1252,7 +1252,7 @@
   font-weight: 900;
   color: var(--color-primary);
   line-height: 1;
-  text-shadow: 0 0 40px rgba(153, 49, 60, 0.5);
+  text-shadow: 0 0 40px rgba(161, 47, 58, 0.5);
 }
 
 .wk-countdown-label {
@@ -1388,7 +1388,7 @@
 
 .wk-tick-filled.wk-tick-work {
   stroke: var(--color-primary);
-  filter: drop-shadow(0 0 2px rgba(153, 49, 60, 0.5));
+  filter: drop-shadow(0 0 2px rgba(161, 47, 58, 0.5));
 }
 
 .wk-tick-filled.wk-tick-rest {

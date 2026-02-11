@@ -13,7 +13,7 @@
 
 /* Today's Summary */
 .today-summary {
-  background: #99313c;
+  background: #A12F3A;
   color: white;
   padding: 20px;
   border-radius: 12px;
@@ -78,7 +78,7 @@
 }
 
 .date-group.today {
-  border-color: #99313c;
+  border-color: #A12F3A;
   border-width: 2px;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .date-group.today .date-label {
-  color: #99313c;
+  color: #A12F3A;
 }
 
 .date-count {
@@ -132,7 +132,7 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 1rem;
-  color: #99313c;
+  color: #A12F3A;
   min-width: 70px;
 }
 

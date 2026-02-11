@@ -50,7 +50,7 @@
 }
 
 .close-btn:hover {
-  color: #99313c;
+  color: #A12F3A;
 }
 
 .form-error {
@@ -102,7 +102,7 @@ form {
 
 .form-group input:focus {
   outline: none;
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 .form-group select {
@@ -118,7 +118,7 @@ form {
 
 .form-group select:focus {
   outline: none;
-  border-color: #99313c;
+  border-color: #A12F3A;
 }
 
 .helper-text {
@@ -150,7 +150,7 @@ form {
 }
 
 .type-btn.active {
-  background: #99313c;
+  background: #A12F3A;
   color: white;
 }
 
@@ -174,7 +174,7 @@ form {
 .circuit-toggle-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #99313c;
+  accent-color: #A12F3A;
   cursor: pointer;
 }
 
@@ -205,7 +205,7 @@ form {
 }
 
 .submit-btn {
-  background: #99313c;
+  background: #A12F3A;
   color: white;
   border: none;
   padding: 12px 24px;

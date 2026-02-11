@@ -93,7 +93,7 @@
 .pg-browse-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(153, 49, 60, 0.25);
+  border-color: rgba(161, 47, 58, 0.25);
 }
 
 .pg-browse-card:active {
@@ -298,7 +298,7 @@
 }
 
 .pg-badge-weighted {
-  background: rgba(153, 49, 60, 0.15);
+  background: rgba(161, 47, 58, 0.15);
   color: var(--color-primary);
 }
 
@@ -347,7 +347,7 @@
 
 .pg-start-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+  box-shadow: 0 8px 28px rgba(161, 47, 58, 0.5);
 }
 
 .pg-start-btn:active {
@@ -393,7 +393,7 @@
 
 .pg-tick-filled {
   stroke: var(--color-primary);
-  filter: drop-shadow(0 0 3px rgba(153, 49, 60, 0.5));
+  filter: drop-shadow(0 0 3px rgba(161, 47, 58, 0.5));
 }
 
 .pg-tick-empty {
@@ -711,7 +711,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: var(--color-primary-alpha, rgba(153, 49, 60, 0.1));
+  background: var(--color-primary-alpha, rgba(161, 47, 58, 0.1));
   border-radius: 8px;
   border-left: 3px solid var(--color-primary);
 }
@@ -898,7 +898,7 @@
 
 .pg-log-set-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(153, 49, 60, 0.5);
+  box-shadow: 0 8px 28px rgba(161, 47, 58, 0.5);
 }
 
 .pg-log-set-btn:active {

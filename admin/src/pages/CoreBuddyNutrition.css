@@ -48,7 +48,7 @@
 
 /* ===== DARK ZONE (top) ===== */
 .nut-dark-zone {
-  background: #0d0d0d;
+  background: #333331;
   padding-bottom: 32px;
   position: relative;
 }
@@ -69,7 +69,7 @@
 }
 
 [data-theme="dark"] .nut-light-zone {
-  background: #121212;
+  background: #2a2a28;
 }
 
 .nut-light-content {
@@ -460,7 +460,7 @@
 
 .nut-goal-options button.active {
   border-color: var(--color-primary);
-  background: rgba(153, 49, 60, 0.08);
+  background: rgba(161, 47, 58, 0.08);
   color: var(--color-primary);
 }
 
@@ -498,7 +498,7 @@
 
 .nut-deficit-options button.active {
   border-color: var(--color-primary);
-  background: rgba(153, 49, 60, 0.08);
+  background: rgba(161, 47, 58, 0.08);
   color: var(--color-primary);
 }
 
@@ -533,7 +533,7 @@
 
 .nut-calc-btn:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+  box-shadow: 0 4px 12px rgba(161, 47, 58, 0.3);
 }
 
 /* Calculator Results */
@@ -606,7 +606,7 @@
 
 .nut-save-targets-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(153, 49, 60, 0.3);
+  box-shadow: 0 4px 12px rgba(161, 47, 58, 0.3);
 }
 
 /* ==================== MACRO RINGS ==================== */
@@ -700,7 +700,7 @@
 .ring-fats .nut-tick-filled { stroke: #ff9800; }
 .ring-fats .nut-tick-empty { stroke: rgba(255, 152, 0, 0.15); }
 .ring-cals .nut-tick-filled { stroke: var(--color-primary); }
-.ring-cals .nut-tick-empty { stroke: rgba(153, 49, 60, 0.15); }
+.ring-cals .nut-tick-empty { stroke: rgba(161, 47, 58, 0.15); }
 
 .nut-ring-center {
   position: absolute;
@@ -832,7 +832,7 @@
 
 .nut-meal-pill.active {
   border-color: var(--color-primary);
-  background: rgba(153, 49, 60, 0.08);
+  background: rgba(161, 47, 58, 0.08);
   color: var(--color-primary);
 }
 
@@ -841,7 +841,7 @@
 }
 
 .nut-meal-pill:hover:not(.active) {
-  border-color: rgba(153, 49, 60, 0.15);
+  border-color: rgba(161, 47, 58, 0.15);
   transform: translateY(-1px);
 }
 
@@ -1668,7 +1668,7 @@
   right: 10%;
   height: 2px;
   background: var(--color-primary);
-  box-shadow: 0 0 8px rgba(153, 49, 60, 0.8), 0 0 20px rgba(153, 49, 60, 0.4);
+  box-shadow: 0 0 8px rgba(161, 47, 58, 0.8), 0 0 20px rgba(161, 47, 58, 0.4);
   z-index: 10;
   animation: scanLine 2s ease-in-out infinite;
   pointer-events: none;
@@ -2267,7 +2267,7 @@
 
 .nut-recent-item:hover {
   background: var(--bg-secondary);
-  border-color: rgba(153, 49, 60, 0.2);
+  border-color: rgba(161, 47, 58, 0.2);
 }
 
 .nut-recent-item:active {
