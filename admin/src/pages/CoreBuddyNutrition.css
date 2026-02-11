@@ -48,13 +48,9 @@
 
 /* ===== DARK ZONE (top) ===== */
 .nut-dark-zone {
-  background: linear-gradient(160deg, #1a1f2e 0%, #0f1118 100%);
+  background: #0d0d0d;
   padding-bottom: 32px;
   position: relative;
-}
-
-[data-theme="dark"] .nut-dark-zone {
-  background: linear-gradient(160deg, #141821 0%, #0a0c12 100%);
 }
 
 .nut-dark-content {
@@ -67,8 +63,6 @@
 .nut-light-zone {
   flex: 1;
   background: var(--bg-body);
-  border-radius: 24px 24px 0 0;
-  margin-top: -16px;
   position: relative;
   z-index: 2;
   padding-bottom: 40px;
@@ -1108,50 +1102,101 @@
 }
 
 /* ==================== WATER TRACKER ==================== */
-.nut-water-section {
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: fadeIn 0.4s ease-out 0.2s backwards;
-}
-
-[data-theme="dark"] .nut-water-section {
-  background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.nut-water-header {
+/* Quick button in light zone */
+.nut-water-quick {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 14px;
-}
-
-.nut-water-header svg {
-  width: 20px;
-  height: 20px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.3s ease-out;
+  font-family: 'Roboto', sans-serif;
   color: #2196f3;
 }
 
-.nut-water-header span:first-of-type {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
+[data-theme="dark"] .nut-water-quick {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
-.nut-water-count {
+.nut-water-quick:hover {
+  border-color: #2196f3;
+}
+
+.nut-water-quick:active {
+  transform: scale(0.98);
+}
+
+.nut-water-quick svg:first-child {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nut-water-quick-count {
   font-family: 'Orbitron', monospace;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-tertiary);
-  margin-left: auto;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.nut-water-quick svg:last-child {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+/* Water Popup */
+.nut-water-popup {
+  width: 90%;
+  max-width: 340px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
+  margin: auto;
+}
+
+[data-theme="dark"] .nut-water-popup {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nut-water-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.nut-water-popup-header span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.nut-water-popup-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.nut-water-popup-count {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .nut-water-glasses {
@@ -1159,7 +1204,6 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 12px;
 }
 
 .nut-water-glass {
@@ -1190,9 +1234,9 @@
 }
 
 .nut-water-btns button {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   border: 1.5px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-secondary);
