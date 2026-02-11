@@ -64,6 +64,11 @@
   overflow: hidden;
 }
 
+/* In dark mode, match body so there's no visible seam */
+[data-theme="dark"] .nut-dark-zone {
+  background: var(--bg-body);
+}
+
 .nut-dark-zone::after {
   content: '';
   position: absolute;
