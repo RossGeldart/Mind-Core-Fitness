@@ -29,7 +29,7 @@
 }
 
 .nut-tick-filled {
-  animation: tickReveal 0.15s ease-out backwards;
+  animation: tickReveal 0.25s ease-out backwards;
 }
 
 /* Page */
