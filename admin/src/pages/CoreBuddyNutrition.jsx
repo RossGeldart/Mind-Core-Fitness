@@ -95,7 +95,7 @@ export default function CoreBuddyNutrition() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [manualForm, setManualForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
   const [scannedProduct, setScannedProduct] = useState(null);
-  const [servingMultiplier, setServingMultiplier] = useState(1);
+  const [servingInput, setServingInput] = useState('100');
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -291,7 +291,7 @@ export default function CoreBuddyNutrition() {
     saveLog(newLog);
     setAddMode(null);
     setScannedProduct(null);
-    setServingMultiplier(1);
+    setServingInput('100');
     setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
     showToast('Food added!', 'success');
   };
@@ -376,13 +376,30 @@ export default function CoreBuddyNutrition() {
     setScannerActive(false);
   };
 
+  const parseServingSize = (raw) => {
+    if (!raw) return { value: 100, unit: 'g' };
+    const str = raw.toLowerCase().replace(/\s/g, '');
+    const isLiquid = /ml|cl|l(?!b)|litre|liter|fl/i.test(str);
+    const numMatch = str.match(/([\d.]+)/);
+    const value = numMatch ? parseFloat(numMatch[1]) : 100;
+    if (isLiquid) {
+      if (/cl/.test(str)) return { value: value * 10, unit: 'ml' };
+      if (/(?:^|\d)l(?!i)/.test(str) && !/ml/.test(str)) return { value: value * 1000, unit: 'ml' };
+      return { value, unit: 'ml' };
+    }
+    return { value, unit: 'g' };
+  };
+
   const parseProduct = (p) => {
     const n = p.nutriments || {};
+    const serving = parseServingSize(p.serving_size);
     return {
       name: p.product_name || p.product_name_en || 'Unknown Product',
       brand: p.brands || '',
       image: p.image_small_url || p.image_url || null,
       servingSize: p.serving_size || '100g',
+      servingValue: serving.value,
+      servingUnit: serving.unit,
       protein: Math.round(n.proteins_100g || n.proteins || 0),
       carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
       fats: Math.round(n.fat_100g || n.fat || 0),
@@ -404,7 +421,7 @@ export default function CoreBuddyNutrition() {
           showToast('Product found but no nutrition data available.', 'error');
         } else {
           setScannedProduct(product);
-          setServingMultiplier(1);
+          setServingInput(String(product.servingValue || 100));
           setManualBarcode('');
         }
       } else {
@@ -973,12 +990,16 @@ export default function CoreBuddyNutrition() {
             )}
 
             {/* SCANNED PRODUCT RESULT */}
-            {addMode === 'scan' && scannedProduct && (
+            {addMode === 'scan' && scannedProduct && (() => {
+              const u = scannedProduct.servingUnit || 'g';
+              const mult = (parseFloat(servingInput) || 0) / 100;
+              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
+              return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
                 <h4>{scannedProduct.name}</h4>
                 {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
-                <p className="nut-product-per">Per 100g:</p>
+                <p className="nut-product-per">Per 100{u}:</p>
                 <div className="nut-product-macros">
                   <span className="nut-macro-p">{scannedProduct.protein}g P</span>
                   <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
@@ -986,25 +1007,31 @@ export default function CoreBuddyNutrition() {
                   <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
                 </div>
                 <div className="nut-serving-adjust">
-                  <label>Serving (g)</label>
-                  <input type="number" value={Math.round(servingMultiplier * 100)} onChange={e => setServingMultiplier(Math.max(0, parseFloat(e.target.value) || 0) / 100)} min="1" />
+                  <label>Serving ({u})</label>
+                  <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
+                </div>
+                <div className="nut-quick-amounts">
+                  {quickAmounts.map(amt => (
+                    <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
+                  ))}
                 </div>
                 <div className="nut-product-total">
-                  <span>Total: {Math.round(scannedProduct.protein * servingMultiplier)}p / {Math.round(scannedProduct.carbs * servingMultiplier)}c / {Math.round(scannedProduct.fats * servingMultiplier)}f / {Math.round(scannedProduct.calories * servingMultiplier)} cal</span>
+                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
                 </div>
                 <div className="nut-product-actions">
                   <button className="nut-btn-secondary" onClick={() => { setScannedProduct(null); setAddMode('scan'); }}>Scan Again</button>
                   <button className="nut-btn-primary" onClick={() => addFoodEntry({
                     name: scannedProduct.name,
-                    protein: Math.round(scannedProduct.protein * servingMultiplier),
-                    carbs: Math.round(scannedProduct.carbs * servingMultiplier),
-                    fats: Math.round(scannedProduct.fats * servingMultiplier),
-                    calories: Math.round(scannedProduct.calories * servingMultiplier),
-                    serving: `${Math.round(servingMultiplier * 100)}g`
+                    protein: Math.round(scannedProduct.protein * mult),
+                    carbs: Math.round(scannedProduct.carbs * mult),
+                    fats: Math.round(scannedProduct.fats * mult),
+                    calories: Math.round(scannedProduct.calories * mult),
+                    serving: `${Math.round(parseFloat(servingInput) || 0)}${u}`
                   })}>Add</button>
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* SEARCH MODE */}
             {addMode === 'search' && !scannedProduct && (
@@ -1020,7 +1047,7 @@ export default function CoreBuddyNutrition() {
                 </div>
                 <div className="nut-search-results">
                   {searchResults.map((item, i) => (
-                    <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); setServingMultiplier(1); }}>
+                    <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); setServingInput(String(item.servingValue || 100)); }}>
                       {item.image && <img src={item.image} alt="" loading="lazy" />}
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
@@ -1037,12 +1064,16 @@ export default function CoreBuddyNutrition() {
             )}
 
             {/* SEARCH - SELECTED PRODUCT */}
-            {addMode === 'search' && scannedProduct && (
+            {addMode === 'search' && scannedProduct && (() => {
+              const u = scannedProduct.servingUnit || 'g';
+              const mult = (parseFloat(servingInput) || 0) / 100;
+              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
+              return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
                 <h4>{scannedProduct.name}</h4>
                 {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
-                <p className="nut-product-per">Per 100g:</p>
+                <p className="nut-product-per">Per 100{u}:</p>
                 <div className="nut-product-macros">
                   <span className="nut-macro-p">{scannedProduct.protein}g P</span>
                   <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
@@ -1050,24 +1081,31 @@ export default function CoreBuddyNutrition() {
                   <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
                 </div>
                 <div className="nut-serving-adjust">
-                  <label>Serving (g)</label>
-                  <input type="number" value={Math.round(servingMultiplier * 100)} onChange={e => setServingMultiplier(Math.max(0, parseFloat(e.target.value) || 0) / 100)} min="1" />
+                  <label>Serving ({u})</label>
+                  <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
+                </div>
+                <div className="nut-quick-amounts">
+                  {quickAmounts.map(amt => (
+                    <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
+                  ))}
                 </div>
                 <div className="nut-product-total">
-                  <span>Total: {Math.round(scannedProduct.protein * servingMultiplier)}p / {Math.round(scannedProduct.carbs * servingMultiplier)}c / {Math.round(scannedProduct.fats * servingMultiplier)}f / {Math.round(scannedProduct.calories * servingMultiplier)} cal</span>
+                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
                 </div>
                 <div className="nut-product-actions">
                   <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Search</button>
                   <button className="nut-btn-primary" onClick={() => addFoodEntry({
                     name: scannedProduct.name,
-                    protein: Math.round(scannedProduct.protein * servingMultiplier),
-                    carbs: Math.round(scannedProduct.carbs * servingMultiplier),
-                    fats: Math.round(scannedProduct.fats * servingMultiplier),
-                    calories: Math.round(scannedProduct.calories * servingMultiplier),
-                    serving: `${Math.round(servingMultiplier * 100)}g`
+                    protein: Math.round(scannedProduct.protein * mult),
+                    carbs: Math.round(scannedProduct.carbs * mult),
+                    fats: Math.round(scannedProduct.fats * mult),
+                    calories: Math.round(scannedProduct.calories * mult),
+                    serving: `${Math.round(parseFloat(servingInput) || 0)}${u}`
                   })}>Add</button>
                 </div>
               </div>
+              );
+            })()
             )}
 
             {/* MANUAL MODE */}
