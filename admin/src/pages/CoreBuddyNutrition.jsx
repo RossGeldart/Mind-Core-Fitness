@@ -1105,8 +1105,7 @@ export default function CoreBuddyNutrition() {
                 </div>
               </div>
               );
-            })()
-            )}
+            })()}
 
             {/* MANUAL MODE */}
             {addMode === 'manual' && (
