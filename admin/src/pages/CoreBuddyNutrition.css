@@ -461,15 +461,26 @@
   gap: 6px;
   padding: 12px 6px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nut-meal-pill {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nut-meal-pill:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
 }
 
 .nut-meal-icon {
@@ -488,22 +499,22 @@
 
 /* Meal icon colour tints */
 .nut-meal-icon-breakfast {
-  background: rgba(255, 152, 0, 0.12);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 152, 0, 0.18), rgba(255, 152, 0, 0.06));
   color: #ff9800;
 }
 
 .nut-meal-icon-lunch {
-  background: rgba(245, 158, 11, 0.12);
+  background: radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.06));
   color: #f59e0b;
 }
 
 .nut-meal-icon-dinner {
-  background: rgba(103, 58, 183, 0.1);
+  background: radial-gradient(circle at 30% 30%, rgba(103, 58, 183, 0.16), rgba(103, 58, 183, 0.05));
   color: #7c3aed;
 }
 
 .nut-meal-icon-snacks {
-  background: rgba(233, 30, 99, 0.1);
+  background: radial-gradient(circle at 30% 30%, rgba(233, 30, 99, 0.16), rgba(233, 30, 99, 0.05));
   color: #e91e63;
 }
 
@@ -527,9 +538,18 @@
 
 .nut-meal-card {
   background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nut-meal-card {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nut-meal-card-header {
@@ -612,12 +632,21 @@
   gap: 8px;
   padding: 18px 10px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-family: 'Montserrat', sans-serif;
   color: var(--text-secondary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nut-add-btn {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nut-add-icon {
@@ -641,38 +670,53 @@
 }
 
 .nut-add-scan .nut-add-icon {
-  background: rgba(153, 49, 60, 0.1);
+  background: radial-gradient(circle at 30% 30%, rgba(153, 49, 60, 0.16), rgba(153, 49, 60, 0.05));
   color: var(--color-primary);
 }
 
 .nut-add-search .nut-add-icon {
-  background: rgba(33, 150, 243, 0.1);
+  background: radial-gradient(circle at 30% 30%, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0.05));
   color: #2196f3;
 }
 
 .nut-add-manual .nut-add-icon {
-  background: rgba(76, 175, 80, 0.12);
+  background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.18), rgba(76, 175, 80, 0.06));
   color: #4caf50;
 }
 
 .nut-add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: rgba(153, 49, 60, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: rgba(153, 49, 60, 0.15);
+}
+
+[data-theme="dark"] .nut-add-btn:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nut-add-btn:active {
-  transform: translateY(0);
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
 }
 
 /* ==================== WATER TRACKER ==================== */
 .nut-water-section {
   background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   animation: fadeIn 0.4s ease-out 0.2s backwards;
+}
+
+[data-theme="dark"] .nut-water-section {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nut-water-header {
