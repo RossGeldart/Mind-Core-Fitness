@@ -265,7 +265,7 @@ export default function CoreBuddyConsistency() {
               return (
                 <button
                   key={habit.key}
-                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
+                  className={`cbc-habit-btn cbc-habit-${habit.key} ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   onClick={() => toggleHabit(habit.key)}
                   disabled={saving}
                 >
@@ -290,7 +290,7 @@ export default function CoreBuddyConsistency() {
                       ))}
                     </div>
                   )}
-                  <div className="cbc-habit-icon">
+                  <div className={`cbc-habit-icon cbc-icon-${habit.key}`}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path d={habit.icon} />
                     </svg>
@@ -361,7 +361,7 @@ export default function CoreBuddyConsistency() {
             ))}
           </div>
           <div className="cbc-celebration-card">
-            <svg className="cbc-celebration-icon" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2">
+            <svg className="cbc-celebration-icon" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
               <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
