@@ -51,12 +51,28 @@
   background: #333331;
   padding-bottom: 32px;
   position: relative;
+  overflow: hidden;
+}
+
+.nut-dark-zone::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(161, 47, 58, 0.12) 0%, rgba(161, 47, 58, 0.04) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .nut-dark-content {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 12px 20px 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== LIGHT ZONE (bottom sheet) ===== */
@@ -134,9 +150,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,14 +217,14 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .nut-week-day-num {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.9);
   width: 32px;
   height: 32px;
   display: flex;
@@ -677,7 +693,11 @@
 }
 
 .nut-rings-row .nut-tick-empty {
-  opacity: 0.4;
+  opacity: 0.7;
+}
+
+.nut-rings-row .nut-tick-filled {
+  filter: brightness(1.2);
 }
 
 .nut-ring-wrap {
@@ -694,13 +714,13 @@
 
 /* Tick colours per ring type */
 .ring-protein .nut-tick-filled { stroke: #4caf50; }
-.ring-protein .nut-tick-empty { stroke: rgba(76, 175, 80, 0.15); }
+.ring-protein .nut-tick-empty { stroke: rgba(76, 175, 80, 0.3); }
 .ring-carbs .nut-tick-filled { stroke: #2196f3; }
-.ring-carbs .nut-tick-empty { stroke: rgba(33, 150, 243, 0.15); }
+.ring-carbs .nut-tick-empty { stroke: rgba(33, 150, 243, 0.3); }
 .ring-fats .nut-tick-filled { stroke: #ff9800; }
-.ring-fats .nut-tick-empty { stroke: rgba(255, 152, 0, 0.15); }
+.ring-fats .nut-tick-empty { stroke: rgba(255, 152, 0, 0.3); }
 .ring-cals .nut-tick-filled { stroke: var(--color-primary); }
-.ring-cals .nut-tick-empty { stroke: rgba(161, 47, 58, 0.15); }
+.ring-cals .nut-tick-empty { stroke: rgba(161, 47, 58, 0.3); }
 
 .nut-ring-center {
   position: absolute;
