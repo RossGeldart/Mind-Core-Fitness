@@ -118,7 +118,7 @@
 
 /* Header */
 .dashboard-header {
-  background: var(--header-bg);
+  background: transparent;
   padding: 16px 24px;
   display: flex;
   align-items: center;
@@ -135,7 +135,7 @@
 }
 
 .header-left h1 {
-  color: #ffffff;
+  color: var(--text-on-header);
   font-family: 'Montserrat', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
@@ -181,8 +181,8 @@
 }
 
 .nav-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-on-header);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .nav-btn.active {
