@@ -1103,6 +1103,74 @@
   margin: -12px 0 0;
 }
 
+/* Badge Celebration Overlay */
+.mg-badge-celebration {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-out;
+  cursor: pointer;
+}
+
+.mg-badge-celebration-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+  width: 90%;
+  animation: countdownPop 0.4s cubic-bezier(0.17, 0.67, 0.34, 1.5);
+}
+
+.mg-badge-celebration-icon {
+  animation: countdownPop 0.5s cubic-bezier(0.17, 0.67, 0.34, 1.5) 0.2s backwards;
+}
+
+.mg-badge-celebration-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.mg-badge-celebration-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.mg-badge-celebration-item {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-body);
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.mg-badge-celebration-dismiss {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
 /* Preview title for core interval */
 .mg-preview-title {
   font-family: 'Montserrat', sans-serif;
