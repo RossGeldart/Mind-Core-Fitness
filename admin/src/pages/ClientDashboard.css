@@ -345,6 +345,25 @@
   position: relative;
 }
 
+.header-back-btn {
+  position: absolute;
+  left: 10px;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.header-back-btn:hover {
+  color: var(--color-primary);
+}
+
 .header-actions {
   position: absolute;
   right: 10px;
