@@ -415,6 +415,21 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== FOOD SEARCH ====================
+  const scoreRelevance = (name, term) => {
+    const n = name.toLowerCase().trim();
+    const t = term.toLowerCase().trim();
+    let score = 0;
+    // Exact match e.g. "Egg" or "Eggs"
+    if (n === t || n === t + 's' || n + 's' === t) score += 100;
+    // Name ends with term — product IS the thing (e.g. "Free Range Eggs")
+    if (n.endsWith(' ' + t) || n.endsWith(' ' + t + 's')) score += 40;
+    // Name starts with term — term modifies something else (e.g. "Egg Noodles")
+    if (n.startsWith(t + ' ') || n.startsWith(t + 's ')) score += 15;
+    // Shorter names are more specific/relevant
+    score += Math.max(0, 30 - n.length);
+    return score;
+  };
+
   const searchFood = async () => {
     if (!searchQuery.trim()) return;
     setSearchLoading(true);
@@ -429,6 +444,7 @@ export default function CoreBuddyNutrition() {
         .map(p => parseProduct(p))
         .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
         .filter(p => p.name.toLowerCase().includes(term))
+        .sort((a, b) => scoreRelevance(b.name, term) - scoreRelevance(a.name, term))
         .slice(0, 15);
       setSearchResults(results);
       if (results.length === 0) {
