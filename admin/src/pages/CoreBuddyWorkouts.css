@@ -1039,7 +1039,7 @@
 
 .mg-video-container {
   position: relative;
-  margin: 8px 12px 12px;
+  margin: 8px 12px 4px;
   border-radius: 14px;
   overflow: hidden;
   background: #000;
@@ -1077,7 +1077,7 @@
 }
 
 .mg-video-placeholder {
-  margin: 8px 12px 12px;
+  margin: 8px 12px 4px;
   border-radius: 14px;
   background: var(--bg-card);
   border: 2px dashed var(--border-color);
@@ -1098,7 +1098,7 @@
 
 /* Exercise Card */
 .mg-exercise-card {
-  margin: 0 0 32px;
+  margin: 16px 0 32px;
   padding: 24px 20px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
