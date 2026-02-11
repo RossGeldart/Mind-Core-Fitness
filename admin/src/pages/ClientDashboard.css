@@ -331,7 +331,7 @@
 }
 
 .client-header {
-  background: var(--bg-header);
+  background: transparent;
   padding: 16px 20px;
   position: sticky;
   top: 0;

@@ -58,10 +58,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: var(--bg-header);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: transparent;
 }
 
 .cb-header-left {

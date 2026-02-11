@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: var(--bg-header);
+  background: transparent;
   color: var(--text-on-header);
 }
 
