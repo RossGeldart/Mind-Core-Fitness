@@ -419,7 +419,7 @@ export default function CoreBuddyNutrition() {
     if (!searchQuery.trim()) return;
     setSearchLoading(true);
     try {
-      const url = `https://world.openfoodfacts.org/api/v2/search?search_terms=${encodeURIComponent(searchQuery)}&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments&page_size=10`;
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchQuery)}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,nutriments`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -473,7 +473,7 @@ export default function CoreBuddyNutrition() {
               <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
                 className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
                 strokeWidth={i % 5 === 0 ? '3' : '2'}
-                style={i < filled ? { animationDelay: `${i * 30}ms` } : undefined} />
+                style={i < filled ? { animationDelay: `${i * 50}ms` } : undefined} />
             );
           })}
         </svg>

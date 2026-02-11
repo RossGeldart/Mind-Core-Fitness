@@ -1196,7 +1196,7 @@
   background: rgba(0, 0, 0, 0.6);
   z-index: 1000;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   animation: fadeIn 0.2s ease-out;
   overflow-y: auto;
@@ -1205,20 +1205,19 @@
 .nut-modal {
   width: 100%;
   max-width: 600px;
-  max-height: 85vh;
-  max-height: 85dvh;
+  max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
   background: var(--bg-card);
-  border-radius: 20px 20px 0 0;
+  border-radius: 0 0 20px 20px;
   padding: 24px 20px;
-  padding-bottom: calc(24px + env(keyboard-inset-height, 0px));
-  animation: slideUp 0.3s ease-out;
-  margin-top: auto;
+  padding-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
   flex-shrink: 0;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); }
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
   to { transform: translateY(0); }
 }
 
