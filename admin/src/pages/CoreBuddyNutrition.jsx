@@ -871,39 +871,31 @@ export default function CoreBuddyNutrition() {
           {renderMacroRing('Carbs', 'Carbs', totals.carbs, targets.carbs, 'ring-carbs')}
           {renderMacroRing('Fats', 'Fats', totals.fats, targets.fats, 'ring-fats')}
           {renderMacroRing('Calories', 'Calories', totals.calories, targets.calories, 'ring-cals')}
-        </div>
 
-        {/* Add Food (today only) */}
-        {isToday && <>
-          <div className="nut-add-buttons">
-            <button className="nut-add-btn nut-add-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
-              <div className="nut-add-icon">
+          {/* Action bar inside the card */}
+          {isToday && (
+            <div className="nut-card-actions">
+              <button className="nut-card-action nut-action-scan" onClick={() => { setAddMode('scan'); setScannedProduct(null); }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-              </div>
-              <span>Scan</span>
-            </button>
-            <button className="nut-add-btn nut-add-search" onClick={() => { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }}>
-              <div className="nut-add-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </div>
-              <span>Search</span>
-            </button>
-            <button className="nut-add-btn nut-add-manual" onClick={() => { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }}>
-              <div className="nut-add-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </div>
-              <span>Manual</span>
-            </button>
-            {getFavourites().length > 0 && (
-              <button className="nut-add-btn nut-add-recent" onClick={() => setAddMode('favourites')}>
-                <div className="nut-add-icon">
-                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                </div>
-                <span>Favourites</span>
+                <span>Scan</span>
               </button>
-            )}
-          </div>
-        </>}
+              <button className="nut-card-action nut-action-search" onClick={() => { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Search</span>
+              </button>
+              <button className="nut-card-action nut-action-manual" onClick={() => { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Manual</span>
+              </button>
+              {getFavourites().length > 0 && (
+                <button className="nut-card-action nut-action-fav" onClick={() => setAddMode('favourites')}>
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span>Favs</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Water Tracker (today only) */}
         {isToday && (
