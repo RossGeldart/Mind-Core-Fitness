@@ -130,7 +130,7 @@
 
 /* ====== Sections ====== */
 .ach-section {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .ach-section-title {
@@ -337,7 +337,7 @@
 .ach-badge-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .ach-badge-card {
@@ -345,8 +345,8 @@
   align-items: center;
   gap: 14px;
   background: var(--bg-card);
-  border-radius: 14px;
-  padding: 14px 16px;
+  border-radius: 16px;
+  padding: 18px 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   animation: cardEntrance 0.4s ease-out backwards;
@@ -385,7 +385,7 @@
 
 .ach-badge-exercise {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;
@@ -408,7 +408,7 @@
 /* ====== PB Empty ====== */
 .ach-pb-empty {
   background: var(--bg-card);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 24px 20px;
   border: 1px dashed var(--border-color);
   text-align: center;
