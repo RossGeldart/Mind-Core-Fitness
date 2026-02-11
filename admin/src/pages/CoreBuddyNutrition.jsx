@@ -473,7 +473,7 @@ export default function CoreBuddyNutrition() {
               <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
                 className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
                 strokeWidth={i % 5 === 0 ? '3' : '2'}
-                style={i < filled ? { animationDelay: `${i * 15}ms` } : undefined} />
+                style={i < filled ? { animationDelay: `${i * 30}ms` } : undefined} />
             );
           })}
         </svg>

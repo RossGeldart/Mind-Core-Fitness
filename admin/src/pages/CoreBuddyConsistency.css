@@ -5,6 +5,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes cardEntrance {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* Loading */
 .cbc-loading {
   display: flex;
@@ -18,7 +23,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-color);
-  border-top-color: #4caf50;
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -122,8 +127,12 @@
 }
 
 .cbc-tick-filled {
-  stroke: #4caf50;
-  filter: drop-shadow(0 0 3px rgba(76, 175, 80, 0.5));
+  stroke: var(--color-primary);
+  filter: drop-shadow(0 0 3px rgba(153, 49, 60, 0.5));
+}
+
+[data-theme="dark"] .cbc-tick-filled {
+  filter: drop-shadow(0 0 3px rgba(199, 95, 107, 0.5));
 }
 
 .cbc-tick-empty {
@@ -142,7 +151,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1.6rem;
-  color: #4caf50;
+  color: var(--color-primary);
 }
 
 .cbc-ring-label {
@@ -166,6 +175,11 @@
   border-radius: 20px;
 }
 
+[data-theme="dark"] .cbc-streak {
+  background: rgba(199, 95, 107, 0.1);
+  border-color: rgba(199, 95, 107, 0.25);
+}
+
 .cbc-streak-count {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
@@ -181,7 +195,7 @@
 
 /* Section */
 .cbc-section {
-  padding: 20px 0;
+  padding: 16px 0;
   animation: fadeIn 0.4s ease-out 0.1s backwards;
 }
 
@@ -199,7 +213,7 @@
 .cbc-habits {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .cbc-habit-btn {
@@ -217,15 +231,23 @@
   transition: background 0.2s ease, border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
+  animation: cardEntrance 0.4s ease-out backwards;
 }
+
+.cbc-habit-btn:nth-child(1) { animation-delay: 0.10s; }
+.cbc-habit-btn:nth-child(2) { animation-delay: 0.17s; }
+.cbc-habit-btn:nth-child(3) { animation-delay: 0.24s; }
+.cbc-habit-btn:nth-child(4) { animation-delay: 0.31s; }
+.cbc-habit-btn:nth-child(5) { animation-delay: 0.38s; }
 
 .cbc-habit-btn:active {
   transform: scale(0.98);
 }
 
+/* Done state */
 .cbc-habit-done {
-  border-color: rgba(76, 175, 80, 0.3);
-  background: rgba(76, 175, 80, 0.06);
+  border-color: rgba(153, 49, 60, 0.3);
+  background: rgba(153, 49, 60, 0.06);
 }
 
 .cbc-habit-check {
@@ -246,14 +268,15 @@
 }
 
 .cbc-habit-done .cbc-habit-check {
-  color: #4caf50;
+  color: var(--color-primary);
 }
 
 .cbc-habit-done .cbc-habit-circle {
-  border-color: #4caf50;
-  background: #4caf50;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
 }
 
+/* Habit icon - default fallback */
 .cbc-habit-icon {
   flex-shrink: 0;
   width: 32px;
@@ -262,17 +285,26 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: rgba(76, 175, 80, 0.1);
-  color: #4caf50;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
+
+/* Per-habit icon colors */
+.cbc-icon-trained { background: rgba(153, 49, 60, 0.1); color: #99313c; }
+.cbc-icon-protein { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
+.cbc-icon-steps { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+.cbc-icon-sleep { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+.cbc-icon-water { background: rgba(33, 150, 243, 0.1); color: #2196f3; }
+
+[data-theme="dark"] .cbc-icon-trained { background: rgba(199, 95, 107, 0.15); color: #c75f6b; }
+[data-theme="dark"] .cbc-icon-protein { background: rgba(76, 175, 80, 0.15); color: #66bb6a; }
+[data-theme="dark"] .cbc-icon-steps { background: rgba(255, 152, 0, 0.15); color: #ffb74d; }
+[data-theme="dark"] .cbc-icon-sleep { background: rgba(124, 58, 237, 0.15); color: #a78bfa; }
+[data-theme="dark"] .cbc-icon-water { background: rgba(33, 150, 243, 0.15); color: #64b5f6; }
 
 .cbc-habit-icon svg {
   width: 18px;
   height: 18px;
-}
-
-.cbc-habit-done .cbc-habit-icon {
-  background: rgba(76, 175, 80, 0.15);
 }
 
 .cbc-habit-label {
@@ -283,7 +315,22 @@
 }
 
 .cbc-habit-done .cbc-habit-label {
-  color: #4caf50;
+  color: var(--color-primary);
+}
+
+/* Dark mode habit cards - glassmorphism matching dashboard */
+[data-theme="dark"] .cbc-habit-btn {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Done state in dark mode */
+[data-theme="dark"] .cbc-habit-btn.cbc-habit-done {
+  border-color: rgba(199, 95, 107, 0.3);
+  background: rgba(199, 95, 107, 0.08);
 }
 
 /* Weekly Day Rings */
@@ -307,11 +354,15 @@
 }
 
 .cbc-day-tick-filled {
-  stroke: #4caf50;
+  stroke: var(--color-primary);
 }
 
 .cbc-day-tick-empty {
-  stroke: rgba(76, 175, 80, 0.12);
+  stroke: rgba(153, 49, 60, 0.12);
+}
+
+[data-theme="dark"] .cbc-day-tick-empty {
+  stroke: rgba(199, 95, 107, 0.12);
 }
 
 .cbc-day-label {
@@ -323,7 +374,7 @@
 }
 
 .cbc-day-today .cbc-day-label {
-  color: #4caf50;
+  color: var(--color-primary);
 }
 
 .cbc-day-count {
@@ -333,7 +384,7 @@
 }
 
 .cbc-day-active .cbc-day-count {
-  color: #4caf50;
+  color: var(--color-primary);
 }
 
 /* Weekly Summary Bar */
@@ -354,7 +405,7 @@
 
 .cbc-week-summary-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4caf50, #66bb6a);
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
   border-radius: 3px;
   transition: width 0.4s ease;
 }
@@ -430,10 +481,23 @@
   position: absolute;
   width: var(--size, 5px);
   height: var(--size, 5px);
-  background: #4caf50;
+  background: var(--color-primary);
   border-radius: 50%;
   animation: particleBurst 0.55s ease-out both;
 }
+
+/* Per-habit particle colors */
+.cbc-habit-trained .cbc-particle { background: #99313c; }
+.cbc-habit-protein .cbc-particle { background: #4caf50; }
+.cbc-habit-steps .cbc-particle { background: #ff9800; }
+.cbc-habit-sleep .cbc-particle { background: #7c3aed; }
+.cbc-habit-water .cbc-particle { background: #2196f3; }
+
+[data-theme="dark"] .cbc-habit-trained .cbc-particle { background: #c75f6b; }
+[data-theme="dark"] .cbc-habit-protein .cbc-particle { background: #66bb6a; }
+[data-theme="dark"] .cbc-habit-steps .cbc-particle { background: #ffb74d; }
+[data-theme="dark"] .cbc-habit-sleep .cbc-particle { background: #a78bfa; }
+[data-theme="dark"] .cbc-habit-water .cbc-particle { background: #64b5f6; }
 
 @keyframes particleBurst {
   0% { transform: translate(0, 0) scale(1); opacity: 1; }
@@ -476,7 +540,7 @@
   position: absolute;
   top: -10px;
   left: var(--x, 50%);
-  background: var(--color, #4caf50);
+  background: var(--color, var(--color-primary));
   border-radius: 2px;
   animation: confettiFall var(--duration, 2s) ease-in var(--delay, 0s) both;
 }
@@ -498,10 +562,15 @@
   align-items: center;
   padding: 36px 48px;
   background: var(--bg-card);
-  border: 1px solid rgba(76, 175, 80, 0.3);
+  border: 1px solid rgba(153, 49, 60, 0.3);
   border-radius: 20px;
   animation: celebrationCardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(76, 175, 80, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(153, 49, 60, 0.15);
+}
+
+[data-theme="dark"] .cbc-celebration-card {
+  border-color: rgba(199, 95, 107, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(199, 95, 107, 0.15);
 }
 
 @keyframes celebrationCardPop {
@@ -526,7 +595,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #4caf50;
+  color: var(--color-primary);
   margin: 0 0 4px;
 }
 
