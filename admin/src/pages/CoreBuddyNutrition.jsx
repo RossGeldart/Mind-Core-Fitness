@@ -98,6 +98,8 @@ export default function CoreBuddyNutrition() {
   const [servingInput, setServingInput] = useState('100');
   const [portionCount, setPortionCount] = useState(0);
   const [servingMode, setServingMode] = useState('weight');
+  const [recentTab, setRecentTab] = useState('recents');
+  const [favTick, setFavTick] = useState(0);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -313,6 +315,41 @@ export default function CoreBuddyNutrition() {
     };
     filtered.unshift(item);
     localStorage.setItem(RECENTS_KEY, JSON.stringify(filtered.slice(0, MAX_RECENTS)));
+  };
+
+  // ==================== FAVOURITES ====================
+  const FAVS_KEY = 'nut_favourite_foods';
+
+  const getFavourites = () => {
+    try {
+      return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]');
+    } catch { return []; }
+  };
+
+  const isFavourite = (name) => {
+    return getFavourites().some(f => f.name.toLowerCase() === (name || '').toLowerCase());
+  };
+
+  const toggleFavourite = (entry) => {
+    const favs = getFavourites();
+    const exists = favs.findIndex(f => f.name.toLowerCase() === entry.name.toLowerCase());
+    if (exists >= 0) {
+      favs.splice(exists, 1);
+    } else {
+      favs.unshift({
+        name: entry.name,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fats: entry.fats,
+        calories: entry.calories,
+        serving: entry.serving,
+        per100g: entry.per100g || null,
+        servingUnit: entry.servingUnit || 'g',
+        portion: entry.portion || null,
+      });
+    }
+    localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+    setFavTick(t => t + 1); // trigger re-render
   };
 
   // ==================== FOOD LOGGING ====================
@@ -896,8 +933,8 @@ export default function CoreBuddyNutrition() {
               </div>
               <span>Manual</span>
             </button>
-            {getRecentFoods().length > 0 && (
-              <button className="nut-add-btn nut-add-recent" onClick={() => setAddMode('recent')}>
+            {(getRecentFoods().length > 0 || getFavourites().length > 0) && (
+              <button className="nut-add-btn nut-add-recent" onClick={() => { setAddMode('recent'); setRecentTab(getFavourites().length > 0 && getRecentFoods().length === 0 ? 'favourites' : 'recents'); }}>
                 <div className="nut-add-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
@@ -1111,7 +1148,23 @@ export default function CoreBuddyNutrition() {
               return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
-                <h4>{scannedProduct.name}</h4>
+                <div className="nut-product-name-row">
+                  <h4>{scannedProduct.name}</h4>
+                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
+                    onClick={() => toggleFavourite({
+                      name: scannedProduct.name,
+                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
+                      fats: scannedProduct.fats, calories: scannedProduct.calories,
+                      serving: scannedProduct.servingSize,
+                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
+                      servingUnit: scannedProduct.servingUnit || 'g',
+                      portion: scannedProduct.portion || null,
+                    })}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </button>
+                </div>
                 {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
                 <p className="nut-product-per">Per 100{u}:</p>
                 <div className="nut-product-macros">
@@ -1210,7 +1263,23 @@ export default function CoreBuddyNutrition() {
               return (
               <div className="nut-product-result">
                 {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
-                <h4>{scannedProduct.name}</h4>
+                <div className="nut-product-name-row">
+                  <h4>{scannedProduct.name}</h4>
+                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
+                    onClick={() => toggleFavourite({
+                      name: scannedProduct.name,
+                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
+                      fats: scannedProduct.fats, calories: scannedProduct.calories,
+                      serving: scannedProduct.servingSize,
+                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
+                      servingUnit: scannedProduct.servingUnit || 'g',
+                      portion: scannedProduct.portion || null,
+                    })}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </button>
+                </div>
                 {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
                 <p className="nut-product-per">Per 100{u}:</p>
                 <div className="nut-product-macros">
@@ -1306,64 +1375,88 @@ export default function CoreBuddyNutrition() {
               </div>
             )}
 
-            {/* RECENT MODE */}
+            {/* RECENT / FAVOURITES MODE */}
             {addMode === 'recent' && !scannedProduct && (() => {
               const recents = getRecentFoods();
+              const favs = getFavourites();
+              const list = recentTab === 'favourites' ? favs : recents;
+              const selectItem = (item) => {
+                if (item.per100g) {
+                  const p100 = item.per100g;
+                  setScannedProduct({
+                    name: item.name,
+                    brand: '',
+                    image: null,
+                    servingSize: item.serving || '100g',
+                    servingValue: 100,
+                    servingUnit: item.servingUnit || 'g',
+                    portion: item.portion || null,
+                    protein: p100.protein,
+                    carbs: p100.carbs,
+                    fats: p100.fats,
+                    calories: p100.calories,
+                    per100g: true
+                  });
+                  if (item.portion) {
+                    setPortionCount(1);
+                    setServingInput(String(item.portion.weight));
+                    setServingMode('portion');
+                  } else {
+                    setPortionCount(0);
+                    setServingInput('100');
+                    setServingMode('weight');
+                  }
+                } else {
+                  addFoodEntry({
+                    name: item.name,
+                    protein: item.protein,
+                    carbs: item.carbs,
+                    fats: item.fats,
+                    calories: item.calories,
+                    serving: item.serving || ''
+                  });
+                }
+              };
               return (
                 <div className="nut-recent-area">
-                  {recents.length === 0 ? (
-                    <p className="nut-search-empty">No recent foods yet. Add foods via scan, search, or manual entry.</p>
+                  <div className="nut-recent-tabs">
+                    <button className={recentTab === 'recents' ? 'active' : ''} onClick={() => setRecentTab('recents')}>
+                      Recents
+                    </button>
+                    <button className={recentTab === 'favourites' ? 'active' : ''} onClick={() => setRecentTab('favourites')}>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      Favourites{favs.length > 0 ? ` (${favs.length})` : ''}
+                    </button>
+                  </div>
+                  {list.length === 0 ? (
+                    <p className="nut-search-empty">
+                      {recentTab === 'favourites'
+                        ? 'No favourites yet. Tap the star on any food to save it here.'
+                        : 'No recent foods yet. Add foods via scan, search, or manual entry.'}
+                    </p>
                   ) : (
                     <div className="nut-recent-list">
-                      {recents.map((item, i) => (
-                        <button key={i} className="nut-recent-item" onClick={() => {
-                          if (item.per100g) {
-                            const p100 = item.per100g;
-                            setScannedProduct({
-                              name: item.name,
-                              brand: '',
-                              image: null,
-                              servingSize: item.serving || '100g',
-                              servingValue: 100,
-                              servingUnit: item.servingUnit || 'g',
-                              portion: item.portion || null,
-                              protein: p100.protein,
-                              carbs: p100.carbs,
-                              fats: p100.fats,
-                              calories: p100.calories,
-                              per100g: true
-                            });
-                            if (item.portion) {
-                              setPortionCount(1);
-                              setServingInput(String(item.portion.weight));
-                              setServingMode('portion');
-                            } else {
-                              setPortionCount(0);
-                              setServingInput('100');
-                              setServingMode('weight');
-                            }
-                          } else {
-                            addFoodEntry({
-                              name: item.name,
-                              protein: item.protein,
-                              carbs: item.carbs,
-                              fats: item.fats,
-                              calories: item.calories,
-                              serving: item.serving || ''
-                            });
-                          }
-                        }}>
-                          <div className="nut-recent-item-info">
-                            <span className="nut-recent-item-name">{item.name}</span>
-                            <span className="nut-recent-item-serving">{item.serving || ''}</span>
-                          </div>
-                          <span className="nut-recent-item-macros">{item.calories} cal</span>
-                          {item.per100g ? (
-                            <span className="nut-recent-item-badge">Adjust</span>
-                          ) : (
-                            <span className="nut-recent-item-badge quick">Quick</span>
-                          )}
-                        </button>
+                      {list.map((item, i) => (
+                        <div key={i} className="nut-recent-item-row">
+                          <button className={`nut-fav-star${isFavourite(item.name) ? ' active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); toggleFavourite(item); }}>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill={isFavourite(item.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                          </button>
+                          <button className="nut-recent-item" onClick={() => selectItem(item)}>
+                            <div className="nut-recent-item-info">
+                              <span className="nut-recent-item-name">{item.name}</span>
+                              <span className="nut-recent-item-serving">{item.serving || ''}</span>
+                            </div>
+                            <span className="nut-recent-item-macros">{item.calories} cal</span>
+                            {item.per100g ? (
+                              <span className="nut-recent-item-badge">Adjust</span>
+                            ) : (
+                              <span className="nut-recent-item-badge quick">Quick</span>
+                            )}
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -1383,7 +1476,23 @@ export default function CoreBuddyNutrition() {
                 : `${Math.round(effectiveWeight)}${u}`;
               return (
               <div className="nut-product-result">
-                <h4>{scannedProduct.name}</h4>
+                <div className="nut-product-name-row">
+                  <h4>{scannedProduct.name}</h4>
+                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
+                    onClick={() => toggleFavourite({
+                      name: scannedProduct.name,
+                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
+                      fats: scannedProduct.fats, calories: scannedProduct.calories,
+                      serving: scannedProduct.servingSize,
+                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
+                      servingUnit: scannedProduct.servingUnit || 'g',
+                      portion: scannedProduct.portion || null,
+                    })}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </button>
+                </div>
                 <p className="nut-product-per">Per 100{u}:</p>
                 <div className="nut-product-macros">
                   <span className="nut-macro-p">{scannedProduct.protein}g P</span>
