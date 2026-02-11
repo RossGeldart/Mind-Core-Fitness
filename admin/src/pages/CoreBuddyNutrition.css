@@ -111,38 +111,6 @@
   padding: 20px;
 }
 
-.nut-back-btn {
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  color: var(--text-secondary);
-  border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 16px;
-}
-
-.nut-back-btn.nut-back-dark {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.nut-back-btn.nut-back-dark:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-[data-theme="dark"] .nut-back-btn {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.nut-back-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
 /* ===== WEEK CALENDAR STRIP ===== */
 .nut-week-strip {
   margin-bottom: 20px;
