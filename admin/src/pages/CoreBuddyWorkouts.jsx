@@ -6,7 +6,6 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
-import programmeCardImg from '../assets/programme-card-workout.JPG';
 import randomiserCardImg from '../assets/randomiser-card.jpg';
 
 const TICK_COUNT = 60;
@@ -23,6 +22,36 @@ const TEMPLATE_META = {
   upper_4wk: { duration: 4, daysPerWeek: 3 },
   lower_4wk: { duration: 4, daysPerWeek: 3 },
 };
+
+// Programme cards for carousel display
+const PROGRAMME_CARDS = [
+  { id: 'fullbody_4wk', name: '4-Week Full Body', focus: 'fullbody', duration: 4, level: 'All Levels', daysPerWeek: 3 },
+  { id: 'fullbody_8wk', name: '8-Week Full Body', focus: 'fullbody', duration: 8, level: 'Intermediate', daysPerWeek: 3 },
+  { id: 'fullbody_12wk', name: '12-Week Full Body', focus: 'fullbody', duration: 12, level: 'Advanced', daysPerWeek: 3 },
+  { id: 'core_4wk', name: '4-Week Core', focus: 'core', duration: 4, level: 'Beginner', daysPerWeek: 3 },
+  { id: 'core_8wk', name: '8-Week Core', focus: 'core', duration: 8, level: 'Intermediate', daysPerWeek: 3 },
+  { id: 'core_12wk', name: '12-Week Core', focus: 'core', duration: 12, level: 'Advanced', daysPerWeek: 3 },
+  { id: 'upper_4wk', name: '4-Week Upper Body', focus: 'upper', duration: 4, level: 'Intermediate', daysPerWeek: 3 },
+  { id: 'lower_4wk', name: '4-Week Lower Body', focus: 'lower', duration: 4, level: 'Intermediate', daysPerWeek: 3 },
+];
+
+// Focus icons for programme cards
+const FOCUS_ICONS = {
+  fullbody: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm-2 8h4l1 4h2l-1 4h-2l-1 4h-2l-1-4H8l-1-4h2l1-4z',
+  core: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z',
+  upper: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z',
+  lower: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z',
+};
+
+// Muscle group placeholders
+const MUSCLE_GROUPS = [
+  { key: 'arms', label: 'Arms', icon: 'M7 5h2v14H7V5zm8 0h2v14h-2V5zm-5 4h4v6h-4V9z' },
+  { key: 'chest', label: 'Chest', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm4 0h-2v-2h2v2zm3-6c0 1.1-.36 2.12-.97 2.95l-.87-.87C16.7 12.53 17 11.8 17 11c0-2.76-2.24-5-5-5S7 8.24 7 11c0 .8.3 1.53.84 2.08l-.87.87A4.977 4.977 0 0 1 6 11c0-3.31 2.69-6 6-6s6 2.69 6 6z' },
+  { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z' },
+  { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z' },
+  { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z' },
+  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z' },
+];
 
 const EQUIPMENT = [
   { key: 'bodyweight', label: 'Bodyweight', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' },
@@ -115,12 +144,9 @@ export default function CoreBuddyWorkouts() {
   const [streak, setStreak] = useState(0);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
-  // Card stack state
-  const [activeCardIdx, setActiveCardIdx] = useState(0);
-  const [stackDrag, setStackDrag] = useState(0);
-  const [cardLanded, setCardLanded] = useState(0); // increments on each card swap to trigger cascade
-  const [displayedStat, setDisplayedStat] = useState(null); // for count-up animation
-  const stackTouch = useRef({ startY: 0, dragging: false, didDrag: false, lastDrag: 0, lastIdx: 0 });
+  // Active programme info (for the "Continue Programme" card)
+  const [activeProgrammeId, setActiveProgrammeId] = useState(null);
+  const [activeProgrammeName, setActiveProgrammeName] = useState('');
 
   // Auth guard
   useEffect(() => {
@@ -175,6 +201,10 @@ export default function CoreBuddyWorkouts() {
               const prog = progSnap.data();
               const activeTemplateId = prog.templateId;
               progCount = weekly.filter(d => d.type === 'programme' && d.programmeId === activeTemplateId).length;
+              // Store active programme info for the "Continue" card
+              setActiveProgrammeId(activeTemplateId);
+              const progCard = PROGRAMME_CARDS.find(p => p.id === activeTemplateId);
+              if (progCard) setActiveProgrammeName(progCard.name);
               // Overall programme progress (matches dashboard calculation)
               const meta = TEMPLATE_META[activeTemplateId];
               if (meta) {
@@ -182,6 +212,10 @@ export default function CoreBuddyWorkouts() {
                 const total = meta.duration * meta.daysPerWeek;
                 setProgrammePct(total > 0 ? Math.round((completed / total) * 100) : 0);
               }
+            } else {
+              setActiveProgrammeId(null);
+              setActiveProgrammeName('');
+              setProgrammePct(0);
             }
           } catch (e) {
             // Fallback: no active programme, show 0
@@ -561,71 +595,6 @@ export default function CoreBuddyWorkouts() {
     return completed / totalExercises;
   };
 
-  // ==================== CAROUSEL LOGIC ====================
-  const CARD_COUNT = 2;
-  const SWIPE_THRESHOLD = 50;
-  const carouselRef = useRef(null);
-  stackTouch.current.lastIdx = activeCardIdx;
-
-  // Trigger cascade + count-up on card swap
-  const commitCardSwap = (newIdx) => {
-    setActiveCardIdx(newIdx);
-    setCardLanded(c => c + 1);
-    setDisplayedStat(0);
-    if (navigator.vibrate) navigator.vibrate(12);
-  };
-
-  // Count-up animation for stats
-  useEffect(() => {
-    if (displayedStat === null) return;
-    const target = activeCardIdx === 0 ? weeklyCount : programmePct;
-    if (displayedStat >= target) { setDisplayedStat(null); return; }
-    const step = Math.max(1, Math.ceil(target / 20));
-    const t = setTimeout(() => setDisplayedStat(s => Math.min(s + step, target)), 30);
-    return () => clearTimeout(t);
-  }, [displayedStat, activeCardIdx, weeklyCount, programmePct]);
-
-  const handleCarouselTouchStart = (e) => {
-    stackTouch.current = { startX: e.touches[0].clientX, dragging: true, didDrag: false, lastDrag: 0, lastIdx: activeCardIdx };
-    setStackDrag(0);
-  };
-
-  const handleCarouselTouchMove = (e) => {
-    if (!stackTouch.current.dragging) return;
-    const delta = stackTouch.current.startX - e.touches[0].clientX;
-    if (Math.abs(delta) > 10) stackTouch.current.didDrag = true;
-    stackTouch.current.lastDrag = delta;
-    setStackDrag(delta);
-  };
-
-  const handleCarouselTouchEnd = () => {
-    if (!stackTouch.current.dragging) return;
-    stackTouch.current.dragging = false;
-    const drag = stackTouch.current.lastDrag;
-    const idx = stackTouch.current.lastIdx;
-
-    if (drag > SWIPE_THRESHOLD && idx < CARD_COUNT - 1) {
-      commitCardSwap(idx + 1);
-    } else if (drag < -SWIPE_THRESHOLD && idx > 0) {
-      commitCardSwap(idx - 1);
-    }
-    setStackDrag(0);
-  };
-
-  // Carousel: compute translateX for the track based on active card + drag offset
-  // Each slide is 84% wide, so shift by 84% per card
-  const SLIDE_WIDTH_PCT = 84;
-  const getCarouselTrackStyle = () => {
-    const dragging = stackTouch.current.dragging;
-    const dragPx = dragging ? -stackDrag : 0;
-    const baseOffset = -activeCardIdx * SLIDE_WIDTH_PCT;
-    const dragPercent = dragging ? (dragPx / (carouselRef.current?.offsetWidth || 360)) * 100 : 0;
-    return {
-      transform: `translateX(calc(${baseOffset}% + ${dragPercent}%))`,
-      transition: dragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-    };
-  };
-
   // Toast element - rendered at the end of every view
   const toastEl = toast && (
     <div className={`toast-notification ${toast.type}`}>
@@ -639,7 +608,6 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
-    const programmeImg = programmeCardImg;
     const randomiserImg = randomiserCardImg || null;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
@@ -658,119 +626,117 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
         </header>
-        <main className="wk-main wk-main-carousel">
+        <main className="wk-main">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>&larr; Back</button>
 
-          {/* Motivational heading */}
-          <div className="wk-carousel-heading">
+          {/* Active Programme Card — only if user has one */}
+          {activeProgrammeId && (
+            <button className="wk-active-prog" onClick={() => navigate('/client/core-buddy/programmes')}>
+              <div className="wk-active-prog-ring">
+                <svg viewBox="0 0 200 200">
+                  {[...Array(TICK_COUNT)].map((_, i) => {
+                    const angle = (i * 6 - 90) * (Math.PI / 180);
+                    const x1 = 100 + 78 * Math.cos(angle);
+                    const y1 = 100 + 78 * Math.sin(angle);
+                    const x2 = 100 + 94 * Math.cos(angle);
+                    const y2 = 100 + 94 * Math.sin(angle);
+                    const filled = Math.round((programmePct / 100) * TICK_COUNT);
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                        className={i < filled ? 'wk-ap-tick-filled' : 'wk-ap-tick-empty'}
+                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                    );
+                  })}
+                </svg>
+                <span className="wk-ap-pct">{programmePct}%</span>
+              </div>
+              <div className="wk-active-prog-info">
+                <span className="wk-ap-label">CURRENT PROGRAMME</span>
+                <span className="wk-ap-name">{activeProgrammeName}</span>
+                <span className="wk-ap-cta">Continue &rarr;</span>
+              </div>
+            </button>
+          )}
+
+          {/* Heading */}
+          <div className="wk-menu-heading">
             <h2>Choose Your Workout</h2>
             <p>No excuses. Just results.</p>
           </div>
 
-          {/* Carousel */}
-          <div
-            className="wk-carousel"
-            ref={carouselRef}
-            onTouchStart={handleCarouselTouchStart}
-            onTouchMove={handleCarouselTouchMove}
-            onTouchEnd={handleCarouselTouchEnd}
-          >
-            <div className="wk-carousel-track" style={getCarouselTrackStyle()}>
-              {/* Card 0: Random Workout */}
-              <div className="wk-carousel-slide">
-                <button
-                  className={`wk-menu-card wk-card-has-bg${activeCardIdx === 0 ? ' wk-card-landed' : ''}`}
-                  onClick={() => { if (!stackTouch.current.didDrag) setView('setup'); }}
-                >
-                  <img src={randomiserImg} alt="" className="wk-card-bg" />
-                  <div className="wk-card-overlay" />
-                  <div className="wk-card-content">
-                    <div className={`wk-menu-ring-wrap${activeCardIdx === 0 ? ' wk-ring-glow' : ''}`} key={`ring0-${cardLanded}`}>
-                      <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                        {[...Array(TICK_COUNT)].map((_, i) => {
-                          const angle = (i * 6 - 90) * (Math.PI / 180);
-                          const x1 = 100 + 78 * Math.cos(angle);
-                          const y1 = 100 + 78 * Math.sin(angle);
-                          const x2 = 100 + 94 * Math.cos(angle);
-                          const y2 = 100 + 94 * Math.sin(angle);
-                          const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
-                          return (
-                            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                              className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 0 ? ' wk-tick-cascade' : ''}`}
-                              strokeWidth={i % 5 === 0 ? '3' : '2'}
-                              style={activeCardIdx === 0 ? { animationDelay: `${i * 0.018}s` } : undefined} />
-                          );
-                        })}
-                      </svg>
-                      <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
-                    </div>
-                    <div className="wk-menu-card-stats">
-                      <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 0 ? displayedStat : weeklyCount}</span>
-                      <span className="wk-menu-stat-label">this week</span>
-                    </div>
-                    <h3>Random Workout</h3>
-                    <p>Interval-based HIIT from your exercise library</p>
-                  </div>
-                  {/* Swipe hint inside card */}
-                  {activeCardIdx === 0 && (
-                    <div className="wk-swipe-hint">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                      <span>Swipe</span>
-                    </div>
-                  )}
-                </button>
+          {/* Hero Card: Randomise Workout */}
+          <button className="wk-hero-card" onClick={() => setView('setup')}>
+            <img src={randomiserImg} alt="" className="wk-hero-bg" />
+            <div className="wk-hero-overlay" />
+            <div className="wk-hero-content">
+              <div className="wk-hero-top">
+                <div className="wk-hero-ring">
+                  <svg viewBox="0 0 200 200">
+                    {[...Array(TICK_COUNT)].map((_, i) => {
+                      const angle = (i * 6 - 90) * (Math.PI / 180);
+                      const x1 = 100 + 78 * Math.cos(angle);
+                      const y1 = 100 + 78 * Math.sin(angle);
+                      const x2 = 100 + 94 * Math.cos(angle);
+                      const y2 = 100 + 94 * Math.sin(angle);
+                      const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
+                      return (
+                        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                          className={i < filled ? 'wk-hero-tick-filled' : 'wk-hero-tick-empty'}
+                          strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                      );
+                    })}
+                  </svg>
+                  <span className="wk-hero-ring-stat">{weeklyCount}<small>/{WEEKLY_TARGET}</small></span>
+                </div>
+                <span className="wk-hero-week-label">this week</span>
               </div>
-
-              {/* Card 1: Pick a Programme */}
-              <div className="wk-carousel-slide">
-                <button
-                  className={`wk-menu-card wk-card-has-bg${activeCardIdx === 1 ? ' wk-card-landed' : ''}`}
-                  onClick={() => { if (!stackTouch.current.didDrag) navigate('/client/core-buddy/programmes'); }}
-                >
-                  <img src={programmeImg} alt="" className="wk-card-bg" />
-                  <div className="wk-card-overlay" />
-                  <div className="wk-card-content">
-                    <div className={`wk-menu-ring-wrap${activeCardIdx === 1 ? ' wk-ring-glow' : ''}`} key={`ring1-${cardLanded}`}>
-                      <svg className="wk-menu-ring-svg" viewBox="0 0 200 200">
-                        {[...Array(TICK_COUNT)].map((_, i) => {
-                          const angle = (i * 6 - 90) * (Math.PI / 180);
-                          const x1 = 100 + 78 * Math.cos(angle);
-                          const y1 = 100 + 78 * Math.sin(angle);
-                          const x2 = 100 + 94 * Math.cos(angle);
-                          const y2 = 100 + 94 * Math.sin(angle);
-                          const filled = Math.round((programmePct / 100) * TICK_COUNT);
-                          return (
-                            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                              className={`${i < filled ? 'wk-menu-tick-filled' : 'wk-menu-tick-empty'}${activeCardIdx === 1 ? ' wk-tick-cascade' : ''}`}
-                              strokeWidth={i % 5 === 0 ? '3' : '2'}
-                              style={activeCardIdx === 1 ? { animationDelay: `${i * 0.018}s` } : undefined} />
-                          );
-                        })}
-                      </svg>
-                      <img src="/Logo.PNG" alt="" className="wk-menu-ring-logo" />
-                    </div>
-                    {programmePct > 0 && (
-                      <div className="wk-menu-card-stats">
-                        <span className="wk-menu-stat-big wk-stat-pop">{displayedStat !== null && activeCardIdx === 1 ? displayedStat : programmePct}%</span>
-                        <span className="wk-menu-stat-label">complete</span>
-                      </div>
-                    )}
-                    <h3>Pick a Programme</h3>
-                    <p>Structured set & rep programmes with progressive overload</p>
-                  </div>
-                </button>
+              <div className="wk-hero-bottom">
+                <h3>RANDOM WORKOUT</h3>
+                <p>Interval-based HIIT from your exercise library</p>
+                <span className="wk-hero-go">LET'S GO &rarr;</span>
               </div>
             </div>
+          </button>
+
+          {/* Programmes Section */}
+          <div className="wk-section-header">
+            <h2>Programmes</h2>
+            <span className="wk-section-count">{PROGRAMME_CARDS.length} available</span>
           </div>
 
-          {/* Dot indicators */}
-          <div className="wk-carousel-dots">
-            {[...Array(CARD_COUNT)].map((_, i) => (
-              <button
-                key={i}
-                className={`wk-carousel-dot${activeCardIdx === i ? ' active' : ''}`}
-                onClick={() => { if (activeCardIdx !== i) commitCardSwap(i); }}
-              />
+          <div className="wk-prog-scroll">
+            {PROGRAMME_CARDS.map((prog, i) => (
+              <button key={prog.id} className="wk-prog-card"
+                onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
+                style={{ animationDelay: `${i * 0.05}s` }}>
+                <div className="wk-prog-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d={FOCUS_ICONS[prog.focus]} /></svg>
+                </div>
+                <span className="wk-prog-duration">{prog.duration} WK</span>
+                <span className="wk-prog-name">{prog.name}</span>
+                <span className="wk-prog-level">{prog.level}</span>
+                <span className="wk-prog-meta">{prog.daysPerWeek}x / week</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Muscle Groups Section */}
+          <div className="wk-section-header">
+            <h2>Muscle Groups</h2>
+            <span className="wk-section-count">Coming soon</span>
+          </div>
+
+          <div className="wk-muscle-grid">
+            {MUSCLE_GROUPS.map((mg, i) => (
+              <button key={mg.key} className="wk-muscle-card"
+                onClick={() => showToast(`${mg.label} workouts coming soon!`, 'info')}
+                style={{ animationDelay: `${i * 0.05}s` }}>
+                <div className="wk-muscle-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
+                </div>
+                <span className="wk-muscle-name">{mg.label}</span>
+                <span className="wk-muscle-soon">Coming Soon</span>
+              </button>
             ))}
           </div>
         </main>
