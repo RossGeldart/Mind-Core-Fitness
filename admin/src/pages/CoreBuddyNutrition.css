@@ -416,7 +416,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   animation: fadeIn 0.4s ease-out;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -695,8 +695,8 @@
 .nut-add-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 16px;
   animation: fadeIn 0.4s ease-out 0.1s backwards;
 }
 
@@ -704,11 +704,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 18px 10px;
+  gap: 6px;
+  padding: 14px 10px;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-family: 'Montserrat', sans-serif;
@@ -725,9 +725,9 @@
 }
 
 .nut-add-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -781,7 +781,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   animation: fadeIn 0.4s ease-out 0.2s backwards;
 }
@@ -892,6 +892,7 @@
   justify-content: center;
   gap: 8px;
   margin-bottom: 16px;
+  margin-top: 4px;
   animation: fadeIn 0.3s ease-out 0.25s backwards;
 }
 
