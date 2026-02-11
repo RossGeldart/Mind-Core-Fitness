@@ -12,7 +12,8 @@
 
 @keyframes waterPop {
   0% { transform: scale(1); }
-  40% { transform: scale(1.25); }
+  30% { transform: scale(1.45); }
+  60% { transform: scale(0.9); }
   100% { transform: scale(1); }
 }
 
@@ -38,6 +39,11 @@
   padding-bottom: 40px;
 }
 
+[data-theme="dark"] .nut-page {
+  --bg-card: #252525;
+  --bg-card-elevated: #2e2e2e;
+}
+
 .nut-main {
   max-width: 600px;
   margin: 0 auto;
@@ -58,7 +64,7 @@
 }
 
 [data-theme="dark"] .nut-back-btn {
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nut-back-btn:hover {
@@ -111,11 +117,9 @@
 }
 
 [data-theme="dark"] .nut-calc-form {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-form-group {
@@ -344,11 +348,9 @@
 }
 
 [data-theme="dark"] .nut-calc-results {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-calc-results h3 {
@@ -420,11 +422,9 @@
 }
 
 [data-theme="dark"] .nut-rings-grid {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-ring-wrap {
@@ -530,8 +530,9 @@
 }
 
 [data-theme="dark"] .nut-meal-pill {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-meal-pill:active {
@@ -611,11 +612,9 @@
 .nut-meal-card:nth-child(4) { animation-delay: 0.26s; }
 
 [data-theme="dark"] .nut-meal-card {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-meal-card-header {
@@ -708,11 +707,9 @@
 }
 
 [data-theme="dark"] .nut-add-btn {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-add-icon {
@@ -778,11 +775,9 @@
 }
 
 [data-theme="dark"] .nut-water-section {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-water-header {
@@ -830,7 +825,11 @@
 
 .nut-water-glass.filled {
   color: #2196f3;
-  animation: waterPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: waterPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nut-water-glass.filled svg {
+  filter: drop-shadow(0 0 4px rgba(33, 150, 243, 0.4));
 }
 
 .nut-water-glass svg {
@@ -1073,11 +1072,9 @@
 }
 
 [data-theme="dark"] .nut-log-empty {
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .nut-log-empty p {
