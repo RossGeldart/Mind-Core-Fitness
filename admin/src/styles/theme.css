@@ -120,6 +120,31 @@
   --time-afternoon: rgba(227, 242, 253, 0.1);
 }
 
+/* Accent Colour Overrides */
+[data-accent="orange"] {
+  --color-primary: #FF914D;
+  --color-primary-dark: #E07830;
+  --color-primary-light: rgba(255, 145, 77, 0.1);
+  --shadow-primary: 0 6px 20px rgba(255, 145, 77, 0.4);
+}
+
+[data-accent="orange"][data-theme="dark"] {
+  --color-primary-light: rgba(255, 145, 77, 0.15);
+  --shadow-primary: 0 6px 20px rgba(255, 145, 77, 0.4);
+}
+
+[data-accent="blue"] {
+  --color-primary: #38B6FF;
+  --color-primary-dark: #2A9AD8;
+  --color-primary-light: rgba(56, 182, 255, 0.1);
+  --shadow-primary: 0 6px 20px rgba(56, 182, 255, 0.4);
+}
+
+[data-accent="blue"][data-theme="dark"] {
+  --color-primary-light: rgba(56, 182, 255, 0.15);
+  --shadow-primary: 0 6px 20px rgba(56, 182, 255, 0.4);
+}
+
 /* Smooth theme transition */
 * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;

@@ -38,7 +38,7 @@ const TEMPLATE_META = {
 
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent, setAccent } = useTheme();
   const navigate = useNavigate();
 
   // 24hr countdown state
@@ -199,9 +199,24 @@ export default function CoreBuddyDashboard() {
       </header>
 
       <main className="cb-main">
-        {/* Greeting */}
+        {/* Greeting + Accent Picker */}
         <div className="cb-greeting">
           <h2>Hey {firstName}</h2>
+          <div className="cb-accent-picker">
+            {[
+              { id: 'red', color: '#A12F3A' },
+              { id: 'orange', color: '#FF914D' },
+              { id: 'blue', color: '#38B6FF' },
+            ].map(opt => (
+              <button
+                key={opt.id}
+                className={`cb-accent-dot ${accent === opt.id ? 'active' : ''}`}
+                style={{ background: opt.color }}
+                onClick={() => setAccent(opt.id)}
+                aria-label={`${opt.id} theme`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* 24hr Countdown Ring */}
