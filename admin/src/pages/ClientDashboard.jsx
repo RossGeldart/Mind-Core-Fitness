@@ -847,21 +847,6 @@ export default function ClientDashboard() {
           </div>
         )}
 
-        <div className="quick-actions">
-          <button className="forms-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/forms'); }}>
-            Forms & Questionnaires
-          </button>
-          <button className="tools-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/tools'); }}>
-            Tools & Calculators
-          </button>
-        </div>
-
-        <div className="quick-actions" style={{ marginTop: '-8px' }}>
-          <button className="forms-btn ripple-btn" onClick={(e) => { createRipple(e); navigate('/client/personal-bests'); }} style={{ flex: '1 1 100%' }}>
-            Personal Bests & Progress
-          </button>
-        </div>
-
         {achievements.length > 0 && (
           <div className="achievements-card">
             <div className="achievements-card-header">
