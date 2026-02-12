@@ -1,13 +1,13 @@
 /* Core Buddy Nutrition */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes waterPop {
@@ -29,7 +29,7 @@
 }
 
 .nut-tick-filled {
-  animation: tickReveal 0.25s ease-out backwards;
+  animation: tickReveal 0.25s ease-out;
 }
 
 /* Page */
@@ -306,7 +306,7 @@
   border-radius: 16px;
   padding: 24px 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: cardEntrance 0.4s ease-out 0.1s backwards;
+  animation: cardEntrance 0.3s ease-out;
 }
 
 [data-theme="dark"] .nut-calc-form {
@@ -610,7 +610,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   padding: 8px 0 0;
-  animation: fadeIn 0.4s ease-out 0.1s backwards;
+  animation: fadeIn 0.3s ease-out;
 }
 
 /* Keep the old grid class for setup calc results */
@@ -768,7 +768,7 @@
   display: flex;
   gap: 6px;
   margin-bottom: 14px;
-  animation: fadeIn 0.3s ease-out 0.05s backwards;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-meal-pill {
@@ -868,13 +868,8 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: cardEntrance 0.4s ease-out backwards;
+  animation: cardEntrance 0.3s ease-out;
 }
-
-.nut-meal-card:nth-child(1) { animation-delay: 0.05s; }
-.nut-meal-card:nth-child(2) { animation-delay: 0.12s; }
-.nut-meal-card:nth-child(3) { animation-delay: 0.19s; }
-.nut-meal-card:nth-child(4) { animation-delay: 0.26s; }
 
 [data-theme="dark"] .nut-meal-card {
   background: rgba(30, 30, 30, 0.8);
@@ -1355,7 +1350,7 @@
   gap: 8px;
   margin-bottom: 16px;
   margin-top: 4px;
-  animation: fadeIn 0.3s ease-out 0.25s backwards;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-date-arrow {
@@ -1528,7 +1523,7 @@
 
 /* ==================== FOOD LOG ==================== */
 .nut-log-section {
-  animation: fadeIn 0.4s ease-out 0.3s backwards;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-log-section h3 {

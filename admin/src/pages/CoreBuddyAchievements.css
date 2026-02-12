@@ -1,13 +1,13 @@
 /* ====== Core Buddy Achievements Page ====== */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes badgeGlow {
@@ -264,7 +264,7 @@
   background: rgba(var(--color-primary-rgb), 0.15);
   border: 2px solid var(--color-primary);
   box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.25);
-  animation: milestoneUnlock 0.4s ease-out backwards;
+  animation: milestoneUnlock 0.4s ease-out;
 }
 
 .ach-milestone-icon {
@@ -349,7 +349,7 @@
   padding: 18px 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  animation: cardEntrance 0.4s ease-out backwards;
+  animation: cardEntrance 0.3s ease-out;
   transition: all 0.2s ease;
 }
 

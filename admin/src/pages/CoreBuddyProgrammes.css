@@ -1,13 +1,13 @@
 /* Core Buddy Programmes */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes completeTick {
@@ -87,7 +87,7 @@
   text-align: left;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  animation: cardEntrance 0.4s ease-out backwards;
+  animation: cardEntrance 0.3s ease-out;
 }
 
 .pg-browse-card:hover {
@@ -234,12 +234,8 @@
   border: 1px solid var(--border-color);
   border-radius: 14px;
   overflow: hidden;
-  animation: fadeIn 0.4s ease-out backwards;
+  animation: fadeIn 0.3s ease-out;
 }
-
-.pg-day-card:nth-child(1) { animation-delay: 0.1s; }
-.pg-day-card:nth-child(2) { animation-delay: 0.2s; }
-.pg-day-card:nth-child(3) { animation-delay: 0.3s; }
 
 .pg-day-header {
   display: flex;

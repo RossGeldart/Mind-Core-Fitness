@@ -243,36 +243,34 @@ export default function CoreBuddyDashboard() {
           <p className="cb-ring-tagline">You have 24 hours a day... <strong>make it count</strong> with Core Buddy</p>
         </div>
 
-        {/* Stats Rings Row */}
-        {statsLoaded && (
-          <div className="cb-stats-row">
-            {statRings.map((ring) => (
-              <div key={ring.cls} className="cb-stat-item">
-                <div className={`cb-stat-ring ${ring.cls}`}>
-                  <svg viewBox="0 0 100 100">
-                    {[...Array(TICK_COUNT)].map((_, i) => {
-                      const angle = (i * 6 - 90) * (Math.PI / 180);
-                      const x1 = 50 + 38 * Math.cos(angle);
-                      const y1 = 50 + 38 * Math.sin(angle);
-                      const x2 = 50 + 46 * Math.cos(angle);
-                      const y2 = 50 + 46 * Math.sin(angle);
-                      return (
-                        <line
-                          key={i}
-                          x1={x1} y1={y1} x2={x2} y2={y2}
-                          className={i < ring.ticks ? 'cb-stat-filled' : 'cb-stat-empty'}
-                          strokeWidth={i % 5 === 0 ? '3' : '2'}
-                        />
-                      );
-                    })}
-                  </svg>
-                  <span className="cb-stat-value">{ring.value}</span>
-                </div>
-                <span className="cb-stat-label">{ring.label}</span>
+        {/* Stats Rings Row — always rendered to prevent layout shift */}
+        <div className="cb-stats-row">
+          {statRings.map((ring) => (
+            <div key={ring.cls} className="cb-stat-item">
+              <div className={`cb-stat-ring ${ring.cls}`}>
+                <svg viewBox="0 0 100 100">
+                  {[...Array(TICK_COUNT)].map((_, i) => {
+                    const angle = (i * 6 - 90) * (Math.PI / 180);
+                    const x1 = 50 + 38 * Math.cos(angle);
+                    const y1 = 50 + 38 * Math.sin(angle);
+                    const x2 = 50 + 46 * Math.cos(angle);
+                    const y2 = 50 + 46 * Math.sin(angle);
+                    return (
+                      <line
+                        key={i}
+                        x1={x1} y1={y1} x2={x2} y2={y2}
+                        className={i < ring.ticks ? 'cb-stat-filled' : 'cb-stat-empty'}
+                        strokeWidth={i % 5 === 0 ? '3' : '2'}
+                      />
+                    );
+                  })}
+                </svg>
+                <span className="cb-stat-value">{statsLoaded ? ring.value : '–'}</span>
               </div>
-            ))}
-          </div>
-        )}
+              <span className="cb-stat-label">{ring.label}</span>
+            </div>
+          ))}
+        </div>
 
         {/* Feature Cards */}
         <div className="cb-features">
