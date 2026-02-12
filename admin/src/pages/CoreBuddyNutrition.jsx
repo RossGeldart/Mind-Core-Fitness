@@ -67,7 +67,8 @@ export default function CoreBuddyNutrition() {
   const [formData, setFormData] = useState({
     gender: 'male', age: '', weight: '', weightUnit: 'kg',
     height: '', heightUnit: 'cm', heightFeet: '', heightInches: '',
-    activityLevel: 'moderate', goal: 'maintain', deficitLevel: 'moderate'
+    dailyActivity: 'sedentary', trainingFrequency: 'moderate',
+    goal: 'maintain', deficitLevel: 'moderate'
   });
   const [calcResults, setCalcResults] = useState(null);
 
@@ -233,20 +234,25 @@ export default function CoreBuddyNutrition() {
       ? (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5
       : (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
 
-    const multipliers = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, veryActive: 1.9 };
-    const tdee = bmr * multipliers[formData.activityLevel];
+    // NEAT — daily lifestyle activity (outside of training)
+    const neatMultipliers = { sedentary: 1.2, light: 1.3, moderate: 1.4, active: 1.5 };
+    const neat = bmr * neatMultipliers[formData.dailyActivity];
+
+    // Exercise add-on — average daily calories from training sessions
+    const exerciseAddOns = { low: 100, moderate: 200, high: 300, daily: 400 };
+    const tdee = Math.round(neat + exerciseAddOns[formData.trainingFrequency]);
 
     let targetCalories = tdee, proteinPerKg, fatPct;
     switch (formData.goal) {
       case 'lose':
-        targetCalories = tdee - ({ light: 250, moderate: 500, harsh: 750 }[formData.deficitLevel]);
+        targetCalories = tdee * (1 - ({ light: 0.15, moderate: 0.20, harsh: 0.25 }[formData.deficitLevel]));
         proteinPerKg = 2.2; fatPct = 0.30; break;
       case 'build':
-        targetCalories = tdee + 300; proteinPerKg = 2.0; fatPct = 0.22; break;
+        targetCalories = tdee * 1.10; proteinPerKg = 2.0; fatPct = 0.22; break;
       default:
         proteinPerKg = 1.8; fatPct = 0.25;
     }
-    targetCalories = Math.max(targetCalories, formData.gender === 'male' ? 1500 : 1200);
+    targetCalories = Math.max(targetCalories, formData.gender === 'male' ? 1400 : 1100);
 
     const protein = Math.round(weightKg * proteinPerKg);
     const fats = Math.round((targetCalories * fatPct) / 9);
@@ -254,7 +260,9 @@ export default function CoreBuddyNutrition() {
 
     setCalcResults({
       calories: Math.round(targetCalories), protein, carbs, fats,
-      bmr: Math.round(bmr), tdee: Math.round(tdee)
+      bmr: Math.round(bmr), neat: Math.round(neat),
+      exerciseAdd: exerciseAddOns[formData.trainingFrequency],
+      tdee: Math.round(tdee)
     });
   };
 
@@ -765,15 +773,25 @@ export default function CoreBuddyNutrition() {
               </div>
             </div>
 
-            {/* Activity Level */}
+            {/* Daily Activity */}
             <div className="nut-form-group">
-              <label>Activity Level</label>
-              <select value={formData.activityLevel} onChange={e => { setFormData(p => ({ ...p, activityLevel: e.target.value })); setCalcResults(null); }}>
-                <option value="sedentary">Sedentary (little to no exercise)</option>
-                <option value="light">Lightly Active (1-3 days/week)</option>
-                <option value="moderate">Moderately Active (3-5 days/week)</option>
-                <option value="active">Very Active (6-7 days/week)</option>
-                <option value="veryActive">Extra Active (athlete/physical job)</option>
+              <label>Daily Activity (outside of training)</label>
+              <select value={formData.dailyActivity} onChange={e => { setFormData(p => ({ ...p, dailyActivity: e.target.value })); setCalcResults(null); }}>
+                <option value="sedentary">Sedentary — desk job, under 5k steps</option>
+                <option value="light">Lightly Active — office + walking, 5-8k steps</option>
+                <option value="moderate">Moderately Active — on feet often, 8-12k steps</option>
+                <option value="active">Very Active — physical job, 12k+ steps</option>
+              </select>
+            </div>
+
+            {/* Training Frequency */}
+            <div className="nut-form-group">
+              <label>Training Sessions per Week</label>
+              <select value={formData.trainingFrequency} onChange={e => { setFormData(p => ({ ...p, trainingFrequency: e.target.value })); setCalcResults(null); }}>
+                <option value="low">1-2 sessions</option>
+                <option value="moderate">3-4 sessions</option>
+                <option value="high">5-6 sessions</option>
+                <option value="daily">7+ sessions</option>
               </select>
             </div>
 
@@ -799,13 +817,13 @@ export default function CoreBuddyNutrition() {
                 <label>Deficit Level</label>
                 <div className="nut-deficit-options">
                   <button className={formData.deficitLevel === 'light' ? 'active' : ''} onClick={() => { setFormData(p => ({ ...p, deficitLevel: 'light' })); setCalcResults(null); }}>
-                    <strong>Light</strong><span>-250 cal/day</span>
+                    <strong>Mild</strong><span>15% below TDEE</span>
                   </button>
                   <button className={formData.deficitLevel === 'moderate' ? 'active' : ''} onClick={() => { setFormData(p => ({ ...p, deficitLevel: 'moderate' })); setCalcResults(null); }}>
-                    <strong>Moderate</strong><span>-500 cal/day</span>
+                    <strong>Moderate</strong><span>20% below TDEE</span>
                   </button>
                   <button className={formData.deficitLevel === 'harsh' ? 'active' : ''} onClick={() => { setFormData(p => ({ ...p, deficitLevel: 'harsh' })); setCalcResults(null); }}>
-                    <strong>Aggressive</strong><span>-750 cal/day</span>
+                    <strong>Aggressive</strong><span>25% below TDEE</span>
                   </button>
                 </div>
               </div>
@@ -826,10 +844,16 @@ export default function CoreBuddyNutrition() {
               </div>
               <div className="nut-calc-info">
                 <div className="nut-calc-info-row">
-                  <span>BMR</span><span>{calcResults.bmr} cal</span>
+                  <span>BMR (body at rest)</span><span>{calcResults.bmr} cal</span>
                 </div>
                 <div className="nut-calc-info-row">
-                  <span>TDEE</span><span>{calcResults.tdee} cal</span>
+                  <span>+ Daily activity (NEAT)</span><span>{calcResults.neat} cal</span>
+                </div>
+                <div className="nut-calc-info-row">
+                  <span>+ Training sessions</span><span>+{calcResults.exerciseAdd} cal</span>
+                </div>
+                <div className="nut-calc-info-row" style={{ fontWeight: 600 }}>
+                  <span>TDEE (total burn)</span><span>{calcResults.tdee} cal</span>
                 </div>
               </div>
               <button className="nut-save-targets-btn" onClick={saveTargets}>Set as My Daily Targets</button>
