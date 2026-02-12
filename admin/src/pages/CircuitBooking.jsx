@@ -190,17 +190,6 @@ export default function CircuitBooking() {
         }
       }
 
-      // Check Wednesday deadline
-      const nextSat = getNextSaturday();
-      const deadline = new Date(nextSat);
-      deadline.setDate(deadline.getDate() - 3);
-      deadline.setHours(23, 59, 59, 999);
-      if (new Date() > deadline) {
-        showToast('Booking deadline has passed (Wednesday)', 'error');
-        setSaving(false);
-        return;
-      }
-
       // Check already booked
       if (session.slots.some(s => s.memberId === clientData.id)) {
         showToast('You already have a slot booked', 'error');
@@ -391,10 +380,6 @@ export default function CircuitBooking() {
 
   // Deadline checks for UI
   const nextSat = getNextSaturday();
-  const bookDeadline = new Date(nextSat);
-  bookDeadline.setDate(bookDeadline.getDate() - 3);
-  bookDeadline.setHours(23, 59, 59, 999);
-  const pastBookDeadline = new Date() > bookDeadline;
 
   const cancelDeadline = new Date(nextSat);
   cancelDeadline.setHours(9, 0, 0, 0);
@@ -416,13 +401,6 @@ export default function CircuitBooking() {
           <p>{session.time} - {session.endTime} &bull; {availableSlots} slot{availableSlots !== 1 ? 's' : ''} available</p>
         </div>
 
-        {/* Deadline Notice */}
-        {pastBookDeadline && !myCurrentSlot && (
-          <div className="cb-deadline-notice">
-            Booking deadline has passed for this week
-          </div>
-        )}
-
         {/* 8 Slot Cards */}
         <div className="cb-slots-grid">
           {session.slots.map(slot => {
@@ -437,7 +415,7 @@ export default function CircuitBooking() {
                   {isAvailable ? (
                     <>
                       <span className="cb-slot-available">Available</span>
-                      {!myCurrentSlot && !pastBookDeadline && (
+                      {!myCurrentSlot && (
                         <button className="cb-slot-book-btn" onClick={() => handleBookSlot(slot.slotNumber)} disabled={saving}>
                           Book
                         </button>
@@ -501,7 +479,7 @@ export default function CircuitBooking() {
 
         {/* Rules */}
         <div className="cb-rules">
-          <p><strong>Book by Wednesday</strong> &bull; <strong>Cancel 24hrs before</strong> &bull; <strong>3 no-shows = 1 month ban</strong></p>
+          <p><strong>Book anytime before class</strong> &bull; <strong>Cancel 24hrs before</strong> &bull; <strong>3 no-shows = 1 month ban</strong></p>
         </div>
       </main>
 
