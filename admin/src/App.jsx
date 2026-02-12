@@ -5,7 +5,15 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import Login from './pages/Login';
 import './styles/theme.css';
 
-// Lazy-load every page except Login (the entry point)
+// Eagerly import CoreBuddy pages (shared bottom-nav group — no loading gap)
+import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
+import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
+import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
+import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
+import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
+import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
+
+// Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AddClient = lazy(() => import('./pages/AddClient'));
 const ClientDashboard = lazy(() => import('./pages/ClientDashboard'));
@@ -17,16 +25,10 @@ const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
 const PersonalBests = lazy(() => import('./pages/PersonalBests'));
 const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
 const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
-const CoreBuddyDashboard = lazy(() => import('./pages/CoreBuddyDashboard'));
-const CoreBuddyNutrition = lazy(() => import('./pages/CoreBuddyNutrition'));
-const CoreBuddyWorkouts = lazy(() => import('./pages/CoreBuddyWorkouts'));
-const CoreBuddyProgrammes = lazy(() => import('./pages/CoreBuddyProgrammes'));
-const CoreBuddyAchievements = lazy(() => import('./pages/CoreBuddyAchievements'));
-const CoreBuddyConsistency = lazy(() => import('./pages/CoreBuddyConsistency'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 
-// Scroll to top + fade-in on route change
-function PageTransition({ children }) {
+// Scroll to top on route change
+function ScrollToTop({ children }) {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -39,11 +41,7 @@ function PageTransition({ children }) {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
 
-  return (
-    <div className="page-transition" key={pathname}>
-      {children}
-    </div>
-  );
+  return children;
 }
 
 // Component to handle redirect from 404.html
@@ -69,7 +67,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter basename="/login">
           <RedirectHandler />
-          <PageTransition>
+          <ScrollToTop>
           <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<Login />} />
@@ -94,7 +92,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>
-          </PageTransition>
+          </ScrollToTop>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
