@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { TICKS_78_94, TICKS_MINI } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 
@@ -227,19 +228,12 @@ export default function CoreBuddyConsistency() {
         <div className="cbc-ring-section">
           <div className="cbc-progress-ring">
             <svg viewBox="0 0 200 200">
-              {[...Array(TICK_COUNT)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const x1 = 100 + 78 * Math.cos(angle);
-                const y1 = 100 + 78 * Math.sin(angle);
-                const x2 = 100 + 94 * Math.cos(angle);
-                const y2 = 100 + 94 * Math.sin(angle);
-                return (
-                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                    className={i < todayTicks ? 'cbc-tick-filled' : 'cbc-tick-empty'}
-                    strokeWidth={i % 5 === 0 ? '3' : '2'}
-                    style={{ transitionDelay: `${i * 20}ms` }} />
-                );
-              })}
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className={i < todayTicks ? 'cbc-tick-filled' : 'cbc-tick-empty'}
+                  strokeWidth={t.thick ? '3' : '2'}
+                  style={{ transitionDelay: `${i * 20}ms` }} />
+              ))}
             </svg>
             <div className="cbc-ring-center">
               <span className="cbc-ring-pct">{todayPct}%</span>
@@ -313,18 +307,11 @@ export default function CoreBuddyConsistency() {
               return (
                 <div key={i} className={`cbc-day-ring ${isToday ? 'cbc-day-today' : ''} ${day.completed > 0 ? 'cbc-day-active' : ''}`}>
                   <svg viewBox="0 0 100 100">
-                    {[...Array(TICK_COUNT)].map((_, t) => {
-                      const angle = (t * 6 - 90) * (Math.PI / 180);
-                      const x1 = 50 + 38 * Math.cos(angle);
-                      const y1 = 50 + 38 * Math.sin(angle);
-                      const x2 = 50 + 46 * Math.cos(angle);
-                      const y2 = 50 + 46 * Math.sin(angle);
-                      return (
-                        <line key={t} x1={x1} y1={y1} x2={x2} y2={y2}
-                          className={t < filled ? 'cbc-day-tick-filled' : 'cbc-day-tick-empty'}
-                          strokeWidth={t % 5 === 0 ? '3' : '2'} />
-                      );
-                    })}
+                    {TICKS_MINI.map((t, idx) => (
+                      <line key={idx} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                        className={idx < filled ? 'cbc-day-tick-filled' : 'cbc-day-tick-empty'}
+                        strokeWidth={t.thick ? '3' : '2'} />
+                    ))}
                   </svg>
                   <span className="cbc-day-label">{dayLabels[i]}</span>
                   <span className="cbc-day-count">{day.completed}/{day.total}</span>

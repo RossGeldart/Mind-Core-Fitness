@@ -11,6 +11,7 @@ import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
 import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
+import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -1280,18 +1281,11 @@ export default function CoreBuddyWorkouts() {
     const filled = Math.round((current / total) * TICK_COUNT);
     return (
       <svg className="wk-ring-svg" viewBox="0 0 200 200">
-        {[...Array(TICK_COUNT)].map((_, i) => {
-          const angle = (i * 6 - 90) * (Math.PI / 180);
-          const x1 = 100 + 82 * Math.cos(angle);
-          const y1 = 100 + 82 * Math.sin(angle);
-          const x2 = 100 + 94 * Math.cos(angle);
-          const y2 = 100 + 94 * Math.sin(angle);
-          return (
-            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-              className={i < filled ? `wk-tick-filled ${colorClass}` : 'wk-tick-empty'}
-              strokeWidth={i % 5 === 0 ? '3' : '2'} />
-          );
-        })}
+        {TICKS_82_94.map((t, i) => (
+          <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+            className={i < filled ? `wk-tick-filled ${colorClass}` : 'wk-tick-empty'}
+            strokeWidth={t.thick ? '3' : '2'} />
+        ))}
       </svg>
     );
   };
@@ -1354,17 +1348,12 @@ export default function CoreBuddyWorkouts() {
             <button className="wk-active-prog" onClick={() => navigate('/client/core-buddy/programmes')}>
               <div className="wk-active-prog-ring">
                 <svg viewBox="0 0 200 200">
-                  {[...Array(TICK_COUNT)].map((_, i) => {
-                    const angle = (i * 6 - 90) * (Math.PI / 180);
-                    const x1 = 100 + 78 * Math.cos(angle);
-                    const y1 = 100 + 78 * Math.sin(angle);
-                    const x2 = 100 + 94 * Math.cos(angle);
-                    const y2 = 100 + 94 * Math.sin(angle);
+                  {TICKS_78_94.map((t, i) => {
                     const filled = Math.round((programmePct / 100) * TICK_COUNT);
                     return (
-                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                      <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                         className={i < filled ? 'wk-ap-tick-filled' : 'wk-ap-tick-empty'}
-                        strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                        strokeWidth={t.thick ? '3' : '2'} />
                     );
                   })}
                 </svg>
@@ -1412,7 +1401,7 @@ export default function CoreBuddyWorkouts() {
                 <button key={prog.id} className="wk-prog-hero-card"
                   onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
                   style={{ animationDelay: `${i * 0.06}s` }}>
-                  <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
+                  <img src={programmeCardImg} alt="Programme" className="wk-prog-hero-bg" loading="lazy" />
                   <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
                   <div className="wk-prog-hero-content">
                     <div className="wk-prog-hero-top">
@@ -1450,7 +1439,7 @@ export default function CoreBuddyWorkouts() {
                   <img src={mg.image} alt={mg.label} className="wk-muscle-thumb-img" />
                 ) : (
                   <>
-                    <img src={randomiserCardImg} alt="" className="wk-muscle-hero-bg" />
+                    <img src={randomiserCardImg} alt="Muscle group" className="wk-muscle-hero-bg" loading="lazy" />
                     <div className="wk-muscle-hero-overlay" style={{ background: MUSCLE_GRADIENTS[mg.key] }} />
                     <div className="wk-muscle-hero-content">
                       <div className="wk-muscle-hero-icon">
@@ -1502,17 +1491,12 @@ export default function CoreBuddyWorkouts() {
           <div className="wk-stats-strip">
             <div className="wk-stats-strip-ring">
               <svg viewBox="0 0 200 200">
-                {[...Array(TICK_COUNT)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const x1 = 100 + 78 * Math.cos(angle);
-                  const y1 = 100 + 78 * Math.sin(angle);
-                  const x2 = 100 + 94 * Math.cos(angle);
-                  const y2 = 100 + 94 * Math.sin(angle);
+                {TICKS_78_94.map((t, i) => {
                   const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
                   return (
-                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                       className={i < filled ? 'wk-stats-tick-filled' : 'wk-stats-tick-empty'}
-                      strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                      strokeWidth={t.thick ? '3' : '2'} />
                   );
                 })}
               </svg>
@@ -1622,21 +1606,14 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-spin-container">
           <div className="wk-spin-ring">
             <svg className="wk-spin-svg" viewBox="0 0 200 200">
-              {[...Array(TICK_COUNT)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const x1 = 100 + 78 * Math.cos(angle);
-                const y1 = 100 + 78 * Math.sin(angle);
-                const x2 = 100 + 94 * Math.cos(angle);
-                const y2 = 100 + 94 * Math.sin(angle);
-                return (
-                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                    className="wk-spin-tick"
-                    strokeWidth={i % 5 === 0 ? '3.5' : '2'}
-                    style={{ animationDelay: `${i * 0.03}s` }} />
-                );
-              })}
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className="wk-spin-tick"
+                  strokeWidth={t.thick ? '3.5' : '2'}
+                  style={{ animationDelay: `${i * 0.03}s` }} />
+              ))}
             </svg>
-            <img src="/Logo.webp" alt="" className="wk-spin-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
           </div>
           <p className="wk-spin-text">Generating workout...</p>
         </div>
@@ -1846,19 +1823,12 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-complete">
           <div className="wk-complete-ring">
             <svg className="wk-complete-svg" viewBox="0 0 200 200">
-              {[...Array(TICK_COUNT)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const x1 = 100 + 78 * Math.cos(angle);
-                const y1 = 100 + 78 * Math.sin(angle);
-                const x2 = 100 + 94 * Math.cos(angle);
-                const y2 = 100 + 94 * Math.sin(angle);
-                return (
-                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                    className="wk-tick-complete"
-                    strokeWidth={i % 5 === 0 ? '3.5' : '2'}
-                    style={{ animationDelay: `${i * 0.02}s` }} />
-                );
-              })}
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className="wk-tick-complete"
+                  strokeWidth={t.thick ? '3.5' : '2'}
+                  style={{ animationDelay: `${i * 0.02}s` }} />
+              ))}
             </svg>
             <div className="wk-complete-center">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
@@ -2234,19 +2204,12 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-complete">
           <div className="wk-complete-ring">
             <svg className="wk-complete-svg" viewBox="0 0 200 200">
-              {[...Array(TICK_COUNT)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const x1 = 100 + 78 * Math.cos(angle);
-                const y1 = 100 + 78 * Math.sin(angle);
-                const x2 = 100 + 94 * Math.cos(angle);
-                const y2 = 100 + 94 * Math.sin(angle);
-                return (
-                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                    className="wk-tick-complete"
-                    strokeWidth={i % 5 === 0 ? '3.5' : '2'}
-                    style={{ animationDelay: `${i * 0.02}s` }} />
-                );
-              })}
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className="wk-tick-complete"
+                  strokeWidth={t.thick ? '3.5' : '2'}
+                  style={{ animationDelay: `${i * 0.02}s` }} />
+              ))}
             </svg>
             <div className="wk-complete-center">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>

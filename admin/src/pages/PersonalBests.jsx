@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import PersonalBestsJunior from './PersonalBestsJunior';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { TICKS_85_96, TICKS_TINY } from '../utils/ringTicks';
 import './PersonalBests.css';
 import './ClientDashboard.css';
 
@@ -771,17 +772,12 @@ export default function PersonalBests() {
                     <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
                       <div className="pb-cb-card-ring">
                         <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
-                          {[...Array(60)].map((_, j) => {
-                            const angle = (j * 6 - 90) * (Math.PI / 180);
-                            const x1 = 40 + 30 * Math.cos(angle);
-                            const y1 = 40 + 30 * Math.sin(angle);
-                            const x2 = 40 + 37 * Math.cos(angle);
-                            const y2 = 40 + 37 * Math.sin(angle);
+                          {TICKS_TINY.map((t, j) => {
                             const filled = j < ringFill;
                             return (
-                              <line key={j} x1={x1} y1={y1} x2={x2} y2={y2}
+                              <line key={j} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                                 className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                                strokeWidth={j % 5 === 0 ? '2' : '1.5'} />
+                                strokeWidth={t.thick ? '2' : '1.5'} />
                             );
                           })}
                         </svg>
@@ -936,23 +932,12 @@ export default function PersonalBests() {
                   <div className={`pb-ring-container slide-from-${slideDirection.current}`} key={currentSlide}>
                     <div className="pb-ring">
                       <svg className="pb-ring-svg" viewBox="0 0 200 200">
-                        {[...Array(60)].map((_, i) => {
-                          const angle = (i * 6 - 90) * (Math.PI / 180);
-                          const innerRadius = 85;
-                          const outerRadius = 96;
-                          const x1 = 100 + innerRadius * Math.cos(angle);
-                          const y1 = 100 + innerRadius * Math.sin(angle);
-                          const x2 = 100 + outerRadius * Math.cos(angle);
-                          const y2 = 100 + outerRadius * Math.sin(angle);
+                        {TICKS_85_96.map((t, i) => {
                           const isFilled = i < Math.round(ringFill);
-
                           return (
-                            <line
-                              key={i}
-                              x1={x1} y1={y1} x2={x2} y2={y2}
+                            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                               className={`pb-ring-tick ${isFilled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                              strokeWidth={i % 5 === 0 ? "3" : "2"}
-                            />
+                              strokeWidth={t.thick ? '3' : '2'} />
                           );
                         })}
                       </svg>

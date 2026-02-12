@@ -4,6 +4,7 @@ import { collection, query, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { TICKS_85_96 } from '../utils/ringTicks';
 import './CircuitDashboard.css';
 
 const getNextSaturday = () => {
@@ -189,21 +190,13 @@ export default function CircuitDashboard() {
           <div className="circuit-countdown">
             <div className="circuit-ring">
               <svg className="circuit-ring-svg" viewBox="0 0 200 200">
-                {[...Array(60)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const innerR = 85;
-                  const outerR = 96;
-                  const x1 = 100 + innerR * Math.cos(angle);
-                  const y1 = 100 + innerR * Math.sin(angle);
-                  const x2 = 100 + outerR * Math.cos(angle);
-                  const y2 = 100 + outerR * Math.sin(angle);
+                {TICKS_85_96.map((t, i) => {
                   const elapsed = 60 - liveCountdown.seconds;
                   const isElapsed = i < elapsed;
                   return (
-                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                       className={`circuit-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
-                      strokeWidth={i % 5 === 0 ? '3' : '2'}
-                    />
+                      strokeWidth={t.thick ? '3' : '2'} />
                   );
                 })}
               </svg>

@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './PersonalBests.css';
+import { TICKS_85_96 } from '../utils/ringTicks';
 import './ClientDashboard.css';
 
 const EXERCISES = [
@@ -733,23 +734,12 @@ export default function PersonalBestsJunior() {
                   <div className={`pb-ring-container slide-from-${slideDirection.current}`} key={currentSlide}>
                     <div className="pb-ring">
                       <svg className="pb-ring-svg" viewBox="0 0 200 200">
-                        {[...Array(60)].map((_, i) => {
-                          const angle = (i * 6 - 90) * (Math.PI / 180);
-                          const innerRadius = 85;
-                          const outerRadius = 96;
-                          const x1 = 100 + innerRadius * Math.cos(angle);
-                          const y1 = 100 + innerRadius * Math.sin(angle);
-                          const x2 = 100 + outerRadius * Math.cos(angle);
-                          const y2 = 100 + outerRadius * Math.sin(angle);
+                        {TICKS_85_96.map((t, i) => {
                           const isFilled = i < Math.round(ringFill);
-
                           return (
-                            <line
-                              key={i}
-                              x1={x1} y1={y1} x2={x2} y2={y2}
+                            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                               className={`pb-ring-tick ${isFilled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                              strokeWidth={i % 5 === 0 ? "3" : "2"}
-                            />
+                              strokeWidth={t.thick ? '3' : '2'} />
                           );
                         })}
                       </svg>
