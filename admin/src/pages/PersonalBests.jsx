@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import PersonalBestsJunior from './PersonalBestsJunior';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 import './PersonalBests.css';
 import './ClientDashboard.css';
 
@@ -1644,6 +1645,9 @@ export default function PersonalBests() {
           )}
         </nav>
       )}
+
+      {/* Core Buddy Bottom Nav */}
+      {coreBuddyMode && <CoreBuddyNav active="progress" />}
     </div>
   );
 }

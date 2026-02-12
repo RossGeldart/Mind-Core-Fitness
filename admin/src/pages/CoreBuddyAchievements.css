@@ -30,7 +30,7 @@
 .ach-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 16px 80px;
   animation: fadeIn 0.4s ease-out;
 }
 

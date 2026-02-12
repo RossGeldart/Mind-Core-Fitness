@@ -6,6 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 
 const TICK_COUNT = 60;
 
@@ -911,6 +912,7 @@ export default function CoreBuddyProgrammes() {
             ))}
           </div>
         </main>
+        <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
     );
@@ -1095,6 +1097,7 @@ export default function CoreBuddyProgrammes() {
             Quit Programme
           </button>
         </main>
+        <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
     );
