@@ -2620,3 +2620,11 @@
   color: #fff;
   box-shadow: none;
 }
+
+[data-theme="light"] .wk-equip-btn.active .wk-equip-icon,
+[data-theme="light"] .wk-level-card.active .wk-level-name,
+[data-theme="light"] .wk-level-card.active .wk-level-desc,
+[data-theme="light"] .wk-time-btn.active .wk-time-num,
+[data-theme="light"] .wk-time-btn.active .wk-time-unit {
+  color: #fff;
+}
