@@ -1566,7 +1566,7 @@
 .wk-equip-btn.active {
   background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
   color: var(--text-primary);
-  box-shadow: 0 0 14px rgba(220, 60, 70, 0.5);
+  box-shadow: none;
   transform: scale(1.08);
   z-index: 2;
 }
@@ -1662,7 +1662,7 @@
 
 .wk-level-card.active {
   background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  box-shadow: 0 0 14px rgba(220, 60, 70, 0.5);
+  box-shadow: none;
   transform: scale(1.03);
   z-index: 2;
 }
@@ -1731,7 +1731,7 @@
 
 .wk-time-btn.active {
   background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  box-shadow: 0 0 14px rgba(220, 60, 70, 0.5);
+  box-shadow: none;
   transform: scale(1.1);
   z-index: 2;
 }
