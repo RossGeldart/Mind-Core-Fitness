@@ -106,6 +106,13 @@
 }
 
 /* ===== Active Programme Card ===== */
+.wk-active-prog-placeholder {
+  height: 88px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: transparent;
+}
+
 .wk-active-prog {
   display: flex;
   align-items: center;
