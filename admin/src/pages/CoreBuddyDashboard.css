@@ -405,6 +405,29 @@
   transition: transform 0.1s ease;
 }
 
+/* Gradient accent for Progress & Leaderboard cards */
+.cb-card-progress,
+.cb-card-leaderboard {
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-color: transparent;
+}
+
+.cb-card-progress .cb-card-content h3,
+.cb-card-progress .cb-card-content p,
+.cb-card-progress .cb-card-arrow,
+.cb-card-leaderboard .cb-card-content h3,
+.cb-card-leaderboard .cb-card-content p,
+.cb-card-leaderboard .cb-card-arrow {
+  color: #fff;
+  opacity: 1;
+}
+
+[data-theme="light"] .cb-card-progress,
+[data-theme="light"] .cb-card-leaderboard {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  border-color: transparent;
+}
+
 /* Card Icon */
 .cb-card-icon {
   flex-shrink: 0;
