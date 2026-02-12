@@ -1,15 +1,5 @@
 /* Core Buddy Consistency / Habit Tracking */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cardEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 /* Loading */
 .cbc-loading {
   display: flex;
@@ -107,7 +97,6 @@
   flex-direction: column;
   align-items: center;
   padding: 24px 0 8px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .cbc-progress-ring {
@@ -197,7 +186,6 @@
 /* Section */
 .cbc-section {
   padding: 16px 0;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .cbc-section-title {
@@ -232,7 +220,6 @@
   transition: background 0.2s ease, border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
-  animation: cardEntrance 0.3s ease-out;
 }
 
 .cbc-habit-btn:active {
@@ -416,7 +403,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: fadeIn 0.3s ease-out;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 

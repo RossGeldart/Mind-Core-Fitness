@@ -1,15 +1,5 @@
 /* ====== Core Buddy Achievements Page ====== */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cardEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes badgeGlow {
   0%, 100% { box-shadow: 0 0 8px var(--group-color, rgba(var(--color-primary-rgb), 0.3)); }
   50% { box-shadow: 0 0 18px var(--group-color, rgba(var(--color-primary-rgb), 0.5)); }
@@ -51,7 +41,6 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 0 16px 80px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .ach-page .nut-back-btn {
@@ -82,7 +71,6 @@
   padding: 20px 16px;
   margin-bottom: 24px;
   box-shadow: var(--shadow-md);
-  animation: cardEntrance 0.4s ease-out;
 }
 
 .ach-stat-item {
@@ -117,7 +105,6 @@
 .ach-empty {
   text-align: center;
   padding: 40px 20px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .ach-empty-icon {
@@ -369,7 +356,6 @@
   padding: 18px 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  animation: cardEntrance 0.3s ease-out;
   transition: all 0.2s ease;
 }
 

@@ -1,15 +1,5 @@
 /* Core Buddy Dashboard */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cardEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes colonBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
@@ -66,7 +56,6 @@
 /* Greeting */
 .cb-greeting {
   padding: 28px 0 0;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .cb-greeting h2 {
@@ -84,7 +73,6 @@
   flex-direction: column;
   align-items: center;
   padding: 20px 0;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .cb-ring {
@@ -205,7 +193,6 @@
   justify-content: center;
   gap: 16px;
   padding: 4px 0 16px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .cb-stat-item {
@@ -336,8 +323,6 @@
   margin: 0;
   padding-top: 4px;
 }
-
-.cb-feature-card { animation: cardEntrance 0.3s ease-out; }
 
 .cb-feature-card:hover {
   transform: translateY(-2px);
@@ -563,7 +548,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: fadeIn 0.3s ease-out;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
