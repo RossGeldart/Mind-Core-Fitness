@@ -151,7 +151,8 @@ export default function ClientList() {
       status: client.status,
       hasPortalAccess: !!client.uid,
       circuitAccess: !!client.circuitAccess,
-      coreBuddyAccess: !!client.coreBuddyAccess
+      coreBuddyAccess: !!client.coreBuddyAccess,
+      isJunior: !!client.isJunior
     });
   };
 
@@ -218,6 +219,7 @@ export default function ClientList() {
         clientType: editForm.clientType,
         status: editForm.status,
         coreBuddyAccess: editForm.coreBuddyAccess,
+        isJunior: editForm.isJunior,
       };
 
       if (isBlock) {
@@ -513,6 +515,15 @@ export default function ClientList() {
                         <label className="circuit-access-toggle">
                           <input type="checkbox" checked={editForm.coreBuddyAccess} onChange={(e) => setEditForm(prev => ({ ...prev, coreBuddyAccess: e.target.checked }))} />
                           <span>Core Buddy Access</span>
+                        </label>
+                      </div>
+                    )}
+
+                    {editForm.clientType === 'block' && (
+                      <div className="edit-row circuit-row">
+                        <label className="circuit-access-toggle">
+                          <input type="checkbox" checked={editForm.isJunior} onChange={(e) => setEditForm(prev => ({ ...prev, isJunior: e.target.checked }))} />
+                          <span>Junior Client (Kids)</span>
                         </label>
                       </div>
                     )}
