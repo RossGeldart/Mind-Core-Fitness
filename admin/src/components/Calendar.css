@@ -24,7 +24,7 @@
 }
 
 .calendar-header h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   color: var(--text-primary);
   margin: 0;
@@ -92,7 +92,7 @@
 }
 
 .selected-info strong {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   color: var(--text-primary);
 }
 
@@ -277,7 +277,7 @@
 }
 
 .day-card-header .day-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 600;
   font-size: 0.85rem;
 }
@@ -326,7 +326,7 @@
 }
 
 .time-panel-header h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   margin: 0;
 }
@@ -624,7 +624,7 @@
 }
 
 .modal-header h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   margin: 0;
 }
@@ -673,7 +673,7 @@
 }
 
 .client-option strong {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   color: var(--text-primary);
   font-size: 0.95rem;
 }

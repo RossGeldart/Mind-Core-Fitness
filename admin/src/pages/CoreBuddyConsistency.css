@@ -65,7 +65,7 @@
 
 .cbc-title {
   flex: 1;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-on-header);
@@ -194,7 +194,7 @@
 }
 
 .cbc-section-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -574,7 +574,7 @@
 }
 
 .cbc-celebration-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-primary);

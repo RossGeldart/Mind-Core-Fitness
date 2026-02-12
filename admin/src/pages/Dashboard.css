@@ -133,7 +133,7 @@
 
 .header-left h1 {
   color: var(--text-on-header);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
@@ -275,7 +275,7 @@
 }
 
 .view-header h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0;
@@ -391,7 +391,7 @@
 }
 
 .request-header .client-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -605,7 +605,7 @@
 }
 
 .empty-state h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;

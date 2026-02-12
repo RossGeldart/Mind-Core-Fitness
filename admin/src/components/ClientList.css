@@ -158,7 +158,7 @@
 
 /* ====== Section Headers ====== */
 .client-section-header {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -249,7 +249,7 @@
 }
 
 .client-name-text h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.95rem;
   color: var(--text-primary);
   margin: 0;
@@ -682,7 +682,7 @@
 }
 
 .notes-modal-header h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);

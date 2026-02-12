@@ -298,7 +298,7 @@
 }
 
 .empty-state h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
