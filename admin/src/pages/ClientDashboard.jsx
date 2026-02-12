@@ -162,6 +162,13 @@ export default function ClientDashboard() {
 
   useEffect(() => {
     if (clientData) {
+      // Check context for daily quote immediately (before Firestore fetch)
+      if (clientData.dailyQuote) {
+        const today = new Date().toISOString().split('T')[0];
+        if (clientData.dailyQuote.date === today) {
+          setDailyQuote(clientData.dailyQuote);
+        }
+      }
       fetchAllData();
     }
   }, [clientData]);

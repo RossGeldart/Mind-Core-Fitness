@@ -65,7 +65,7 @@ const MOTIVATION_QUOTES = [
 ];
 
 export default function DailyMotivation() {
-  const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
+  const { currentUser, isClient, clientData, updateClientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [dailyQuote, setDailyQuote] = useState(null);
@@ -137,17 +137,20 @@ export default function DailyMotivation() {
       date: today
     };
 
-    // Save to Firestore FIRST so dashboard can read it
+    // Save to Firestore
     try {
       await updateDoc(doc(db, 'clients', clientData.id), {
         dailyQuote: quoteData,
         quoteUsedIndices: [...usedIndices, selectedIndex]
       });
     } catch (error) {
-      console.error('Error saving daily quote:', error);
+      console.error('Error saving daily quote to Firestore:', error);
     }
 
-    // Then show the quote locally
+    // Update React context so dashboard has it immediately
+    updateClientData({ dailyQuote: quoteData });
+
+    // Show the quote locally
     setDailyQuote(quoteData);
     setQuoteAnimating(false);
   };
