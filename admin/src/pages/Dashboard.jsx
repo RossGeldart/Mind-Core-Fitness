@@ -295,24 +295,6 @@ export default function Dashboard() {
         </div>
         <nav className="header-nav">
           <button
-            className={`nav-btn ${activeView === 'schedule' ? 'active' : ''}`}
-            onClick={() => setActiveView('schedule')}
-          >
-            Today
-          </button>
-          <button
-            className={`nav-btn ${activeView === 'clients' ? 'active' : ''}`}
-            onClick={() => setActiveView('clients')}
-          >
-            Clients
-          </button>
-          <button
-            className={`nav-btn ${activeView === 'calendar' ? 'active' : ''}`}
-            onClick={() => setActiveView('calendar')}
-          >
-            Calendar
-          </button>
-          <button
             className={`nav-btn ${activeView === 'requests' ? 'active' : ''} ${pendingCount > 0 ? 'has-badge' : ''}`}
             onClick={() => setActiveView('requests')}
           >
@@ -506,6 +488,22 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* Bottom Tab Nav */}
+      <nav className="admin-bottom-nav">
+        <button className={`admin-nav-tab ${activeView === 'schedule' ? 'active' : ''}`} onClick={() => setActiveView('schedule')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Today</span>
+        </button>
+        <button className={`admin-nav-tab ${activeView === 'clients' ? 'active' : ''}`} onClick={() => setActiveView('clients')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Clients</span>
+        </button>
+        <button className={`admin-nav-tab ${activeView === 'calendar' ? 'active' : ''}`} onClick={() => setActiveView('calendar')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+          <span>Calendar</span>
+        </button>
+      </nav>
     </div>
   );
 }
