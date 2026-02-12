@@ -130,16 +130,12 @@ export default function CoreBuddyAchievements() {
   if (authLoading || loading) {
     return (
       <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <header className="cb-header">
-          <div className="cb-header-left">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
-            <span className="cb-header-title">Achievements</span>
+        <header className="client-header">
+          <div className="header-content">
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
           </div>
         </header>
-        <main className="ach-main">
-          <div className="skeleton" style={{ width: 180, height: 28, marginBottom: 20, borderRadius: 8 }}></div>
-          <div className="skeleton" style={{ height: 200, borderRadius: 16 }}></div>
-        </main>
+        <div className="ach-loading-inline"><div className="cb-loading-spinner" /></div>
       </div>
     );
   }

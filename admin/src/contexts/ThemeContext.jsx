@@ -30,7 +30,13 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('accent', accent);
   }, [accent]);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  const toggleTheme = () => {
+    document.documentElement.setAttribute('data-theme-transitioning', '');
+    setIsDark(!isDark);
+    setTimeout(() => {
+      document.documentElement.removeAttribute('data-theme-transitioning');
+    }, 350);
+  };
   const setAccent = (color) => setAccentState(color);
 
   const value = {

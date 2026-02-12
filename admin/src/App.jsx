@@ -23,11 +23,10 @@ import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
 import Leaderboard from './pages/Leaderboard';
 import './styles/theme.css';
 
-// Scroll to top on route change
-function ScrollToTop() {
+// Scroll to top + fade-in on route change
+function PageTransition({ children }) {
   const { pathname } = useLocation();
 
-  // Disable browser's automatic scroll restoration
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -35,18 +34,14 @@ function ScrollToTop() {
   }, []);
 
   useEffect(() => {
-    // Immediate scroll
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    // Also scroll after a frame to override any browser restoration
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-    });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
 
-  return null;
+  return (
+    <div className="page-transition" key={pathname}>
+      {children}
+    </div>
+  );
 }
 
 // Component to handle redirect from 404.html
@@ -71,8 +66,8 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter basename="/login">
-          <ScrollToTop />
           <RedirectHandler />
+          <PageTransition>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -95,6 +90,7 @@ function App() {
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </PageTransition>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

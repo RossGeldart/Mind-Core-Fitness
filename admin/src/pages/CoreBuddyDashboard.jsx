@@ -167,14 +167,6 @@ export default function CoreBuddyDashboard() {
     { label: 'Habits Today', value: `${habitWeekPct}%`, ticks: habitTicks, cls: 'cb-stat-habits' },
   ];
 
-  if (authLoading) {
-    return (
-      <div className="cb-loading">
-        <div className="cb-loading-spinner" />
-      </div>
-    );
-  }
-
   return (
     <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
       {/* Header */}
@@ -196,6 +188,9 @@ export default function CoreBuddyDashboard() {
         </div>
       </header>
 
+      {authLoading ? (
+        <div className="cb-loading-inline"><div className="cb-loading-spinner" /></div>
+      ) : (
       <main className="cb-main">
         {/* Greeting */}
         <div className="cb-greeting">
@@ -363,6 +358,7 @@ export default function CoreBuddyDashboard() {
 
         </div>
       </main>
+      )}
 
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />

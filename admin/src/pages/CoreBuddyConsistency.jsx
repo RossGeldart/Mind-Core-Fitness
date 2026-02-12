@@ -198,14 +198,6 @@ export default function CoreBuddyConsistency() {
   const todayPct = Math.round((todayCompleted / DEFAULT_HABITS.length) * 100);
   const todayTicks = Math.round((todayPct / 100) * TICK_COUNT);
 
-  if (authLoading || loading) {
-    return (
-      <div className="cbc-loading">
-        <div className="cbc-loading-spinner" />
-      </div>
-    );
-  }
-
   return (
     <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* Header */}
@@ -227,6 +219,9 @@ export default function CoreBuddyConsistency() {
         </div>
       </header>
 
+      {(authLoading || loading) ? (
+        <div className="cbc-loading-inline"><div className="cbc-loading-spinner" /></div>
+      ) : (
       <main className="cbc-main">
         {/* Today's Progress Ring */}
         <div className="cbc-ring-section">
@@ -347,6 +342,7 @@ export default function CoreBuddyConsistency() {
           </div>
         </div>
       </main>
+      )}
 
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />
