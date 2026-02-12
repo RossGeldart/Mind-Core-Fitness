@@ -5,32 +5,6 @@
   100% { transform: rotate(360deg); }
 }
 
-@keyframes tickPulse {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; stroke: var(--color-primary); }
-}
-
-@keyframes tickFillIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes countdownPop {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes completeTick {
-  from { opacity: 0; stroke: transparent; }
-  to { opacity: 1; stroke: #4caf50; }
-}
-
 @keyframes pulseBorder {
   0%, 100% { border-color: var(--color-primary); }
   50% { border-color: rgba(var(--color-primary-rgb), 0.3); }
@@ -565,11 +539,6 @@
 }
 
 /* Swipe Arrow Indicator */
-@keyframes swipeArrowPulse {
-  0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.6; }
-  50% { transform: translateY(-50%) translateX(5px); opacity: 1; }
-}
-
 .wk-swipe-arrow {
   position: absolute;
   right: 8px;
@@ -584,7 +553,7 @@
   background: rgba(var(--color-primary-rgb), 0.85);
   color: #fff;
   box-shadow: 0 0 12px rgba(var(--color-primary-rgb), 0.6), 0 0 24px rgba(var(--color-primary-rgb), 0.3);
-  animation: swipeArrowPulse 2s ease-in-out infinite;
+
   pointer-events: none;
   z-index: 5;
 }
@@ -1386,11 +1355,9 @@
   gap: 16px;
   max-width: 320px;
   width: 90%;
-  animation: countdownPop 0.4s cubic-bezier(0.17, 0.67, 0.34, 1.5);
 }
 
 .mg-badge-celebration-icon {
-  animation: countdownPop 0.5s cubic-bezier(0.17, 0.67, 0.34, 1.5) 0.2s backwards;
 }
 
 .mg-badge-celebration-title {
@@ -1866,7 +1833,6 @@
 
 .wk-spin-tick {
   stroke: var(--border-color);
-  animation: tickPulse 2s ease-in-out infinite;
 }
 
 .wk-spin-logo {
@@ -2028,7 +1994,6 @@
   background: var(--bg-card);
   border-radius: 16px;
   overflow: hidden;
-  animation: slideUp 0.25s ease-out;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
@@ -2136,7 +2101,6 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  animation: countdownPop 0.4s cubic-bezier(0.17, 0.67, 0.34, 1.5);
 }
 
 .wk-countdown-num {
@@ -2429,7 +2393,6 @@
 
 .wk-tick-complete {
   stroke: transparent;
-  animation: completeTick 0.3s ease-out forwards;
 }
 
 .wk-complete-center {

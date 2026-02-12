@@ -1,68 +1,7 @@
 /* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
-
-/* Ripple Effect */
-@keyframes rippleEffect {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
 }
 
 .ripple-btn {
@@ -75,7 +14,6 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   transform: scale(0);
-  animation: rippleEffect 0.6s linear;
   pointer-events: none;
 }
 
@@ -264,7 +202,6 @@
   padding-bottom: 80px;
   max-width: 1200px;
   margin: 0 auto;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .view-header {
@@ -272,7 +209,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .view-header h2 {
@@ -325,7 +261,6 @@
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  animation: pulse 2s ease-in-out infinite;
 }
 
 /* Requests View */
@@ -339,7 +274,6 @@
   padding: 60px 40px;
   text-align: center;
   border: 1px solid var(--border-color);
-  animation: fadeIn 0.4s ease-out;
 }
 
 .no-requests .empty-icon {
@@ -375,14 +309,7 @@
   padding: 20px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-card);
-  animation: cardEntrance 0.4s ease-out backwards;
 }
-
-.request-card:nth-child(1) { animation-delay: 0.05s; }
-.request-card:nth-child(2) { animation-delay: 0.1s; }
-.request-card:nth-child(3) { animation-delay: 0.15s; }
-.request-card:nth-child(4) { animation-delay: 0.2s; }
-.request-card:nth-child(5) { animation-delay: 0.25s; }
 
 .request-header {
   display: flex;
@@ -514,7 +441,6 @@
   padding: 60px 40px;
   text-align: center;
   border: 1px solid var(--border-color);
-  animation: fadeIn 0.4s ease-out;
 }
 
 .coming-soon p {
@@ -545,13 +471,11 @@
   padding: 14px 20px;
   border-radius: 10px;
   box-shadow: var(--shadow-lg);
-  animation: slideIn 0.3s ease-out;
   min-width: 280px;
   max-width: 400px;
 }
 
 .toast.toast-exit {
-  animation: slideOut 0.3s ease-out forwards;
 }
 
 .toast.success {
@@ -589,7 +513,6 @@
   background: var(--bg-card);
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  animation: fadeIn 0.4s ease-out;
 }
 
 .empty-state-icon {
@@ -637,13 +560,7 @@
   gap: 14px;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.1s;
-  animation: cardEntrance 0.4s ease-out backwards;
 }
-
-.summary-card:nth-child(1) { animation-delay: 0.05s; }
-.summary-card:nth-child(2) { animation-delay: 0.1s; }
-.summary-card:nth-child(3) { animation-delay: 0.15s; }
-.summary-card:nth-child(4) { animation-delay: 0.2s; }
 
 .summary-card:active {
   transform: scale(0.97);
@@ -676,7 +593,6 @@
 
 .summary-icon.requests-icon.has-items {
   background: rgba(156, 39, 176, 0.25);
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .summary-icon.expiring-icon {
@@ -726,7 +642,6 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
-  animation: cardEntrance 0.4s ease-out 0.25s backwards;
 }
 
 .attention-header {

@@ -1,31 +1,5 @@
 /* Leaderboard */
 
-@keyframes fadeInUp {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes rankEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes podiumGrow {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
-}
-
-@keyframes crownBounce {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  25% { transform: translateY(-3px) rotate(-5deg); }
-  75% { transform: translateY(-3px) rotate(5deg); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
 /* Loading */
 .lb-loading {
   display: flex;
@@ -126,7 +100,6 @@
 .lb-optin-card {
   width: 100%;
   text-align: center;
-  animation: fadeInUp 0.5s ease-out;
 }
 
 .lb-optin-trophy {
@@ -134,7 +107,6 @@
   height: 80px;
   margin: 0 auto 20px;
   color: var(--color-primary);
-  animation: fadeInUp 0.3s ease-out;
 }
 
 .lb-optin-trophy svg {
@@ -173,12 +145,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  animation: fadeInUp 0.3s ease-out;
 }
-
-.lb-optin-category:nth-child(1) { animation-delay: 0.15s; }
-.lb-optin-category:nth-child(2) { animation-delay: 0.25s; }
-.lb-optin-category:nth-child(3) { animation-delay: 0.35s; }
 
 .lb-optin-category-icon {
   flex-shrink: 0;
@@ -231,7 +198,6 @@
   box-shadow: var(--shadow-primary);
   transition: transform 0.15s, opacity 0.15s;
   -webkit-tap-highlight-color: transparent;
-  animation: fadeInUp 0.3s ease-out;
 }
 
 .lb-optin-btn:active { transform: scale(0.97); }
@@ -242,7 +208,6 @@
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin: 12px 0 0;
-  animation: fadeInUp 0.3s ease-out;
 }
 
 /* ===== TABS ===== */
@@ -333,7 +298,6 @@
   justify-content: center;
   gap: 8px;
   padding: 12px 0 24px;
-  animation: fadeInUp 0.5s ease-out;
 }
 
 .lb-podium-place {
@@ -352,7 +316,6 @@
   width: 28px;
   height: 28px;
   margin-bottom: 4px;
-  animation: crownBounce 2s ease-in-out infinite;
 }
 
 .lb-podium-crown svg {
@@ -422,7 +385,6 @@
   justify-content: center;
   padding-top: 10px;
   transform-origin: bottom;
-  animation: podiumGrow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .lb-podium-rank {
@@ -436,7 +398,6 @@
   background: linear-gradient(180deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.03));
   border: 1px solid rgba(255, 215, 0, 0.25);
   border-bottom: none;
-  animation-delay: 0.2s;
 }
 
 .lb-bar-1st .lb-podium-rank {
@@ -449,7 +410,6 @@
   background: linear-gradient(180deg, rgba(168, 180, 192, 0.2), rgba(168, 180, 192, 0.03));
   border: 1px solid rgba(168, 180, 192, 0.25);
   border-bottom: none;
-  animation-delay: 0.35s;
 }
 
 .lb-bar-2nd .lb-podium-rank {
@@ -461,7 +421,6 @@
   background: linear-gradient(180deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.03));
   border: 1px solid rgba(205, 127, 50, 0.25);
   border-bottom: none;
-  animation-delay: 0.5s;
 }
 
 .lb-bar-3rd .lb-podium-rank {
@@ -484,7 +443,6 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  animation: rankEntrance 0.3s ease-out;
 }
 
 .lb-rank-you {
@@ -573,7 +531,6 @@
   border-radius: 16px;
   box-shadow: var(--shadow-primary);
   margin-top: 8px;
-  animation: fadeInUp 0.4s ease-out;
 }
 
 .lb-your-rank {
@@ -607,7 +564,6 @@
 .lb-empty {
   text-align: center;
   padding: 60px 20px;
-  animation: fadeInUp 0.4s ease-out;
 }
 
 .lb-empty-icon {
@@ -642,12 +598,6 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .lb-modal {
@@ -728,7 +678,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: fadeInUp 0.3s ease-out;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
 }

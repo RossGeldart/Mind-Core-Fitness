@@ -1,26 +1,3 @@
-/* Page Transition */
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .client-tools-page {
   min-height: 100vh;
   background: var(--bg-secondary);
@@ -52,12 +29,10 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  animation: pageEnter 0.4s ease-out;
 }
 
 .tools-intro {
   margin-bottom: 24px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .tools-intro h2 {
@@ -94,10 +69,6 @@
   box-shadow: var(--shadow-card);
   -webkit-tap-highlight-color: transparent;
 }
-
-.tool-select-card:nth-child(1) { animation: fadeIn 0.4s ease-out 0.05s backwards; }
-.tool-select-card:nth-child(2) { animation: fadeIn 0.4s ease-out 0.15s backwards; }
-.tool-select-card:nth-child(3) { animation: fadeIn 0.4s ease-out 0.25s backwards; }
 
 .tool-select-card:hover {
   border-color: var(--color-primary);
@@ -159,7 +130,6 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-card);
-  animation: fadeIn 0.5s ease-out 0.1s backwards;
 }
 
 .tool-header {
@@ -429,7 +399,6 @@
   padding: 24px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
-  animation: fadeIn 0.4s ease-out;
 }
 
 .results-header {
@@ -561,18 +530,6 @@
   border-radius: 10px;
   box-shadow: var(--shadow-card);
   border-top: 3px solid;
-  animation: macroCardEnter 0.4s ease-out backwards;
-}
-
-@keyframes macroCardEnter {
-  from {
-    opacity: 0;
-    transform: translateY(15px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .macro-card.protein {
@@ -694,7 +651,6 @@
   padding: 24px;
   margin-bottom: 20px;
   text-align: center;
-  animation: snackReveal 0.4s ease-out;
 }
 
 .snack-result.shuffling {
@@ -714,17 +670,6 @@
 .snack-shuffle-icon svg {
   width: 100%;
   height: 100%;
-}
-
-@keyframes snackReveal {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
 }
 
 @keyframes spin {
@@ -883,7 +828,6 @@
   border-radius: 12px;
   padding: 28px 24px;
   text-align: center;
-  animation: quoteReveal 0.5s ease-out;
 }
 
 .quote-result.shuffling {
@@ -903,17 +847,6 @@
 .quote-shuffle-icon svg {
   width: 100%;
   height: 100%;
-}
-
-@keyframes quoteReveal {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .quote-icon {
@@ -988,7 +921,6 @@
   border-radius: 50%;
   background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-secondary) 50%, var(--border-color) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
 }
 
 .skeleton-line {
@@ -996,17 +928,11 @@
   border-radius: 7px;
   background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-secondary) 50%, var(--border-color) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
 }
 
 .skeleton-line.long { width: 90%; }
 .skeleton-line.medium { width: 70%; }
 .skeleton-line.short { width: 40%; }
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
 
 /* Quote Empty State */
 .quote-empty {
@@ -1018,17 +944,11 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  animation: gentlePulse 3s ease-in-out infinite;
 }
 
 .quote-empty-graphic svg {
   width: 100%;
   height: 100%;
-}
-
-@keyframes gentlePulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
 }
 
 .quote-empty-title {

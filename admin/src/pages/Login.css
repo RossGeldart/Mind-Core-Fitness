@@ -1,32 +1,3 @@
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.95);
-  }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -43,7 +14,6 @@
   width: 100%;
   max-width: 400px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.5s ease-out;
 }
 
 .login-header {
@@ -81,7 +51,6 @@
   margin-bottom: 20px;
   font-size: 0.9rem;
   text-align: center;
-  animation: shake 0.5s ease-out;
 }
 
 .form-group {
@@ -190,7 +159,6 @@
 .reset-sent {
   text-align: center;
   padding: 10px 0;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .reset-sent-icon {
@@ -246,5 +214,4 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--color-primary);
-  animation: pulse 1.5s ease-in-out infinite;
 }
