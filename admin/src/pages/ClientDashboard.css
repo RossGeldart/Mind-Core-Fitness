@@ -827,11 +827,37 @@
   margin-bottom: 6px;
 }
 
+.daily-quote-label {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
 .daily-quote-author {
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+}
+
+.daily-quote-lock {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 10px;
+}
+
+.daily-quote-lock svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 /* Daily Quote CTA (no quote yet) */
