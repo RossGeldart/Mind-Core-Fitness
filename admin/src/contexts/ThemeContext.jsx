@@ -26,12 +26,7 @@ export function ThemeProvider({ children }) {
   }, [isDark]);
 
   useEffect(() => {
-    // Apply accent colour
-    if (accent === 'red') {
-      document.documentElement.removeAttribute('data-accent');
-    } else {
-      document.documentElement.setAttribute('data-accent', accent);
-    }
+    // Store accent preference (applied per-page by Core Buddy components)
     localStorage.setItem('accent', accent);
   }, [accent]);
 

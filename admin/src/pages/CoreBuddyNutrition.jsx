@@ -54,7 +54,7 @@ function getDefaultMeal() {
 
 export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
 
   // Views: 'loading' | 'setup' | 'dashboard'
@@ -700,7 +700,7 @@ export default function CoreBuddyNutrition() {
   // ==================== SETUP VIEW (Macro Calculator) ====================
   if (view === 'setup') {
     return (
-      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -900,7 +900,7 @@ export default function CoreBuddyNutrition() {
   const weekMonthLabel = `${MONTH_NAMES[selDateObj.getMonth()]} ${selDateObj.getFullYear()}`;
 
   return (
-    <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
         <header className="client-header">

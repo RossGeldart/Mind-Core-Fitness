@@ -355,7 +355,7 @@ const FOCUS_ICONS = {
 
 export default function CoreBuddyProgrammes() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -887,7 +887,7 @@ export default function CoreBuddyProgrammes() {
   // ==================== BROWSE VIEW ====================
   if (view === 'browse') {
     return (
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {renderHeader('Programmes')}
         <main className="pg-main">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy/workouts')}>&larr; Back</button>
@@ -920,7 +920,7 @@ export default function CoreBuddyProgrammes() {
   if (view === 'overview' && selectedTemplate) {
     const t = selectedTemplate;
     return (
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {renderHeader(t.name)}
         <main className="pg-main">
           <button className="nut-back-btn" onClick={() => setView('browse')}>&larr; Back</button>
@@ -995,7 +995,7 @@ export default function CoreBuddyProgrammes() {
     const ringFilled = Math.round((progress.totalCompleted / (progress.totalSessions || 1)) * TICK_COUNT);
 
     return (
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {renderHeader('Programme')}
         <main className="pg-main">
           <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy/workouts')}>&larr; Back</button>
@@ -1134,7 +1134,7 @@ export default function CoreBuddyProgrammes() {
     };
 
     return (
-      <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {/* Progress bar */}
         <div className="pg-session-progress">
           <div className="pg-session-progress-fill" style={{ width: `${overallProgress * 100}%` }} />
@@ -1283,7 +1283,7 @@ export default function CoreBuddyProgrammes() {
       sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
 
     return (
-      <div className="pg-page pg-page-center" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="pg-page pg-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <div className="pg-session-done">
           {/* Completion ring */}
           <div className="pg-done-ring">
