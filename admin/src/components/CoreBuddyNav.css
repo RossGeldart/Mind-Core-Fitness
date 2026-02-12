@@ -1,58 +1,69 @@
 /* ====== Shared CoreBuddy Header ====== */
-.cb-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
+.client-header {
   background: transparent;
+  padding: 16px 20px;
 }
 
-.cb-header-left {
+.header-content {
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  padding: 0 10px;
+  position: relative;
 }
 
-.cb-header-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid var(--color-primary);
-}
-
-.cb-header-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text-on-header);
-  letter-spacing: 0.5px;
-}
-
-.cb-header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cb-theme-toggle,
-.cb-logout {
+.header-back-btn {
+  position: absolute;
+  left: 10px;
   background: none;
   border: none;
-  color: var(--text-on-header);
+  color: var(--text-secondary, #aaa);
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
-  opacity: 0.7;
+  transition: color 0.2s;
 }
 
-.cb-theme-toggle:hover,
-.cb-logout:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+.header-back-btn:hover {
+  color: var(--color-primary);
+}
+
+.header-actions {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-actions button {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.header-actions button:hover {
+  color: var(--text-primary, #fff);
+}
+
+.header-logo {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #A12F3A;
 }
 
 /* ====== Shared Bottom Tab Nav ====== */
