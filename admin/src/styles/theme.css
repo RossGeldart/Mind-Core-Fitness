@@ -147,8 +147,8 @@
   --color-primary-light: rgba(56, 182, 255, 0.15);
 }
 
-/* Smooth theme transition */
-* {
+/* Smooth theme transition — scoped to theme toggle only */
+[data-theme-transitioning] * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
 }
 

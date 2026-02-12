@@ -1311,7 +1311,19 @@ export default function CoreBuddyWorkouts() {
   );
 
   if (authLoading) {
-    return <div className="cb-loading"><div className="cb-loading-spinner" /></div>;
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          </div>
+        </header>
+        <div className="wk-loading-inline"><div className="wk-loading-spinner" /></div>
+      </div>
+    );
   }
 
   // ==================== MENU VIEW ====================
