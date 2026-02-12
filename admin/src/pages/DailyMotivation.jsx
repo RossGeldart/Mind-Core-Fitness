@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import './ClientTools.css';
@@ -136,19 +136,20 @@ export default function DailyMotivation() {
       date: today
     };
 
+    // Show the quote immediately after brief animation
+    setTimeout(() => {
+      setDailyQuote(quoteData);
+      setQuoteAnimating(false);
+    }, 300);
+
+    // Persist to Firestore in the background
     try {
-      await setDoc(doc(db, 'clients', clientData.id), {
+      await updateDoc(doc(db, 'clients', clientData.id), {
         dailyQuote: quoteData,
         quoteUsedIndices: [...usedIndices, selectedIndex]
-      }, { merge: true });
-
-      setTimeout(() => {
-        setDailyQuote(quoteData);
-        setQuoteAnimating(false);
-      }, 300);
+      });
     } catch (error) {
       console.error('Error saving daily quote:', error);
-      setQuoteAnimating(false);
     }
   };
 
