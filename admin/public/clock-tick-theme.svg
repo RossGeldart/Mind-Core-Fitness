@@ -63,17 +63,4 @@
   <line x1="73.73" y1="19.16" x2="70.33" y2="8.70" stroke="#d32f2f" stroke-width="2" stroke-linecap="round"/>
   <line x1="82.33" y1="16.86" x2="80.04" y2="6.10" stroke="#d32f2f" stroke-width="2" stroke-linecap="round"/>
   <line x1="91.12" y1="15.47" x2="89.97" y2="4.53" stroke="#d32f2f" stroke-width="2" stroke-linecap="round"/>
-
-  <!-- Center logo circle -->
-  <circle cx="100" cy="47" r="26" fill="#ffffff" stroke="#d32f2f" stroke-width="1.5"/>
-  <text x="100" y="51" text-anchor="middle" fill="#2d2d2d" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="13">MCF</text>
-
-  <!-- Countdown display -->
-  <text x="100" y="102" text-anchor="middle" fill="#2d2d2d" font-family="'Courier New', Courier, monospace" font-weight="bold" font-size="18" letter-spacing="1.5">02:15:34</text>
-
-  <!-- Label -->
-  <text x="100" y="116" text-anchor="middle" fill="#666666" font-family="Arial, Helvetica, sans-serif" font-size="7.5">until next session</text>
-
-  <!-- Session info -->
-  <text x="100" y="140" text-anchor="middle" fill="#555555" font-family="Arial, Helvetica, sans-serif" font-size="8.5">Thursday 13th Feb at 6:00 PM</text>
 </svg>
