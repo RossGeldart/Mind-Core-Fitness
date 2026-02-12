@@ -1440,25 +1440,34 @@
   box-shadow: 0 6px 20px rgba(199, 95, 107, 0.3);
 }
 
-/* ==================== STATS HERO (Setup View) ==================== */
-.wk-stats-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 0 8px;
-  animation: fadeIn 0.5s ease-out;
+/* ==================== COMPACT STATS STRIP (Setup View) ==================== */
+.wk-setup-main {
+  padding-bottom: 100px;
 }
 
-.wk-stats-ring-wrap {
+.wk-stats-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  margin-bottom: 6px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.wk-stats-strip-ring {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.wk-stats-ring-svg {
+.wk-stats-strip-ring svg {
   position: absolute;
   top: 0;
   left: 0;
@@ -1466,15 +1475,20 @@
   height: 100%;
 }
 
-.wk-stats-ring-logo {
+.wk-stats-strip-ring-num {
   position: relative;
   z-index: 1;
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 2.5px solid var(--color-primary);
-  object-fit: cover;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.wk-stats-strip-ring-num small {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
 }
 
 .wk-stats-tick-filled {
@@ -1486,137 +1500,34 @@
   stroke: var(--border-color);
 }
 
-.wk-stats-ring-label {
+.wk-stats-strip-items {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 3px;
-  margin-top: 8px;
-}
-
-.wk-stats-ring-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: var(--color-primary);
-  line-height: 1;
-}
-
-.wk-stats-ring-sep {
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.1rem;
-  color: var(--text-tertiary);
-  margin: 0 1px;
-}
-
-.wk-stats-ring-target {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  line-height: 1;
-}
-
-.wk-stats-ring-text {
-  width: 100%;
-  text-align: center;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--text-tertiary);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-/* Stats Cards Row */
-.wk-stats-cards {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  width: 100%;
-  max-width: 340px;
-}
-
-.wk-stats-card {
   flex: 1;
+  justify-content: space-around;
+}
+
+.wk-stats-strip-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 12px 8px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  gap: 2px;
 }
 
-.wk-stats-card-num {
+.wk-stats-strip-num {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
 }
 
-.wk-stats-card-label {
+.wk-stats-strip-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 500;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.wk-stats-level-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--text-secondary);
-  margin-top: 14px;
-  margin-bottom: 6px;
-}
-
-/* Level Breakdown Bar */
-.wk-stats-level-bar {
-  display: flex;
-  width: 100%;
-  max-width: 340px;
-  height: 22px;
-  border-radius: 11px;
-  overflow: hidden;
-  margin-top: 12px;
-  border: 1px solid var(--border-color);
-}
-
-.wk-stats-level-seg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  transition: width 0.4s ease;
-}
-
-.wk-stats-level-seg span {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-.wk-seg-beginner {
-  background: #42a5f5;
-}
-
-.wk-seg-intermediate {
-  background: var(--color-primary);
-}
-
-.wk-seg-advanced {
-  background: #ff7043;
 }
 
 /* ==================== EQUIPMENT SELECTOR ==================== */
@@ -1630,13 +1541,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
-  max-width: 110px;
-  padding: 16px 10px;
+  max-width: 130px;
+  padding: 18px 12px;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -1644,6 +1555,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .wk-equip-btn:hover {
@@ -1654,11 +1566,12 @@
   border-color: var(--color-primary);
   background: var(--color-primary-light);
   color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
 }
 
 .wk-equip-icon {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   color: var(--text-tertiary);
   transition: color 0.2s ease;
 }
@@ -1669,15 +1582,20 @@
 
 /* ==================== FOCUS AREA SELECTOR ==================== */
 .wk-focus-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  justify-content: center;
 }
 
 .wk-focus-grid .wk-equip-btn {
-  width: calc(33.333% - 8px);
   max-width: none;
+  width: auto;
+}
+
+.wk-focus-grid .wk-mix-btn {
+  grid-column: 1 / -1;
+  max-width: 200px;
+  justify-self: center;
 }
 
 /* ==================== SETUP VIEW ==================== */
@@ -1714,21 +1632,32 @@
   padding: 16px 18px;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
+  border-left: 5px solid var(--border-color);
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
+  box-shadow: var(--shadow-sm);
 }
 
 .wk-level-card:hover {
   border-color: rgba(161, 47, 58, 0.3);
 }
 
+/* Colour-coded left accent per level */
+.wk-level-beginner { border-left-color: #42a5f5; }
+.wk-level-intermediate { border-left-color: var(--color-primary); }
+.wk-level-advanced { border-left-color: #ff7043; }
+
 .wk-level-card.active {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
 }
+
+.wk-level-card.active.wk-level-beginner { border-left-color: #42a5f5; }
+.wk-level-card.active.wk-level-intermediate { border-left-color: var(--color-primary); }
+.wk-level-card.active.wk-level-advanced { border-left-color: #ff7043; }
 
 .wk-level-name {
   font-family: 'Montserrat', sans-serif;
@@ -1752,26 +1681,24 @@
 /* Time Options */
 .wk-time-options {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .wk-time-btn {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  width: 62px;
-  height: 62px;
-  justify-content: center;
+  align-items: baseline;
+  gap: 3px;
+  padding: 12px 18px;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 24px;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
+  box-shadow: var(--shadow-sm);
 }
 
 .wk-time-btn:hover {
@@ -1781,11 +1708,12 @@
 .wk-time-btn.active {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
+  box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
 }
 
 .wk-time-num {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1;
@@ -1803,12 +1731,46 @@
   color: var(--color-primary);
 }
 
-/* Randomise Button */
+/* Summary line */
+.wk-setup-summary {
+  text-align: center;
+  margin-top: 18px;
+  padding-bottom: 8px;
+}
+
+.wk-setup-summary span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+/* Sticky GO Button */
+@keyframes goGlow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(161, 47, 58, 0.4); }
+  50% { box-shadow: 0 4px 28px rgba(161, 47, 58, 0.65); }
+}
+
+.wk-go-sticky {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px 20px;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(to top, var(--bg-body) 60%, transparent);
+  z-index: 10;
+  pointer-events: none;
+}
+
 .wk-randomise-btn {
+  pointer-events: auto;
   display: block;
   width: 100%;
   max-width: 320px;
-  margin: 32px auto 0;
   padding: 16px 24px;
   background: var(--color-primary);
   color: #fff;
@@ -1818,10 +1780,11 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-primary);
   -webkit-tap-highlight-color: transparent;
   letter-spacing: 0.3px;
+  animation: goGlow 2.5s ease-in-out infinite;
 }
 
 .wk-randomise-btn:hover {
@@ -1831,11 +1794,13 @@
 
 .wk-randomise-btn:active {
   transform: translateY(0);
+  animation: none;
 }
 
 .wk-randomise-btn:disabled {
   opacity: 0.6;
   cursor: wait;
+  animation: none;
 }
 
 /* ==================== SPINNING VIEW ==================== */
@@ -2390,22 +2355,13 @@
 
 /* ==================== RESPONSIVE ==================== */
 @media (min-width: 400px) {
-  .wk-stats-ring-wrap {
-    width: 180px;
-    height: 180px;
+  .wk-stats-strip-ring {
+    width: 72px;
+    height: 72px;
   }
 
-  .wk-stats-ring-logo {
-    width: 76px;
-    height: 76px;
-  }
-
-  .wk-stats-cards {
-    max-width: 380px;
-  }
-
-  .wk-stats-level-bar {
-    max-width: 380px;
+  .wk-stats-strip-ring-num {
+    font-size: 1.15rem;
   }
 
   .wk-hero-card {
