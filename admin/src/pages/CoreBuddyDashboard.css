@@ -127,6 +127,36 @@
   text-align: center;
 }
 
+/* Accent Colour Picker */
+.cb-accent-picker {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.cb-accent-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  outline: none;
+}
+
+.cb-accent-dot:hover {
+  transform: scale(1.15);
+}
+
+.cb-accent-dot.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 5px currentColor;
+  transform: scale(1.1);
+}
+
 /* 24hr Countdown Ring */
 .cb-ring-container {
   display: flex;
