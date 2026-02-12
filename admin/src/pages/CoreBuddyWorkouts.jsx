@@ -1676,9 +1676,9 @@ export default function CoreBuddyWorkouts() {
                 <span className="wk-preview-num">{i + 1}</span>
                 <div className="wk-preview-thumb">
                   {ex.isGif ? (
-                    <img src={ex.videoUrl} alt={ex.name} />
+                    <img src={ex.videoUrl} alt={ex.name} loading="lazy" />
                   ) : (
-                    <video src={ex.videoUrl} muted playsInline preload="metadata" />
+                    <video src={`${ex.videoUrl}#t=0.1`} muted playsInline preload="auto" />
                   )}
                 </div>
                 <span className="wk-preview-name">{ex.name}</span>
