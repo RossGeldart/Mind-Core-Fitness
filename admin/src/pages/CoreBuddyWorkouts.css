@@ -2616,7 +2616,7 @@
 [data-theme="light"] .wk-equip-btn.active,
 [data-theme="light"] .wk-level-card.active,
 [data-theme="light"] .wk-time-btn.active {
-  background: radial-gradient(circle at center, rgba(180, 50, 60, 0.85) 0%, rgba(140, 38, 48, 0.4) 100%);
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
   color: #fff;
   box-shadow: none;
 }
