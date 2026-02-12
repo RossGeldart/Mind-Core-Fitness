@@ -8,7 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
-import programmeCardImg from '../assets/programme-card-workout.JPG';
+import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
 import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
 
@@ -1318,7 +1318,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           </div>
         </header>
         <div className="wk-loading-inline"><div className="wk-loading-spinner" /></div>
@@ -1335,7 +1335,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (
@@ -1484,7 +1484,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (
@@ -1636,7 +1636,7 @@ export default function CoreBuddyWorkouts() {
                 );
               })}
             </svg>
-            <img src="/Logo.PNG" alt="" className="wk-spin-logo" />
+            <img src="/Logo.webp" alt="" className="wk-spin-logo" />
           </div>
           <p className="wk-spin-text">Generating workout...</p>
         </div>
@@ -1656,7 +1656,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => setView(selectedMuscleSession?.interval ? 'muscle_sessions' : 'setup')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (
@@ -1898,7 +1898,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (
@@ -1967,7 +1967,7 @@ export default function CoreBuddyWorkouts() {
             <button className="header-back-btn" onClick={() => setView('muscle_sessions')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (

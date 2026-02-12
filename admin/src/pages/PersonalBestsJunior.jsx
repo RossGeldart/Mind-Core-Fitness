@@ -656,7 +656,7 @@ export default function PersonalBestsJunior() {
       <div className="pb-page">
         <header className="client-header">
           <div className="header-content">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           </div>
         </header>
         <main className="pb-main">
@@ -700,7 +700,7 @@ export default function PersonalBestsJunior() {
           <button className="header-back-btn" onClick={() => navigate('/client')} aria-label="Go back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
         </div>
       </header>
 

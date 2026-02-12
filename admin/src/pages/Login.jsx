@@ -37,7 +37,7 @@ export default function Login() {
     return (
       <div className="login-container">
         <div className="login-loading">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="loading-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="loading-logo" />
         </div>
       </div>
     );
@@ -84,7 +84,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="login-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="login-logo" />
           <p>{resetMode ? 'Reset Password' : 'Client Portal'}</p>
         </div>
 
