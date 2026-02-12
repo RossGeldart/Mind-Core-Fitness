@@ -391,14 +391,20 @@ export default function ClientList() {
 
   const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
   const isCoreBuddy = (c) => c.clientType === 'core_buddy';
-  const blockClients = searched.filter(c => !isCircuit(c) && !isCoreBuddy(c));
-  const circuitClients = searched.filter(c => isCircuit(c));
-  const coreBuddyClients = searched.filter(c => isCoreBuddy(c));
+  const isArchived = (c) => c.status === 'archived';
+
+  // For non-archived filters, exclude archived clients
+  const activeSearched = searched.filter(c => !isArchived(c));
+  const blockClients = activeSearched.filter(c => !isCircuit(c) && !isCoreBuddy(c));
+  const circuitClients = activeSearched.filter(c => isCircuit(c));
+  const coreBuddyClients = activeSearched.filter(c => isCoreBuddy(c));
+  const archivedClients = searched.filter(c => isArchived(c));
 
   const filtered = typeFilter === 'block' ? blockClients
     : typeFilter === 'circuit' ? circuitClients
     : typeFilter === 'core_buddy' ? coreBuddyClients
-    : searched;
+    : typeFilter === 'archived' ? archivedClients
+    : activeSearched;
 
   const toggleExpand = (clientId) => {
     if (editingClient) return;
@@ -616,10 +622,11 @@ export default function ClientList() {
       {/* Type Filter Tabs */}
       <div className="client-type-filter">
         {[
-          { value: 'all', label: 'All', count: searched.length },
+          { value: 'all', label: 'All', count: activeSearched.length },
           { value: 'block', label: 'Block', count: blockClients.length },
           { value: 'circuit', label: 'Circuit', count: circuitClients.length },
           { value: 'core_buddy', label: 'Core Buddy', count: coreBuddyClients.length },
+          { value: 'archived', label: 'Archived', count: archivedClients.length },
         ].map(tab => (
           <button
             key={tab.value}
@@ -645,6 +652,23 @@ export default function ClientList() {
             <>
               <div className="client-section-header">Circuit Members <span>{circuitClients.length}</span></div>
               {circuitClients.map(renderClientRow)}
+            </>
+          )}
+          {coreBuddyClients.length > 0 && (
+            <>
+              <div className="client-section-header">Core Buddy Members <span>{coreBuddyClients.length}</span></div>
+              {coreBuddyClients.map(renderClientRow)}
+            </>
+          )}
+        </>
+      ) : typeFilter === 'archived' ? (
+        <>
+          {archivedClients.length === 0 ? (
+            <div className="client-section-empty">No archived clients</div>
+          ) : (
+            <>
+              <div className="client-section-header">Archived Clients <span>{archivedClients.length}</span></div>
+              {archivedClients.map(renderClientRow)}
             </>
           )}
         </>
