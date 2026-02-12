@@ -39,7 +39,7 @@ function getWeekDates(monday) {
 
 export default function CoreBuddyConsistency() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
 
   const [habitLogs, setHabitLogs] = useState({});
@@ -206,7 +206,7 @@ export default function CoreBuddyConsistency() {
   }
 
   return (
-    <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* Header */}
       <header className="client-header">
         <div className="header-content">

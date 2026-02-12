@@ -77,7 +77,7 @@
   transform: translate(-50%, -50%);
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(161, 47, 58, 0.12) 0%, rgba(161, 47, 58, 0.04) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.12) 0%, rgba(var(--color-primary-rgb), 0.04) 40%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -455,7 +455,7 @@
 
 .nut-goal-options button.active {
   border-color: var(--color-primary);
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--color-primary);
 }
 
@@ -493,7 +493,7 @@
 
 .nut-deficit-options button.active {
   border-color: var(--color-primary);
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--color-primary);
 }
 
@@ -528,7 +528,7 @@
 
 .nut-calc-btn:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(161, 47, 58, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
 }
 
 /* Calculator Results */
@@ -601,7 +601,7 @@
 
 .nut-save-targets-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(161, 47, 58, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
 }
 
 /* ==================== MACRO RINGS ==================== */
@@ -842,7 +842,7 @@
 
 .nut-meal-pill.active {
   border-color: var(--color-primary);
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--color-primary);
 }
 
@@ -851,7 +851,7 @@
 }
 
 .nut-meal-pill:hover:not(.active) {
-  border-color: rgba(161, 47, 58, 0.15);
+  border-color: rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-1px);
 }
 
@@ -1754,7 +1754,7 @@
   right: 10%;
   height: 2px;
   background: var(--color-primary);
-  box-shadow: 0 0 8px rgba(161, 47, 58, 0.8), 0 0 20px rgba(161, 47, 58, 0.4);
+  box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.8), 0 0 20px rgba(var(--color-primary-rgb), 0.4);
   z-index: 10;
   animation: scanLine 2s ease-in-out infinite;
   pointer-events: none;
@@ -2353,7 +2353,7 @@
 
 .nut-recent-item:hover {
   background: var(--bg-secondary);
-  border-color: rgba(161, 47, 58, 0.2);
+  border-color: rgba(var(--color-primary-rgb), 0.2);
 }
 
 .nut-recent-item:active {

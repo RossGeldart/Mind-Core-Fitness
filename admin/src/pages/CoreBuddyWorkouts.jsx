@@ -489,7 +489,7 @@ function shuffleArray(arr) {
 
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
 
   // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
@@ -1316,7 +1316,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -1464,7 +1464,7 @@ export default function CoreBuddyWorkouts() {
     const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
     const levelLabel = LEVELS.find(l => l.key === level)?.label || level;
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
@@ -1604,7 +1604,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== SPINNING VIEW ====================
   if (view === 'spinning') {
     return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <div className="wk-spin-container">
           <div className="wk-spin-ring">
             <svg className="wk-spin-svg" viewBox="0 0 200 200">
@@ -1636,7 +1636,7 @@ export default function CoreBuddyWorkouts() {
     const previewConfig = selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level);
     const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView(selectedMuscleSession?.interval ? 'muscle_sessions' : 'setup')} aria-label="Go back">
@@ -1732,7 +1732,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== COUNTDOWN VIEW (3-2-1) ====================
   if (view === 'countdown') {
     return (
-      <div className="wk-page wk-page-center wk-page-dark" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page wk-page-center wk-page-dark" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <div className="wk-countdown-big">
           <span className="wk-countdown-num">{startCountdown}</span>
           <span className="wk-countdown-label">GET READY</span>
@@ -1750,7 +1750,7 @@ export default function CoreBuddyWorkouts() {
       : null;
 
     return (
-      <div className="wk-page wk-page-workout" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page wk-page-workout" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {/* Video */}
         <div className="wk-video-container">
           {phase === 'work' ? (
@@ -1828,7 +1828,7 @@ export default function CoreBuddyWorkouts() {
     const config = LEVELS.find(l => l.key === level);
     const totalTime = workout.length * rounds * (config.work + config.rest);
     return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <div className="wk-complete">
           <div className="wk-complete-ring">
             <svg className="wk-complete-svg" viewBox="0 0 200 200">
@@ -1878,7 +1878,7 @@ export default function CoreBuddyWorkouts() {
     const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
     const sessions = MUSCLE_GROUP_SESSIONS[selectedMuscleGroup] || [];
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
@@ -1947,7 +1947,7 @@ export default function CoreBuddyWorkouts() {
     if (!session) return null;
     const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView('muscle_sessions')} aria-label="Go back">
@@ -2071,7 +2071,7 @@ export default function CoreBuddyWorkouts() {
         : 'Log Set \u2192 Complete';
 
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {/* Progress bar */}
         <div className="mg-session-progress">
           <div className="mg-session-progress-fill" style={{ width: `${progressPct}%` }} />
@@ -2216,7 +2216,7 @@ export default function CoreBuddyWorkouts() {
       sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
     const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
     return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <div className="wk-complete">
           <div className="wk-complete-ring">
             <svg className="wk-complete-svg" viewBox="0 0 200 200">

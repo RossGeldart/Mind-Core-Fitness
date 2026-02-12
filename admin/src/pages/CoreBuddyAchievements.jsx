@@ -78,7 +78,7 @@ function formatVolumeUnit(kg) {
 
 export default function CoreBuddyAchievements() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -128,7 +128,7 @@ export default function CoreBuddyAchievements() {
 
   if (authLoading || loading) {
     return (
-      <div className="ach-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="cb-header">
           <div className="cb-header-left">
             <img src="/Logo.PNG" alt="Mind Core Fitness" className="cb-header-logo" />
@@ -147,7 +147,7 @@ export default function CoreBuddyAchievements() {
   const hasAnyContent = totalBadges > 0 || totalVolume > 0;
 
   return (
-    <div className="ach-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       <header className="client-header">
         <div className="header-content">
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />

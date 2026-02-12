@@ -175,7 +175,7 @@ export default function CoreBuddyDashboard() {
   }
 
   return (
-    <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
