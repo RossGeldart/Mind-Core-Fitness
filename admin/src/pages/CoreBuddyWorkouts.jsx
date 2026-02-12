@@ -520,6 +520,9 @@ export default function CoreBuddyWorkouts() {
   const [isPaused, setIsPaused] = useState(false);
   const [startCountdown, setStartCountdown] = useState(0);
 
+  // Quick-preview modal for exercise thumbnails
+  const [previewEx, setPreviewEx] = useState(null);
+
   // GIF looping
   const gifRef = useRef(null);
 
@@ -1669,12 +1672,39 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-list">
             {workout.map((ex, i) => (
-              <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }}>
+              <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }} onClick={() => setPreviewEx(ex)}>
                 <span className="wk-preview-num">{i + 1}</span>
+                <div className="wk-preview-thumb">
+                  {ex.isGif ? (
+                    <img src={ex.videoUrl} alt={ex.name} />
+                  ) : (
+                    <video src={ex.videoUrl} muted playsInline preload="metadata" />
+                  )}
+                </div>
                 <span className="wk-preview-name">{ex.name}</span>
+                <svg className="wk-preview-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               </div>
             ))}
           </div>
+
+          {/* Quick-preview modal */}
+          {previewEx && (
+            <div className="wk-preview-modal-backdrop" onClick={() => setPreviewEx(null)}>
+              <div className="wk-preview-modal" onClick={e => e.stopPropagation()}>
+                <button className="wk-preview-modal-close" onClick={() => setPreviewEx(null)} aria-label="Close preview">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div className="wk-preview-modal-video">
+                  {previewEx.isGif ? (
+                    <img src={previewEx.videoUrl} alt={previewEx.name} />
+                  ) : (
+                    <video src={previewEx.videoUrl} autoPlay loop muted playsInline />
+                  )}
+                </div>
+                <h3 className="wk-preview-modal-title">{previewEx.name}</h3>
+              </div>
+            </div>
+          )}
 
           <div className="wk-preview-actions">
             {!selectedMuscleSession?.interval && (

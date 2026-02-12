@@ -1934,11 +1934,19 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
+  padding: 10px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   animation: slideUp 0.3s ease-out backwards;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wk-preview-item:active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(191, 55, 68, 0.2);
 }
 
 .wk-preview-num {
@@ -1958,9 +1966,111 @@
 
 .wk-preview-name {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Exercise thumbnail */
+.wk-preview-thumb {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-tertiary, #1a1a1a);
+}
+
+.wk-preview-thumb img,
+.wk-preview-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* Play hint icon */
+.wk-preview-play {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.wk-preview-item:active .wk-preview-play {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+/* ---- Quick-preview modal ---- */
+.wk-preview-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wk-preview-modal {
+  position: relative;
+  width: 88%;
+  max-width: 400px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: slideUp 0.25s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.wk-preview-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.wk-preview-modal-video {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #000;
+}
+
+.wk-preview-modal-video img,
+.wk-preview-modal-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.wk-preview-modal-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 14px 16px;
+  margin: 0;
 }
 
 /* Preview Actions */
