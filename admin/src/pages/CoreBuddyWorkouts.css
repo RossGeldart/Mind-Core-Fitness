@@ -605,7 +605,7 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 140px;
+  aspect-ratio: 16 / 9;
   border: none;
   border-radius: 16px;
   overflow: hidden;
@@ -615,6 +615,16 @@
   box-shadow: var(--shadow-md);
   transition: transform 0.2s ease;
   animation: fadeIn 0.4s ease-out backwards;
+  padding: 0;
+}
+
+/* Thumbnail image variant (no overlay/text) */
+.wk-muscle-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
 }
 
 .wk-muscle-hero-card:active {
@@ -2527,14 +2537,6 @@
 
   .wk-prog-hero-bottom h3 {
     font-size: 1.4rem;
-  }
-
-  .wk-muscle-hero-card {
-    min-height: 150px;
-  }
-
-  .wk-muscle-hero-content {
-    min-height: 150px;
   }
 
   .wk-timer-ring-wrap {
