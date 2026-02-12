@@ -1378,36 +1378,37 @@ export default function CoreBuddyWorkouts() {
             <span className="wk-section-count">{PROGRAMME_CARDS.length} available</span>
           </div>
 
-          <div className="wk-prog-scroll">
-            {PROGRAMME_CARDS.map((prog, i) => prog.image ? (
-              <button key={prog.id} className="wk-prog-img-card"
-                onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
-                style={{ animationDelay: `${i * 0.06}s` }}>
-                <img src={prog.image} alt={prog.name} className="wk-prog-img" />
-              </button>
-            ) : (
-              <button key={prog.id} className="wk-prog-hero-card"
-                onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
-                style={{ animationDelay: `${i * 0.06}s` }}>
-                <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
-                <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
-                <div className="wk-prog-hero-content">
-                  <div className="wk-prog-hero-top">
-                    <span className="wk-prog-hero-badge">{prog.duration} WEEKS</span>
-                    <span className="wk-prog-hero-level">{prog.level}</span>
+          <div className="wk-prog-scroll-wrap">
+            <div className="wk-prog-scroll">
+              {PROGRAMME_CARDS.map((prog, i) => prog.image ? (
+                <button key={prog.id} className="wk-prog-img-card"
+                  onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
+                  style={{ animationDelay: `${i * 0.06}s` }}>
+                  <img src={prog.image} alt={prog.name} className="wk-prog-img" />
+                </button>
+              ) : (
+                <button key={prog.id} className="wk-prog-hero-card"
+                  onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
+                  style={{ animationDelay: `${i * 0.06}s` }}>
+                  <img src={programmeCardImg} alt="" className="wk-prog-hero-bg" />
+                  <div className="wk-prog-hero-overlay" style={{ background: FOCUS_GRADIENTS[prog.focus] }} />
+                  <div className="wk-prog-hero-content">
+                    <div className="wk-prog-hero-top">
+                      <span className="wk-prog-hero-badge">{prog.duration} WEEKS</span>
+                      <span className="wk-prog-hero-level">{prog.level}</span>
+                    </div>
+                    <div className="wk-prog-hero-bottom">
+                      <h3>{prog.name.toUpperCase()}</h3>
+                      <p>{prog.daysPerWeek}x per week &bull; {prog.focus === 'fullbody' ? 'Full Body' : prog.focus.charAt(0).toUpperCase() + prog.focus.slice(1)} Focus</p>
+                      <span className="wk-prog-hero-go">VIEW PROGRAMME &rarr;</span>
+                    </div>
                   </div>
-                  <div className="wk-prog-hero-bottom">
-                    <h3>{prog.name.toUpperCase()}</h3>
-                    <p>{prog.daysPerWeek}x per week &bull; {prog.focus === 'fullbody' ? 'Full Body' : prog.focus.charAt(0).toUpperCase() + prog.focus.slice(1)} Focus</p>
-                    <span className="wk-prog-hero-go">VIEW PROGRAMME &rarr;</span>
-                  </div>
-                </div>
-              </button>
-            ))}
-            {/* Swipe CTA */}
-            <div className="wk-swipe-cta">
-              <span>Swipe</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+              ))}
+            </div>
+            {/* Swipe Arrow */}
+            <div className="wk-swipe-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </div>
           </div>
 
