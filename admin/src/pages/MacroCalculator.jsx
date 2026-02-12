@@ -172,8 +172,6 @@ export default function MacroCalculator() {
       </header>
 
       <main className="tools-main page-transition-enter">
-        <button className="back-btn" onClick={() => navigate('/client/tools')}>&larr; Back to Tools</button>
-
         <div className="tool-card">
           <div className="tool-header">
             <h3>Macro Calculator</h3>
