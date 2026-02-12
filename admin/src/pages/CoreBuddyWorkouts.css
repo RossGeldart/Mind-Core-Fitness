@@ -2611,3 +2611,12 @@
     height: 44px;
   }
 }
+
+/* ==================== LIGHT MODE OVERRIDES ==================== */
+[data-theme="light"] .wk-equip-btn.active,
+[data-theme="light"] .wk-level-card.active,
+[data-theme="light"] .wk-time-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: none;
+}
