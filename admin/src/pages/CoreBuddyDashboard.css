@@ -356,16 +356,20 @@
 }
 
 .cb-card-top-row {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
   width: 100%;
 }
 
 .cb-card-top-row .cb-card-content {
-  flex: 1;
-  min-width: 0;
   text-align: center;
+}
+
+.cb-card-top-row .cb-card-arrow {
+  position: absolute;
+  right: 0;
 }
 
 .cb-card-preview-row {
