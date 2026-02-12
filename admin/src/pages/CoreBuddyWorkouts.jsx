@@ -1629,6 +1629,9 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView(selectedMuscleSession?.interval ? 'muscle_sessions' : 'setup')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
@@ -1642,9 +1645,6 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
-          {selectedMuscleSession?.interval && (
-            <button className="nut-back-btn" onClick={() => setView('muscle_sessions')}>&larr; Back</button>
-          )}
           {selectedMuscleSession?.interval && (
             <h2 className="mg-preview-title">{selectedMuscleSession.name}</h2>
           )}
