@@ -402,8 +402,11 @@
 }
 
 /* ===== Programme Carousel (Horizontal Scroll — Hero Cards) ===== */
-.wk-prog-scroll {
+.wk-prog-scroll-wrap {
   position: relative;
+}
+
+.wk-prog-scroll {
   display: flex;
   gap: 16px;
   overflow-x: auto;
@@ -558,29 +561,34 @@
   letter-spacing: 1px;
 }
 
-/* Swipe CTA */
-@keyframes swipeHint {
-  0%, 100% { transform: translateX(0); opacity: 0.7; }
-  50% { transform: translateX(6px); opacity: 1; }
+/* Swipe Arrow Indicator */
+@keyframes swipeArrowPulse {
+  0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.6; }
+  50% { transform: translateY(-50%) translateX(5px); opacity: 1; }
 }
 
-.wk-swipe-cta {
+.wk-swipe-arrow {
   position: absolute;
-  bottom: 8px;
-  right: 20px;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  animation: swipeHint 2s ease-in-out infinite;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(161, 47, 58, 0.85);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(161, 47, 58, 0.6), 0 0 24px rgba(161, 47, 58, 0.3);
+  animation: swipeArrowPulse 2s ease-in-out infinite;
   pointer-events: none;
+  z-index: 5;
 }
 
-.wk-swipe-cta svg {
-  color: var(--text-tertiary);
+.wk-swipe-arrow svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* ===== Muscle Group Cards (Hero Grid) ===== */
@@ -2452,6 +2460,11 @@
 @media (min-width: 500px) {
   .wk-main {
     padding: 0 24px;
+  }
+
+  .wk-prog-scroll {
+    margin: 0 -24px;
+    padding: 4px 24px 24px;
   }
 }
 
