@@ -1998,7 +1998,7 @@
 /* Play hint icon */
 .wk-preview-play {
   flex-shrink: 0;
-  color: #fff;
+  color: var(--text-primary);
   opacity: 0.85;
   transition: opacity 0.2s ease, color 0.2s ease;
 }
