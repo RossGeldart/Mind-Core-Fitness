@@ -38,7 +38,7 @@ const TEMPLATE_META = {
 
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent, setAccent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // 24hr countdown state
@@ -175,7 +175,7 @@ export default function CoreBuddyDashboard() {
   }
 
   return (
-    <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+    <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
@@ -196,24 +196,9 @@ export default function CoreBuddyDashboard() {
       </header>
 
       <main className="cb-main">
-        {/* Greeting + Accent Picker */}
+        {/* Greeting */}
         <div className="cb-greeting">
           <h2>Hey {firstName}</h2>
-          <div className="cb-accent-picker">
-            {[
-              { id: 'red', color: '#A12F3A' },
-              { id: 'orange', color: '#FF914D' },
-              { id: 'blue', color: '#38B6FF' },
-            ].map(opt => (
-              <button
-                key={opt.id}
-                className={`cb-accent-dot ${accent === opt.id ? 'active' : ''}`}
-                style={{ background: opt.color }}
-                onClick={() => setAccent(opt.id)}
-                aria-label={`${opt.id} theme`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* 24hr Countdown Ring */}
