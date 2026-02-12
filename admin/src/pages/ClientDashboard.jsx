@@ -777,6 +777,22 @@ export default function ClientDashboard() {
           </div>
         </div>
 
+        {/* Core Buddy Link */}
+        {clientData?.coreBuddyAccess && (
+          <div className="core-buddy-cta" onClick={() => navigate('/client/core-buddy')}>
+            <div className="core-buddy-cta-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            </div>
+            <div className="core-buddy-cta-text">
+              <span className="core-buddy-cta-title">Core Buddy</span>
+              <span className="core-buddy-cta-sub">Workouts, nutrition & habits</span>
+            </div>
+            <svg className="core-buddy-cta-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+          </div>
+        )}
+
         {/* Session Notes Card */}
         {sessionNotes.length > 0 && (
           <div className="session-notes-card" ref={notesRef}>
