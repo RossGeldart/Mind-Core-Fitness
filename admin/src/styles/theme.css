@@ -183,44 +183,10 @@
   transform: rotate(20deg);
 }
 
-/* Success Animation Styles */
-@keyframes successPop {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes checkDraw {
-  0% {
-    stroke-dashoffset: 50;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes circleDraw {
-  0% {
-    stroke-dashoffset: 166;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
 .success-checkmark {
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  animation: successPop 0.4s cubic-bezier(0.17, 0.67, 0.34, 1.5);
 }
 
 .success-checkmark .circle {
@@ -228,8 +194,7 @@
   stroke: var(--color-success);
   stroke-width: 3;
   stroke-dasharray: 166;
-  stroke-dashoffset: 166;
-  animation: circleDraw 0.6s ease-out forwards;
+  stroke-dashoffset: 0;
 }
 
 .success-checkmark .check {
@@ -239,35 +204,15 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 50;
-  stroke-dashoffset: 50;
-  animation: checkDraw 0.3s ease-out 0.6s forwards;
-}
-
-/* Progress Ring Animation */
-@keyframes progressFill {
-  from {
-    stroke-dashoffset: 264;
-  }
+  stroke-dashoffset: 0;
 }
 
 .progress-ring-fill.animate {
-  animation: progressFill 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* Today Session Pulse */
-@keyframes todayPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(161, 47, 58, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(161, 47, 58, 0);
-  }
 }
 
 .session-card.today-session {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
-  animation: todayPulse 2s ease-in-out infinite;
 }
 
 .session-card.today-session .session-date {

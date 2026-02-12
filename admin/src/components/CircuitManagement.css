@@ -1,17 +1,4 @@
 /* ====== Circuit Management (Admin) ====== */
-@keyframes cmFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes cmCardIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.cm-container {
-  animation: cmFadeIn 0.3s ease-out;
-}
 
 /* ====== Loading ====== */
 .cm-loading {
@@ -44,7 +31,6 @@
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  animation: cmFadeIn 0.3s ease-out;
 }
 
 .cm-stat-pill {
@@ -152,7 +138,6 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  animation: cmCardIn 0.3s ease-out backwards;
 }
 
 .cm-session-btn:hover {
@@ -221,7 +206,6 @@
   padding: 20px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  animation: cmCardIn 0.3s ease-out;
 }
 
 .cm-detail-header {
@@ -281,17 +265,7 @@
   border-radius: 10px;
   border: 1px solid var(--border-color);
   transition: all 0.2s;
-  animation: cmCardIn 0.3s ease-out backwards;
 }
-
-.cm-slot:nth-child(1) { animation-delay: 0s; }
-.cm-slot:nth-child(2) { animation-delay: 0.02s; }
-.cm-slot:nth-child(3) { animation-delay: 0.04s; }
-.cm-slot:nth-child(4) { animation-delay: 0.06s; }
-.cm-slot:nth-child(5) { animation-delay: 0.08s; }
-.cm-slot:nth-child(6) { animation-delay: 0.1s; }
-.cm-slot:nth-child(7) { animation-delay: 0.12s; }
-.cm-slot:nth-child(8) { animation-delay: 0.14s; }
 
 .cm-slot.empty {
   border-style: dashed;
@@ -539,7 +513,6 @@
   box-shadow: var(--shadow-lg);
   z-index: 100;
   overflow: hidden;
-  animation: cmFadeIn 0.15s ease-out;
 }
 
 .cm-dropdown-search {
@@ -649,10 +622,6 @@
 }
 
 /* ====== Members View ====== */
-.cm-members {
-  animation: cmFadeIn 0.3s ease-out;
-}
-
 .cm-ban-alert {
   background: var(--color-error-bg);
   border: 1px solid var(--color-error);
@@ -730,7 +699,6 @@
   padding: 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  animation: cmCardIn 0.3s ease-out backwards;
 }
 
 .cm-member-card.banned {
@@ -850,7 +818,6 @@
   font-size: 0.85rem;
   font-weight: 500;
   z-index: 2000;
-  animation: cmFadeIn 0.3s ease-out;
   box-shadow: var(--shadow-lg);
 }
 
