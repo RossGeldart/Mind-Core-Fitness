@@ -955,6 +955,24 @@
   letter-spacing: 0.5px;
 }
 
+.quote-lock-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 12px;
+  opacity: 0.7;
+}
+
+.quote-lock-note svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 /* Quote Skeleton Loader */
 .quote-skeleton {
   padding: 28px 24px;
