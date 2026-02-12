@@ -424,6 +424,7 @@
 
 /* Image-only programme card (custom artwork) */
 .wk-prog-img-card {
+  position: relative;
   flex: 0 0 85%;
   border: none;
   border-radius: 20px;
@@ -570,7 +571,7 @@
 
 .wk-swipe-arrow {
   position: absolute;
-  right: 4px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
