@@ -145,7 +145,7 @@ export default function CircuitDashboard() {
     return (
       <div className="circuit-page">
         <div className="circuit-loading">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="circuit-loading-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="circuit-loading-logo" />
         </div>
       </div>
     );
@@ -160,7 +160,7 @@ export default function CircuitDashboard() {
     <div className={`circuit-page ${isDark ? 'dark' : ''}`}>
       <header className="client-header">
         <div className="header-content">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
             <button onClick={toggleTheme} aria-label="Toggle theme">
               {isDark ? (
@@ -209,7 +209,7 @@ export default function CircuitDashboard() {
               </svg>
               <div className="circuit-ring-center">
                 <div className="circuit-ring-logo">
-                  <img src="/Logo.PNG" alt="Mind Core Fitness" />
+                  <img src="/Logo.webp" alt="Mind Core Fitness" />
                 </div>
                 <div className="circuit-ring-label">Next Class</div>
                 <div className="circuit-ring-countdown">

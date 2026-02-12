@@ -132,7 +132,7 @@ export default function CoreBuddyAchievements() {
       <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           </div>
         </header>
         <div className="ach-loading-inline"><div className="cb-loading-spinner" /></div>
@@ -147,7 +147,7 @@ export default function CoreBuddyAchievements() {
     <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       <header className="client-header">
         <div className="header-content">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
             <button onClick={toggleTheme} aria-label="Toggle theme">
               {isDark ? (

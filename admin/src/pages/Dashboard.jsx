@@ -357,7 +357,7 @@ export default function Dashboard() {
       )}
       <header className="dashboard-header">
         <div className="header-left">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="admin-header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="admin-header-logo" width="50" height="50" />
           <span className="admin-badge">Admin</span>
         </div>
         <nav className="header-nav">

@@ -216,12 +216,30 @@ export default function ClientDashboard() {
 
   const fetchAllData = async () => {
     try {
-      // Fetch client's sessions
-      const sessionsQuery = query(
-        collection(db, 'sessions'),
-        where('clientId', '==', clientData.id)
-      );
-      const sessionsSnapshot = await getDocs(sessionsQuery);
+      // Fire ALL independent queries in parallel instead of sequentially
+      const [
+        sessionsSnapshot,
+        allSessionsSnapshot,
+        holidaysSnapshot,
+        blockedTimesSnapshot,
+        openedSlotsSnapshot,
+        requestsSnapshot,
+        achSnapshot,
+        clientDoc,
+        notesSnapshot,
+      ] = await Promise.all([
+        getDocs(query(collection(db, 'sessions'), where('clientId', '==', clientData.id))),
+        getDocs(collection(db, 'sessions')),
+        getDocs(collection(db, 'holidays')),
+        getDocs(collection(db, 'blockedTimes')),
+        getDocs(collection(db, 'openedSlots')),
+        getDocs(query(collection(db, 'rescheduleRequests'), where('clientId', '==', clientData.id))),
+        getDocs(query(collection(db, 'achievements'), where('clientId', '==', clientData.id))),
+        getDoc(doc(db, 'clients', clientData.id)),
+        getDocs(query(collection(db, 'sessionNotes'), where('clientId', '==', clientData.id))),
+      ]);
+
+      // Process sessions
       const sessionsData = sessionsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -232,31 +250,15 @@ export default function ClientDashboard() {
       });
       setSessions(sessionsData);
 
-      // Fetch all sessions for availability check
-      const allSessionsSnapshot = await getDocs(collection(db, 'sessions'));
       setAllSessions(allSessionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
-      // Fetch holidays
-      const holidaysSnapshot = await getDocs(collection(db, 'holidays'));
       setHolidays(holidaysSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
-      // Fetch blocked times
-      const blockedTimesSnapshot = await getDocs(collection(db, 'blockedTimes'));
       setBlockedTimes(blockedTimesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
-      const openedSlotsSnapshot = await getDocs(collection(db, 'openedSlots'));
       setOpenedSlots(openedSlotsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-      // Fetch pending reschedule requests for this client
-      const requestsQuery = query(
-        collection(db, 'rescheduleRequests'),
-        where('clientId', '==', clientData.id)
-      );
-      const requestsSnapshot = await getDocs(requestsQuery);
+      // Process reschedule requests
       const requestsData = requestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPendingRequests(requestsData.filter(r => r.status === 'pending'));
 
-      // Get recent notifications (approved/rejected in last 7 days)
       const recentNotifications = requestsData.filter(r => {
         if (r.status === 'pending') return false;
         if (!r.respondedAt) return false;
@@ -267,20 +269,14 @@ export default function ClientDashboard() {
       });
       setNotifications(recentNotifications);
 
-      // Fetch achievements
-      const achQ = query(
-        collection(db, 'achievements'),
-        where('clientId', '==', clientData.id)
-      );
-      const achSnapshot = await getDocs(achQ);
+      // Process achievements
       if (!achSnapshot.empty) {
         const badges = achSnapshot.docs[0].data().badges || [];
         setAchievements(badges);
       }
 
-      // Fetch daily quote
+      // Process daily quote
       const today = new Date().toISOString().split('T')[0];
-      const clientDoc = await getDoc(doc(db, 'clients', clientData.id));
       if (clientDoc.exists()) {
         const data = clientDoc.data();
         if (data.dailyQuote && data.dailyQuote.date === today) {
@@ -290,23 +286,14 @@ export default function ClientDashboard() {
         }
       }
 
-      // Fetch session notes (block clients only)
-      try {
-        const notesQuery = query(
-          collection(db, 'sessionNotes'),
-          where('clientId', '==', clientData.id)
-        );
-        const notesSnapshot = await getDocs(notesQuery);
-        const notes = notesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        notes.sort((a, b) => {
-          const aTime = a.createdAt?.toMillis?.() || 0;
-          const bTime = b.createdAt?.toMillis?.() || 0;
-          return bTime - aTime;
-        });
-        setSessionNotes(notes);
-      } catch (e) {
-        console.error('Error fetching session notes:', e);
-      }
+      // Process session notes
+      const notes = notesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      notes.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
+      setSessionNotes(notes);
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -576,7 +563,7 @@ export default function ClientDashboard() {
     <div className="client-dashboard">
       <header className="client-header">
         <div className="header-content">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
         </div>
       </header>
 
@@ -697,7 +684,7 @@ export default function ClientDashboard() {
               {/* Center content - Logo and countdown */}
               <div className="ring-timer-center">
                 <div className="ring-timer-logo">
-                  <img src="/Logo.PNG" alt="Mind Core Fitness" />
+                  <img src="/Logo.webp" alt="Mind Core Fitness" />
                 </div>
                 <div className="ring-timer-countdown">
                   {liveCountdown.days > 0 && (

@@ -172,7 +172,7 @@ export default function CoreBuddyDashboard() {
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
             <button onClick={toggleTheme} aria-label="Toggle theme">
               {isDark ? (
@@ -223,7 +223,7 @@ export default function CoreBuddyDashboard() {
             </svg>
             <div className="cb-ring-center">
               <div className="cb-ring-logo">
-                <img src="/Logo.PNG" alt="Mind Core Fitness" />
+                <img src="/Logo.webp" alt="Mind Core Fitness" />
               </div>
               <div className="cb-ring-countdown">
                 <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>

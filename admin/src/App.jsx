@@ -1,27 +1,29 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import AddClient from './pages/AddClient';
-import ClientDashboard from './pages/ClientDashboard';
-import ClientForms from './pages/ClientForms';
-import ClientTools from './pages/ClientTools';
-import MacroCalculator from './pages/MacroCalculator';
-import ProteinSnacks from './pages/ProteinSnacks';
-import DailyMotivation from './pages/DailyMotivation';
-import PersonalBests from './pages/PersonalBests';
-import CircuitDashboard from './pages/CircuitDashboard';
-import CircuitBooking from './pages/CircuitBooking';
-import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
-import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
-import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
-import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
-import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
-import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
-import Leaderboard from './pages/Leaderboard';
 import './styles/theme.css';
+
+// Lazy-load every page except Login (the entry point)
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AddClient = lazy(() => import('./pages/AddClient'));
+const ClientDashboard = lazy(() => import('./pages/ClientDashboard'));
+const ClientForms = lazy(() => import('./pages/ClientForms'));
+const ClientTools = lazy(() => import('./pages/ClientTools'));
+const MacroCalculator = lazy(() => import('./pages/MacroCalculator'));
+const ProteinSnacks = lazy(() => import('./pages/ProteinSnacks'));
+const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
+const PersonalBests = lazy(() => import('./pages/PersonalBests'));
+const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
+const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
+const CoreBuddyDashboard = lazy(() => import('./pages/CoreBuddyDashboard'));
+const CoreBuddyNutrition = lazy(() => import('./pages/CoreBuddyNutrition'));
+const CoreBuddyWorkouts = lazy(() => import('./pages/CoreBuddyWorkouts'));
+const CoreBuddyProgrammes = lazy(() => import('./pages/CoreBuddyProgrammes'));
+const CoreBuddyAchievements = lazy(() => import('./pages/CoreBuddyAchievements'));
+const CoreBuddyConsistency = lazy(() => import('./pages/CoreBuddyConsistency'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 
 // Scroll to top + fade-in on route change
 function PageTransition({ children }) {
@@ -68,6 +70,7 @@ function App() {
         <BrowserRouter basename="/login">
           <RedirectHandler />
           <PageTransition>
+          <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -90,6 +93,7 @@ function App() {
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </Suspense>
           </PageTransition>
         </BrowserRouter>
       </AuthProvider>

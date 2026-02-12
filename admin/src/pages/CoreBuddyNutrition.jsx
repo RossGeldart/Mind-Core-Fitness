@@ -4,7 +4,6 @@ import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import Quagga from '@ericblade/quagga2';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -356,8 +355,10 @@ export default function CoreBuddyNutrition() {
     saveLog(newLog);
   };
 
-  // ==================== BARCODE SCANNER (Quagga2) ====================
-  const startScanner = () => {
+  // ==================== BARCODE SCANNER (Quagga2 — loaded on demand) ====================
+  const quaggaRef = useRef(null);
+
+  const startScanner = async () => {
     setScannerActive(true);
     const target = document.querySelector('#barcode-reader');
     if (!target) {
@@ -365,6 +366,20 @@ export default function CoreBuddyNutrition() {
       showToast('Scanner container not found.', 'error');
       return;
     }
+
+    // Dynamic import — only loads when user taps scan
+    if (!quaggaRef.current) {
+      try {
+        const mod = await import('@ericblade/quagga2');
+        quaggaRef.current = mod.default;
+      } catch (e) {
+        console.error('Failed to load barcode scanner:', e);
+        setScannerActive(false);
+        showToast('Could not load scanner.', 'error');
+        return;
+      }
+    }
+    const Quagga = quaggaRef.current;
 
     Quagga.init({
       inputStream: {
@@ -421,7 +436,8 @@ export default function CoreBuddyNutrition() {
   };
 
   const stopScanner = () => {
-    if (quaggaRunning.current) {
+    const Quagga = quaggaRef.current;
+    if (quaggaRunning.current && Quagga) {
       Quagga.stop();
       Quagga.offDetected();
       quaggaRunning.current = false;
@@ -687,7 +703,8 @@ export default function CoreBuddyNutrition() {
   // Cleanup scanner on unmount
   useEffect(() => {
     return () => {
-      if (quaggaRunning.current) {
+      const Quagga = quaggaRef.current;
+      if (quaggaRunning.current && Quagga) {
         try { Quagga.stop(); Quagga.offDetected(); } catch (e) {}
         quaggaRunning.current = false;
       }
@@ -702,7 +719,7 @@ export default function CoreBuddyNutrition() {
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           </div>
         </header>
         <div className="nut-loading-inline"><div className="cb-loading-spinner" /></div>
@@ -719,7 +736,7 @@ export default function CoreBuddyNutrition() {
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
                 {isDark ? (
@@ -921,7 +938,7 @@ export default function CoreBuddyNutrition() {
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={() => { setView('setup'); setCalcResults(null); }} aria-label="Recalculate macros">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
