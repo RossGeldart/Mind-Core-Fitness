@@ -281,11 +281,6 @@ export default function CoreBuddyDashboard() {
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
           >
             <div className="cb-card-top-row">
-              <div className="cb-card-icon cb-icon-nutrition">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
-                </svg>
-              </div>
               <div className="cb-card-content">
                 <h3>Today's Nutrition</h3>
               </div>
@@ -327,11 +322,6 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-workouts ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <div className="cb-card-icon cb-icon-workouts">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6.5 6.5L17.5 17.5"/><path d="M3 10V7a1 1 0 0 1 1-1h3"/><path d="M14 3h3a1 1 0 0 1 1 1v3"/><path d="M21 14v3a1 1 0 0 1-1 1h-3"/><path d="M10 21H7a1 1 0 0 1-1-1v-3"/>
-              </svg>
-            </div>
             <div className="cb-card-content">
               <h3>Workouts</h3>
               <p>Randomise or pick a programme</p>
@@ -344,11 +334,6 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-consistency ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
           >
-            <div className="cb-card-icon cb-icon-consistency">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-              </svg>
-            </div>
             <div className="cb-card-content">
               <h3>Daily Habits</h3>
               <p>Check off your daily habits and build streaks</p>
@@ -361,11 +346,6 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-progress ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
           >
-            <div className="cb-card-icon cb-icon-progress">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
             <div className="cb-card-content">
               <h3>My Progress</h3>
               <p>Track personal bests and body metrics</p>
@@ -378,11 +358,6 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-leaderboard ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
           >
-            <div className="cb-card-icon cb-icon-leaderboard">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10l-1 9H8L7 4z"/><path d="M17 4c0 0 2 0 2 2s-2 4-2 4"/><path d="M7 4c0 0-2 0-2 2s2 4 2 4"/>
-              </svg>
-            </div>
             <div className="cb-card-content">
               <h3>Leaderboard</h3>
               <p>Compete with your Core Buddies</p>
