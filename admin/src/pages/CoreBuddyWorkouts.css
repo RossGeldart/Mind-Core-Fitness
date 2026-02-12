@@ -1583,19 +1583,18 @@
 /* ==================== FOCUS AREA SELECTOR ==================== */
 .wk-focus-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
 }
 
 .wk-focus-grid .wk-equip-btn {
   max-width: none;
   width: auto;
+  grid-column: span 3;
 }
 
-.wk-focus-grid .wk-mix-btn {
-  grid-column: 1 / -1;
-  max-width: 200px;
-  justify-self: center;
+.wk-focus-grid .wk-equip-btn:nth-child(n+3) {
+  grid-column: span 2;
 }
 
 /* ==================== SETUP VIEW ==================== */
@@ -1680,16 +1679,17 @@
 
 /* Time Options */
 .wk-time-options {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 .wk-time-btn {
   display: flex;
   align-items: baseline;
+  justify-content: center;
   gap: 3px;
+  grid-column: span 2;
   padding: 12px 18px;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
@@ -1699,6 +1699,10 @@
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   box-shadow: var(--shadow-sm);
+}
+
+.wk-time-btn:nth-child(n+4) {
+  grid-column: span 3;
 }
 
 .wk-time-btn:hover {
