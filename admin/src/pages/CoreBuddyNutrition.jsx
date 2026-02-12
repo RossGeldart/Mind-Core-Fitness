@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import Quagga from '@ericblade/quagga2';
 import './CoreBuddyNutrition.css';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 
 const TICK_COUNT = 60;
 const searchCache = new Map();
@@ -1612,6 +1613,9 @@ export default function CoreBuddyNutrition() {
           </div>
         </div>
       )}
+
+      {/* Core Buddy Bottom Nav */}
+      <CoreBuddyNav active="nutrition" />
 
       {/* Toast */}
       {toast && (

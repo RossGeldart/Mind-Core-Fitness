@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyAchievements.css';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 
 // Exercise group mapping for all weighted exercises in programme templates
 const EXERCISE_GROUPS = {
@@ -312,6 +313,7 @@ export default function CoreBuddyAchievements() {
           )}
         </div>
       </main>
+      <CoreBuddyNav active="home" />
     </div>
   );
 }

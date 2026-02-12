@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyConsistency.css';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 
 const TICK_COUNT = 60;
 
@@ -346,6 +347,9 @@ export default function CoreBuddyConsistency() {
           </div>
         </div>
       </main>
+
+      {/* Core Buddy Bottom Nav */}
+      <CoreBuddyNav active="home" />
 
       {/* All-done celebration */}
       {showCelebration && (

@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
+import CoreBuddyNav from '../components/CoreBuddyNav';
 
 function getWeekBounds() {
   const now = new Date();
@@ -597,6 +598,9 @@ export default function Leaderboard() {
           </div>
         </div>
       )}
+
+      {/* Core Buddy Bottom Nav */}
+      <CoreBuddyNav />
 
       {/* Toast */}
       {toast && (
