@@ -1,21 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs, doc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import PersonalBestsJunior from './PersonalBestsJunior';
 import './PersonalBests.css';
 import './ClientDashboard.css';
 
 const EXERCISES = [
-  { key: 'chestPress', name: 'Chest Press', category: 'Upper Body - Push', unit: 'weight' },
-  { key: 'shoulderPress', name: 'Shoulder Press', category: 'Upper Body - Push', unit: 'weight' },
-  { key: 'seatedRow', name: 'Seated Row', category: 'Upper Body - Pull', unit: 'weight' },
-  { key: 'latPulldown', name: 'Lat Pulldown', category: 'Upper Body - Pull', unit: 'weight' },
-  { key: 'squat', name: 'Squat', category: 'Lower Body', unit: 'weight' },
-  { key: 'deadlift', name: 'Deadlift', category: 'Lower Body', unit: 'weight' },
+  { key: 'pressUps', name: 'Press-Ups', category: 'Upper Body', unit: 'reps' },
+  { key: 'squats', name: 'Squats', category: 'Lower Body', unit: 'reps' },
+  { key: 'longJump', name: 'Standing Long Jump', category: 'Power', unit: 'distance' },
+  { key: 'deadHang', name: 'Dead Hang', category: 'Upper Body', unit: 'time' },
   { key: 'plank', name: 'Plank', category: 'Core', unit: 'time' },
+  { key: 'wallSit', name: 'Wall Sit', category: 'Lower Body', unit: 'time' },
+  { key: 'chestPress', name: 'Chest Press', category: 'Upper Body', unit: 'weight' },
 ];
 
 const BODY_METRICS = [
@@ -40,7 +39,7 @@ function formatMonthLabel(monthStr) {
   return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 }
 
-function formatPlankTime(seconds) {
+function formatTime(seconds) {
   if (!seconds && seconds !== 0) return '-';
   const mins = Math.floor(seconds / 60);
   const secs = (seconds % 60).toFixed(2);
@@ -54,11 +53,26 @@ function formatWeight(weight, reps) {
   return `${weight}kg x ${reps}`;
 }
 
-// Calculate volume (weight x reps) for percentage comparison, or time for plank
+function formatValue(exercise, data) {
+  if (!data) return '-';
+  switch (exercise.unit) {
+    case 'weight': return formatWeight(data.weight, data.reps);
+    case 'time': return formatTime(data.time);
+    case 'reps': return data.reps ? `${data.reps} reps` : '-';
+    case 'distance': return data.distance ? `${data.distance} cm` : '-';
+    default: return '-';
+  }
+}
+
 function getComparableValue(exercise, data) {
   if (!data) return 0;
-  if (exercise.unit === 'time') return data.time || 0;
-  return (data.weight || 0) * (data.reps || 0);
+  switch (exercise.unit) {
+    case 'weight': return (data.weight || 0) * (data.reps || 0);
+    case 'time': return data.time || 0;
+    case 'reps': return data.reps || 0;
+    case 'distance': return data.distance || 0;
+    default: return 0;
+  }
 }
 
 function calcPercentChange(current, previous) {
@@ -66,7 +80,6 @@ function calcPercentChange(current, previous) {
   return ((current - previous) / previous) * 100;
 }
 
-// Simple SVG trend line chart
 function TrendChart({ data, exerciseKey, unit }) {
   if (!data || data.length < 2) {
     return (
@@ -79,8 +92,13 @@ function TrendChart({ data, exerciseKey, unit }) {
   const values = data.map(d => {
     const bench = d.benchmarks?.[exerciseKey];
     if (!bench) return 0;
-    if (unit === 'time') return bench.time || 0;
-    return (bench.weight || 0) * (bench.reps || 0);
+    switch (unit) {
+      case 'weight': return (bench.weight || 0) * (bench.reps || 0);
+      case 'time': return bench.time || 0;
+      case 'reps': return bench.reps || 0;
+      case 'distance': return bench.distance || 0;
+      default: return 0;
+    }
   });
 
   const maxVal = Math.max(...values);
@@ -106,12 +124,12 @@ function TrendChart({ data, exerciseKey, unit }) {
     <div className="pb-trend-chart">
       <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="trendGradientJr" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.3" />
             <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.02" />
           </linearGradient>
         </defs>
-        <path d={areaD} fill="url(#trendGradient)" />
+        <path d={areaD} fill="url(#trendGradientJr)" />
         <path d={pathD} fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
           <circle key={i} cx={p.x} cy={p.y} r="4" fill="var(--bg-card)" stroke="var(--color-primary)" strokeWidth="2" />
@@ -126,7 +144,7 @@ function TrendChart({ data, exerciseKey, unit }) {
   );
 }
 
-export default function PersonalBests() {
+export default function PersonalBestsJunior() {
   const [activeTab, setActiveTab] = useState('bests');
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -146,19 +164,10 @@ export default function PersonalBests() {
   const [celebration, setCelebration] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // History compare state
   const [compareMode, setCompareMode] = useState(false);
   const [compareA, setCompareA] = useState('');
   const [compareB, setCompareB] = useState('');
 
-  // Core Buddy PB state
-  const [cbPBs, setCbPBs] = useState({});
-  const [cbTargets, setCbTargets] = useState({});
-  const [cbAchievements, setCbAchievements] = useState(null);
-  const [cbTargetExercise, setCbTargetExercise] = useState(null); // exercise name being targeted
-  const [cbTargetInput, setCbTargetInput] = useState('');
-
-  // Touch/swipe state for carousel
   const carouselRef = useRef(null);
   const touchStartX = useRef(0);
   const touchDelta = useRef(0);
@@ -176,9 +185,6 @@ export default function PersonalBests() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark } = useTheme();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const coreBuddyMode = searchParams.get('mode') === 'corebuddy';
-  const isBlockClient = !coreBuddyMode && (!clientData?.clientType || clientData.clientType === 'block');
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -193,33 +199,13 @@ export default function PersonalBests() {
 
   useEffect(() => {
     if (!clientData) return;
-    if (isBlockClient) {
-      fetchRecords();
-    } else {
-      // Core Buddy clients: load PBs, targets, and achievements
-      const loadCBPBs = async () => {
-        try {
-          const [pbSnap, targetSnap, achSnap] = await Promise.all([
-            getDoc(doc(db, 'coreBuddyPBs', clientData.id)),
-            getDoc(doc(db, 'coreBuddyTargets', clientData.id)),
-            getDoc(doc(db, 'coreBuddyAchievements', clientData.id)),
-          ]);
-          if (pbSnap.exists()) setCbPBs(pbSnap.data().exercises || {});
-          if (targetSnap.exists()) setCbTargets(targetSnap.data().targets || {});
-          if (achSnap.exists()) setCbAchievements(achSnap.data());
-        } catch (err) {
-          console.error('Error loading Core Buddy PBs:', err);
-        }
-        setLoading(false);
-      };
-      loadCBPBs();
-    }
+    fetchRecords();
   }, [clientData]);
 
   const fetchRecords = async () => {
     try {
       const q = query(
-        collection(db, 'personalBests'),
+        collection(db, 'juniorPBs'),
         where('clientId', '==', clientData.id)
       );
       const snapshot = await getDocs(q);
@@ -227,9 +213,8 @@ export default function PersonalBests() {
       data.sort((a, b) => a.month.localeCompare(b.month));
       setRecords(data);
 
-      // Fetch targets
       const targetsQ = query(
-        collection(db, 'personalBestTargets'),
+        collection(db, 'juniorPBTargets'),
         where('clientId', '==', clientData.id)
       );
       const targetsSnapshot = await getDocs(targetsQ);
@@ -241,9 +226,8 @@ export default function PersonalBests() {
         setMetricTargetsForm(targetsData.metricTargets || {});
       }
 
-      // Fetch achievements
       const achQ = query(
-        collection(db, 'achievements'),
+        collection(db, 'juniorAchievements'),
         where('clientId', '==', clientData.id)
       );
       const achSnapshot = await getDocs(achQ);
@@ -251,67 +235,9 @@ export default function PersonalBests() {
         setAchievements(achSnapshot.docs[0].data().badges || []);
       }
     } catch (error) {
-      console.error('Error fetching personal bests:', error);
+      console.error('Error fetching junior personal bests:', error);
     }
     setLoading(false);
-  };
-
-  // Core Buddy: save a target for an exercise
-  const handleSaveCbTarget = async () => {
-    if (!cbTargetExercise || !cbTargetInput || !clientData) return;
-    const targetWeight = parseFloat(cbTargetInput);
-    const currentPB = cbPBs[cbTargetExercise];
-    if (!currentPB || targetWeight <= currentPB.weight) {
-      showToast('Target must be higher than current PB', 'error');
-      return;
-    }
-    setSaving(true);
-    try {
-      const newTargets = {
-        ...cbTargets,
-        [cbTargetExercise]: {
-          targetWeight,
-          setAt: Timestamp.now(),
-          currentPBWhenSet: currentPB.weight,
-        },
-      };
-      await setDoc(doc(db, 'coreBuddyTargets', clientData.id), {
-        clientId: clientData.id,
-        targets: newTargets,
-        updatedAt: Timestamp.now(),
-      });
-      setCbTargets(newTargets);
-      setCbTargetExercise(null);
-      setCbTargetInput('');
-      showToast('Target set!', 'success');
-    } catch (err) {
-      console.error('Error saving target:', err);
-      showToast('Failed to save target', 'error');
-    }
-    setSaving(false);
-  };
-
-  // Core Buddy: check if a PB badge was earned for an exercise
-  const hasCbBadge = (exerciseName) => {
-    if (!cbAchievements?.badges) return false;
-    const target = cbTargets[exerciseName];
-    if (!target) return false;
-    return cbAchievements.badges.some(
-      b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
-    );
-  };
-
-  // Core Buddy: get progress toward target (0-1)
-  const getCbTargetProgress = (exerciseName) => {
-    const target = cbTargets[exerciseName];
-    if (!target) return null;
-    const currentPB = cbPBs[exerciseName];
-    if (!currentPB) return 0;
-    const start = target.currentPBWhenSet || 0;
-    const end = target.targetWeight;
-    const range = end - start;
-    if (range <= 0) return currentPB.weight >= end ? 1 : 0;
-    return Math.max(0, Math.min((currentPB.weight - start) / range, 1));
   };
 
   const currentMonth = getCurrentMonth();
@@ -319,7 +245,6 @@ export default function PersonalBests() {
   const previousRecords = records.filter(r => r.month < currentMonth);
   const previousRecord = previousRecords.length > 0 ? previousRecords[previousRecords.length - 1] : null;
 
-  // Initialize edit forms when current record changes
   useEffect(() => {
     if (currentRecord) {
       setBenchmarkForm(currentRecord.benchmarks || {});
@@ -330,7 +255,6 @@ export default function PersonalBests() {
     }
   }, [currentRecord?.id]);
 
-  // Check for new achievements after saving benchmarks or metrics
   const checkAndSaveAchievements = async (type, dataMap) => {
     const newBadges = [];
 
@@ -348,6 +272,18 @@ export default function PersonalBests() {
           const currentVal = bench.time || 0;
           const range = target.targetValue - startVal;
           progress = range === 0 ? (currentVal >= target.targetValue ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+        } else if (target.targetType === 'reps') {
+          if (!target.targetReps) return;
+          const startVal = target.startReps || 0;
+          const currentVal = bench.reps || 0;
+          const range = target.targetReps - startVal;
+          progress = range === 0 ? (currentVal >= target.targetReps ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+        } else if (target.targetType === 'distance') {
+          if (!target.targetDistance) return;
+          const startVal = target.startDistance || 0;
+          const currentVal = bench.distance || 0;
+          const range = target.targetDistance - startVal;
+          progress = range === 0 ? (currentVal >= target.targetDistance ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
         } else {
           if (!target.targetWeight && !target.targetReps) return;
           const startVol = (target.startWeight || 0) * (target.startReps || 0);
@@ -358,17 +294,27 @@ export default function PersonalBests() {
         }
 
         if (progress >= 1) {
-          const alreadyAchieved = target.targetType === 'time'
-            ? achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetValue === target.targetValue)
-            : achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
+          let alreadyAchieved;
+          let label;
+          if (target.targetType === 'time') {
+            alreadyAchieved = achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetValue === target.targetValue);
+            label = `${ex.name} ${target.targetValue}s`;
+          } else if (target.targetType === 'reps') {
+            alreadyAchieved = achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetReps === target.targetReps);
+            label = `${ex.name} ${target.targetReps} reps`;
+          } else if (target.targetType === 'distance') {
+            alreadyAchieved = achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetDistance === target.targetDistance);
+            label = `${ex.name} ${target.targetDistance}cm`;
+          } else {
+            alreadyAchieved = achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
+            label = `${ex.name} ${target.targetWeight}kg × ${target.targetReps}`;
+          }
           if (!alreadyAchieved) {
-            const label = target.targetType === 'time'
-              ? `${ex.name} ${target.targetValue}s`
-              : `${ex.name} ${target.targetWeight}kg × ${target.targetReps}`;
             newBadges.push({
               type: 'strength', key: ex.key,
-              ...(target.targetType === 'time'
-                ? { targetType: 'time', targetValue: target.targetValue }
+              ...(target.targetType === 'time' ? { targetType: 'time', targetValue: target.targetValue }
+                : target.targetType === 'reps' ? { targetType: 'reps', targetReps: target.targetReps }
+                : target.targetType === 'distance' ? { targetType: 'distance', targetDistance: target.targetDistance }
                 : { targetWeight: target.targetWeight, targetReps: target.targetReps }),
               achievedMonth: currentMonth, label,
             });
@@ -402,7 +348,7 @@ export default function PersonalBests() {
 
     if (newBadges.length > 0) {
       const allBadges = [...achievements, ...newBadges];
-      await setDoc(doc(db, 'achievements', clientData.id), {
+      await setDoc(doc(db, 'juniorAchievements', clientData.id), {
         clientId: clientData.id,
         badges: allBadges,
         updatedAt: Timestamp.now(),
@@ -417,11 +363,15 @@ export default function PersonalBests() {
     if (type === 'strength') {
       const target = targets[key];
       if (!target) return false;
-      if (target.targetType === 'time') {
-        return achievements.some(a => a.type === 'strength' && a.key === key && a.targetValue === target.targetValue);
+      const ex = EXERCISES.find(e => e.key === key);
+      switch (ex?.unit) {
+        case 'time': return achievements.some(a => a.type === 'strength' && a.key === key && a.targetValue === target.targetValue);
+        case 'reps': return achievements.some(a => a.type === 'strength' && a.key === key && a.targetReps === target.targetReps);
+        case 'distance': return achievements.some(a => a.type === 'strength' && a.key === key && a.targetDistance === target.targetDistance);
+        default:
+          if (!target.targetWeight && !target.targetReps) return false;
+          return achievements.some(a => a.type === 'strength' && a.key === key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
       }
-      if (!target.targetWeight && !target.targetReps) return false;
-      return achievements.some(a => a.type === 'strength' && a.key === key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
     } else {
       const mTarget = metricTargets[key];
       if (!mTarget || !mTarget.targetValue) return false;
@@ -434,7 +384,7 @@ export default function PersonalBests() {
     try {
       const docId = `${clientData.id}_${currentMonth}`;
       const existing = currentRecord || {};
-      await setDoc(doc(db, 'personalBests', docId), {
+      await setDoc(doc(db, 'juniorPBs', docId), {
         clientId: clientData.id,
         month: currentMonth,
         benchmarks: benchmarkForm,
@@ -458,7 +408,7 @@ export default function PersonalBests() {
     try {
       const docId = `${clientData.id}_${currentMonth}`;
       const existing = currentRecord || {};
-      await setDoc(doc(db, 'personalBests', docId), {
+      await setDoc(doc(db, 'juniorPBs', docId), {
         clientId: clientData.id,
         month: currentMonth,
         benchmarks: existing.benchmarks || benchmarkForm || {},
@@ -512,29 +462,49 @@ export default function PersonalBests() {
       const targetsToSave = {};
       EXERCISES.forEach(ex => {
         const bench = latestBenchmarks[ex.key];
-        if (ex.unit === 'time') {
-          if (targetsForm[ex.key]?.targetValue) {
-            targetsToSave[ex.key] = {
-              targetType: 'time',
-              targetValue: targetsForm[ex.key].targetValue,
-              startValue: bench?.time || 0,
-            };
-          }
-        } else {
-          if (targetsForm[ex.key]?.targetWeight || targetsForm[ex.key]?.targetReps) {
-            targetsToSave[ex.key] = {
-              targetWeight: targetsForm[ex.key].targetWeight || 0,
-              targetReps: targetsForm[ex.key].targetReps || 0,
-              startWeight: bench?.weight || 0,
-              startReps: bench?.reps || 0,
-            };
-          }
+        switch (ex.unit) {
+          case 'time':
+            if (targetsForm[ex.key]?.targetValue) {
+              targetsToSave[ex.key] = {
+                targetType: 'time',
+                targetValue: targetsForm[ex.key].targetValue,
+                startValue: bench?.time || 0,
+              };
+            }
+            break;
+          case 'reps':
+            if (targetsForm[ex.key]?.targetReps) {
+              targetsToSave[ex.key] = {
+                targetType: 'reps',
+                targetReps: targetsForm[ex.key].targetReps,
+                startReps: bench?.reps || 0,
+              };
+            }
+            break;
+          case 'distance':
+            if (targetsForm[ex.key]?.targetDistance) {
+              targetsToSave[ex.key] = {
+                targetType: 'distance',
+                targetDistance: targetsForm[ex.key].targetDistance,
+                startDistance: bench?.distance || 0,
+              };
+            }
+            break;
+          default: // weight
+            if (targetsForm[ex.key]?.targetWeight || targetsForm[ex.key]?.targetReps) {
+              targetsToSave[ex.key] = {
+                targetWeight: targetsForm[ex.key].targetWeight || 0,
+                targetReps: targetsForm[ex.key].targetReps || 0,
+                startWeight: bench?.weight || 0,
+                startReps: bench?.reps || 0,
+              };
+            }
         }
       });
-      await setDoc(doc(db, 'personalBestTargets', docId), {
+      await setDoc(doc(db, 'juniorPBTargets', docId), {
         clientId: clientData.id,
         targets: targetsToSave,
-        metricTargets: metricTargets, // Preserve existing metric targets
+        metricTargets: metricTargets,
         updatedAt: Timestamp.now(),
       });
       setTargets(targetsToSave);
@@ -572,9 +542,9 @@ export default function PersonalBests() {
           };
         }
       });
-      await setDoc(doc(db, 'personalBestTargets', docId), {
+      await setDoc(doc(db, 'juniorPBTargets', docId), {
         clientId: clientData.id,
-        targets: targets, // Preserve existing strength targets
+        targets: targets,
         metricTargets: metricTargetsToSave,
         updatedAt: Timestamp.now(),
       });
@@ -589,12 +559,11 @@ export default function PersonalBests() {
     setSaving(false);
   };
 
-  // Reset all targets (strength + metric)
   const handleResetTargets = async () => {
     if (!window.confirm('Reset all goals? This will clear all strength and body metric targets. Your recorded benchmarks and measurements will NOT be affected.')) return;
     setSaving(true);
     try {
-      const targetDocRef = doc(db, 'personalBestTargets', `targets_${clientData.id}`);
+      const targetDocRef = doc(db, 'juniorPBTargets', `targets_${clientData.id}`);
       await deleteDoc(targetDocRef);
       setTargets({});
       setMetricTargets({});
@@ -608,12 +577,10 @@ export default function PersonalBests() {
     setSaving(false);
   };
 
-  // Get progress toward target (0 to 1) based on range from start to target
   const getTargetProgress = (exerciseKey, benchData) => {
     const target = targets[exerciseKey];
     if (!target || !benchData) return null;
 
-    // Time-based exercise (plank)
     if (target.targetType === 'time') {
       if (!target.targetValue) return null;
       const startVal = target.startValue || 0;
@@ -624,7 +591,27 @@ export default function PersonalBests() {
       return Math.max(0, Math.min((currentVal - startVal) / range, 1));
     }
 
-    // Weight + reps based: use volume (weight × reps)
+    if (target.targetType === 'reps') {
+      if (!target.targetReps) return null;
+      const startVal = target.startReps || 0;
+      const targetVal = target.targetReps;
+      const currentVal = benchData.reps || 0;
+      const range = targetVal - startVal;
+      if (range <= 0) return currentVal >= targetVal ? 1 : 0;
+      return Math.max(0, Math.min((currentVal - startVal) / range, 1));
+    }
+
+    if (target.targetType === 'distance') {
+      if (!target.targetDistance) return null;
+      const startVal = target.startDistance || 0;
+      const targetVal = target.targetDistance;
+      const currentVal = benchData.distance || 0;
+      const range = targetVal - startVal;
+      if (range <= 0) return currentVal >= targetVal ? 1 : 0;
+      return Math.max(0, Math.min((currentVal - startVal) / range, 1));
+    }
+
+    // Weight + reps (volume)
     if (!target.targetWeight && !target.targetReps) return null;
     const startVol = (target.startWeight || 0) * (target.startReps || 0);
     const targetVol = (target.targetWeight || 0) * (target.targetReps || 0);
@@ -634,7 +621,6 @@ export default function PersonalBests() {
     return Math.max(0, Math.min((currentVol - startVol) / range, 1));
   };
 
-  // Get progress toward metric target (0 to 1), handles both increase and decrease goals
   const getMetricTargetProgress = (metricKey) => {
     const mTarget = metricTargets[metricKey];
     if (!mTarget || !mTarget.targetValue) return null;
@@ -647,26 +633,14 @@ export default function PersonalBests() {
     return Math.max(0, Math.min((currentVal - startVal) / range, 1));
   };
 
-  // Carousel touch handlers
-  const handleCarouselTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchDelta.current = 0;
-  };
-
-  const handleCarouselTouchMove = (e) => {
-    touchDelta.current = e.touches[0].clientX - touchStartX.current;
-  };
-
+  const handleCarouselTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; touchDelta.current = 0; };
+  const handleCarouselTouchMove = (e) => { touchDelta.current = e.touches[0].clientX - touchStartX.current; };
   const handleCarouselTouchEnd = () => {
-    if (touchDelta.current < -50) {
-      goToSlide(currentSlide + 1);
-    } else if (touchDelta.current > 50) {
-      goToSlide(currentSlide - 1);
-    }
+    if (touchDelta.current < -50) goToSlide(currentSlide + 1);
+    else if (touchDelta.current > 50) goToSlide(currentSlide - 1);
     touchDelta.current = 0;
   };
 
-  // Get change for a metric
   const getMetricChange = (metricKey) => {
     const current = currentRecord?.bodyMetrics?.[metricKey];
     const previous = previousRecord?.bodyMetrics?.[metricKey];
@@ -674,7 +648,6 @@ export default function PersonalBests() {
     return parseFloat((current - previous).toFixed(2));
   };
 
-  // Compare records
   const recordA = records.find(r => r.month === compareA);
   const recordB = records.find(r => r.month === compareB);
 
@@ -694,14 +667,7 @@ export default function PersonalBests() {
     );
   }
 
-  if (!currentUser || !isClient || !clientData) {
-    return null;
-  }
-
-  // Junior block clients get their own PB page with kid-safe exercises
-  if (isBlockClient && clientData?.isJunior) {
-    return <PersonalBestsJunior />;
-  }
+  if (!currentUser || !isClient || !clientData) return null;
 
   const currentExercise = EXERCISES[currentSlide];
   const currentBench = currentRecord?.benchmarks?.[currentExercise.key];
@@ -710,22 +676,28 @@ export default function PersonalBests() {
   const previousVal = getComparableValue(currentExercise, previousBench);
   const percentChange = calcPercentChange(currentVal, previousVal);
 
-  // Ring ticks: fill based on progress toward target (0-100% = 0-60 ticks)
   const targetProgress = getTargetProgress(currentExercise.key, currentBench);
   const hasTarget = targetProgress !== null;
   const targetHit = targetProgress !== null && targetProgress >= 1;
   const ringFill = hasTarget
     ? Math.round(targetProgress * 60)
-    : (currentVal > 0 ? 15 : 0); // Fallback: small fill if no target set
+    : (currentVal > 0 ? 15 : 0);
 
-  // Get current target info for display
   const currentTarget = targets[currentExercise.key];
+
+  const formatTargetDisplay = (target) => {
+    if (!target) return null;
+    if (target.targetType === 'time') return `${target.startValue || 0}s → ${target.targetValue}s`;
+    if (target.targetType === 'reps') return `${target.startReps || 0} → ${target.targetReps} reps`;
+    if (target.targetType === 'distance') return `${target.startDistance || 0} → ${target.targetDistance}cm`;
+    return `${target.startWeight || 0}kg×${target.startReps || 0} → ${target.targetWeight}kg×${target.targetReps}`;
+  };
 
   return (
     <div className="pb-page">
       <header className="client-header">
         <div className="header-content">
-          <button className="header-back-btn" onClick={() => navigate(coreBuddyMode ? '/client/core-buddy' : '/client')} aria-label="Go back">
+          <button className="header-back-btn" onClick={() => navigate('/client')} aria-label="Go back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
@@ -735,194 +707,20 @@ export default function PersonalBests() {
       <main className="pb-main page-transition-enter">
 
         <div className="pb-intro">
-          <h2>Personal Bests</h2>
-          <p>{isBlockClient
-            ? 'Track your strength benchmarks and body measurements each month.'
-            : 'Your all-time best lifts from programme workouts.'
-          }</p>
+          <h2>Junior Strength Tests</h2>
+          <p>Track your strength test results and body measurements each month.</p>
         </div>
 
-        {/* ====== CORE BUDDY PB VIEW ====== */}
-        {!isBlockClient && (
-          <div className="pb-cb-section">
-            {Object.keys(cbPBs).length === 0 ? (
-              <div className="pb-empty">
-                <div className="pb-cb-empty-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
-                  </svg>
-                </div>
-                <h4>No personal bests yet</h4>
-                <p>Complete weight-based workouts to start tracking your personal bests.</p>
-              </div>
-            ) : (
-              <div className="pb-cb-grid">
-                {Object.entries(cbPBs)
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([name, data], i) => {
-                  const target = cbTargets[name];
-                  const progress = getCbTargetProgress(name);
-                  const targetHit = progress !== null && progress >= 1;
-                  const badgeEarned = hasCbBadge(name);
-                  const ringFill = progress !== null ? Math.round(progress * 60) : 60;
-
-                  return (
-                    <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                      <div className="pb-cb-card-ring">
-                        <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
-                          {[...Array(60)].map((_, j) => {
-                            const angle = (j * 6 - 90) * (Math.PI / 180);
-                            const x1 = 40 + 30 * Math.cos(angle);
-                            const y1 = 40 + 30 * Math.sin(angle);
-                            const x2 = 40 + 37 * Math.cos(angle);
-                            const y2 = 40 + 37 * Math.sin(angle);
-                            const filled = j < ringFill;
-                            return (
-                              <line key={j} x1={x1} y1={y1} x2={x2} y2={y2}
-                                className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                                strokeWidth={j % 5 === 0 ? '2' : '1.5'} />
-                            );
-                          })}
-                        </svg>
-                        <div className="pb-cb-ring-icon">
-                          {badgeEarned ? (
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                          ) : (
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
-                            </svg>
-                          )}
-                        </div>
-                      </div>
-                      <div className="pb-cb-card-info">
-                        <h4 className="pb-cb-card-name">{name}</h4>
-                        <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
-                        {data.achievedAt && (
-                          <div className="pb-cb-card-date">
-                            {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
-                              .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </div>
-                        )}
-                        {/* Target info */}
-                        {target && !targetHit && (
-                          <div className="pb-cb-target-info">
-                            Target: {target.targetWeight}kg ({Math.round((progress || 0) * 100)}%)
-                          </div>
-                        )}
-                        {target && targetHit && !badgeEarned && (
-                          <div className="pb-cb-target-info hit">Target hit!</div>
-                        )}
-                        {badgeEarned && (
-                          <div className="pb-cb-target-info earned">Badge earned!</div>
-                        )}
-                      </div>
-                      {/* Set Target button */}
-                      <div className="pb-cb-card-action">
-                        {!target ? (
-                          <button className="pb-cb-target-btn" onClick={() => {
-                            setCbTargetExercise(name);
-                            setCbTargetInput('');
-                          }}>
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10" />
-                              <circle cx="12" cy="12" r="6" />
-                              <circle cx="12" cy="12" r="2" />
-                            </svg>
-                          </button>
-                        ) : targetHit && badgeEarned ? (
-                          <button className="pb-cb-target-btn" onClick={() => {
-                            setCbTargetExercise(name);
-                            setCbTargetInput('');
-                          }}>
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M12 5v14M5 12h14" />
-                            </svg>
-                          </button>
-                        ) : null}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Achievements link */}
-            {Object.keys(cbPBs).length > 0 && (
-              <button className="pb-cb-achievements-link" onClick={() => navigate('/client/core-buddy/achievements')}>
-                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                View Achievements
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            )}
-
-            {/* Target Setting Modal */}
-            {cbTargetExercise && (
-              <div className="pb-cb-target-modal-overlay" onClick={() => setCbTargetExercise(null)}>
-                <div className="pb-cb-target-modal" onClick={e => e.stopPropagation()}>
-                  <h3>Set Target</h3>
-                  <p className="pb-cb-target-exercise-name">{cbTargetExercise}</p>
-                  <div className="pb-cb-target-current">
-                    Current PB: <strong>{cbPBs[cbTargetExercise]?.weight}kg</strong>
-                  </div>
-                  <div className="pb-cb-target-input-wrap">
-                    <label>Your target (kg)</label>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.5"
-                      value={cbTargetInput}
-                      onChange={e => setCbTargetInput(e.target.value)}
-                      placeholder={String((cbPBs[cbTargetExercise]?.weight || 0) + 5)}
-                      className="pb-cb-target-input"
-                      autoFocus
-                    />
-                  </div>
-                  <div className="pb-cb-target-actions">
-                    <button className="pb-cancel-btn" onClick={() => setCbTargetExercise(null)}>Cancel</button>
-                    <button className="pb-save-btn" onClick={handleSaveCbTarget} disabled={saving}>
-                      {saving ? 'Saving...' : 'Set Target'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ====== BLOCK CLIENT PB VIEW ====== */}
-        {isBlockClient && <>
         {/* Tab Navigation */}
         <div className="pb-tabs">
-          <button
-            className={`pb-tab ${activeTab === 'bests' ? 'active' : ''}`}
-            onClick={() => setActiveTab('bests')}
-          >
-            Strength
-          </button>
-          <button
-            className={`pb-tab ${activeTab === 'metrics' ? 'active' : ''}`}
-            onClick={() => setActiveTab('metrics')}
-          >
-            Body Metrics
-          </button>
-          <button
-            className={`pb-tab ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            History
-          </button>
+          <button className={`pb-tab ${activeTab === 'bests' ? 'active' : ''}`} onClick={() => setActiveTab('bests')}>Strength</button>
+          <button className={`pb-tab ${activeTab === 'metrics' ? 'active' : ''}`} onClick={() => setActiveTab('metrics')}>Body Metrics</button>
+          <button className={`pb-tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>History</button>
         </div>
 
         {/* ====== STRENGTH TAB ====== */}
         {activeTab === 'bests' && (
           <div className="pb-strength-section">
-            {/* Carousel Ring */}
             {!editingBenchmarks && (
               <>
                 <div
@@ -964,12 +762,7 @@ export default function PersonalBests() {
                           )}
                         </div>
                         <div className="pb-ring-value">
-                          {currentBench
-                            ? currentExercise.unit === 'time'
-                              ? formatPlankTime(currentBench.time)
-                              : formatWeight(currentBench.weight, currentBench.reps)
-                            : '-'
-                          }
+                          {currentBench ? formatValue(currentExercise, currentBench) : '-'}
                         </div>
                         {percentChange !== null && (
                           <div className={`pb-ring-change ${percentChange >= 0 ? 'positive' : 'negative'}`}>
@@ -981,11 +774,7 @@ export default function PersonalBests() {
                         )}
                         {currentTarget && (
                           <div className={`pb-ring-target ${targetHit ? 'hit' : ''}`}>
-                            {targetHit ? 'Target hit!' : (
-                              currentTarget.targetType === 'time'
-                                ? `${currentTarget.startValue || 0}s → ${currentTarget.targetValue}s`
-                                : `${currentTarget.startWeight || 0}kg×${currentTarget.startReps || 0} → ${currentTarget.targetWeight}kg×${currentTarget.targetReps}`
-                            )}
+                            {targetHit ? 'Target hit!' : formatTargetDisplay(currentTarget)}
                           </div>
                         )}
                         {!currentTarget && (
@@ -995,35 +784,20 @@ export default function PersonalBests() {
                     </div>
                   </div>
 
-                  {/* Carousel dots */}
                   <div className="pb-carousel-dots">
                     {EXERCISES.map((_, i) => (
-                      <button
-                        key={i}
-                        className={`pb-dot ${i === currentSlide ? 'active' : ''}`}
-                        onClick={() => goToSlide(i)}
-                      />
+                      <button key={i} className={`pb-dot ${i === currentSlide ? 'active' : ''}`} onClick={() => goToSlide(i)} />
                     ))}
                   </div>
 
-                  {/* Arrow buttons */}
-                  <button
-                    className="pb-carousel-arrow left"
-                    onClick={() => goToSlide(currentSlide - 1)}
-                    disabled={currentSlide === 0}
-                  >
+                  <button className="pb-carousel-arrow left" onClick={() => goToSlide(currentSlide - 1)} disabled={currentSlide === 0}>
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                   </button>
-                  <button
-                    className="pb-carousel-arrow right"
-                    onClick={() => goToSlide(currentSlide + 1)}
-                    disabled={currentSlide === EXERCISES.length - 1}
-                  >
+                  <button className="pb-carousel-arrow right" onClick={() => goToSlide(currentSlide + 1)} disabled={currentSlide === EXERCISES.length - 1}>
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
                   </button>
                 </div>
 
-                {/* Trend Chart */}
                 <div className="pb-trend-section">
                   <h4>Trend</h4>
                   <TrendChart data={records} exerciseKey={currentExercise.key} unit={currentExercise.unit} />
@@ -1031,7 +805,6 @@ export default function PersonalBests() {
               </>
             )}
 
-            {/* Edit / Add Benchmarks */}
             {!editingBenchmarks && !editingTargets && (
               <div className="pb-action-buttons">
                 <button className="pb-edit-btn" onClick={() => setEditingBenchmarks(true)}>
@@ -1052,10 +825,7 @@ export default function PersonalBests() {
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Benchmarks - {formatMonthLabel(currentMonth)}</h3>
-                  <button className="pb-edit-close" onClick={() => {
-                    setEditingBenchmarks(false);
-                    setBenchmarkForm(currentRecord?.benchmarks || {});
-                  }}>&times;</button>
+                  <button className="pb-edit-close" onClick={() => { setEditingBenchmarks(false); setBenchmarkForm(currentRecord?.benchmarks || {}); }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
                   {EXERCISES.map(ex => (
@@ -1065,35 +835,32 @@ export default function PersonalBests() {
                         <div className="pb-edit-row">
                           <div className="pb-edit-field">
                             <label>Weight (kg)</label>
-                            <input
-                              type="number"
-                              step="0.5"
-                              value={benchmarkForm[ex.key]?.weight ?? ''}
-                              onChange={(e) => handleBenchmarkChange(ex.key, 'weight', e.target.value)}
-                              placeholder="0"
-                            />
+                            <input type="number" step="0.5" value={benchmarkForm[ex.key]?.weight ?? ''} onChange={(e) => handleBenchmarkChange(ex.key, 'weight', e.target.value)} placeholder="0" />
                           </div>
                           <div className="pb-edit-field">
                             <label>Reps</label>
-                            <input
-                              type="number"
-                              value={benchmarkForm[ex.key]?.reps ?? ''}
-                              onChange={(e) => handleBenchmarkChange(ex.key, 'reps', e.target.value)}
-                              placeholder="0"
-                            />
+                            <input type="number" value={benchmarkForm[ex.key]?.reps ?? ''} onChange={(e) => handleBenchmarkChange(ex.key, 'reps', e.target.value)} placeholder="0" />
+                          </div>
+                        </div>
+                      ) : ex.unit === 'reps' ? (
+                        <div className="pb-edit-row">
+                          <div className="pb-edit-field full">
+                            <label>Reps (max in 1 min)</label>
+                            <input type="number" value={benchmarkForm[ex.key]?.reps ?? ''} onChange={(e) => handleBenchmarkChange(ex.key, 'reps', e.target.value)} placeholder="0" />
+                          </div>
+                        </div>
+                      ) : ex.unit === 'distance' ? (
+                        <div className="pb-edit-row">
+                          <div className="pb-edit-field full">
+                            <label>Distance (cm)</label>
+                            <input type="number" step="0.5" value={benchmarkForm[ex.key]?.distance ?? ''} onChange={(e) => handleBenchmarkChange(ex.key, 'distance', e.target.value)} placeholder="0" />
                           </div>
                         </div>
                       ) : (
                         <div className="pb-edit-row">
                           <div className="pb-edit-field full">
                             <label>Time (seconds)</label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={benchmarkForm[ex.key]?.time ?? ''}
-                              onChange={(e) => handleBenchmarkChange(ex.key, 'time', e.target.value)}
-                              placeholder="0"
-                            />
+                            <input type="number" step="0.01" value={benchmarkForm[ex.key]?.time ?? ''} onChange={(e) => handleBenchmarkChange(ex.key, 'time', e.target.value)} placeholder="0" />
                           </div>
                         </div>
                       )}
@@ -1101,13 +868,8 @@ export default function PersonalBests() {
                   ))}
                 </div>
                 <div className="pb-edit-actions">
-                  <button className="pb-cancel-btn" onClick={() => {
-                    setEditingBenchmarks(false);
-                    setBenchmarkForm(currentRecord?.benchmarks || {});
-                  }}>Cancel</button>
-                  <button className="pb-save-btn" onClick={handleSaveBenchmarks} disabled={saving}>
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
+                  <button className="pb-cancel-btn" onClick={() => { setEditingBenchmarks(false); setBenchmarkForm(currentRecord?.benchmarks || {}); }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveBenchmarks} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
                 </div>
               </div>
             )}
@@ -1117,20 +879,20 @@ export default function PersonalBests() {
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Set Your Targets</h3>
-                  <button className="pb-edit-close" onClick={() => {
-                    setEditingTargets(false);
-                    setTargetsForm(targets);
-                  }}>&times;</button>
+                  <button className="pb-edit-close" onClick={() => { setEditingTargets(false); setTargetsForm(targets); }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
                   <p className="pb-target-hint">Set a target for each exercise. Your current best is captured automatically from your latest benchmarks.</p>
-
                   {EXERCISES.map(ex => {
                     const bench = currentRecord?.benchmarks?.[ex.key];
                     let currentBestDisplay = '-';
                     if (bench) {
-                      if (ex.unit === 'time' && bench.time) currentBestDisplay = `${bench.time}s`;
-                      else if (bench.weight || bench.reps) currentBestDisplay = `${bench.weight || 0}kg × ${bench.reps || 0}`;
+                      switch (ex.unit) {
+                        case 'weight': if (bench.weight || bench.reps) currentBestDisplay = `${bench.weight || 0}kg × ${bench.reps || 0}`; break;
+                        case 'time': if (bench.time) currentBestDisplay = `${bench.time}s`; break;
+                        case 'reps': if (bench.reps) currentBestDisplay = `${bench.reps} reps`; break;
+                        case 'distance': if (bench.distance) currentBestDisplay = `${bench.distance} cm`; break;
+                      }
                     }
                     return (
                       <div key={ex.key} className="pb-edit-exercise">
@@ -1142,51 +904,42 @@ export default function PersonalBests() {
                           <div className="pb-edit-row">
                             <div className="pb-edit-field">
                               <label>Target Weight (kg)</label>
-                              <input
-                                type="number"
-                                step="0.5"
-                                value={targetsForm[ex.key]?.targetWeight ?? ''}
-                                onChange={(e) => handleTargetChange(ex.key, 'targetWeight', e.target.value)}
-                                placeholder="0"
-                              />
+                              <input type="number" step="0.5" value={targetsForm[ex.key]?.targetWeight ?? ''} onChange={(e) => handleTargetChange(ex.key, 'targetWeight', e.target.value)} placeholder="0" />
                             </div>
                             <div className="pb-edit-field">
                               <label>Target Reps</label>
-                              <input
-                                type="number"
-                                value={targetsForm[ex.key]?.targetReps ?? ''}
-                                onChange={(e) => handleTargetChange(ex.key, 'targetReps', e.target.value)}
-                                placeholder="0"
-                              />
+                              <input type="number" value={targetsForm[ex.key]?.targetReps ?? ''} onChange={(e) => handleTargetChange(ex.key, 'targetReps', e.target.value)} placeholder="0" />
+                            </div>
+                          </div>
+                        ) : ex.unit === 'reps' ? (
+                          <div className="pb-edit-row">
+                            <div className="pb-edit-field full">
+                              <label>Target Reps (in 1 min)</label>
+                              <input type="number" value={targetsForm[ex.key]?.targetReps ?? ''} onChange={(e) => handleTargetChange(ex.key, 'targetReps', e.target.value)} placeholder="0" />
+                            </div>
+                          </div>
+                        ) : ex.unit === 'distance' ? (
+                          <div className="pb-edit-row">
+                            <div className="pb-edit-field full">
+                              <label>Target Distance (cm)</label>
+                              <input type="number" step="0.5" value={targetsForm[ex.key]?.targetDistance ?? ''} onChange={(e) => handleTargetChange(ex.key, 'targetDistance', e.target.value)} placeholder="0" />
                             </div>
                           </div>
                         ) : (
                           <div className="pb-edit-row">
                             <div className="pb-edit-field full">
                               <label>Target (seconds)</label>
-                              <input
-                                type="number"
-                                step="1"
-                                value={targetsForm[ex.key]?.targetValue ?? ''}
-                                onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
-                                placeholder="0"
-                              />
+                              <input type="number" step="1" value={targetsForm[ex.key]?.targetValue ?? ''} onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)} placeholder="0" />
                             </div>
                           </div>
                         )}
                       </div>
                     );
                   })}
-
                 </div>
                 <div className="pb-edit-actions">
-                  <button className="pb-cancel-btn" onClick={() => {
-                    setEditingTargets(false);
-                    setTargetsForm(targets);
-                  }}>Cancel</button>
-                  <button className="pb-save-btn" onClick={handleSaveTargets} disabled={saving}>
-                    {saving ? 'Saving...' : 'Save Targets'}
-                  </button>
+                  <button className="pb-cancel-btn" onClick={() => { setEditingTargets(false); setTargetsForm(targets); }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveTargets} disabled={saving}>{saving ? 'Saving...' : 'Save Targets'}</button>
                 </div>
               </div>
             )}
@@ -1219,15 +972,11 @@ export default function PersonalBests() {
                                 )}
                               </span>
                               {mTarget && (
-                                <span className="pb-metric-target-label">
-                                  Target: {mTarget.targetValue} {metric.suffix}
-                                </span>
+                                <span className="pb-metric-target-label">Target: {mTarget.targetValue} {metric.suffix}</span>
                               )}
                             </div>
                             <div className="pb-metric-values">
-                              <span className="pb-metric-current">
-                                {value != null ? `${value} ${metric.suffix}` : '-'}
-                              </span>
+                              <span className="pb-metric-current">{value != null ? `${value} ${metric.suffix}` : '-'}</span>
                               {change !== null && (
                                 <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
                                   {change > 0 ? '+' : ''}{change} {metric.suffix}
@@ -1238,10 +987,7 @@ export default function PersonalBests() {
                           {mProgress !== null && (
                             <div className="pb-metric-progress">
                               <div className="pb-metric-bar">
-                                <div
-                                  className={`pb-metric-bar-fill ${mHit ? 'hit' : ''}`}
-                                  style={{ width: `${Math.round(mProgress * 100)}%` }}
-                                />
+                                <div className={`pb-metric-bar-fill ${mHit ? 'hit' : ''}`} style={{ width: `${Math.round(mProgress * 100)}%` }} />
                               </div>
                               <span className={`pb-metric-percent ${mHit ? 'hit' : ''}`}>
                                 {mHit ? 'Hit!' : `${Math.round(mProgress * 100)}%`}
@@ -1261,9 +1007,7 @@ export default function PersonalBests() {
                     {Object.keys(metricTargets).length > 0 ? 'Edit Targets' : 'Set Targets'}
                   </button>
                   {(Object.keys(targets).length > 0 || Object.keys(metricTargets).length > 0) && (
-                    <button className="pb-edit-btn pb-reset-btn" onClick={handleResetTargets} disabled={saving}>
-                      Reset All Goals
-                    </button>
+                    <button className="pb-edit-btn pb-reset-btn" onClick={handleResetTargets} disabled={saving}>Reset All Goals</button>
                   )}
                 </div>
               </>
@@ -1273,35 +1017,21 @@ export default function PersonalBests() {
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Measurements - {formatMonthLabel(currentMonth)}</h3>
-                  <button className="pb-edit-close" onClick={() => {
-                    setEditingMetrics(false);
-                    setMetricsForm(currentRecord?.bodyMetrics || {});
-                  }}>&times;</button>
+                  <button className="pb-edit-close" onClick={() => { setEditingMetrics(false); setMetricsForm(currentRecord?.bodyMetrics || {}); }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
                   {BODY_METRICS.map(metric => (
                     <div key={metric.key} className="pb-edit-metric">
                       <div className="pb-edit-field full">
                         <label>{metric.name} ({metric.suffix})</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          value={metricsForm[metric.key] ?? ''}
-                          onChange={(e) => handleMetricChange(metric.key, e.target.value)}
-                          placeholder="0"
-                        />
+                        <input type="number" step="0.1" value={metricsForm[metric.key] ?? ''} onChange={(e) => handleMetricChange(metric.key, e.target.value)} placeholder="0" />
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="pb-edit-actions">
-                  <button className="pb-cancel-btn" onClick={() => {
-                    setEditingMetrics(false);
-                    setMetricsForm(currentRecord?.bodyMetrics || {});
-                  }}>Cancel</button>
-                  <button className="pb-save-btn" onClick={handleSaveMetrics} disabled={saving}>
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
+                  <button className="pb-cancel-btn" onClick={() => { setEditingMetrics(false); setMetricsForm(currentRecord?.bodyMetrics || {}); }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveMetrics} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
                 </div>
               </div>
             )}
@@ -1310,10 +1040,7 @@ export default function PersonalBests() {
               <div className="pb-edit-card">
                 <div className="pb-edit-header">
                   <h3>Body Metric Targets</h3>
-                  <button className="pb-edit-close" onClick={() => {
-                    setEditingMetricTargets(false);
-                    setMetricTargetsForm(metricTargets);
-                  }}>&times;</button>
+                  <button className="pb-edit-close" onClick={() => { setEditingMetricTargets(false); setMetricTargetsForm(metricTargets); }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
                   <p className="pb-target-hint">Set targets for your body measurements. Your current measurement is captured automatically.</p>
@@ -1328,13 +1055,7 @@ export default function PersonalBests() {
                         <div className="pb-edit-row">
                           <div className="pb-edit-field full">
                             <label>Target ({m.suffix})</label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={metricTargetsForm[m.key]?.targetValue ?? ''}
-                              onChange={(e) => handleMetricTargetChange(m.key, e.target.value)}
-                              placeholder="0"
-                            />
+                            <input type="number" step="0.1" value={metricTargetsForm[m.key]?.targetValue ?? ''} onChange={(e) => handleMetricTargetChange(m.key, e.target.value)} placeholder="0" />
                           </div>
                         </div>
                       </div>
@@ -1342,13 +1063,8 @@ export default function PersonalBests() {
                   })}
                 </div>
                 <div className="pb-edit-actions">
-                  <button className="pb-cancel-btn" onClick={() => {
-                    setEditingMetricTargets(false);
-                    setMetricTargetsForm(metricTargets);
-                  }}>Cancel</button>
-                  <button className="pb-save-btn" onClick={handleSaveMetricTargets} disabled={saving}>
-                    {saving ? 'Saving...' : 'Save Targets'}
-                  </button>
+                  <button className="pb-cancel-btn" onClick={() => { setEditingMetricTargets(false); setMetricTargetsForm(metricTargets); }}>Cancel</button>
+                  <button className="pb-save-btn" onClick={handleSaveMetricTargets} disabled={saving}>{saving ? 'Saving...' : 'Save Targets'}</button>
                 </div>
               </div>
             )}
@@ -1369,18 +1085,14 @@ export default function PersonalBests() {
                 {achievements.length > 0 && (
                   <div className="pb-achievements-wall">
                     <h4 className="pb-achievements-wall-title">
-                      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                       Targets Achieved
                     </h4>
                     <div className="pb-achievements-list">
                       {[...achievements].reverse().map((badge, i) => (
                         <div key={i} className="pb-achievement-item" style={{ animationDelay: `${i * 0.05}s` }}>
                           <div className="pb-achievement-star">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                           </div>
                           <div className="pb-achievement-info">
                             <span className="pb-achievement-label">{badge.label}</span>
@@ -1409,21 +1121,18 @@ export default function PersonalBests() {
                 </div>
 
                 {!compareMode ? (
-                  /* Timeline View */
                   <div className="pb-timeline">
                     {[...records].reverse().map((record, idx) => {
-                      const prevRecord = records.find(r => r.month < record.month && records.indexOf(r) === records.indexOf(record) - 1)
-                        || records.filter(r => r.month < record.month).pop();
+                      const prevRecord = records.filter(r => r.month < record.month).pop();
                       return (
                         <div key={record.id} className="pb-timeline-item" style={{ animationDelay: `${idx * 0.05}s` }}>
                           <div className="pb-timeline-dot"></div>
                           <div className="pb-timeline-card">
                             <h4>{formatMonthLabel(record.month)}</h4>
 
-                            {/* Benchmarks */}
                             {record.benchmarks && Object.keys(record.benchmarks).length > 0 && (
                               <div className="pb-timeline-group">
-                                <h5>Strength Benchmarks</h5>
+                                <h5>Strength Tests</h5>
                                 {EXERCISES.map(ex => {
                                   const bench = record.benchmarks[ex.key];
                                   if (!bench) return null;
@@ -1435,9 +1144,7 @@ export default function PersonalBests() {
                                     <div key={ex.key} className="pb-timeline-row">
                                       <span className="pb-timeline-label">{ex.name}</span>
                                       <div className="pb-timeline-values">
-                                        <span className="pb-timeline-value">
-                                          {ex.unit === 'time' ? formatPlankTime(bench.time) : formatWeight(bench.weight, bench.reps)}
-                                        </span>
+                                        <span className="pb-timeline-value">{formatValue(ex, bench)}</span>
                                         {pct !== null && (
                                           <span className={`pb-timeline-change ${pct >= 0 ? 'positive' : 'negative'}`}>
                                             {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
@@ -1450,7 +1157,6 @@ export default function PersonalBests() {
                               </div>
                             )}
 
-                            {/* Body Metrics */}
                             {record.bodyMetrics && Object.keys(record.bodyMetrics).length > 0 && (
                               <div className="pb-timeline-group">
                                 <h5>Body Measurements</h5>
@@ -1481,33 +1187,27 @@ export default function PersonalBests() {
                     })}
                   </div>
                 ) : (
-                  /* Compare View */
                   <div className="pb-compare">
                     <div className="pb-compare-selectors">
                       <div className="pb-compare-select">
                         <label>From</label>
                         <select value={compareA} onChange={(e) => setCompareA(e.target.value)}>
-                          {records.map(r => (
-                            <option key={r.month} value={r.month}>{formatMonthLabel(r.month)}</option>
-                          ))}
+                          {records.map(r => (<option key={r.month} value={r.month}>{formatMonthLabel(r.month)}</option>))}
                         </select>
                       </div>
                       <div className="pb-compare-vs">vs</div>
                       <div className="pb-compare-select">
                         <label>To</label>
                         <select value={compareB} onChange={(e) => setCompareB(e.target.value)}>
-                          {records.map(r => (
-                            <option key={r.month} value={r.month}>{formatMonthLabel(r.month)}</option>
-                          ))}
+                          {records.map(r => (<option key={r.month} value={r.month}>{formatMonthLabel(r.month)}</option>))}
                         </select>
                       </div>
                     </div>
 
                     {recordA && recordB && (
                       <div className="pb-compare-results">
-                        {/* Benchmarks comparison */}
                         <div className="pb-compare-group">
-                          <h4>Strength Benchmarks</h4>
+                          <h4>Strength Tests</h4>
                           <div className="pb-compare-table">
                             <div className="pb-compare-header-row">
                               <span>Exercise</span>
@@ -1524,12 +1224,8 @@ export default function PersonalBests() {
                               return (
                                 <div key={ex.key} className="pb-compare-row">
                                   <span className="pb-compare-name">{ex.name}</span>
-                                  <span className="pb-compare-val">
-                                    {benchA ? (ex.unit === 'time' ? formatPlankTime(benchA.time) : `${benchA.weight}x${benchA.reps}`) : '-'}
-                                  </span>
-                                  <span className="pb-compare-val">
-                                    {benchB ? (ex.unit === 'time' ? formatPlankTime(benchB.time) : `${benchB.weight}x${benchB.reps}`) : '-'}
-                                  </span>
+                                  <span className="pb-compare-val">{benchA ? formatValue(ex, benchA) : '-'}</span>
+                                  <span className="pb-compare-val">{benchB ? formatValue(ex, benchB) : '-'}</span>
                                   <span className={`pb-compare-change ${pct !== null ? (pct >= 0 ? 'positive' : 'negative') : ''}`}>
                                     {pct !== null ? `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%` : '-'}
                                   </span>
@@ -1539,7 +1235,6 @@ export default function PersonalBests() {
                           </div>
                         </div>
 
-                        {/* Body metrics comparison */}
                         <div className="pb-compare-group">
                           <h4>Body Measurements</h4>
                           <div className="pb-compare-table">
@@ -1574,7 +1269,6 @@ export default function PersonalBests() {
             )}
           </div>
         )}
-        </>}
       </main>
 
       {/* Achievement Celebration */}
@@ -1617,33 +1311,31 @@ export default function PersonalBests() {
         </div>
       )}
 
-      {/* Bottom Tab Nav — block clients only */}
-      {isBlockClient && (
-        <nav className="block-bottom-nav">
-          <button className="block-nav-tab" onClick={() => navigate('/client')}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Home</span>
+      {/* Bottom Tab Nav */}
+      <nav className="block-bottom-nav">
+        <button className="block-nav-tab" onClick={() => navigate('/client')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </button>
+        <button className="block-nav-tab" onClick={() => navigate('/client/forms')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>Forms</span>
+        </button>
+        <button className="block-nav-tab" onClick={() => navigate('/client/tools')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span>Tools</span>
+        </button>
+        <button className="block-nav-tab active">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          <span>PBs</span>
+        </button>
+        {clientData?.circuitAccess && (
+          <button className="block-nav-tab" onClick={() => navigate('/client/circuit')}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>Circuit</span>
           </button>
-          <button className="block-nav-tab" onClick={() => navigate('/client/forms')}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <span>Forms</span>
-          </button>
-          <button className="block-nav-tab" onClick={() => navigate('/client/tools')}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            <span>Tools</span>
-          </button>
-          <button className="block-nav-tab active">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-            <span>PBs</span>
-          </button>
-          {clientData?.circuitAccess && (
-            <button className="block-nav-tab" onClick={() => navigate('/client/circuit')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-              <span>Circuit</span>
-            </button>
-          )}
-        </nav>
-      )}
+        )}
+      </nav>
     </div>
   );
 }
