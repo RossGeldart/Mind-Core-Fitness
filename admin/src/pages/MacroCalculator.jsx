@@ -16,7 +16,8 @@ export default function MacroCalculator() {
     heightUnit: 'cm',
     heightFeet: '',
     heightInches: '',
-    activityLevel: 'moderate',
+    dailyActivity: 'sedentary',
+    trainingFrequency: 'moderate',
     goal: 'maintain',
     deficitLevel: 'moderate'
   });
@@ -60,15 +61,25 @@ export default function MacroCalculator() {
       bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
     }
 
-    const activityMultipliers = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      active: 1.725,
-      veryActive: 1.9
+    // Step 1: NEAT — daily lifestyle activity (outside of training)
+    const neatMultipliers = {
+      sedentary: 1.2,    // desk job, drive to work, <5k steps
+      light: 1.3,        // office job + some walking, 5-8k steps
+      moderate: 1.4,     // on feet often, retail/teaching, 8-12k steps
+      active: 1.5        // physical job, 12k+ steps
     };
 
-    const tdee = bmr * activityMultipliers[formData.activityLevel];
+    const neat = bmr * neatMultipliers[formData.dailyActivity];
+
+    // Step 2: Exercise add-on — average daily calories from training sessions
+    const exerciseAddOns = {
+      low: 100,           // 1-2 sessions/week
+      moderate: 200,      // 3-4 sessions/week
+      high: 300,          // 5-6 sessions/week
+      daily: 400          // 7+ sessions/week
+    };
+
+    const tdee = Math.round(neat + exerciseAddOns[formData.trainingFrequency]);
 
     let targetCalories = tdee;
     let proteinPerKg;
@@ -76,13 +87,14 @@ export default function MacroCalculator() {
 
     switch (formData.goal) {
       case 'lose':
-        const deficits = { light: 250, moderate: 500, harsh: 750 };
-        targetCalories = tdee - deficits[formData.deficitLevel];
+        // Percentage-based deficits scale with body size
+        const deficitPcts = { light: 0.15, moderate: 0.20, harsh: 0.25 };
+        targetCalories = tdee * (1 - deficitPcts[formData.deficitLevel]);
         proteinPerKg = 2.2;
         fatPct = 0.30;
         break;
       case 'build':
-        targetCalories = tdee + 300;
+        targetCalories = tdee * 1.10; // 10% surplus
         proteinPerKg = 2.0;
         fatPct = 0.22;
         break;
@@ -93,7 +105,7 @@ export default function MacroCalculator() {
         break;
     }
 
-    const minCalories = formData.gender === 'male' ? 1500 : 1200;
+    const minCalories = formData.gender === 'male' ? 1400 : 1100;
     targetCalories = Math.max(targetCalories, minCalories);
 
     const proteinGrams = Math.round(weightKg * proteinPerKg);
@@ -105,6 +117,8 @@ export default function MacroCalculator() {
 
     setResults({
       bmr: Math.round(bmr),
+      neat: Math.round(neat),
+      exerciseAdd: exerciseAddOns[formData.trainingFrequency],
       tdee: Math.round(tdee),
       targetCalories: Math.round(targetCalories),
       protein: proteinGrams,
@@ -212,13 +226,22 @@ export default function MacroCalculator() {
             </div>
 
             <div className="form-group full-width">
-              <label>Activity Level</label>
-              <select name="activityLevel" value={formData.activityLevel} onChange={handleChange}>
-                <option value="sedentary">Sedentary (little to no exercise)</option>
-                <option value="light">Lightly Active (1-3 days/week)</option>
-                <option value="moderate">Moderately Active (3-5 days/week)</option>
-                <option value="active">Very Active (6-7 days/week)</option>
-                <option value="veryActive">Extra Active (athlete/physical job)</option>
+              <label>Daily Activity (outside of training)</label>
+              <select name="dailyActivity" value={formData.dailyActivity} onChange={handleChange}>
+                <option value="sedentary">Sedentary — desk job, drive to work, under 5k steps</option>
+                <option value="light">Lightly Active — office + some walking, 5-8k steps</option>
+                <option value="moderate">Moderately Active — on feet often, 8-12k steps</option>
+                <option value="active">Very Active — physical job, 12k+ steps</option>
+              </select>
+            </div>
+
+            <div className="form-group full-width">
+              <label>Training Sessions per Week</label>
+              <select name="trainingFrequency" value={formData.trainingFrequency} onChange={handleChange}>
+                <option value="low">1-2 sessions</option>
+                <option value="moderate">3-4 sessions</option>
+                <option value="high">5-6 sessions</option>
+                <option value="daily">7+ sessions</option>
               </select>
             </div>
 
@@ -245,19 +268,19 @@ export default function MacroCalculator() {
                 <label>Calorie Deficit Level</label>
                 <div className="deficit-options">
                   <button type="button" className={`deficit-btn ${formData.deficitLevel === 'light' ? 'active' : ''}`} onClick={() => { setFormData(prev => ({ ...prev, deficitLevel: 'light' })); setShowResults(false); }}>
-                    <span className="deficit-name">Light</span>
-                    <span className="deficit-desc">-250 cal/day</span>
-                    <span className="deficit-rate">~0.5 lb/week</span>
+                    <span className="deficit-name">Mild</span>
+                    <span className="deficit-desc">15% below TDEE</span>
+                    <span className="deficit-rate">Steady, sustainable</span>
                   </button>
                   <button type="button" className={`deficit-btn ${formData.deficitLevel === 'moderate' ? 'active' : ''}`} onClick={() => { setFormData(prev => ({ ...prev, deficitLevel: 'moderate' })); setShowResults(false); }}>
                     <span className="deficit-name">Moderate</span>
-                    <span className="deficit-desc">-500 cal/day</span>
-                    <span className="deficit-rate">~1 lb/week</span>
+                    <span className="deficit-desc">20% below TDEE</span>
+                    <span className="deficit-rate">Recommended</span>
                   </button>
                   <button type="button" className={`deficit-btn ${formData.deficitLevel === 'harsh' ? 'active' : ''}`} onClick={() => { setFormData(prev => ({ ...prev, deficitLevel: 'harsh' })); setShowResults(false); }}>
                     <span className="deficit-name">Aggressive</span>
-                    <span className="deficit-desc">-750 cal/day</span>
-                    <span className="deficit-rate">~1.5 lb/week</span>
+                    <span className="deficit-desc">25% below TDEE</span>
+                    <span className="deficit-rate">Fast but tough</span>
                   </button>
                 </div>
               </div>
@@ -322,11 +345,19 @@ export default function MacroCalculator() {
               </div>
               <div className="results-info">
                 <div className="info-row">
-                  <span>Basal Metabolic Rate (BMR)</span>
+                  <span>BMR (your body at rest)</span>
                   <span className="info-value">{results.bmr} cal</span>
                 </div>
                 <div className="info-row">
-                  <span>Total Daily Energy Expenditure (TDEE)</span>
+                  <span>+ Daily activity (NEAT)</span>
+                  <span className="info-value">{results.neat} cal</span>
+                </div>
+                <div className="info-row">
+                  <span>+ Training sessions</span>
+                  <span className="info-value">+{results.exerciseAdd} cal</span>
+                </div>
+                <div className="info-row" style={{ fontWeight: 600 }}>
+                  <span>TDEE (total burn)</span>
                   <span className="info-value">{results.tdee} cal</span>
                 </div>
               </div>
