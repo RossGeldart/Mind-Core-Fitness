@@ -6,7 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyWorkouts.css';
-import randomiserCardImg from '../assets/images/cards/randomiser-mcf.jpg';
+import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
 import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
