@@ -426,6 +426,12 @@
   opacity: 1;
 }
 
+[data-theme="dark"] .cb-card-progress,
+[data-theme="dark"] .cb-card-leaderboard {
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-color: transparent;
+}
+
 [data-theme="light"] .cb-card-progress,
 [data-theme="light"] .cb-card-leaderboard {
   background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
