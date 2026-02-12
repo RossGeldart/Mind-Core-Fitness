@@ -1,15 +1,5 @@
 /* Core Buddy Nutrition */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cardEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes waterPop {
   0% { transform: scale(1); }
   30% { transform: scale(1.45); }
@@ -134,7 +124,6 @@
 /* ===== WEEK CALENDAR STRIP ===== */
 .nut-week-strip {
   margin-bottom: 20px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-week-header {
@@ -303,7 +292,6 @@
 /* ==================== SETUP / CALCULATOR ==================== */
 .nut-setup-intro {
   margin-bottom: 24px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-setup-intro h2 {
@@ -326,7 +314,6 @@
   border-radius: 16px;
   padding: 24px 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: cardEntrance 0.3s ease-out;
 }
 
 [data-theme="dark"] .nut-calc-form {
@@ -559,7 +546,6 @@
   border-radius: 16px;
   padding: 24px 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: cardEntrance 0.4s ease-out;
 }
 
 [data-theme="dark"] .nut-calc-results {
@@ -630,7 +616,6 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   padding: 8px 0 0;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* Keep the old grid class for setup calc results */
@@ -639,7 +624,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
-  animation: fadeIn 0.4s ease-out;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
@@ -788,7 +772,6 @@
   display: flex;
   gap: 6px;
   margin-bottom: 14px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-meal-pill {
@@ -888,7 +871,6 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-  animation: cardEntrance 0.3s ease-out;
 }
 
 [data-theme="dark"] .nut-meal-card {
@@ -1216,7 +1198,6 @@
   transition: all 0.2s;
   margin-bottom: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  animation: fadeIn 0.3s ease-out;
   font-family: 'Roboto', sans-serif;
   color: #2196f3;
 }
@@ -1262,7 +1243,6 @@
   background: var(--bg-card);
   border-radius: 20px;
   padding: 24px;
-  animation: fadeIn 0.2s ease-out;
   margin: auto;
 }
 
@@ -1370,7 +1350,6 @@
   gap: 8px;
   margin-bottom: 16px;
   margin-top: 4px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-date-arrow {
@@ -1430,7 +1409,6 @@
   padding: 16px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-md);
-  animation: fadeIn 0.2s ease-out;
 }
 
 .nut-cal-header {
@@ -1543,7 +1521,6 @@
 
 /* ==================== FOOD LOG ==================== */
 .nut-log-section {
-  animation: fadeIn 0.3s ease-out;
 }
 
 .nut-log-section h3 {
@@ -1675,7 +1652,6 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
   overflow-y: auto;
 }
 
@@ -1791,7 +1767,6 @@
   justify-content: center;
   gap: 8px;
   z-index: 20;
-  animation: fadeIn 0.3s ease-out;
   border-radius: 12px;
 }
 

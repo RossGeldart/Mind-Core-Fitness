@@ -1,15 +1,5 @@
 /* Core Buddy Workouts */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cardEntrance {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes spinRing {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -122,7 +112,6 @@
 .wk-menu-heading {
   text-align: center;
   padding: 4px 0 16px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .wk-menu-heading h2 {
@@ -154,7 +143,6 @@
   border-radius: 16px;
   cursor: pointer;
   margin-bottom: 20px;
-  animation: fadeIn 0.4s ease-out;
   -webkit-tap-highlight-color: transparent;
   box-shadow: var(--shadow-primary);
   transition: transform 0.15s, box-shadow 0.15s;
@@ -242,7 +230,6 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  animation: cardEntrance 0.4s ease-out;
   box-shadow: var(--shadow-lg);
   transition: transform 0.2s ease;
 }
@@ -452,7 +439,6 @@
   background: none;
   box-shadow: var(--shadow-lg);
   transition: transform 0.2s ease;
-  animation: cardEntrance 0.3s ease-out;
 }
 
 .wk-prog-img-card:active {
@@ -480,7 +466,6 @@
   font-family: inherit;
   box-shadow: var(--shadow-lg);
   transition: transform 0.2s ease;
-  animation: cardEntrance 0.3s ease-out;
 }
 
 .wk-prog-hero-card:active {
@@ -630,7 +615,6 @@
   font-family: inherit;
   box-shadow: var(--shadow-md);
   transition: transform 0.2s ease;
-  animation: fadeIn 0.3s ease-out;
   padding: 0;
 }
 
@@ -740,7 +724,6 @@
   align-items: center;
   gap: 8px;
   padding: 20px 0 24px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .mg-sessions-icon {
@@ -793,7 +776,6 @@
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   text-align: left;
-  animation: fadeIn 0.3s ease-out;
   box-shadow: var(--shadow-sm);
 }
 
@@ -1390,7 +1372,6 @@
   align-items: center;
   justify-content: center;
   z-index: 999;
-  animation: fadeIn 0.3s ease-out;
   cursor: pointer;
 }
 
@@ -1484,7 +1465,6 @@
   border: 1px solid var(--border-color);
   border-radius: 16px;
   margin-bottom: 6px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .wk-stats-strip-ring {
@@ -1639,7 +1619,6 @@
 /* ==================== SETUP VIEW ==================== */
 .wk-setup-section {
   padding: 20px 0 0;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .wk-setup-section h2 {
@@ -1865,7 +1844,6 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .wk-spin-ring {
@@ -1917,7 +1895,6 @@
   justify-content: center;
   gap: 8px;
   padding: 24px 0 20px;
-  animation: fadeIn 0.4s ease-out;
 }
 
 .wk-stat {
@@ -1963,7 +1940,6 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  animation: fadeIn 0.3s ease-out;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -2042,7 +2018,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -2104,7 +2079,6 @@
   gap: 12px;
   justify-content: center;
   padding-bottom: 20px;
-  animation: fadeIn 0.3s ease-out;
 }
 
 .wk-btn-secondary {
@@ -2433,7 +2407,6 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  animation: fadeIn 0.5s ease-out;
   padding: 0 20px;
 }
 
@@ -2505,7 +2478,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: fadeIn 0.3s ease-out;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
