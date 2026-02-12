@@ -1568,6 +1568,16 @@
   letter-spacing: 0.5px;
 }
 
+.wk-stats-level-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
 /* Level Breakdown Bar */
 .wk-stats-level-bar {
   display: flex;

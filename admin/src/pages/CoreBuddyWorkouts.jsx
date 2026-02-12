@@ -1519,17 +1519,20 @@ export default function CoreBuddyWorkouts() {
               const iPct = Math.round((levelBreakdown.intermediate / total) * 100);
               const aPct = 100 - bPct - iPct;
               return (
-                <div className="wk-stats-level-bar">
-                  {bPct > 0 && <div className="wk-stats-level-seg wk-seg-beginner" style={{ width: `${bPct}%` }}>
-                    {bPct >= 15 && <span>B {bPct}%</span>}
-                  </div>}
-                  {iPct > 0 && <div className="wk-stats-level-seg wk-seg-intermediate" style={{ width: `${iPct}%` }}>
-                    {iPct >= 15 && <span>I {iPct}%</span>}
-                  </div>}
-                  {aPct > 0 && <div className="wk-stats-level-seg wk-seg-advanced" style={{ width: `${aPct}%` }}>
-                    {aPct >= 15 && <span>A {aPct}%</span>}
-                  </div>}
-                </div>
+                <>
+                  <span className="wk-stats-level-title">LEVEL BREAKDOWN</span>
+                  <div className="wk-stats-level-bar">
+                    {bPct > 0 && <div className="wk-stats-level-seg wk-seg-beginner" style={{ width: `${bPct}%` }}>
+                      {bPct >= 15 && <span>BEG {bPct}%</span>}
+                    </div>}
+                    {iPct > 0 && <div className="wk-stats-level-seg wk-seg-intermediate" style={{ width: `${iPct}%` }}>
+                      {iPct >= 15 && <span>INT {iPct}%</span>}
+                    </div>}
+                    {aPct > 0 && <div className="wk-stats-level-seg wk-seg-advanced" style={{ width: `${aPct}%` }}>
+                      {aPct >= 15 && <span>ADV {aPct}%</span>}
+                    </div>}
+                  </div>
+                </>
               );
             })()}
           </div>
