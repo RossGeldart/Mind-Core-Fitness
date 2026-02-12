@@ -9,6 +9,7 @@ import './CoreBuddyWorkouts.css';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.JPG';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
+import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
 
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
@@ -97,7 +98,7 @@ const FOCUS_ICONS = {
 
 // Muscle group placeholders
 const MUSCLE_GROUPS = [
-  { key: 'arms', label: 'Arms', icon: 'M7 5h2v14H7V5zm8 0h2v14h-2V5zm-5 4h4v6h-4V9z' },
+  { key: 'arms', label: 'Arms', icon: 'M7 5h2v14H7V5zm8 0h2v14h-2V5zm-5 4h4v6h-4V9z', image: mgArmsImg },
   { key: 'chest', label: 'Chest', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm4 0h-2v-2h2v2zm3-6c0 1.1-.36 2.12-.97 2.95l-.87-.87C16.7 12.53 17 11.8 17 11c0-2.76-2.24-5-5-5S7 8.24 7 11c0 .8.3 1.53.84 2.08l-.87.87A4.977 4.977 0 0 1 6 11c0-3.31 2.69-6 6-6s6 2.69 6 6z' },
   { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z' },
   { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z' },
@@ -1429,20 +1430,26 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-muscle-grid">
             {MUSCLE_GROUPS.map((mg, i) => (
-              <button key={mg.key} className="wk-muscle-hero-card"
+              <button key={mg.key} className={`wk-muscle-hero-card${mg.image ? ' wk-muscle-thumb' : ''}`}
                 onClick={() => { setSelectedMuscleGroup(mg.key); setView('muscle_sessions'); }}
                 style={{ animationDelay: `${i * 0.05}s` }}>
-                <img src={randomiserCardImg} alt="" className="wk-muscle-hero-bg" />
-                <div className="wk-muscle-hero-overlay" style={{ background: MUSCLE_GRADIENTS[mg.key] }} />
-                <div className="wk-muscle-hero-content">
-                  <div className="wk-muscle-hero-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
-                  </div>
-                  <div className="wk-muscle-hero-text">
-                    <span className="wk-muscle-hero-name">{mg.label}</span>
-                    <span className="wk-muscle-hero-count">{MUSCLE_GROUP_SESSIONS[mg.key]?.length || 0} sessions</span>
-                  </div>
-                </div>
+                {mg.image ? (
+                  <img src={mg.image} alt={mg.label} className="wk-muscle-thumb-img" />
+                ) : (
+                  <>
+                    <img src={randomiserCardImg} alt="" className="wk-muscle-hero-bg" />
+                    <div className="wk-muscle-hero-overlay" style={{ background: MUSCLE_GRADIENTS[mg.key] }} />
+                    <div className="wk-muscle-hero-content">
+                      <div className="wk-muscle-hero-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d={mg.icon} /></svg>
+                      </div>
+                      <div className="wk-muscle-hero-text">
+                        <span className="wk-muscle-hero-name">{mg.label}</span>
+                        <span className="wk-muscle-hero-count">{MUSCLE_GROUP_SESSIONS[mg.key]?.length || 0} sessions</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </button>
             ))}
           </div>
