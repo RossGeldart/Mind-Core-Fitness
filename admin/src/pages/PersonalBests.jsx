@@ -336,27 +336,40 @@ export default function PersonalBests() {
     if (type === 'strength') {
       EXERCISES.forEach(ex => {
         const target = targets[ex.key];
-        if (!target || !target.targetValue) return;
+        if (!target) return;
         const bench = dataMap[ex.key];
         if (!bench) return;
-        let currentVal = 0;
-        if (target.targetType === 'weight') currentVal = bench.weight || 0;
-        else if (target.targetType === 'reps') currentVal = bench.reps || 0;
-        else if (target.targetType === 'time') currentVal = bench.time || 0;
-        const startVal = target.startValue || 0;
-        const targetVal = target.targetValue;
-        const range = targetVal - startVal;
-        const progress = range === 0 ? (currentVal >= targetVal ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+
+        let progress;
+        if (target.targetType === 'time') {
+          if (!target.targetValue) return;
+          const startVal = target.startValue || 0;
+          const currentVal = bench.time || 0;
+          const range = target.targetValue - startVal;
+          progress = range === 0 ? (currentVal >= target.targetValue ? 1 : 0) : Math.max(0, (currentVal - startVal) / range);
+        } else {
+          if (!target.targetWeight && !target.targetReps) return;
+          const startVol = (target.startWeight || 0) * (target.startReps || 0);
+          const targetVol = (target.targetWeight || 0) * (target.targetReps || 0);
+          const currentVol = (bench.weight || 0) * (bench.reps || 0);
+          const range = targetVol - startVol;
+          progress = range === 0 ? (currentVol >= targetVol ? 1 : 0) : Math.max(0, (currentVol - startVol) / range);
+        }
+
         if (progress >= 1) {
-          const alreadyAchieved = achievements.some(
-            a => a.type === 'strength' && a.key === ex.key && a.targetValue === targetVal
-          );
+          const alreadyAchieved = target.targetType === 'time'
+            ? achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetValue === target.targetValue)
+            : achievements.some(a => a.type === 'strength' && a.key === ex.key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
           if (!alreadyAchieved) {
-            const unitLabel = target.targetType === 'weight' ? 'kg' : target.targetType === 'reps' ? ' reps' : 's';
+            const label = target.targetType === 'time'
+              ? `${ex.name} ${target.targetValue}s`
+              : `${ex.name} ${target.targetWeight}kg × ${target.targetReps}`;
             newBadges.push({
-              type: 'strength', key: ex.key, targetType: target.targetType,
-              targetValue: targetVal, achievedMonth: currentMonth,
-              label: `${ex.name} ${targetVal}${unitLabel}`,
+              type: 'strength', key: ex.key,
+              ...(target.targetType === 'time'
+                ? { targetType: 'time', targetValue: target.targetValue }
+                : { targetWeight: target.targetWeight, targetReps: target.targetReps }),
+              achievedMonth: currentMonth, label,
             });
           }
         }
@@ -402,8 +415,12 @@ export default function PersonalBests() {
   const hasAchievement = (type, key) => {
     if (type === 'strength') {
       const target = targets[key];
-      if (!target || !target.targetValue) return false;
-      return achievements.some(a => a.type === 'strength' && a.key === key && a.targetValue === target.targetValue);
+      if (!target) return false;
+      if (target.targetType === 'time') {
+        return achievements.some(a => a.type === 'strength' && a.key === key && a.targetValue === target.targetValue);
+      }
+      if (!target.targetWeight && !target.targetReps) return false;
+      return achievements.some(a => a.type === 'strength' && a.key === key && a.targetWeight === target.targetWeight && a.targetReps === target.targetReps);
     } else {
       const mTarget = metricTargets[key];
       if (!mTarget || !mTarget.targetValue) return false;
@@ -481,7 +498,7 @@ export default function PersonalBests() {
       ...prev,
       [exerciseKey]: {
         ...prev[exerciseKey],
-        [field]: field === 'targetType' ? value : (value === '' ? '' : parseFloat(value)),
+        [field]: value === '' ? '' : parseFloat(value),
       }
     }));
   };
@@ -493,20 +510,24 @@ export default function PersonalBests() {
       const latestBenchmarks = currentRecord?.benchmarks || {};
       const targetsToSave = {};
       EXERCISES.forEach(ex => {
-        if (targetsForm[ex.key]?.targetValue) {
-          const tType = targetsForm[ex.key].targetType || (ex.unit === 'time' ? 'time' : 'weight');
-          let autoStart = 0;
-          const bench = latestBenchmarks[ex.key];
-          if (bench) {
-            if (tType === 'weight') autoStart = bench.weight || 0;
-            else if (tType === 'reps') autoStart = bench.reps || 0;
-            else if (tType === 'time') autoStart = bench.time || 0;
+        const bench = latestBenchmarks[ex.key];
+        if (ex.unit === 'time') {
+          if (targetsForm[ex.key]?.targetValue) {
+            targetsToSave[ex.key] = {
+              targetType: 'time',
+              targetValue: targetsForm[ex.key].targetValue,
+              startValue: bench?.time || 0,
+            };
           }
-          targetsToSave[ex.key] = {
-            targetType: tType,
-            targetValue: targetsForm[ex.key].targetValue,
-            startValue: autoStart,
-          };
+        } else {
+          if (targetsForm[ex.key]?.targetWeight || targetsForm[ex.key]?.targetReps) {
+            targetsToSave[ex.key] = {
+              targetWeight: targetsForm[ex.key].targetWeight || 0,
+              targetReps: targetsForm[ex.key].targetReps || 0,
+              startWeight: bench?.weight || 0,
+              startReps: bench?.reps || 0,
+            };
+          }
         }
       });
       await setDoc(doc(db, 'personalBestTargets', docId), {
@@ -589,23 +610,27 @@ export default function PersonalBests() {
   // Get progress toward target (0 to 1) based on range from start to target
   const getTargetProgress = (exerciseKey, benchData) => {
     const target = targets[exerciseKey];
-    if (!target || !target.targetValue || !benchData) return null;
+    if (!target || !benchData) return null;
 
-    const startVal = target.startValue || 0;
-    const targetVal = target.targetValue;
-
-    let currentVal = 0;
-    if (target.targetType === 'weight') {
-      currentVal = benchData.weight || 0;
-    } else if (target.targetType === 'reps') {
-      currentVal = benchData.reps || 0;
-    } else if (target.targetType === 'time') {
-      currentVal = benchData.time || 0;
+    // Time-based exercise (plank)
+    if (target.targetType === 'time') {
+      if (!target.targetValue) return null;
+      const startVal = target.startValue || 0;
+      const targetVal = target.targetValue;
+      const currentVal = benchData.time || 0;
+      const range = targetVal - startVal;
+      if (range <= 0) return currentVal >= targetVal ? 1 : 0;
+      return Math.max(0, Math.min((currentVal - startVal) / range, 1));
     }
 
-    const range = targetVal - startVal;
-    if (range <= 0) return currentVal >= targetVal ? 1 : 0;
-    return Math.max(0, Math.min((currentVal - startVal) / range, 1));
+    // Weight + reps based: use volume (weight × reps)
+    if (!target.targetWeight && !target.targetReps) return null;
+    const startVol = (target.startWeight || 0) * (target.startReps || 0);
+    const targetVol = (target.targetWeight || 0) * (target.targetReps || 0);
+    const currentVol = (benchData.weight || 0) * (benchData.reps || 0);
+    const range = targetVol - startVol;
+    if (range <= 0) return currentVol >= targetVol ? 1 : 0;
+    return Math.max(0, Math.min((currentVol - startVol) / range, 1));
   };
 
   // Get progress toward metric target (0 to 1), handles both increase and decrease goals
@@ -950,8 +975,11 @@ export default function PersonalBests() {
                         )}
                         {currentTarget && (
                           <div className={`pb-ring-target ${targetHit ? 'hit' : ''}`}>
-                            {targetHit ? 'Target hit!' : `${currentTarget.startValue || 0} → ${currentTarget.targetValue}`}{' '}
-                            {currentTarget.targetType === 'weight' ? 'kg' : currentTarget.targetType === 'reps' ? 'reps' : currentTarget.targetType === 'time' ? 's' : 'kg'}
+                            {targetHit ? 'Target hit!' : (
+                              currentTarget.targetType === 'time'
+                                ? `${currentTarget.startValue || 0}s → ${currentTarget.targetValue}s`
+                                : `${currentTarget.startWeight || 0}kg×${currentTarget.startReps || 0} → ${currentTarget.targetWeight}kg×${currentTarget.targetReps}`
+                            )}
                           </div>
                         )}
                         {!currentTarget && (
@@ -1092,15 +1120,11 @@ export default function PersonalBests() {
                   <p className="pb-target-hint">Set a target for each exercise. Your current best is captured automatically from your latest benchmarks.</p>
 
                   {EXERCISES.map(ex => {
-                    const targetType = targetsForm[ex.key]?.targetType || (ex.unit === 'time' ? 'time' : 'weight');
-                    const unitLabel = targetType === 'weight' ? 'kg' : targetType === 'reps' ? 'reps' : 'seconds';
-                    // Show the auto-captured start value from latest benchmark
                     const bench = currentRecord?.benchmarks?.[ex.key];
                     let currentBestDisplay = '-';
                     if (bench) {
-                      if (targetType === 'weight' && bench.weight) currentBestDisplay = `${bench.weight}kg`;
-                      else if (targetType === 'reps' && bench.reps) currentBestDisplay = `${bench.reps} reps`;
-                      else if (targetType === 'time' && bench.time) currentBestDisplay = `${bench.time}s`;
+                      if (ex.unit === 'time' && bench.time) currentBestDisplay = `${bench.time}s`;
+                      else if (bench.weight || bench.reps) currentBestDisplay = `${bench.weight || 0}kg × ${bench.reps || 0}`;
                     }
                     return (
                       <div key={ex.key} className="pb-edit-exercise">
@@ -1108,36 +1132,42 @@ export default function PersonalBests() {
                           <div className="pb-edit-exercise-name">{ex.name}</div>
                           <div className="pb-edit-current-best">Current: {currentBestDisplay}</div>
                         </div>
-                        {ex.unit === 'weight' && (
-                          <div className="pb-target-type-toggle">
-                            <button
-                              type="button"
-                              className={targetType === 'weight' ? 'active' : ''}
-                              onClick={() => handleTargetChange(ex.key, 'targetType', 'weight')}
-                            >
-                              Weight
-                            </button>
-                            <button
-                              type="button"
-                              className={targetType === 'reps' ? 'active' : ''}
-                              onClick={() => handleTargetChange(ex.key, 'targetType', 'reps')}
-                            >
-                              Reps
-                            </button>
+                        {ex.unit === 'weight' ? (
+                          <div className="pb-edit-row">
+                            <div className="pb-edit-field">
+                              <label>Target Weight (kg)</label>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={targetsForm[ex.key]?.targetWeight ?? ''}
+                                onChange={(e) => handleTargetChange(ex.key, 'targetWeight', e.target.value)}
+                                placeholder="0"
+                              />
+                            </div>
+                            <div className="pb-edit-field">
+                              <label>Target Reps</label>
+                              <input
+                                type="number"
+                                value={targetsForm[ex.key]?.targetReps ?? ''}
+                                onChange={(e) => handleTargetChange(ex.key, 'targetReps', e.target.value)}
+                                placeholder="0"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="pb-edit-row">
+                            <div className="pb-edit-field full">
+                              <label>Target (seconds)</label>
+                              <input
+                                type="number"
+                                step="1"
+                                value={targetsForm[ex.key]?.targetValue ?? ''}
+                                onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                                placeholder="0"
+                              />
+                            </div>
                           </div>
                         )}
-                        <div className="pb-edit-row">
-                          <div className="pb-edit-field full">
-                            <label>Target ({unitLabel})</label>
-                            <input
-                              type="number"
-                              step={targetType === 'weight' ? '0.5' : targetType === 'time' ? '1' : '1'}
-                              value={targetsForm[ex.key]?.targetValue ?? ''}
-                              onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
-                              placeholder="0"
-                            />
-                          </div>
-                        </div>
                       </div>
                     );
                   })}
