@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
+import workoutsImg from '../assets/images/cards/workouts.jpg';
 
 const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
@@ -319,14 +320,10 @@ export default function CoreBuddyDashboard() {
 
           {/* 2. Workouts */}
           <button
-            className="cb-feature-card cb-card-workouts ripple-btn"
+            className="cb-feature-card cb-card-workouts cb-card-thumbnail ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <div className="cb-card-content">
-              <h3>Workouts</h3>
-              <p>Randomise or pick a programme</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            <img src={workoutsImg} alt="Workouts" className="cb-card-thumb-img" />
           </button>
 
           {/* 3. Daily Habits */}

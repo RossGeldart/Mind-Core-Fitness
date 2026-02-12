@@ -409,6 +409,22 @@
   transition: transform 0.1s ease;
 }
 
+/* Thumbnail image card (e.g. Workouts) */
+.cb-card-thumbnail {
+  padding: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
+.cb-card-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
 /* Gradient accent for Progress & Leaderboard cards */
 .cb-card-progress,
 .cb-card-leaderboard {
