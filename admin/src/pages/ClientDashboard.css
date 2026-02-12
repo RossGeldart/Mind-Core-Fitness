@@ -774,25 +774,30 @@
   font-weight: 500;
 }
 
-/* Daily Quote Card */
+/* Daily Quote Card (shown when quote exists) */
 .daily-quote-card {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: var(--bg-card);
-  border: 1px solid rgba(161, 47, 58, 0.2);
-  border-radius: 14px;
-  padding: 18px;
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 18px 16px;
   margin-bottom: 20px;
-  animation: fadeIn 0.4s ease-out 0.15s backwards;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  animation: cardEntrance 0.4s ease-out 0.15s backwards;
+}
+
+[data-theme="light"] .daily-quote-card {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
 }
 
 .daily-quote-icon {
   width: 28px;
   height: 28px;
-  color: var(--color-primary);
+  color: #fff;
   flex-shrink: 0;
-  opacity: 0.6;
+  opacity: 0.7;
   margin-top: 2px;
 }
 
@@ -809,7 +814,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #fff;
   line-height: 1.5;
   font-style: italic;
   margin-bottom: 6px;
@@ -818,42 +823,46 @@
 .daily-quote-author {
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
-  color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
 }
 
-/* Daily Quote CTA */
+/* Daily Quote CTA (no quote yet) */
 .daily-quote-cta {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: var(--bg-card);
-  border: 1px solid rgba(161, 47, 58, 0.15);
-  border-radius: 14px;
-  padding: 16px 18px;
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 18px 16px;
   margin-bottom: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  animation: fadeIn 0.4s ease-out 0.15s backwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  -webkit-tap-highlight-color: transparent;
+  animation: cardEntrance 0.4s ease-out 0.15s backwards;
+}
+
+[data-theme="light"] .daily-quote-cta {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
 }
 
 .daily-quote-cta:hover {
-  border-color: rgba(161, 47, 58, 0.4);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .daily-quote-cta:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .daily-quote-cta-icon {
   width: 32px;
   height: 32px;
-  color: var(--color-primary);
+  color: #fff;
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .daily-quote-cta-icon svg {
@@ -871,19 +880,19 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: #fff;
 }
 
 .daily-quote-cta-sub {
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .daily-quote-cta-arrow {
   width: 20px;
   height: 20px;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.6);
   flex-shrink: 0;
 }
 
@@ -892,32 +901,35 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border: 1px solid transparent;
   border-radius: 16px;
-  padding: 18px 20px;
+  padding: 18px 16px;
   margin-bottom: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   -webkit-tap-highlight-color: transparent;
-  animation: fadeIn 0.4s ease-out 0.1s backwards;
+  animation: cardEntrance 0.4s ease-out 0.1s backwards;
+}
+
+[data-theme="light"] .core-buddy-cta {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
 }
 
 .core-buddy-cta:hover {
-  border-color: rgba(161, 47, 58, 0.4);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .core-buddy-cta:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .core-buddy-cta-icon {
   width: 36px;
   height: 36px;
-  color: var(--color-primary);
+  color: #fff;
   flex-shrink: 0;
 }
 
@@ -936,20 +948,20 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: #fff;
 }
 
 .core-buddy-cta-sub {
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 2px;
 }
 
 .core-buddy-cta-arrow {
   width: 20px;
   height: 20px;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.6);
   flex-shrink: 0;
 }
 

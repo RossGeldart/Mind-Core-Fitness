@@ -197,6 +197,12 @@ export default function DailyMotivation() {
                 <div className="quote-text">{dailyQuote.text}</div>
                 <div className="quote-author">— {dailyQuote.author}</div>
                 <div className="quote-date-note">Your inspiration for today</div>
+                <div className="quote-lock-note">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
+                  New quote available tomorrow at midnight
+                </div>
               </div>
             ) : quoteAnimating ? (
               <div className="quote-result shuffling">
