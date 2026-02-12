@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
   const [processingRequest, setProcessingRequest] = useState(null);
   const [toast, setToast] = useState(null);
+  const [dashClients, setDashClients] = useState([]);
+  const [dashSessions, setDashSessions] = useState([]);
   const { currentUser, logout, isAdmin, loading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -90,9 +92,9 @@ export default function Dashboard() {
     }
   };
 
-  // Cleanup orphaned sessions (sessions with no matching client)
+  // Fetch clients + sessions for summary cards & cleanup orphans
   useEffect(() => {
-    const cleanupOrphanedSessions = async () => {
+    const fetchDashboardData = async () => {
       if (!currentUser || !isAdmin) return;
 
       try {
@@ -101,25 +103,33 @@ export default function Dashboard() {
           getDocs(collection(db, 'sessions'))
         ]);
 
-        const clientIds = new Set(clientsSnapshot.docs.map(doc => doc.id));
+        const clientsData = clientsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        const sessionsData = sessionsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Store for summary cards
+        setDashClients(clientsData);
+
+        // Cleanup orphaned sessions
+        const clientIds = new Set(clientsData.map(c => c.id));
         const orphanedSessions = sessionsSnapshot.docs.filter(
           sessionDoc => !clientIds.has(sessionDoc.data().clientId)
         );
 
         if (orphanedSessions.length > 0) {
-          console.log(`Cleaning up ${orphanedSessions.length} orphaned sessions...`);
           const deletePromises = orphanedSessions.map(sessionDoc =>
             deleteDoc(doc(db, 'sessions', sessionDoc.id))
           );
           await Promise.all(deletePromises);
-          console.log('Orphaned sessions cleaned up successfully');
         }
+
+        // Store non-orphaned sessions
+        setDashSessions(sessionsData.filter(s => clientIds.has(s.clientId)));
       } catch (error) {
-        console.error('Error cleaning up orphaned sessions:', error);
+        console.error('Error fetching dashboard data:', error);
       }
     };
 
-    cleanupOrphanedSessions();
+    fetchDashboardData();
   }, [currentUser, isAdmin]);
 
   // Pull-to-refresh handlers
@@ -277,6 +287,63 @@ export default function Dashboard() {
 
   const pendingCount = rescheduleRequests.length;
 
+  // --- Summary stats ---
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+  const currentTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  const todaySessions = dashSessions.filter(s => s.date === todayStr);
+  const sessionsToday = todaySessions.length;
+
+  // Completed sessions helper
+  const getCompletedCount = (clientId) => {
+    return dashSessions.filter(s => {
+      if (s.clientId !== clientId) return false;
+      if (s.date < todayStr) return true;
+      if (s.date === todayStr && s.time < currentTimeStr) return true;
+      return false;
+    }).length;
+  };
+
+  // Active block clients only
+  const activeBlockClients = dashClients.filter(c =>
+    c.status !== 'archived' && (!c.clientType || c.clientType === 'block')
+  );
+
+  // Expiring within 7 days
+  const in7Days = new Date(now);
+  in7Days.setDate(in7Days.getDate() + 7);
+
+  const expiringClients = activeBlockClients.filter(c => {
+    if (!c.endDate) return false;
+    const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
+    return end >= now && end <= in7Days;
+  });
+
+  // Low sessions (1-2 remaining) or empty (0)
+  const lowSessionClients = activeBlockClients.filter(c => {
+    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+    return remaining <= 2;
+  });
+
+  // Combine for attention list (deduplicated)
+  const attentionMap = new Map();
+  expiringClients.forEach(c => {
+    const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
+    const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+    attentionMap.set(c.id, { client: c, reasons: [`Block ends in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`] });
+  });
+  lowSessionClients.forEach(c => {
+    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+    const reason = remaining <= 0 ? 'No sessions left' : `${remaining} session${remaining !== 1 ? 's' : ''} left`;
+    if (attentionMap.has(c.id)) {
+      attentionMap.get(c.id).reasons.push(reason);
+    } else {
+      attentionMap.set(c.id, { client: c, reasons: [reason] });
+    }
+  });
+  const attentionList = Array.from(attentionMap.values());
+
   return (
     <div className="dashboard">
       {/* Pull to refresh indicator */}
@@ -371,6 +438,70 @@ export default function Dashboard() {
             <div className="view-header">
               <h2>Schedule</h2>
             </div>
+
+            {/* Summary Cards */}
+            <div className="summary-cards">
+              <div className="summary-card" onClick={() => {}}>
+                <div className="summary-icon sessions-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div className="summary-info">
+                  <span className="summary-number">{sessionsToday}</span>
+                  <span className="summary-label">Today</span>
+                </div>
+              </div>
+
+              <div className="summary-card" onClick={() => pendingCount > 0 && setActiveView('requests')}>
+                <div className={`summary-icon requests-icon ${pendingCount > 0 ? 'has-items' : ''}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
+                <div className="summary-info">
+                  <span className="summary-number">{pendingCount}</span>
+                  <span className="summary-label">Requests</span>
+                </div>
+              </div>
+
+              <div className="summary-card" onClick={() => setActiveView('clients')}>
+                <div className={`summary-icon expiring-icon ${expiringClients.length > 0 ? 'has-items' : ''}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div className="summary-info">
+                  <span className="summary-number">{expiringClients.length}</span>
+                  <span className="summary-label">Expiring</span>
+                </div>
+              </div>
+
+              <div className="summary-card" onClick={() => setActiveView('clients')}>
+                <div className={`summary-icon low-icon ${lowSessionClients.length > 0 ? 'has-items' : ''}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div className="summary-info">
+                  <span className="summary-number">{lowSessionClients.length}</span>
+                  <span className="summary-label">Low Sessions</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Attention Alerts */}
+            {attentionList.length > 0 && (
+              <div className="attention-section">
+                <div className="attention-header">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <span>Needs Attention</span>
+                </div>
+                {attentionList.map(({ client, reasons }) => (
+                  <div key={client.id} className="attention-item">
+                    <span className="attention-name">{client.name}</span>
+                    <div className="attention-reasons">
+                      {reasons.map((r, i) => (
+                        <span key={i} className={`attention-tag ${r.includes('No sessions') ? 'urgent' : r.includes('ends') ? 'warning' : 'low'}`}>{r}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <Schedule />
           </div>
         )}
