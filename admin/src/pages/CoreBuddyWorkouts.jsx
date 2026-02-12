@@ -1451,10 +1451,15 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== SETUP VIEW ====================
   if (view === 'setup') {
+    const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
+    const levelLabel = LEVELS.find(l => l.key === level)?.label || level;
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <img src="/Logo.PNG" alt="Mind Core Fitness" className="header-logo" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
@@ -1467,13 +1472,12 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
         </header>
-        <main className="wk-main">
-          <button className="nut-back-btn" onClick={() => setView('menu')}>&larr; Back</button>
+        <main className="wk-main wk-setup-main">
 
-          {/* Stats Hero */}
-          <div className="wk-stats-hero">
-            <div className="wk-stats-ring-wrap">
-              <svg className="wk-stats-ring-svg" viewBox="0 0 200 200">
+          {/* Compact Stats Strip */}
+          <div className="wk-stats-strip">
+            <div className="wk-stats-strip-ring">
+              <svg viewBox="0 0 200 200">
                 {[...Array(TICK_COUNT)].map((_, i) => {
                   const angle = (i * 6 - 90) * (Math.PI / 180);
                   const x1 = 100 + 78 * Math.cos(angle);
@@ -1488,77 +1492,25 @@ export default function CoreBuddyWorkouts() {
                   );
                 })}
               </svg>
-              <img src="/Logo.PNG" alt="" className="wk-stats-ring-logo" />
+              <span className="wk-stats-strip-ring-num">{weeklyCount}<small>/{WEEKLY_TARGET}</small></span>
             </div>
-            <div className="wk-stats-ring-label">
-              <span className="wk-stats-ring-count">{weeklyCount}</span>
-              <span className="wk-stats-ring-sep">/</span>
-              <span className="wk-stats-ring-target">{WEEKLY_TARGET}</span>
-              <span className="wk-stats-ring-text">THIS WEEK</span>
-            </div>
-
-            <div className="wk-stats-cards">
-              <div className="wk-stats-card">
-                <span className="wk-stats-card-num">{totalCount}</span>
-                <span className="wk-stats-card-label">Workouts</span>
+            <div className="wk-stats-strip-items">
+              <div className="wk-stats-strip-item">
+                <span className="wk-stats-strip-num">{totalCount}</span>
+                <span className="wk-stats-strip-label">Workouts</span>
               </div>
-              <div className="wk-stats-card">
-                <span className="wk-stats-card-num">{totalMinutes}</span>
-                <span className="wk-stats-card-label">Minutes</span>
+              <div className="wk-stats-strip-item">
+                <span className="wk-stats-strip-num">{totalMinutes}</span>
+                <span className="wk-stats-strip-label">Minutes</span>
               </div>
-              <div className="wk-stats-card">
-                <span className="wk-stats-card-num">{streak}</span>
-                <span className="wk-stats-card-label">Weeks</span>
+              <div className="wk-stats-strip-item">
+                <span className="wk-stats-strip-num">{streak}</span>
+                <span className="wk-stats-strip-label">Wk Streak</span>
               </div>
-            </div>
-
-            {totalCount > 0 && (() => {
-              const total = levelBreakdown.beginner + levelBreakdown.intermediate + levelBreakdown.advanced;
-              if (total === 0) return null;
-              const bPct = Math.round((levelBreakdown.beginner / total) * 100);
-              const iPct = Math.round((levelBreakdown.intermediate / total) * 100);
-              const aPct = 100 - bPct - iPct;
-              return (
-                <>
-                  <span className="wk-stats-level-title">LEVEL BREAKDOWN</span>
-                  <div className="wk-stats-level-bar">
-                    {bPct > 0 && <div className="wk-stats-level-seg wk-seg-beginner" style={{ width: `${bPct}%` }}>
-                      {bPct >= 15 && <span>BEG {bPct}%</span>}
-                    </div>}
-                    {iPct > 0 && <div className="wk-stats-level-seg wk-seg-intermediate" style={{ width: `${iPct}%` }}>
-                      {iPct >= 15 && <span>INT {iPct}%</span>}
-                    </div>}
-                    {aPct > 0 && <div className="wk-stats-level-seg wk-seg-advanced" style={{ width: `${aPct}%` }}>
-                      {aPct >= 15 && <span>ADV {aPct}%</span>}
-                    </div>}
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-
-          <div className="wk-setup-section">
-            <h2>Equipment</h2>
-            <div className="wk-equip-options">
-              {EQUIPMENT.map(eq => {
-                const isSelected = selectedEquipment.includes(eq.key);
-                return (
-                  <button key={eq.key}
-                    className={`wk-equip-btn${isSelected ? ' active' : ''}`}
-                    onClick={() => {
-                      setSelectedEquipment(prev => {
-                        if (isSelected && prev.length === 1) return prev; // Must keep at least one
-                        return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
-                      });
-                    }}>
-                    <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={eq.icon} /></svg>
-                    <span>{eq.label}</span>
-                  </button>
-                );
-              })}
             </div>
           </div>
 
+          {/* Focus Area — first because it's the most important choice */}
           <div className="wk-setup-section">
             <h2>Focus Area</h2>
             <div className="wk-focus-grid">
@@ -1573,11 +1525,12 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
+          {/* Level */}
           <div className="wk-setup-section">
             <h2>Level</h2>
             <div className="wk-level-cards">
               {LEVELS.map(l => (
-                <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
+                <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
                   <span className="wk-level-name">{l.label}</span>
                   <span className="wk-level-desc">{l.desc}</span>
                 </button>
@@ -1585,6 +1538,7 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
+          {/* Time */}
           <div className="wk-setup-section">
             <h2>Time</h2>
             <div className="wk-time-options">
@@ -1597,10 +1551,41 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
+          {/* Equipment — last, least critical */}
+          <div className="wk-setup-section">
+            <h2>Equipment</h2>
+            <div className="wk-equip-options">
+              {EQUIPMENT.map(eq => {
+                const isSelected = selectedEquipment.includes(eq.key);
+                return (
+                  <button key={eq.key}
+                    className={`wk-equip-btn${isSelected ? ' active' : ''}`}
+                    onClick={() => {
+                      setSelectedEquipment(prev => {
+                        if (isSelected && prev.length === 1) return prev;
+                        return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
+                      });
+                    }}>
+                    <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={eq.icon} /></svg>
+                    <span>{eq.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Summary + GO */}
+          <div className="wk-setup-summary">
+            <span>{focusLabel} &middot; {levelLabel} &middot; {duration} min</span>
+          </div>
+        </main>
+
+        {/* Sticky GO button */}
+        <div className="wk-go-sticky">
           <button className="wk-randomise-btn" onClick={generateWorkout} disabled={loadingExercises}>
             {loadingExercises ? 'Loading exercises...' : 'Randomise Workout'}
           </button>
-        </main>
+        </div>
         {toastEl}
       </div>
     );
