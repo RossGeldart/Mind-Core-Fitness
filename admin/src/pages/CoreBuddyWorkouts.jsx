@@ -569,6 +569,7 @@ export default function CoreBuddyWorkouts() {
   // Active programme info (for the "Continue Programme" card)
   const [activeProgrammeId, setActiveProgrammeId] = useState(null);
   const [activeProgrammeName, setActiveProgrammeName] = useState('');
+  const [statsLoaded, setStatsLoaded] = useState(false);
 
   // Auth guard
   useEffect(() => {
@@ -695,6 +696,8 @@ export default function CoreBuddyWorkouts() {
         }
       } catch (err) {
         console.error('Error loading workout stats:', err);
+      } finally {
+        setStatsLoaded(true);
       }
     };
     loadStats();
@@ -1343,8 +1346,10 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main">
 
-          {/* Active Programme Card — only if user has one */}
-          {activeProgrammeId && (
+          {/* Active Programme Card — placeholder while loading, card when ready */}
+          {!statsLoaded ? (
+            <div className="wk-active-prog-placeholder" />
+          ) : activeProgrammeId ? (
             <button className="wk-active-prog" onClick={() => navigate('/client/core-buddy/programmes')}>
               <div className="wk-active-prog-ring">
                 <svg viewBox="0 0 200 200">
@@ -1365,7 +1370,7 @@ export default function CoreBuddyWorkouts() {
                 <span className="wk-ap-cta">Continue &rarr;</span>
               </div>
             </button>
-          )}
+          ) : null}
 
           {/* Heading */}
           <div className="wk-menu-heading">
