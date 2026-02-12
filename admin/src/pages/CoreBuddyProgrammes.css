@@ -123,7 +123,7 @@
 }
 
 .pg-browse-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -172,7 +172,7 @@
 }
 
 .pg-overview-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -250,7 +250,7 @@
 }
 
 .pg-day-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -401,7 +401,7 @@
 }
 
 .pg-dash-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -509,7 +509,7 @@
 }
 
 .pg-next-session h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -564,7 +564,7 @@
 }
 
 .pg-complete-msg h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -643,7 +643,7 @@
 }
 
 .pg-session-week {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -744,7 +744,7 @@
 }
 
 .pg-ex-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -974,7 +974,7 @@
 }
 
 .pg-done-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1103,7 +1103,7 @@
 }
 
 .pg-badge-celebration-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);

@@ -232,7 +232,7 @@
 }
 
 .cm-detail-header h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -351,7 +351,7 @@
 }
 
 .cm-slot-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -598,7 +598,7 @@
 }
 
 .cm-waitlist h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 10px 0;
@@ -662,7 +662,7 @@
 }
 
 .cm-ban-alert h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   color: var(--color-error);
   margin: 0 0 12px 0;
@@ -687,7 +687,7 @@
 }
 
 .cm-ban-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -746,7 +746,7 @@
 }
 
 .cm-member-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);

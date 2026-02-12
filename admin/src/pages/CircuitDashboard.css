@@ -108,7 +108,7 @@
 }
 
 .circuit-intro h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 6px 0;
@@ -309,7 +309,7 @@
 }
 
 .circuit-status-info h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -358,7 +358,7 @@
 }
 
 .circuit-stats-card h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 16px 0;
@@ -421,7 +421,7 @@
 }
 
 .circuit-rules h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 10px 0;
@@ -493,7 +493,7 @@
 }
 
 .circuit-vip-promo h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;

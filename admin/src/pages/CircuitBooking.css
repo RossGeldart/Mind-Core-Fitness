@@ -54,7 +54,7 @@
 }
 
 .cb-header h1 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   font-weight: 700;
   margin: 0;
@@ -80,7 +80,7 @@
 }
 
 .cb-class-info h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -175,7 +175,7 @@
 }
 
 .cb-slot-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -339,7 +339,7 @@
 }
 
 .cb-waitlist-preview h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 12px 0;
@@ -399,7 +399,7 @@
 }
 
 .cb-error-state h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 8px 0 0 0;

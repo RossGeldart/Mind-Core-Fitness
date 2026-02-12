@@ -114,7 +114,7 @@
 }
 
 .ach-empty h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -316,7 +316,7 @@
 }
 
 .ach-group-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -384,7 +384,7 @@
 }
 
 .ach-badge-exercise {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);

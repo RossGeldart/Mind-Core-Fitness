@@ -287,7 +287,7 @@
 }
 
 .nut-setup-intro h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -551,7 +551,7 @@
 }
 
 .nut-calc-results h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--text-primary);
   text-align: center;
@@ -908,7 +908,7 @@
 }
 
 .nut-meal-card-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1264,7 +1264,7 @@
 }
 
 .nut-water-popup-header span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1426,7 +1426,7 @@
 }
 
 .nut-cal-header span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1532,7 +1532,7 @@
 }
 
 .nut-log-section h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1691,7 +1691,7 @@
 }
 
 .nut-modal-header h3 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1912,7 +1912,7 @@
 }
 
 .nut-product-result h4 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
