@@ -62,9 +62,9 @@
 
 [data-theme="dark"] {
   /* Primary colors */
-  --color-primary: #c75f6b;
-  --color-primary-dark: #A12F3A;
-  --color-primary-light: rgba(199, 95, 107, 0.15);
+  --color-primary: #A12F3A;
+  --color-primary-dark: #832630;
+  --color-primary-light: rgba(161, 47, 58, 0.15);
 
   /* Backgrounds */
   --bg-body: #2a2a28;
@@ -110,7 +110,7 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-primary: 0 6px 20px rgba(199, 95, 107, 0.3);
+  --shadow-primary: 0 6px 20px rgba(161, 47, 58, 0.4);
 
   /* Overlays */
   --overlay-bg: rgba(0, 0, 0, 0.8);
