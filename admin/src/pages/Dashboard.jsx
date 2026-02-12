@@ -7,7 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
-import Availability from '../components/Availability';
+import FormSubmissions from '../components/FormSubmissions';
 import CircuitManagement from '../components/CircuitManagement';
 import './Dashboard.css';
 
@@ -320,10 +320,10 @@ export default function Dashboard() {
             {pendingCount > 0 && <span className="nav-badge">{pendingCount}</span>}
           </button>
           <button
-            className={`nav-btn ${activeView === 'availability' ? 'active' : ''}`}
-            onClick={() => setActiveView('availability')}
+            className={`nav-btn ${activeView === 'forms' ? 'active' : ''}`}
+            onClick={() => setActiveView('forms')}
           >
-            Slots
+            Forms
           </button>
           <button
             className={`nav-btn ${activeView === 'circuits' ? 'active' : ''}`}
@@ -488,12 +488,12 @@ export default function Dashboard() {
           </div>
         )}
 
-        {activeView === 'availability' && (
-          <div className="availability-view">
+        {activeView === 'forms' && (
+          <div className="forms-view">
             <div className="view-header">
-              <h2>Available Slots</h2>
+              <h2>Client Forms</h2>
             </div>
-            <Availability />
+            <FormSubmissions />
           </div>
         )}
 
