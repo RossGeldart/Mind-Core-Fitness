@@ -899,8 +899,15 @@ export default function ClientDashboard() {
               </svg>
             </div>
             <div className="daily-quote-content">
+              <div className="daily-quote-label">Daily Motivation</div>
               <div className="daily-quote-text">{dailyQuote.text}</div>
               <div className="daily-quote-author">— {dailyQuote.author}</div>
+              <div className="daily-quote-lock">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+                New quote at midnight
+              </div>
             </div>
           </div>
         ) : (
@@ -911,8 +918,8 @@ export default function ClientDashboard() {
               </svg>
             </div>
             <div className="daily-quote-cta-text">
-              <span className="daily-quote-cta-title">Get More Inspiration</span>
-              <span className="daily-quote-cta-sub">Tap to get today's motivation</span>
+              <span className="daily-quote-cta-title">Daily Motivation</span>
+              <span className="daily-quote-cta-sub">Tap to get today's inspiration</span>
             </div>
             <svg className="daily-quote-cta-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
           </div>
