@@ -1447,7 +1447,7 @@
 /* ===== Dark Mode for Menu ===== */
 [data-theme="dark"] .wk-active-prog {
   background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  box-shadow: 0 6px 20px rgba(199, 95, 107, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="light"] .wk-active-prog {
