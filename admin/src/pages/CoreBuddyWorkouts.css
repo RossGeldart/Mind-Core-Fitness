@@ -1549,13 +1549,14 @@
   border: 2px solid var(--border-color);
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
   box-shadow: var(--shadow-sm);
+  transform: scale(1);
 }
 
 .wk-equip-btn:hover {
@@ -1567,6 +1568,15 @@
   background: var(--color-primary-light);
   color: var(--color-primary);
   box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
+  transform: scale(1.08);
+  z-index: 2;
+}
+
+/* Shrink siblings when one is active */
+.wk-equip-options:has(.wk-equip-btn.active) .wk-equip-btn:not(.active),
+.wk-focus-grid:has(.wk-equip-btn.active) .wk-equip-btn:not(.active) {
+  transform: scale(0.93);
+  opacity: 0.75;
 }
 
 .wk-equip-icon {
@@ -1634,10 +1644,12 @@
   border-left: 5px solid var(--border-color);
   border-radius: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   box-shadow: var(--shadow-sm);
+  transform: scale(1);
+  transform-origin: center;
 }
 
 .wk-level-card:hover {
@@ -1652,6 +1664,13 @@
 .wk-level-card.active {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
+  transform: scale(1.03);
+  z-index: 2;
+}
+
+.wk-level-cards:has(.wk-level-card.active) .wk-level-card:not(.active) {
+  transform: scale(0.96);
+  opacity: 0.7;
 }
 
 .wk-level-card.active.wk-level-beginner { border-left-color: #42a5f5; }
@@ -1695,10 +1714,11 @@
   border: 2px solid var(--border-color);
   border-radius: 24px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   box-shadow: var(--shadow-sm);
+  transform: scale(1);
 }
 
 .wk-time-btn:nth-child(n+4) {
@@ -1713,6 +1733,13 @@
   border-color: var(--color-primary);
   background: var(--color-primary-light);
   box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-sm);
+  transform: scale(1.1);
+  z-index: 2;
+}
+
+.wk-time-options:has(.wk-time-btn.active) .wk-time-btn:not(.active) {
+  transform: scale(0.92);
+  opacity: 0.7;
 }
 
 .wk-time-num {
