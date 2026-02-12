@@ -13,6 +13,7 @@ import {
   isWeekday,
   getDayName
 } from '../utils/scheduleUtils';
+import { TICKS_85_96 } from '../utils/ringTicks';
 import './ClientDashboard.css';
 
 export default function ClientDashboard() {
@@ -651,32 +652,14 @@ export default function ClientDashboard() {
               {/* SVG Ring with 60 tick marks */}
               <svg className="ring-timer-svg" viewBox="0 0 200 200">
                 {/* Generate 60 tick marks */}
-                {[...Array(60)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180); // Start from top (12 o'clock)
-                  const innerRadius = 85;
-                  const outerRadius = 96;
-                  const x1 = 100 + innerRadius * Math.cos(angle);
-                  const y1 = 100 + innerRadius * Math.sin(angle);
-                  const x2 = 100 + outerRadius * Math.cos(angle);
-                  const y2 = 100 + outerRadius * Math.sin(angle);
-
-                  // Calculate which ticks should be white (elapsed) vs red (remaining)
-                  // Counterclockwise from 12 o'clock, ticks turn white as seconds pass
+                {TICKS_85_96.map((t, i) => {
                   const currentSecond = liveCountdown.seconds;
-                  const ticksElapsed = 60 - currentSecond; // Number of ticks that should be white
-                  // Counterclockwise: tick 0 is at 12 o'clock, tick 1 is at 11:59, etc.
+                  const ticksElapsed = 60 - currentSecond;
                   const isElapsed = i < ticksElapsed;
-
                   return (
-                    <line
-                      key={i}
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                       className={`ring-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
-                      strokeWidth={i % 5 === 0 ? "3" : "2"}
-                    />
+                      strokeWidth={t.thick ? '3' : '2'} />
                   );
                 })}
               </svg>

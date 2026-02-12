@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 
@@ -1006,20 +1007,13 @@ export default function CoreBuddyProgrammes() {
           <div className="pg-dash-hero">
             <div className="pg-dash-ring-wrap">
               <svg className="pg-dash-ring-svg" viewBox="0 0 200 200">
-                {[...Array(TICK_COUNT)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const x1 = 100 + 78 * Math.cos(angle);
-                  const y1 = 100 + 78 * Math.sin(angle);
-                  const x2 = 100 + 94 * Math.cos(angle);
-                  const y2 = 100 + 94 * Math.sin(angle);
-                  return (
-                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                      className={i < ringFilled ? 'pg-tick-filled' : 'pg-tick-empty'}
-                      strokeWidth={i % 5 === 0 ? '3' : '2'} />
-                  );
-                })}
+                {TICKS_78_94.map((t, i) => (
+                  <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                    className={i < ringFilled ? 'pg-tick-filled' : 'pg-tick-empty'}
+                    strokeWidth={t.thick ? '3' : '2'} />
+                ))}
               </svg>
-              <img src="/Logo.webp" alt="" className="pg-dash-ring-logo" />
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="pg-dash-ring-logo" width="50" height="50" />
             </div>
             <h2 className="pg-dash-name">{template.name}</h2>
             <div className="pg-dash-progress-text">
@@ -1291,19 +1285,12 @@ export default function CoreBuddyProgrammes() {
           {/* Completion ring */}
           <div className="pg-done-ring">
             <svg className="pg-done-ring-svg" viewBox="0 0 200 200">
-              {[...Array(TICK_COUNT)].map((_, i) => {
-                const angle = (i * 6 - 90) * (Math.PI / 180);
-                const x1 = 100 + 78 * Math.cos(angle);
-                const y1 = 100 + 78 * Math.sin(angle);
-                const x2 = 100 + 94 * Math.cos(angle);
-                const y2 = 100 + 94 * Math.sin(angle);
-                return (
-                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                    className="pg-tick-complete"
-                    strokeWidth={i % 5 === 0 ? '3.5' : '2'}
-                    style={{ animationDelay: `${i * 0.02}s` }} />
-                );
-              })}
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className="pg-tick-complete"
+                  strokeWidth={t.thick ? '3.5' : '2'}
+                  style={{ animationDelay: `${i * 0.02}s` }} />
+              ))}
             </svg>
             <div className="pg-done-center">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>

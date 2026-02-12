@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 const searchCache = new Map();
@@ -663,20 +664,13 @@ export default function CoreBuddyNutrition() {
     return (
       <div className={`nut-ring-wrap ${colorClass}`}>
         <svg className="nut-ring-svg" viewBox="0 0 200 200">
-          {[...Array(TICK_COUNT)].map((_, i) => {
-            const angle = (i * 6 - 90) * (Math.PI / 180);
-            const x1 = 100 + 78 * Math.cos(angle);
-            const y1 = 100 + 78 * Math.sin(angle);
-            const x2 = 100 + 96 * Math.cos(angle);
-            const y2 = 100 + 96 * Math.sin(angle);
-            return (
-              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
-                strokeWidth={i % 5 === 0 ? '4.5' : '3'}
-                strokeLinecap="round"
-                style={i < filled ? { animationDelay: `${i * 50}ms` } : undefined} />
-            );
-          })}
+          {TICKS_78_94.map((t, i) => (
+            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+              className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
+              strokeWidth={t.thick ? '4.5' : '3'}
+              strokeLinecap="round"
+              style={i < filled ? { animationDelay: `${i * 50}ms` } : undefined} />
+          ))}
         </svg>
         <div className="nut-ring-center">
           <span className="nut-ring-value">{Math.round(current)}</span>
@@ -1260,7 +1254,7 @@ export default function CoreBuddyNutrition() {
                 : `${Math.round(effectiveWeight)}${u}`;
               return (
               <div className="nut-product-result">
-                {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
+                {scannedProduct.image && <img src={scannedProduct.image} alt={scannedProduct.name || 'Product'} className="nut-product-img" loading="lazy" />}
                 <div className="nut-product-name-row">
                   <h4>{scannedProduct.name}</h4>
                   <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
@@ -1348,7 +1342,7 @@ export default function CoreBuddyNutrition() {
                 <div className="nut-search-results">
                   {searchResults.map((item, i) => (
                     <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); if (item.portion) { setPortionCount(1); setServingInput(String(item.portion.weight)); setServingMode('portion'); } else { setPortionCount(0); setServingInput(String(item.servingValue || 100)); setServingMode('weight'); } }}>
-                      {item.image && <img src={item.image} alt="" loading="lazy" />}
+                      {item.image && <img src={item.image} alt={item.name || 'Product'} loading="lazy" />}
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
                         {item.brand && <span className="nut-search-item-brand">{item.brand}</span>}
@@ -1375,7 +1369,7 @@ export default function CoreBuddyNutrition() {
                 : `${Math.round(effectiveWeight)}${u}`;
               return (
               <div className="nut-product-result">
-                {scannedProduct.image && <img src={scannedProduct.image} alt="" className="nut-product-img" />}
+                {scannedProduct.image && <img src={scannedProduct.image} alt={scannedProduct.name || 'Product'} className="nut-product-img" loading="lazy" />}
                 <div className="nut-product-name-row">
                   <h4>{scannedProduct.name}</h4>
                   <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}

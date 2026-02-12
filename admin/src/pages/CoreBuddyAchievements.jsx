@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyAchievements.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { TICKS_78_94 } from '../utils/ringTicks';
 
 // Exercise group mapping for all weighted exercises in programme templates
 const EXERCISE_GROUPS = {
@@ -210,17 +211,12 @@ export default function CoreBuddyAchievements() {
           <div className="ach-volume-hero">
             <div className="ach-volume-ring">
               <svg className="ach-volume-ring-svg" viewBox="0 0 200 200">
-                {[...Array(60)].map((_, i) => {
-                  const angle = (i * 6 - 90) * (Math.PI / 180);
-                  const x1 = 100 + 78 * Math.cos(angle);
-                  const y1 = 100 + 78 * Math.sin(angle);
-                  const x2 = 100 + 94 * Math.cos(angle);
-                  const y2 = 100 + 94 * Math.sin(angle);
+                {TICKS_78_94.map((t, i) => {
                   const filled = i < Math.round(milestoneProgress * 60);
                   return (
-                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                       className={filled ? 'ach-tick-filled' : 'ach-tick-empty'}
-                      strokeWidth={i % 5 === 0 ? '3' : '2'} />
+                      strokeWidth={t.thick ? '3' : '2'} />
                   );
                 })}
               </svg>
