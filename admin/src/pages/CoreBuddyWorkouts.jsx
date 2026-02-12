@@ -1385,6 +1385,11 @@ export default function CoreBuddyWorkouts() {
                   onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: prog.id } })}
                   style={{ animationDelay: `${i * 0.06}s` }}>
                   <img src={prog.image} alt={prog.name} className="wk-prog-img" />
+                  {i === 0 && (
+                    <div className="wk-swipe-arrow">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                  )}
                 </button>
               ) : (
                 <button key={prog.id} className="wk-prog-hero-card"
@@ -1403,12 +1408,13 @@ export default function CoreBuddyWorkouts() {
                       <span className="wk-prog-hero-go">VIEW PROGRAMME &rarr;</span>
                     </div>
                   </div>
+                  {i === 0 && (
+                    <div className="wk-swipe-arrow">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                  )}
                 </button>
               ))}
-            </div>
-            {/* Swipe Arrow */}
-            <div className="wk-swipe-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </div>
           </div>
 
