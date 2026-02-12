@@ -50,9 +50,6 @@ export default function ClientDashboard() {
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState(null);
 
-  // FAB state
-  const [fabOpen, setFabOpen] = useState(false);
-
   // Achievements
   const [achievements, setAchievements] = useState([]);
 
@@ -1165,91 +1162,31 @@ export default function ClientDashboard() {
         </div>
       )}
 
-      {/* FAB Backdrop Blur */}
-      {fabOpen && <div className="fab-backdrop" onClick={() => setFabOpen(false)} />}
-
-      {/* Floating Action Button (Mobile) */}
-      <div className={`fab-container ${fabOpen ? 'open' : ''}`}>
-        <button
-          className={`fab-main ripple-btn ${fabOpen ? 'open' : ''}`}
-          onClick={(e) => { createRipple(e); setFabOpen(!fabOpen); }}
-          aria-label="Quick actions"
-        >
-          <span className="fab-icon">+</span>
+      {/* Bottom Tab Nav */}
+      <nav className="block-bottom-nav">
+        <button className="block-nav-tab active">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
         </button>
-        <div className="fab-actions">
-          <button
-            className="fab-action ripple-btn"
-            onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/tools'); }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-            </svg>
-            Tools & Calculators
+        <button className="block-nav-tab" onClick={() => navigate('/client/forms')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>Forms</span>
+        </button>
+        <button className="block-nav-tab" onClick={() => navigate('/client/tools')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span>Tools</span>
+        </button>
+        <button className="block-nav-tab" onClick={() => navigate('/client/personal-bests')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          <span>PBs</span>
+        </button>
+        {clientData?.circuitAccess && (
+          <button className="block-nav-tab" onClick={() => navigate('/client/circuit')}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>Circuit</span>
           </button>
-          <button
-            className="fab-action ripple-btn"
-            onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/forms'); }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <polyline points="10 9 9 9 8 9"/>
-            </svg>
-            Forms & Questionnaires
-          </button>
-          <button
-            className="fab-action ripple-btn"
-            onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/personal-bests'); }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 20V10"/>
-              <path d="M18 20V4"/>
-              <path d="M6 20v-4"/>
-            </svg>
-            Personal Bests
-          </button>
-          {sessionNotes.length > 0 && (
-            <button
-              className="fab-action ripple-btn"
-              onClick={(e) => { createRipple(e); setFabOpen(false); notesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
-              Session Notes
-            </button>
-          )}
-          {clientData?.circuitAccess && (
-            <button
-              className="fab-action ripple-btn"
-              onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/circuit'); }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              Circuit Classes
-            </button>
-          )}
-          {clientData?.coreBuddyAccess && (
-            <button
-              className="fab-action ripple-btn"
-              onClick={(e) => { createRipple(e); setFabOpen(false); navigate('/client/core-buddy'); }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
-              </svg>
-              Core Buddy
-            </button>
-          )}
-        </div>
-      </div>
+        )}
+      </nav>
     </div>
   );
 }
