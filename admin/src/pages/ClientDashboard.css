@@ -629,13 +629,20 @@
 }
 
 .block-header-row {
-  margin-bottom: 20px;
+  margin: -24px -24px 20px -24px;
+  padding: 16px 20px;
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+[data-theme="light"] .block-header-row {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
 }
 
 .block-info-card h3 {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.1rem;
-  color: var(--text-primary);
+  font-size: 1rem;
+  color: #fff;
   margin: 0;
 }
 
@@ -968,27 +975,44 @@
 .sessions-section {
   background: var(--bg-card);
   border-radius: 16px;
-  padding: 24px;
+  padding: 0;
   margin-bottom: 20px;
   box-shadow: var(--shadow-md), var(--shadow-sm);
   animation: cardEntrance 0.5s ease-out 0.3s backwards;
+  overflow: hidden;
 }
 
 .completed-section {
   background: var(--bg-card);
   border-radius: 16px;
-  padding: 24px;
+  padding: 0;
   margin-bottom: 20px;
   box-shadow: var(--shadow-md), var(--shadow-sm);
   animation: cardEntrance 0.5s ease-out 0.4s backwards;
+  overflow: hidden;
 }
 
 .sessions-section h3,
 .completed-section h3 {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1rem;
-  color: var(--text-primary);
-  margin: 0 0 16px 0;
+  color: #fff;
+  margin: 0;
+  padding: 16px 20px;
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+}
+
+[data-theme="light"] .sessions-section h3,
+[data-theme="light"] .completed-section h3 {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+}
+
+.sessions-section .sessions-list,
+.sessions-section .empty-state,
+.completed-section .sessions-list,
+.completed-section .empty-state,
+.completed-section .more-sessions {
+  padding: 20px;
 }
 
 .no-sessions {
