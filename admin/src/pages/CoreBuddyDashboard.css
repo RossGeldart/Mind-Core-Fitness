@@ -365,6 +365,7 @@
 .cb-card-top-row .cb-card-content {
   flex: 1;
   min-width: 0;
+  text-align: center;
 }
 
 .cb-card-preview-row {
