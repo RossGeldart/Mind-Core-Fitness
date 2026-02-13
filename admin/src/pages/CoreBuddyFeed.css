@@ -301,6 +301,19 @@
   word-break: break-word;
 }
 
+/* Post Image */
+.feed-post-image {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.feed-post-image img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
 /* ── Actions ── */
 .feed-post-actions {
   display: flex;
