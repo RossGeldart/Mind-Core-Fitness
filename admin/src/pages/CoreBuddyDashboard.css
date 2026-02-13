@@ -441,97 +441,109 @@
   transition: transform 0.1s ease;
 }
 
-/* Thumbnail image card (e.g. Workouts) */
-.cb-card-thumbnail {
-  padding: 0;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border: none;
+/* Workouts Hero Card */
+.cb-card-workouts-hero {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 18px 18px;
+  min-height: 120px;
 }
 
-.cb-card-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
+.cb-hero-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1;
 }
 
-/* Workouts Card Image Overlay */
-.cb-card-img-overlay {
+.cb-card-workouts-hero .cb-card-arrow {
   position: absolute;
-  inset: 0;
+  top: 16px;
+  right: 16px;
+}
+
+.cb-hero-stats {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.45) 100%);
-  z-index: 1;
+  gap: 6px;
+  margin-top: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
 }
 
-.cb-overlay-ring {
-  position: relative;
-  width: 52px;
-  height: 52px;
+.cb-hero-dot {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Progress Preview */
+.cb-progress-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.cb-progress-icon {
   flex-shrink: 0;
+  color: #eab308;
+}
+
+.cb-progress-preview span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Leaderboard Top 3 Preview */
+.cb-lb-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.cb-lb-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.cb-lb-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #A8B4C0;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.cb-overlay-ring svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.cb-overlay-ring-track {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
-  stroke-width: 10;
-  stroke-linecap: round;
-}
-
-.cb-overlay-ring-fill {
-  fill: none;
-  stroke: var(--color-primary);
-  stroke-width: 10;
-  stroke-linecap: round;
-}
-
-.cb-overlay-ring-val {
-  position: relative;
-  z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.75rem;
+.cb-lb-avatar span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
   font-weight: 700;
   color: #fff;
+  letter-spacing: 0.5px;
 }
 
-.cb-overlay-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.cb-overlay-info h3 {
+.cb-lb-rank {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 3px;
+  font-size: 0.55rem;
+  font-weight: 700;
 }
 
-.cb-overlay-stat {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.cb-overlay-arrow {
-  flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.5);
+.cb-lb-me .cb-lb-avatar {
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
 }
 
 /* Habit Dots Preview */

@@ -7,7 +7,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_85_96 } from '../utils/ringTicks';
-import workoutsImg from '../assets/images/cards/workouts.jpg';
 
 const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
@@ -71,6 +70,8 @@ export default function CoreBuddyDashboard() {
   const [hasProgramme, setHasProgramme] = useState(false);
   const [programmeComplete, setProgrammeComplete] = useState(false);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
+  const [pbCount, setPbCount] = useState(0);
+  const [leaderboardTop3, setLeaderboardTop3] = useState([]);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -190,6 +191,41 @@ export default function CoreBuddyDashboard() {
             calories: acc.calories + (e.calories || 0),
           }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
           setNutritionTotals(totals);
+        }
+        // 6. Core Buddy PBs count
+        const pbSnap = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
+        if (pbSnap.exists()) {
+          const exercises = pbSnap.data().exercises || {};
+          setPbCount(Object.keys(exercises).length);
+        }
+
+        // 7. Leaderboard top 3 (this week's workouts)
+        try {
+          const clientsRef = collection(db, 'clients');
+          const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
+          const clientsSnap = await getDocs(cq);
+          const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
+
+          if (optedIn.length > 0) {
+            // Re-use mondayStr from above for weekly count
+            const allLogs = collection(db, 'workoutLogs');
+            const allLogsSnap = await getDocs(allLogs);
+            const counts = {};
+            allLogsSnap.docs.forEach(d => {
+              const data = d.data();
+              if ((data.date || '') >= mondayStr) {
+                counts[data.clientId] = (counts[data.clientId] || 0) + 1;
+              }
+            });
+
+            const ranked = optedIn
+              .map(c => ({ ...c, count: counts[c.id] || 0 }))
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 3);
+            setLeaderboardTop3(ranked);
+          }
+        } catch (lbErr) {
+          console.error('Leaderboard preview error:', lbErr);
         }
       } catch (err) {
         console.error('Error loading dashboard stats:', err);
@@ -459,26 +495,16 @@ export default function CoreBuddyDashboard() {
 
           {/* 2. Workouts */}
           <button
-            className="cb-feature-card cb-card-workouts cb-card-thumbnail ripple-btn"
+            className="cb-feature-card cb-card-workouts-hero ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <img src={workoutsImg} alt="Workouts" className="cb-card-thumb-img" />
-            <div className="cb-card-img-overlay">
-              <div className="cb-overlay-ring">
-                <svg viewBox="0 0 100 100">
-                  <circle className="cb-overlay-ring-track" cx="50" cy="50" r="38" />
-                  <circle className="cb-overlay-ring-fill" cx="50" cy="50" r="38"
-                    strokeDasharray={2 * Math.PI * 38}
-                    strokeDashoffset={2 * Math.PI * 38 - (workoutPct / 100) * 2 * Math.PI * 38} />
-                </svg>
-                <span className="cb-overlay-ring-val">{totalWorkouts}</span>
-              </div>
-              <div className="cb-overlay-info">
-                <h3>Workouts</h3>
-                <span className="cb-overlay-stat">{weeklyWorkouts} this week &middot; {totalWorkouts} total</span>
-              </div>
-              <svg className="cb-overlay-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            <h3 className="cb-hero-title">Workouts</h3>
+            <div className="cb-hero-stats">
+              <span>{weeklyWorkouts} this week</span>
+              <span className="cb-hero-dot">&middot;</span>
+              <span>{totalWorkouts} total</span>
             </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
           {/* 3. Daily Habits */}
@@ -505,7 +531,10 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>My Progress</h3>
-              <p>Track personal bests and body metrics</p>
+              <div className="cb-progress-preview">
+                <svg className="cb-progress-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>{pbCount} PB{pbCount !== 1 ? 's' : ''} recorded</span>
+              </div>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
@@ -517,7 +546,23 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>Leaderboard</h3>
-              <p>Compete with your Core Buddies</p>
+              {leaderboardTop3.length > 0 && (
+                <div className="cb-lb-preview">
+                  {leaderboardTop3.map((entry, idx) => {
+                    const medal = ['#FFD700', '#A8B4C0', '#CD7F32'][idx];
+                    const initials = entry.name ? entry.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
+                    const isMe = entry.id === clientData?.id;
+                    return (
+                      <div key={entry.id} className={`cb-lb-entry${isMe ? ' cb-lb-me' : ''}`}>
+                        <div className="cb-lb-avatar" style={{ borderColor: medal }}>
+                          <span>{initials}</span>
+                        </div>
+                        <span className="cb-lb-rank" style={{ color: medal }}>#{idx + 1}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
