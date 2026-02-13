@@ -1466,35 +1466,32 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main wk-setup-main">
 
-          {/* Compact Stats Strip */}
-          <div className="wk-stats-strip">
-            <div className="wk-stats-strip-ring">
-              <svg viewBox="0 0 200 200">
-                {TICKS_78_94.map((t, i) => {
-                  const filled = Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * TICK_COUNT);
-                  return (
-                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                      className={i < filled ? 'wk-stats-tick-filled' : 'wk-stats-tick-empty'}
-                      strokeWidth={t.thick ? '3' : '2'} />
-                  );
-                })}
-              </svg>
-              <span className="wk-stats-strip-ring-num">{weeklyCount}<small>/{WEEKLY_TARGET}</small></span>
-            </div>
-            <div className="wk-stats-strip-items">
-              <div className="wk-stats-strip-item">
-                <span className="wk-stats-strip-num">{totalCount}</span>
-                <span className="wk-stats-strip-label">Workouts</span>
-              </div>
-              <div className="wk-stats-strip-item">
-                <span className="wk-stats-strip-num">{totalMinutes}</span>
-                <span className="wk-stats-strip-label">Minutes</span>
-              </div>
-              <div className="wk-stats-strip-item">
-                <span className="wk-stats-strip-num">{streak}</span>
-                <span className="wk-stats-strip-label">Wk Streak</span>
-              </div>
-            </div>
+          {/* Stats Rings */}
+          <div className="wk-stats-row">
+            {[
+              { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
+              { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
+              { label: 'Wk Streak', value: `${streak}`, pct: streak > 0 ? Math.min(Math.round((streak / 12) * 100), 100) : 0, color: '#38B6FF', size: 'normal' },
+            ].map((ring) => {
+              const r = 38;
+              const circ = 2 * Math.PI * r;
+              const offset = circ - (ring.pct / 100) * circ;
+              return (
+                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
+                  <div className="wk-stat-ring">
+                    <svg viewBox="0 0 100 100">
+                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
+                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                        style={{ stroke: ring.color }}
+                        strokeDasharray={circ}
+                        strokeDashoffset={offset} />
+                    </svg>
+                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  </div>
+                  <span className="wk-stat-label">{ring.label}</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Focus Area — first because it's the most important choice */}

@@ -1430,85 +1430,73 @@
   padding-bottom: 100px;
 }
 
-.wk-stats-strip {
+/* Stats Rings Row (homepage style) */
+.wk-stats-row {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  margin-bottom: 6px;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 4px 0 16px;
 }
 
-.wk-stats-strip-ring {
+.wk-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wk-stat-ring {
   position: relative;
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.wk-stats-strip-ring svg {
+.wk-stat-large .wk-stat-ring {
+  width: 100px;
+  height: 100px;
+}
+
+.wk-stat-ring svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  transform: rotate(-90deg);
 }
 
-.wk-stats-strip-ring-num {
+.wk-stat-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.wk-stat-fill {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.wk-stat-value {
   position: relative;
   z-index: 1;
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.05rem;
-  font-weight: 900;
-  color: var(--color-primary);
-  line-height: 1;
-}
-
-.wk-stats-strip-ring-num small {
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-}
-
-.wk-stats-tick-filled {
-  stroke: var(--color-primary);
-  filter: drop-shadow(0 0 3px rgba(var(--color-primary-rgb), 0.5));
-}
-
-.wk-stats-tick-empty {
-  stroke: var(--border-color);
-}
-
-.wk-stats-strip-items {
-  display: flex;
-  flex: 1;
-  justify-content: space-around;
-}
-
-.wk-stats-strip-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.wk-stats-strip-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
+  font-size: 0.85rem;
 }
 
-.wk-stats-strip-label {
+.wk-stat-large .wk-stat-value {
+  font-size: 1rem;
+}
+
+.wk-stat-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 500;
+  font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2463,13 +2451,17 @@
 
 /* ==================== RESPONSIVE ==================== */
 @media (min-width: 400px) {
-  .wk-stats-strip-ring {
-    width: 72px;
-    height: 72px;
+  .wk-stat-ring {
+    width: 90px;
+    height: 90px;
   }
 
-  .wk-stats-strip-ring-num {
-    font-size: 1.15rem;
+  .wk-stat-value {
+    font-size: 0.95rem;
+  }
+
+  .wk-stats-row {
+    gap: 24px;
   }
 
   .wk-hero-card {
