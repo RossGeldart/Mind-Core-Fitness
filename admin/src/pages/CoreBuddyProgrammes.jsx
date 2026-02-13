@@ -437,11 +437,13 @@ export default function CoreBuddyProgrammes() {
           setActiveProgramme(snap.data());
           setView('dashboard');
         } else {
-          setView('browse');
+          // No active programme — if no templateId was passed, send back to workouts
+          if (!location.state?.templateId) navigate('/client/core-buddy/workouts', { replace: true });
+          else setView('browse');
         }
       } catch (err) {
         console.error('Error loading programme:', err);
-        setView('browse');
+        navigate('/client/core-buddy/workouts', { replace: true });
       }
     };
     load();
@@ -886,36 +888,11 @@ export default function CoreBuddyProgrammes() {
     return <div className="cb-loading"><div className="cb-loading-spinner" /></div>;
   }
 
-  // ==================== BROWSE VIEW ====================
+  // Browse view no longer needed — programme carousel lives on the workouts page.
+  // Redirect to workouts if we somehow land here.
   if (view === 'browse') {
-    return (
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        {renderHeader('Programmes', () => navigate('/client/core-buddy/workouts'))}
-        <main className="pg-main">
-          <p className="pg-browse-intro">Choose a programme and start your journey</p>
-          <div className="pg-browse-grid">
-            {TEMPLATES.map((t, i) => (
-              <button key={t.id} className="pg-browse-card" onClick={() => { setSelectedTemplate(t); setView('overview'); }}
-                style={{ animationDelay: `${i * 0.06}s` }}>
-                <div className="pg-browse-card-top">
-                  <svg className="pg-browse-icon" viewBox="0 0 24 24" fill="currentColor"><path d={FOCUS_ICONS[t.focus]} /></svg>
-                  <span className="pg-browse-duration">{t.duration} WK</span>
-                </div>
-                <h3 className="pg-browse-name">{t.name}</h3>
-                <span className="pg-browse-level">{t.level}</span>
-                <p className="pg-browse-desc">{t.description}</p>
-                <div className="pg-browse-meta">
-                  <span>{t.daysPerWeek}× per week</span>
-                  <span>{t.days[0].exercises.length} exercises</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </main>
-        <CoreBuddyNav active="workouts" />
-        {toastEl}
-      </div>
-    );
+    navigate('/client/core-buddy/workouts', { replace: true });
+    return null;
   }
 
   // ==================== OVERVIEW VIEW ====================
@@ -923,7 +900,7 @@ export default function CoreBuddyProgrammes() {
     const t = selectedTemplate;
     return (
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        {renderHeader(t.name, () => setView('browse'))}
+        {renderHeader(t.name, () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
           <div className="pg-overview-hero">
             <svg className="pg-overview-icon" viewBox="0 0 24 24" fill="currentColor"><path d={FOCUS_ICONS[t.focus]} /></svg>
