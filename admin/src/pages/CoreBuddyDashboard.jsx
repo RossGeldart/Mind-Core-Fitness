@@ -286,11 +286,11 @@ export default function CoreBuddyDashboard() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Fetch all clients for @ mentions
+  // Fetch Core Buddy clients for @ mentions
   useEffect(() => {
     if (!clientData) return;
     getDocs(collection(db, 'clients')).then(snap => {
-      setAllClients(snap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null })).filter(c => c.id !== clientData.id));
+      setAllClients(snap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null, coreBuddyAccess: !!d.data().coreBuddyAccess })).filter(c => c.id !== clientData.id && c.coreBuddyAccess));
     }).catch(() => {});
   }, [clientData]);
 
