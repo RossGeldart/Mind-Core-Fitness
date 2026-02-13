@@ -185,6 +185,7 @@
 .cb-stats-row {
   display: flex;
   justify-content: center;
+  align-items: flex-end;
   gap: 16px;
   padding: 4px 0 16px;
 }
@@ -205,6 +206,11 @@
   justify-content: center;
 }
 
+.cb-stat-large .cb-stat-ring {
+  width: 100px;
+  height: 100px;
+}
+
 .cb-stat-ring svg {
   position: absolute;
   top: 0;
@@ -217,14 +223,13 @@
 .cb-stat-track {
   fill: none;
   stroke: rgba(150, 150, 150, 0.2);
-  stroke-width: 6;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
 .cb-stat-fill {
   fill: none;
-  stroke: #14b8a6;
-  stroke-width: 6;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
@@ -234,7 +239,10 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #14b8a6;
+}
+
+.cb-stat-large .cb-stat-value {
+  font-size: 1rem;
 }
 
 .cb-stat-label {
