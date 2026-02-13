@@ -392,7 +392,7 @@ export default function CoreBuddyDashboard() {
         const clientsRef = collection(db, 'clients');
         const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
         const clientsSnap = await getDocs(cq);
-        const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
+        const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null }));
         setLeaderboardTop3(optedIn.slice(0, 3));
       } catch (lbErr) {
         console.error('Leaderboard preview error:', lbErr);
@@ -841,7 +841,7 @@ export default function CoreBuddyDashboard() {
                     return (
                       <div key={entry.id} className={`cb-lb-entry${isMe ? ' cb-lb-me' : ''}`}>
                         <div className="cb-lb-avatar" style={{ borderColor: medal }}>
-                          <span>{initials}</span>
+                          {entry.photoURL ? <img src={entry.photoURL} alt="" className="cb-lb-avatar-img" /> : <span>{initials}</span>}
                         </div>
                         <span className="cb-lb-rank" style={{ color: medal }}>#{idx + 1}</span>
                       </div>
