@@ -6,9 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import { TICKS_78_94, TICKS_MINI } from '../utils/ringTicks';
 
-const TICK_COUNT = 60;
 
 const DEFAULT_HABITS = [
   { key: 'trained', label: 'Trained', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
@@ -193,11 +191,9 @@ export default function CoreBuddyConsistency() {
   const weeklyCompleted = weeklyStats.reduce((sum, d) => sum + d.completed, 0);
   const weeklyTotal = weeklyStats.reduce((sum, d) => sum + d.total, 0);
   const weeklyPct = weeklyTotal > 0 ? Math.round((weeklyCompleted / weeklyTotal) * 100) : 0;
-  const weeklyTicks = Math.round((weeklyPct / 100) * TICK_COUNT);
 
   const todayCompleted = Object.values(todayLog.habits || {}).filter(Boolean).length;
   const todayPct = Math.round((todayCompleted / DEFAULT_HABITS.length) * 100);
-  const todayTicks = Math.round((todayPct / 100) * TICK_COUNT);
 
   return (
     <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
@@ -228,12 +224,10 @@ export default function CoreBuddyConsistency() {
         <div className="cbc-ring-section">
           <div className="cbc-progress-ring">
             <svg viewBox="0 0 200 200">
-              {TICKS_78_94.map((t, i) => (
-                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                  className={i < todayTicks ? 'cbc-tick-filled' : 'cbc-tick-empty'}
-                  strokeWidth={t.thick ? '3' : '2'}
-                  style={{ transitionDelay: `${i * 20}ms` }} />
-              ))}
+              <circle className="cbc-arc-track" cx="100" cy="100" r="80" />
+              <circle className="cbc-arc-fill" cx="100" cy="100" r="80"
+                strokeDasharray={2 * Math.PI * 80}
+                strokeDashoffset={2 * Math.PI * 80 - (todayPct / 100) * 2 * Math.PI * 80} />
             </svg>
             <div className="cbc-ring-center">
               <span className="cbc-ring-pct">{todayPct}%</span>
@@ -303,15 +297,16 @@ export default function CoreBuddyConsistency() {
             {weeklyStats.map((day, i) => {
               const isToday = day.dateStr === todayStr;
               const pct = day.total > 0 ? day.completed / day.total : 0;
-              const filled = Math.round(pct * TICK_COUNT);
+              const r = 38;
+              const circ = 2 * Math.PI * r;
+              const offset = circ - pct * circ;
               return (
                 <div key={i} className={`cbc-day-ring ${isToday ? 'cbc-day-today' : ''} ${day.completed > 0 ? 'cbc-day-active' : ''}`}>
                   <svg viewBox="0 0 100 100">
-                    {TICKS_MINI.map((t, idx) => (
-                      <line key={idx} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                        className={idx < filled ? 'cbc-day-tick-filled' : 'cbc-day-tick-empty'}
-                        strokeWidth={t.thick ? '3' : '2'} />
-                    ))}
+                    <circle className="cbc-day-track" cx="50" cy="50" r={r} />
+                    <circle className="cbc-day-fill" cx="50" cy="50" r={r}
+                      strokeDasharray={circ}
+                      strokeDashoffset={offset} />
                   </svg>
                   <span className="cbc-day-label">{dayLabels[i]}</span>
                   <span className="cbc-day-count">{day.completed}/{day.total}</span>

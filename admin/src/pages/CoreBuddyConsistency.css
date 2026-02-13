@@ -114,19 +114,21 @@
   left: 0;
   width: 100%;
   height: 100%;
+  transform: rotate(-90deg);
 }
 
-.cbc-tick-filled {
-  stroke: var(--color-primary);
-  filter: drop-shadow(0 0 3px rgba(var(--color-primary-rgb), 0.5));
+.cbc-arc-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 24;
+  stroke-linecap: round;
 }
 
-[data-theme="dark"] .cbc-tick-filled {
-  filter: drop-shadow(0 0 3px rgba(199, 95, 107, 0.5));
-}
-
-.cbc-tick-empty {
-  stroke: var(--border-color);
+.cbc-arc-fill {
+  fill: none;
+  stroke: #14b8a6;
+  stroke-width: 24;
+  stroke-linecap: round;
 }
 
 .cbc-ring-center {
@@ -141,7 +143,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1.6rem;
-  color: var(--color-primary);
+  color: #14b8a6;
 }
 
 .cbc-ring-label {
@@ -321,18 +323,21 @@
 .cbc-day-ring svg {
   width: 42px;
   height: 42px;
+  transform: rotate(-90deg);
 }
 
-.cbc-day-tick-filled {
-  stroke: var(--color-primary);
+.cbc-day-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 12;
+  stroke-linecap: round;
 }
 
-.cbc-day-tick-empty {
-  stroke: rgba(var(--color-primary-rgb), 0.12);
-}
-
-[data-theme="dark"] .cbc-day-tick-empty {
-  stroke: rgba(199, 95, 107, 0.12);
+.cbc-day-fill {
+  fill: none;
+  stroke: #14b8a6;
+  stroke-width: 12;
+  stroke-linecap: round;
 }
 
 .cbc-day-label {
@@ -451,12 +456,6 @@
 [data-theme="dark"] .cbc-habit-steps .cbc-particle { background: #ffb74d; }
 [data-theme="dark"] .cbc-habit-sleep .cbc-particle { background: #a78bfa; }
 [data-theme="dark"] .cbc-habit-water .cbc-particle { background: #64b5f6; }
-
-/* ===== Ring Tick Animation ===== */
-.cbc-tick-filled,
-.cbc-tick-empty {
-  transition: stroke 0.3s ease, filter 0.3s ease;
-}
 
 /* ===== All-Done Celebration ===== */
 .cbc-celebration {
