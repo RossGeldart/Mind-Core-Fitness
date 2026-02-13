@@ -32,16 +32,8 @@ export default function Login() {
     }
   }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
 
-  // Show loading screen while checking auth state
-  if (authLoading) {
-    return (
-      <div className="login-container">
-        <div className="login-loading">
-          <img src="/Logo.webp" alt="Mind Core Fitness" className="loading-logo" />
-        </div>
-      </div>
-    );
-  }
+  // While checking auth state, render nothing (avoids logo flash)
+  if (authLoading) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
