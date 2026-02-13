@@ -862,10 +862,10 @@ export default function CoreBuddyProgrammes() {
   );
 
   // Header
-  const renderHeader = (title) => (
+  const renderHeader = (title, onBack) => (
     <header className="client-header">
       <div className="header-content">
-        <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+        <button className="header-back-btn" onClick={onBack} aria-label="Go back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -890,9 +890,8 @@ export default function CoreBuddyProgrammes() {
   if (view === 'browse') {
     return (
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        {renderHeader('Programmes')}
+        {renderHeader('Programmes', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
-          <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy/workouts')}>&larr; Back</button>
           <p className="pg-browse-intro">Choose a programme and start your journey</p>
           <div className="pg-browse-grid">
             {TEMPLATES.map((t, i) => (
@@ -924,10 +923,8 @@ export default function CoreBuddyProgrammes() {
     const t = selectedTemplate;
     return (
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        {renderHeader(t.name)}
+        {renderHeader(t.name, () => setView('browse'))}
         <main className="pg-main">
-          <button className="nut-back-btn" onClick={() => setView('browse')}>&larr; Back</button>
-
           <div className="pg-overview-hero">
             <svg className="pg-overview-icon" viewBox="0 0 24 24" fill="currentColor"><path d={FOCUS_ICONS[t.focus]} /></svg>
             <h2 className="pg-overview-name">{t.name}</h2>
@@ -999,10 +996,8 @@ export default function CoreBuddyProgrammes() {
 
     return (
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        {renderHeader('Programme')}
+        {renderHeader('Programme', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
-          <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy/workouts')}>&larr; Back</button>
-
           {/* Progress Ring */}
           <div className="pg-dash-hero">
             <div className="pg-dash-ring-wrap">
