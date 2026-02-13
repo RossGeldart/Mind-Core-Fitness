@@ -162,7 +162,7 @@ export default function CoreBuddyDashboard() {
   const statRings = [
     { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: '#14b8a6', size: 'normal' },
     { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large' },
-    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'rgba(150,150,150,0.55)', size: 'normal' },
+    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: '#38B6FF', size: 'normal' },
   ];
 
   return (
@@ -266,7 +266,7 @@ export default function CoreBuddyDashboard() {
                   { label: 'P', pct: 25, color: '#14b8a6' },
                   { label: 'C', pct: 47, color: 'var(--color-primary)' },
                   { label: 'F', pct: 63, color: '#eab308' },
-                  { label: 'Cal', pct: 37, color: 'rgba(150,150,150,0.55)' },
+                  { label: 'Cal', pct: 37, color: '#38B6FF' },
                 ].map((ring) => {
                   const r = 38;
                   const circ = 2 * Math.PI * r;
