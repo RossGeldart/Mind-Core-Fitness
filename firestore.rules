@@ -1,0 +1,178 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verify the authenticated user owns the given client document
+    function isClientOwner(clientId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/clients/$(clientId)).data.uid == request.auth.uid;
+    }
+
+    // Clients - admin full, clients read own profile
+    match /clients/{clientId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      // LEADERBOARD: any authenticated user can read opted-in client profiles
+      allow read: if isAuthenticated() && resource.data.leaderboardOptIn == true;
+      // BUDDIES: any authenticated user can read all clients for buddy search
+      allow read: if isAuthenticated();
+      // Clients can update their own leaderboardOptIn, welcomeForm, parqForm, daily quote, and photoURL fields
+      allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL']);
+    }
+
+    // Sessions - admin full, clients read own
+    match /sessions/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
+    }
+
+    // Holidays - admin full, clients read
+    match /holidays/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+    }
+
+    // Blocked Times - admin full, clients read
+    match /blockedTimes/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+    }
+
+    // Opened Slots - admin full, clients read
+    match /openedSlots/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+    }
+
+    // Reschedule Requests - admin full, clients read own + create
+    match /rescheduleRequests/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // Personal Bests - admin full, clients read/write own (doc ID = {clientId}_{month})
+    match /personalBests/{docId} {
+      allow read, write: if isAdmin();
+      allow read, delete: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // PB Targets - admin full, clients read/write/delete own (doc ID = targets_{clientId})
+    match /personalBestTargets/{docId} {
+      allow read, write: if isAdmin();
+      allow read, delete: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // Core Buddy PBs - admin full, clients read/write own (doc ID = clientId)
+    match /coreBuddyPBs/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Core Buddy Targets - admin full, clients read/write own (doc ID = clientId)
+    match /coreBuddyTargets/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Core Buddy Achievements - admin full, clients read/write own, all authenticated can read (for profiles)
+    match /coreBuddyAchievements/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated(); // PROFILES: view other users' badges
+      allow write: if isClientOwner(docId);
+    }
+
+    // Achievements - admin full, clients read/write own (doc ID = clientId)
+    match /achievements/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Session Notes - admin full, clients read own
+    match /sessionNotes/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+    }
+
+    // Circuit Sessions - admin full, clients read + update (slot-based booking, can't scope per-member)
+    match /circuitSessions/{docId} {
+      allow read, write: if isAdmin();
+      allow read, update: if isAuthenticated();
+    }
+
+    // Workout Logs - admin full, clients read + create
+    match /workoutLogs/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
+      allow create: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // Client Programmes - admin full, clients read/write own (doc ID = clientId)
+    match /clientProgrammes/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
+    match /nutritionTargets/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Nutrition Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
+    match /nutritionLogs/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // Habit Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
+    match /habitLogs/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
+
+    // ── BUDDY SYSTEM (Phase 2) ──
+
+    // Buddy Requests - pending requests between users
+    // Doc ID = "{fromClientId}_{toClientId}"
+    // Fields: fromId, toId, status ("pending"), createdAt
+    match /buddyRequests/{reqId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read requests (to check incoming/outgoing)
+      allow read: if isAuthenticated();
+      // Any authenticated user can create a request
+      allow create: if isAuthenticated();
+      // Any authenticated user can delete (sender cancels, recipient declines)
+      allow delete: if isAuthenticated();
+      // Any authenticated user can update status (accept/decline)
+      allow update: if isAuthenticated();
+    }
+
+    // Buddies - confirmed buddy connections
+    // Doc ID = sorted pair "{clientA}_{clientB}" (alphabetical)
+    // Fields: user1, user2, connectedAt
+    match /buddies/{pairId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read (for buddy lists, leaderboard filter)
+      allow read: if isAuthenticated();
+      // Any authenticated user can create (on accepting a request)
+      allow create: if isAuthenticated();
+      // Either side can remove the buddy connection
+      allow delete: if isAuthenticated();
+    }
+
+  }
+}
