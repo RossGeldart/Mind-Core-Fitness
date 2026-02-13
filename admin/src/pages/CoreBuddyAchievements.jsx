@@ -162,7 +162,7 @@ export default function CoreBuddyAchievements() {
       </header>
 
       <main className="ach-main">
-        <button className="nut-back-btn" onClick={() => navigate('/client/core-buddy')}>
+        <button className="nut-back-btn" onClick={() => navigate('/client/personal-bests?mode=corebuddy')}>
           &larr; Back
         </button>
 
