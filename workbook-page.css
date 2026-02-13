@@ -19,7 +19,7 @@
     gap: 8px;
     color: var(--text-color);
     text-decoration: none;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
     transition: color 0.2s ease;
@@ -160,7 +160,7 @@
 .cta-button {
     display: inline-block;
     padding: 16px 32px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
@@ -272,7 +272,7 @@
 }
 
 .audience-intro {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
     color: var(--text-color);
@@ -479,7 +479,7 @@
 }
 
 .format-price .price {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 2rem;
     color: var(--text-color);
@@ -490,7 +490,7 @@
     padding: 16px 24px;
     border-radius: 8px;
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;

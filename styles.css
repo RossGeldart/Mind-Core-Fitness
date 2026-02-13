@@ -62,7 +62,7 @@
 .nav-link {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.85rem;
     padding: 8px 14px;
@@ -281,7 +281,7 @@ body {
     padding: 16px 40px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
@@ -488,7 +488,7 @@ body {
     padding: 6px 12px 8px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.6rem;
     letter-spacing: 0.5px;
@@ -650,7 +650,7 @@ body {
     padding: 12px 28px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     border-radius: 8px;
@@ -872,7 +872,7 @@ body {
 }
 
 .testimonial-author-info strong {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -1048,7 +1048,7 @@ body {
 }
 
 .form-group label {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
     color: var(--text-color);
@@ -1089,7 +1089,7 @@ body {
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -1378,7 +1378,7 @@ body {
 }
 
 .btn-label {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     margin-bottom: 4px;
@@ -1406,7 +1406,7 @@ body {
     padding: 16px 32px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
