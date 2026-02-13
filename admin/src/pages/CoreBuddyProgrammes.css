@@ -494,6 +494,13 @@
   cursor: pointer;
 }
 
+.pg-day-dot.missed {
+  background: rgba(229, 57, 53, 0.08);
+  border-color: rgba(229, 57, 53, 0.25);
+  color: #e53935;
+  opacity: 0.7;
+}
+
 .pg-day-dot.next:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-primary);
@@ -554,6 +561,28 @@
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-secondary);
+}
+
+.pg-available-session {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+.pg-available-session:first-of-type {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+.pg-avail-day-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+.pg-available-session .pg-start-btn {
+  margin-top: 10px;
 }
 
 /* Complete & Quit */
@@ -1154,6 +1183,11 @@
 [data-theme="dark"] .pg-day-dot {
   background: rgba(30, 30, 30, 0.8);
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pg-day-dot.missed {
+  background: rgba(229, 57, 53, 0.12);
+  border-color: rgba(229, 57, 53, 0.3);
 }
 
 [data-theme="dark"] .pg-input {
