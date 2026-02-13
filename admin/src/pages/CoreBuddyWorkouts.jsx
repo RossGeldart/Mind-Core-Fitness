@@ -1494,73 +1494,75 @@ export default function CoreBuddyWorkouts() {
             })}
           </div>
 
-          {/* Focus Area — first because it's the most important choice */}
-          <div className="wk-setup-section">
-            <h2>Focus Area</h2>
-            <div className="wk-focus-grid">
-              {FOCUS_AREAS.map(f => (
-                <button key={f.key}
-                  className={`wk-equip-btn${focusArea === f.key ? ' active' : ''}${f.key === 'mix' ? ' wk-mix-btn' : ''}`}
-                  onClick={() => setFocusArea(f.key)}>
-                  <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={f.icon} /></svg>
-                  <span>{f.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Level */}
-          <div className="wk-setup-section">
-            <h2>Level</h2>
-            <div className="wk-level-cards">
-              {LEVELS.map(l => (
-                <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
-                  <span className="wk-level-name">{l.label}</span>
-                  <span className="wk-level-desc">{l.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Time */}
-          <div className="wk-setup-section">
-            <h2>Time</h2>
-            <div className="wk-time-options">
-              {TIME_OPTIONS.map(t => (
-                <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}`} onClick={() => setDuration(t)}>
-                  <span className="wk-time-num">{t}</span>
-                  <span className="wk-time-unit">min</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Equipment — last, least critical */}
-          <div className="wk-setup-section">
-            <h2>Equipment</h2>
-            <div className="wk-equip-options">
-              {EQUIPMENT.map(eq => {
-                const isSelected = selectedEquipment.includes(eq.key);
-                return (
-                  <button key={eq.key}
-                    className={`wk-equip-btn${isSelected ? ' active' : ''}`}
-                    onClick={() => {
-                      setSelectedEquipment(prev => {
-                        if (isSelected && prev.length === 1) return prev;
-                        return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
-                      });
-                    }}>
-                    <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={eq.icon} /></svg>
-                    <span>{eq.label}</span>
+          <div className="wk-setup-flow">
+            {/* Focus Area */}
+            <div className="wk-setup-section">
+              <h2>Focus Area</h2>
+              <div className="wk-focus-grid">
+                {FOCUS_AREAS.map(f => (
+                  <button key={f.key}
+                    className={`wk-equip-btn${focusArea === f.key ? ' active' : ''}${f.key === 'mix' ? ' wk-mix-btn' : ''}`}
+                    onClick={() => setFocusArea(f.key)}>
+                    <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={f.icon} /></svg>
+                    <span>{f.label}</span>
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Summary + GO */}
-          <div className="wk-setup-summary">
-            <span>{focusLabel} &middot; {levelLabel} &middot; {duration} min</span>
+            {/* Level */}
+            <div className="wk-setup-section">
+              <h2>Level</h2>
+              <div className="wk-level-cards">
+                {LEVELS.map(l => (
+                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
+                    <span className="wk-level-name">{l.label}</span>
+                    <span className="wk-level-desc">{l.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Time */}
+            <div className="wk-setup-section">
+              <h2>Time</h2>
+              <div className="wk-time-options">
+                {TIME_OPTIONS.map(t => (
+                  <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}`} onClick={() => setDuration(t)}>
+                    <span className="wk-time-num">{t}</span>
+                    <span className="wk-time-unit">min</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Equipment */}
+            <div className="wk-setup-section">
+              <h2>Equipment</h2>
+              <div className="wk-equip-options">
+                {EQUIPMENT.map(eq => {
+                  const isSelected = selectedEquipment.includes(eq.key);
+                  return (
+                    <button key={eq.key}
+                      className={`wk-equip-btn${isSelected ? ' active' : ''}`}
+                      onClick={() => {
+                        setSelectedEquipment(prev => {
+                          if (isSelected && prev.length === 1) return prev;
+                          return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
+                        });
+                      }}>
+                      <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={eq.icon} /></svg>
+                      <span>{eq.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="wk-setup-summary">
+              <span>{focusLabel} &middot; {levelLabel} &middot; {duration} min</span>
+            </div>
           </div>
         </main>
 
