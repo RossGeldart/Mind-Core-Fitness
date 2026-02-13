@@ -267,12 +267,16 @@ export default function CoreBuddyDashboard() {
     if (!clientData) return;
     const q = query(
       collection(db, 'notifications'),
-      where('toId', '==', clientData.id),
-      orderBy('createdAt', 'desc'),
-      limit(50)
+      where('toId', '==', clientData.id)
     );
     const unsub = onSnapshot(q, (snap) => {
-      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const notifs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      notifs.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
+      setNotifications(notifs.slice(0, 50));
     }, (err) => console.error('Notification listener error:', err));
     return () => unsub();
   }, [clientData]);
