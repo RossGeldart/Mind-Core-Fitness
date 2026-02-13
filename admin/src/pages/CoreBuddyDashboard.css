@@ -214,6 +214,7 @@
 }
 
 .cb-ring-logo {
+  position: relative;
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -221,12 +222,41 @@
   border: 3px solid var(--color-primary);
   margin-bottom: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cb-ring-logo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.cb-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+}
+
+.cb-ring-logo:hover .cb-photo-overlay,
+.cb-ring-logo:active .cb-photo-overlay,
+.cb-photo-overlay.uploading {
+  opacity: 1;
+}
+
+.cb-photo-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
 .cb-ring-countdown {
@@ -940,4 +970,157 @@
   .cb-nudge-title {
     font-size: 1rem;
   }
+}
+
+/* Achievements Section */
+.cb-achievements-section {
+  padding: 8px 0 4px;
+}
+
+.cb-achievements-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.cb-badges-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.cb-badges-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cb-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 68px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(150, 150, 150, 0.2);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+}
+
+[data-theme="dark"] .cb-badge {
+  background: rgba(30, 30, 30, 0.8);
+}
+
+.cb-badge:active {
+  transform: scale(0.95);
+}
+
+.cb-badge.unlocked {
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.cb-badge.locked {
+  opacity: 0.4;
+}
+
+.cb-badge.locked .cb-badge-icon {
+  filter: grayscale(1);
+}
+
+.cb-badge-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.cb-badge-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+
+.cb-badge.unlocked .cb-badge-name {
+  color: var(--text-primary);
+}
+
+/* Badge Detail Card */
+.cb-badge-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+  border-radius: 14px;
+  animation: taglineFadeIn 0.3s ease-out;
+}
+
+[data-theme="dark"] .cb-badge-detail {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.cb-badge-detail-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cb-badge-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cb-badge-detail-info strong {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cb-badge-detail-info span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.cb-badge-status {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.cb-badge-status.unlocked {
+  color: var(--color-primary);
+}
+
+.cb-badge-status.locked {
+  color: var(--text-tertiary);
+}
+
+.cb-badges-count {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 8px 0 0;
 }
