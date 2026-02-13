@@ -48,17 +48,42 @@
   padding: 0 16px 80px;
 }
 
-/* Greeting */
-.cb-greeting {
-  padding: 28px 0 0;
+/* Smart Nudge */
+.cb-nudge {
+  padding: 24px 0 0;
+  text-align: center;
 }
 
-.cb-greeting h2 {
+.cb-nudge-msg {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.cb-nudge-sub {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0 0 14px;
+}
+
+.cb-nudge-cta {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text-primary);
-  text-align: center;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cb-nudge-cta:active {
+  opacity: 0.85;
+  transform: scale(0.97);
 }
 
 
@@ -623,7 +648,7 @@
     padding: 0 24px;
   }
 
-  .cb-greeting h2 {
-    font-size: 1.7rem;
+  .cb-nudge-msg {
+    font-size: 1.3rem;
   }
 }
