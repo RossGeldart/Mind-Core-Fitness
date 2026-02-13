@@ -174,5 +174,45 @@ service cloud.firestore {
       allow delete: if isAuthenticated();
     }
 
+    // ── SOCIAL FEED (Phase 3) ──
+
+    // Posts - text updates shared with buddies
+    // Doc ID = auto-generated
+    // Fields: authorId, authorName, authorPhotoURL, content, type, createdAt, likeCount, commentCount
+    match /posts/{postId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read (client-side filters to buddies only)
+      allow read: if isAuthenticated();
+      // Any authenticated user can create a post
+      allow create: if isAuthenticated();
+      // Any authenticated user can update (like/comment count increments)
+      allow update: if isAuthenticated();
+      // Author can delete their own post
+      allow delete: if isClientOwner(resource.data.authorId);
+    }
+
+    // Post Likes - one doc per user per post
+    // Doc ID = "{postId}_{clientId}"
+    // Fields: postId, userId, createdAt
+    match /postLikes/{likeId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read
+      allow read: if isAuthenticated();
+      // Any authenticated user can create/delete likes
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // Post Comments - comments on posts
+    // Doc ID = auto-generated
+    // Fields: postId, authorId, authorName, authorPhotoURL, content, createdAt
+    match /postComments/{commentId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read comments
+      allow read: if isAuthenticated();
+      // Any authenticated user can create a comment
+      allow create: if isAuthenticated();
+    }
+
   }
 }

@@ -912,7 +912,19 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 8. Achievements */}
+          {/* 8. Feed */}
+          <button
+            className="cb-feature-card cb-card-feed ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/feed'); }}
+          >
+            <div className="cb-card-content">
+              <h3>Feed</h3>
+              <p>See what your buddies are up to and share updates</p>
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* 9. Achievements */}
           <div className="cb-achievements-section">
             <h3 className="cb-achievements-title">Achievements</h3>
             <div className="cb-badges-scroll">
