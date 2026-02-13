@@ -665,6 +665,14 @@ export default function CoreBuddyDashboard() {
               </div>
             </div>
           </div>
+          <div className="cb-ring-countdown">
+            <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>
+            <span className="cb-timer-colon">:</span>
+            <span className="cb-timer-digit">{String(timeLeft.minutes).padStart(2, '0')}</span>
+            <span className="cb-timer-colon">:</span>
+            <span className="cb-timer-digit cb-timer-seconds">{String(timeLeft.seconds).padStart(2, '0')}</span>
+          </div>
+          <span className="cb-ring-label">remaining today</span>
           <p className="cb-ring-tagline" key={taglineIdx}>{TAGLINES[taglineIdx].text} <strong>{TAGLINES[taglineIdx].bold}</strong></p>
         </div>
 
