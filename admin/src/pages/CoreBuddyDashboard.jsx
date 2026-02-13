@@ -70,6 +70,7 @@ export default function CoreBuddyDashboard() {
   const [nextSession, setNextSession] = useState(null);
   const [hasProgramme, setHasProgramme] = useState(false);
   const [programmeComplete, setProgrammeComplete] = useState(false);
+  const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -149,6 +150,16 @@ export default function CoreBuddyDashboard() {
         const logsSnap = await getDocs(q);
         const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
         setTotalWorkouts(randomiserCount);
+        // Weekly workout count (Mon-Sun)
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0=Sun
+        const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - mondayOffset);
+        monday.setHours(0, 0, 0, 0);
+        const mondayStr = formatDate(monday);
+        const weekCount = logsSnap.docs.filter(d => (d.data().date || '') >= mondayStr).length;
+        setWeeklyWorkouts(weekCount);
 
         // 3. Habit completion today
         const habitRef = collection(db, 'habitLogs');
@@ -222,6 +233,17 @@ export default function CoreBuddyDashboard() {
     if (!nutritionTargetData || !nutritionTargetData[key]) return 0;
     return Math.min(Math.round((nutritionTotals[key] / nutritionTargetData[key]) * 100), 100);
   };
+
+  // Time-aware coach message
+  const coachLine = (() => {
+    const hour = new Date().getHours();
+    const allDone = statsLoaded && todayHabitsCount >= HABIT_COUNT && nutritionTotals.calories > 0;
+    if (allDone) return { main: `Smashed it today,`, sub: 'Rest up and go again tomorrow.' };
+    if (hour >= 5 && hour < 12) return { main: `Rise and grind,`, sub: "let's get after it!" };
+    if (hour >= 12 && hour < 17) return { main: `Oye`, sub: 'crack on and make it count!' };
+    if (hour >= 17 && hour < 21) return { main: `Evening session?`, sub: "Let's finish strong!" };
+    return { main: `Burning the midnight oil,`, sub: 'Respect the hustle!' };
+  })();
 
   // Priority-based smart nudge
   const nudge = (() => {
@@ -369,7 +391,7 @@ export default function CoreBuddyDashboard() {
         </div>
 
         {/* Coach Message */}
-        <p className="cb-coach-msg">Oye <strong>{firstName}</strong>, crack on and make it count!</p>
+        <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
         {/* Smart Nudge Card */}
         {nudge && (
@@ -441,6 +463,22 @@ export default function CoreBuddyDashboard() {
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
             <img src={workoutsImg} alt="Workouts" className="cb-card-thumb-img" />
+            <div className="cb-card-img-overlay">
+              <div className="cb-overlay-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle className="cb-overlay-ring-track" cx="50" cy="50" r="38" />
+                  <circle className="cb-overlay-ring-fill" cx="50" cy="50" r="38"
+                    strokeDasharray={2 * Math.PI * 38}
+                    strokeDashoffset={2 * Math.PI * 38 - (workoutPct / 100) * 2 * Math.PI * 38} />
+                </svg>
+                <span className="cb-overlay-ring-val">{totalWorkouts}</span>
+              </div>
+              <div className="cb-overlay-info">
+                <h3>Workouts</h3>
+                <span className="cb-overlay-stat">{weeklyWorkouts} this week &middot; {totalWorkouts} total</span>
+              </div>
+              <svg className="cb-overlay-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
           </button>
 
           {/* 3. Daily Habits */}
@@ -450,7 +488,12 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>Daily Habits</h3>
-              <p>Check off your daily habits and build streaks</p>
+              <div className="cb-habit-dots">
+                {Array.from({ length: HABIT_COUNT }, (_, i) => (
+                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
+                ))}
+                <span className="cb-habit-dots-label">{todayHabitsCount}/{HABIT_COUNT}</span>
+              </div>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
