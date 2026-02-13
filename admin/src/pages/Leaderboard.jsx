@@ -259,6 +259,7 @@ export default function Leaderboard() {
         stats[c.id] = {
           id: c.id,
           name: c.name,
+          photoURL: c.photoURL || null,
           workouts: 0,
           minutes: 0,
           workoutDates: new Set(),
@@ -544,7 +545,7 @@ export default function Leaderboard() {
                   {podiumEntries[1] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[1]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[1] }}>
-                        {getInitials(podiumEntries[1].name)}
+                        {podiumEntries[1].photoURL ? <img src={podiumEntries[1].photoURL} alt="" className="lb-avatar-img" /> : getInitials(podiumEntries[1].name)}
                       </div>
                       <div className="lb-podium-name">{podiumEntries[1].name.split(' ')[0]}</div>
                       <div className="lb-podium-stat">{formatValue(podiumEntries[1])}</div>
@@ -564,7 +565,7 @@ export default function Leaderboard() {
                     </svg>
                   </div>
                   <div className={`lb-podium-avatar lb-avatar-1st ${isCurrentUser(podiumEntries[0]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[0] }}>
-                    {getInitials(podiumEntries[0].name)}
+                    {podiumEntries[0].photoURL ? <img src={podiumEntries[0].photoURL} alt="" className="lb-avatar-img" /> : getInitials(podiumEntries[0].name)}
                   </div>
                   <div className="lb-podium-name">{podiumEntries[0].name.split(' ')[0]}</div>
                   <div className="lb-podium-stat">{formatValue(podiumEntries[0])}</div>
@@ -578,7 +579,7 @@ export default function Leaderboard() {
                   {podiumEntries[2] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[2]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[2] }}>
-                        {getInitials(podiumEntries[2].name)}
+                        {podiumEntries[2].photoURL ? <img src={podiumEntries[2].photoURL} alt="" className="lb-avatar-img" /> : getInitials(podiumEntries[2].name)}
                       </div>
                       <div className="lb-podium-name">{podiumEntries[2].name.split(' ')[0]}</div>
                       <div className="lb-podium-stat">{formatValue(podiumEntries[2])}</div>
@@ -604,7 +605,7 @@ export default function Leaderboard() {
                   >
                     <span className="lb-rank-number">{entry.rank}</span>
                     <div className={`lb-rank-avatar ${isCurrentUser(entry) ? 'lb-avatar-you' : ''}`}>
-                      {getInitials(entry.name)}
+                      {entry.photoURL ? <img src={entry.photoURL} alt="" className="lb-avatar-img" /> : getInitials(entry.name)}
                     </div>
                     <div className="lb-rank-info">
                       <span className="lb-rank-name">

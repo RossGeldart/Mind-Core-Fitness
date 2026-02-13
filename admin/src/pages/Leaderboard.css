@@ -393,6 +393,13 @@
   color: var(--color-primary);
 }
 
+.lb-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .lb-podium-name {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.75rem;
