@@ -1071,7 +1071,13 @@ export default function CoreBuddyDashboard() {
                     notifications.map(n => (
                       <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
                         setNotifOpen(false);
-                        if (n.type === 'buddy_request') navigate('/client/core-buddy/buddies');
+                        if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
+                          navigate('/client/core-buddy/buddies');
+                        } else if (n.type === 'like' || n.type === 'comment') {
+                          document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
+                        } else if (n.type === 'mention') {
+                          navigate(`/client/core-buddy/profile/${n.fromId}`);
+                        }
                       }}>
                         <div className="notif-item-avatar">
                           {n.fromPhotoURL ? <img src={n.fromPhotoURL} alt="" /> : <span>{(n.fromName || '?')[0]}</span>}
