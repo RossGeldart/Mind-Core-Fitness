@@ -353,6 +353,9 @@ export default function Leaderboard() {
       <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
+            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
               <button onClick={toggleTheme} aria-label="Toggle theme">
@@ -409,6 +412,7 @@ export default function Leaderboard() {
             <p className="lb-optin-note">Your full name will be visible to other members</p>
           </div>
         </main>
+        <CoreBuddyNav />
       </div>
     );
   }
