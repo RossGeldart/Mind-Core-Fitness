@@ -99,6 +99,8 @@ export default function AddClient() {
         clientDoc.sessionDuration = parseInt(formData.sessionDuration);
         clientDoc.startDate = Timestamp.fromDate(new Date(formData.startDate));
         clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
+      } else if (formData.clientType === 'core_buddy') {
+        clientDoc.coreBuddyAccess = true;
       } else {
         clientDoc.circuitStrikes = 0;
         clientDoc.circuitBanUntil = null;
