@@ -55,7 +55,7 @@
   font-weight: 600;
   color: var(--text-primary);
   text-align: center;
-  margin: 0 0 14px;
+  margin: 8px 0 20px;
 }
 
 .cb-coach-msg strong {
@@ -74,7 +74,7 @@
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   -webkit-tap-highlight-color: transparent;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   font-family: inherit;
