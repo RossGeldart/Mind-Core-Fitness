@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import { TICKS_85_96, TICKS_MINI } from '../utils/ringTicks';
+import { TICKS_85_96 } from '../utils/ringTicks';
 import workoutsImg from '../assets/images/cards/workouts.jpg';
 
 const TICK_COUNT = 60;
@@ -263,22 +263,27 @@ export default function CoreBuddyDashboard() {
             <div className="cb-card-preview-row">
               <div className="cb-mini-rings">
                 {[
-                  { cls: 'cb-ring-protein', label: 'P', filled: 15 },
-                  { cls: 'cb-ring-carbs', label: 'C', filled: 28 },
-                  { cls: 'cb-ring-fats', label: 'F', filled: 38 },
-                  { cls: 'cb-ring-cals', label: 'Cal', filled: 22 },
-                ].map((ring) => (
-                  <div key={ring.cls} className={`cb-mini-ring ${ring.cls}`}>
-                    <svg viewBox="0 0 100 100">
-                      {TICKS_MINI.map((t, i) => (
-                        <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                          className={i < ring.filled ? 'cb-tick-filled' : 'cb-tick-empty'}
-                          strokeWidth={t.thick ? '3' : '2'} />
-                      ))}
-                    </svg>
-                    <span>{ring.label}</span>
-                  </div>
-                ))}
+                  { label: 'P', pct: 25, color: '#14b8a6' },
+                  { label: 'C', pct: 47, color: 'var(--color-primary)' },
+                  { label: 'F', pct: 63, color: '#eab308' },
+                  { label: 'Cal', pct: 37, color: 'rgba(150,150,150,0.55)' },
+                ].map((ring) => {
+                  const r = 38;
+                  const circ = 2 * Math.PI * r;
+                  const off = circ - (ring.pct / 100) * circ;
+                  return (
+                    <div key={ring.label} className="cb-mini-ring">
+                      <svg viewBox="0 0 100 100">
+                        <circle className="cb-mini-track" cx="50" cy="50" r={r} />
+                        <circle className="cb-mini-fill" cx="50" cy="50" r={r}
+                          style={{ stroke: ring.color }}
+                          strokeDasharray={circ}
+                          strokeDashoffset={off} />
+                      </svg>
+                      <span style={{ color: ring.color }}>{ring.label}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
