@@ -204,8 +204,12 @@ export default function CoreBuddyDashboard() {
   const [comments, setComments] = useState({});
   const [commentText, setCommentText] = useState({});
   const [commentLoading, setCommentLoading] = useState({});
+  const [replyTo, setReplyTo] = useState({});            // { [postId]: { id, authorName } }
+  const [commentImage, setCommentImage] = useState({});   // { [postId]: File }
+  const [commentImagePreview, setCommentImagePreview] = useState({}); // { [postId]: dataURL }
   const journeyTextRef = useRef(null);
   const journeyFileRef = useRef(null);
+  const commentFileRefs = useRef({});
 
   // Notifications
   const [notifications, setNotifications] = useState([]);
@@ -1024,13 +1028,29 @@ export default function CoreBuddyDashboard() {
 
   const handleJourneyComment = async (postId) => {
     const text = (commentText[postId] || '').trim();
-    if (!text || !clientData) return;
+    const imgFile = commentImage[postId];
+    if ((!text && !imgFile) || !clientData) return;
     setCommentLoading(prev => ({ ...prev, [postId]: true }));
     try {
-      await addDoc(collection(db, 'postComments'), {
+      // Upload comment image if present
+      let imageURL = null;
+      if (imgFile) {
+        const imgRef = ref(storage, `comment-images/${Date.now()}_${imgFile.name}`);
+        await uploadBytes(imgRef, imgFile);
+        imageURL = await getDownloadURL(imgRef);
+      }
+      const commentData = {
         postId, authorId: clientData.id, authorName: clientData.name || 'Unknown',
-        authorPhotoURL: clientData.photoURL || null, content: text, createdAt: serverTimestamp()
-      });
+        authorPhotoURL: clientData.photoURL || null, content: text || '', createdAt: serverTimestamp()
+      };
+      if (imageURL) commentData.imageURL = imageURL;
+      // Attach reply info
+      const reply = replyTo[postId];
+      if (reply) {
+        commentData.replyToId = reply.id;
+        commentData.replyToName = reply.authorName;
+      }
+      await addDoc(collection(db, 'postComments'), commentData);
       await updateDoc(doc(db, 'posts', postId), { commentCount: increment(1) });
       // Notify post author about comment
       const post = journeyPosts.find(p => p.id === postId);
@@ -1049,6 +1069,10 @@ export default function CoreBuddyDashboard() {
         });
       }
       setCommentText(prev => ({ ...prev, [postId]: '' }));
+      setCommentImage(prev => ({ ...prev, [postId]: null }));
+      setCommentImagePreview(prev => ({ ...prev, [postId]: null }));
+      setReplyTo(prev => ({ ...prev, [postId]: null }));
+      if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
       setJourneyPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
       ));
@@ -1059,6 +1083,36 @@ export default function CoreBuddyDashboard() {
     } finally {
       setCommentLoading(prev => ({ ...prev, [postId]: false }));
     }
+  };
+
+  const deleteJourneyComment = async (postId, commentId) => {
+    try {
+      await deleteDoc(doc(db, 'postComments', commentId));
+      await updateDoc(doc(db, 'posts', postId), { commentCount: increment(-1) });
+      setComments(prev => ({ ...prev, [postId]: (prev[postId] || []).filter(c => c.id !== commentId) }));
+      setJourneyPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, commentCount: Math.max((p.commentCount || 1) - 1, 0) } : p
+      ));
+    } catch (err) {
+      console.error('Delete comment error:', err);
+      showToast('Failed to delete comment', 'error');
+    }
+  };
+
+  const handleCommentImageSelect = (postId, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
+    setCommentImage(prev => ({ ...prev, [postId]: file }));
+    const reader = new FileReader();
+    reader.onload = ev => setCommentImagePreview(prev => ({ ...prev, [postId]: ev.target.result }));
+    reader.readAsDataURL(file);
+  };
+
+  const clearCommentImage = (postId) => {
+    setCommentImage(prev => ({ ...prev, [postId]: null }));
+    setCommentImagePreview(prev => ({ ...prev, [postId]: null }));
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
   };
 
   const handleJourneyTextInput = (e) => {
@@ -1554,19 +1608,64 @@ export default function CoreBuddyDashboard() {
                               <div className="journey-comment-body">
                                 <div className="journey-comment-bubble">
                                   <span className="journey-comment-name">{c.authorName}</span>
-                                  <span className="journey-comment-text">{renderWithMentions(c.content)}</span>
+                                  {c.replyToName && (
+                                    <span className="journey-comment-reply-tag">
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+                                      {c.replyToName}
+                                    </span>
+                                  )}
+                                  {c.content && <span className="journey-comment-text">{renderWithMentions(c.content)}</span>}
+                                  {c.imageURL && (
+                                    <img className="journey-comment-image" src={c.imageURL} alt="Comment" loading="lazy" />
+                                  )}
                                 </div>
-                                <span className="journey-comment-time">{timeAgo(c.createdAt)}</span>
+                                <div className="journey-comment-actions-row">
+                                  <span className="journey-comment-time">{timeAgo(c.createdAt)}</span>
+                                  <button className="journey-comment-reply-btn" onClick={() => setReplyTo(prev => ({ ...prev, [post.id]: { id: c.id, authorName: c.authorName } }))}>Reply</button>
+                                  <button className="journey-comment-delete-btn" onClick={() => deleteJourneyComment(post.id, c.id)} aria-label="Delete comment">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ))
                         ) : (
                           <p className="journey-no-comments">No comments yet</p>
                         )}
+
+                        {/* Reply indicator */}
+                        {replyTo[post.id] && (
+                          <div className="journey-comment-replying">
+                            <span>Replying to <strong>{replyTo[post.id].authorName}</strong></span>
+                            <button onClick={() => setReplyTo(prev => ({ ...prev, [post.id]: null }))} aria-label="Cancel reply">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Comment image preview */}
+                        {commentImagePreview[post.id] && (
+                          <div className="journey-comment-img-preview">
+                            <img src={commentImagePreview[post.id]} alt="Preview" />
+                            <button onClick={() => clearCommentImage(post.id)} aria-label="Remove image">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            </button>
+                          </div>
+                        )}
+
                         <div className="journey-comment-input" style={{ position: 'relative' }}>
+                          <button className="journey-comment-img-btn" onClick={() => commentFileRefs.current[post.id]?.click()} aria-label="Add image">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                          </button>
+                          <input
+                            ref={el => { commentFileRefs.current[post.id] = el; }}
+                            type="file" accept="image/*"
+                            onChange={e => handleCommentImageSelect(post.id, e)}
+                            hidden
+                          />
                           <input
                             type="text"
-                            placeholder="Comment... (@ to mention)"
+                            placeholder="Comment"
                             value={commentText[post.id] || ''}
                             onChange={e => handleCommentInputChange(post.id, e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') handleJourneyComment(post.id); }}
@@ -1584,7 +1683,7 @@ export default function CoreBuddyDashboard() {
                               ))}
                             </div>
                           )}
-                          <button onClick={() => handleJourneyComment(post.id)} disabled={!(commentText[post.id] || '').trim() || commentLoading[post.id]}>
+                          <button onClick={() => handleJourneyComment(post.id)} disabled={!(commentText[post.id] || '').trim() && !commentImage[post.id] || commentLoading[post.id]}>
                             {commentLoading[post.id] ? (
                               <div className="journey-btn-spinner-sm" />
                             ) : (
