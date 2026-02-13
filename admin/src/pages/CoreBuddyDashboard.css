@@ -499,7 +499,7 @@
 .cb-progress-preview span {
   font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--text-tertiary);
 }
 
 /* Leaderboard Top 3 Preview */
@@ -532,7 +532,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: 0.5px;
 }
 
@@ -577,34 +577,6 @@
   margin-left: 4px;
 }
 
-/* Gradient accent for Progress & Leaderboard cards */
-.cb-card-progress,
-.cb-card-leaderboard {
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  border-color: transparent;
-}
-
-.cb-card-progress .cb-card-content h3,
-.cb-card-progress .cb-card-content p,
-.cb-card-progress .cb-card-arrow,
-.cb-card-leaderboard .cb-card-content h3,
-.cb-card-leaderboard .cb-card-content p,
-.cb-card-leaderboard .cb-card-arrow {
-  color: #fff;
-  opacity: 1;
-}
-
-[data-theme="dark"] .cb-card-progress,
-[data-theme="dark"] .cb-card-leaderboard {
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  border-color: transparent;
-}
-
-[data-theme="light"] .cb-card-progress,
-[data-theme="light"] .cb-card-leaderboard {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
-  border-color: transparent;
-}
 
 /* Card Icon */
 .cb-card-icon {
