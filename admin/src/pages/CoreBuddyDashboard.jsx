@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
@@ -58,8 +59,33 @@ const TAGLINES = [
   { text: 'The only bad workout...', bold: 'is the one you skipped' },
 ];
 
+// Achievement badge definitions
+const BADGE_DEFS = [
+  // Workout milestones
+  { id: 'first_workout', icon: '💪', name: 'First Rep', desc: 'Complete your first workout', category: 'workouts' },
+  { id: 'workouts_10', icon: '🔥', name: 'On Fire', desc: 'Complete 10 workouts', category: 'workouts' },
+  { id: 'workouts_25', icon: '⚡', name: 'Lightning', desc: 'Complete 25 workouts', category: 'workouts' },
+  { id: 'workouts_50', icon: '🏋️', name: 'Iron Will', desc: 'Complete 50 workouts', category: 'workouts' },
+  { id: 'workouts_100', icon: '💯', name: 'Century Club', desc: 'Complete 100 workouts', category: 'workouts' },
+  // Streak
+  { id: 'streak_2', icon: '📅', name: '2 Week Warrior', desc: '2-week workout streak', category: 'streak' },
+  { id: 'streak_4', icon: '🗓️', name: 'Month Strong', desc: '4-week workout streak', category: 'streak' },
+  { id: 'streak_8', icon: '🔗', name: 'Unbreakable', desc: '8-week workout streak', category: 'streak' },
+  // Programme
+  { id: 'programme_done', icon: '🏆', name: 'Finisher', desc: 'Complete a programme', category: 'programme' },
+  // Habits
+  { id: 'habits_7', icon: '✅', name: 'Habit Machine', desc: '7-day perfect habit streak', category: 'habits' },
+  // Nutrition
+  { id: 'nutrition_7', icon: '🥗', name: 'Fuel Master', desc: 'Log nutrition 7 days in a row', category: 'nutrition' },
+  // PBs
+  { id: 'first_pb', icon: '🥇', name: 'Record Breaker', desc: 'Set your first PB', category: 'pbs' },
+  { id: 'pbs_5', icon: '📈', name: 'Climbing', desc: 'Set 5 personal bests', category: 'pbs' },
+  // Social
+  { id: 'leaderboard_join', icon: '🏅', name: 'Competitor', desc: 'Join the leaderboard', category: 'social' },
+];
+
 export default function CoreBuddyDashboard() {
-  const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
+  const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -84,6 +110,20 @@ export default function CoreBuddyDashboard() {
   const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
 
+  // Profile photo
+  const [photoURL, setPhotoURL] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef(null);
+
+  // Achievements
+  const [unlockedBadges, setUnlockedBadges] = useState([]);
+  const [selectedBadge, setSelectedBadge] = useState(null);
+
+  // Streak data for achievements
+  const [streakWeeks, setStreakWeeks] = useState(0);
+  const [habitStreak, setHabitStreak] = useState(0);
+  const [nutritionStreak, setNutritionStreak] = useState(0);
+
   // Rotating tagline
   const [taglineIdx, setTaglineIdx] = useState(0);
 
@@ -100,6 +140,66 @@ export default function CoreBuddyDashboard() {
       navigate('/');
     }
   }, [authLoading, currentUser, navigate]);
+
+  // Load profile photo from client data
+  useEffect(() => {
+    if (clientData?.photoURL) {
+      setPhotoURL(clientData.photoURL);
+    }
+  }, [clientData]);
+
+  // Profile photo upload handler
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !clientData) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file', 'error');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image must be under 5MB', 'error');
+      return;
+    }
+
+    setUploadingPhoto(true);
+    try {
+      // Compress image via canvas
+      const compressed = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxSize = 400;
+          let w = img.width, h = img.height;
+          if (w > h) { h = (h / w) * maxSize; w = maxSize; }
+          else { w = (w / h) * maxSize; h = maxSize; }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.75);
+        };
+        img.src = URL.createObjectURL(file);
+      });
+
+      // Upload to Storage
+      const storageRef = ref(storage, `profilePhotos/${clientData.id}`);
+      await uploadBytes(storageRef, compressed);
+      const url = await getDownloadURL(storageRef);
+
+      // Save URL to Firestore
+      await updateDoc(doc(db, 'clients', clientData.id), { photoURL: url });
+      setPhotoURL(url);
+      updateClientData({ photoURL: url });
+      showToast('Profile photo updated!', 'success');
+    } catch (err) {
+      console.error('Photo upload error:', err);
+      showToast('Failed to upload photo', 'error');
+    }
+    setUploadingPhoto(false);
+    // Reset input so same file can be re-selected
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
 
   // 24hr countdown - time remaining in the day
   useEffect(() => {
@@ -136,6 +236,11 @@ export default function CoreBuddyDashboard() {
   useEffect(() => {
     if (!currentUser || !clientData) return;
     const loadStats = async () => {
+      let logsSnap = null;
+      let localPbCount = 0;
+      let localPbList = [];
+      let localProgrammeComplete = false;
+
       try {
         const todayStr = formatDate(new Date());
 
@@ -163,14 +268,14 @@ export default function CoreBuddyDashboard() {
                 }
               }
             }
-            if (!foundNext) setProgrammeComplete(true);
+            if (!foundNext) { setProgrammeComplete(true); localProgrammeComplete = true; }
           }
         }
 
         // 2. Total randomiser workouts
         const logsRef = collection(db, 'workoutLogs');
         const q = query(logsRef, where('clientId', '==', clientData.id));
-        const logsSnap = await getDocs(q);
+        logsSnap = await getDocs(q);
         const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
         setTotalWorkouts(randomiserCount);
         // Weekly workout count (Mon-Sun)
@@ -227,6 +332,7 @@ export default function CoreBuddyDashboard() {
         if (cbPbSnap.exists()) {
           const exercises = cbPbSnap.data().exercises || {};
           setPbCount(Object.keys(exercises).length);
+          localPbCount = Object.keys(exercises).length;
           pbList = Object.entries(exercises)
             .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
             .slice(0, 3)
@@ -252,10 +358,12 @@ export default function CoreBuddyDashboard() {
             });
             const all = Object.values(best);
             setPbCount(all.length);
+            localPbCount = all.length;
             pbList = all.sort((a, b) => (b.weight || 0) - (a.weight || 0)).slice(0, 3);
           }
         }
 
+        localPbList = pbList;
         setTopPBs(pbList);
       } catch (pbErr) {
         console.error('PB fetch error:', pbErr);
@@ -270,6 +378,99 @@ export default function CoreBuddyDashboard() {
         setLeaderboardTop3(optedIn.slice(0, 3));
       } catch (lbErr) {
         console.error('Leaderboard preview error:', lbErr);
+      }
+
+      // 8. Compute achievements
+      try {
+        // Calculate workout streak (consecutive weeks with at least 1 workout)
+        let wkStreak = 0;
+        if (logsSnap) {
+          const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+          if (allDates.length > 0) {
+            const now2 = new Date();
+            let checkWeek = new Date(now2);
+            // Go back week by week
+            outer: for (let w = 0; w < 52; w++) {
+              const weekStart = new Date(checkWeek);
+              const dow = weekStart.getDay();
+              const monOff = dow === 0 ? 6 : dow - 1;
+              weekStart.setDate(weekStart.getDate() - monOff);
+              weekStart.setHours(0, 0, 0, 0);
+              const weekEnd = new Date(weekStart);
+              weekEnd.setDate(weekEnd.getDate() + 7);
+              const wsStr = formatDate(weekStart);
+              const weStr = formatDate(weekEnd);
+              const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
+              if (hasWorkout) { wkStreak++; }
+              else if (w > 0) break outer; // allow current week to be empty
+              else break;
+              checkWeek.setDate(checkWeek.getDate() - 7);
+            }
+          }
+        }
+        setStreakWeeks(wkStreak);
+
+        // Habit streak (consecutive days with all 5 done, up to 30 days back)
+        let hStreak = 0;
+        for (let d = 0; d < 30; d++) {
+          const checkDate = new Date();
+          checkDate.setDate(checkDate.getDate() - d);
+          const dStr = formatDate(checkDate);
+          try {
+            const hSnap = await getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', clientData.id), where('date', '==', dStr)));
+            if (!hSnap.empty) {
+              const habits = hSnap.docs[0].data().habits || {};
+              if (Object.values(habits).filter(Boolean).length >= HABIT_COUNT) { hStreak++; }
+              else break;
+            } else break;
+          } catch { break; }
+        }
+        setHabitStreak(hStreak);
+
+        // Nutrition streak (consecutive days with at least 1 entry, up to 30 days back)
+        let nStreak = 0;
+        for (let d = 0; d < 30; d++) {
+          const checkDate = new Date();
+          checkDate.setDate(checkDate.getDate() - d);
+          const dStr = formatDate(checkDate);
+          try {
+            const nSnap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${dStr}`));
+            if (nSnap.exists() && (nSnap.data().entries || []).length > 0) { nStreak++; }
+            else break;
+          } catch { break; }
+        }
+        setNutritionStreak(nStreak);
+
+        // Total workouts across all types
+        const totalAll = logsSnap ? logsSnap.docs.length : 0;
+
+        // Determine unlocked badges
+        const unlocked = [];
+        const addBadge = (id) => unlocked.push(id);
+
+        if (totalAll >= 1) addBadge('first_workout');
+        if (totalAll >= 10) addBadge('workouts_10');
+        if (totalAll >= 25) addBadge('workouts_25');
+        if (totalAll >= 50) addBadge('workouts_50');
+        if (totalAll >= 100) addBadge('workouts_100');
+        if (wkStreak >= 2) addBadge('streak_2');
+        if (wkStreak >= 4) addBadge('streak_4');
+        if (wkStreak >= 8) addBadge('streak_8');
+        if (localProgrammeComplete) addBadge('programme_done');
+        if (hStreak >= 7) addBadge('habits_7');
+        if (nStreak >= 7) addBadge('nutrition_7');
+        if (localPbCount > 0 || localPbList.length > 0) addBadge('first_pb');
+        if (localPbCount >= 5) addBadge('pbs_5');
+        if (clientData.leaderboardOptIn) addBadge('leaderboard_join');
+
+        setUnlockedBadges(unlocked);
+
+        // Persist to Firestore (fire and forget)
+        const badgeMap = {};
+        unlocked.forEach(id => { badgeMap[id] = { unlockedAt: new Date().toISOString() }; });
+        setDoc(doc(db, 'achievements', clientData.id), { badges: badgeMap, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+      } catch (achErr) {
+        console.error('Achievement computation error:', achErr);
       }
 
       setStatsLoaded(true);
@@ -427,8 +628,22 @@ export default function CoreBuddyDashboard() {
               })}
             </svg>
             <div className="cb-ring-center">
-              <div className="cb-ring-logo">
-                <img src="/Logo.webp" alt="Mind Core Fitness" />
+              <div className="cb-ring-logo" onClick={() => photoInputRef.current?.click()} role="button" tabIndex={0} aria-label="Change profile photo">
+                <img src={photoURL || '/Logo.webp'} alt={photoURL ? 'Profile' : 'Mind Core Fitness'} />
+                <div className={`cb-photo-overlay${uploadingPhoto ? ' uploading' : ''}`}>
+                  {uploadingPhoto ? (
+                    <div className="cb-photo-spinner" />
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  )}
+                </div>
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  style={{ display: 'none' }}
+                />
               </div>
               <div className="cb-ring-countdown">
                 <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>
@@ -621,6 +836,41 @@ export default function CoreBuddyDashboard() {
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
+
+          {/* 7. Achievements */}
+          <div className="cb-achievements-section">
+            <h3 className="cb-achievements-title">Achievements</h3>
+            <div className="cb-badges-scroll">
+              {BADGE_DEFS.map((badge) => {
+                const isUnlocked = unlockedBadges.includes(badge.id);
+                return (
+                  <button
+                    key={badge.id}
+                    className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
+                    onClick={() => setSelectedBadge(selectedBadge?.id === badge.id ? null : badge)}
+                  >
+                    <span className="cb-badge-icon">{badge.icon}</span>
+                    <span className="cb-badge-name">{badge.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {selectedBadge && (
+              <div className="cb-badge-detail">
+                <span className="cb-badge-detail-icon">{selectedBadge.icon}</span>
+                <div className="cb-badge-detail-info">
+                  <strong>{selectedBadge.name}</strong>
+                  <span>{selectedBadge.desc}</span>
+                  {unlockedBadges.includes(selectedBadge.id) ? (
+                    <span className="cb-badge-status unlocked">Unlocked</span>
+                  ) : (
+                    <span className="cb-badge-status locked">Locked</span>
+                  )}
+                </div>
+              </div>
+            )}
+            <p className="cb-badges-count">{unlockedBadges.length}/{BADGE_DEFS.length} unlocked</p>
+          </div>
 
         </div>
       </main>
