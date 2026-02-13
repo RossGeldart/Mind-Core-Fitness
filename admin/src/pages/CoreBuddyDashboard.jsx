@@ -546,7 +546,7 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>Leaderboard</h3>
-              {leaderboardTop3.length > 0 && (
+              {leaderboardTop3.length > 0 ? (
                 <div className="cb-lb-preview">
                   {leaderboardTop3.map((entry, idx) => {
                     const medal = ['#FFD700', '#A8B4C0', '#CD7F32'][idx];
@@ -562,6 +562,8 @@ export default function CoreBuddyDashboard() {
                     );
                   })}
                 </div>
+              ) : (
+                <p>Opt in to compete with your Core Buddies</p>
               )}
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
