@@ -159,6 +159,34 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, currentUser, navigate]);
 
+  // Hydrate from session cache so returning visits render instantly
+  useEffect(() => {
+    if (!clientData) return;
+    try {
+      const cached = sessionStorage.getItem(`cbDash_${clientData.id}`);
+      if (cached) {
+        const c = JSON.parse(cached);
+        setProgrammePct(c.programmePct ?? 0);
+        setProgrammeName(c.programmeName ?? '');
+        setTotalWorkouts(c.totalWorkouts ?? 0);
+        setHabitWeekPct(c.habitWeekPct ?? 0);
+        setNutritionTotals(c.nutritionTotals ?? { protein: 0, carbs: 0, fats: 0, calories: 0 });
+        setNutritionTargetData(c.nutritionTargetData ?? null);
+        setTodayHabitsCount(c.todayHabitsCount ?? 0);
+        setNextSession(c.nextSession ?? null);
+        setHasProgramme(c.hasProgramme ?? false);
+        setProgrammeComplete(c.programmeComplete ?? false);
+        setWeeklyWorkouts(c.weeklyWorkouts ?? 0);
+        setPbCount(c.pbCount ?? 0);
+        setTopPBs(c.topPBs ?? []);
+        setLeaderboardTop3(c.leaderboardTop3 ?? []);
+        setUnlockedBadges(c.unlockedBadges ?? []);
+        setStreakWeeks(c.streakWeeks ?? 0);
+        setStatsLoaded(true);
+      }
+    } catch {}
+  }, [clientData]);
+
   // Load profile photo from client data
   useEffect(() => {
     if (clientData?.photoURL) {
@@ -495,6 +523,23 @@ export default function CoreBuddyDashboard() {
     };
     loadStats();
   }, [currentUser, clientData]);
+
+  // Cache dashboard stats after fresh load so returning visits are instant
+  useEffect(() => {
+    if (!statsLoaded || !clientData) return;
+    try {
+      sessionStorage.setItem(`cbDash_${clientData.id}`, JSON.stringify({
+        programmePct, programmeName, totalWorkouts, habitWeekPct,
+        nutritionTotals, nutritionTargetData, todayHabitsCount,
+        nextSession, hasProgramme, programmeComplete,
+        weeklyWorkouts, pbCount, topPBs, leaderboardTop3,
+        unlockedBadges, streakWeeks
+      }));
+    } catch {}
+  }, [statsLoaded, programmePct, programmeName, totalWorkouts, habitWeekPct,
+     nutritionTotals, nutritionTargetData, todayHabitsCount, nextSession,
+     hasProgramme, programmeComplete, weeklyWorkouts, pbCount, topPBs,
+     leaderboardTop3, unlockedBadges, streakWeeks, clientData]);
 
   // Ripple effect
   const createRipple = (event) => {
