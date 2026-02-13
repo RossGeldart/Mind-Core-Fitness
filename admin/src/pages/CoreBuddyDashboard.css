@@ -457,6 +457,114 @@
   pointer-events: none;
 }
 
+/* Workouts Card Image Overlay */
+.cb-card-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.45) 100%);
+  z-index: 1;
+}
+
+.cb-overlay-ring {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-overlay-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cb-overlay-ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.cb-overlay-ring-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.cb-overlay-ring-val {
+  position: relative;
+  z-index: 1;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.cb-overlay-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cb-overlay-info h3 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 3px;
+}
+
+.cb-overlay-stat {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cb-overlay-arrow {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Habit Dots Preview */
+.cb-habit-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cb-habit-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.25);
+  border: 1.5px solid rgba(56, 182, 255, 0.3);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.cb-habit-dot.done {
+  background: #38B6FF;
+  border-color: #38B6FF;
+  box-shadow: 0 0 4px rgba(56, 182, 255, 0.4);
+}
+
+.cb-habit-dots-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-left: 4px;
+}
+
 /* Gradient accent for Progress & Leaderboard cards */
 .cb-card-progress,
 .cb-card-leaderboard {
