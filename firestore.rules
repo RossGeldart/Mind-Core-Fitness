@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Clients ──
+    match /clients/{clientId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == resource.data.uid
+                   || request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
+    }
+
+    // ── Buddy Requests ──
+    // fromId / toId are client doc IDs.  Only the sender can create;
+    // only the recipient can accept/decline; either side can delete.
+    match /buddyRequests/{reqId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // ── Buddies (confirmed connections) ──
+    // Each doc id = sorted pair "clientA_clientB"
+    match /buddies/{pairId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // ── Workout logs, sessions, circuits (read-only for leaderboard / profiles) ──
+    match /workoutLogs/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    match /sessions/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
+    }
+
+    match /circuitSessions/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
+    }
+
+    // ── Achievements / PBs ──
+    match /coreBuddyAchievements/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    match /coreBuddyPBs/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    match /personalBests/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ── Programme progress ──
+    match /clientProgrammes/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ── Everything else: admin only ──
+    match /{document=**} {
+      allow read, write: if request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
+    }
+  }
+}

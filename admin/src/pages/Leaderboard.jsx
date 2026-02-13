@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -118,6 +118,8 @@ export default function Leaderboard() {
   const [togglingOptIn, setTogglingOptIn] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [toast, setToast] = useState(null);
+  const [buddyFilter, setBuddyFilter] = useState(false);
+  const [buddyIds, setBuddyIds] = useState(new Set());
 
   const { currentUser, isClient, clientData, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -136,6 +138,26 @@ export default function Leaderboard() {
     if (clientData) {
       setOptedIn(clientData.leaderboardOptIn === true);
     }
+  }, [clientData]);
+
+  // Fetch buddy IDs for filter
+  useEffect(() => {
+    if (!clientData) return;
+    (async () => {
+      try {
+        const myId = clientData.id;
+        const b1 = await getDocs(query(collection(db, 'buddies'), where('user1', '==', myId)));
+        const b2 = await getDocs(query(collection(db, 'buddies'), where('user2', '==', myId)));
+        const ids = new Set();
+        [...b1.docs, ...b2.docs].forEach(d => {
+          const data = d.data();
+          ids.add(data.user1 === myId ? data.user2 : data.user1);
+        });
+        setBuddyIds(ids);
+      } catch (err) {
+        console.error('Error fetching buddies:', err);
+      }
+    })();
   }, [clientData]);
 
   useEffect(() => {
@@ -335,7 +357,7 @@ export default function Leaderboard() {
   };
 
   const isCurrentUser = (entry) => entry.id === clientData?.id;
-  const currentUserEntry = rankings.find(r => r.id === clientData?.id);
+  const currentUserEntry = filteredRankings.find(r => r.id === clientData?.id);
 
   if (authLoading) {
     return (
@@ -417,8 +439,14 @@ export default function Leaderboard() {
     );
   }
 
-  const podiumEntries = rankings.slice(0, 3);
-  const listEntries = rankings.slice(3);
+  // Apply buddy filter
+  const filteredRankings = buddyFilter
+    ? rankings.filter(r => buddyIds.has(r.id) || r.id === clientData?.id)
+        .map((r, i) => ({ ...r, rank: i + 1 }))
+    : rankings;
+
+  const podiumEntries = filteredRankings.slice(0, 3);
+  const listEntries = filteredRankings.slice(3);
 
   return (
     <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
@@ -474,6 +502,19 @@ export default function Leaderboard() {
           </div>
         )}
 
+        {/* Buddy Filter */}
+        {buddyIds.size > 0 && (
+          <div className="lb-buddy-filter-row">
+            <button
+              className={`lb-buddy-filter${buddyFilter ? ' active' : ''}`}
+              onClick={() => setBuddyFilter(!buddyFilter)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Buddies Only</span>
+            </button>
+          </div>
+        )}
+
         <div className="lb-period-label">{getPeriodLabel()}</div>
 
         {loading ? (
@@ -499,7 +540,7 @@ export default function Leaderboard() {
             {podiumEntries.length > 0 && (
               <div className="lb-podium">
                 {/* 2nd place */}
-                <div className="lb-podium-place lb-podium-2nd">
+                <div className="lb-podium-place lb-podium-2nd" onClick={() => podiumEntries[1] && navigate(`/client/core-buddy/profile/${podiumEntries[1].id}`)} role={podiumEntries[1] ? 'button' : undefined}>
                   {podiumEntries[1] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[1]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[1] }}>
@@ -515,7 +556,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* 1st place */}
-                <div className="lb-podium-place lb-podium-1st">
+                <div className="lb-podium-place lb-podium-1st" onClick={() => navigate(`/client/core-buddy/profile/${podiumEntries[0].id}`)} role="button">
                   <div className="lb-podium-crown">
                     <svg viewBox="0 0 24 24" fill="#FFD700" stroke="none">
                       <path d="M2.5 18.5l3-7 4 4 3-9 3 9 4-4 3 7z"/>
@@ -533,7 +574,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* 3rd place */}
-                <div className="lb-podium-place lb-podium-3rd">
+                <div className="lb-podium-place lb-podium-3rd" onClick={() => podiumEntries[2] && navigate(`/client/core-buddy/profile/${podiumEntries[2].id}`)} role={podiumEntries[2] ? 'button' : undefined}>
                   {podiumEntries[2] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[2]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[2] }}>
@@ -558,6 +599,8 @@ export default function Leaderboard() {
                     key={entry.id}
                     className={`lb-rank-item ${isCurrentUser(entry) ? 'lb-rank-you' : ''}`}
                     style={{ animationDelay: `${i * 0.04}s` }}
+                    onClick={() => navigate(`/client/core-buddy/profile/${entry.id}`)}
+                    role="button"
                   >
                     <span className="lb-rank-number">{entry.rank}</span>
                     <div className={`lb-rank-avatar ${isCurrentUser(entry) ? 'lb-avatar-you' : ''}`}>

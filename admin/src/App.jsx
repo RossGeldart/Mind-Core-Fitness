@@ -12,6 +12,8 @@ import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
 import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
+import CoreBuddyBuddies from './pages/CoreBuddyBuddies';
+import CoreBuddyProfile from './pages/CoreBuddyProfile';
 import PersonalBests from './pages/PersonalBests';
 
 // Lazy-load pages outside the CoreBuddy nav group
@@ -88,6 +90,8 @@ function App() {
             <Route path="/client/core-buddy/programmes" element={<CoreBuddyProgrammes />} />
             <Route path="/client/core-buddy/achievements" element={<CoreBuddyAchievements />} />
             <Route path="/client/core-buddy/consistency" element={<CoreBuddyConsistency />} />
+            <Route path="/client/core-buddy/buddies" element={<CoreBuddyBuddies />} />
+            <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
