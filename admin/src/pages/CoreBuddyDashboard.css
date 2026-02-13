@@ -215,13 +215,12 @@
 
 .cb-ring-logo {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid var(--color-primary);
-  margin-bottom: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -251,9 +250,9 @@
 }
 
 .cb-photo-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
@@ -919,12 +918,8 @@
   }
 
   .cb-ring-logo {
-    width: 65px;
-    height: 65px;
-  }
-
-  .cb-timer-digit {
-    font-size: 1.4rem;
+    width: 140px;
+    height: 140px;
   }
 
   .cb-stat-ring {
@@ -1031,13 +1026,21 @@
   opacity: 0.4;
 }
 
-.cb-badge.locked .cb-badge-icon {
-  filter: grayscale(1);
-}
 
 .cb-badge-icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.cb-badge-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.cb-badge.locked .cb-badge-icon {
+  color: var(--text-tertiary);
 }
 
 .cb-badge-name {
@@ -1076,9 +1079,16 @@
 }
 
 .cb-badge-detail-icon {
-  font-size: 2rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.cb-badge-detail-icon svg {
+  width: 36px;
+  height: 36px;
 }
 
 .cb-badge-detail-info {
