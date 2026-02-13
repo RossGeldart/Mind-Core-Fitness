@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc,
-  addDoc, deleteDoc, orderBy, limit, increment, serverTimestamp
+  addDoc, deleteDoc, orderBy, limit, increment, serverTimestamp, onSnapshot,
+  writeBatch
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -206,6 +207,19 @@ export default function CoreBuddyDashboard() {
   const journeyTextRef = useRef(null);
   const journeyFileRef = useRef(null);
 
+  // Notifications
+  const [notifications, setNotifications] = useState([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+
+  // @ Mention state
+  const [allClients, setAllClients] = useState([]);
+  const [mentionQuery, setMentionQuery] = useState('');
+  const [mentionActive, setMentionActive] = useState(false);
+  const [mentionTarget, setMentionTarget] = useState(null); // 'compose' | postId
+  const [mentionResults, setMentionResults] = useState([]);
+  const [mentionAnchor, setMentionAnchor] = useState(null);
+
   // Auth guard
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -247,6 +261,121 @@ export default function CoreBuddyDashboard() {
       setPhotoURL(clientData.photoURL);
     }
   }, [clientData]);
+
+  // Real-time notification listener
+  useEffect(() => {
+    if (!clientData) return;
+    const q = query(
+      collection(db, 'notifications'),
+      where('toId', '==', clientData.id),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error('Notification listener error:', err));
+    return () => unsub();
+  }, [clientData]);
+
+  // Close notification panel on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Fetch all clients for @ mentions
+  useEffect(() => {
+    if (!clientData) return;
+    getDocs(collection(db, 'clients')).then(snap => {
+      setAllClients(snap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null })).filter(c => c.id !== clientData.id));
+    }).catch(() => {});
+  }, [clientData]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAllRead = async () => {
+    const unread = notifications.filter(n => !n.read);
+    if (!unread.length) return;
+    const batch = writeBatch(db);
+    unread.forEach(n => batch.update(doc(db, 'notifications', n.id), { read: true }));
+    await batch.commit();
+  };
+
+  const clearAllNotifications = async () => {
+    if (!notifications.length) return;
+    const batch = writeBatch(db);
+    notifications.forEach(n => batch.delete(doc(db, 'notifications', n.id)));
+    await batch.commit();
+  };
+
+  // Create a notification helper
+  const createNotification = async (toId, type, extra = {}) => {
+    if (!clientData || toId === clientData.id) return;
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        toId,
+        fromId: clientData.id,
+        fromName: clientData.name || 'Someone',
+        fromPhotoURL: clientData.photoURL || null,
+        type,
+        read: false,
+        createdAt: serverTimestamp(),
+        ...extra
+      });
+    } catch (err) { console.error('Notification create error:', err); }
+  };
+
+  // @ mention helpers
+  const handleMentionInput = (text, target) => {
+    const cursorPos = target === 'compose' ? journeyTextRef.current?.selectionStart : null;
+    const relevantText = cursorPos != null ? text.slice(0, cursorPos) : text;
+    const atMatch = relevantText.match(/@(\w*)$/);
+    if (atMatch) {
+      setMentionActive(true);
+      setMentionTarget(target);
+      setMentionQuery(atMatch[1].toLowerCase());
+      const filtered = allClients.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      setMentionResults(filtered);
+    } else {
+      setMentionActive(false);
+      setMentionResults([]);
+    }
+  };
+
+  const insertMention = (client, target) => {
+    if (target === 'compose') {
+      const el = journeyTextRef.current;
+      const text = journeyText;
+      const cursorPos = el?.selectionStart ?? text.length;
+      const before = text.slice(0, cursorPos);
+      const after = text.slice(cursorPos);
+      const replaced = before.replace(/@\w*$/, `@${client.name} `);
+      setJourneyText(replaced + after);
+      setTimeout(() => { el?.focus(); el.selectionStart = el.selectionEnd = replaced.length; }, 0);
+    } else {
+      // comment input — target is postId
+      const text = commentText[target] || '';
+      const replaced = text.replace(/@\w*$/, `@${client.name} `);
+      setCommentText(prev => ({ ...prev, [target]: replaced }));
+    }
+    setMentionActive(false);
+    setMentionResults([]);
+  };
+
+  // Parse post/comment text to highlight @mentions
+  const renderWithMentions = (text) => {
+    if (!text) return text;
+    const parts = text.split(/(@\w[\w\s]*?\s)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('@') && allClients.some(c => part.trim() === `@${c.name}`)) {
+        return <span key={i} className="mention-highlight">{part.trim()}</span>;
+      }
+      return part;
+    });
+  };
 
   // Profile photo upload handler
   const handlePhotoUpload = async (e) => {
@@ -778,6 +907,20 @@ export default function CoreBuddyDashboard() {
         likeCount: 0,
         commentCount: 0
       });
+      // Notify @mentioned users in the post
+      const postText = journeyText.trim();
+      const mentionMatches = postText.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
+      if (mentionMatches) {
+        const notified = new Set();
+        mentionMatches.forEach(m => {
+          const name = m.slice(1).trim();
+          const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+          if (client && !notified.has(client.id)) {
+            notified.add(client.id);
+            createNotification(client.id, 'mention', {});
+          }
+        });
+      }
       setJourneyText('');
       clearJourneyImage();
       if (journeyTextRef.current) journeyTextRef.current.style.height = 'auto';
@@ -821,6 +964,9 @@ export default function CoreBuddyDashboard() {
       } else {
         await setDoc(doc(db, 'postLikes', likeId), { postId, userId: myId, createdAt: serverTimestamp() });
         await updateDoc(doc(db, 'posts', postId), { likeCount: increment(1) });
+        // Notify post author
+        const post = journeyPosts.find(p => p.id === postId);
+        if (post) createNotification(post.authorId, 'like', { postId });
       }
     } catch (err) {
       console.error('Like error:', err);
@@ -854,6 +1000,22 @@ export default function CoreBuddyDashboard() {
         authorPhotoURL: clientData.photoURL || null, content: text, createdAt: serverTimestamp()
       });
       await updateDoc(doc(db, 'posts', postId), { commentCount: increment(1) });
+      // Notify post author about comment
+      const post = journeyPosts.find(p => p.id === postId);
+      if (post) createNotification(post.authorId, 'comment', { postId });
+      // Notify @mentioned users
+      const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
+      if (mentionMatches) {
+        const notified = new Set();
+        mentionMatches.forEach(m => {
+          const name = m.slice(1).trim();
+          const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+          if (client && !notified.has(client.id)) {
+            notified.add(client.id);
+            createNotification(client.id, 'mention', { postId });
+          }
+        });
+      }
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setJourneyPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
@@ -871,6 +1033,12 @@ export default function CoreBuddyDashboard() {
     setJourneyText(e.target.value);
     e.target.style.height = 'auto';
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+    handleMentionInput(e.target.value, 'compose');
+  };
+
+  const handleCommentInputChange = (postId, value) => {
+    setCommentText(prev => ({ ...prev, [postId]: value }));
+    handleMentionInput(value, postId);
   };
 
   return (
@@ -878,6 +1046,55 @@ export default function CoreBuddyDashboard() {
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
+          {/* Notification bell — top left */}
+          <div className="header-notif-wrap" ref={notifRef}>
+            <button className="header-notif-btn" onClick={() => { setNotifOpen(!notifOpen); if (!notifOpen) markAllRead(); }} aria-label="Notifications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {unreadCount > 0 && <span className="header-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+            </button>
+
+            {notifOpen && (
+              <div className="notif-panel">
+                <div className="notif-panel-header">
+                  <span className="notif-panel-title">Notifications</span>
+                  {notifications.length > 0 && (
+                    <button className="notif-clear-btn" onClick={clearAllNotifications}>Clear all</button>
+                  )}
+                </div>
+                <div className="notif-panel-list">
+                  {notifications.length === 0 ? (
+                    <div className="notif-empty">No notifications yet</div>
+                  ) : (
+                    notifications.map(n => (
+                      <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
+                        setNotifOpen(false);
+                        if (n.type === 'buddy_request') navigate('/client/core-buddy/buddies');
+                      }}>
+                        <div className="notif-item-avatar">
+                          {n.fromPhotoURL ? <img src={n.fromPhotoURL} alt="" /> : <span>{(n.fromName || '?')[0]}</span>}
+                        </div>
+                        <div className="notif-item-body">
+                          <p className="notif-item-text">
+                            <strong>{n.fromName}</strong>{' '}
+                            {n.type === 'buddy_request' && 'sent you a buddy request'}
+                            {n.type === 'buddy_accept' && 'accepted your buddy request'}
+                            {n.type === 'like' && 'liked your post'}
+                            {n.type === 'comment' && 'commented on your post'}
+                            {n.type === 'mention' && 'mentioned you'}
+                          </p>
+                          <span className="notif-item-time">{timeAgo(n.createdAt)}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
             <button onClick={toggleTheme} aria-label="Toggle theme">
@@ -1178,15 +1395,27 @@ export default function CoreBuddyDashboard() {
                   <span>{getInitials(clientData?.name)}</span>
                 )}
               </div>
-              <div className="journey-compose-body">
+              <div className="journey-compose-body" style={{ position: 'relative' }}>
                 <textarea
                   ref={journeyTextRef}
-                  placeholder="Share your progress..."
+                  placeholder="Share your progress... (use @ to mention)"
                   value={journeyText}
                   onChange={handleJourneyTextInput}
                   rows={1}
                   maxLength={500}
                 />
+                {mentionActive && mentionTarget === 'compose' && mentionResults.length > 0 && (
+                  <div className="mention-dropdown">
+                    {mentionResults.map(c => (
+                      <button key={c.id} className="mention-option" onClick={() => insertMention(c, 'compose')}>
+                        <div className="mention-option-avatar">
+                          {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                        </div>
+                        <span>{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {journeyImagePreview && (
                   <div className="journey-image-preview">
                     <img src={journeyImagePreview} alt="Preview" />
@@ -1240,7 +1469,7 @@ export default function CoreBuddyDashboard() {
                       </button>
                     </div>
 
-                    {post.content && <p className="journey-post-content">{post.content}</p>}
+                    {post.content && <p className="journey-post-content">{renderWithMentions(post.content)}</p>}
 
                     {post.imageURL && (
                       <div className="journey-post-image">
@@ -1274,7 +1503,7 @@ export default function CoreBuddyDashboard() {
                               <div className="journey-comment-body">
                                 <div className="journey-comment-bubble">
                                   <span className="journey-comment-name">{c.authorName}</span>
-                                  <span className="journey-comment-text">{c.content}</span>
+                                  <span className="journey-comment-text">{renderWithMentions(c.content)}</span>
                                 </div>
                                 <span className="journey-comment-time">{timeAgo(c.createdAt)}</span>
                               </div>
@@ -1283,15 +1512,27 @@ export default function CoreBuddyDashboard() {
                         ) : (
                           <p className="journey-no-comments">No comments yet</p>
                         )}
-                        <div className="journey-comment-input">
+                        <div className="journey-comment-input" style={{ position: 'relative' }}>
                           <input
                             type="text"
-                            placeholder="Write a comment..."
+                            placeholder="Comment... (@ to mention)"
                             value={commentText[post.id] || ''}
-                            onChange={e => setCommentText(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            onChange={e => handleCommentInputChange(post.id, e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') handleJourneyComment(post.id); }}
                             maxLength={300}
                           />
+                          {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
+                            <div className="mention-dropdown mention-dropdown-up">
+                              {mentionResults.map(c => (
+                                <button key={c.id} className="mention-option" onClick={() => insertMention(c, post.id)}>
+                                  <div className="mention-option-avatar">
+                                    {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                  </div>
+                                  <span>{c.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
                           <button onClick={() => handleJourneyComment(post.id)} disabled={!(commentText[post.id] || '').trim() || commentLoading[post.id]}>
                             {commentLoading[post.id] ? (
                               <div className="journey-btn-spinner-sm" />

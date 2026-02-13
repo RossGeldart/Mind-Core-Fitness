@@ -117,6 +117,23 @@ export default function CoreBuddyProfile() {
     return () => { cancelled = true; };
   }, [clientData, userId]);
 
+  // Notification helper
+  const createNotification = async (toId, type, extra = {}) => {
+    if (!clientData || toId === clientData.id) return;
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        toId,
+        fromId: clientData.id,
+        fromName: clientData.name || 'Someone',
+        fromPhotoURL: clientData.photoURL || null,
+        type,
+        read: false,
+        createdAt: serverTimestamp(),
+        ...extra
+      });
+    } catch (err) { console.error('Notification error:', err); }
+  };
+
   // Actions
   const sendRequest = async () => {
     setActionLoading(true);
@@ -128,6 +145,7 @@ export default function CoreBuddyProfile() {
         status: 'pending',
         createdAt: serverTimestamp()
       });
+      await createNotification(userId, 'buddy_request');
       setBuddyStatus('pending_out');
       setRequestId(reqId);
       showToast('Buddy request sent!', 'success');
@@ -150,6 +168,7 @@ export default function CoreBuddyProfile() {
         connectedAt: serverTimestamp()
       });
       await deleteDoc(doc(db, 'buddyRequests', requestId));
+      await createNotification(userId, 'buddy_accept');
       setBuddyStatus('buddy');
       showToast('Buddy added!', 'success');
     } catch (err) {
@@ -261,6 +280,9 @@ export default function CoreBuddyProfile() {
           createdAt: serverTimestamp()
         });
         await updateDoc(doc(db, 'posts', postId), { likeCount: increment(1) });
+        // Notify post author
+        const post = journeyPosts.find(p => p.id === postId);
+        if (post) createNotification(post.authorId, 'like', { postId });
       }
     } catch (err) {
       console.error('Like error:', err);
@@ -310,6 +332,9 @@ export default function CoreBuddyProfile() {
         createdAt: serverTimestamp()
       });
       await updateDoc(doc(db, 'posts', postId), { commentCount: increment(1) });
+      // Notify post author
+      const post = journeyPosts.find(p => p.id === postId);
+      if (post) createNotification(post.authorId, 'comment', { postId });
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setJourneyPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  collection, query, where, getDocs, doc, setDoc, deleteDoc,
+  collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
   serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -127,6 +127,22 @@ export default function CoreBuddyBuddies() {
     setSearchResults(results);
   }, [searchTerm, allClients, buddies, outgoing, incoming, clientData]);
 
+  // Notification helper
+  const createNotification = async (toId, type) => {
+    if (!clientData || toId === clientData.id) return;
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        toId,
+        fromId: clientData.id,
+        fromName: clientData.name || 'Someone',
+        fromPhotoURL: clientData.photoURL || null,
+        type,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) { console.error('Notification error:', err); }
+  };
+
   // Actions
   const sendRequest = async (toId) => {
     setActionLoading(toId);
@@ -138,6 +154,7 @@ export default function CoreBuddyBuddies() {
         status: 'pending',
         createdAt: serverTimestamp()
       });
+      await createNotification(toId, 'buddy_request');
       showToast('Buddy request sent!', 'success');
       await fetchData();
     } catch (err) {
@@ -160,6 +177,7 @@ export default function CoreBuddyBuddies() {
       });
       // Delete the request
       await deleteDoc(doc(db, 'buddyRequests', req.reqId));
+      await createNotification(req.fromId, 'buddy_accept');
       showToast('Buddy added!', 'success');
       await fetchData();
     } catch (err) {
