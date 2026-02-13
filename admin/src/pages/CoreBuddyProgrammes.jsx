@@ -978,14 +978,16 @@ export default function CoreBuddyProgrammes() {
           {/* Progress Ring */}
           <div className="pg-dash-hero">
             <div className="pg-dash-ring-wrap">
-              <svg className="pg-dash-ring-svg" viewBox="0 0 200 200">
-                {TICKS_78_94.map((t, i) => (
-                  <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                    className={i < ringFilled ? 'pg-tick-filled' : 'pg-tick-empty'}
-                    strokeWidth={t.thick ? '3' : '2'} />
-                ))}
+              <svg viewBox="0 0 200 200">
+                <circle className="pg-arc-track" cx="100" cy="100" r="80" />
+                <circle className="pg-arc-fill" cx="100" cy="100" r="80"
+                  strokeDasharray={2 * Math.PI * 80}
+                  strokeDashoffset={2 * Math.PI * 80 - (progressPct / 100) * 2 * Math.PI * 80} />
               </svg>
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="pg-dash-ring-logo" width="50" height="50" />
+              <div className="pg-ring-center">
+                <span className="pg-ring-pct">{progressPct}%</span>
+                <span className="pg-ring-label">complete</span>
+              </div>
             </div>
             <h2 className="pg-dash-name">{template.name}</h2>
             <div className="pg-dash-progress-text">

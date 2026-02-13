@@ -353,32 +353,52 @@
   justify-content: center;
 }
 
-.pg-dash-ring-svg {
+.pg-dash-ring-wrap svg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  transform: rotate(-90deg);
 }
 
-.pg-dash-ring-logo {
+.pg-arc-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 24;
+  stroke-linecap: round;
+}
+
+.pg-arc-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 24;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.pg-ring-center {
   position: relative;
   z-index: 1;
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 2.5px solid var(--color-primary);
-  object-fit: cover;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.pg-tick-filled {
-  stroke: var(--color-primary);
-  filter: drop-shadow(0 0 3px rgba(var(--color-primary-rgb), 0.5));
+.pg-ring-pct {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--color-primary);
 }
 
-.pg-tick-empty {
-  stroke: var(--border-color);
+.pg-ring-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
 }
 
 .pg-dash-name {
@@ -1157,9 +1177,8 @@
     height: 180px;
   }
 
-  .pg-dash-ring-logo {
-    width: 76px;
-    height: 76px;
+  .pg-ring-pct {
+    font-size: 1.8rem;
   }
 
   .pg-input {
