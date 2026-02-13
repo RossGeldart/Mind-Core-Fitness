@@ -140,7 +140,12 @@ export default function CoreBuddyBuddies() {
         read: false,
         createdAt: serverTimestamp()
       });
-    } catch (err) { console.error('Notification error:', err); }
+    } catch (err) {
+      console.error('Notification error:', err);
+      if (err.code === 'permission-denied') {
+        showToast('Notifications blocked — check Firestore rules', 'error');
+      }
+    }
   };
 
   // Actions
