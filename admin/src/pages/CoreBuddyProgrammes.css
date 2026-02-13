@@ -56,22 +56,23 @@
 .pg-browse-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .pg-browse-card {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 20px;
+  padding: 18px 16px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pg-browse-card:hover {
@@ -174,7 +175,7 @@
 
 .pg-overview-stats {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   margin-top: 8px;
 }
 
@@ -182,11 +183,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 12px 18px;
+  gap: 6px;
+  padding: 16px 18px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pg-ov-stat-num {
@@ -198,7 +200,7 @@
 
 .pg-ov-stat-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -208,23 +210,24 @@
 .pg-overview-days {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   padding: 16px 0;
 }
 
 .pg-day-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pg-day-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .pg-day-name {
@@ -270,8 +273,8 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   letter-spacing: 0.5px;
 }
 
@@ -296,11 +299,12 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 14px 16px;
   text-align: center;
   line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* Start Button */
@@ -313,9 +317,9 @@
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
+  border-radius: 16px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -478,9 +482,10 @@
 /* Next Session Card */
 .pg-next-session {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
-  padding: 20px;
+  padding: 18px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .pg-next-session h3 {
@@ -708,8 +713,9 @@
   margin: 16px;
   padding: 24px 20px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -961,18 +967,19 @@
 
 .pg-done-stats {
   display: flex;
-  gap: 12px;
+  gap: 16px;
 }
 
 .pg-done-stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 12px 16px;
+  gap: 6px;
+  padding: 16px 18px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
   min-width: 70px;
 }
 
@@ -985,7 +992,7 @@
 
 .pg-done-stat-label {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1089,6 +1096,58 @@
   cursor: pointer;
   padding: 8px 16px;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* ==================== DARK MODE ==================== */
+[data-theme="dark"] .pg-browse-card,
+[data-theme="dark"] .pg-ov-stat,
+[data-theme="dark"] .pg-day-card,
+[data-theme="dark"] .pg-overview-note,
+[data-theme="dark"] .pg-next-session,
+[data-theme="dark"] .pg-exercise-card,
+[data-theme="dark"] .pg-done-stat {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .pg-browse-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .pg-day-header {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pg-next-ex {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pg-week-current {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pg-day-dot {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pg-input {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pg-input:focus {
+  border-color: var(--color-primary);
+}
+
+/* ==================== LIGHT MODE ==================== */
+[data-theme="light"] .pg-start-btn {
+  background: linear-gradient(135deg, #b5343f 0%, #7a252e 100%);
 }
 
 /* ==================== RESPONSIVE ==================== */
