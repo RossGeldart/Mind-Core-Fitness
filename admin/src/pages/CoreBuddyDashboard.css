@@ -482,6 +482,7 @@
   left: 0;
   width: 100%;
   height: 100%;
+  transform: rotate(-90deg);
 }
 
 .cb-mini-ring span {
@@ -490,25 +491,20 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
-  color: var(--text-secondary);
 }
 
-/* Tick colours per mini ring */
-.cb-ring-protein .cb-tick-filled { stroke: #4caf50; }
-.cb-ring-protein .cb-tick-empty { stroke: rgba(76, 175, 80, 0.15); }
-.cb-ring-protein span { color: #4caf50; }
+.cb-mini-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
 
-.cb-ring-carbs .cb-tick-filled { stroke: #2196f3; }
-.cb-ring-carbs .cb-tick-empty { stroke: rgba(33, 150, 243, 0.15); }
-.cb-ring-carbs span { color: #2196f3; }
-
-.cb-ring-fats .cb-tick-filled { stroke: #ff9800; }
-.cb-ring-fats .cb-tick-empty { stroke: rgba(255, 152, 0, 0.15); }
-.cb-ring-fats span { color: #ff9800; }
-
-.cb-ring-cals .cb-tick-filled { stroke: var(--color-primary); }
-.cb-ring-cals .cb-tick-empty { stroke: rgba(var(--color-primary-rgb), 0.15); }
-.cb-ring-cals span { color: var(--color-primary); }
+.cb-mini-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
 
 /* Coming Soon Badge */
 .cb-coming-soon {
