@@ -518,7 +518,17 @@ export default function CoreBuddyProgrammes() {
     return TEMPLATES.find(t => t.id === activeProgramme.templateId);
   };
 
-  // Calculate current week and next session
+  // Calculate current calendar week based on startDate
+  const getCalendarWeek = () => {
+    if (!activeProgramme?.startDate) return 1;
+    const start = activeProgramme.startDate.toDate ? activeProgramme.startDate.toDate() : new Date(activeProgramme.startDate);
+    const now = new Date();
+    const diffMs = now - start;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    return Math.floor(diffDays / 7) + 1; // Week 1 = days 0-6, Week 2 = days 7-13, etc.
+  };
+
+  // Calculate progress using calendar weeks
   const getProgress = () => {
     if (!activeProgramme) return { currentWeek: 1, completedThisWeek: 0, nextDay: 0, totalCompleted: 0 };
     const completed = activeProgramme.completedSessions || {};
@@ -527,19 +537,36 @@ export default function CoreBuddyProgrammes() {
     if (!template) return { currentWeek: 1, completedThisWeek: 0, nextDay: 0, totalCompleted: 0 };
 
     const totalSessions = template.duration * template.daysPerWeek;
-    const currentWeek = Math.min(Math.floor(totalCompleted / template.daysPerWeek) + 1, template.duration);
-    const completedThisWeek = totalCompleted - (currentWeek - 1) * template.daysPerWeek;
+    const calendarWeek = getCalendarWeek();
+    const currentWeek = Math.min(calendarWeek, template.duration);
 
-    // Find next uncompleted session
-    for (let w = 1; w <= template.duration; w++) {
-      for (let d = 0; d < template.daysPerWeek; d++) {
-        const key = `w${w}d${d}`;
-        if (!completed[key]) {
-          return { currentWeek: w, completedThisWeek, nextDay: d, nextWeek: w, totalCompleted, totalSessions };
-        }
-      }
+    // Count completed in current week
+    let completedThisWeek = 0;
+    for (let d = 0; d < template.daysPerWeek; d++) {
+      if (completed[`w${currentWeek}d${d}`]) completedThisWeek++;
     }
-    return { currentWeek: template.duration, completedThisWeek: template.daysPerWeek, nextDay: -1, totalCompleted, totalSessions, complete: true };
+
+    // Programme is complete if all sessions done OR we've passed the last week
+    if (totalCompleted >= totalSessions) {
+      return { currentWeek: template.duration, completedThisWeek: template.daysPerWeek, nextDay: -1, totalCompleted, totalSessions, complete: true };
+    }
+    if (calendarWeek > template.duration) {
+      return { currentWeek: template.duration, completedThisWeek, nextDay: -1, totalCompleted, totalSessions, complete: true };
+    }
+
+    // Find next available session in current week
+    let nextDay = -1;
+    for (let d = 0; d < template.daysPerWeek; d++) {
+      if (!completed[`w${currentWeek}d${d}`]) { nextDay = d; break; }
+    }
+
+    return { currentWeek, completedThisWeek, nextDay, nextWeek: currentWeek, totalCompleted, totalSessions };
+  };
+
+  // Check if a week is in the past (missed sessions should show strikethrough)
+  const isWeekPast = (weekNum) => {
+    const calendarWeek = getCalendarWeek();
+    return weekNum < calendarWeek;
   };
 
   // Get last week's data for an exercise (for auto-fill)
@@ -1000,6 +1027,7 @@ export default function CoreBuddyProgrammes() {
           <div className="pg-weeks">
             {Array.from({ length: template.duration }, (_, w) => {
               const weekNum = w + 1;
+              const weekPast = isWeekPast(weekNum);
               return (
                 <div key={w} className={`pg-week-row${weekNum === progress.currentWeek ? ' pg-week-current' : ''}`}>
                   <span className="pg-week-label">W{weekNum}</span>
@@ -1007,14 +1035,17 @@ export default function CoreBuddyProgrammes() {
                     {template.days.map((day, d) => {
                       const key = `w${weekNum}d${d}`;
                       const isDone = !!completed[key];
-                      const isNext = !progress.complete && weekNum === progress.nextWeek && d === progress.nextDay;
+                      const isMissed = !isDone && weekPast; // Past week + not completed = missed
+                      const isAvailable = !isDone && !isMissed && weekNum === progress.currentWeek && !progress.complete;
                       return (
                         <button key={d}
-                          className={`pg-day-dot${isDone ? ' done' : ''}${isNext ? ' next' : ''}`}
-                          disabled={isDone}
-                          onClick={() => { if (isNext) startSession(weekNum, d); }}>
+                          className={`pg-day-dot${isDone ? ' done' : ''}${isMissed ? ' missed' : ''}${isAvailable ? ' next' : ''}`}
+                          disabled={!isAvailable}
+                          onClick={() => { if (isAvailable) startSession(weekNum, d); }}>
                           {isDone ? (
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+                          ) : isMissed ? (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
                           ) : (
                             <span>{day.name.replace('Day ', '')}</span>
                           )}
@@ -1027,31 +1058,39 @@ export default function CoreBuddyProgrammes() {
             })}
           </div>
 
-          {/* Next Session Card */}
-          {!progress.complete && progress.nextDay >= 0 && (
-            <div className="pg-next-session">
-              <h3>Next Session</h3>
-              <p className="pg-next-info">
-                Week {progress.nextWeek} — {template.days[progress.nextDay].name}: {template.days[progress.nextDay].label}
-              </p>
-              <div className="pg-next-exercises">
-                {template.days[progress.nextDay].exercises.map((ex, i) => {
-                  const t = getWeekTargets(ex, progress.nextWeek, template);
-                  return (
-                    <div key={i} className="pg-next-ex">
-                      <span className="pg-next-ex-name">{ex.name}</span>
-                      <span className="pg-next-ex-target">
-                        {ex.type === 'timed' ? `${t.sets}×${t.time}s` : `${t.sets}×${t.reps}`}
-                      </span>
+          {/* Available Sessions for current week */}
+          {!progress.complete && (() => {
+            const availableDays = template.days.map((day, d) => ({ day, d }))
+              .filter(({ d }) => !completed[`w${progress.currentWeek}d${d}`]);
+            if (availableDays.length === 0) return null;
+            return (
+              <div className="pg-next-session">
+                <h3>{availableDays.length === template.daysPerWeek ? 'Choose a Session' : 'Remaining Sessions'}</h3>
+                <p className="pg-next-info">Week {progress.currentWeek} — {availableDays.length} session{availableDays.length !== 1 ? 's' : ''} left this week</p>
+                {availableDays.map(({ day, d }) => (
+                  <div key={d} className="pg-available-session">
+                    <div className="pg-next-exercises">
+                      <span className="pg-avail-day-label">{day.name}: {day.label}</span>
+                      {day.exercises.map((ex, i) => {
+                        const t = getWeekTargets(ex, progress.currentWeek, template);
+                        return (
+                          <div key={i} className="pg-next-ex">
+                            <span className="pg-next-ex-name">{ex.name}</span>
+                            <span className="pg-next-ex-target">
+                              {ex.type === 'timed' ? `${t.sets}×${t.time}s` : `${t.sets}×${t.reps}`}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                    <button className="pg-start-btn" onClick={() => startSession(progress.currentWeek, d)}>
+                      Start {day.name}
+                    </button>
+                  </div>
+                ))}
               </div>
-              <button className="pg-start-btn" onClick={() => startSession(progress.nextWeek, progress.nextDay)}>
-                Start Session
-              </button>
-            </div>
-          )}
+            );
+          })()}
 
           {progress.complete && (
             <div className="pg-complete-msg">
