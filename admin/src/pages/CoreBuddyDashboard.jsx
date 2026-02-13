@@ -59,29 +59,47 @@ const TAGLINES = [
   { text: 'The only bad workout...', bold: 'is the one you skipped' },
 ];
 
+// SVG badge icons (stroke-based, 24x24 viewBox)
+const BADGE_ICONS = {
+  first_workout: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4v16"/><path d="M18 4v16"/><path d="M6 12h12"/><rect x="3" y="7" width="6" height="10" rx="1"/><rect x="15" y="7" width="6" height="10" rx="1"/></svg>,
+  workouts_10: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c1 3 4 5.5 4 8.5a4 4 0 1 1-8 0C8 7.5 11 5 12 2z"/><path d="M12 14v4"/><path d="M10 18h4"/></svg>,
+  workouts_25: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+  workouts_50: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h4"/><path d="M16 12h4"/><path d="M12 4v4"/><path d="M12 16v4"/><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>,
+  workouts_100: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/><circle cx="12" cy="12" r="3"/></svg>,
+  streak_2: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>,
+  streak_4: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M8 16h8"/><path d="M12 14v4"/></svg>,
+  streak_8: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2c-1.5 3-5 5-5 9a7 7 0 0 0 14 0c0-4-3.5-6-5-9"/><path d="M12 18c-2 0-3-1.5-3-3 0-2 1.5-3 3-5 1.5 2 3 3 3 5 0 1.5-1 3-3 3z"/></svg>,
+  programme_done: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 22V8a4 4 0 0 0-4-4H8a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4h2a4 4 0 0 0-4 4v14"/><path d="M9 12l2 2 4-4"/></svg>,
+  habits_7: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>,
+  nutrition_7: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 2-1.5 3.5-3 4.5V20a2 2 0 0 1-4 0v-8.5C8.5 10.5 7 9 7 7a5 5 0 0 1 5-5z"/><path d="M9 7h6"/></svg>,
+  first_pb: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M12 14v8"/><path d="M9 18l3 3 3-3"/><path d="M10 6l2 2 2-2"/></svg>,
+  pbs_5: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18"/><path d="M5 20V10l4-6"/><path d="M9 20V4"/><path d="M13 20V10l4-6"/><path d="M17 20V4"/><path d="M21 20V10"/></svg>,
+  leaderboard_join: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+};
+
 // Achievement badge definitions
 const BADGE_DEFS = [
   // Workout milestones
-  { id: 'first_workout', icon: '💪', name: 'First Rep', desc: 'Complete your first workout', category: 'workouts' },
-  { id: 'workouts_10', icon: '🔥', name: 'On Fire', desc: 'Complete 10 workouts', category: 'workouts' },
-  { id: 'workouts_25', icon: '⚡', name: 'Lightning', desc: 'Complete 25 workouts', category: 'workouts' },
-  { id: 'workouts_50', icon: '🏋️', name: 'Iron Will', desc: 'Complete 50 workouts', category: 'workouts' },
-  { id: 'workouts_100', icon: '💯', name: 'Century Club', desc: 'Complete 100 workouts', category: 'workouts' },
+  { id: 'first_workout', icon: BADGE_ICONS.first_workout, name: 'First Rep', desc: 'Complete your first workout', category: 'workouts' },
+  { id: 'workouts_10', icon: BADGE_ICONS.workouts_10, name: 'On Fire', desc: 'Complete 10 workouts', category: 'workouts' },
+  { id: 'workouts_25', icon: BADGE_ICONS.workouts_25, name: 'Lightning', desc: 'Complete 25 workouts', category: 'workouts' },
+  { id: 'workouts_50', icon: BADGE_ICONS.workouts_50, name: 'Iron Will', desc: 'Complete 50 workouts', category: 'workouts' },
+  { id: 'workouts_100', icon: BADGE_ICONS.workouts_100, name: 'Century Club', desc: 'Complete 100 workouts', category: 'workouts' },
   // Streak
-  { id: 'streak_2', icon: '📅', name: '2 Week Warrior', desc: '2-week workout streak', category: 'streak' },
-  { id: 'streak_4', icon: '🗓️', name: 'Month Strong', desc: '4-week workout streak', category: 'streak' },
-  { id: 'streak_8', icon: '🔗', name: 'Unbreakable', desc: '8-week workout streak', category: 'streak' },
+  { id: 'streak_2', icon: BADGE_ICONS.streak_2, name: '2 Week Warrior', desc: '2-week workout streak', category: 'streak' },
+  { id: 'streak_4', icon: BADGE_ICONS.streak_4, name: 'Month Strong', desc: '4-week workout streak', category: 'streak' },
+  { id: 'streak_8', icon: BADGE_ICONS.streak_8, name: 'Unbreakable', desc: '8-week workout streak', category: 'streak' },
   // Programme
-  { id: 'programme_done', icon: '🏆', name: 'Finisher', desc: 'Complete a programme', category: 'programme' },
+  { id: 'programme_done', icon: BADGE_ICONS.programme_done, name: 'Finisher', desc: 'Complete a programme', category: 'programme' },
   // Habits
-  { id: 'habits_7', icon: '✅', name: 'Habit Machine', desc: '7-day perfect habit streak', category: 'habits' },
+  { id: 'habits_7', icon: BADGE_ICONS.habits_7, name: 'Habit Machine', desc: '7-day perfect habit streak', category: 'habits' },
   // Nutrition
-  { id: 'nutrition_7', icon: '🥗', name: 'Fuel Master', desc: 'Log nutrition 7 days in a row', category: 'nutrition' },
+  { id: 'nutrition_7', icon: BADGE_ICONS.nutrition_7, name: 'Fuel Master', desc: 'Log nutrition 7 days in a row', category: 'nutrition' },
   // PBs
-  { id: 'first_pb', icon: '🥇', name: 'Record Breaker', desc: 'Set your first PB', category: 'pbs' },
-  { id: 'pbs_5', icon: '📈', name: 'Climbing', desc: 'Set 5 personal bests', category: 'pbs' },
+  { id: 'first_pb', icon: BADGE_ICONS.first_pb, name: 'Record Breaker', desc: 'Set your first PB', category: 'pbs' },
+  { id: 'pbs_5', icon: BADGE_ICONS.pbs_5, name: 'Climbing', desc: 'Set 5 personal bests', category: 'pbs' },
   // Social
-  { id: 'leaderboard_join', icon: '🏅', name: 'Competitor', desc: 'Join the leaderboard', category: 'social' },
+  { id: 'leaderboard_join', icon: BADGE_ICONS.leaderboard_join, name: 'Competitor', desc: 'Join the leaderboard', category: 'social' },
 ];
 
 export default function CoreBuddyDashboard() {
@@ -634,7 +652,7 @@ export default function CoreBuddyDashboard() {
                   {uploadingPhoto ? (
                     <div className="cb-photo-spinner" />
                   ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                   )}
                 </div>
                 <input
@@ -645,14 +663,6 @@ export default function CoreBuddyDashboard() {
                   style={{ display: 'none' }}
                 />
               </div>
-              <div className="cb-ring-countdown">
-                <span className="cb-timer-digit">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="cb-timer-colon">:</span>
-                <span className="cb-timer-digit">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="cb-timer-colon">:</span>
-                <span className="cb-timer-digit cb-timer-seconds">{String(timeLeft.seconds).padStart(2, '0')}</span>
-              </div>
-              <div className="cb-ring-label">remaining today</div>
             </div>
           </div>
           <p className="cb-ring-tagline" key={taglineIdx}>{TAGLINES[taglineIdx].text} <strong>{TAGLINES[taglineIdx].bold}</strong></p>
