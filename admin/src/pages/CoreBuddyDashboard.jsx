@@ -155,17 +155,17 @@ export default function CoreBuddyDashboard() {
 
   const firstName = clientData?.name?.split(' ')[0] || 'there';
 
-  // Calculate ring ticks for 3 stat rings
-  const programmeTicks = Math.round((programmePct / 100) * TICK_COUNT);
+  // Calculate percentages for 3 stat rings (solid arc style)
   const { prev: wPrev, next: wNext } = getWorkoutMilestone(totalWorkouts);
   const workoutPct = wNext > wPrev ? Math.round(((totalWorkouts - wPrev) / (wNext - wPrev)) * 100) : 100;
-  const workoutTicks = Math.round((workoutPct / 100) * TICK_COUNT);
-  const habitTicks = Math.round((habitWeekPct / 100) * TICK_COUNT);
+
+  const RING_RADIUS = 38;
+  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
   const statRings = [
-    { label: 'Programme', value: `${programmePct}%`, ticks: programmeTicks, cls: 'cb-stat-programme' },
-    { label: 'Workouts', value: `${totalWorkouts}`, ticks: workoutTicks, cls: 'cb-stat-workouts' },
-    { label: 'Habits Today', value: `${habitWeekPct}%`, ticks: habitTicks, cls: 'cb-stat-habits' },
+    { label: 'Programme', value: `${programmePct}%`, pct: programmePct },
+    { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct },
+    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct },
   ];
 
   return (
@@ -227,21 +227,23 @@ export default function CoreBuddyDashboard() {
 
         {/* Stats Rings Row — always rendered to prevent layout shift */}
         <div className="cb-stats-row">
-          {statRings.map((ring) => (
-            <div key={ring.cls} className="cb-stat-item">
-              <div className={`cb-stat-ring ${ring.cls}`}>
-                <svg viewBox="0 0 100 100">
-                  {TICKS_MINI.map((t, i) => (
-                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                      className={i < ring.ticks ? 'cb-stat-filled' : 'cb-stat-empty'}
-                      strokeWidth={t.thick ? '3' : '2'} />
-                  ))}
-                </svg>
-                <span className="cb-stat-value">{statsLoaded ? ring.value : '–'}</span>
+          {statRings.map((ring) => {
+            const offset = RING_CIRCUMFERENCE - (ring.pct / 100) * RING_CIRCUMFERENCE;
+            return (
+              <div key={ring.label} className="cb-stat-item">
+                <div className="cb-stat-ring">
+                  <svg viewBox="0 0 100 100">
+                    <circle className="cb-stat-track" cx="50" cy="50" r={RING_RADIUS} />
+                    <circle className="cb-stat-fill" cx="50" cy="50" r={RING_RADIUS}
+                      strokeDasharray={RING_CIRCUMFERENCE}
+                      strokeDashoffset={statsLoaded ? offset : RING_CIRCUMFERENCE} />
+                  </svg>
+                  <span className="cb-stat-value">{statsLoaded ? ring.value : '–'}</span>
+                </div>
+                <span className="cb-stat-label">{ring.label}</span>
               </div>
-              <span className="cb-stat-label">{ring.label}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Feature Cards */}
