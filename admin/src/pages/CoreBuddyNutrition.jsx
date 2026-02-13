@@ -6,9 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import { TICKS_78_94 } from '../utils/ringTicks';
 
-const TICK_COUNT = 60;
 const searchCache = new Map();
 
 function getTodayKey() {
@@ -653,31 +651,34 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== RING HELPERS ====================
-  const getRingTicks = (current, target) => {
-    if (!target || target <= 0) return 0;
-    return Math.min(TICK_COUNT, Math.round((current / target) * TICK_COUNT));
+  const MACRO_COLORS = {
+    'ring-protein': '#14b8a6',
+    'ring-carbs': 'var(--color-primary)',
+    'ring-fats': '#eab308',
+    'ring-cals': 'rgba(150,150,150,0.55)',
   };
+  const NUT_RING_RADIUS = 80;
+  const NUT_RING_CIRC = 2 * Math.PI * NUT_RING_RADIUS;
 
   const renderMacroRing = (label, shortLabel, current, target, colorClass) => {
-    const filled = getRingTicks(current, target);
     const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
+    const offset = NUT_RING_CIRC - (pct / 100) * NUT_RING_CIRC;
+    const color = MACRO_COLORS[colorClass] || '#14b8a6';
     return (
-      <div className={`nut-ring-wrap ${colorClass}`}>
+      <div className="nut-ring-wrap">
         <svg className="nut-ring-svg" viewBox="0 0 200 200">
-          {TICKS_78_94.map((t, i) => (
-            <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-              className={i < filled ? 'nut-tick-filled' : 'nut-tick-empty'}
-              strokeWidth={t.thick ? '4.5' : '3'}
-              strokeLinecap="round"
-              style={i < filled ? { animationDelay: `${i * 50}ms` } : undefined} />
-          ))}
+          <circle className="nut-arc-track" cx="100" cy="100" r={NUT_RING_RADIUS} />
+          <circle className="nut-arc-fill" cx="100" cy="100" r={NUT_RING_RADIUS}
+            style={{ stroke: color }}
+            strokeDasharray={NUT_RING_CIRC}
+            strokeDashoffset={offset} />
         </svg>
         <div className="nut-ring-center">
-          <span className="nut-ring-value">{Math.round(current)}</span>
+          <span className="nut-ring-value" style={{ color }}>{Math.round(current)}</span>
           <span className="nut-ring-target">/ {target}{label === 'Calories' ? '' : 'g'}</span>
-          <span className="nut-ring-label">{shortLabel}</span>
+          <span className="nut-ring-label" style={{ color }}>{shortLabel}</span>
         </div>
-        <span className="nut-ring-pct">{pct}%</span>
+        <span className="nut-ring-pct" style={{ color }}>{pct}%</span>
       </div>
     );
   };
