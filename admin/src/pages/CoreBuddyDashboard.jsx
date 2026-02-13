@@ -369,7 +369,7 @@ export default function CoreBuddyDashboard() {
         </div>
 
         {/* Coach Message */}
-        <p className="cb-coach-msg">Oye {firstName}, crack on and make it count!</p>
+        <p className="cb-coach-msg">Oye <strong>{firstName}</strong>, crack on and make it count!</p>
 
         {/* Smart Nudge Card */}
         {nudge && (

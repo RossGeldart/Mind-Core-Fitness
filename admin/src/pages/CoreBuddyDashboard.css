@@ -51,11 +51,16 @@
 /* Coach Message */
 .cb-coach-msg {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
   text-align: center;
   margin: 0 0 14px;
+}
+
+.cb-coach-msg strong {
+  font-weight: 800;
+  color: var(--color-primary);
 }
 
 /* Smart Nudge Card */
