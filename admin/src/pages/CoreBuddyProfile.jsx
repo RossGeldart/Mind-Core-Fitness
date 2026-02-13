@@ -302,10 +302,10 @@ export default function CoreBuddyProfile() {
     }
   };
 
-  if (authLoading || loading) {
-    return <div className="prf-loading"><div className="prf-spinner" /></div>;
+  if (authLoading || loading || !clientData) {
+    return <div className="prf-loading" data-theme={isDark ? 'dark' : 'light'}><div className="prf-spinner" /></div>;
   }
-  if (!currentUser || !isClient || !clientData) return null;
+  if (!currentUser || !isClient) return null;
   if (!profile) {
     return (
       <div className="prf-page" data-theme={isDark ? 'dark' : 'light'}>
