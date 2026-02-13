@@ -236,9 +236,9 @@ export default function CoreBuddyDashboard() {
                     <circle className="cb-stat-fill" cx="50" cy="50" r={r}
                       style={{ stroke: ring.color }}
                       strokeDasharray={circ}
-                      strokeDashoffset={statsLoaded ? offset : circ} />
+                      strokeDashoffset={offset} />
                   </svg>
-                  <span className="cb-stat-value" style={{ color: ring.color }}>{statsLoaded ? ring.value : '–'}</span>
+                  <span className="cb-stat-value" style={{ color: ring.color }}>{ring.value}</span>
                 </div>
                 <span className="cb-stat-label">{ring.label}</span>
               </div>

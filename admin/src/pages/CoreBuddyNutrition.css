@@ -672,13 +672,13 @@
 .nut-arc-track {
   fill: none;
   stroke: rgba(150, 150, 150, 0.2);
-  stroke-width: 14;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
 .nut-arc-fill {
   fill: none;
-  stroke-width: 14;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
