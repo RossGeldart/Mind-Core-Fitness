@@ -48,6 +48,16 @@
   padding: 0 16px 80px;
 }
 
+/* Coach Message */
+.cb-coach-msg {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 14px;
+}
+
 /* Smart Nudge Card */
 .cb-nudge-card {
   display: flex;
