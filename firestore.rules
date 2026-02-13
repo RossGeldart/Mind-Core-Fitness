@@ -214,5 +214,22 @@ service cloud.firestore {
       allow create: if isAuthenticated();
     }
 
+    // ── NOTIFICATIONS (Phase 4) ──
+
+    // Notifications - in-app notifications for each user
+    // Doc ID = auto-generated
+    // Fields: toId, fromId, fromName, fromPhotoURL, type, postId?, createdAt, read
+    match /notifications/{notifId} {
+      allow read, write: if isAdmin();
+      // Any authenticated user can read their own notifications
+      allow read: if isAuthenticated();
+      // Any authenticated user can create notifications (triggered by actions)
+      allow create: if isAuthenticated();
+      // Recipients can mark their notifications as read
+      allow update: if isAuthenticated();
+      // Recipients can delete/clear their notifications
+      allow delete: if isAuthenticated();
+    }
+
   }
 }
