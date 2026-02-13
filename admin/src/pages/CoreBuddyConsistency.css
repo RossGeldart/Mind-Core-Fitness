@@ -126,7 +126,7 @@
 
 .cbc-arc-fill {
   fill: none;
-  stroke: #14b8a6;
+  stroke: #38B6FF;
   stroke-width: 24;
   stroke-linecap: round;
 }
@@ -143,7 +143,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1.6rem;
-  color: #14b8a6;
+  color: #38B6FF;
 }
 
 .cbc-ring-label {
@@ -335,7 +335,7 @@
 
 .cbc-day-fill {
   fill: none;
-  stroke: #14b8a6;
+  stroke: #38B6FF;
   stroke-width: 12;
   stroke-linecap: round;
 }
@@ -349,7 +349,7 @@
 }
 
 .cbc-day-today .cbc-day-label {
-  color: var(--color-primary);
+  color: #38B6FF;
 }
 
 .cbc-day-count {
@@ -359,7 +359,7 @@
 }
 
 .cbc-day-active .cbc-day-count {
-  color: var(--color-primary);
+  color: #38B6FF;
 }
 
 /* Weekly Summary Bar */
