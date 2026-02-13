@@ -502,6 +502,40 @@
   color: var(--text-tertiary);
 }
 
+/* PB Top 3 Preview */
+.cb-pb-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.cb-pb-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cb-pb-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.cb-pb-value {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #eab308;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* Leaderboard Top 3 Preview */
 .cb-lb-preview {
   display: flex;

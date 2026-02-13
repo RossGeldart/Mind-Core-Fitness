@@ -71,6 +71,7 @@ export default function CoreBuddyDashboard() {
   const [programmeComplete, setProgrammeComplete] = useState(false);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [pbCount, setPbCount] = useState(0);
+  const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
 
   // Toast
@@ -197,6 +198,11 @@ export default function CoreBuddyDashboard() {
         if (pbSnap.exists()) {
           const exercises = pbSnap.data().exercises || {};
           setPbCount(Object.keys(exercises).length);
+          const sorted = Object.entries(exercises)
+            .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
+            .slice(0, 3)
+            .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
+          setTopPBs(sorted);
         }
 
         // 7. Leaderboard top 3 preview (opted-in clients)
@@ -513,10 +519,21 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>My Progress</h3>
-              <div className="cb-progress-preview">
-                <svg className="cb-progress-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <span>{pbCount} PB{pbCount !== 1 ? 's' : ''} recorded</span>
-              </div>
+              {topPBs.length > 0 ? (
+                <div className="cb-pb-preview">
+                  {topPBs.map((pb, idx) => (
+                    <div key={pb.name} className="cb-pb-entry">
+                      <span className="cb-pb-name">{pb.name}</span>
+                      <span className="cb-pb-value">{pb.weight}kg × {pb.reps}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="cb-progress-preview">
+                  <svg className="cb-progress-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  <span>No PBs yet — start lifting!</span>
+                </div>
+              )}
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
