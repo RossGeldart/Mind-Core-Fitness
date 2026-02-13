@@ -334,7 +334,13 @@ export default function CoreBuddyFeed() {
                   )}
                 </div>
 
-                <p className="feed-post-content">{post.content}</p>
+                {post.content && <p className="feed-post-content">{post.content}</p>}
+
+                {post.imageURL && (
+                  <div className="feed-post-image">
+                    <img src={post.imageURL} alt="Post" loading="lazy" />
+                  </div>
+                )}
 
                 <div className="feed-post-actions">
                   <button
