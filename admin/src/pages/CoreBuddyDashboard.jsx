@@ -1105,6 +1105,19 @@ export default function CoreBuddyDashboard() {
                         setNotifOpen(false);
                         if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
                           navigate('/client/core-buddy/buddies');
+                        } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
+                          // Expand comments and load them if needed
+                          if (!expandedComments.has(n.postId)) {
+                            const newExpanded = new Set(expandedComments);
+                            newExpanded.add(n.postId);
+                            setExpandedComments(newExpanded);
+                            if (!comments[n.postId]) loadJourneyComments(n.postId);
+                          }
+                          // Scroll to the specific post after React renders
+                          setTimeout(() => {
+                            const el = document.getElementById(`post-${n.postId}`);
+                            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }, 150);
                         } else if (n.type === 'like' || n.type === 'comment') {
                           document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
                         } else if (n.type === 'mention') {
@@ -1489,7 +1502,7 @@ export default function CoreBuddyDashboard() {
             ) : (
               <div className="journey-list">
                 {journeyPosts.map(post => (
-                  <div key={post.id} className="journey-post">
+                  <div key={post.id} id={`post-${post.id}`} className="journey-post">
                     <div className="journey-post-header">
                       <div className="journey-post-avatar">
                         {post.authorPhotoURL ? (
