@@ -48,6 +48,16 @@ const TEMPLATE_DAYS = {
   lower_4wk: ['Quad Dominant', 'Hamstring & Glute', 'Power & Stability'],
 };
 
+const TAGLINES = [
+  { text: 'You have 24 hours a day...', bold: 'make it count' },
+  { text: 'Discipline beats motivation...', bold: 'every single time' },
+  { text: "Rest when you're done,", bold: "not when you're tired" },
+  { text: 'Small daily gains...', bold: 'create massive results' },
+  { text: "Your body keeps score,", bold: 'train it well' },
+  { text: 'Consistency over intensity...', bold: 'always wins' },
+  { text: 'The only bad workout...', bold: 'is the one you skipped' },
+];
+
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -73,6 +83,9 @@ export default function CoreBuddyDashboard() {
   const [pbCount, setPbCount] = useState(0);
   const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
+
+  // Rotating tagline
+  const [taglineIdx, setTaglineIdx] = useState(0);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -109,6 +122,14 @@ export default function CoreBuddyDashboard() {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Rotating taglines
+  useEffect(() => {
+    const taglineInterval = setInterval(() => {
+      setTaglineIdx((prev) => (prev + 1) % TAGLINES.length);
+    }, 8000);
+    return () => clearInterval(taglineInterval);
   }, []);
 
   // Load ring stats
@@ -419,7 +440,7 @@ export default function CoreBuddyDashboard() {
               <div className="cb-ring-label">remaining today</div>
             </div>
           </div>
-          <p className="cb-ring-tagline">You have 24 hours a day... <strong>make it count</strong> with Core Buddy</p>
+          <p className="cb-ring-tagline" key={taglineIdx}>{TAGLINES[taglineIdx].text} <strong>{TAGLINES[taglineIdx].bold}</strong></p>
         </div>
 
         {/* Stats Rings Row — always rendered to prevent layout shift */}
@@ -527,48 +548,49 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 3. Daily Habits */}
-          <button
-            className="cb-feature-card cb-card-consistency ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
-          >
-            <div className="cb-card-content">
-              <h3>Daily Habits</h3>
-              <div className="cb-habit-dots">
-                {Array.from({ length: HABIT_COUNT }, (_, i) => (
-                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
-                ))}
-                <span className="cb-habit-dots-label">{todayHabitsCount}/{HABIT_COUNT}</span>
-              </div>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-
-          {/* 4. Progress / PBs */}
-          <button
-            className="cb-feature-card cb-card-progress ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
-          >
-            <div className="cb-card-content">
-              <h3>My Progress</h3>
-              {topPBs.length > 0 ? (
-                <div className="cb-pb-preview">
-                  {topPBs.map((pb, idx) => (
-                    <div key={pb.name} className="cb-pb-entry">
-                      <span className="cb-pb-name">{pb.name}</span>
-                      <span className="cb-pb-value">{pb.weight}kg × {pb.reps}</span>
-                    </div>
+          {/* 3 & 4. Habits + PBs — 2-column grid */}
+          <div className="cb-grid-row">
+            <button
+              className="cb-feature-card cb-grid-card cb-card-consistency ripple-btn"
+              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
+            >
+              <div className="cb-card-content">
+                <h3>Habits</h3>
+                <div className="cb-habit-dots">
+                  {Array.from({ length: HABIT_COUNT }, (_, i) => (
+                    <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
                   ))}
                 </div>
-              ) : (
-                <div className="cb-progress-preview">
-                  <svg className="cb-progress-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  <span>No PBs yet — start lifting!</span>
-                </div>
-              )}
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
+                <span className="cb-habit-dots-label">{todayHabitsCount}/{HABIT_COUNT} today</span>
+              </div>
+              <svg className="cb-card-arrow cb-grid-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+            <button
+              className="cb-feature-card cb-grid-card cb-card-progress ripple-btn"
+              onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
+            >
+              <div className="cb-card-content">
+                <h3>PBs</h3>
+                {topPBs.length > 0 ? (
+                  <div className="cb-pb-preview">
+                    {topPBs.slice(0, 2).map((pb) => (
+                      <div key={pb.name} className="cb-pb-entry">
+                        <span className="cb-pb-name">{pb.name}</span>
+                        <span className="cb-pb-value">{pb.weight}kg</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="cb-progress-preview">
+                    <svg className="cb-progress-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    <span>Start lifting!</span>
+                  </div>
+                )}
+              </div>
+              <svg className="cb-card-arrow cb-grid-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
 
           {/* 6. Leaderboard */}
           <button
