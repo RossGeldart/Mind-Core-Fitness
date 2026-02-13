@@ -1346,32 +1346,6 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main">
 
-          {/* Active Programme Card — placeholder while loading, card when ready */}
-          {!statsLoaded ? (
-            <div className="wk-active-prog-placeholder" />
-          ) : activeProgrammeId ? (
-            <button className="wk-active-prog" onClick={() => navigate('/client/core-buddy/programmes')}>
-              <div className="wk-active-prog-ring">
-                <svg viewBox="0 0 200 200">
-                  {TICKS_78_94.map((t, i) => {
-                    const filled = Math.round((programmePct / 100) * TICK_COUNT);
-                    return (
-                      <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                        className={i < filled ? 'wk-ap-tick-filled' : 'wk-ap-tick-empty'}
-                        strokeWidth={t.thick ? '3' : '2'} />
-                    );
-                  })}
-                </svg>
-                <span className="wk-ap-pct">{programmePct}%</span>
-              </div>
-              <div className="wk-active-prog-info">
-                <span className="wk-ap-label">CURRENT PROGRAMME</span>
-                <span className="wk-ap-name">{activeProgrammeName}</span>
-                <span className="wk-ap-cta">Continue &rarr;</span>
-              </div>
-            </button>
-          ) : null}
-
           {/* Heading */}
           <div className="wk-menu-heading">
             <h2>Choose Your Workout</h2>

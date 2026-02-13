@@ -229,59 +229,66 @@ export default function CoreBuddyDashboard() {
     // 1. Active programme with next session
     if (hasProgramme && nextSession && !programmeComplete) {
       return {
-        message: `Week ${nextSession.week}, Day ${nextSession.dayIdx + 1}`,
-        sub: nextSession.label,
-        cta: 'Continue Programme',
+        label: 'NEXT SESSION',
+        message: `Week ${nextSession.week}, Day ${nextSession.dayIdx + 1} — ${nextSession.label}`,
+        cta: 'Continue',
         action: () => navigate('/client/core-buddy/programmes'),
-        color: '#14b8a6',
+        pct: programmePct,
+        ringLabel: `${programmePct}%`,
       };
     }
     // 2. Habits not all done
     if (todayHabitsCount < HABIT_COUNT) {
       return {
-        message: `${todayHabitsCount}/${HABIT_COUNT} habits done`,
-        sub: todayHabitsCount === 0 ? "You haven't started today's habits" : 'Keep going!',
+        label: 'DAILY HABITS',
+        message: `${todayHabitsCount}/${HABIT_COUNT} completed`,
         cta: 'Open Habits',
         action: () => navigate('/client/core-buddy/consistency'),
-        color: '#38B6FF',
+        pct: habitWeekPct,
+        ringLabel: `${todayHabitsCount}/${HABIT_COUNT}`,
       };
     }
     // 3. No nutrition logged
     if (nutritionTotals.calories === 0) {
       return {
+        label: 'NUTRITION',
         message: 'No meals logged today',
-        sub: 'Track your nutrition to stay on target',
         cta: 'Log Meal',
         action: () => navigate('/client/core-buddy/nutrition'),
-        color: '#eab308',
+        pct: 0,
+        ringLabel: '0',
       };
     }
     // 4. No programme active
     if (!hasProgramme) {
       return {
-        message: 'No active programme',
-        sub: 'Start a programme to level up your training',
-        cta: 'Browse Programmes',
+        label: 'PROGRAMMES',
+        message: 'Start a programme to level up',
+        cta: 'Browse',
         action: () => navigate('/client/core-buddy/workouts'),
-        color: 'var(--color-primary)',
+        pct: 0,
+        ringLabel: '\u2014',
       };
     }
     // 5. Programme complete
     if (programmeComplete) {
       return {
-        message: 'Programme complete!',
-        sub: 'Choose a new programme to keep progressing',
-        cta: 'Browse Programmes',
+        label: 'COMPLETE',
+        message: 'Programme finished!',
+        cta: 'New Programme',
         action: () => navigate('/client/core-buddy/workouts'),
-        color: 'var(--color-primary)',
+        pct: 100,
+        ringLabel: '100%',
       };
     }
     // 6. Everything done
     return {
-      message: "You're crushing it today",
-      sub: 'Habits done, meals logged — keep it up!',
+      label: 'TODAY',
+      message: "You're crushing it!",
       cta: null,
-      color: 'var(--color-primary)',
+      action: null,
+      pct: 100,
+      ringLabel: '\u2713',
     };
   })();
 
@@ -307,19 +314,6 @@ export default function CoreBuddyDashboard() {
       </header>
 
       <main className="cb-main">
-        {/* Smart Nudge */}
-        {nudge && (
-          <div className="cb-nudge">
-            <p className="cb-nudge-msg" style={{ color: nudge.color }}>{nudge.message}</p>
-            <p className="cb-nudge-sub">{nudge.sub}</p>
-            {nudge.cta && (
-              <button className="cb-nudge-cta" style={{ background: nudge.color }} onClick={nudge.action}>
-                {nudge.cta}
-              </button>
-            )}
-          </div>
-        )}
-
         {/* 24hr Countdown Ring */}
         <div className="cb-ring-container">
           <div className="cb-ring">
@@ -373,6 +367,27 @@ export default function CoreBuddyDashboard() {
             );
           })}
         </div>
+
+        {/* Smart Nudge Card */}
+        {nudge && (
+          <button className="cb-nudge-card" onClick={nudge.action || undefined}
+            style={nudge.action ? undefined : { cursor: 'default' }}>
+            <div className="cb-nudge-ring">
+              <svg viewBox="0 0 100 100">
+                <circle className="cb-nudge-ring-track" cx="50" cy="50" r="38" />
+                <circle className="cb-nudge-ring-fill" cx="50" cy="50" r="38"
+                  strokeDasharray={2 * Math.PI * 38}
+                  strokeDashoffset={2 * Math.PI * 38 - (nudge.pct / 100) * 2 * Math.PI * 38} />
+              </svg>
+              <span className="cb-nudge-ring-val">{nudge.ringLabel}</span>
+            </div>
+            <div className="cb-nudge-info">
+              <span className="cb-nudge-label">{nudge.label}</span>
+              <span className="cb-nudge-title">{nudge.message}</span>
+              {nudge.cta && <span className="cb-nudge-cta">{nudge.cta} &rarr;</span>}
+            </div>
+          </button>
+        )}
 
         {/* Feature Cards */}
         <div className="cb-features">

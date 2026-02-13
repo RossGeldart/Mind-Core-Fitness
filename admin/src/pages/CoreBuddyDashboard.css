@@ -48,42 +48,101 @@
   padding: 0 16px 80px;
 }
 
-/* Smart Nudge */
-.cb-nudge {
-  padding: 24px 0 0;
-  text-align: center;
+/* Smart Nudge Card */
+.cb-nudge-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: inherit;
+  text-align: left;
 }
 
-.cb-nudge-msg {
+.cb-nudge-card:active {
+  transform: scale(0.98);
+}
+
+[data-theme="light"] .cb-nudge-card {
+  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+}
+
+.cb-nudge-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-nudge-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cb-nudge-ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.cb-nudge-ring-fill {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 10;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+.cb-nudge-ring-val {
+  position: relative;
+  z-index: 1;
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.15rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  margin: 0 0 4px;
+  color: #fff;
 }
 
-.cb-nudge-sub {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  color: var(--text-tertiary);
-  margin: 0 0 14px;
+.cb-nudge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cb-nudge-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.cb-nudge-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 .cb-nudge-cta {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 10px 24px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cb-nudge-cta:active {
-  opacity: 0.85;
-  transform: scale(0.97);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 
@@ -648,7 +707,7 @@
     padding: 0 24px;
   }
 
-  .cb-nudge-msg {
-    font-size: 1.3rem;
+  .cb-nudge-title {
+    font-size: 1rem;
   }
 }
