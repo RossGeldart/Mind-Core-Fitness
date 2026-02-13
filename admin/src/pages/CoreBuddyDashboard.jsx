@@ -38,6 +38,17 @@ const TEMPLATE_META = {
   lower_4wk: { duration: 4, daysPerWeek: 3 },
 };
 
+const TEMPLATE_DAYS = {
+  fullbody_4wk: ['Push Focus', 'Pull Focus', 'Legs & Core'],
+  fullbody_8wk: ['Strength', 'Power', 'Endurance'],
+  fullbody_12wk: ['Upper Push', 'Lower Body', 'Upper Pull'],
+  core_4wk: ['Abs', 'Stability', 'Power Core'],
+  core_8wk: ['Anti-Extension', 'Rotation', 'Power'],
+  core_12wk: ['Strength', 'Endurance', 'Power'],
+  upper_4wk: ['Push', 'Pull', 'Mixed'],
+  lower_4wk: ['Quad Dominant', 'Hamstring & Glute', 'Power & Stability'],
+};
+
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -53,6 +64,12 @@ export default function CoreBuddyDashboard() {
   const [totalWorkouts, setTotalWorkouts] = useState(0);
   const [habitWeekPct, setHabitWeekPct] = useState(0);
   const [statsLoaded, setStatsLoaded] = useState(false);
+  const [nutritionTotals, setNutritionTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+  const [nutritionTargetData, setNutritionTargetData] = useState(null);
+  const [todayHabitsCount, setTodayHabitsCount] = useState(0);
+  const [nextSession, setNextSession] = useState(null);
+  const [hasProgramme, setHasProgramme] = useState(false);
+  const [programmeComplete, setProgrammeComplete] = useState(false);
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -96,17 +113,33 @@ export default function CoreBuddyDashboard() {
     if (!currentUser || !clientData) return;
     const loadStats = async () => {
       try {
-        // 1. Programme progress
+        const todayStr = formatDate(new Date());
+
+        // 1. Programme progress + next session
         const progSnap = await getDoc(doc(db, 'clientProgrammes', clientData.id));
         if (progSnap.exists()) {
           const prog = progSnap.data();
           const meta = TEMPLATE_META[prog.templateId];
+          setHasProgramme(true);
           if (meta) {
-            const completed = Object.keys(prog.completedSessions || {}).length;
+            const completedKeys = prog.completedSessions || {};
+            const completedCount = Object.keys(completedKeys).length;
             const total = meta.duration * meta.daysPerWeek;
-            setProgrammePct(total > 0 ? Math.round((completed / total) * 100) : 0);
+            setProgrammePct(total > 0 ? Math.round((completedCount / total) * 100) : 0);
             const name = prog.templateId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
             setProgrammeName(name);
+            // Find next uncompleted session
+            const dayLabels = TEMPLATE_DAYS[prog.templateId];
+            let foundNext = false;
+            for (let w = 1; w <= meta.duration && !foundNext; w++) {
+              for (let d = 0; d < meta.daysPerWeek && !foundNext; d++) {
+                if (!completedKeys[`w${w}d${d}`]) {
+                  setNextSession({ week: w, dayIdx: d, label: dayLabels?.[d] || `Day ${d + 1}` });
+                  foundNext = true;
+                }
+              }
+            }
+            if (!foundNext) setProgrammeComplete(true);
           }
         }
 
@@ -118,7 +151,6 @@ export default function CoreBuddyDashboard() {
         setTotalWorkouts(randomiserCount);
 
         // 3. Habit completion today
-        const todayStr = formatDate(new Date());
         const habitRef = collection(db, 'habitLogs');
         const hq = query(habitRef, where('clientId', '==', clientData.id), where('date', '==', todayStr));
         const habitSnap = await getDocs(hq);
@@ -128,6 +160,26 @@ export default function CoreBuddyDashboard() {
           todayCompleted = Object.values(habits).filter(Boolean).length;
         }
         setHabitWeekPct(Math.round((todayCompleted / HABIT_COUNT) * 100));
+        setTodayHabitsCount(todayCompleted);
+
+        // 4. Nutrition targets
+        const targetSnap = await getDoc(doc(db, 'nutritionTargets', clientData.id));
+        if (targetSnap.exists()) {
+          setNutritionTargetData(targetSnap.data());
+        }
+
+        // 5. Today's nutrition log
+        const nutLogSnap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${todayStr}`));
+        if (nutLogSnap.exists()) {
+          const entries = nutLogSnap.data().entries || [];
+          const totals = entries.reduce((acc, e) => ({
+            protein: acc.protein + (e.protein || 0),
+            carbs: acc.carbs + (e.carbs || 0),
+            fats: acc.fats + (e.fats || 0),
+            calories: acc.calories + (e.calories || 0),
+          }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+          setNutritionTotals(totals);
+        }
       } catch (err) {
         console.error('Error loading dashboard stats:', err);
       } finally {
@@ -165,6 +217,74 @@ export default function CoreBuddyDashboard() {
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: '#38B6FF', size: 'normal' },
   ];
 
+  // Nutrition percentage helper
+  const nutPct = (key) => {
+    if (!nutritionTargetData || !nutritionTargetData[key]) return 0;
+    return Math.min(Math.round((nutritionTotals[key] / nutritionTargetData[key]) * 100), 100);
+  };
+
+  // Priority-based smart nudge
+  const nudge = (() => {
+    if (!statsLoaded) return null;
+    // 1. Active programme with next session
+    if (hasProgramme && nextSession && !programmeComplete) {
+      return {
+        message: `Week ${nextSession.week}, Day ${nextSession.dayIdx + 1}`,
+        sub: nextSession.label,
+        cta: 'Continue Programme',
+        action: () => navigate('/client/core-buddy/programmes'),
+        color: '#14b8a6',
+      };
+    }
+    // 2. Habits not all done
+    if (todayHabitsCount < HABIT_COUNT) {
+      return {
+        message: `${todayHabitsCount}/${HABIT_COUNT} habits done`,
+        sub: todayHabitsCount === 0 ? "You haven't started today's habits" : 'Keep going!',
+        cta: 'Open Habits',
+        action: () => navigate('/client/core-buddy/consistency'),
+        color: '#38B6FF',
+      };
+    }
+    // 3. No nutrition logged
+    if (nutritionTotals.calories === 0) {
+      return {
+        message: 'No meals logged today',
+        sub: 'Track your nutrition to stay on target',
+        cta: 'Log Meal',
+        action: () => navigate('/client/core-buddy/nutrition'),
+        color: '#eab308',
+      };
+    }
+    // 4. No programme active
+    if (!hasProgramme) {
+      return {
+        message: 'No active programme',
+        sub: 'Start a programme to level up your training',
+        cta: 'Browse Programmes',
+        action: () => navigate('/client/core-buddy/workouts'),
+        color: 'var(--color-primary)',
+      };
+    }
+    // 5. Programme complete
+    if (programmeComplete) {
+      return {
+        message: 'Programme complete!',
+        sub: 'Choose a new programme to keep progressing',
+        cta: 'Browse Programmes',
+        action: () => navigate('/client/core-buddy/workouts'),
+        color: 'var(--color-primary)',
+      };
+    }
+    // 6. Everything done
+    return {
+      message: "You're crushing it today",
+      sub: 'Habits done, meals logged — keep it up!',
+      cta: null,
+      color: 'var(--color-primary)',
+    };
+  })();
+
   return (
     <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
       {/* Header */}
@@ -187,10 +307,18 @@ export default function CoreBuddyDashboard() {
       </header>
 
       <main className="cb-main">
-        {/* Greeting */}
-        <div className="cb-greeting">
-          <h2>Hey {firstName}</h2>
-        </div>
+        {/* Smart Nudge */}
+        {nudge && (
+          <div className="cb-nudge">
+            <p className="cb-nudge-msg" style={{ color: nudge.color }}>{nudge.message}</p>
+            <p className="cb-nudge-sub">{nudge.sub}</p>
+            {nudge.cta && (
+              <button className="cb-nudge-cta" style={{ background: nudge.color }} onClick={nudge.action}>
+                {nudge.cta}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* 24hr Countdown Ring */}
         <div className="cb-ring-container">
@@ -263,10 +391,10 @@ export default function CoreBuddyDashboard() {
             <div className="cb-card-preview-row">
               <div className="cb-mini-rings">
                 {[
-                  { label: 'P', pct: 25, color: '#14b8a6' },
-                  { label: 'C', pct: 47, color: 'var(--color-primary)' },
-                  { label: 'F', pct: 63, color: '#eab308' },
-                  { label: 'Cal', pct: 37, color: '#38B6FF' },
+                  { label: 'P', pct: nutPct('protein'), color: '#14b8a6' },
+                  { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
+                  { label: 'F', pct: nutPct('fats'), color: '#eab308' },
+                  { label: 'Cal', pct: nutPct('calories'), color: '#38B6FF' },
                 ].map((ring) => {
                   const r = 38;
                   const circ = 2 * Math.PI * r;
