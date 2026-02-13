@@ -159,13 +159,10 @@ export default function CoreBuddyDashboard() {
   const { prev: wPrev, next: wNext } = getWorkoutMilestone(totalWorkouts);
   const workoutPct = wNext > wPrev ? Math.round(((totalWorkouts - wPrev) / (wNext - wPrev)) * 100) : 100;
 
-  const RING_RADIUS = 38;
-  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-
   const statRings = [
-    { label: 'Programme', value: `${programmePct}%`, pct: programmePct },
-    { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct },
-    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct },
+    { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: '#14b8a6', size: 'normal' },
+    { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large' },
+    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'rgba(150,150,150,0.55)', size: 'normal' },
   ];
 
   return (
@@ -228,17 +225,20 @@ export default function CoreBuddyDashboard() {
         {/* Stats Rings Row — always rendered to prevent layout shift */}
         <div className="cb-stats-row">
           {statRings.map((ring) => {
-            const offset = RING_CIRCUMFERENCE - (ring.pct / 100) * RING_CIRCUMFERENCE;
+            const r = ring.size === 'large' ? 38 : 38;
+            const circ = 2 * Math.PI * r;
+            const offset = circ - (ring.pct / 100) * circ;
             return (
-              <div key={ring.label} className="cb-stat-item">
+              <div key={ring.label} className={`cb-stat-item${ring.size === 'large' ? ' cb-stat-large' : ''}`}>
                 <div className="cb-stat-ring">
                   <svg viewBox="0 0 100 100">
-                    <circle className="cb-stat-track" cx="50" cy="50" r={RING_RADIUS} />
-                    <circle className="cb-stat-fill" cx="50" cy="50" r={RING_RADIUS}
-                      strokeDasharray={RING_CIRCUMFERENCE}
-                      strokeDashoffset={statsLoaded ? offset : RING_CIRCUMFERENCE} />
+                    <circle className="cb-stat-track" cx="50" cy="50" r={r} />
+                    <circle className="cb-stat-fill" cx="50" cy="50" r={r}
+                      style={{ stroke: ring.color }}
+                      strokeDasharray={circ}
+                      strokeDashoffset={statsLoaded ? offset : circ} />
                   </svg>
-                  <span className="cb-stat-value">{statsLoaded ? ring.value : '–'}</span>
+                  <span className="cb-stat-value" style={{ color: ring.color }}>{statsLoaded ? ring.value : '–'}</span>
                 </div>
                 <span className="cb-stat-label">{ring.label}</span>
               </div>
