@@ -520,3 +520,30 @@
     padding: 0 24px 90px;
   }
 }
+
+/* Toast */
+.feed-page .toast-notification {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  word-break: break-word;
+}
+
+.feed-page .toast-notification.info { background: var(--bg-header); }
+.feed-page .toast-notification.success { background: var(--color-success); }
+.feed-page .toast-notification.error { background: var(--color-error); }

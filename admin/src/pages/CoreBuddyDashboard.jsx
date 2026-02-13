@@ -785,7 +785,7 @@ export default function CoreBuddyDashboard() {
       showToast('Posted!', 'success');
     } catch (err) {
       console.error('Error posting:', err);
-      showToast('Failed to post', 'error');
+      showToast(err?.message || 'Failed to post', 'error');
     } finally {
       setJourneyPosting(false);
     }
