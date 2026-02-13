@@ -393,6 +393,19 @@ export default function CoreBuddyProfile() {
       // Notify post author
       const post = journeyPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment', { postId });
+      // Notify @mentioned users in the comment
+      const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
+      if (mentionMatches) {
+        const notified = new Set();
+        mentionMatches.forEach(m => {
+          const name = m.slice(1).trim();
+          const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+          if (client && !notified.has(client.id)) {
+            notified.add(client.id);
+            createNotification(client.id, 'mention', { postId });
+          }
+        });
+      }
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setJourneyPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
