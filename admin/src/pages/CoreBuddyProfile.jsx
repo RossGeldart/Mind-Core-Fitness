@@ -54,6 +54,12 @@ export default function CoreBuddyProfile() {
   const [commentText, setCommentText] = useState({});
   const [commentLoading, setCommentLoading] = useState({});
 
+  // @ Mention state
+  const [allClients, setAllClients] = useState([]);
+  const [mentionActive, setMentionActive] = useState(false);
+  const [mentionTarget, setMentionTarget] = useState(null); // postId
+  const [mentionResults, setMentionResults] = useState([]);
+
   const showToast = useCallback((msg, type = 'info') => {
     setToast({ message: msg, type });
     setTimeout(() => setToast(null), 3500);
@@ -116,6 +122,31 @@ export default function CoreBuddyProfile() {
 
     return () => { cancelled = true; };
   }, [clientData, userId]);
+
+  // Fetch accepted buddies for @ mentions
+  useEffect(() => {
+    if (!clientData) return;
+    const myId = clientData.id;
+    (async () => {
+      try {
+        const [b1, b2, clientsSnap] = await Promise.all([
+          getDocs(query(collection(db, 'buddies'), where('user1', '==', myId))),
+          getDocs(query(collection(db, 'buddies'), where('user2', '==', myId))),
+          getDocs(collection(db, 'clients'))
+        ]);
+        const buddyIds = new Set();
+        [...b1.docs, ...b2.docs].forEach(d => {
+          const data = d.data();
+          buddyIds.add(data.user1 === myId ? data.user2 : data.user1);
+        });
+        const clientMap = {};
+        clientsSnap.docs.forEach(d => { clientMap[d.id] = d.data(); });
+        setAllClients(Array.from(buddyIds).filter(id => clientMap[id]).map(id => ({
+          id, name: clientMap[id].name, photoURL: clientMap[id].photoURL || null
+        })));
+      } catch (err) { console.error('Error loading buddies for mentions:', err); }
+    })();
+  }, [clientData]);
 
   // Notification helper
   const createNotification = async (toId, type, extra = {}) => {
@@ -316,6 +347,33 @@ export default function CoreBuddyProfile() {
       if (!comments[postId]) loadComments(postId);
     }
     setExpandedComments(newExpanded);
+  };
+
+  // @ mention helpers
+  const handleMentionInput = (text, target) => {
+    const atMatch = text.match(/@(\w*)$/);
+    if (atMatch) {
+      setMentionActive(true);
+      setMentionTarget(target);
+      const filtered = allClients.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      setMentionResults(filtered);
+    } else {
+      setMentionActive(false);
+      setMentionResults([]);
+    }
+  };
+
+  const insertMention = (client, target) => {
+    const text = commentText[target] || '';
+    const replaced = text.replace(/@\w*$/, `@${client.name} `);
+    setCommentText(prev => ({ ...prev, [target]: replaced }));
+    setMentionActive(false);
+    setMentionResults([]);
+  };
+
+  const handleCommentInputChange = (postId, value) => {
+    setCommentText(prev => ({ ...prev, [postId]: value }));
+    handleMentionInput(value, postId);
   };
 
   const handleComment = async (postId) => {
@@ -529,15 +587,27 @@ export default function CoreBuddyProfile() {
                         <p className="journey-no-comments">No comments yet</p>
                       )}
 
-                      <div className="journey-comment-input">
+                      <div className="journey-comment-input" style={{ position: 'relative' }}>
                         <input
                           type="text"
-                          placeholder="Write a comment..."
+                          placeholder="Comment... (@ to mention)"
                           value={commentText[post.id] || ''}
-                          onChange={e => setCommentText(prev => ({ ...prev, [post.id]: e.target.value }))}
+                          onChange={e => handleCommentInputChange(post.id, e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter') handleComment(post.id); }}
                           maxLength={300}
                         />
+                        {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
+                          <div className="mention-dropdown mention-dropdown-up">
+                            {mentionResults.map(c => (
+                              <button key={c.id} className="mention-option" onClick={() => insertMention(c, post.id)}>
+                                <div className="mention-option-avatar">
+                                  {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                </div>
+                                <span>{c.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         <button
                           onClick={() => handleComment(post.id)}
                           disabled={!(commentText[post.id] || '').trim() || commentLoading[post.id]}
