@@ -863,13 +863,13 @@
 /* Toast */
 .toast-notification {
   position: fixed;
-  bottom: 32px;
+  bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 12px 24px;
+  padding: 12px 20px;
   border-radius: 12px;
   font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: #ffffff;
   z-index: 1000;
@@ -877,6 +877,9 @@
   align-items: center;
   gap: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  word-break: break-word;
 }
 
 .toast-notification.info {
