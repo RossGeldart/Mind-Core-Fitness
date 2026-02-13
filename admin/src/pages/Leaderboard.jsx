@@ -356,6 +356,15 @@ export default function Leaderboard() {
     return now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   };
 
+  // Apply buddy filter
+  const filteredRankings = buddyFilter
+    ? rankings.filter(r => buddyIds.has(r.id) || r.id === clientData?.id)
+        .map((r, i) => ({ ...r, rank: i + 1 }))
+    : rankings;
+
+  const podiumEntries = filteredRankings.slice(0, 3);
+  const listEntries = filteredRankings.slice(3);
+
   const isCurrentUser = (entry) => entry.id === clientData?.id;
   const currentUserEntry = filteredRankings.find(r => r.id === clientData?.id);
 
@@ -438,15 +447,6 @@ export default function Leaderboard() {
       </div>
     );
   }
-
-  // Apply buddy filter
-  const filteredRankings = buddyFilter
-    ? rankings.filter(r => buddyIds.has(r.id) || r.id === clientData?.id)
-        .map((r, i) => ({ ...r, rank: i + 1 }))
-    : rankings;
-
-  const podiumEntries = filteredRankings.slice(0, 3);
-  const listEntries = filteredRankings.slice(3);
 
   return (
     <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
