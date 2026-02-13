@@ -199,31 +199,13 @@ export default function CoreBuddyDashboard() {
           setPbCount(Object.keys(exercises).length);
         }
 
-        // 7. Leaderboard top 3 (this week's workouts)
+        // 7. Leaderboard top 3 preview (opted-in clients)
         try {
           const clientsRef = collection(db, 'clients');
           const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
           const clientsSnap = await getDocs(cq);
           const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
-
-          if (optedIn.length > 0) {
-            // Re-use mondayStr from above for weekly count
-            const allLogs = collection(db, 'workoutLogs');
-            const allLogsSnap = await getDocs(allLogs);
-            const counts = {};
-            allLogsSnap.docs.forEach(d => {
-              const data = d.data();
-              if ((data.date || '') >= mondayStr) {
-                counts[data.clientId] = (counts[data.clientId] || 0) + 1;
-              }
-            });
-
-            const ranked = optedIn
-              .map(c => ({ ...c, count: counts[c.id] || 0 }))
-              .sort((a, b) => b.count - a.count)
-              .slice(0, 3);
-            setLeaderboardTop3(ranked);
-          }
+          setLeaderboardTop3(optedIn.slice(0, 3));
         } catch (lbErr) {
           console.error('Leaderboard preview error:', lbErr);
         }
