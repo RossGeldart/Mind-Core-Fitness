@@ -809,7 +809,7 @@
   border-color: var(--color-primary);
 }
 
-/* Timer */
+/* Timer Ring */
 .pg-timer-area {
   display: flex;
   flex-direction: column;
@@ -817,22 +817,47 @@
   gap: 12px;
 }
 
-.pg-timer-display {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 4px solid var(--border-color);
+.pg-timer-ring-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.3s ease;
+}
+
+.pg-timer-ring-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pg-timer-tick-filled {
+  stroke: var(--color-primary);
+  filter: drop-shadow(0 0 2px rgba(var(--color-primary-rgb), 0.5));
+}
+
+.pg-timer-tick-empty {
+  stroke: var(--border-color);
+}
+
+.pg-timer-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .pg-timer-value {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 900;
   color: var(--text-primary);
+  line-height: 1;
 }
 
 .pg-timer-btn {
@@ -840,9 +865,9 @@
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
+  border-radius: 16px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1166,13 +1191,8 @@
     font-size: 1.6rem;
   }
 
-  .pg-timer-display {
-    width: 160px;
-    height: 160px;
-  }
-
   .pg-timer-value {
-    font-size: 2.8rem;
+    font-size: 3rem;
   }
 }
 

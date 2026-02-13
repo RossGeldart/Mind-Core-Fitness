@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import { TICKS_78_94 } from '../utils/ringTicks';
+import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 
@@ -985,7 +985,7 @@ export default function CoreBuddyProgrammes() {
                     strokeWidth={t.thick ? '3' : '2'} />
                 ))}
               </svg>
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="pg-dash-ring-logo" width="50" height="50" />
+              <img src={clientData?.photoURL || '/Logo.webp'} alt={clientData?.photoURL ? 'Profile' : 'Mind Core Fitness'} className="pg-dash-ring-logo" width="50" height="50" />
             </div>
             <h2 className="pg-dash-name">{template.name}</h2>
             <div className="pg-dash-progress-text">
@@ -1196,25 +1196,38 @@ export default function CoreBuddyProgrammes() {
             </div>
           )}
 
-          {exercise.type === 'timed' && (
-            <div className="pg-timer-area">
-              <div className="pg-timer-display">
-                <span className="pg-timer-value">{timerValue}s</span>
+          {exercise.type === 'timed' && (() => {
+            const total = targets.time;
+            const filled = Math.round((timerValue / total) * TICK_COUNT);
+            return (
+              <div className="pg-timer-area">
+                <div className="pg-timer-ring-wrap">
+                  <svg className="pg-timer-ring-svg" viewBox="0 0 200 200">
+                    {TICKS_82_94.map((t, i) => (
+                      <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                        className={i < filled ? 'pg-timer-tick-filled' : 'pg-timer-tick-empty'}
+                        strokeWidth={t.thick ? '3' : '2'} />
+                    ))}
+                  </svg>
+                  <div className="pg-timer-center">
+                    <span className="pg-timer-value">{timerValue}s</span>
+                  </div>
+                </div>
+                {!timerActive ? (
+                  <button className="pg-timer-btn" onClick={() => {
+                    if (timerValue === 0) setTimerValue(targets.time);
+                    setTimerActive(true);
+                  }}>
+                    {timerValue < targets.time && timerValue > 0 ? 'Resume' : 'Start Timer'}
+                  </button>
+                ) : (
+                  <button className="pg-timer-btn pg-timer-stop" onClick={() => setTimerActive(false)}>
+                    Stop
+                  </button>
+                )}
               </div>
-              {!timerActive ? (
-                <button className="pg-timer-btn" onClick={() => {
-                  if (timerValue === 0) setTimerValue(targets.time);
-                  setTimerActive(true);
-                }}>
-                  {timerValue < targets.time && timerValue > 0 ? 'Resume' : 'Start Timer'}
-                </button>
-              ) : (
-                <button className="pg-timer-btn pg-timer-stop" onClick={() => setTimerActive(false)}>
-                  Stop
-                </button>
-              )}
-            </div>
-          )}
+            );
+          })()}
 
           <button className="pg-log-set-btn" onClick={logSet}
             disabled={exercise.type === 'timed' && timerActive}>
