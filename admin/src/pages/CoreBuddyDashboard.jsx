@@ -193,33 +193,65 @@ export default function CoreBuddyDashboard() {
           }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
           setNutritionTotals(totals);
         }
-        // 6. Core Buddy PBs count
-        const pbSnap = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
-        if (pbSnap.exists()) {
-          const exercises = pbSnap.data().exercises || {};
+      } catch (err) {
+        console.error('Error loading dashboard stats:', err);
+      }
+
+      // 6. Personal Bests (independent so earlier errors don't block it)
+      try {
+        let pbList = [];
+
+        // Try Core Buddy PBs first
+        const cbPbSnap = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
+        if (cbPbSnap.exists()) {
+          const exercises = cbPbSnap.data().exercises || {};
           setPbCount(Object.keys(exercises).length);
-          const sorted = Object.entries(exercises)
+          pbList = Object.entries(exercises)
             .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
             .slice(0, 3)
             .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
-          setTopPBs(sorted);
         }
 
-        // 7. Leaderboard top 3 preview (opted-in clients)
-        try {
-          const clientsRef = collection(db, 'clients');
-          const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
-          const clientsSnap = await getDocs(cq);
-          const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
-          setLeaderboardTop3(optedIn.slice(0, 3));
-        } catch (lbErr) {
-          console.error('Leaderboard preview error:', lbErr);
+        // Fall back to block client benchmarks if no Core Buddy PBs
+        if (pbList.length === 0) {
+          const nameMap = { chestPress: 'Chest Press', shoulderPress: 'Shoulder Press', seatedRow: 'Seated Row', latPulldown: 'Lat Pulldown', squat: 'Squat', deadlift: 'Deadlift' };
+          const bq = query(collection(db, 'personalBests'), where('clientId', '==', clientData.id));
+          const bSnap = await getDocs(bq);
+          if (!bSnap.empty) {
+            const best = {};
+            bSnap.docs.forEach(d => {
+              const bench = d.data().benchmarks || {};
+              Object.entries(bench).forEach(([key, val]) => {
+                if (!val.weight || !nameMap[key]) return;
+                const vol = (val.weight || 0) * (val.reps || 1);
+                if (!best[key] || vol > (best[key].weight || 0) * (best[key].reps || 1)) {
+                  best[key] = { name: nameMap[key], weight: val.weight, reps: val.reps };
+                }
+              });
+            });
+            const all = Object.values(best);
+            setPbCount(all.length);
+            pbList = all.sort((a, b) => (b.weight || 0) - (a.weight || 0)).slice(0, 3);
+          }
         }
-      } catch (err) {
-        console.error('Error loading dashboard stats:', err);
-      } finally {
-        setStatsLoaded(true);
+
+        setTopPBs(pbList);
+      } catch (pbErr) {
+        console.error('PB fetch error:', pbErr);
       }
+
+      // 7. Leaderboard top 3 preview (opted-in clients)
+      try {
+        const clientsRef = collection(db, 'clients');
+        const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
+        const clientsSnap = await getDocs(cq);
+        const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
+        setLeaderboardTop3(optedIn.slice(0, 3));
+      } catch (lbErr) {
+        console.error('Leaderboard preview error:', lbErr);
+      }
+
+      setStatsLoaded(true);
     };
     loadStats();
   }, [currentUser, clientData]);
