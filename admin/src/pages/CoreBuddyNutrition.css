@@ -902,74 +902,106 @@
   transform: scale(0.9);
 }
 
-/* Add Food Picker Popup */
-.nut-add-wrapper {
-  position: relative;
-}
-
+/* Add Food Picker — Bottom Action Sheet */
 .nut-add-picker-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 49;
+  background: var(--overlay-bg);
+  z-index: 999;
+  animation: pickerFadeIn 0.2s ease-out;
+}
+
+@keyframes pickerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pickerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .nut-add-picker {
-  position: absolute;
-  top: calc(100% + 8px);
+  position: fixed;
+  bottom: 0;
+  left: 0;
   right: 0;
-  display: flex;
-  gap: 2px;
   background: var(--bg-card);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px 28px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: pickerSlideUp 0.25s ease-out;
+}
+
+.nut-add-picker-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  margin: 0 auto 14px;
+}
+
+.nut-add-picker-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 16px;
+}
+
+.nut-add-picker-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.nut-add-picker-options button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
   border: 1px solid var(--border-color);
   border-radius: 14px;
-  padding: 6px;
-  box-shadow: var(--shadow-lg);
-  z-index: 50;
-}
-
-.nut-add-picker button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
+  background: var(--bg-card);
   cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
+  transition: transform 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
 }
 
-.nut-add-picker button:hover {
-  background: rgba(0, 0, 0, 0.04);
+.nut-add-picker-options button:active {
+  transform: scale(0.96);
 }
 
-[data-theme="dark"] .nut-add-picker button:hover {
-  background: rgba(255, 255, 255, 0.06);
+.nut-add-picker-options button svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
-.nut-add-picker button:active {
-  transform: scale(0.93);
-  transition: transform 0.1s;
-}
+.nut-add-picker-options button:nth-child(1) { color: var(--color-primary); }
+.nut-add-picker-options button:nth-child(2) { color: #2196f3; }
+.nut-add-picker-options button:nth-child(3) { color: #4caf50; }
+.nut-add-picker-options button:nth-child(4) { color: #ff9800; }
 
-.nut-add-picker button svg {
-  width: 22px;
-  height: 22px;
-}
-
-.nut-add-picker button:nth-child(1) { color: var(--color-primary); }
-.nut-add-picker button:nth-child(2) { color: #2196f3; }
-.nut-add-picker button:nth-child(3) { color: #4caf50; }
-.nut-add-picker button:nth-child(4) { color: #ff9800; }
-
-.nut-add-picker button span {
+.nut-add-picker-options button span {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+}
+
+[data-theme="dark"] .nut-add-picker {
+  background: rgba(30, 30, 30, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .nut-add-picker-options button {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Mini Macro Progress Bars */
