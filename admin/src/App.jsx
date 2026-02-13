@@ -12,6 +12,7 @@ import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
 import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
+import PersonalBests from './pages/PersonalBests';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -22,7 +23,6 @@ const ClientTools = lazy(() => import('./pages/ClientTools'));
 const MacroCalculator = lazy(() => import('./pages/MacroCalculator'));
 const ProteinSnacks = lazy(() => import('./pages/ProteinSnacks'));
 const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
-const PersonalBests = lazy(() => import('./pages/PersonalBests'));
 const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
 const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
