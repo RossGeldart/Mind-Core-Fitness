@@ -90,7 +90,8 @@ export default function CircuitBooking() {
           const slottedMemberIds = existingSession.slots
             .filter(s => s.memberId)
             .map(s => s.memberId);
-          const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id));
+          const optedOut = existingSession.vipOptOuts || [];
+          const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id) && !optedOut.includes(v.id));
 
           if (missingVips.length > 0) {
             const updatedSlots = [...existingSession.slots];
@@ -218,11 +219,17 @@ export default function CircuitBooking() {
       // Remove from waitlist if they were on it
       const updatedWaitlist = (session.waitlist || []).filter(w => w.memberId !== clientData.id);
 
-      await updateDoc(doc(db, 'circuitSessions', session.id), {
-        slots: updatedSlots,
-        waitlist: updatedWaitlist,
-      });
-      setSession(prev => ({ ...prev, slots: updatedSlots, waitlist: updatedWaitlist }));
+      // Remove from vipOptOuts if VIP is manually re-booking
+      const updateData = { slots: updatedSlots, waitlist: updatedWaitlist };
+      if (clientData.clientType === 'circuit_vip') {
+        const currentOptOuts = session.vipOptOuts || [];
+        if (currentOptOuts.includes(clientData.id)) {
+          updateData.vipOptOuts = currentOptOuts.filter(id => id !== clientData.id);
+        }
+      }
+
+      await updateDoc(doc(db, 'circuitSessions', session.id), updateData);
+      setSession(prev => ({ ...prev, ...updateData }));
       showToast('Slot booked!', 'success');
     } catch (error) {
       console.error('Error booking slot:', error);
@@ -253,6 +260,7 @@ export default function CircuitBooking() {
       }
 
       const slotNum = updatedSlots[mySlotIdx].slotNumber;
+      const isVip = updatedSlots[mySlotIdx].memberType === 'circuit_vip';
       let updatedWaitlist = [...(session.waitlist || [])];
 
       // If waitlist has someone, auto-book them into the released slot
@@ -276,11 +284,20 @@ export default function CircuitBooking() {
         };
       }
 
-      await updateDoc(doc(db, 'circuitSessions', session.id), {
+      // Track VIP opt-out so auto-booking doesn't re-add them to this session
+      const updateData = {
         slots: updatedSlots,
         waitlist: updatedWaitlist,
-      });
-      setSession(prev => ({ ...prev, slots: updatedSlots, waitlist: updatedWaitlist }));
+      };
+      if (isVip) {
+        const currentOptOuts = session.vipOptOuts || [];
+        if (!currentOptOuts.includes(clientData.id)) {
+          updateData.vipOptOuts = [...currentOptOuts, clientData.id];
+        }
+      }
+
+      await updateDoc(doc(db, 'circuitSessions', session.id), updateData);
+      setSession(prev => ({ ...prev, ...updateData }));
       showToast('Slot released', 'success');
     } catch (error) {
       console.error('Error releasing slot:', error);

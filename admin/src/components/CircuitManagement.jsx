@@ -98,6 +98,8 @@ export default function CircuitManagement() {
       const idx = updatedSlots.findIndex(s => s.slotNumber === slotNumber);
       if (idx === -1) { setSaving(false); return; }
 
+      const removedMember = updatedSlots[idx];
+      const isVip = removedMember.memberType === 'circuit_vip';
       let updatedWaitlist = [...(selectedSession.waitlist || [])];
 
       // Auto-promote from waitlist
@@ -123,12 +125,21 @@ export default function CircuitManagement() {
         showToast('Member removed from slot', 'success');
       }
 
-      await updateDoc(doc(db, 'circuitSessions', selectedSession.id), {
+      // Track VIP opt-out so auto-booking doesn't re-add them to this session
+      const updateData = {
         slots: updatedSlots,
         waitlist: updatedWaitlist,
-      });
+      };
+      if (isVip && removedMember.memberId) {
+        const currentOptOuts = selectedSession.vipOptOuts || [];
+        if (!currentOptOuts.includes(removedMember.memberId)) {
+          updateData.vipOptOuts = [...currentOptOuts, removedMember.memberId];
+        }
+      }
 
-      const updated = { ...selectedSession, slots: updatedSlots, waitlist: updatedWaitlist };
+      await updateDoc(doc(db, 'circuitSessions', selectedSession.id), updateData);
+
+      const updated = { ...selectedSession, ...updateData };
       setSelectedSession(updated);
       setSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
     } catch (error) {
@@ -169,12 +180,18 @@ export default function CircuitManagement() {
       // Remove from waitlist if on it
       const updatedWaitlist = (selectedSession.waitlist || []).filter(w => w.memberId !== member.id);
 
-      await updateDoc(doc(db, 'circuitSessions', selectedSession.id), {
-        slots: updatedSlots,
-        waitlist: updatedWaitlist,
-      });
+      // Remove from vipOptOuts if admin is manually adding a VIP back
+      const updateData = { slots: updatedSlots, waitlist: updatedWaitlist };
+      if (member.clientType === 'circuit_vip') {
+        const currentOptOuts = selectedSession.vipOptOuts || [];
+        if (currentOptOuts.includes(member.id)) {
+          updateData.vipOptOuts = currentOptOuts.filter(id => id !== member.id);
+        }
+      }
 
-      const updated = { ...selectedSession, slots: updatedSlots, waitlist: updatedWaitlist };
+      await updateDoc(doc(db, 'circuitSessions', selectedSession.id), updateData);
+
+      const updated = { ...selectedSession, ...updateData };
       setSelectedSession(updated);
       setSessions(prev => prev.map(s => s.id === updated.id ? updated : s));
       showToast(`${member.name} added to slot ${slotNumber}`, 'success');
