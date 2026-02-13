@@ -115,6 +115,7 @@ export default function CoreBuddyBuddies() {
     const results = allClients.filter(c => {
       if (c.id === myId) return false;
       if (!c.name) return false;
+      if (!c.coreBuddyAccess) return false;
       return c.name.toLowerCase().includes(q);
     }).map(c => ({
       ...c,
