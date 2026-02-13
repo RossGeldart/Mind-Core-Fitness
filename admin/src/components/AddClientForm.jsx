@@ -98,6 +98,8 @@ export default function AddClientForm({ onClose, onClientAdded }) {
         clientDoc.sessionDuration = parseInt(formData.sessionDuration);
         clientDoc.startDate = Timestamp.fromDate(new Date(formData.startDate));
         clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
+      } else if (formData.clientType === 'core_buddy') {
+        clientDoc.coreBuddyAccess = true;
       } else {
         // Circuit members get strike tracking
         clientDoc.circuitStrikes = 0;
