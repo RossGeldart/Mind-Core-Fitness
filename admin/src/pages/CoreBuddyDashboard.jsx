@@ -277,7 +277,12 @@ export default function CoreBuddyDashboard() {
         return bTime - aTime;
       });
       setNotifications(notifs.slice(0, 50));
-    }, (err) => console.error('Notification listener error:', err));
+    }, (err) => {
+      console.error('Notification listener error:', err);
+      if (err.code === 'permission-denied') {
+        console.warn('Firestore rules may be missing for the notifications collection. Please update your Firestore rules in the Firebase Console.');
+      }
+    });
     return () => unsub();
   }, [clientData]);
 
@@ -347,7 +352,12 @@ export default function CoreBuddyDashboard() {
         createdAt: serverTimestamp(),
         ...extra
       });
-    } catch (err) { console.error('Notification create error:', err); }
+    } catch (err) {
+      console.error('Notification create error:', err);
+      if (err.code === 'permission-denied') {
+        showToast('Notifications blocked — check Firestore rules', 'error');
+      }
+    }
   };
 
   // @ mention helpers

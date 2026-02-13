@@ -162,7 +162,12 @@ export default function CoreBuddyProfile() {
         createdAt: serverTimestamp(),
         ...extra
       });
-    } catch (err) { console.error('Notification error:', err); }
+    } catch (err) {
+      console.error('Notification error:', err);
+      if (err.code === 'permission-denied') {
+        showToast('Notifications blocked — check Firestore rules', 'error');
+      }
+    }
   };
 
   // Actions
