@@ -290,15 +290,30 @@ export default function CoreBuddyDashboard() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Fetch Core Buddy clients for @ mentions (block clients with coreBuddyAccess only)
+  // Fetch accepted buddies for @ mentions (only people you're actually connected with)
   useEffect(() => {
     if (!clientData) return;
-    getDocs(collection(db, 'clients')).then(snap => {
-      setAllClients(snap.docs.map(d => {
-        const data = d.data();
-        return { id: d.id, name: data.name, photoURL: data.photoURL || null, coreBuddyAccess: !!data.coreBuddyAccess, clientType: data.clientType };
-      }).filter(c => c.id !== clientData.id && c.coreBuddyAccess && c.clientType === 'block'));
-    }).catch(() => {});
+    const myId = clientData.id;
+    (async () => {
+      try {
+        // Get all accepted buddy connections
+        const [b1, b2, clientsSnap] = await Promise.all([
+          getDocs(query(collection(db, 'buddies'), where('user1', '==', myId))),
+          getDocs(query(collection(db, 'buddies'), where('user2', '==', myId))),
+          getDocs(collection(db, 'clients'))
+        ]);
+        const buddyIds = new Set();
+        [...b1.docs, ...b2.docs].forEach(d => {
+          const data = d.data();
+          buddyIds.add(data.user1 === myId ? data.user2 : data.user1);
+        });
+        const clientMap = {};
+        clientsSnap.docs.forEach(d => { clientMap[d.id] = d.data(); });
+        setAllClients(Array.from(buddyIds).filter(id => clientMap[id]).map(id => ({
+          id, name: clientMap[id].name, photoURL: clientMap[id].photoURL || null
+        })));
+      } catch (err) { console.error('Error loading buddies for mentions:', err); }
+    })();
   }, [clientData]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
