@@ -290,11 +290,14 @@ export default function CoreBuddyDashboard() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Fetch Core Buddy clients for @ mentions
+  // Fetch Core Buddy clients for @ mentions (block clients with coreBuddyAccess only)
   useEffect(() => {
     if (!clientData) return;
     getDocs(collection(db, 'clients')).then(snap => {
-      setAllClients(snap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null, coreBuddyAccess: !!d.data().coreBuddyAccess })).filter(c => c.id !== clientData.id && c.coreBuddyAccess));
+      setAllClients(snap.docs.map(d => {
+        const data = d.data();
+        return { id: d.id, name: data.name, photoURL: data.photoURL || null, coreBuddyAccess: !!data.coreBuddyAccess, clientType: data.clientType };
+      }).filter(c => c.id !== clientData.id && c.coreBuddyAccess && c.clientType === 'block'));
     }).catch(() => {});
   }, [clientData]);
 

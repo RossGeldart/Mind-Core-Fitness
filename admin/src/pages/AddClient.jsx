@@ -20,6 +20,7 @@ export default function AddClient() {
     password: '',
     clientType: 'block',
     circuitAccess: false,
+    coreBuddyAccess: false,
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -91,6 +92,7 @@ export default function AddClient() {
 
       if (isBlock) {
         clientDoc.circuitAccess = formData.circuitAccess;
+        clientDoc.coreBuddyAccess = formData.coreBuddyAccess;
         clientDoc.weeksInBlock = parseInt(formData.weeksInBlock);
         clientDoc.totalSessions = parseInt(formData.numberOfSessions);
         clientDoc.sessionsRemaining = parseInt(formData.numberOfSessions);
@@ -213,6 +215,21 @@ export default function AddClient() {
                   onChange={handleChange}
                 />
                 <span>Also allow Circuit Class access</span>
+              </label>
+            </div>
+          )}
+
+          {/* Core Buddy access toggle for block clients */}
+          {isBlock && (
+            <div className="form-group">
+              <label className="circuit-toggle-label">
+                <input
+                  type="checkbox"
+                  name="coreBuddyAccess"
+                  checked={formData.coreBuddyAccess}
+                  onChange={handleChange}
+                />
+                <span>Enable Core Buddy access</span>
               </label>
             </div>
           )}
