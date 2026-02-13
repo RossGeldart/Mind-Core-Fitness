@@ -1752,6 +1752,32 @@
   text-transform: uppercase;
 }
 
+/* Dark mode card overrides — match dashboard shade */
+[data-theme="dark"] .wk-equip-btn,
+[data-theme="dark"] .wk-level-card,
+[data-theme="dark"] .wk-time-btn {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .wk-equip-btn.active {
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .wk-level-card.active {
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .wk-time-btn.active {
+  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 /* Sticky GO Button */
 @keyframes goGlow {
   0%, 100% { box-shadow: 0 4px 20px rgba(var(--color-primary-rgb), 0.4); }
@@ -1862,8 +1888,8 @@
 .wk-preview-stats {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 24px 0 20px;
+  gap: 10px;
+  padding: 16px 0;
 }
 
 .wk-stat {
@@ -1874,7 +1900,7 @@
   padding: 12px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   min-width: 70px;
 }
 
@@ -1897,18 +1923,18 @@
 .wk-preview-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 0 24px;
+  gap: 10px;
+  padding: 0 0 16px;
 }
 
 .wk-preview-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -1917,6 +1943,23 @@
 .wk-preview-item:active {
   border-color: var(--color-primary);
   box-shadow: 0 0 8px rgba(191, 55, 68, 0.2);
+}
+
+/* Dark mode preview cards — match dashboard shade */
+[data-theme="dark"] .wk-stat,
+[data-theme="dark"] .wk-preview-item,
+[data-theme="dark"] .wk-btn-secondary,
+[data-theme="dark"] .wk-preview-modal {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .wk-preview-item:active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(191, 55, 68, 0.3);
 }
 
 .wk-preview-num {
@@ -2046,7 +2089,7 @@
   display: flex;
   gap: 12px;
   justify-content: center;
-  padding-bottom: 20px;
+  padding-bottom: 16px;
 }
 
 .wk-btn-secondary {
