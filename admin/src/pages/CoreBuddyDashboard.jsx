@@ -368,6 +368,9 @@ export default function CoreBuddyDashboard() {
           })}
         </div>
 
+        {/* Coach Message */}
+        <p className="cb-coach-msg">Oye {firstName}, crack on and make it count!</p>
+
         {/* Smart Nudge Card */}
         {nudge && (
           <button className="cb-nudge-card" onClick={nudge.action || undefined}
