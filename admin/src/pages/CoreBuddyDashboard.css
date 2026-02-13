@@ -89,7 +89,6 @@
 }
 
 .cb-ring .ring-tick {
-  transition: stroke 0.15s ease-out;
 }
 
 .cb-ring .ring-tick.remaining {
