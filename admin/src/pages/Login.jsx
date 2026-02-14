@@ -20,8 +20,8 @@ export default function Login() {
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
-        // Redirect to onboarding if not completed
-        if (clientData?.clientType === 'core_buddy' && !clientData?.onboardingComplete) {
+        // Redirect to onboarding if not completed (self-signup only)
+        if (clientData?.signupSource === 'self_signup' && !clientData?.onboardingComplete) {
           navigate('/onboarding');
           return;
         }

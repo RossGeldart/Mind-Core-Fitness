@@ -192,9 +192,9 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, currentUser, navigate]);
 
-  // Onboarding guard — redirect if not completed
+  // Onboarding guard — only for self-signup users who haven't completed it
   useEffect(() => {
-    if (!authLoading && clientData && !clientData.onboardingComplete) {
+    if (!authLoading && clientData && clientData.signupSource === 'self_signup' && !clientData.onboardingComplete) {
       navigate('/onboarding');
     }
   }, [authLoading, clientData, navigate]);
