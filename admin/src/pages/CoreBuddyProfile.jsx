@@ -688,7 +688,7 @@ export default function CoreBuddyProfile() {
             {(programmeName || habitStreak > 0) && (
               <div className="prf-info-row">
                 {programmeName && (
-                  <div className="prf-info-card">
+                  <div className="prf-info-card info-programme">
                     <div className="prf-info-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
@@ -702,7 +702,7 @@ export default function CoreBuddyProfile() {
                   </div>
                 )}
                 {habitStreak > 0 && (
-                  <div className="prf-info-card">
+                  <div className="prf-info-card info-habit">
                     <div className="prf-info-icon">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
                     </div>
