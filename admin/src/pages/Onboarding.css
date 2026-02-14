@@ -1,7 +1,7 @@
 /* Onboarding Flow */
 .ob-page {
   min-height: 100dvh;
-  background: var(--bg-primary);
+  background: var(--bg-body);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -22,8 +22,9 @@
 }
 
 .ob-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 6px;
   text-align: center;
@@ -77,7 +78,7 @@
   scroll-snap-align: center;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 28px 20px;
   text-align: center;
   min-height: 200px;
@@ -86,14 +87,15 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: var(--shadow-card);
 }
 
 .ob-feature-icon {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
+  background: color-mix(in srgb, var(--accent, var(--color-primary)) 15%, transparent);
+  color: var(--accent, var(--color-primary));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +103,7 @@
 
 .ob-feature-card h3 {
   margin: 0;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -135,17 +138,17 @@
 /* ── Primary Button ── */
 .ob-primary-btn {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--color-primary);
   color: var(--text-on-primary);
   font-size: 1rem;
-  font-weight: 700;
-  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   box-shadow: var(--shadow-primary);
-  transition: transform 0.1s, opacity 0.15s;
+  transition: background 0.2s, transform 0.1s;
   margin-top: 8px;
 }
 
@@ -171,12 +174,13 @@
   position: relative;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px 18px;
+  border-radius: 12px;
+  padding: 24px 20px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.1s;
   font-family: 'Roboto', sans-serif;
+  box-shadow: var(--shadow-card);
 }
 
 .ob-plan-card:active {
@@ -248,22 +252,24 @@
   width: 100%;
   padding: 12px;
   border: 2px solid var(--color-primary);
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: var(--color-primary);
   font-size: 0.9rem;
   font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .ob-plan-cta-outline {
   width: 100%;
   padding: 12px;
   border: 2px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .ob-plan-cta-featured {
@@ -319,6 +325,7 @@
 .ob-input:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .ob-textarea {
@@ -337,6 +344,7 @@
 .ob-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 /* Chip groups (goals, gender) */
@@ -444,24 +452,24 @@
 }
 
 .ob-parq-btn.yes {
-  background: #e74c3c;
+  background: var(--color-error);
   color: #fff;
-  border-color: #e74c3c;
+  border-color: var(--color-error);
 }
 
 .ob-parq-btn.no {
-  background: #14b8a6;
+  background: var(--color-success);
   color: #fff;
-  border-color: #14b8a6;
+  border-color: var(--color-success);
 }
 
 .ob-parq-warning {
-  background: #fef3cd;
-  border: 1px solid #ffc107;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 0.82rem;
-  color: #856404;
+  color: var(--warning-text);
   line-height: 1.4;
   margin-bottom: 12px;
   width: 100%;
