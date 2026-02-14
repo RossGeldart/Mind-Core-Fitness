@@ -77,7 +77,8 @@ service cloud.firestore {
     // Core Buddy PBs - admin full, clients read/write own (doc ID = clientId)
     match /coreBuddyPBs/{docId} {
       allow read, write: if isAdmin();
-      allow read, write: if isClientOwner(docId);
+      allow read: if isAuthenticated(); // PROFILES: view buddy PBs
+      allow write: if isClientOwner(docId);
     }
 
     // Core Buddy Targets - admin full, clients read/write own (doc ID = clientId)
@@ -96,7 +97,8 @@ service cloud.firestore {
     // Achievements - admin full, clients read/write own (doc ID = clientId)
     match /achievements/{docId} {
       allow read, write: if isAdmin();
-      allow read, write: if isClientOwner(docId);
+      allow read: if isAuthenticated(); // PROFILES: view buddy badges
+      allow write: if isClientOwner(docId);
     }
 
     // Session Notes - admin full, clients read own
@@ -121,7 +123,8 @@ service cloud.firestore {
     // Client Programmes - admin full, clients read/write own (doc ID = clientId)
     match /clientProgrammes/{docId} {
       allow read, write: if isAdmin();
-      allow read, write: if isClientOwner(docId);
+      allow read: if isAuthenticated(); // PROFILES: view buddy programme progress
+      allow write: if isClientOwner(docId);
     }
 
     // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
@@ -140,7 +143,7 @@ service cloud.firestore {
     // Habit Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /habitLogs/{docId} {
       allow read, write: if isAdmin();
-      allow read: if isClientOwner(resource.data.clientId);
+      allow read: if isAuthenticated(); // PROFILES: view buddy habit streak
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
 
