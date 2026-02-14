@@ -2,13 +2,14 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
   browserLocalPersistence,
   browserSessionPersistence,
   setPersistence
 } from 'firebase/auth';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID } from '../config/firebase';
 
 const AuthContext = createContext();
@@ -85,6 +86,28 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   };
 
+  const signup = async (name, email, password) => {
+    await setPersistence(auth, browserLocalPersistence);
+    const userCredential = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+    const user = userCredential.user;
+
+    const clientRef = doc(collection(db, 'clients'));
+    await setDoc(clientRef, {
+      uid: user.uid,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      clientType: 'core_buddy',
+      coreBuddyAccess: true,
+      status: 'active',
+      tier: 'free',
+      subscriptionStatus: null,
+      signupSource: 'self_signup',
+      createdAt: Timestamp.now(),
+    });
+
+    return userCredential;
+  };
+
   const updateClientData = (fields) => {
     setClientData(prev => prev ? { ...prev, ...fields } : prev);
   };
@@ -96,6 +119,7 @@ export function AuthProvider({ children }) {
     clientData,
     updateClientData,
     login,
+    signup,
     logout,
     resetPassword,
     loading
