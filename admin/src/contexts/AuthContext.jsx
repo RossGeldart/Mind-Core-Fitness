@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
     const user = userCredential.user;
 
     const clientRef = doc(collection(db, 'clients'));
-    await setDoc(clientRef, {
+    const clientDoc = {
       uid: user.uid,
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -103,7 +103,12 @@ export function AuthProvider({ children }) {
       subscriptionStatus: null,
       signupSource: 'self_signup',
       createdAt: Timestamp.now(),
-    });
+    };
+    await setDoc(clientRef, clientDoc);
+
+    // Set client data immediately to avoid race condition with onAuthStateChanged
+    setIsClient(true);
+    setClientData({ id: clientRef.id, ...clientDoc });
 
     return userCredential;
   };

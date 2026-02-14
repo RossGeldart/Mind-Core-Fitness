@@ -9,6 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTier } from '../contexts/TierContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_85_96 } from '../utils/ringTicks';
@@ -104,6 +105,7 @@ function compressImage(file, maxSize = 800) {
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { isPremium } = useTier();
   const navigate = useNavigate();
 
   // 24hr countdown state
@@ -1310,12 +1312,12 @@ export default function CoreBuddyDashboard() {
 
           {/* 1. Nutrition / Macros */}
           <button
-            className="cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
+            className={`cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
+            onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/core-buddy/nutrition' : '/upgrade'); }}
           >
             <div className="cb-card-top-row">
               <div className="cb-card-content">
-                <h3>Today's Nutrition</h3>
+                <h3>Today's Nutrition {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
               </div>
               <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>
@@ -1365,11 +1367,11 @@ export default function CoreBuddyDashboard() {
           {/* 3 & 4. Habits + PBs — 2-column grid */}
           <div className="cb-grid-row">
             <button
-              className="cb-feature-card cb-grid-card cb-card-consistency ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
+              className={`cb-feature-card cb-grid-card cb-card-consistency ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
+              onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/core-buddy/consistency' : '/upgrade'); }}
             >
               <div className="cb-card-content">
-                <h3>Habits</h3>
+                <h3>Habits {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
                 <div className="cb-habit-dots">
                   {Array.from({ length: HABIT_COUNT }, (_, i) => (
                     <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
@@ -1381,11 +1383,11 @@ export default function CoreBuddyDashboard() {
             </button>
 
             <button
-              className="cb-feature-card cb-grid-card cb-card-progress ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
+              className={`cb-feature-card cb-grid-card cb-card-progress ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
+              onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/personal-bests?mode=corebuddy' : '/upgrade'); }}
             >
               <div className="cb-card-content">
-                <h3>PBs</h3>
+                <h3>PBs {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
                 {topPBs.length > 0 ? (
                   <div className="cb-pb-preview">
                     {topPBs.slice(0, 2).map((pb) => (
@@ -1408,11 +1410,11 @@ export default function CoreBuddyDashboard() {
 
           {/* 6. Leaderboard */}
           <button
-            className="cb-feature-card cb-card-leaderboard ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
+            className={`cb-feature-card cb-card-leaderboard ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
+            onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/leaderboard' : '/upgrade'); }}
           >
             <div className="cb-card-content">
-              <h3>Leaderboard</h3>
+              <h3>Leaderboard {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
               {leaderboardTop3.length > 0 ? (
                 <div className="cb-lb-preview">
                   {leaderboardTop3.map((entry, idx) => {
@@ -1438,34 +1440,43 @@ export default function CoreBuddyDashboard() {
 
           {/* 7. Buddies */}
           <button
-            className="cb-feature-card cb-card-buddies ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/buddies'); }}
+            className={`cb-feature-card cb-card-buddies ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
+            onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade'); }}
           >
             <div className="cb-card-content">
-              <h3>Buddies</h3>
+              <h3>Buddies {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
               <p>Connect with other members and track each other's progress</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
           {/* 8. Achievements */}
-          <div className="cb-achievements-section">
-            <h3 className="cb-achievements-title">Achievements</h3>
-            <div className="cb-badges-scroll">
-              {BADGE_DEFS.map((badge) => {
-                const isUnlocked = unlockedBadges.includes(badge.id);
-                return (
-                  <button
-                    key={badge.id}
-                    className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
-                    onClick={() => setSelectedBadge(badge)}
-                  >
-                    <img src={badge.img} alt={badge.name} className="cb-badge-img" />
-                  </button>
-                );
-              })}
-            </div>
-            <p className="cb-badges-count">{unlockedBadges.length}/{BADGE_DEFS.length} unlocked</p>
+          <div className={`cb-achievements-section${!isPremium ? ' cb-card-locked' : ''}`}>
+            <h3 className="cb-achievements-title">Achievements {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
+            {isPremium ? (
+              <>
+                <div className="cb-badges-scroll">
+                  {BADGE_DEFS.map((badge) => {
+                    const isUnlocked = unlockedBadges.includes(badge.id);
+                    return (
+                      <button
+                        key={badge.id}
+                        className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
+                        onClick={() => setSelectedBadge(badge)}
+                      >
+                        <img src={badge.img} alt={badge.name} className="cb-badge-img" />
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="cb-badges-count">{unlockedBadges.length}/{BADGE_DEFS.length} unlocked</p>
+              </>
+            ) : (
+              <button className="cb-upgrade-teaser" onClick={() => navigate('/upgrade')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Upgrade to unlock achievements</span>
+              </button>
+            )}
           </div>
 
           {/* Badge fullscreen overlay */}
