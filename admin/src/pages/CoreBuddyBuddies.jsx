@@ -266,6 +266,12 @@ export default function CoreBuddyBuddies() {
       <main className="bdy-main">
         <h1 className="bdy-title">Buddies</h1>
 
+        <button className="bdy-leaderboard-link" onClick={() => navigate('/client/leaderboard')}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><rect x="6" y="9" width="12" height="13" rx="2"/><path d="M12 9v13"/><path d="M2 22h20"/></svg>
+          <span>Leaderboard</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
         {/* Tabs */}
         <div className="bdy-tabs">
           <button className={`bdy-tab${tab === 'buddies' ? ' active' : ''}`} onClick={() => setTab('buddies')}>
