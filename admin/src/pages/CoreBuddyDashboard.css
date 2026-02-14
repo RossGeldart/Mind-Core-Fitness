@@ -1073,6 +1073,13 @@
   height: 26px;
 }
 
+.cb-badge-icon .cb-badge-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
 .cb-badge.locked .cb-badge-icon {
   color: var(--text-tertiary);
 }
@@ -1123,6 +1130,13 @@
 .cb-badge-detail-icon svg {
   width: 36px;
   height: 36px;
+}
+
+.cb-badge-detail-icon .cb-badge-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 .cb-badge-detail-info {
