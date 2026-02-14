@@ -16,6 +16,11 @@ export default function SignUp() {
   // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && currentUser && isClient) {
+      // Self-signup user who hasn't finished onboarding → send to onboarding
+      if (clientData?.signupSource === 'self_signup' && !clientData?.onboardingComplete) {
+        navigate('/onboarding');
+        return;
+      }
       const type = clientData?.clientType;
       if (type === 'core_buddy') {
         navigate('/client/core-buddy');
