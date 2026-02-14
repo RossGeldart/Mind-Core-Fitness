@@ -1,0 +1,81 @@
+/* LockedFeature overlay */
+.locked-feature-wrap {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Blurred background content */
+.locked-feature-bg {
+  filter: blur(6px);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Overlay sits on top */
+.locked-feature-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay-bg);
+  padding: 24px;
+}
+
+.locked-feature-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 40px 28px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.locked-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: var(--color-primary);
+}
+
+.locked-feature-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+  color: var(--text-primary);
+}
+
+.locked-feature-card p {
+  margin: 0 0 24px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.locked-upgrade-btn {
+  display: inline-block;
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.locked-upgrade-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}

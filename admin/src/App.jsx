@@ -2,7 +2,9 @@ import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { TierProvider } from './contexts/TierContext';
 import Login from './pages/Login';
+import LockedFeature from './components/LockedFeature';
 import './styles/theme.css';
 
 // Eagerly import CoreBuddy pages (shared bottom-nav group — no loading gap)
@@ -67,6 +69,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <TierProvider>
         <BrowserRouter basename="/login">
           <RedirectHandler />
           <ScrollToTop>
@@ -81,23 +84,24 @@ function App() {
             <Route path="/client/tools/macros" element={<MacroCalculator />} />
             <Route path="/client/tools/snacks" element={<ProteinSnacks />} />
             <Route path="/client/tools/motivation" element={<DailyMotivation />} />
-            <Route path="/client/personal-bests" element={<PersonalBests />} />
+            <Route path="/client/personal-bests" element={<LockedFeature feature="personalBests"><PersonalBests /></LockedFeature>} />
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
-            <Route path="/client/core-buddy/nutrition" element={<CoreBuddyNutrition />} />
+            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
-            <Route path="/client/core-buddy/programmes" element={<CoreBuddyProgrammes />} />
-            <Route path="/client/core-buddy/achievements" element={<CoreBuddyAchievements />} />
-            <Route path="/client/core-buddy/consistency" element={<CoreBuddyConsistency />} />
-            <Route path="/client/core-buddy/buddies" element={<CoreBuddyBuddies />} />
+            <Route path="/client/core-buddy/programmes" element={<LockedFeature feature="programmes"><CoreBuddyProgrammes /></LockedFeature>} />
+            <Route path="/client/core-buddy/achievements" element={<LockedFeature feature="achievements"><CoreBuddyAchievements /></LockedFeature>} />
+            <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
+            <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
-            <Route path="/client/leaderboard" element={<Leaderboard />} />
+            <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>
           </ScrollToTop>
         </BrowserRouter>
+        </TierProvider>
       </AuthProvider>
     </ThemeProvider>
   );

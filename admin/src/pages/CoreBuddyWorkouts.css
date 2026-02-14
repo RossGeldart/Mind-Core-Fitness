@@ -1856,6 +1856,30 @@
   animation: none;
 }
 
+/* Free tier locked time button */
+.wk-time-btn.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  position: relative;
+}
+.wk-time-btn.locked .wk-time-unit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wk-time-btn.locked .wk-time-unit svg {
+  opacity: 0.7;
+}
+
+/* Free tier limit message */
+.wk-free-limit-msg {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
 /* ==================== SPINNING VIEW ==================== */
 .wk-spin-container {
   display: flex;
