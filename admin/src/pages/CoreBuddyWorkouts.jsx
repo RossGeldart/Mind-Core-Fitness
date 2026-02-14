@@ -5,6 +5,7 @@ import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, Timesta
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTier } from '../contexts/TierContext';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -492,6 +493,7 @@ function shuffleArray(arr) {
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme, accent } = useTheme();
+  const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
   // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
@@ -502,7 +504,7 @@ export default function CoreBuddyWorkouts() {
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
   const [focusArea, setFocusArea] = useState('core');
   const [level, setLevel] = useState('intermediate');
-  const [duration, setDuration] = useState(15);
+  const [duration, setDuration] = useState(isPremium ? 15 : 5);
 
   // Exercises from Firebase Storage
   const [allExercises, setAllExercises] = useState([]);
@@ -565,6 +567,10 @@ export default function CoreBuddyWorkouts() {
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [streak, setStreak] = useState(0);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
+
+  // Free-tier gating: limit available durations and weekly usage
+  const availableTimeOptions = isPremium ? TIME_OPTIONS : TIME_OPTIONS.filter(t => FREE_RANDOMISER_DURATIONS.includes(t));
+  const freeRandomiserLimitReached = !isPremium && weeklyCount >= FREE_RANDOMISER_WEEKLY_LIMIT;
 
   // Active programme info (for the "Continue Programme" card)
   const [activeProgrammeId, setActiveProgrammeId] = useState(null);
@@ -808,6 +814,7 @@ export default function CoreBuddyWorkouts() {
 
   // Generate random workout
   const generateWorkout = async () => {
+    if (freeRandomiserLimitReached) return;
     setView('spinning');
     // Clear cache so new selections load fresh exercises
     exercisesRef.current = [];
@@ -1527,12 +1534,15 @@ export default function CoreBuddyWorkouts() {
             <div className="wk-setup-section">
               <h2>Time</h2>
               <div className="wk-time-options">
-                {TIME_OPTIONS.map(t => (
-                  <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}`} onClick={() => setDuration(t)}>
-                    <span className="wk-time-num">{t}</span>
-                    <span className="wk-time-unit">min</span>
-                  </button>
-                ))}
+                {TIME_OPTIONS.map(t => {
+                  const locked = !availableTimeOptions.includes(t);
+                  return (
+                    <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}${locked ? ' locked' : ''}`} onClick={() => !locked && setDuration(t)} disabled={locked}>
+                      <span className="wk-time-num">{t}</span>
+                      <span className="wk-time-unit">{locked ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> : 'min'}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1568,8 +1578,11 @@ export default function CoreBuddyWorkouts() {
 
         {/* Sticky GO button */}
         <div className="wk-go-sticky">
-          <button className="wk-randomise-btn" onClick={generateWorkout} disabled={loadingExercises}>
-            {loadingExercises ? 'Loading exercises...' : 'Randomise Workout'}
+          {freeRandomiserLimitReached && (
+            <p className="wk-free-limit-msg">You've used your free workout this week. Upgrade for unlimited access.</p>
+          )}
+          <button className="wk-randomise-btn" onClick={generateWorkout} disabled={loadingExercises || freeRandomiserLimitReached}>
+            {loadingExercises ? 'Loading exercises...' : freeRandomiserLimitReached ? 'Limit Reached' : 'Randomise Workout'}
           </button>
         </div>
         {toastEl}
