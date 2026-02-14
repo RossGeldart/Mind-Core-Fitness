@@ -1068,11 +1068,6 @@
   color: var(--color-primary);
 }
 
-.cb-badge-icon svg {
-  width: 26px;
-  height: 26px;
-}
-
 .cb-badge-icon .cb-badge-img {
   width: 42px;
   height: 42px;
@@ -1124,11 +1119,6 @@
   justify-content: center;
   flex-shrink: 0;
   color: var(--color-primary);
-}
-
-.cb-badge-detail-icon svg {
-  width: 36px;
-  height: 36px;
 }
 
 .cb-badge-detail-icon .cb-badge-img {
