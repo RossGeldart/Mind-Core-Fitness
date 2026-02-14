@@ -1129,8 +1129,8 @@
 }
 
 .cb-badge-overlay-img-locked {
-  filter: blur(14px);
-  opacity: 0.5;
+  filter: blur(6px);
+  opacity: 0.7;
 }
 
 .cb-badge-overlay-desc {
