@@ -92,6 +92,7 @@ export default function CoreBuddyProfile() {
   const [habitStreak, setHabitStreak] = useState(0);
   const [topPBs, setTopPBs] = useState([]);
   const [unlockedBadges, setUnlockedBadges] = useState([]);
+  const [selectedBadge, setSelectedBadge] = useState(null);
   const [programmeName, setProgrammeName] = useState(null);
   const [programmePct, setProgrammePct] = useState(0);
 
@@ -743,11 +744,22 @@ export default function CoreBuddyProfile() {
                     const badge = BADGE_DEFS.find(b => b.id === id);
                     if (!badge) return null;
                     return (
-                      <div key={id} className="prf-badge-chip">
+                      <button key={id} className="prf-badge-chip" onClick={() => setSelectedBadge(badge)}>
                         <img src={badge.img} alt={badge.name} className="prf-badge-chip-img" />
-                      </div>
+                      </button>
                     );
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* Badge fullscreen overlay */}
+            {selectedBadge && (
+              <div className="prf-badge-overlay" onClick={() => setSelectedBadge(null)}>
+                <div className="prf-badge-overlay-content" onClick={e => e.stopPropagation()}>
+                  <img src={selectedBadge.img} alt={selectedBadge.name} className="prf-badge-overlay-img" />
+                  <p className="prf-badge-overlay-desc">{selectedBadge.desc}</p>
+                  <button className="prf-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
                 </div>
               </div>
             )}

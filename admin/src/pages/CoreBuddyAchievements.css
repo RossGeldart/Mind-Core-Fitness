@@ -537,6 +537,11 @@
   object-fit: contain;
 }
 
+.ach-badge-overlay-img-locked {
+  filter: blur(14px);
+  opacity: 0.5;
+}
+
 .ach-badge-overlay-desc {
   font-family: 'Roboto', sans-serif;
   font-size: 1rem;

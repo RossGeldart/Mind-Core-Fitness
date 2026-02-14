@@ -1128,6 +1128,11 @@
   filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.3));
 }
 
+.cb-badge-overlay-img-locked {
+  filter: blur(14px);
+  opacity: 0.5;
+}
+
 .cb-badge-overlay-desc {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
