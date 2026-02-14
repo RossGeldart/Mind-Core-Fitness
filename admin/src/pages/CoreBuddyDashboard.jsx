@@ -1472,7 +1472,11 @@ export default function CoreBuddyDashboard() {
           {selectedBadge && (
             <div className="cb-badge-overlay" onClick={() => setSelectedBadge(null)}>
               <div className="cb-badge-overlay-content" onClick={e => e.stopPropagation()}>
-                <img src={selectedBadge.img} alt={selectedBadge.name} className="cb-badge-overlay-img" />
+                <img
+                  src={selectedBadge.img}
+                  alt={selectedBadge.name}
+                  className={`cb-badge-overlay-img${!unlockedBadges.includes(selectedBadge.id) ? ' cb-badge-overlay-img-locked' : ''}`}
+                />
                 <p className="cb-badge-overlay-desc">{selectedBadge.desc}</p>
                 {unlockedBadges.includes(selectedBadge.id) ? (
                   <span className="cb-badge-status unlocked">Unlocked</span>

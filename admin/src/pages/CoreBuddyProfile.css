@@ -444,6 +444,16 @@
   border-radius: 14px;
 }
 
+.prf-badge-chip {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.prf-badge-chip:active {
+  transform: scale(0.92);
+}
+
 .prf-badge-chip-img {
   width: 40px;
   height: 40px;
@@ -462,6 +472,65 @@
 [data-theme="dark"] .prf-badge-chip {
   background: rgba(30, 30, 30, 0.8);
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Badge Fullscreen Overlay ===== */
+.prf-badge-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: prf-overlay-in 0.2s ease;
+}
+
+@keyframes prf-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.prf-badge-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 24px;
+  animation: prf-overlay-scale 0.25s ease;
+}
+
+@keyframes prf-overlay-scale {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.prf-badge-overlay-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+.prf-badge-overlay-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin: 0;
+}
+
+.prf-badge-overlay-close {
+  background: none;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 8px 16px;
+  margin-top: 8px;
 }
 
 /* ===== TOAST ===== */

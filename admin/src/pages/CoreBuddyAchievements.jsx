@@ -275,7 +275,11 @@ export default function CoreBuddyAchievements() {
         {selectedBadge && (
           <div className="ach-badge-overlay" onClick={() => setSelectedBadge(null)}>
             <div className="ach-badge-overlay-content" onClick={e => e.stopPropagation()}>
-              <img src={selectedBadge.img} alt={selectedBadge.name} className="ach-badge-overlay-img" />
+              <img
+                src={selectedBadge.img}
+                alt={selectedBadge.name}
+                className={`ach-badge-overlay-img${!unlockedBadges.includes(selectedBadge.id) ? ' ach-badge-overlay-img-locked' : ''}`}
+              />
               <p className="ach-badge-overlay-desc">{selectedBadge.desc}</p>
               {unlockedBadges.includes(selectedBadge.id) ? (
                 <span className="ach-badge-overlay-status unlocked">Unlocked</span>
