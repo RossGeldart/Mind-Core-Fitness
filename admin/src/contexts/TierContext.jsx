@@ -28,8 +28,8 @@ export function TierProvider({ children }) {
   const value = useMemo(() => {
     const tier = clientData?.tier || 'free';
     const subscriptionStatus = clientData?.subscriptionStatus || null;
-    // Admin-added clients (no signupSource) with coreBuddyAccess are treated as premium
-    const isAdminGranted = clientData?.signupSource !== 'self_signup' && clientData?.coreBuddyAccess;
+    // Admin-added clients (not self-signup) are treated as premium
+    const isAdminGranted = clientData && clientData.signupSource !== 'self_signup';
     const isPremium = tier === 'premium' || !!isAdminGranted;
 
     function canAccess(feature) {
@@ -45,7 +45,7 @@ export function TierProvider({ children }) {
       FREE_RANDOMISER_DURATIONS,
       FREE_RANDOMISER_WEEKLY_LIMIT,
     };
-  }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource, clientData?.coreBuddyAccess]);
+  }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource]);
 
   return (
     <TierContext.Provider value={value}>
