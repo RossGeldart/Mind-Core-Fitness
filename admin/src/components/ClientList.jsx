@@ -29,7 +29,7 @@ export default function ClientList() {
   const fetchData = async () => {
     try {
       const [clientsSnapshot, sessionsSnapshot] = await Promise.all([
-        getDocs(query(collection(db, 'clients'), orderBy('createdAt', 'desc'))),
+        getDocs(query(collection(db, 'clients'), orderBy('name', 'asc'))),
         getDocs(collection(db, 'sessions'))
       ]);
 
@@ -389,7 +389,7 @@ export default function ClientList() {
   const searched = clients.filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  ).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
   const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
   const isCoreBuddy = (c) => c.clientType === 'core_buddy';
