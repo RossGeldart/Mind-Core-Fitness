@@ -29,6 +29,15 @@ function getMonthBounds() {
   return { start, end };
 }
 
+function getYearBounds() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(now.getFullYear(), 11, 31);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
+}
+
 function formatDateKey(date) {
   return date.toISOString().split('T')[0];
 }
@@ -116,6 +125,13 @@ const TABS = [
 
 const MEDAL_COLORS = ['#FFD700', '#A8B4C0', '#CD7F32'];
 
+const TAB_DESCRIPTIONS = {
+  workouts: 'Total completed workouts across randomiser, muscle group and programme sessions',
+  minutes: 'Active minutes from randomiser workouts only',
+  volume: 'Total weight lifted (kg) from programme and muscle group workouts',
+  streak: 'Consecutive weeks with at least one workout completed (Mon\u2013Sun)',
+};
+
 export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState('workouts');
   const [period, setPeriod] = useState('week');
@@ -127,6 +143,7 @@ export default function Leaderboard() {
   const [toast, setToast] = useState(null);
   const [buddyFilter, setBuddyFilter] = useState(false);
   const [buddyIds, setBuddyIds] = useState(new Set());
+  const [showAll, setShowAll] = useState(false);
 
   const { currentUser, isClient, clientData, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -169,6 +186,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     if (!clientData || !optedIn) return;
+    setShowAll(false);
     fetchLeaderboard();
   }, [clientData, optedIn, activeTab, period]);
 
@@ -229,7 +247,7 @@ export default function Leaderboard() {
         start.setHours(0, 0, 0, 0);
         bounds = { start, end: now };
       } else {
-        bounds = period === 'week' ? getWeekBounds() : getMonthBounds();
+        bounds = period === 'week' ? getWeekBounds() : period === 'month' ? getMonthBounds() : getYearBounds();
       }
 
       const startTs = Timestamp.fromDate(bounds.start);
@@ -340,6 +358,9 @@ export default function Leaderboard() {
       const { start, end } = getWeekBounds();
       return `${start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`;
     }
+    if (period === 'year') {
+      return new Date().getFullYear().toString();
+    }
     const now = new Date();
     return now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   };
@@ -351,7 +372,9 @@ export default function Leaderboard() {
     : rankings;
 
   const podiumEntries = filteredRankings.slice(0, 3);
-  const listEntries = filteredRankings.slice(3);
+  const remainingEntries = filteredRankings.slice(3);
+  const listEntries = showAll ? remainingEntries : remainingEntries.slice(0, 7);
+  const hasMore = remainingEntries.length > 7;
 
   const isCurrentUser = (entry) => entry.id === clientData?.id;
   const currentUserEntry = filteredRankings.find(r => r.id === clientData?.id);
@@ -471,6 +494,9 @@ export default function Leaderboard() {
           ))}
         </div>
 
+        {/* Tab Description */}
+        <div className="lb-tab-desc">{TAB_DESCRIPTIONS[activeTab]}</div>
+
         {/* Period Toggle */}
         {activeTab !== 'streak' && (
           <div className="lb-period-row">
@@ -486,6 +512,12 @@ export default function Leaderboard() {
                 onClick={() => setPeriod('month')}
               >
                 This Month
+              </button>
+              <button
+                className={`lb-period-btn ${period === 'year' ? 'lb-period-active' : ''}`}
+                onClick={() => setPeriod('year')}
+              >
+                This Year
               </button>
             </div>
           </div>
@@ -604,6 +636,14 @@ export default function Leaderboard() {
                     <span className="lb-rank-stat">{formatValue(entry)}</span>
                   </div>
                 ))}
+                {hasMore && (
+                  <button className="lb-view-all-btn" onClick={() => setShowAll(!showAll)}>
+                    <span>{showAll ? 'Show Less' : `View All (${filteredRankings.length})`}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showAll ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </button>
+                )}
               </div>
             )}
 

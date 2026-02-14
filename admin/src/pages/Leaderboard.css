@@ -213,8 +213,8 @@
 /* ===== TABS ===== */
 .lb-tabs {
   display: flex;
-  gap: 6px;
-  padding: 16px 0 8px;
+  gap: 5px;
+  padding: 16px 0 6px;
 }
 
 .lb-tab {
@@ -222,23 +222,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 8px;
+  gap: 4px;
+  padding: 10px 4px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   background: var(--bg-card);
   color: var(--text-tertiary);
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .lb-tab svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
@@ -249,6 +251,16 @@
 }
 
 .lb-tab:active { transform: scale(0.97); }
+
+/* ===== TAB DESCRIPTION ===== */
+.lb-tab-desc {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  padding: 6px 12px 8px;
+  line-height: 1.35;
+}
 
 /* ===== PERIOD TOGGLE ===== */
 .lb-period-row {
@@ -561,6 +573,33 @@
   flex-shrink: 0;
 }
 
+/* ===== VIEW ALL BUTTON ===== */
+.lb-view-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lb-view-all-btn:active { transform: scale(0.97); }
+
+.lb-view-all-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
 /* ===== YOUR POSITION BAR ===== */
 .lb-your-position {
   position: sticky;
@@ -762,8 +801,14 @@
   }
 
   .lb-tab {
-    font-size: 0.8rem;
-    padding: 12px 10px;
+    font-size: 0.75rem;
+    gap: 5px;
+    padding: 10px 6px;
+  }
+
+  .lb-tab svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -832,6 +877,16 @@
 
 [data-theme="dark"] .lb-buddy-filter.active {
   background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .lb-view-all-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .lb-view-all-btn:hover {
+  color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
