@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   collection, query, where, getDocs, getDoc, doc, setDoc, deleteDoc,
-  addDoc, updateDoc, orderBy, limit, increment, serverTimestamp
+  addDoc, updateDoc, orderBy, limit, increment, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -20,6 +20,35 @@ function getInitials(name) {
 function pairId(a, b) {
   return [a, b].sort().join('_');
 }
+
+const HABIT_COUNT = 5;
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function formatVolume(kg) {
+  if (kg >= 1000000) return `${(kg / 1000000).toFixed(1)}M`;
+  if (kg >= 1000) return `${(kg / 1000).toFixed(1)}T`;
+  return `${Math.round(kg)}`;
+}
+
+function formatVolumeUnit(kg) {
+  if (kg >= 1000000) return 'million kg';
+  if (kg >= 1000) return 'tonnes';
+  return 'kg';
+}
+
+const TEMPLATE_META = {
+  fullbody_4wk: { duration: 4, daysPerWeek: 3 },
+  fullbody_8wk: { duration: 8, daysPerWeek: 3 },
+  fullbody_12wk: { duration: 12, daysPerWeek: 3 },
+  core_4wk: { duration: 4, daysPerWeek: 3 },
+  core_8wk: { duration: 8, daysPerWeek: 3 },
+  core_12wk: { duration: 12, daysPerWeek: 3 },
+  upper_4wk: { duration: 4, daysPerWeek: 3 },
+  lower_4wk: { duration: 4, daysPerWeek: 3 },
+};
 
 function timeAgo(date) {
   if (!date) return '';
@@ -53,6 +82,17 @@ export default function CoreBuddyProfile() {
   const [comments, setComments] = useState({});
   const [commentText, setCommentText] = useState({});
   const [commentLoading, setCommentLoading] = useState({});
+
+  // Stats state
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [totalWorkouts, setTotalWorkouts] = useState(0);
+  const [totalVolume, setTotalVolume] = useState(0);
+  const [streakWeeks, setStreakWeeks] = useState(0);
+  const [habitStreak, setHabitStreak] = useState(0);
+  const [topPBs, setTopPBs] = useState([]);
+  const [unlockedBadges, setUnlockedBadges] = useState([]);
+  const [programmeName, setProgrammeName] = useState(null);
+  const [programmePct, setProgrammePct] = useState(0);
 
   // @ Mention state
   const [allClients, setAllClients] = useState([]);
@@ -122,6 +162,116 @@ export default function CoreBuddyProfile() {
 
     return () => { cancelled = true; };
   }, [clientData, userId]);
+
+  // Fetch buddy stats
+  useEffect(() => {
+    if (!userId || !profile) return;
+    let cancelled = false;
+
+    (async () => {
+      setStatsLoading(true);
+      try {
+        // Parallel fetches
+        const [logsSnap, achSnap, pbSnap, progSnap] = await Promise.all([
+          getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId))),
+          getDoc(doc(db, 'coreBuddyAchievements', userId)),
+          getDoc(doc(db, 'coreBuddyPBs', userId)),
+          getDoc(doc(db, 'clientProgrammes', userId)),
+        ]);
+
+        if (cancelled) return;
+
+        // Total workouts
+        const totalAll = logsSnap.docs.length;
+        setTotalWorkouts(totalAll);
+
+        // Total volume
+        if (achSnap.exists()) {
+          setTotalVolume(achSnap.data().totalVolume || 0);
+        }
+
+        // Workout streak (consecutive weeks)
+        let wkStreak = 0;
+        const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+        if (allDates.length > 0) {
+          const now2 = new Date();
+          let checkWeek = new Date(now2);
+          for (let w = 0; w < 52; w++) {
+            const weekStart = new Date(checkWeek);
+            const dow = weekStart.getDay();
+            const monOff = dow === 0 ? 6 : dow - 1;
+            weekStart.setDate(weekStart.getDate() - monOff);
+            weekStart.setHours(0, 0, 0, 0);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            const wsStr = formatDate(weekStart);
+            const weStr = formatDate(weekEnd);
+            const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
+            if (hasWorkout) { wkStreak++; }
+            else if (w > 0) break;
+            else break;
+            checkWeek.setDate(checkWeek.getDate() - 7);
+          }
+        }
+        if (!cancelled) setStreakWeeks(wkStreak);
+
+        // Personal bests (top 3)
+        if (pbSnap.exists()) {
+          const exercises = pbSnap.data().exercises || {};
+          const pbList = Object.entries(exercises)
+            .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
+            .slice(0, 3)
+            .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
+          if (!cancelled) setTopPBs(pbList);
+        }
+
+        // Programme progress
+        if (progSnap.exists()) {
+          const prog = progSnap.data();
+          const meta = TEMPLATE_META[prog.templateId];
+          if (meta) {
+            const completedCount = Object.keys(prog.completedSessions || {}).length;
+            const total = meta.duration * meta.daysPerWeek;
+            if (!cancelled) {
+              setProgrammeName(prog.templateId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+              setProgrammePct(total > 0 ? Math.round((completedCount / total) * 100) : 0);
+            }
+          }
+        }
+
+        // Badges from achievements collection
+        const achBadgesSnap = await getDoc(doc(db, 'achievements', userId));
+        if (!cancelled && achBadgesSnap.exists()) {
+          const badges = achBadgesSnap.data().badges || {};
+          setUnlockedBadges(Object.keys(badges));
+        }
+
+        // Habit streak (consecutive days with all 5 done)
+        let hStreak = 0;
+        for (let d = 0; d < 30; d++) {
+          const checkDate = new Date();
+          checkDate.setDate(checkDate.getDate() - d);
+          const dStr = formatDate(checkDate);
+          try {
+            const hSnap = await getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', userId), where('date', '==', dStr)));
+            if (!hSnap.empty) {
+              const habits = hSnap.docs[0].data().habits || {};
+              if (Object.values(habits).filter(Boolean).length >= HABIT_COUNT) { hStreak++; }
+              else break;
+            } else break;
+          } catch { break; }
+        }
+        if (!cancelled) setHabitStreak(hStreak);
+
+      } catch (err) {
+        console.error('Error loading buddy stats:', err);
+      } finally {
+        if (!cancelled) setStatsLoading(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [userId, profile]);
 
   // Fetch accepted buddies for @ mentions
   useEffect(() => {
@@ -512,6 +662,104 @@ export default function CoreBuddyProfile() {
               )}
           </div>
         </div>
+
+        {/* Stats */}
+        {statsLoading ? (
+          <div className="prf-stats-loading"><div className="prf-spinner" /></div>
+        ) : (
+          <>
+            {/* Stats Row */}
+            <div className="prf-stats">
+              <div className="prf-stat">
+                <span className="prf-stat-value">{totalWorkouts}</span>
+                <span className="prf-stat-label">Workouts</span>
+              </div>
+              <div className="prf-stat">
+                <span className="prf-stat-value">{formatVolume(totalVolume)}<span className="prf-stat-unit">{totalVolume >= 1000 ? '' : 'kg'}</span></span>
+                <span className="prf-stat-label">{totalVolume >= 1000000 ? 'Million kg' : totalVolume >= 1000 ? 'Tonnes' : 'Volume'} Lifted</span>
+              </div>
+              <div className="prf-stat">
+                <span className="prf-stat-value">{streakWeeks}<span className="prf-stat-unit">wk</span></span>
+                <span className="prf-stat-label">Streak</span>
+              </div>
+            </div>
+
+            {/* Programme + Habit Streak Row */}
+            {(programmeName || habitStreak > 0) && (
+              <div className="prf-info-row">
+                {programmeName && (
+                  <div className="prf-info-card">
+                    <div className="prf-info-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <div className="prf-info-text">
+                      <span className="prf-info-label">{programmeName}</span>
+                      <div className="prf-info-progress-bar">
+                        <div className="prf-info-progress-fill" style={{ width: `${Math.min(programmePct, 100)}%` }} />
+                      </div>
+                      <span className="prf-info-sub">{programmePct}% complete</span>
+                    </div>
+                  </div>
+                )}
+                {habitStreak > 0 && (
+                  <div className="prf-info-card">
+                    <div className="prf-info-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                    </div>
+                    <div className="prf-info-text">
+                      <span className="prf-info-value">{habitStreak} day{habitStreak !== 1 ? 's' : ''}</span>
+                      <span className="prf-info-sub">Habit Streak</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Top PBs */}
+            {topPBs.length > 0 && (
+              <div className="prf-section">
+                <h2 className="prf-section-title">Top Lifts</h2>
+                <div className="prf-pb-list">
+                  {topPBs.map((pb, i) => (
+                    <div key={i} className="prf-pb-item">
+                      <div className="prf-pb-rank">{i === 0 ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2L12 16.6 5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>
+                      ) : `#${i + 1}`}</div>
+                      <span className="prf-pb-name">{pb.name}</span>
+                      <span className="prf-pb-weight">{pb.weight}<span className="prf-pb-unit">kg</span> x{pb.reps}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Badges */}
+            {unlockedBadges.length > 0 && (
+              <div className="prf-section">
+                <h2 className="prf-section-title">Badges Earned ({unlockedBadges.length})</h2>
+                <div className="prf-badge-row">
+                  {unlockedBadges.map(id => {
+                    const labels = {
+                      first_workout: 'First Rep', workouts_10: 'On Fire', workouts_25: 'Lightning',
+                      workouts_50: 'Iron Will', workouts_100: 'Century', streak_2: '2 Wk Warrior',
+                      streak_4: 'Month Strong', streak_8: 'Unbreakable', programme_done: 'Finisher',
+                      habits_7: 'Habit Machine', nutrition_7: 'Fuel Master', first_pb: 'Record Breaker',
+                      pbs_5: 'Climbing', leaderboard_join: 'Competitor',
+                    };
+                    return (
+                      <div key={id} className="prf-badge-chip">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/>
+                        </svg>
+                        <span>{labels[id] || id}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Journey */}
         <div className="prf-section">
