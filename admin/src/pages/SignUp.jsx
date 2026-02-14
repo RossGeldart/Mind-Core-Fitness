@@ -44,7 +44,7 @@ export default function SignUp() {
     setLoading(true);
     try {
       await signup(name, email, password);
-      navigate('/upgrade');
+      navigate('/onboarding');
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
         setError('An account with this email already exists');
