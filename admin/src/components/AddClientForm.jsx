@@ -87,6 +87,9 @@ export default function AddClientForm({ onClose, onClientAdded }) {
         email: formData.email.trim().toLowerCase(),
         clientType: formData.clientType,
         status: 'active',
+        tier: 'premium',
+        subscriptionStatus: 'active',
+        signupSource: 'admin',
         createdAt: Timestamp.now()
       };
 
