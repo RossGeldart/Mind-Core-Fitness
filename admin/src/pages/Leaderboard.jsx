@@ -101,9 +101,16 @@ function calculateWeekStreak(workoutDates) {
   return streak;
 }
 
+function formatVolume(kg) {
+  if (kg >= 1000000) return `${(kg / 1000000).toFixed(1)}M kg`;
+  if (kg >= 1000) return `${(kg / 1000).toFixed(1)}T`;
+  return `${kg} kg`;
+}
+
 const TABS = [
   { key: 'workouts', label: 'Workouts', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
   { key: 'minutes', label: 'Minutes', icon: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z' },
+  { key: 'volume', label: 'Volume', icon: 'M6.5 2H4v20h2.5M17.5 2H20v20h-2.5M4 12h16M7 7h10M7 17h10' },
   { key: 'streak', label: 'Streak', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
 ];
 
@@ -200,10 +207,12 @@ export default function Leaderboard() {
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
-      // Get all opted-in clients
+      // Get all opted-in Core Buddy clients only
       const clientsQ = query(collection(db, 'clients'), where('leaderboardOptIn', '==', true));
       const clientsSnap = await getDocs(clientsQ);
-      const clients = clientsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const clients = clientsSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(c => c.clientType === 'core_buddy' || c.coreBuddyAccess === true);
 
       if (clients.length === 0) {
         setRankings([]);
@@ -223,34 +232,16 @@ export default function Leaderboard() {
         bounds = period === 'week' ? getWeekBounds() : getMonthBounds();
       }
 
-      const startStr = formatDateKey(bounds.start);
-      const endStr = formatDateKey(bounds.end);
       const startTs = Timestamp.fromDate(bounds.start);
       const endTs = Timestamp.fromDate(bounds.end);
 
-      // Query workoutLogs
+      // Query workoutLogs (Core Buddy workouts only)
       const wlQ = query(
         collection(db, 'workoutLogs'),
         where('completedAt', '>=', startTs),
         where('completedAt', '<=', endTs)
       );
       const wlSnap = await getDocs(wlQ);
-
-      // Query circuitSessions
-      const csQ = query(
-        collection(db, 'circuitSessions'),
-        where('date', '>=', startStr),
-        where('date', '<=', endStr)
-      );
-      const csSnap = await getDocs(csQ);
-
-      // Query 1-2-1 sessions
-      const sessQ = query(
-        collection(db, 'sessions'),
-        where('date', '>=', startStr),
-        where('date', '<=', endStr)
-      );
-      const sessSnap = await getDocs(sessQ);
 
       // Build stats map
       const clientIds = new Set(clients.map(c => c.id));
@@ -262,6 +253,7 @@ export default function Leaderboard() {
           photoURL: c.photoURL || null,
           workouts: 0,
           minutes: 0,
+          volume: 0,
           workoutDates: new Set(),
         };
       });
@@ -270,35 +262,25 @@ export default function Leaderboard() {
       wlSnap.docs.forEach(d => {
         const data = d.data();
         if (!clientIds.has(data.clientId)) return;
-        stats[data.clientId].workouts++;
-        stats[data.clientId].minutes += data.duration || 0;
+        const s = stats[data.clientId];
+
+        // Workouts: count all types (randomiser, muscle_group, programme)
+        s.workouts++;
+
+        // Minutes: only randomiser workouts (no type field = randomiser)
+        if (!data.type) {
+          s.minutes += data.duration || 0;
+        }
+
+        // Volume: programme + muscle_group only
+        if (data.type === 'programme' || data.type === 'muscle_group') {
+          s.volume += data.volume || 0;
+        }
+
+        // Streak dates: all workout types count
         if (data.completedAt) {
           const date = data.completedAt.toDate();
-          stats[data.clientId].workoutDates.add(formatDateKey(date));
-        }
-      });
-
-      // Process circuitSessions (check attended slots)
-      csSnap.docs.forEach(d => {
-        const data = d.data();
-        (data.slots || []).forEach(slot => {
-          if (slot.attended && slot.memberId && clientIds.has(slot.memberId)) {
-            stats[slot.memberId].workouts++;
-            stats[slot.memberId].minutes += 45;
-            stats[slot.memberId].workoutDates.add(data.date);
-          }
-        });
-      });
-
-      // Process 1-2-1 sessions (past = completed)
-      const today = formatDateKey(new Date());
-      sessSnap.docs.forEach(d => {
-        const data = d.data();
-        if (!clientIds.has(data.clientId)) return;
-        if (data.date <= today) {
-          stats[data.clientId].workouts++;
-          stats[data.clientId].minutes += data.duration || 45;
-          stats[data.clientId].workoutDates.add(data.date);
+          s.workoutDates.add(formatDateKey(date));
         }
       });
 
@@ -315,6 +297,8 @@ export default function Leaderboard() {
         sorted.sort((a, b) => b.workouts - a.workouts || a.name.localeCompare(b.name));
       } else if (activeTab === 'minutes') {
         sorted.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
+      } else if (activeTab === 'volume') {
+        sorted.sort((a, b) => b.volume - a.volume || a.name.localeCompare(b.name));
       } else {
         sorted.sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name));
       }
@@ -332,18 +316,21 @@ export default function Leaderboard() {
   const getValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return entry.minutes;
+    if (activeTab === 'volume') return entry.volume;
     return entry.streak;
   };
 
   const formatValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return formatMinutes(entry.minutes);
+    if (activeTab === 'volume') return formatVolume(entry.volume);
     return entry.streak;
   };
 
   const getUnit = () => {
     if (activeTab === 'workouts') return '';
     if (activeTab === 'minutes') return '';
+    if (activeTab === 'volume') return '';
     return 'wk';
   };
 
@@ -425,8 +412,9 @@ export default function Leaderboard() {
                   <div className="lb-optin-category-text">
                     <span className="lb-optin-category-name">{tab.label}</span>
                     <span className="lb-optin-category-desc">
-                      {tab.key === 'workouts' && 'Total workouts from all training types'}
-                      {tab.key === 'minutes' && 'Total active minutes across all sessions'}
+                      {tab.key === 'workouts' && 'Randomiser, muscle group & programme workouts'}
+                      {tab.key === 'minutes' && 'Total minutes from randomiser workouts'}
+                      {tab.key === 'volume' && 'Total weight lifted in programmes & muscle groups'}
                       {tab.key === 'streak' && 'Consecutive weeks with at least one workout'}
                     </span>
                   </div>
