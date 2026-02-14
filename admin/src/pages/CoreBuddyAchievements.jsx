@@ -90,6 +90,7 @@ export default function CoreBuddyAchievements() {
   const [unlockedBadges, setUnlockedBadges] = useState([]);
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [totalWorkouts, setTotalWorkouts] = useState(0);
+  const [progress, setProgress] = useState({});
   const carouselRef = useRef(null);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function CoreBuddyAchievements() {
         if (pbSnap.exists()) setPbData(pbSnap.data().exercises || {});
         if (badgesSnap.exists()) {
           setUnlockedBadges(Object.keys(badgesSnap.data().badges || {}));
+          setProgress(badgesSnap.data().progress || {});
         }
         setTotalWorkouts(logsSnap.docs.length);
       } catch (err) {
@@ -209,41 +211,65 @@ export default function CoreBuddyAchievements() {
           </div>
         )}
 
-        {/* ====== WORKOUT BADGES CAROUSEL ====== */}
-        <div className="ach-section">
-          <h3 className="ach-section-title">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
-            </svg>
-            Workout Badges
-          </h3>
-
-          <div className="ach-workout-carousel" ref={carouselRef}>
-            {BADGE_DEFS.map((badge) => {
-              const isUnlocked = unlockedBadges.includes(badge.id);
-              return (
-                <button
-                  key={badge.id}
-                  className={`ach-workout-badge${isUnlocked ? ' unlocked' : ' locked'}`}
-                  onClick={() => setSelectedBadge(badge)}
-                >
-                  <img src={badge.img} alt={badge.name} className="ach-workout-badge-img" />
-                  {!isUnlocked && badge.threshold && (
-                    <div className="ach-workout-badge-progress">
-                      <div
-                        className="ach-workout-badge-progress-fill"
-                        style={{ width: `${Math.min((totalWorkouts / badge.threshold) * 100, 100)}%` }}
-                      />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <p className="ach-workout-badges-count">
-            {unlockedBadges.length}/{BADGE_DEFS.length} unlocked
-          </p>
-        </div>
+        {/* ====== BADGE CAROUSELS ====== */}
+        {[
+          { key: 'workouts', title: 'Workout Badges', iconPath: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z' },
+          { key: 'streaks', title: 'Streak Badges', iconPath: 'M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z' },
+          { key: 'pbs', title: 'Personal Best Badges', iconPath: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
+          { key: 'nutrition', title: 'Nutrition Badges', iconPath: 'M18.06 23h1.66c.84 0 1.53-.65 1.63-1.47L23 5.05h-5V1h-2v4.05h-5l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29V23zM1 22v-1h15.03v1c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-4.87-4.66-5.84-8.03-5.97l.72 5.52L1 15.05v5.95h15.03V15z' },
+          { key: 'habits', title: 'Habit Badges', iconPath: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z' },
+          { key: 'leaderboard', title: 'Leaderboard Badges', iconPath: 'M7.5 21H2V9h5.5v12zm7.25-18h-5.5v18h5.5V3zM22 11h-5.5v10H22V11z' },
+        ].map(cat => {
+          const catBadges = BADGE_DEFS.filter(b => b.category === cat.key);
+          if (catBadges.length === 0) return null;
+          const progressValue = (() => {
+            switch (cat.key) {
+              case 'workouts': return totalWorkouts;
+              case 'streaks': return progress.streakWeeks || 0;
+              case 'pbs': return Object.keys(pbData).length;
+              case 'nutrition': return progress.nutritionStreak || 0;
+              case 'leaderboard': return clientData?.leaderboardOptIn ? 1 : 0;
+              case 'habits': return progress.habitStreak || 0;
+              default: return 0;
+            }
+          })();
+          const catUnlocked = catBadges.filter(b => unlockedBadges.includes(b.id)).length;
+          return (
+            <div key={cat.key} className="ach-section">
+              <h3 className="ach-section-title">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d={cat.iconPath} />
+                </svg>
+                {cat.title}
+              </h3>
+              <div className="ach-workout-carousel">
+                {catBadges.map((badge) => {
+                  const isUnlocked = unlockedBadges.includes(badge.id);
+                  return (
+                    <button
+                      key={badge.id}
+                      className={`ach-workout-badge${isUnlocked ? ' unlocked' : ' locked'}`}
+                      onClick={() => setSelectedBadge(badge)}
+                    >
+                      <img src={badge.img} alt={badge.name} className="ach-workout-badge-img" />
+                      {!isUnlocked && badge.threshold && (
+                        <div className="ach-workout-badge-progress">
+                          <div
+                            className="ach-workout-badge-progress-fill"
+                            style={{ width: `${Math.min((progressValue / badge.threshold) * 100, 100)}%` }}
+                          />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="ach-workout-badges-count">
+                {catUnlocked}/{catBadges.length} unlocked
+              </p>
+            </div>
+          );
+        })}
 
         {/* Badge fullscreen overlay */}
         {selectedBadge && (
