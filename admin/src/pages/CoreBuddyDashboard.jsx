@@ -674,6 +674,9 @@ export default function CoreBuddyDashboard() {
 
         if (totalAll >= 1) addBadge('first_workout');
         if (totalAll >= 10) addBadge('workouts_10');
+        if (totalAll >= 25) addBadge('workouts_25');
+        if (totalAll >= 50) addBadge('workouts_50');
+        if (totalAll >= 100) addBadge('workouts_100');
 
         setUnlockedBadges(unlocked);
 

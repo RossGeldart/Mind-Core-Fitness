@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyAchievements.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_78_94 } from '../utils/ringTicks';
+import BADGE_DEFS from '../utils/badgeConfig';
 
 // Exercise group mapping for all weighted exercises in programme templates
 const EXERCISE_GROUPS = {
@@ -86,6 +87,10 @@ export default function CoreBuddyAchievements() {
   const [loading, setLoading] = useState(true);
   const [achievements, setAchievements] = useState(null);
   const [pbData, setPbData] = useState({});
+  const [unlockedBadges, setUnlockedBadges] = useState([]);
+  const [selectedBadge, setSelectedBadge] = useState(null);
+  const [totalWorkouts, setTotalWorkouts] = useState(0);
+  const carouselRef = useRef(null);
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
@@ -95,12 +100,18 @@ export default function CoreBuddyAchievements() {
     if (!clientData) return;
     const load = async () => {
       try {
-        const [achSnap, pbSnap] = await Promise.all([
+        const [achSnap, pbSnap, badgesSnap, logsSnap] = await Promise.all([
           getDoc(doc(db, 'coreBuddyAchievements', clientData.id)),
           getDoc(doc(db, 'coreBuddyPBs', clientData.id)),
+          getDoc(doc(db, 'achievements', clientData.id)),
+          getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', clientData.id))),
         ]);
         if (achSnap.exists()) setAchievements(achSnap.data());
         if (pbSnap.exists()) setPbData(pbSnap.data().exercises || {});
+        if (badgesSnap.exists()) {
+          setUnlockedBadges(Object.keys(badgesSnap.data().badges || {}));
+        }
+        setTotalWorkouts(logsSnap.docs.length);
       } catch (err) {
         console.error('Error loading achievements:', err);
       }
@@ -141,8 +152,8 @@ export default function CoreBuddyAchievements() {
     );
   }
 
-  const totalBadges = badges.length;
-  const hasAnyContent = totalBadges > 0 || totalVolume > 0;
+  const totalBadges = badges.length + unlockedBadges.length;
+  const hasAnyContent = totalBadges > 0 || totalVolume > 0 || totalWorkouts > 0;
 
   return (
     <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
@@ -195,6 +206,58 @@ export default function CoreBuddyAchievements() {
             </div>
             <h4>No achievements yet</h4>
             <p>Complete workouts to track volume and set PB targets to start earning badges.</p>
+          </div>
+        )}
+
+        {/* ====== WORKOUT BADGES CAROUSEL ====== */}
+        <div className="ach-section">
+          <h3 className="ach-section-title">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+            </svg>
+            Workout Badges
+          </h3>
+
+          <div className="ach-workout-carousel" ref={carouselRef}>
+            {BADGE_DEFS.map((badge) => {
+              const isUnlocked = unlockedBadges.includes(badge.id);
+              return (
+                <button
+                  key={badge.id}
+                  className={`ach-workout-badge${isUnlocked ? ' unlocked' : ' locked'}`}
+                  onClick={() => setSelectedBadge(badge)}
+                >
+                  <img src={badge.img} alt={badge.name} className="ach-workout-badge-img" />
+                  {!isUnlocked && badge.threshold && (
+                    <div className="ach-workout-badge-progress">
+                      <div
+                        className="ach-workout-badge-progress-fill"
+                        style={{ width: `${Math.min((totalWorkouts / badge.threshold) * 100, 100)}%` }}
+                      />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className="ach-workout-badges-count">
+            {unlockedBadges.length}/{BADGE_DEFS.length} unlocked
+          </p>
+        </div>
+
+        {/* Badge fullscreen overlay */}
+        {selectedBadge && (
+          <div className="ach-badge-overlay" onClick={() => setSelectedBadge(null)}>
+            <div className="ach-badge-overlay-content" onClick={e => e.stopPropagation()}>
+              <img src={selectedBadge.img} alt={selectedBadge.name} className="ach-badge-overlay-img" />
+              <p className="ach-badge-overlay-desc">{selectedBadge.desc}</p>
+              {unlockedBadges.includes(selectedBadge.id) ? (
+                <span className="ach-badge-overlay-status unlocked">Unlocked</span>
+              ) : (
+                <span className="ach-badge-overlay-status locked">Locked</span>
+              )}
+              <button className="ach-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
+            </div>
           </div>
         )}
 
