@@ -464,6 +464,7 @@ export default function CoreBuddyDashboard() {
       let localPbCount = 0;
       let localPbList = [];
       let localProgrammeComplete = false;
+      let localNutTargets = null;
 
       try {
         const todayStr = formatDate(new Date());
@@ -529,6 +530,7 @@ export default function CoreBuddyDashboard() {
         const targetSnap = await getDoc(doc(db, 'nutritionTargets', clientData.id));
         if (targetSnap.exists()) {
           setNutritionTargetData(targetSnap.data());
+          localNutTargets = targetSnap.data();
         }
 
         // 5. Today's nutrition log
@@ -651,7 +653,7 @@ export default function CoreBuddyDashboard() {
         }
         setHabitStreak(hStreak);
 
-        // Nutrition streak (consecutive days with at least 1 entry, up to 30 days back)
+        // Nutrition streak (consecutive days hitting macro targets, up to 30 days back)
         let nStreak = 0;
         for (let d = 0; d < 30; d++) {
           const checkDate = new Date();
@@ -659,8 +661,23 @@ export default function CoreBuddyDashboard() {
           const dStr = formatDate(checkDate);
           try {
             const nSnap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${dStr}`));
-            if (nSnap.exists() && (nSnap.data().entries || []).length > 0) { nStreak++; }
-            else break;
+            if (nSnap.exists() && (nSnap.data().entries || []).length > 0) {
+              if (localNutTargets) {
+                const entries = nSnap.data().entries || [];
+                const totals = entries.reduce((acc, e) => ({
+                  protein: acc.protein + (e.protein || 0),
+                  carbs: acc.carbs + (e.carbs || 0),
+                  fats: acc.fats + (e.fats || 0),
+                }), { protein: 0, carbs: 0, fats: 0 });
+                if (totals.protein >= (localNutTargets.protein || 0) &&
+                    totals.carbs >= (localNutTargets.carbs || 0) &&
+                    totals.fats >= (localNutTargets.fats || 0)) {
+                  nStreak++;
+                } else break;
+              } else {
+                nStreak++;
+              }
+            } else break;
           } catch { break; }
         }
         setNutritionStreak(nStreak);
@@ -678,12 +695,36 @@ export default function CoreBuddyDashboard() {
         if (totalAll >= 50) addBadge('workouts_50');
         if (totalAll >= 100) addBadge('workouts_100');
 
+        // Streak badges
+        if (wkStreak >= 2) addBadge('streak_2');
+        if (wkStreak >= 4) addBadge('streak_4');
+        if (wkStreak >= 8) addBadge('streak_8');
+
+        // PB count badges
+        if (localPbCount >= 1) addBadge('first_pb');
+        if (localPbCount >= 5) addBadge('pbs_5');
+        if (localPbCount >= 10) addBadge('pbs_10');
+        if (localPbCount >= 100) addBadge('pbs_100');
+
+        // Nutrition streak badge
+        if (nStreak >= 7) addBadge('nutrition_7');
+
+        // Leaderboard badge
+        if (clientData.leaderboardOptIn) addBadge('leaderboard_join');
+
+        // Habit streak badge
+        if (hStreak >= 7) addBadge('habits_7');
+
         setUnlockedBadges(unlocked);
 
         // Persist to Firestore (fire and forget)
         const badgeMap = {};
         unlocked.forEach(id => { badgeMap[id] = { unlockedAt: new Date().toISOString() }; });
-        setDoc(doc(db, 'achievements', clientData.id), { badges: badgeMap, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
+        setDoc(doc(db, 'achievements', clientData.id), {
+          badges: badgeMap,
+          progress: { streakWeeks: wkStreak, pbCount: localPbCount, nutritionStreak: nStreak, habitStreak: hStreak },
+          updatedAt: new Date().toISOString()
+        }, { merge: true }).catch(() => {});
       } catch (achErr) {
         console.error('Achievement computation error:', achErr);
       }
