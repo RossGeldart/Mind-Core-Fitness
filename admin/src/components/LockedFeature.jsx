@@ -1,20 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useTier } from '../contexts/TierContext';
 import './LockedFeature.css';
 
-/**
- * Wraps a page/section and shows an upgrade overlay if the user is on the free tier.
- *
- * Usage:
- *   <LockedFeature feature="nutrition">
- *     <CoreBuddyNutrition />
- *   </LockedFeature>
- *
- * Props:
- *   feature  – key from PREMIUM_FEATURES in TierContext
- *   children – the gated content (still rendered underneath the blur)
- */
 export default function LockedFeature({ feature, children }) {
   const { canAccess } = useTier();
+  const navigate = useNavigate();
 
   if (canAccess(feature)) return children;
 
@@ -33,7 +23,7 @@ export default function LockedFeature({ feature, children }) {
           </div>
           <h2>Premium Feature</h2>
           <p>Upgrade to Core Buddy Premium to unlock this feature and get full access to everything.</p>
-          <button className="locked-upgrade-btn">Upgrade Now</button>
+          <button className="locked-upgrade-btn" onClick={() => navigate('/upgrade')}>Upgrade Now</button>
         </div>
       </div>
     </div>

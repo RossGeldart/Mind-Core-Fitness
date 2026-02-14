@@ -30,6 +30,7 @@ const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
 const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
 const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const UpgradePage = lazy(() => import('./pages/UpgradePage'));
 
 // Scroll to top on route change
 function ScrollToTop({ children }) {
@@ -96,6 +97,7 @@ function App() {
             <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
+            <Route path="/upgrade" element={<UpgradePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           </Suspense>

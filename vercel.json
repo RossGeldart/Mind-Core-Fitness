@@ -46,6 +46,10 @@
       "destination": "/login/index.html"
     },
     {
+      "source": "/login/upgrade",
+      "destination": "/login/index.html"
+    },
+    {
       "source": "/login/:path*",
       "has": [
         {
