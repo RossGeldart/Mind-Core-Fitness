@@ -20,6 +20,11 @@ export default function Login() {
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
+        // Redirect to onboarding if not completed
+        if (clientData?.clientType === 'core_buddy' && !clientData?.onboardingComplete) {
+          navigate('/onboarding');
+          return;
+        }
         const type = clientData?.clientType;
         if (type === 'core_buddy') {
           navigate('/client/core-buddy');

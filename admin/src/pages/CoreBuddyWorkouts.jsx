@@ -1366,10 +1366,11 @@ export default function CoreBuddyWorkouts() {
 
           {/* Programmes Section */}
           <div className="wk-section-header">
-            <h2>Programmes</h2>
+            <h2>Programmes {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h2>
             <span className="wk-section-count">{PROGRAMME_CARDS.length} available</span>
           </div>
 
+          {isPremium ? (
           <div className="wk-prog-scroll-wrap">
             <div className="wk-prog-scroll">
               {PROGRAMME_CARDS.map((prog, i) => prog.image ? (
@@ -1409,13 +1410,20 @@ export default function CoreBuddyWorkouts() {
               ))}
             </div>
           </div>
+          ) : (
+            <button className="cb-upgrade-teaser" onClick={() => navigate('/upgrade')}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Upgrade to unlock programmes</span>
+            </button>
+          )}
 
           {/* Muscle Groups Section */}
           <div className="wk-section-header">
-            <h2>Muscle Groups</h2>
+            <h2>Muscle Groups {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h2>
             <span className="wk-section-count">{MUSCLE_GROUPS.length} groups</span>
           </div>
 
+          {isPremium ? (
           <div className="wk-muscle-grid">
             {MUSCLE_GROUPS.map((mg, i) => (
               <button key={mg.key} className={`wk-muscle-hero-card${mg.image ? ' wk-muscle-thumb' : ''}`}
@@ -1441,6 +1449,12 @@ export default function CoreBuddyWorkouts() {
               </button>
             ))}
           </div>
+          ) : (
+            <button className="cb-upgrade-teaser" onClick={() => navigate('/upgrade')}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Upgrade to unlock muscle group workouts</span>
+            </button>
+          )}
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
