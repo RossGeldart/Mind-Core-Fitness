@@ -405,8 +405,8 @@ export default function Calendar() {
       return;
     }
 
-    // Check if client can book more sessions (total - already booked)
-    const clientBookedSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
+    // Check if client can book more sessions (only count upcoming, not completed)
+    const clientBookedSessions = getBookedSessionsCount(selectedClient.id);
     if (clientBookedSessions >= selectedClient.totalSessions) {
       alert(`${selectedClient.name} has already booked all ${selectedClient.totalSessions} sessions`);
       return;
@@ -461,7 +461,7 @@ export default function Calendar() {
 
     // First pass: count how many sessions would actually be created
     let sessionsToCreate = [];
-    const existingClientSessions = sessions.filter(s => s.clientId === selectedClient.id).length;
+    const existingClientSessions = getBookedSessionsCount(selectedClient.id);
 
     for (let week = 0; week < totalWeeks; week++) {
       const weekStartDate = new Date(clientStart);
