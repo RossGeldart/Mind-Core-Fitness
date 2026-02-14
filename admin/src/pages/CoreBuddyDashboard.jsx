@@ -1414,34 +1414,31 @@ export default function CoreBuddyDashboard() {
                   <button
                     key={badge.id}
                     className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
-                    onClick={() => setSelectedBadge(selectedBadge?.id === badge.id ? null : badge)}
+                    onClick={() => setSelectedBadge(badge)}
                   >
-                    <span className="cb-badge-icon">
-                      <img src={badge.img} alt={badge.name} className="cb-badge-img" />
-                    </span>
-                    <span className="cb-badge-name">{badge.name}</span>
+                    <img src={badge.img} alt={badge.name} className="cb-badge-img" />
                   </button>
                 );
               })}
             </div>
-            {selectedBadge && (
-              <div className="cb-badge-detail">
-                <span className="cb-badge-detail-icon">
-                  <img src={selectedBadge.img} alt={selectedBadge.name} className="cb-badge-img" />
-                </span>
-                <div className="cb-badge-detail-info">
-                  <strong>{selectedBadge.name}</strong>
-                  <span>{selectedBadge.desc}</span>
-                  {unlockedBadges.includes(selectedBadge.id) ? (
-                    <span className="cb-badge-status unlocked">Unlocked</span>
-                  ) : (
-                    <span className="cb-badge-status locked">Locked</span>
-                  )}
-                </div>
-              </div>
-            )}
             <p className="cb-badges-count">{unlockedBadges.length}/{BADGE_DEFS.length} unlocked</p>
           </div>
+
+          {/* Badge fullscreen overlay */}
+          {selectedBadge && (
+            <div className="cb-badge-overlay" onClick={() => setSelectedBadge(null)}>
+              <div className="cb-badge-overlay-content" onClick={e => e.stopPropagation()}>
+                <img src={selectedBadge.img} alt={selectedBadge.name} className="cb-badge-overlay-img" />
+                <p className="cb-badge-overlay-desc">{selectedBadge.desc}</p>
+                {unlockedBadges.includes(selectedBadge.id) ? (
+                  <span className="cb-badge-status unlocked">Unlocked</span>
+                ) : (
+                  <span className="cb-badge-status locked">Locked</span>
+                )}
+                <button className="cb-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
+              </div>
+            </div>
+          )}
 
           {/* My Journey */}
           <div className="cb-journey-section">
