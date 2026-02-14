@@ -1077,7 +1077,6 @@
   width: 42px;
   height: 42px;
   object-fit: contain;
-  border-radius: 50%;
 }
 
 .cb-badge.locked .cb-badge-icon {
@@ -1136,7 +1135,6 @@
   width: 52px;
   height: 52px;
   object-fit: contain;
-  border-radius: 50%;
 }
 
 .cb-badge-detail-info {
