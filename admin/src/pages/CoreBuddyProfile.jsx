@@ -745,7 +745,6 @@ export default function CoreBuddyProfile() {
                     return (
                       <div key={id} className="prf-badge-chip">
                         <img src={badge.img} alt={badge.name} className="prf-badge-chip-img" />
-                        <span>{badge.name}</span>
                       </div>
                     );
                   })}
