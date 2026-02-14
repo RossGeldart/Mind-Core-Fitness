@@ -8,6 +8,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import BADGE_DEFS from '../utils/badgeConfig';
 import './CoreBuddyProfile.css';
 
 function getInitials(name) {
@@ -739,19 +740,12 @@ export default function CoreBuddyProfile() {
                 <h2 className="prf-section-title">Badges Earned ({unlockedBadges.length})</h2>
                 <div className="prf-badge-row">
                   {unlockedBadges.map(id => {
-                    const labels = {
-                      first_workout: 'First Rep', workouts_10: 'On Fire', workouts_25: 'Lightning',
-                      workouts_50: 'Iron Will', workouts_100: 'Century', streak_2: '2 Wk Warrior',
-                      streak_4: 'Month Strong', streak_8: 'Unbreakable', programme_done: 'Finisher',
-                      habits_7: 'Habit Machine', nutrition_7: 'Fuel Master', first_pb: 'Record Breaker',
-                      pbs_5: 'Climbing', leaderboard_join: 'Competitor',
-                    };
+                    const badge = BADGE_DEFS.find(b => b.id === id);
+                    if (!badge) return null;
                     return (
                       <div key={id} className="prf-badge-chip">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                          <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/>
-                        </svg>
-                        <span>{labels[id] || id}</span>
+                        <img src={badge.img} alt={badge.name} className="prf-badge-chip-img" />
+                        <span>{badge.name}</span>
                       </div>
                     );
                   })}

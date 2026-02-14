@@ -12,8 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_85_96 } from '../utils/ringTicks';
-import firstWorkoutBadge from '../assets/first_workout.PNG';
-import workouts10Badge from '../assets/workouts_10.PNG';
+import BADGE_DEFS from '../utils/badgeConfig';
 
 const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
@@ -101,48 +100,6 @@ function compressImage(file, maxSize = 800) {
   });
 }
 
-// SVG badge icons (stroke-based, 24x24 viewBox)
-const BADGE_ICONS = {
-  first_workout: <img src={firstWorkoutBadge} alt="First Workout" className="cb-badge-img" />,
-  workouts_10: <img src={workouts10Badge} alt="10 Workouts" className="cb-badge-img" />,
-  workouts_25: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
-  workouts_50: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h4"/><path d="M16 12h4"/><path d="M12 4v4"/><path d="M12 16v4"/><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z"/></svg>,
-  workouts_100: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/><circle cx="12" cy="12" r="3"/></svg>,
-  streak_2: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>,
-  streak_4: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M8 16h8"/><path d="M12 14v4"/></svg>,
-  streak_8: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2c-1.5 3-5 5-5 9a7 7 0 0 0 14 0c0-4-3.5-6-5-9"/><path d="M12 18c-2 0-3-1.5-3-3 0-2 1.5-3 3-5 1.5 2 3 3 3 5 0 1.5-1 3-3 3z"/></svg>,
-  programme_done: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 22V8a4 4 0 0 0-4-4H8a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4h2a4 4 0 0 0-4 4v14"/><path d="M9 12l2 2 4-4"/></svg>,
-  habits_7: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>,
-  nutrition_7: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 2-1.5 3.5-3 4.5V20a2 2 0 0 1-4 0v-8.5C8.5 10.5 7 9 7 7a5 5 0 0 1 5-5z"/><path d="M9 7h6"/></svg>,
-  first_pb: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M12 14v8"/><path d="M9 18l3 3 3-3"/><path d="M10 6l2 2 2-2"/></svg>,
-  pbs_5: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18"/><path d="M5 20V10l4-6"/><path d="M9 20V4"/><path d="M13 20V10l4-6"/><path d="M17 20V4"/><path d="M21 20V10"/></svg>,
-  leaderboard_join: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-};
-
-// Achievement badge definitions
-const BADGE_DEFS = [
-  // Workout milestones
-  { id: 'first_workout', icon: BADGE_ICONS.first_workout, name: 'First Rep', desc: 'Complete your first workout', category: 'workouts' },
-  { id: 'workouts_10', icon: BADGE_ICONS.workouts_10, name: 'On Fire', desc: 'Complete 10 workouts', category: 'workouts' },
-  { id: 'workouts_25', icon: BADGE_ICONS.workouts_25, name: 'Lightning', desc: 'Complete 25 workouts', category: 'workouts' },
-  { id: 'workouts_50', icon: BADGE_ICONS.workouts_50, name: 'Iron Will', desc: 'Complete 50 workouts', category: 'workouts' },
-  { id: 'workouts_100', icon: BADGE_ICONS.workouts_100, name: 'Century Club', desc: 'Complete 100 workouts', category: 'workouts' },
-  // Streak
-  { id: 'streak_2', icon: BADGE_ICONS.streak_2, name: '2 Week Warrior', desc: '2-week workout streak', category: 'streak' },
-  { id: 'streak_4', icon: BADGE_ICONS.streak_4, name: 'Month Strong', desc: '4-week workout streak', category: 'streak' },
-  { id: 'streak_8', icon: BADGE_ICONS.streak_8, name: 'Unbreakable', desc: '8-week workout streak', category: 'streak' },
-  // Programme
-  { id: 'programme_done', icon: BADGE_ICONS.programme_done, name: 'Finisher', desc: 'Complete a programme', category: 'programme' },
-  // Habits
-  { id: 'habits_7', icon: BADGE_ICONS.habits_7, name: 'Habit Machine', desc: '7-day perfect habit streak', category: 'habits' },
-  // Nutrition
-  { id: 'nutrition_7', icon: BADGE_ICONS.nutrition_7, name: 'Fuel Master', desc: 'Log nutrition 7 days in a row', category: 'nutrition' },
-  // PBs
-  { id: 'first_pb', icon: BADGE_ICONS.first_pb, name: 'Record Breaker', desc: 'Set your first PB', category: 'pbs' },
-  { id: 'pbs_5', icon: BADGE_ICONS.pbs_5, name: 'Climbing', desc: 'Set 5 personal bests', category: 'pbs' },
-  // Social
-  { id: 'leaderboard_join', icon: BADGE_ICONS.leaderboard_join, name: 'Competitor', desc: 'Join the leaderboard', category: 'social' },
-];
 
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
@@ -717,18 +674,6 @@ export default function CoreBuddyDashboard() {
 
         if (totalAll >= 1) addBadge('first_workout');
         if (totalAll >= 10) addBadge('workouts_10');
-        if (totalAll >= 25) addBadge('workouts_25');
-        if (totalAll >= 50) addBadge('workouts_50');
-        if (totalAll >= 100) addBadge('workouts_100');
-        if (wkStreak >= 2) addBadge('streak_2');
-        if (wkStreak >= 4) addBadge('streak_4');
-        if (wkStreak >= 8) addBadge('streak_8');
-        if (localProgrammeComplete) addBadge('programme_done');
-        if (hStreak >= 7) addBadge('habits_7');
-        if (nStreak >= 7) addBadge('nutrition_7');
-        if (localPbCount > 0 || localPbList.length > 0) addBadge('first_pb');
-        if (localPbCount >= 5) addBadge('pbs_5');
-        if (clientData.leaderboardOptIn) addBadge('leaderboard_join');
 
         setUnlockedBadges(unlocked);
 
@@ -1471,7 +1416,9 @@ export default function CoreBuddyDashboard() {
                     className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
                     onClick={() => setSelectedBadge(selectedBadge?.id === badge.id ? null : badge)}
                   >
-                    <span className="cb-badge-icon">{badge.icon}</span>
+                    <span className="cb-badge-icon">
+                      <img src={badge.img} alt={badge.name} className="cb-badge-img" />
+                    </span>
                     <span className="cb-badge-name">{badge.name}</span>
                   </button>
                 );
@@ -1479,7 +1426,9 @@ export default function CoreBuddyDashboard() {
             </div>
             {selectedBadge && (
               <div className="cb-badge-detail">
-                <span className="cb-badge-detail-icon">{selectedBadge.icon}</span>
+                <span className="cb-badge-detail-icon">
+                  <img src={selectedBadge.img} alt={selectedBadge.name} className="cb-badge-img" />
+                </span>
                 <div className="cb-badge-detail-info">
                   <strong>{selectedBadge.name}</strong>
                   <span>{selectedBadge.desc}</span>

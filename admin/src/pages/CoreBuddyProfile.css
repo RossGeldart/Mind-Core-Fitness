@@ -435,29 +435,33 @@
 
 .prf-badge-chip {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  background: rgba(249, 168, 37, 0.08);
-  border: 1px solid rgba(249, 168, 37, 0.2);
-  border-radius: 20px;
-  color: #f9a825;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-card);
+  border: 1px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
+  border-radius: 14px;
 }
 
-.prf-badge-chip svg {
+.prf-badge-chip-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
 .prf-badge-chip span {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   white-space: nowrap;
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .prf-badge-chip {
-  background: rgba(249, 168, 37, 0.12);
-  border-color: rgba(249, 168, 37, 0.25);
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ===== TOAST ===== */
