@@ -9,7 +9,7 @@ import {
   browserSessionPersistence,
   setPersistence
 } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID } from '../config/firebase';
 
 const AuthContext = createContext();
@@ -26,23 +26,31 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubClient = null;
+
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+
+      // Clean up previous client listener
+      if (unsubClient) {
+        unsubClient();
+        unsubClient = null;
+      }
 
       if (user) {
         if (user.uid === ADMIN_UID) {
           setIsAdmin(true);
           setIsClient(false);
           setClientData(null);
+          setLoading(false);
         } else {
-          // Check if this user is a client
+          // Real-time listener on this user's client doc
           setIsAdmin(false);
-          try {
-            const clientsQuery = query(
-              collection(db, 'clients'),
-              where('uid', '==', user.uid)
-            );
-            const snapshot = await getDocs(clientsQuery);
+          const clientsQuery = query(
+            collection(db, 'clients'),
+            where('uid', '==', user.uid)
+          );
+          unsubClient = onSnapshot(clientsQuery, (snapshot) => {
             if (!snapshot.empty) {
               const clientDoc = snapshot.docs[0];
               setIsClient(true);
@@ -51,22 +59,26 @@ export function AuthProvider({ children }) {
               setIsClient(false);
               setClientData(null);
             }
-          } catch (error) {
-            console.error('Error fetching client data:', error);
+            setLoading(false);
+          }, (error) => {
+            console.error('Error listening to client data:', error);
             setIsClient(false);
             setClientData(null);
-          }
+            setLoading(false);
+          });
         }
       } else {
         setIsAdmin(false);
         setIsClient(false);
         setClientData(null);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubAuth();
+      if (unsubClient) unsubClient();
+    };
   }, []);
 
   const login = async (email, password, rememberMe = true) => {
