@@ -189,22 +189,22 @@
 
 .ob-showcase-slide {
   flex: 0 0 100%;
-  height: 100%;            /* fill carousel height — Safari won't infer this */
-  min-height: 0;
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* Never use center — Safari pushes content above the container
+     edge when it overflows, which is exactly the bug we're fixing. */
+  justify-content: flex-start;
   padding: 0 20px;
   box-sizing: border-box;
-  overflow: hidden;        /* nothing bleeds outside the slide */
 }
 
 .ob-showcase-img-wrap {
   max-width: 240px;
-  flex: 1 1 0%;            /* grows into available space, shrinks when tight */
-  min-height: 0;           /* let it shrink below intrinsic image size */
+  /* Hard cap that guarantees room for text (~60px), dots (~28px),
+     buttons (~110px), header (~72px) and page padding (~28px) ≈ 300px */
+  max-height: calc(100dvh - 300px);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
