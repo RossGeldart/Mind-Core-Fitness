@@ -1,21 +1,28 @@
 /* ── Spotlight Tour ── */
 
-/* Full-screen event catcher */
+/* Full-screen container */
 .st-overlay {
   position: fixed;
   inset: 0;
   z-index: 10000;
-  pointer-events: none;           /* clicks pass through except on children */
 }
 
-/* Cutout element – massive box-shadow creates the dark backdrop */
+/* Semi-transparent backdrop — fills the whole screen, click advances */
+.st-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 10000;
+}
+
+/* Cutout element — massive box-shadow carves a spotlight hole above the backdrop */
 .st-spotlight {
   position: fixed;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
-  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
-  pointer-events: none;
   z-index: 10001;
+  pointer-events: none;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
 /* Tooltip card */
@@ -24,12 +31,11 @@
   width: 290px;
   max-width: calc(100vw - 32px);
   background: var(--bg-card, #1e1e2e);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   padding: 20px;
   z-index: 10002;
-  pointer-events: auto;
-  animation: st-fade-in 0.25s ease;
+  animation: st-fade-in 0.28s ease;
 }
 
 @keyframes st-fade-in {
@@ -37,7 +43,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Arrow — below target */
+/* Arrow — tooltip sits below target */
 .st-tooltip-below::before {
   content: '';
   position: absolute;
@@ -46,12 +52,12 @@
   width: 16px;
   height: 16px;
   background: var(--bg-card, #1e1e2e);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
   transform: rotate(45deg);
 }
 
-/* Arrow — above target */
+/* Arrow — tooltip sits above target */
 .st-tooltip-above::before {
   content: '';
   position: absolute;
@@ -60,8 +66,8 @@
   width: 16px;
   height: 16px;
   background: var(--bg-card, #1e1e2e);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
   transform: rotate(45deg);
 }
 
@@ -77,12 +83,12 @@
   height: 8px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .st-dot.active {
   background: var(--color-primary, #FF6B35);
-  transform: scale(1.2);
+  transform: scale(1.25);
 }
 
 .st-dot.done {
