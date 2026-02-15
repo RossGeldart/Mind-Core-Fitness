@@ -594,21 +594,25 @@ export default function CoreBuddyDashboard() {
           }
         }
 
-        // 2. Total randomiser workouts
+        // 2. Total workouts (all types)
         const logsRef = collection(db, 'workoutLogs');
         const q = query(logsRef, where('clientId', '==', clientData.id));
         logsSnap = await getDocs(q);
-        const randomiserCount = logsSnap.docs.filter(d => d.data().type !== 'programme').length;
-        setTotalWorkouts(randomiserCount);
-        // Weekly workout count (Mon-Sun)
+        setTotalWorkouts(logsSnap.docs.length);
+        // Weekly workout count (Mon-Sun) — use completedAt timestamp
         const now = new Date();
         const dayOfWeek = now.getDay(); // 0=Sun
         const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
         const monday = new Date(now);
         monday.setDate(now.getDate() - mondayOffset);
         monday.setHours(0, 0, 0, 0);
-        const mondayStr = formatDate(monday);
-        const weekCount = logsSnap.docs.filter(d => (d.data().date || '') >= mondayStr).length;
+        const mondayMs = monday.getTime();
+        const weekCount = logsSnap.docs.filter(d => {
+          const ts = d.data().completedAt;
+          if (!ts) return false;
+          const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+          return ms >= mondayMs;
+        }).length;
         setWeeklyWorkouts(weekCount);
 
         // 3. Habit completion today
