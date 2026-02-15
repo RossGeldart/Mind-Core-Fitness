@@ -6,47 +6,61 @@ import { useAuth } from '../contexts/AuthContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import './Onboarding.css';
 
+import featureProfile from '../assets/feature_profile.PNG';
+import featureProfileTabs from '../assets/feature_profile_tabs.PNG';
+import featurePickAProgramme from '../assets/feature_pickaprogramme.PNG';
+import featureMuscleGroup from '../assets/feature_musclegroup.PNG';
+import featureRandomiseSelection from '../assets/feature_randomise_selection.PNG';
+import featureRandomiseGenerated from '../assets/feature_randomise_generated_workout.PNG';
+import featureWorkoutView from '../assets/feature_workout_view.PNG';
+import featureNutritionView from '../assets/feature_nutritionview.PNG';
+import featureJourneyPosts from '../assets/feature_journey_posts.PNG';
+
 const FEATURES = [
   {
-    title: 'Randomiser Workouts',
-    desc: 'Quick, effective workouts generated for you. Choose your focus, level, and time — we handle the rest.',
-    icon: 'M1 9h2v6H1V9zm3-2h2v10H4V7zm3 4h10v2H7v-2zm10-4h2v10h-2V7zm3 2h2v6h-2V9z',
-    color: '#FF6B35',
+    title: 'Your Profile',
+    desc: 'Set up your personal profile to track your fitness journey, view your stats, and showcase your progress.',
+    image: featureProfile,
+  },
+  {
+    title: 'Profile Tabs',
+    desc: 'Explore your achievements, personal bests, and activity history — all organised in one place.',
+    image: featureProfileTabs,
+  },
+  {
+    title: 'Pick a Programme',
+    desc: 'Choose from structured 4, 8, or 12-week programmes designed by professionals to match your goals.',
+    image: featurePickAProgramme,
+  },
+  {
+    title: 'Target Muscle Groups',
+    desc: 'Select specific muscle groups to focus on and get workouts tailored to exactly what you want to train.',
+    image: featureMuscleGroup,
+  },
+  {
+    title: 'Randomise Your Workout',
+    desc: 'Pick your preferences — focus area, difficulty, and duration — and let Core Buddy generate a workout for you.',
+    image: featureRandomiseSelection,
+  },
+  {
+    title: 'Generated Workout',
+    desc: 'Your personalised workout is ready to go. Follow along with exercises, sets, and reps all laid out for you.',
+    image: featureRandomiseGenerated,
+  },
+  {
+    title: 'Workout View',
+    desc: 'Track your progress in real time as you work through each exercise with a clear, easy-to-follow layout.',
+    image: featureWorkoutView,
   },
   {
     title: 'Nutrition Tracking',
-    desc: 'Track macros, scan barcodes, log meals and water intake to hit your daily targets.',
-    icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z',
-    color: '#14b8a6',
-    stroke: true,
+    desc: 'Log meals, scan barcodes, and track your macros and water intake to stay on top of your daily targets.',
+    image: featureNutritionView,
   },
   {
-    title: 'Structured Programmes',
-    desc: 'Follow 4, 8, or 12-week programmes designed by professionals. Full body, core, upper, and lower splits.',
-    icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2',
-    color: '#8B5CF6',
-    stroke: true,
-  },
-  {
-    title: 'Buddies & Social',
-    desc: 'Connect with other members, share your journey, like and comment on posts.',
-    icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
-    color: '#38B6FF',
-    stroke: true,
-  },
-  {
-    title: 'Achievements & PBs',
-    desc: 'Track personal bests, earn badges, and celebrate every milestone on your fitness journey.',
-    icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z',
-    color: '#eab308',
-    stroke: true,
-  },
-  {
-    title: 'Leaderboard',
-    desc: 'Compete with your Core Buddies. Opt in, climb the ranks, and stay motivated together.',
-    icon: 'M8 21v-4M16 21v-2M12 21V11M3 7l9-4 9 4M4 10v6l8 4 8-4v-6',
-    color: '#e74c3c',
-    stroke: true,
+    title: 'Journey Posts',
+    desc: 'Share updates, celebrate wins, and connect with your Core Buddies through the community feed.',
+    image: featureJourneyPosts,
   },
 ];
 
@@ -203,42 +217,72 @@ export default function Onboarding() {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
     const slideWidth = el.firstChild?.offsetWidth || 1;
-    const gap = 12;
-    const idx = Math.round(el.scrollLeft / (slideWidth + gap));
+    const idx = Math.round(el.scrollLeft / slideWidth);
     setActiveSlide(Math.min(idx, FEATURES.length - 1));
+  };
+
+  const scrollToSlide = (index) => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    const slideWidth = el.firstChild?.offsetWidth || 1;
+    el.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
   };
 
   // ── Step 0: Feature Showcase ──
   if (step === 0) {
-    return (
-      <div className="ob-page">
-        <div className="ob-content">
-          <img src="/Logo.webp" alt="Mind Core Fitness" className="ob-logo" width="60" height="60" />
-          <h1 className="ob-title">Welcome to Core Buddy</h1>
-          <p className="ob-subtitle">Your all-in-one fitness companion</p>
+    const isLastSlide = activeSlide === FEATURES.length - 1;
 
-          <div className="ob-carousel-wrap">
-            <div className="ob-carousel" ref={scrollRef} onScroll={handleScroll}>
-              {FEATURES.map((f, i) => (
-                <div key={i} className="ob-feature-card" style={{ '--accent': f.color }}>
-                  <div className="ob-feature-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill={f.stroke ? 'none' : 'currentColor'} stroke={f.stroke ? 'currentColor' : 'none'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={f.icon} /></svg>
-                  </div>
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
-                </div>
-              ))}
-            </div>
-            <div className="ob-dots">
-              {FEATURES.map((_, i) => (
-                <span key={i} className={`ob-dot${activeSlide === i ? ' active' : ''}`} />
-              ))}
+    return (
+      <div className="ob-page ob-page--showcase">
+        <div className="ob-content ob-content--showcase">
+          <div className="ob-showcase-header">
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="ob-logo" width="48" height="48" />
+            <div>
+              <h1 className="ob-title" style={{ textAlign: 'left', marginBottom: 2 }}>Core Buddy</h1>
+              <p className="ob-subtitle" style={{ textAlign: 'left', margin: 0 }}>Here's what you can do</p>
             </div>
           </div>
 
-          <button className="ob-primary-btn" onClick={() => setStep(1)}>
-            Get Started
-          </button>
+          <div className="ob-showcase-carousel" ref={scrollRef} onScroll={handleScroll}>
+            {FEATURES.map((f, i) => (
+              <div key={i} className="ob-showcase-slide">
+                <div className="ob-showcase-img-wrap">
+                  <img src={f.image} alt={f.title} className="ob-showcase-img" />
+                </div>
+                <div className="ob-showcase-text">
+                  <h3 className="ob-showcase-title">{f.title}</h3>
+                  <p className="ob-showcase-desc">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="ob-dots">
+            {FEATURES.map((_, i) => (
+              <span
+                key={i}
+                className={`ob-dot${activeSlide === i ? ' active' : ''}`}
+                onClick={() => scrollToSlide(i)}
+              />
+            ))}
+          </div>
+
+          <div className="ob-showcase-actions">
+            {isLastSlide ? (
+              <button className="ob-primary-btn" onClick={() => setStep(1)}>
+                Get Started
+              </button>
+            ) : (
+              <>
+                <button className="ob-primary-btn" onClick={() => scrollToSlide(activeSlide + 1)}>
+                  Next
+                </button>
+                <button className="ob-skip-btn" onClick={() => setStep(1)}>
+                  Skip
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );

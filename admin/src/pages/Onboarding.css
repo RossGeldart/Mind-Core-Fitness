@@ -52,74 +52,89 @@
   border-radius: 20px;
 }
 
-/* ── Feature Carousel ── */
-.ob-carousel-wrap {
-  width: 100%;
-  margin-bottom: 28px;
+/* ── Feature Showcase (Step 0) ── */
+.ob-page--showcase {
+  padding: 16px 0 24px;
 }
 
-.ob-carousel {
+.ob-content--showcase {
+  max-width: 100%;
+}
+
+.ob-showcase-header {
   display: flex;
+  align-items: center;
   gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+
+.ob-showcase-carousel {
+  display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  padding: 4px 0 16px;
   scrollbar-width: none;
 }
 
-.ob-carousel::-webkit-scrollbar {
+.ob-showcase-carousel::-webkit-scrollbar {
   display: none;
 }
 
-.ob-feature-card {
-  flex: 0 0 85%;
-  scroll-snap-align: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 28px 20px;
-  text-align: center;
-  min-height: 200px;
+.ob-showcase-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: var(--shadow-card);
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-.ob-feature-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent, var(--color-primary)) 15%, transparent);
-  color: var(--accent, var(--color-primary));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ob-showcase-img-wrap {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  background: #000;
+  border: 3px solid #000;
 }
 
-.ob-feature-card h3 {
-  margin: 0;
+.ob-showcase-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 21px;
+}
+
+.ob-showcase-text {
+  text-align: center;
+  max-width: 340px;
+  padding: 0 8px;
+}
+
+.ob-showcase-title {
+  margin: 0 0 8px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.ob-feature-card p {
+.ob-showcase-desc {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .ob-dots {
   display: flex;
   justify-content: center;
   gap: 6px;
+  margin: 16px 0 4px;
 }
 
 .ob-dot {
@@ -128,11 +143,34 @@
   border-radius: 50%;
   background: var(--border-color);
   transition: background 0.2s, transform 0.2s;
+  cursor: pointer;
 }
 
 .ob-dot.active {
   background: var(--color-primary);
   transform: scale(1.3);
+}
+
+.ob-showcase-actions {
+  width: 100%;
+  max-width: 440px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin: 12px auto 0;
+}
+
+.ob-skip-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  margin-top: 4px;
 }
 
 /* ── Primary Button ── */
