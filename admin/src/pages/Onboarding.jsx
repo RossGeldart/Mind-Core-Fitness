@@ -258,6 +258,26 @@ export default function Onboarding() {
     finalise();
   }, [fromCheckout, clientData?.id, clientData?.onboardingComplete, updateClientData, navigate]);
 
+  // Safety net: if the Stripe webhook already set the user to premium but
+  // onboardingComplete was never written (e.g. query string was lost during
+  // redirect), auto-complete onboarding so they aren't stuck in the flow.
+  useEffect(() => {
+    if (authLoading || !clientData?.id) return;
+    if (clientData.onboardingComplete) return;
+    if (clientData.tier === 'premium' || clientData.stripeSubscriptionId) {
+      const autoComplete = async () => {
+        try {
+          await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
+          updateClientData({ onboardingComplete: true });
+          navigate('/client/core-buddy');
+        } catch (err) {
+          console.error('Auto-complete onboarding error:', err);
+        }
+      };
+      autoComplete();
+    }
+  }, [authLoading, clientData?.id, clientData?.tier, clientData?.stripeSubscriptionId, clientData?.onboardingComplete, updateClientData, navigate]);
+
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !currentUser) {
