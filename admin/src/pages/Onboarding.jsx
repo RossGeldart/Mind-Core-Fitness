@@ -250,6 +250,11 @@ export default function Onboarding() {
         return;
       }
 
+      if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
+        setCheckoutError('Account is still loading — please wait a moment and try again.');
+        return;
+      }
+
       // Stripe checkout for monthly/annual
       setCheckoutLoading(plan);
       setCheckoutError(null);
