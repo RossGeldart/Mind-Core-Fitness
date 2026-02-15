@@ -99,8 +99,7 @@ function App() {
             <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
-            {/* Signup temporarily disabled — redirect to login */}
-            <Route path="/signup" element={<Navigate to="/login" replace />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
