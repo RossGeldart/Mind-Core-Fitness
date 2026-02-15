@@ -9,7 +9,7 @@ import {
   browserSessionPersistence,
   setPersistence
 } from 'firebase/auth';
-import { collection, query, where, getDocs, onSnapshot, doc, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID } from '../config/firebase';
 
 const AuthContext = createContext();
@@ -50,30 +50,39 @@ export function AuthProvider({ children }) {
             collection(db, 'clients'),
             where('uid', '==', user.uid)
           );
-          unsubClient = onSnapshot(clientsQuery, (snapshot) => {
+          // Helper: direct doc read using the clientId stashed in localStorage
+          // (survives Stripe cross-domain redirects that can break query auth)
+          const tryDirectRead = async () => {
+            const storedId = localStorage.getItem('mcf_clientId');
+            if (!storedId) return;
+            try {
+              const snap = await getDoc(doc(db, 'clients', storedId));
+              if (snap.exists()) {
+                setIsClient(true);
+                setClientData({ id: snap.id, ...snap.data() });
+              }
+            } catch (e) {
+              console.error('Direct client read failed:', e);
+            }
+          };
+
+          unsubClient = onSnapshot(clientsQuery, async (snapshot) => {
             if (!snapshot.empty) {
               const clientDoc = snapshot.docs[0];
               setIsClient(true);
               setClientData({ id: clientDoc.id, ...clientDoc.data() });
+              // Keep localStorage in sync for post-redirect recovery
+              try { localStorage.setItem('mcf_clientId', clientDoc.id); } catch {};
+            } else {
+              // Query returned empty — may happen after cross-domain redirect
+              // (e.g. Stripe checkout) when the auth token isn't fully ready.
+              // Fall back to a direct document read by stored ID.
+              await tryDirectRead();
             }
-            // Don't clear clientData on empty snapshot — during signup the
-            // doc may not be visible to the query yet but signup() already
-            // set clientData directly. The real-time listener will pick up
-            // the doc once it appears.
             setLoading(false);
           }, async (error) => {
             console.error('Error listening to client data:', error);
-            // Fallback: try a one-time fetch so the session isn't stuck
-            try {
-              const snap = await getDocs(clientsQuery);
-              if (!snap.empty) {
-                const clientDoc = snap.docs[0];
-                setIsClient(true);
-                setClientData({ id: clientDoc.id, ...clientDoc.data() });
-              }
-            } catch (fallbackErr) {
-              console.error('Fallback client fetch also failed:', fallbackErr);
-            }
+            await tryDirectRead();
             setLoading(false);
           });
         }
@@ -101,6 +110,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    try { localStorage.removeItem('mcf_clientId'); } catch {};
     return signOut(auth);
   };
 
@@ -131,6 +141,10 @@ export function AuthProvider({ children }) {
     // Set client data immediately to avoid race condition with onAuthStateChanged
     setIsClient(true);
     setClientData({ id: clientRef.id, ...clientDoc });
+
+    // Persist the Firestore doc ID so we can recover after cross-domain
+    // redirects (e.g. Stripe checkout) that may clear the auth token cache.
+    try { localStorage.setItem('mcf_clientId', clientRef.id); } catch {};
 
     return userCredential;
   };
