@@ -251,3 +251,43 @@
   color: var(--text-tertiary);
   margin: 0;
 }
+
+/* ====== Pull to Refresh (global) ====== */
+.pull-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg-body);
+  overflow: hidden;
+  transition: height 0.1s ease-out;
+  opacity: 0;
+}
+
+.pull-refresh-indicator.visible {
+  opacity: 1;
+}
+
+.pull-refresh-indicator.refreshing {
+  height: 60px !important;
+}
+
+.refresh-spinner {
+  color: var(--color-primary);
+  transition: transform 0.2s;
+}
+
+.refresh-spinner.spinning {
+  animation: pullRefreshSpin 1s linear infinite;
+}
+
+.refresh-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+@keyframes pullRefreshSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

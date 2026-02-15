@@ -10,6 +10,7 @@ import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
+import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_85_96 } from '../utils/ringTicks';
@@ -1250,6 +1251,7 @@ export default function CoreBuddyDashboard() {
   };
 
   return (
+    <PullToRefresh>
     <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
       {/* Header */}
       <header className="client-header">
@@ -1892,5 +1894,6 @@ export default function CoreBuddyDashboard() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

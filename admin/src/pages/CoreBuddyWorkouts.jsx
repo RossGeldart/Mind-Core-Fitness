@@ -6,6 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
+import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -1333,6 +1334,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
     return (
+      <PullToRefresh>
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
@@ -1459,6 +1461,7 @@ export default function CoreBuddyWorkouts() {
         <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
+      </PullToRefresh>
     );
   }
 
