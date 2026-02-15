@@ -428,10 +428,10 @@ export default function Onboarding() {
 
   // ── Step 3: PARQ Form ──
   const allParqAnswered = parqAnswers.every((a) => a !== null);
-  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
+  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent && !!clientData;
 
   const handleParqSubmit = async () => {
-    if (!canSubmitParq || parqSubmitting || !clientData) return;
+    if (!canSubmitParq || parqSubmitting) return;
     setParqSubmitting(true);
 
     try {
@@ -473,7 +473,7 @@ export default function Onboarding() {
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);
-      alert('Failed to save — please try again.');
+      alert('Failed to save — please try again.\n' + (err.code || err.message || ''));
     } finally {
       setParqSubmitting(false);
     }
