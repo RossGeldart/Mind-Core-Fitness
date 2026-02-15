@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       subscription_data: {
         trial_period_days: 7,
       },
-      success_url: `${req.headers.origin}/login/onboarding?checkout=success`,
+      success_url: `${req.headers.origin}/login/`,
       cancel_url: `${req.headers.origin}/login/upgrade`,
       customer_email: email,
       metadata: {

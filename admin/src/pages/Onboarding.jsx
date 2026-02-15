@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { doc, setDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { doc, setDoc, updateDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { STRIPE_PRICES } from '../config/stripe';
@@ -78,11 +78,11 @@ const EXPERIENCE_LEVELS = [
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  // If returning from Stripe checkout, skip straight to welcome form (step 2)
-  const fromCheckout = searchParams.get('checkout') === 'success';
-  const [step, setStep] = useState(fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  // If the user already has a paid subscription (set by Stripe webhook),
+  // skip the feature showcase & plan picker and go straight to the welcome form.
+  const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+  const [step, setStep] = useState(alreadySubscribed ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -169,6 +169,15 @@ export default function Onboarding() {
       navigate('/client/core-buddy');
     }
   }, [authLoading, clientData, navigate]);
+
+  // If the Stripe webhook fires while the user is still on the feature
+  // showcase or subscription picker, auto-advance to the welcome form.
+  useEffect(() => {
+    const paid = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+    if (paid && step < 2) {
+      setStep(2);
+    }
+  }, [clientData?.tier, clientData?.stripeSubscriptionId, step]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -264,6 +273,8 @@ export default function Onboarding() {
         });
         const data = await res.json();
         if (data.url) {
+          // Persist clientId so we can recover after Stripe redirect
+          try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
           window.location.href = data.url;
         } else {
           setCheckoutError(data.error || 'Something went wrong');
@@ -435,25 +446,38 @@ export default function Onboarding() {
     setParqSubmitting(true);
 
     try {
-      // Resolve client record — use context if available, otherwise fetch directly.
-      // After a Stripe redirect the page reloads from scratch; the real-time
-      // listener may not have delivered clientData yet, so retry a few times.
+      // Resolve client record — use context if available, otherwise fetch.
+      // After a Stripe redirect the page reloads and the auth token may not
+      // be fully ready, causing uid-based queries to return empty.  We first
+      // try a direct document read using the ID stashed in localStorage
+      // (does not depend on query indexes / token state), then fall back to
+      // a uid-based query.
       let client = clientData;
       if (!client) {
-        const maxRetries = 4;
-        for (let attempt = 0; attempt < maxRetries; attempt++) {
+        // 1) Direct read by stored document ID (most reliable after redirect)
+        const storedId = localStorage.getItem('mcf_clientId');
+        if (storedId) {
+          try {
+            const snap = await getDoc(doc(db, 'clients', storedId));
+            if (snap.exists()) {
+              client = { id: snap.id, ...snap.data() };
+              updateClientData(client);
+            }
+          } catch (e) {
+            console.error('Direct client read failed:', e);
+          }
+        }
+
+        // 2) Fallback: query by uid
+        if (!client && currentUser) {
           const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
           const snap = await getDocs(q);
           if (!snap.empty) {
             client = { id: snap.docs[0].id, ...snap.docs[0].data() };
             updateClientData(client);
-            break;
-          }
-          // Wait before retrying (1s, 2s, 3s)
-          if (attempt < maxRetries - 1) {
-            await new Promise((r) => setTimeout(r, (attempt + 1) * 1000));
           }
         }
+
         if (!client) {
           alert('Could not find your account. Please try logging out and back in.');
           setParqSubmitting(false);
