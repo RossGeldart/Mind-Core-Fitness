@@ -15,6 +15,8 @@ export default function SpotlightTour({ steps, onFinish, active }) {
   const [tooltipPos, setTooltipPos] = useState('below');
   const [transitioning, setTransitioning] = useState(false);
   const rafRef = useRef(null);
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   // Reset step index when tour closes so it starts fresh next time
   useEffect(() => {
@@ -79,11 +81,11 @@ export default function SpotlightTour({ steps, onFinish, active }) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       // Wait for scroll to settle, then measure + fade back in + re-lock
       const t = setTimeout(() => {
-        document.body.style.overflow = 'hidden';
+        if (activeRef.current) document.body.style.overflow = 'hidden';
         measure();
         setTransitioning(false);
       }, 400);
-      return () => { clearTimeout(t); document.body.style.overflow = 'hidden'; };
+      return () => { clearTimeout(t); if (activeRef.current) document.body.style.overflow = 'hidden'; };
     }
   }, [active, idx, selector, measure]);
 
