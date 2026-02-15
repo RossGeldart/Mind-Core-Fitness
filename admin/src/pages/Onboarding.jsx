@@ -332,7 +332,7 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="ob-page">
+      <div className="ob-page ob-page--dark">
         <div className="ob-content">
           <div className="ob-step-indicator">
             <span className="ob-step-num">1 of 3</span>
