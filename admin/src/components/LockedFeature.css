@@ -21,26 +21,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   padding: 24px;
 }
 
 .locked-feature-card {
-  background: #333331;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 44px 28px;
   text-align: center;
   max-width: 360px;
   width: 100%;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
 }
 
 .locked-icon {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: rgba(161, 47, 58, 0.15);
+  background: var(--color-primary-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,14 +53,14 @@
   font-family: 'Orbitron', 'Montserrat', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #f0f0f0;
+  color: var(--text-primary);
 }
 
 .locked-feature-card p {
   margin: 0 0 28px;
   font-size: 0.92rem;
   line-height: 1.5;
-  color: #b0b0b0;
+  color: var(--text-secondary);
 }
 
 .locked-upgrade-btn {
