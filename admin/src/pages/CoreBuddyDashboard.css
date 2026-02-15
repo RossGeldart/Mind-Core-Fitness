@@ -1777,3 +1777,157 @@
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
+
+/* ==================== BADGE CELEBRATION OVERLAY ==================== */
+
+@keyframes celebrationFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes celebrationBadgeBounce {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes celebrationGlow {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes celebrationTextSlide {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes confettiBurst {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform:
+      translate(
+        calc(cos(var(--angle)) * var(--distance) + var(--drift)),
+        calc(sin(var(--angle)) * var(--distance) + 80px)
+      )
+      rotate(720deg)
+      scale(0);
+    opacity: 0;
+  }
+}
+
+.cb-celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: celebrationFadeIn 0.4s ease-out;
+}
+
+.cb-confetti-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.cb-confetti-piece {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 2px;
+  animation: confettiBurst 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) var(--delay) both;
+}
+
+.cb-confetti-piece:nth-child(odd) {
+  border-radius: 50%;
+}
+
+.cb-celebration-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  z-index: 1;
+}
+
+.cb-celebration-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.35) 0%, transparent 70%);
+  animation: celebrationGlow 1.8s ease-out 0.2s both;
+  pointer-events: none;
+}
+
+.cb-celebration-badge-img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4));
+  animation: celebrationBadgeBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
+}
+
+.cb-celebration-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFD700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 8px 0 0;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  animation: celebrationTextSlide 0.6s ease-out 0.6s both;
+}
+
+.cb-celebration-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  animation: celebrationTextSlide 0.6s ease-out 0.75s both;
+}
+
+.cb-celebration-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.4;
+  animation: celebrationTextSlide 0.6s ease-out 0.9s both;
+}
+
+.cb-celebration-dismiss {
+  background: none;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 12px 20px;
+  margin-top: 16px;
+  animation: celebrationTextSlide 0.6s ease-out 1.2s both;
+  -webkit-tap-highlight-color: transparent;
+}
