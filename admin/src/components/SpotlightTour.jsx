@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import './SpotlightTour.css';
 
 /**
- * Spotlight‑overlay guided tour.
+ * Spotlight-overlay guided tour.
  *
  * Props
  *  steps     – array of { selector, title, body, cta? }
@@ -12,12 +12,14 @@ import './SpotlightTour.css';
 export default function SpotlightTour({ steps, onFinish, active }) {
   const [idx, setIdx] = useState(0);
   const [rect, setRect] = useState(null);
-  const [tooltipPos, setTooltipPos] = useState('below'); // 'above' | 'below'
-  const tooltipRef = useRef(null);
+  const [tooltipPos, setTooltipPos] = useState('below');
+  const [visible, setVisible] = useState(false);
   const rafRef = useRef(null);
 
-  const step = steps[idx];
-  const isLast = idx === steps.length - 1;
+  // Filter to only steps whose target element exists in the DOM right now
+  const liveSteps = steps.filter(s => document.querySelector(s.selector));
+  const step = liveSteps[idx];
+  const isLast = idx === liveSteps.length - 1;
 
   // Measure the target element and decide tooltip placement
   const measure = useCallback(() => {
@@ -34,24 +36,28 @@ export default function SpotlightTour({ steps, onFinish, active }) {
       height: r.height + pad * 2,
     });
 
-    // Position tooltip above if target is in lower half, below otherwise
     const spaceBelow = window.innerHeight - r.bottom;
     setTooltipPos(spaceBelow < 260 ? 'above' : 'below');
+    setVisible(true);
   }, [step]);
 
   // Scroll target into view + measure on step change
   useEffect(() => {
     if (!active || !step) return;
+
+    // Reset visibility while we scroll + remeasure
+    setVisible(false);
+
     const el = document.querySelector(step.selector);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Allow scroll to settle before measuring
-      const t = setTimeout(measure, 350);
+      // Wait for scroll to settle, then measure
+      const t = setTimeout(measure, 400);
       return () => clearTimeout(t);
     }
   }, [active, idx, step, measure]);
 
-  // Re‑measure on scroll / resize
+  // Re-measure on scroll / resize so the spotlight tracks the element
   useEffect(() => {
     if (!active) return;
     const onUpdate = () => {
@@ -67,7 +73,7 @@ export default function SpotlightTour({ steps, onFinish, active }) {
     };
   }, [active, measure]);
 
-  if (!active || !step) return null;
+  if (!active || !step || liveSteps.length === 0) return null;
 
   const advance = () => {
     if (isLast) { onFinish(); }
@@ -78,11 +84,13 @@ export default function SpotlightTour({ steps, onFinish, active }) {
 
   const skip = () => onFinish();
 
-  // Spotlight overlay rendered as a positioned box with massive box‑shadow
   return (
-    <div className="st-overlay">
+    <div className="st-overlay" onClick={(e) => { e.stopPropagation(); }}>
+      {/* Dark backdrop — click anywhere to advance */}
+      <div className="st-backdrop" onClick={advance} />
+
       {/* Cutout spotlight */}
-      {rect && (
+      {rect && visible && (
         <div
           className="st-spotlight"
           style={{
@@ -95,9 +103,8 @@ export default function SpotlightTour({ steps, onFinish, active }) {
       )}
 
       {/* Tooltip */}
-      {rect && (
+      {rect && visible && (
         <div
-          ref={tooltipRef}
           className={`st-tooltip st-tooltip-${tooltipPos}`}
           style={{
             top: tooltipPos === 'below' ? rect.top + rect.height + 16 : undefined,
@@ -107,7 +114,7 @@ export default function SpotlightTour({ steps, onFinish, active }) {
         >
           {/* Progress dots */}
           <div className="st-dots">
-            {steps.map((_, i) => (
+            {liveSteps.map((_, i) => (
               <span key={i} className={`st-dot${i === idx ? ' active' : ''}${i < idx ? ' done' : ''}`} />
             ))}
           </div>
@@ -120,7 +127,7 @@ export default function SpotlightTour({ steps, onFinish, active }) {
               <button className="st-btn st-btn-back" onClick={back}>Back</button>
             )}
             <button className="st-btn st-btn-next" onClick={advance}>
-              {step.cta || (isLast ? 'Finish' : 'Next')}
+              {step.cta || (isLast ? "Let's Go!" : 'Next')}
             </button>
           </div>
 
