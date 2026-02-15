@@ -705,16 +705,10 @@ export default function Onboarding() {
       return;
     }
 
-    // Mark onboarding complete before Stripe redirect so the user
-    // doesn't get bounced back to onboarding if the webhook fires slowly.
-    try {
-      await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
-      updateClientData({ onboardingComplete: true });
-    } catch (err) {
-      console.error('Pre-checkout onboarding save error:', err);
-    }
-
     // Stripe checkout for monthly/annual
+    // Note: onboardingComplete is set AFTER the user returns from Stripe
+    // (see the fromCheckout useEffect) — setting it here would briefly
+    // expose the dashboard before the redirect fires.
     setCheckoutLoading(plan);
     setCheckoutError(null);
     try {
