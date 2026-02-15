@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 
 
 const DEFAULT_HABITS = [
@@ -196,6 +197,7 @@ export default function CoreBuddyConsistency() {
   const todayPct = Math.round((todayCompleted / DEFAULT_HABITS.length) * 100);
 
   return (
+    <PullToRefresh>
     <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* Header */}
       <header className="client-header">
@@ -363,5 +365,6 @@ export default function CoreBuddyConsistency() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

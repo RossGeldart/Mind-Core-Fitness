@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 
 const searchCache = new Map();
 
@@ -925,6 +926,7 @@ export default function CoreBuddyNutrition() {
   const weekMonthLabel = `${MONTH_NAMES[selDateObj.getMonth()]} ${selDateObj.getFullYear()}`;
 
   return (
+    <PullToRefresh>
     <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
@@ -1652,5 +1654,6 @@ export default function CoreBuddyNutrition() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

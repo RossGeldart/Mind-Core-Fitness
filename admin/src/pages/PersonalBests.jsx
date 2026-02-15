@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import PersonalBestsJunior from './PersonalBestsJunior';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96, TICKS_TINY } from '../utils/ringTicks';
 import './PersonalBests.css';
 import './ClientDashboard.css';
@@ -724,6 +725,7 @@ export default function PersonalBests() {
   const currentTarget = targets[currentExercise.key];
 
   return (
+    <PullToRefresh>
     <div className="pb-page">
       <header className="client-header">
         <div className="header-content">
@@ -1653,5 +1655,6 @@ export default function PersonalBests() {
       {/* Core Buddy Bottom Nav */}
       {coreBuddyMode && <CoreBuddyNav active="progress" />}
     </div>
+    </PullToRefresh>
   );
 }

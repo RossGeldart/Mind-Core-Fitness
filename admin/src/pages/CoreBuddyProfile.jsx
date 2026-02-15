@@ -8,6 +8,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import BADGE_DEFS from '../utils/badgeConfig';
 import './CoreBuddyProfile.css';
 
@@ -599,6 +600,7 @@ export default function CoreBuddyProfile() {
   }
 
   return (
+    <PullToRefresh>
     <div className="prf-page" data-theme={isDark ? 'dark' : 'light'}>
       <header className="client-header">
         <div className="header-content">
@@ -916,5 +918,6 @@ export default function CoreBuddyProfile() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }
