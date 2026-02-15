@@ -61,8 +61,19 @@ export function AuthProvider({ children }) {
             // set clientData directly. The real-time listener will pick up
             // the doc once it appears.
             setLoading(false);
-          }, (error) => {
+          }, async (error) => {
             console.error('Error listening to client data:', error);
+            // Fallback: try a one-time fetch so the session isn't stuck
+            try {
+              const snap = await getDocs(clientsQuery);
+              if (!snap.empty) {
+                const clientDoc = snap.docs[0];
+                setIsClient(true);
+                setClientData({ id: clientDoc.id, ...clientDoc.data() });
+              }
+            } catch (fallbackErr) {
+              console.error('Fallback client fetch also failed:', fallbackErr);
+            }
             setLoading(false);
           });
         }
@@ -125,7 +136,7 @@ export function AuthProvider({ children }) {
   };
 
   const updateClientData = (fields) => {
-    setClientData(prev => prev ? { ...prev, ...fields } : prev);
+    setClientData(prev => prev ? { ...prev, ...fields } : fields);
   };
 
   const value = {

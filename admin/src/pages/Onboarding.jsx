@@ -435,15 +435,26 @@ export default function Onboarding() {
     setParqSubmitting(true);
 
     try {
-      // Resolve client record — use context if available, otherwise fetch directly
+      // Resolve client record — use context if available, otherwise fetch directly.
+      // After a Stripe redirect the page reloads from scratch; the real-time
+      // listener may not have delivered clientData yet, so retry a few times.
       let client = clientData;
       if (!client) {
-        const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          client = { id: snap.docs[0].id, ...snap.docs[0].data() };
-          updateClientData(client);
-        } else {
+        const maxRetries = 4;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            client = { id: snap.docs[0].id, ...snap.docs[0].data() };
+            updateClientData(client);
+            break;
+          }
+          // Wait before retrying (1s, 2s, 3s)
+          if (attempt < maxRetries - 1) {
+            await new Promise((r) => setTimeout(r, (attempt + 1) * 1000));
+          }
+        }
+        if (!client) {
           alert('Could not find your account. Please try logging out and back in.');
           setParqSubmitting(false);
           return;
