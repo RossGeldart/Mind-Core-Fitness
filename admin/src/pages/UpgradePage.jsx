@@ -136,7 +136,7 @@ export default function UpgradePage() {
         </div>
 
         <div className="plan-card plan-card-featured">
-          <div className="plan-badge-save">Save 17%</div>
+          <div className="plan-badge-save">Best Value — Save 17%</div>
           <div className="plan-name">Annual</div>
           <div className="plan-price">
             <span className="plan-amount">£199.99</span>
