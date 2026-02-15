@@ -75,7 +75,7 @@ export default function Login() {
       <div className="login-card">
         <div className="login-header">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="login-logo" />
-          <p>{resetMode ? 'Reset Password' : 'Client Portal'}</p>
+          <p><strong>{resetMode ? 'Reset Password' : 'Sign in as 1-2-1 or a Core Buddy'}</strong></p>
         </div>
 
         {error && <div className="error-message">{error}</div>}

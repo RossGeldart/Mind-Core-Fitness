@@ -1,7 +1,7 @@
 {
-  "name": "Mind Core Fitness Admin",
-  "short_name": "MCF Admin",
-  "description": "Admin portal for managing client sessions",
+  "name": "Mind Core Fitness",
+  "short_name": "Mind Core Fitness",
+  "description": "Personal training, online coaching and Core Buddy programmes. Track workouts, nutrition and habits.",
   "start_url": "/login/",
   "display": "standalone",
   "background_color": "#ffffff",
