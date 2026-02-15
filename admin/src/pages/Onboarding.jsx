@@ -105,8 +105,24 @@ export default function Onboarding() {
 
   // Signature pad
   const sigCanvasRef = useRef(null);
-  const [sigDrawing, setSigDrawing] = useState(false);
+  const sigDrawingRef = useRef(false);
   const [sigHasContent, setSigHasContent] = useState(false);
+
+  // Keep the canvas internal resolution in sync with its CSS display size
+  useEffect(() => {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [step]);
 
   const getSigPos = (e) => {
     const canvas = sigCanvasRef.current;
@@ -122,11 +138,11 @@ export default function Onboarding() {
     const pos = getSigPos(e);
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
-    setSigDrawing(true);
+    sigDrawingRef.current = true;
   };
 
   const sigMove = (e) => {
-    if (!sigDrawing) return;
+    if (!sigDrawingRef.current) return;
     e.preventDefault();
     const ctx = sigCanvasRef.current.getContext('2d');
     const pos = getSigPos(e);
@@ -138,7 +154,7 @@ export default function Onboarding() {
     setSigHasContent(true);
   };
 
-  const sigEnd = () => setSigDrawing(false);
+  const sigEnd = () => { sigDrawingRef.current = false; };
 
   const sigClear = () => {
     const canvas = sigCanvasRef.current;
@@ -523,8 +539,6 @@ export default function Onboarding() {
           <canvas
             ref={sigCanvasRef}
             className="ob-sig-canvas"
-            width={380}
-            height={140}
             onMouseDown={sigStart}
             onMouseMove={sigMove}
             onMouseUp={sigEnd}
