@@ -21,6 +21,20 @@ export default function SpotlightTour({ steps, onFinish, active }) {
     if (!active) setIdx(0);
   }, [active]);
 
+  // Lock all user-initiated scrolling while the tour is active
+  useEffect(() => {
+    if (!active) return;
+    const prevent = (e) => e.preventDefault();
+    document.addEventListener('touchmove', prevent, { passive: false });
+    document.addEventListener('wheel', prevent, { passive: false });
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('touchmove', prevent);
+      document.removeEventListener('wheel', prevent);
+      document.body.style.overflow = '';
+    };
+  }, [active]);
+
   // Build stable list of live steps once when tour activates
   const liveSteps = useMemo(() => {
     if (!active) return [];
@@ -60,13 +74,16 @@ export default function SpotlightTour({ steps, onFinish, active }) {
 
     const el = document.querySelector(selector);
     if (el) {
+      // Temporarily unlock scroll so scrollIntoView works, then re-lock
+      document.body.style.overflow = '';
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Wait for scroll to settle, then measure + fade back in
+      // Wait for scroll to settle, then measure + fade back in + re-lock
       const t = setTimeout(() => {
+        document.body.style.overflow = 'hidden';
         measure();
         setTransitioning(false);
       }, 400);
-      return () => clearTimeout(t);
+      return () => { clearTimeout(t); document.body.style.overflow = 'hidden'; };
     }
   }, [active, idx, selector, measure]);
 

@@ -274,9 +274,11 @@ export default function CoreBuddyDashboard() {
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)
   useEffect(() => {
-    const tourDone = clientData?.tourComplete
-      || (clientData?.id && sessionStorage.getItem(`tourDone_${clientData.id}`));
-    if (statsLoaded && clientData && !tourDone && !tourDismissedRef.current) {
+    let tourDone = clientData?.tourComplete || tourDismissedRef.current;
+    if (!tourDone && clientData?.id) {
+      try { tourDone = !!localStorage.getItem(`tourDone_${clientData.id}`); } catch {}
+    }
+    if (statsLoaded && clientData && !tourDone) {
       const t = setTimeout(() => setShowTour(true), 600);
       return () => clearTimeout(t);
     }
@@ -851,7 +853,7 @@ export default function CoreBuddyDashboard() {
     // is slow or fails, and survives onSnapshot overwrites via sessionStorage.
     updateClientData({ tourComplete: true });
     if (clientData?.id) {
-      try { sessionStorage.setItem(`tourDone_${clientData.id}`, '1'); } catch {}
+      try { localStorage.setItem(`tourDone_${clientData.id}`, '1'); } catch {}
       try {
         await updateDoc(doc(db, 'clients', clientData.id), { tourComplete: true });
       } catch (e) {
