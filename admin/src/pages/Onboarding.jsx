@@ -513,15 +513,23 @@ export default function Onboarding() {
         submittedAt: serverTimestamp(),
       });
 
-      // Mark onboarding complete on client doc
-      await updateDoc(doc(db, 'clients', client.id), {
+      // Mark onboarding complete on client doc.
+      // If the user just came back from a successful Stripe checkout, also set
+      // tier to 'premium' — the webhook will confirm this later, but we cannot
+      // rely on it having fired before the user finishes the forms.
+      const updates = {
         onboardingComplete: true,
         fitnessGoal: goal,
         experienceLevel: experience,
         dob: dob || null,
-      });
+      };
+      if (fromCheckout) {
+        updates.tier = 'premium';
+        updates.subscriptionStatus = updates.subscriptionStatus || 'trialing';
+      }
+      await updateDoc(doc(db, 'clients', client.id), updates);
 
-      updateClientData({ onboardingComplete: true, fitnessGoal: goal, experienceLevel: experience, dob });
+      updateClientData(updates);
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);
