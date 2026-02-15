@@ -147,9 +147,6 @@ export default function Onboarding() {
     setSigHasContent(false);
   };
 
-  // Loading state while returning from checkout
-  const [checkoutReturning, setCheckoutReturning] = useState(fromCheckout);
-
   // Redirect if already completed onboarding
   useEffect(() => {
     if (!authLoading && clientData?.onboardingComplete) {
@@ -163,26 +160,6 @@ export default function Onboarding() {
       navigate('/');
     }
   }, [authLoading, currentUser, navigate]);
-
-  // Clear checkout loading state once auth is ready
-  useEffect(() => {
-    if (fromCheckout && !authLoading && clientData) {
-      setCheckoutReturning(false);
-    }
-  }, [fromCheckout, authLoading, clientData]);
-
-  // Show loading screen while returning from Stripe
-  if (checkoutReturning) {
-    return (
-      <div className="ob-page">
-        <div className="ob-content" style={{ justifyContent: 'center', minHeight: '60dvh' }}>
-          <div className="ob-loading-spinner" />
-          <h1 className="ob-title">Payment Successful</h1>
-          <p className="ob-subtitle">Setting up your account, please wait...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Wait for auth and client data before showing any onboarding steps
   if (authLoading || !clientData) {
