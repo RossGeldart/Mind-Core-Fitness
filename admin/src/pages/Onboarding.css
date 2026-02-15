@@ -74,18 +74,78 @@
   line-height: 1.4;
 }
 
-.ob-step-indicator {
-  margin-bottom: 16px;
+/* ── Progress Bar ── */
+.ob-progress {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
-.ob-step-num {
-  font-size: 0.78rem;
+.ob-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ob-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.ob-progress-label {
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  padding: 4px 12px;
-  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Step Transition Animations ── */
+.ob-step-anim {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.ob-step-enter {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ob-step-exit-right {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.ob-step-exit-left {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ── Back Button ── */
+.ob-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.ob-back-btn:hover {
+  color: var(--text-primary);
 }
 
 /* ── Feature Showcase (Step 0) ── */
@@ -298,11 +358,24 @@
   cursor: not-allowed;
 }
 
-/* Dimmed free tier */
+/* Welcoming free tier */
 .ob-plan-free {
-  background: var(--bg-body);
-  border: 1px dashed var(--border-color);
-  opacity: 0.75;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.ob-plan-cta-free {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--color-success, #2ecc71);
+  border-radius: 30px;
+  background: transparent;
+  color: var(--color-success, #2ecc71);
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  transition: background 0.3s, border-color 0.3s;
+  letter-spacing: 0.02em;
 }
 
 /* Featured card – pulsing glow + accent border */
@@ -567,6 +640,19 @@
   background: var(--color-primary);
   color: var(--text-on-primary);
   border-color: var(--color-primary);
+}
+
+.ob-chip.disabled,
+.ob-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Focus ring for keyboard accessibility */
+.ob-showcase-carousel:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-radius: 8px;
 }
 
 /* Experience level cards */
