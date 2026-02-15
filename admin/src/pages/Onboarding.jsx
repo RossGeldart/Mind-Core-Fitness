@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { STRIPE_PRICES } from '../config/stripe';
@@ -432,21 +432,32 @@ export default function Onboarding() {
 
   const handleParqSubmit = async () => {
     if (!canSubmitParq || parqSubmitting) return;
-    if (!clientData) {
-      alert('Your account is still loading — please wait a moment and try again.');
-      return;
-    }
     setParqSubmitting(true);
 
     try {
+      // Resolve client record — use context if available, otherwise fetch directly
+      let client = clientData;
+      if (!client) {
+        const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          client = { id: snap.docs[0].id, ...snap.docs[0].data() };
+          updateClientData(client);
+        } else {
+          alert('Could not find your account. Please try logging out and back in.');
+          setParqSubmitting(false);
+          return;
+        }
+      }
+
       // Get signature as data URL
       const signatureData = sigCanvasRef.current.toDataURL('image/png');
 
       // Save onboarding data
-      await setDoc(doc(db, 'onboardingSubmissions', clientData.id), {
-        clientId: clientData.id,
-        clientName: clientData.name,
-        email: clientData.email,
+      await setDoc(doc(db, 'onboardingSubmissions', client.id), {
+        clientId: client.id,
+        clientName: client.name,
+        email: client.email,
         selectedPlan: selectedPlan || 'free',
         welcome: {
           dob,
@@ -466,7 +477,7 @@ export default function Onboarding() {
       });
 
       // Mark onboarding complete on client doc
-      await updateDoc(doc(db, 'clients', clientData.id), {
+      await updateDoc(doc(db, 'clients', client.id), {
         onboardingComplete: true,
         fitnessGoal: goal,
         experienceLevel: experience,
