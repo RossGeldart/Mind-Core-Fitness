@@ -769,7 +769,7 @@ export default function PersonalBests() {
                   const ringFill = progress !== null ? Math.round(progress * 60) : 60;
 
                   return (
-                    <div key={name} className={`pb-cb-card${target && !targetHit ? ' pb-cb-card-has-target' : ''}${targetHit ? ' pb-cb-card-target-hit' : ''}`} style={{ animationDelay: `${i * 0.05}s` }}>
+                    <div key={name} className="pb-cb-card" style={{ animationDelay: `${i * 0.05}s` }}>
                       <div className="pb-cb-card-top">
                         <div className="pb-cb-card-ring">
                           <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
