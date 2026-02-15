@@ -193,9 +193,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* flex-start prevents Safari from pushing the text card above the image
+     when content exceeds viewport height (flex center overflow bug).
+     The ::before/::after spacers give equal top/bottom breathing room
+     when space is available, without overflowing upward. */
+  justify-content: flex-start;
   padding: 0 20px;
   box-sizing: border-box;
+}
+
+/* Safe-center technique: equal spacers shrink to 0 on short screens
+   so the image + text always stack top-to-bottom without overlap. */
+.ob-showcase-slide::before,
+.ob-showcase-slide::after {
+  content: '';
+  flex: 1 1 0px;
 }
 
 .ob-showcase-img-wrap {
