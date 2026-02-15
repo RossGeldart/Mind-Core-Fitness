@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { doc, setDoc, updateDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -78,11 +78,11 @@ const EXPERIENCE_LEVELS = [
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  // If returning from Stripe checkout, skip straight to welcome form (step 2)
-  const fromCheckout = searchParams.get('checkout') === 'success';
-  const [step, setStep] = useState(fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  // If the user already has a paid subscription (set by Stripe webhook),
+  // skip the feature showcase & plan picker and go straight to the welcome form.
+  const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+  const [step, setStep] = useState(alreadySubscribed ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -169,6 +169,15 @@ export default function Onboarding() {
       navigate('/client/core-buddy');
     }
   }, [authLoading, clientData, navigate]);
+
+  // If the Stripe webhook fires while the user is still on the feature
+  // showcase or subscription picker, auto-advance to the welcome form.
+  useEffect(() => {
+    const paid = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+    if (paid && step < 2) {
+      setStep(2);
+    }
+  }, [clientData?.tier, clientData?.stripeSubscriptionId, step]);
 
   // Redirect if not logged in
   useEffect(() => {
