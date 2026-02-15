@@ -121,13 +121,16 @@ export default function Onboarding() {
   const [parqAnswers, setParqAnswers] = useState(PARQ_QUESTIONS.map(() => null));
   const [parqDeclare, setParqDeclare] = useState(false);
   const [parqSubmitting, setParqSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   // Signature pad
   const sigCanvasRef = useRef(null);
   const sigDrawingRef = useRef(false);
   const [sigHasContent, setSigHasContent] = useState(false);
 
-  // Keep the canvas internal resolution in sync with its CSS display size
+  // Keep the canvas internal resolution in sync with its CSS display size.
+  // Setting canvas.width/height clears the bitmap, so reset sigHasContent
+  // to prevent submitting a blank signature after a resize/rotation.
   useEffect(() => {
     const canvas = sigCanvasRef.current;
     if (!canvas) return;
@@ -136,6 +139,7 @@ export default function Onboarding() {
       if (canvas.width !== rect.width || canvas.height !== rect.height) {
         canvas.width = rect.width;
         canvas.height = rect.height;
+        setSigHasContent(false);
       }
     };
     resize();
@@ -519,13 +523,14 @@ export default function Onboarding() {
   const handleParqSubmit = async () => {
     if (!canSubmitParq || parqSubmitting) return;
     setParqSubmitting(true);
+    setSubmitError(null);
 
     try {
       // Resolve client record — uses context if available, otherwise falls
       // back to localStorage / uid-query via AuthContext.resolveClient().
       const client = await resolveClient();
       if (!client) {
-        alert('Could not find your account. Please try logging out and back in.');
+        setSubmitError('Could not find your account. Please try logging out and back in.');
         setParqSubmitting(false);
         return;
       }
@@ -577,7 +582,7 @@ export default function Onboarding() {
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);
-      alert('Failed to save — please try again.\n' + (err.code || err.message || ''));
+      setSubmitError('Failed to save — please try again.' + (err.code ? ` (${err.code})` : ''));
     } finally {
       setParqSubmitting(false);
     }
@@ -662,6 +667,8 @@ export default function Onboarding() {
             <p className="ob-sig-hint">Draw your signature above</p>
           )}
         </div>
+
+        {submitError && <p className="ob-error">{submitError}</p>}
 
         <button
           className="ob-primary-btn"
