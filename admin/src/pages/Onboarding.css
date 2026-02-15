@@ -93,19 +93,20 @@
 
 .ob-showcase-img-wrap {
   width: 100%;
-  max-width: 320px;
-  border-radius: 16px;
+  max-width: 280px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
+  background: #000;
+  border: 3px solid #000;
 }
 
 .ob-showcase-img {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 21px;
 }
 
 .ob-showcase-text {
