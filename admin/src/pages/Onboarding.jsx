@@ -184,6 +184,17 @@ export default function Onboarding() {
     );
   }
 
+  // Wait for auth and client data before showing any onboarding steps
+  if (authLoading || !clientData) {
+    return (
+      <div className="ob-page">
+        <div className="ob-content" style={{ justifyContent: 'center', minHeight: '60dvh' }}>
+          <div className="ob-loading-spinner" />
+        </div>
+      </div>
+    );
+  }
+
   // Handle feature carousel scroll
   const handleScroll = () => {
     if (!scrollRef.current) return;
