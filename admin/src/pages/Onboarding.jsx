@@ -513,23 +513,24 @@ export default function Onboarding() {
         submittedAt: serverTimestamp(),
       });
 
-      // Mark onboarding complete on client doc.
-      // If the user just came back from a successful Stripe checkout, also set
-      // tier to 'premium' — the webhook will confirm this later, but we cannot
-      // rely on it having fired before the user finishes the forms.
-      const updates = {
+      // Mark onboarding complete on client doc (only whitelisted fields —
+      // tier/subscriptionStatus are managed server-side by the Stripe webhook).
+      await updateDoc(doc(db, 'clients', client.id), {
         onboardingComplete: true,
         fitnessGoal: goal,
         experienceLevel: experience,
         dob: dob || null,
-      };
-      if (fromCheckout) {
-        updates.tier = 'premium';
-        updates.subscriptionStatus = updates.subscriptionStatus || 'trialing';
-      }
-      await updateDoc(doc(db, 'clients', client.id), updates);
+      });
 
-      updateClientData(updates);
+      // Optimistically set tier in local state so premium features unlock
+      // immediately. The Stripe webhook writes the real value to Firestore;
+      // the onSnapshot listener in AuthContext will reconcile on next load.
+      const localUpdates = { onboardingComplete: true, fitnessGoal: goal, experienceLevel: experience, dob };
+      if (fromCheckout) {
+        localUpdates.tier = 'premium';
+        localUpdates.subscriptionStatus = 'trialing';
+      }
+      updateClientData(localUpdates);
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);
