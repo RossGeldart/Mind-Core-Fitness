@@ -33,6 +33,10 @@ export default function Login() {
         } else {
           navigate('/client');
         }
+      } else {
+        // Auth succeeded but no client record found — unstick the form
+        setLoading(false);
+        setError('No account found. Please sign up or contact your trainer.');
       }
     }
   }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);

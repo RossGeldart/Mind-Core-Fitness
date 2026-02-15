@@ -24,6 +24,9 @@ service cloud.firestore {
       allow read: if isAuthenticated() && resource.data.leaderboardOptIn == true;
       // BUDDIES: any authenticated user can read all clients for buddy search
       allow read: if isAuthenticated();
+      // Self-signup: allow new users to create their own client document
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.signupSource == 'self_signup';
       // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'experienceLevel', 'dob']);
