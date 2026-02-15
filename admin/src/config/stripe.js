@@ -1,9 +1,9 @@
-// Stripe publishable key (safe for client-side — switch to pk_live_ for production)
+// Stripe publishable key (live)
 export const STRIPE_PUBLISHABLE_KEY =
-  'pk_test_51T0qGRGd5tLfJN5xq1wrmfh3y0GjJSaS15lBU2jjIpdMnaviJwU9D7qEmkZ1cDsy6crpbAbhPSPAMpCSeX3C5qRD00sfAgdLPP';
+  'pk_live_51T0qGRGd5tLfJN5x67UOhn4I1jvosfG3WhFO7X4AiwBXuTSN9KPjVScvAZy3s8kqEhonIzDZQeUbHmfqhezZZZYb00QUcQVy0a';
 
 // Price IDs — update after creating products in Stripe Dashboard
 export const STRIPE_PRICES = {
   monthly: 'price_1T0qMBGd5tLfJN5xhoSuoDS2',
-  annual: 'price_1T0qMcGd5tLfJN5x8RVpg6M2',
+  annual: 'price_1T0rLbGd5tLfJN5xQ08woInI',
 };

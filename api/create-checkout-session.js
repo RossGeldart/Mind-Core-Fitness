@@ -19,10 +19,11 @@ export default async function handler(req, res) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
+      allow_promotion_codes: true,
       subscription_data: {
         trial_period_days: 7,
       },
-      success_url: `${req.headers.origin}/login/client/core-buddy?upgraded=true`,
+      success_url: `${req.headers.origin}/login/onboarding?checkout=success`,
       cancel_url: `${req.headers.origin}/login/upgrade`,
       customer_email: email,
       metadata: {

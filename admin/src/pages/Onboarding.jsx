@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { doc, setDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { STRIPE_PRICES } from '../config/stripe';
@@ -78,8 +78,11 @@ const EXPERIENCE_LEVELS = [
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [step, setStep] = useState(0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  // If returning from Stripe checkout, skip straight to welcome form (step 2)
+  const fromCheckout = searchParams.get('checkout') === 'success';
+  const [step, setStep] = useState(fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -97,7 +100,68 @@ export default function Onboarding() {
 
   // PARQ form
   const [parqAnswers, setParqAnswers] = useState(PARQ_QUESTIONS.map(() => null));
+  const [parqDeclare, setParqDeclare] = useState(false);
   const [parqSubmitting, setParqSubmitting] = useState(false);
+
+  // Signature pad
+  const sigCanvasRef = useRef(null);
+  const sigDrawingRef = useRef(false);
+  const [sigHasContent, setSigHasContent] = useState(false);
+
+  // Keep the canvas internal resolution in sync with its CSS display size
+  useEffect(() => {
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [step]);
+
+  const getSigPos = (e) => {
+    const canvas = sigCanvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  };
+
+  const sigStart = (e) => {
+    e.preventDefault();
+    const canvas = sigCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const pos = getSigPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    sigDrawingRef.current = true;
+  };
+
+  const sigMove = (e) => {
+    if (!sigDrawingRef.current) return;
+    e.preventDefault();
+    const ctx = sigCanvasRef.current.getContext('2d');
+    const pos = getSigPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#fff';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    setSigHasContent(true);
+  };
+
+  const sigEnd = () => { sigDrawingRef.current = false; };
+
+  const sigClear = () => {
+    const canvas = sigCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSigHasContent(false);
+  };
 
   // Redirect if already completed onboarding
   useEffect(() => {
@@ -112,6 +176,17 @@ export default function Onboarding() {
       navigate('/');
     }
   }, [authLoading, currentUser, navigate]);
+
+  // Wait for auth to initialise so we know if the user is logged in
+  if (authLoading) {
+    return (
+      <div className="ob-page">
+        <div className="ob-content" style={{ justifyContent: 'center', minHeight: '60dvh' }}>
+          <div className="ob-loading-spinner" />
+        </div>
+      </div>
+    );
+  }
 
   // Handle feature carousel scroll
   const handleScroll = () => {
@@ -165,6 +240,11 @@ export default function Onboarding() {
       if (plan === 'free') {
         setSelectedPlan('free');
         setStep(2);
+        return;
+      }
+
+      if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
+        setCheckoutError('Account is still loading — please wait a moment and try again.');
         return;
       }
 
@@ -348,17 +428,47 @@ export default function Onboarding() {
 
   // ── Step 3: PARQ Form ──
   const allParqAnswered = parqAnswers.every((a) => a !== null);
+  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
 
   const handleParqSubmit = async () => {
-    if (!allParqAnswered || parqSubmitting || !clientData) return;
+    if (!canSubmitParq || parqSubmitting) return;
     setParqSubmitting(true);
 
     try {
+      // Resolve client record — use context if available, otherwise fetch directly.
+      // After a Stripe redirect the page reloads from scratch; the real-time
+      // listener may not have delivered clientData yet, so retry a few times.
+      let client = clientData;
+      if (!client) {
+        const maxRetries = 4;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            client = { id: snap.docs[0].id, ...snap.docs[0].data() };
+            updateClientData(client);
+            break;
+          }
+          // Wait before retrying (1s, 2s, 3s)
+          if (attempt < maxRetries - 1) {
+            await new Promise((r) => setTimeout(r, (attempt + 1) * 1000));
+          }
+        }
+        if (!client) {
+          alert('Could not find your account. Please try logging out and back in.');
+          setParqSubmitting(false);
+          return;
+        }
+      }
+
+      // Get signature as data URL
+      const signatureData = sigCanvasRef.current.toDataURL('image/png');
+
       // Save onboarding data
-      await setDoc(doc(db, 'onboardingSubmissions', clientData.id), {
-        clientId: clientData.id,
-        clientName: clientData.name,
-        email: clientData.email,
+      await setDoc(doc(db, 'onboardingSubmissions', client.id), {
+        clientId: client.id,
+        clientName: client.name,
+        email: client.email,
         selectedPlan: selectedPlan || 'free',
         welcome: {
           dob,
@@ -371,12 +481,14 @@ export default function Onboarding() {
           questions: PARQ_QUESTIONS,
           answers: parqAnswers,
           hasYes: parqAnswers.includes(true),
+          declaration: true,
+          signature: signatureData,
         },
         submittedAt: serverTimestamp(),
       });
 
       // Mark onboarding complete on client doc
-      await updateDoc(doc(db, 'clients', clientData.id), {
+      await updateDoc(doc(db, 'clients', client.id), {
         onboardingComplete: true,
         fitnessGoal: goal,
         experienceLevel: experience,
@@ -387,7 +499,7 @@ export default function Onboarding() {
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);
-      alert('Failed to save — please try again.');
+      alert('Failed to save — please try again.\n' + (err.code || err.message || ''));
     } finally {
       setParqSubmitting(false);
     }
@@ -430,9 +542,45 @@ export default function Onboarding() {
           </div>
         )}
 
+        {/* Declaration */}
+        <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
+          <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
+            {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+          </span>
+          <span className="ob-declare-text">
+            I confirm that I have read and answered each question honestly.
+            I understand that if my health changes I should inform my trainer.
+            I take full responsibility for my participation in physical activity.
+          </span>
+        </label>
+
+        {/* Signature pad */}
+        <div className="ob-sig-section">
+          <div className="ob-sig-header">
+            <label className="ob-label" style={{ margin: 0 }}>Signature</label>
+            {sigHasContent && (
+              <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
+            )}
+          </div>
+          <canvas
+            ref={sigCanvasRef}
+            className="ob-sig-canvas"
+            onMouseDown={sigStart}
+            onMouseMove={sigMove}
+            onMouseUp={sigEnd}
+            onMouseLeave={sigEnd}
+            onTouchStart={sigStart}
+            onTouchMove={sigMove}
+            onTouchEnd={sigEnd}
+          />
+          {!sigHasContent && (
+            <p className="ob-sig-hint">Draw your signature above</p>
+          )}
+        </div>
+
         <button
           className="ob-primary-btn"
-          disabled={!allParqAnswered || parqSubmitting}
+          disabled={!canSubmitParq || parqSubmitting}
           onClick={handleParqSubmit}
         >
           {parqSubmitting ? 'Saving...' : 'Complete Setup'}

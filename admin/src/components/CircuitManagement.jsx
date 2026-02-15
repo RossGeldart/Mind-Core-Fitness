@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, getDocs, doc, getDoc, updateDoc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import './CircuitManagement.css';
 
@@ -77,9 +77,51 @@ export default function CircuitManagement() {
         );
       setMembers(circuitMembers);
 
-      // Auto-select the upcoming session
+      // Auto-create next Saturday's session if it doesn't exist
       const nextSatStr = getDateString(getNextSaturday());
-      const upcoming = sessionsData.find(s => s.date === nextSatStr);
+      let upcoming = sessionsData.find(s => s.date === nextSatStr);
+
+      if (!upcoming) {
+        // Pre-slot active VIPs into the new session
+        const vips = circuitMembers.filter(m => m.clientType === 'circuit_vip' && m.status === 'active');
+        const slots = [];
+        for (let i = 0; i < 8; i++) {
+          if (i < vips.length) {
+            slots.push({
+              slotNumber: i + 1,
+              memberId: vips[i].id,
+              memberName: vips[i].name,
+              memberType: 'circuit_vip',
+              status: 'confirmed',
+              bookedAt: Timestamp.now(),
+            });
+          } else {
+            slots.push({
+              slotNumber: i + 1,
+              memberId: null,
+              memberName: null,
+              memberType: null,
+              status: 'available',
+            });
+          }
+        }
+
+        const sessionData = {
+          date: nextSatStr,
+          time: '09:00',
+          endTime: '09:45',
+          maxCapacity: 8,
+          slots,
+          waitlist: [],
+          createdAt: Timestamp.now(),
+        };
+
+        await setDoc(doc(db, 'circuitSessions', nextSatStr), sessionData);
+        upcoming = { id: nextSatStr, ...sessionData };
+        sessionsData.unshift(upcoming);
+        setSessions([...sessionsData]);
+      }
+
       if (upcoming) setSelectedSession(upcoming);
       else if (sessionsData.length > 0) setSelectedSession(sessionsData[0]);
     } catch (error) {

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -36,6 +36,7 @@ export default function CircuitDashboard() {
   const [mySlot, setMySlot] = useState(null);
   const [stats, setStats] = useState({ attended: 0, streak: 0, strikes: 0 });
   const [toast, setToast] = useState(null);
+  const lastSatDateRef = useRef(null);
 
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -52,7 +53,7 @@ export default function CircuitDashboard() {
     }
   }, [currentUser, isClient, authLoading, navigate]);
 
-  // Live countdown to next Saturday 9am
+  // Live countdown to next Saturday 9am — also detects session transition
   useEffect(() => {
     const update = () => {
       const now = new Date();
@@ -69,11 +70,19 @@ export default function CircuitDashboard() {
         minutes: Math.floor((diff % 3600000) / 60000),
         seconds: Math.floor((diff % 60000) / 1000),
       });
+
+      // Detect session transition: if getNextSaturday() now returns a different
+      // date than what we last fetched, re-fetch data for the new session
+      const currentSatDate = getDateString(nextSat);
+      if (lastSatDateRef.current && lastSatDateRef.current !== currentSatDate && clientData) {
+        lastSatDateRef.current = currentSatDate;
+        fetchData();
+      }
     };
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [clientData]);
 
   useEffect(() => {
     if (clientData) fetchData();
@@ -82,16 +91,110 @@ export default function CircuitDashboard() {
   const fetchData = async () => {
     try {
       const nextSatDate = getDateString(getNextSaturday());
+      lastSatDateRef.current = nextSatDate;
 
-      // Check this week's session for my slot
+      // Check this week's session for my slot — auto-create if missing
       const sessionRef = doc(db, 'circuitSessions', nextSatDate);
       const sessionDoc = await getDoc(sessionRef);
+
       if (sessionDoc.exists()) {
-        const data = sessionDoc.data();
-        const slot = data.slots?.find(s => s.memberId === clientData.id);
+        const existingSession = sessionDoc.data();
+
+        // Auto-slot any new VIPs that aren't in the session yet
+        try {
+          const vipQ = query(
+            collection(db, 'clients'),
+            where('clientType', '==', 'circuit_vip'),
+            where('status', '==', 'active')
+          );
+          const vipSnap = await getDocs(vipQ);
+          const vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+          const slottedMemberIds = existingSession.slots
+            .filter(s => s.memberId)
+            .map(s => s.memberId);
+          const optedOut = existingSession.vipOptOuts || [];
+          const missingVips = vips.filter(v => !slottedMemberIds.includes(v.id) && !optedOut.includes(v.id));
+
+          if (missingVips.length > 0) {
+            const updatedSlots = [...existingSession.slots];
+            let changed = false;
+
+            for (const vip of missingVips) {
+              const availIdx = updatedSlots.findIndex(s => s.status === 'available');
+              if (availIdx === -1) break;
+              updatedSlots[availIdx] = {
+                slotNumber: updatedSlots[availIdx].slotNumber,
+                memberId: vip.id,
+                memberName: vip.name,
+                memberType: 'circuit_vip',
+                status: 'confirmed',
+                bookedAt: Timestamp.now(),
+              };
+              changed = true;
+            }
+
+            if (changed) {
+              await updateDoc(sessionRef, { slots: updatedSlots });
+              existingSession.slots = updatedSlots;
+            }
+          }
+        } catch (vipError) {
+          console.error('VIP auto-slot check failed (non-critical):', vipError);
+        }
+
+        const slot = existingSession.slots?.find(s => s.memberId === clientData.id);
         setMySlot(slot || null);
       } else {
-        setMySlot(null);
+        // Auto-create session with VIP pre-slots (same logic as CircuitBooking)
+        let vips = [];
+        try {
+          const vipQ = query(
+            collection(db, 'clients'),
+            where('clientType', '==', 'circuit_vip'),
+            where('status', '==', 'active')
+          );
+          const vipSnap = await getDocs(vipQ);
+          vips = vipSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (vipError) {
+          console.error('VIP query failed, creating session with empty slots:', vipError);
+        }
+
+        const slots = [];
+        for (let i = 0; i < 8; i++) {
+          if (i < vips.length) {
+            slots.push({
+              slotNumber: i + 1,
+              memberId: vips[i].id,
+              memberName: vips[i].name,
+              memberType: 'circuit_vip',
+              status: 'confirmed',
+              bookedAt: Timestamp.now(),
+            });
+          } else {
+            slots.push({
+              slotNumber: i + 1,
+              memberId: null,
+              memberName: null,
+              memberType: null,
+              status: 'available',
+            });
+          }
+        }
+
+        const sessionData = {
+          date: nextSatDate,
+          time: '09:00',
+          endTime: '09:45',
+          maxCapacity: 8,
+          slots,
+          waitlist: [],
+          createdAt: Timestamp.now(),
+        };
+        await setDoc(sessionRef, sessionData);
+
+        const slot = slots.find(s => s.memberId === clientData.id);
+        setMySlot(slot || null);
       }
 
       // Calculate stats from all past sessions

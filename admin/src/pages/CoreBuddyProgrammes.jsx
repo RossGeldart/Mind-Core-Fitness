@@ -435,11 +435,26 @@ export default function CoreBuddyProgrammes() {
         const snap = await getDoc(docRef);
         if (snap.exists()) {
           setActiveProgramme(snap.data());
+        }
+
+        // If a templateId was passed (e.g. from the workouts page carousel),
+        // auto-select that template and show its overview directly.
+        const templateId = location.state?.templateId;
+        if (templateId && !didAutoSelectRef.current) {
+          const template = TEMPLATES.find(t => t.id === templateId);
+          if (template) {
+            didAutoSelectRef.current = true;
+            setSelectedTemplate(template);
+            setView('overview');
+            return;
+          }
+        }
+
+        // No templateId passed — show dashboard if programme exists, else go back
+        if (snap.exists()) {
           setView('dashboard');
         } else {
-          // No active programme — if no templateId was passed, send back to workouts
-          if (!location.state?.templateId) navigate('/client/core-buddy/workouts', { replace: true });
-          else setView('browse');
+          navigate('/client/core-buddy/workouts', { replace: true });
         }
       } catch (err) {
         console.error('Error loading programme:', err);
@@ -448,21 +463,6 @@ export default function CoreBuddyProgrammes() {
     };
     load();
   }, [clientData]);
-
-  // Auto-select template if navigated with state (from workouts page carousel)
-  // Must run after loading completes (view !== 'loading') and override dashboard view
-  useEffect(() => {
-    if (didAutoSelectRef.current) return;
-    if (view === 'loading') return;
-    const templateId = location.state?.templateId;
-    if (!templateId) return;
-    const template = TEMPLATES.find(t => t.id === templateId);
-    if (template) {
-      didAutoSelectRef.current = true;
-      setSelectedTemplate(template);
-      setView('overview');
-    }
-  }, [view, location.state]);
 
   // Timer countdown effect
   useEffect(() => {
@@ -916,7 +916,6 @@ export default function CoreBuddyProgrammes() {
   }
 
   // Browse view no longer needed — programme carousel lives on the workouts page.
-  // Redirect to workouts if we somehow land here.
   if (view === 'browse') {
     navigate('/client/core-buddy/workouts', { replace: true });
     return null;

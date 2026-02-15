@@ -24,9 +24,15 @@ service cloud.firestore {
       allow read: if isAuthenticated() && resource.data.leaderboardOptIn == true;
       // BUDDIES: any authenticated user can read all clients for buddy search
       allow read: if isAuthenticated();
-      // Clients can update their own leaderboardOptIn, welcomeForm, parqForm, daily quote, and photoURL fields
+      // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'experienceLevel', 'dob']);
+    }
+
+    // Onboarding Submissions - admin full, clients write own (doc ID = clientId)
+    match /onboardingSubmissions/{docId} {
+      allow read, write: if isAdmin();
+      allow create, update: if isClientOwner(docId);
     }
 
     // Sessions - admin full, clients read own
