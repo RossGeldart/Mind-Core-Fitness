@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -78,8 +78,11 @@ const EXPERIENCE_LEVELS = [
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [step, setStep] = useState(0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  // If returning from Stripe checkout, skip straight to welcome form (step 2)
+  const fromCheckout = searchParams.get('checkout') === 'success';
+  const [step, setStep] = useState(fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
