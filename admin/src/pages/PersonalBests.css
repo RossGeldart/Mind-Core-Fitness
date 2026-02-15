@@ -1277,19 +1277,9 @@
   gap: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-left: 4px solid var(--border-color);
   border-radius: 16px;
   padding: 16px 20px;
   box-shadow: var(--shadow-md), var(--shadow-sm);
-  transition: border-color 0.3s ease;
-}
-
-.pb-cb-card-has-target {
-  border-left-color: var(--color-primary);
-}
-
-.pb-cb-card-target-hit {
-  border-left-color: var(--color-success);
 }
 
 .pb-cb-card-top {
@@ -1734,18 +1724,9 @@
 [data-theme="dark"] .pb-cb-card {
   background: rgba(30, 30, 30, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left: 4px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-}
-
-[data-theme="dark"] .pb-cb-card-has-target {
-  border-left-color: var(--color-primary);
-}
-
-[data-theme="dark"] .pb-cb-card-target-hit {
-  border-left-color: var(--color-success);
 }
 
 [data-theme="dark"] .pb-cb-achievements-link {
