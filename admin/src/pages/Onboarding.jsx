@@ -428,10 +428,14 @@ export default function Onboarding() {
 
   // ── Step 3: PARQ Form ──
   const allParqAnswered = parqAnswers.every((a) => a !== null);
-  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent && !!clientData;
+  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
 
   const handleParqSubmit = async () => {
     if (!canSubmitParq || parqSubmitting) return;
+    if (!clientData) {
+      alert('Your account is still loading — please wait a moment and try again.');
+      return;
+    }
     setParqSubmitting(true);
 
     try {
