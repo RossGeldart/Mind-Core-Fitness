@@ -21,6 +21,29 @@
   border-radius: 16px;
 }
 
+/* ── Dark page variant for plan picker ── */
+.ob-page--dark {
+  background: #2a2a28;
+}
+
+.ob-page--dark .ob-title {
+  color: #f0f0f0;
+}
+
+.ob-page--dark .ob-subtitle {
+  color: #b0b0b0;
+}
+
+.ob-page--dark .ob-step-num {
+  background: #333331;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+}
+
+.ob-page--dark .ob-error {
+  color: #f44336;
+}
+
 .ob-title {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
@@ -236,17 +259,17 @@
 
 .ob-plan-card {
   position: relative;
-  background: #2d3d3d;
-  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: #333331;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 32px 24px;
   text-align: center;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   font-family: 'Roboto', sans-serif;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   animation: ob-card-in 0.5s ease-out both;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ob-plan-card:nth-child(1) { animation-delay: 0.05s; }
@@ -264,8 +287,8 @@
 
 /* Dimmed free tier */
 .ob-plan-free {
-  background: #1a2a2a;
-  border: 2px dashed rgba(255, 255, 255, 0.12);
+  background: #2a2a28;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
   opacity: 0.85;
 }
 
@@ -298,14 +321,13 @@
 .ob-plan-featured::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
   border: 2px solid var(--color-primary);
   border-radius: 20px;
-  opacity: 0.4;
+  opacity: 0.5;
   pointer-events: none;
 }
 
