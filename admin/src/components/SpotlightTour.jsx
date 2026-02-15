@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './SpotlightTour.css';
 
 /**
@@ -16,15 +16,25 @@ export default function SpotlightTour({ steps, onFinish, active }) {
   const [visible, setVisible] = useState(false);
   const rafRef = useRef(null);
 
-  // Filter to only steps whose target element exists in the DOM right now
-  const liveSteps = steps.filter(s => document.querySelector(s.selector));
+  // Build stable list of live steps once when tour activates.
+  // useMemo keyed on `active` so it only recomputes on open/close.
+  const liveSteps = useMemo(() => {
+    if (!active) return [];
+    return steps.filter(s => document.querySelector(s.selector));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
   const step = liveSteps[idx];
   const isLast = idx === liveSteps.length - 1;
 
+  // Stable selector string for the current step — use this in deps
+  // instead of the step object to avoid re-render loops.
+  const selector = step?.selector;
+
   // Measure the target element and decide tooltip placement
   const measure = useCallback(() => {
-    if (!step) return;
-    const el = document.querySelector(step.selector);
+    if (!selector) return;
+    const el = document.querySelector(selector);
     if (!el) { setRect(null); return; }
 
     const r = el.getBoundingClientRect();
@@ -39,23 +49,21 @@ export default function SpotlightTour({ steps, onFinish, active }) {
     const spaceBelow = window.innerHeight - r.bottom;
     setTooltipPos(spaceBelow < 260 ? 'above' : 'below');
     setVisible(true);
-  }, [step]);
+  }, [selector]);
 
   // Scroll target into view + measure on step change
   useEffect(() => {
-    if (!active || !step) return;
+    if (!active || !selector) return;
 
-    // Reset visibility while we scroll + remeasure
     setVisible(false);
 
-    const el = document.querySelector(step.selector);
+    const el = document.querySelector(selector);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Wait for scroll to settle, then measure
       const t = setTimeout(measure, 400);
       return () => clearTimeout(t);
     }
-  }, [active, idx, step, measure]);
+  }, [active, idx, selector, measure]);
 
   // Re-measure on scroll / resize so the spotlight tracks the element
   useEffect(() => {
