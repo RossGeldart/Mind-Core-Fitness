@@ -142,6 +142,7 @@ export default function Onboarding() {
     setTimeout(() => {
       setStep(target);
       setAnimating(false);
+      window.scrollTo(0, 0);
     }, 250);
   }, [step, animating]);
 
