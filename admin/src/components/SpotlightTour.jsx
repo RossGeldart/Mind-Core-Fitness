@@ -13,11 +13,15 @@ export default function SpotlightTour({ steps, onFinish, active }) {
   const [idx, setIdx] = useState(0);
   const [rect, setRect] = useState(null);
   const [tooltipPos, setTooltipPos] = useState('below');
-  const [visible, setVisible] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
   const rafRef = useRef(null);
 
-  // Build stable list of live steps once when tour activates.
-  // useMemo keyed on `active` so it only recomputes on open/close.
+  // Reset step index when tour closes so it starts fresh next time
+  useEffect(() => {
+    if (!active) setIdx(0);
+  }, [active]);
+
+  // Build stable list of live steps once when tour activates
   const liveSteps = useMemo(() => {
     if (!active) return [];
     return steps.filter(s => document.querySelector(s.selector));
@@ -26,9 +30,6 @@ export default function SpotlightTour({ steps, onFinish, active }) {
 
   const step = liveSteps[idx];
   const isLast = idx === liveSteps.length - 1;
-
-  // Stable selector string for the current step — use this in deps
-  // instead of the step object to avoid re-render loops.
   const selector = step?.selector;
 
   // Measure the target element and decide tooltip placement
@@ -48,19 +49,23 @@ export default function SpotlightTour({ steps, onFinish, active }) {
 
     const spaceBelow = window.innerHeight - r.bottom;
     setTooltipPos(spaceBelow < 260 ? 'above' : 'below');
-    setVisible(true);
   }, [selector]);
 
   // Scroll target into view + measure on step change
   useEffect(() => {
     if (!active || !selector) return;
 
-    setVisible(false);
+    // Brief fade-out while spotlight moves to the new target
+    setTransitioning(true);
 
     const el = document.querySelector(selector);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const t = setTimeout(measure, 400);
+      // Wait for scroll to settle, then measure + fade back in
+      const t = setTimeout(() => {
+        measure();
+        setTransitioning(false);
+      }, 400);
       return () => clearTimeout(t);
     }
   }, [active, idx, selector, measure]);
@@ -94,13 +99,13 @@ export default function SpotlightTour({ steps, onFinish, active }) {
 
   return (
     <div className="st-overlay" onClick={(e) => { e.stopPropagation(); }}>
-      {/* Dark backdrop — click anywhere to advance */}
+      {/* Transparent click-target — fills screen, click advances */}
       <div className="st-backdrop" onClick={advance} />
 
-      {/* Cutout spotlight */}
-      {rect && visible && (
+      {/* Spotlight cutout — its box-shadow IS the dark overlay */}
+      {rect && (
         <div
-          className="st-spotlight"
+          className={`st-spotlight${transitioning ? ' st-transitioning' : ''}`}
           style={{
             top: rect.top,
             left: rect.left,
@@ -111,9 +116,9 @@ export default function SpotlightTour({ steps, onFinish, active }) {
       )}
 
       {/* Tooltip */}
-      {rect && visible && (
+      {rect && (
         <div
-          className={`st-tooltip st-tooltip-${tooltipPos}`}
+          className={`st-tooltip st-tooltip-${tooltipPos}${transitioning ? ' st-transitioning' : ''}`}
           style={{
             top: tooltipPos === 'below' ? rect.top + rect.height + 16 : undefined,
             bottom: tooltipPos === 'above' ? window.innerHeight - rect.top + 16 : undefined,

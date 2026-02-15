@@ -188,6 +188,7 @@ export default function CoreBuddyDashboard() {
 
   // Guided tour — only shown once for new users
   const [showTour, setShowTour] = useState(false);
+  const tourDismissedRef = useRef(false);
 
   // Build tour steps based on tier (premium users see more steps)
   const tourSteps = (() => {
@@ -268,8 +269,7 @@ export default function CoreBuddyDashboard() {
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)
   useEffect(() => {
-    if (statsLoaded && clientData && !clientData.tourComplete) {
-      // Short delay to ensure the layout has settled after data load
+    if (statsLoaded && clientData && !clientData.tourComplete && !tourDismissedRef.current) {
       const t = setTimeout(() => setShowTour(true), 600);
       return () => clearTimeout(t);
     }
@@ -838,6 +838,7 @@ export default function CoreBuddyDashboard() {
 
   // Tour finish handler — persist to Firestore so it only shows once
   const handleTourFinish = useCallback(async () => {
+    tourDismissedRef.current = true;
     setShowTour(false);
     if (clientData?.id) {
       try {
