@@ -138,6 +138,8 @@ export default function CoreBuddyDashboard() {
   // Achievements
   const [unlockedBadges, setUnlockedBadges] = useState([]);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  const [celebrationBadge, setCelebrationBadge] = useState(null);
+  const previousBadgesRef = useRef(null);
 
   // Streak data for achievements
   const [streakWeeks, setStreakWeeks] = useState(0);
@@ -306,6 +308,7 @@ export default function CoreBuddyDashboard() {
         setTopPBs(c.topPBs ?? []);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
         setUnlockedBadges(c.unlockedBadges ?? []);
+        previousBadgesRef.current = c.unlockedBadges ?? [];
         setStreakWeeks(c.streakWeeks ?? 0);
         setStatsLoaded(true);
       }
@@ -810,6 +813,19 @@ export default function CoreBuddyDashboard() {
         if (hStreak >= 7) addBadge('habits_7');
 
         setUnlockedBadges(unlocked);
+
+        // Detect newly unlocked badges and celebrate
+        const prev = previousBadgesRef.current;
+        if (prev !== null) {
+          const newlyUnlocked = unlocked.filter(id => !prev.includes(id));
+          if (newlyUnlocked.length > 0) {
+            const badgeDef = BADGE_DEFS.find(b => b.id === newlyUnlocked[newlyUnlocked.length - 1]);
+            if (badgeDef) {
+              setTimeout(() => setCelebrationBadge(badgeDef), 600);
+            }
+          }
+        }
+        previousBadgesRef.current = unlocked;
 
         // Persist to Firestore (fire and forget)
         const badgeMap = {};
@@ -1847,6 +1863,32 @@ export default function CoreBuddyDashboard() {
 
       {/* Guided tour for new users */}
       <SpotlightTour steps={tourSteps} active={showTour} onFinish={handleTourFinish} />
+
+      {/* Badge unlock celebration */}
+      {celebrationBadge && (
+        <div className="cb-celebration-overlay" onClick={() => setCelebrationBadge(null)}>
+          <div className="cb-confetti-container">
+            {Array.from({ length: 30 }, (_, i) => (
+              <span key={i} className="cb-confetti-piece" style={{
+                '--angle': `${Math.random() * 360}deg`,
+                '--distance': `${80 + Math.random() * 120}px`,
+                '--delay': `${Math.random() * 0.3}s`,
+                '--color': ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE', '#FF8C42', '#38B6FF'][i % 8],
+                '--size': `${6 + Math.random() * 6}px`,
+                '--drift': `${(Math.random() - 0.5) * 60}px`,
+              }} />
+            ))}
+          </div>
+          <div className="cb-celebration-content" onClick={e => e.stopPropagation()}>
+            <div className="cb-celebration-glow" />
+            <img src={celebrationBadge.img} alt={celebrationBadge.name} className="cb-celebration-badge-img" />
+            <h2 className="cb-celebration-title">Badge Unlocked!</h2>
+            <p className="cb-celebration-name">{celebrationBadge.name}</p>
+            <p className="cb-celebration-desc">{celebrationBadge.desc}</p>
+            <button className="cb-celebration-dismiss" onClick={() => setCelebrationBadge(null)}>Tap to continue</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
