@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { doc, setDoc, updateDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { STRIPE_PRICES } from '../config/stripe';
@@ -76,7 +76,7 @@ const EXPERIENCE_LEVELS = [
 ];
 
 export default function Onboarding() {
-  const { currentUser, clientData, updateClientData, loading: authLoading } = useAuth();
+  const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -89,7 +89,6 @@ export default function Onboarding() {
   const scrollRef = useRef(null);
 
   // Subscription
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [checkoutError, setCheckoutError] = useState(null);
 
@@ -249,7 +248,6 @@ export default function Onboarding() {
   if (step === 1) {
     const handlePlanSelect = async (plan) => {
       if (plan === 'free') {
-        setSelectedPlan('free');
         setStep(2);
         return;
       }
@@ -448,43 +446,13 @@ export default function Onboarding() {
     setParqSubmitting(true);
 
     try {
-      // Resolve client record — use context if available, otherwise fetch.
-      // After a Stripe redirect the page reloads and the auth token may not
-      // be fully ready, causing uid-based queries to return empty.  We first
-      // try a direct document read using the ID stashed in localStorage
-      // (does not depend on query indexes / token state), then fall back to
-      // a uid-based query.
-      let client = clientData;
+      // Resolve client record — uses context if available, otherwise falls
+      // back to localStorage / uid-query via AuthContext.resolveClient().
+      const client = await resolveClient();
       if (!client) {
-        // 1) Direct read by stored document ID (most reliable after redirect)
-        const storedId = localStorage.getItem('mcf_clientId');
-        if (storedId) {
-          try {
-            const snap = await getDoc(doc(db, 'clients', storedId));
-            if (snap.exists()) {
-              client = { id: snap.id, ...snap.data() };
-              updateClientData(client);
-            }
-          } catch (e) {
-            console.error('Direct client read failed:', e);
-          }
-        }
-
-        // 2) Fallback: query by uid
-        if (!client && currentUser) {
-          const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            client = { id: snap.docs[0].id, ...snap.docs[0].data() };
-            updateClientData(client);
-          }
-        }
-
-        if (!client) {
-          alert('Could not find your account. Please try logging out and back in.');
-          setParqSubmitting(false);
-          return;
-        }
+        alert('Could not find your account. Please try logging out and back in.');
+        setParqSubmitting(false);
+        return;
       }
 
       // Get signature as data URL
@@ -495,7 +463,7 @@ export default function Onboarding() {
         clientId: client.id,
         clientName: client.name,
         email: client.email,
-        selectedPlan: selectedPlan || 'free',
+        selectedPlan: client.tier || 'free',
         welcome: {
           dob,
           gender: gender || null,
