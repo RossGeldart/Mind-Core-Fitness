@@ -161,8 +161,8 @@ export default function Onboarding() {
     }
   }, [authLoading, currentUser, navigate]);
 
-  // Wait for auth and client data before showing any onboarding steps
-  if (authLoading || !clientData) {
+  // Wait for auth to initialise so we know if the user is logged in
+  if (authLoading) {
     return (
       <div className="ob-page">
         <div className="ob-content" style={{ justifyContent: 'center', minHeight: '60dvh' }}>
