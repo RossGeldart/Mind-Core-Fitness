@@ -1604,26 +1604,6 @@ export default function CoreBuddyDashboard() {
             )}
           </div>
 
-          {/* Badge fullscreen overlay */}
-          {selectedBadge && (
-            <div className="cb-badge-overlay" onClick={() => setSelectedBadge(null)}>
-              <div className="cb-badge-overlay-content" onClick={e => e.stopPropagation()}>
-                <img
-                  src={selectedBadge.img}
-                  alt={selectedBadge.name}
-                  className={`cb-badge-overlay-img${!unlockedBadges.includes(selectedBadge.id) ? ' cb-badge-overlay-img-locked' : ''}`}
-                />
-                <p className="cb-badge-overlay-desc">{selectedBadge.desc}</p>
-                {unlockedBadges.includes(selectedBadge.id) ? (
-                  <span className="cb-badge-status unlocked">Unlocked</span>
-                ) : (
-                  <span className="cb-badge-status locked">Locked</span>
-                )}
-                <button className="cb-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
-              </div>
-            </div>
-          )}
-
           {/* My Journey */}
           <div className="cb-journey-section">
             <h3 className="cb-journey-title">My Journey {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
@@ -1848,6 +1828,25 @@ export default function CoreBuddyDashboard() {
         </div>
       </main>
 
+      {/* Badge fullscreen overlay — outside cb-features to avoid re-triggering stagger animations */}
+      {selectedBadge && (
+        <div className="cb-badge-overlay" onClick={() => setSelectedBadge(null)}>
+          <div className="cb-badge-overlay-content" onClick={e => e.stopPropagation()}>
+            <img
+              src={selectedBadge.img}
+              alt={selectedBadge.name}
+              className={`cb-badge-overlay-img${!unlockedBadges.includes(selectedBadge.id) ? ' cb-badge-overlay-img-locked' : ''}`}
+            />
+            {unlockedBadges.includes(selectedBadge.id) ? (
+              <span className="cb-badge-status unlocked">Unlocked</span>
+            ) : (
+              <span className="cb-badge-status locked">Locked</span>
+            )}
+            <button className="cb-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
+          </div>
+        </div>
+      )}
+
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />
 
@@ -1884,7 +1883,6 @@ export default function CoreBuddyDashboard() {
             <img src={celebrationBadge.img} alt={celebrationBadge.name} className="cb-celebration-badge-img" />
             <h2 className="cb-celebration-title">Badge Unlocked!</h2>
             <p className="cb-celebration-name">{celebrationBadge.name}</p>
-            <p className="cb-celebration-desc">{celebrationBadge.desc}</p>
             <button className="cb-celebration-dismiss" onClick={() => setCelebrationBadge(null)}>Tap to continue</button>
           </div>
         </div>
