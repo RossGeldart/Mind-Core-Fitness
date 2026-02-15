@@ -235,6 +235,11 @@ export default function CoreBuddyDashboard() {
           body: 'Connect with other members, share your journey, and keep each other accountable.',
         },
         {
+          selector: '.cb-journey-section',
+          title: 'Share Your Journey',
+          body: 'Post photos, updates, and milestones — your fitness journey in one place. Like and comment on each other\'s posts.',
+        },
+        {
           selector: '.cb-achievements-section',
           title: 'Achievements',
           body: 'Every rep counts towards badges — volume milestones, workout streaks, and more to unlock.',
