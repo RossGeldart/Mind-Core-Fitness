@@ -31,8 +31,8 @@ export default function Login() {
     }
   }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
 
-  // While checking auth state, render nothing (avoids logo flash)
-  if (authLoading) return null;
+  // While checking auth state or already logged in, render nothing (avoids flash)
+  if (authLoading || currentUser) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
