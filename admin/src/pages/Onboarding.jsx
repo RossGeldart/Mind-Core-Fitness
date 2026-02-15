@@ -94,18 +94,18 @@ const EXPERIENCE_LEVELS = [
   { key: 'advanced', label: 'Advanced', desc: 'Training consistently for 2+ years' },
 ];
 
-const TOTAL_STEPS = 4; // 0=features, 1=subscription, 2=welcome, 3=parq
+// Step order: 0=features, 1=welcome, 2=parq, 3=choose tier
+const TOTAL_STEPS = 4;
 
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // If the user already has a paid subscription (set by Stripe webhook),
-  // or is returning from a successful Stripe checkout, skip to the welcome form.
-  const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+  // If returning from a successful Stripe checkout, onboarding is complete.
   const fromCheckout = searchParams.get('checkout') === 'success';
-  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0);
+
+  const [step, setStep] = useState(0);
   const [slideDir, setSlideDir] = useState('right'); // 'right' = forward, 'left' = back
   const [animating, setAnimating] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -242,14 +242,20 @@ export default function Onboarding() {
     }
   }, [authLoading, clientData, navigate]);
 
-  // If the Stripe webhook fires while the user is still on the feature
-  // showcase or subscription picker, auto-advance to the welcome form.
+  // If returning from a successful Stripe checkout, finalise onboarding
   useEffect(() => {
-    const paid = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
-    if (paid && step < 2) {
-      setStep(2);
-    }
-  }, [clientData?.tier, clientData?.stripeSubscriptionId, step]);
+    if (!fromCheckout || !clientData?.id || clientData?.onboardingComplete) return;
+    const finalise = async () => {
+      try {
+        await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
+        updateClientData({ onboardingComplete: true, tier: 'premium', subscriptionStatus: 'trialing' });
+        navigate('/client/core-buddy');
+      } catch (err) {
+        console.error('Post-checkout finalise error:', err);
+      }
+    };
+    finalise();
+  }, [fromCheckout, clientData?.id, clientData?.onboardingComplete, updateClientData, navigate]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -315,8 +321,8 @@ export default function Onboarding() {
     : 'ob-step-anim ob-step-enter';
 
   // ── Progress Bar Component ──
+  // Steps 1-3 show as "Step X of 3" (step 0 = showcase doesn't count)
   const ProgressBar = ({ current }) => {
-    // Step 0 (showcase) doesn't count in the numbered progress
     if (current === 0) return null;
     const total = TOTAL_STEPS - 1; // 3 numbered steps
     const pct = (current / total) * 100;
@@ -409,53 +415,13 @@ export default function Onboarding() {
     );
   }
 
-  // ── Step 1: Subscription Picker ──
+  // ── Step 1: Welcome Form ──
   if (step === 1) {
-    const handlePlanSelect = async (plan) => {
-      if (plan === 'free') {
-        goToStep(2);
-        return;
-      }
+    const welcomeValid = dob && gender && goals.length > 0 && experience;
 
-      if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
-        setCheckoutError('Account is still loading — please wait a moment and try again.');
-        return;
-      }
-
-      // Check email is verified before Stripe checkout
-      if (!currentUser.emailVerified) {
-        setCheckoutError('Please verify your email before subscribing. Check your inbox for a verification link.');
-        return;
-      }
-
-      // Stripe checkout for monthly/annual
-      setCheckoutLoading(plan);
-      setCheckoutError(null);
-      try {
-        const res = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            priceId: STRIPE_PRICES[plan],
-            clientId: clientData?.id,
-            uid: currentUser?.uid,
-            email: currentUser?.email,
-          }),
-        });
-        const data = await res.json();
-        if (data.url) {
-          // Persist clientId so we can recover after Stripe redirect
-          try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
-          window.location.href = data.url;
-        } else {
-          setCheckoutError(data.error || 'Something went wrong');
-        }
-      } catch (err) {
-        console.error('Checkout error:', err);
-        setCheckoutError('Unable to start checkout');
-      } finally {
-        setCheckoutLoading(null);
-      }
+    const handleWelcomeContinue = () => {
+      saveDraft();
+      goToStep(2);
     };
 
     return (
@@ -463,89 +429,6 @@ export default function Onboarding() {
         <ThemeToggle className="ob-theme-toggle" />
         <div className={`ob-content ${stepClass}`}>
           <ProgressBar current={1} />
-          <h1 className="ob-title">Choose Your Plan</h1>
-          <p className="ob-subtitle">Start free or unlock everything with Premium</p>
-
-          <div className="ob-plans">
-            {/* Free */}
-            <button className="ob-plan-card ob-plan-free" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
-              <div className="ob-plan-name">Free</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">0</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
-                <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
-                <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
-              </ul>
-              <div className="ob-plan-cta-free">Get Started Free</div>
-            </button>
-
-            {/* Monthly */}
-            <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
-              <div className="ob-plan-badge">Most Popular</div>
-              <div className="ob-plan-name">Monthly</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">19.99</span>
-                <span className="ob-plan-period">/month</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
-                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
-              </ul>
-              <div className="ob-plan-cta">
-                {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
-              </div>
-            </button>
-
-            {/* Annual */}
-            <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
-              <div className="ob-plan-badge">Best Value — Save 17%</div>
-              <div className="ob-plan-name">Annual</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">199.99</span>
-                <span className="ob-plan-period">/year</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
-                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
-              </ul>
-              <div className="ob-plan-cta ob-plan-cta-featured">
-                {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
-              </div>
-            </button>
-          </div>
-
-          {checkoutError && <p className="ob-error">{checkoutError}</p>}
-
-          <button className="ob-back-btn" onClick={() => goToStep(0)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-            Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step 2: Welcome Form ──
-  if (step === 2) {
-    const welcomeValid = dob && gender && goals.length > 0 && experience;
-
-    const handleWelcomeContinue = () => {
-      saveDraft();
-      goToStep(3);
-    };
-
-    return (
-      <div className="ob-page">
-        <ThemeToggle className="ob-theme-toggle" />
-        <div className={`ob-content ${stepClass}`}>
-          <ProgressBar current={2} />
           <h1 className="ob-title">Let's Get To Know You</h1>
           <p className="ob-subtitle">Tell us a bit about yourself and where you're at with your fitness — we're in this together</p>
 
@@ -621,6 +504,168 @@ export default function Onboarding() {
             Continue
           </button>
 
+          <button className="ob-back-btn" onClick={() => goToStep(0)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step 2: PARQ Form ──
+  if (step === 2) {
+    const allParqAnswered = parqAnswers.every((a) => a !== null);
+    const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
+
+    // Save onboarding submission (welcome + PARQ) then advance to tier selection
+    const handleParqSubmit = async () => {
+      if (!canSubmitParq || parqSubmitting) return;
+      setParqSubmitting(true);
+      setSubmitError(null);
+
+      try {
+        const client = await resolveClient();
+        if (!client) {
+          setSubmitError('Could not find your account. Please try logging out and back in.');
+          setParqSubmitting(false);
+          return;
+        }
+
+        // Get signature as data URL
+        const signatureData = sigCanvasRef.current.toDataURL('image/png');
+
+        // Save onboarding submission data
+        await setDoc(doc(db, 'onboardingSubmissions', client.id), {
+          clientId: client.id,
+          clientName: client.name,
+          email: client.email,
+          welcome: {
+            dob,
+            gender: gender || null,
+            goals,
+            experience,
+            injuries: injuries.trim() || null,
+          },
+          parq: {
+            questions: PARQ_QUESTIONS,
+            answers: parqAnswers,
+            hasYes: parqAnswers.includes(true),
+            declaration: true,
+            signature: signatureData,
+          },
+          submittedAt: serverTimestamp(),
+        });
+
+        // Save fitness data to client doc (but don't mark onboardingComplete yet)
+        await updateDoc(doc(db, 'clients', client.id), {
+          fitnessGoal: goals[0],
+          fitnessGoals: goals,
+          experienceLevel: experience,
+          dob: dob || null,
+        });
+
+        // Clean up draft
+        try {
+          const { deleteDoc: delDoc } = await import('firebase/firestore');
+          await delDoc(doc(db, 'onboardingDrafts', client.id));
+        } catch {}
+
+        // Update local state
+        updateClientData({ fitnessGoal: goals[0], fitnessGoals: goals, experienceLevel: experience, dob });
+
+        // Advance to tier selection
+        goToStep(3);
+      } catch (err) {
+        console.error('Onboarding submit error:', err);
+        setSubmitError('Failed to save — please try again.' + (err.code ? ` (${err.code})` : ''));
+      } finally {
+        setParqSubmitting(false);
+      }
+    };
+
+    return (
+      <div className="ob-page">
+        <ThemeToggle className="ob-theme-toggle" />
+        <div className={`ob-content ${stepClass}`}>
+          <ProgressBar current={2} />
+          <h1 className="ob-title">Health Questionnaire</h1>
+          <p className="ob-subtitle">PAR-Q — please answer honestly for your safety</p>
+
+          <div className="ob-parq">
+            {PARQ_QUESTIONS.map((q, i) => (
+              <div key={i} className="ob-parq-item">
+                <p className="ob-parq-question">{q}</p>
+                <div className="ob-parq-btns">
+                  <button
+                    className={`ob-parq-btn${parqAnswers[i] === true ? ' yes' : ''}`}
+                    onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? true : a)))}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className={`ob-parq-btn${parqAnswers[i] === false ? ' no' : ''}`}
+                    onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? false : a)))}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {parqAnswers.includes(true) && (
+            <div className="ob-parq-warning">
+              You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
+            </div>
+          )}
+
+          {/* Declaration */}
+          <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
+            <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
+              {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+            </span>
+            <span className="ob-declare-text">
+              I confirm that I have read and answered each question honestly.
+              I understand that if my health changes I should inform my trainer.
+              I take full responsibility for my participation in physical activity.
+            </span>
+          </label>
+
+          {/* Signature pad */}
+          <div className="ob-sig-section">
+            <div className="ob-sig-header">
+              <label className="ob-label" style={{ margin: 0 }}>Signature</label>
+              {sigHasContent && (
+                <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
+              )}
+            </div>
+            <canvas
+              ref={sigCanvasRef}
+              className="ob-sig-canvas"
+              onMouseDown={sigStart}
+              onMouseMove={sigMove}
+              onMouseUp={sigEnd}
+              onMouseLeave={sigEnd}
+              onTouchStart={sigStart}
+              onTouchMove={sigMove}
+              onTouchEnd={sigEnd}
+            />
+            {!sigHasContent && (
+              <p className="ob-sig-hint">Draw your signature above</p>
+            )}
+          </div>
+
+          {submitError && <p className="ob-error">{submitError}</p>}
+
+          <button
+            className="ob-primary-btn"
+            disabled={!canSubmitParq || parqSubmitting}
+            onClick={handleParqSubmit}
+          >
+            {parqSubmitting ? 'Saving...' : 'Continue'}
+          </button>
+
           <button className="ob-back-btn" onClick={() => goToStep(1)}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
             Back
@@ -630,78 +675,71 @@ export default function Onboarding() {
     );
   }
 
-  // ── Step 3: PARQ Form ──
-  const allParqAnswered = parqAnswers.every((a) => a !== null);
-  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
-
-  const handleParqSubmit = async () => {
-    if (!canSubmitParq || parqSubmitting) return;
-    setParqSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      // Resolve client record
-      const client = await resolveClient();
-      if (!client) {
-        setSubmitError('Could not find your account. Please try logging out and back in.');
-        setParqSubmitting(false);
-        return;
-      }
-
-      // Get signature as data URL
-      const signatureData = sigCanvasRef.current.toDataURL('image/png');
-
-      // Save onboarding data
-      await setDoc(doc(db, 'onboardingSubmissions', client.id), {
-        clientId: client.id,
-        clientName: client.name,
-        email: client.email,
-        selectedPlan: client.tier || 'free',
-        welcome: {
-          dob,
-          gender: gender || null,
-          goals,
-          experience,
-          injuries: injuries.trim() || null,
-        },
-        parq: {
-          questions: PARQ_QUESTIONS,
-          answers: parqAnswers,
-          hasYes: parqAnswers.includes(true),
-          declaration: true,
-          signature: signatureData,
-        },
-        submittedAt: serverTimestamp(),
-      });
-
-      // Mark onboarding complete on client doc
-      await updateDoc(doc(db, 'clients', client.id), {
-        onboardingComplete: true,
-        fitnessGoal: goals[0], // primary goal
-        fitnessGoals: goals,   // all selected goals
-        experienceLevel: experience,
-        dob: dob || null,
-      });
-
-      // Clean up draft
+  // ── Step 3: Choose Your Plan ──
+  const handlePlanSelect = async (plan) => {
+    if (plan === 'free') {
+      // Free tier — mark onboarding complete and go to dashboard
       try {
-        const { deleteDoc: delDoc } = await import('firebase/firestore');
-        await delDoc(doc(db, 'onboardingDrafts', client.id));
-      } catch {}
-
-      // Optimistically set tier in local state
-      const localUpdates = { onboardingComplete: true, fitnessGoal: goals[0], fitnessGoals: goals, experienceLevel: experience, dob };
-      if (fromCheckout) {
-        localUpdates.tier = 'premium';
-        localUpdates.subscriptionStatus = 'trialing';
+        const client = await resolveClient();
+        if (client) {
+          await updateDoc(doc(db, 'clients', client.id), { onboardingComplete: true });
+        }
+        updateClientData({ onboardingComplete: true });
+        navigate('/client/core-buddy');
+      } catch (err) {
+        console.error('Free plan finalise error:', err);
+        setCheckoutError('Something went wrong — please try again.');
       }
-      updateClientData(localUpdates);
-      navigate('/client/core-buddy');
+      return;
+    }
+
+    if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
+      setCheckoutError('Account is still loading — please wait a moment and try again.');
+      return;
+    }
+
+    // Check email is verified before Stripe checkout
+    if (!currentUser.emailVerified) {
+      setCheckoutError('Please verify your email before subscribing. Check your inbox for a verification link.');
+      return;
+    }
+
+    // Mark onboarding complete before Stripe redirect so the user
+    // doesn't get bounced back to onboarding if the webhook fires slowly.
+    try {
+      await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
+      updateClientData({ onboardingComplete: true });
     } catch (err) {
-      console.error('Onboarding submit error:', err);
-      setSubmitError('Failed to save — please try again.' + (err.code ? ` (${err.code})` : ''));
+      console.error('Pre-checkout onboarding save error:', err);
+    }
+
+    // Stripe checkout for monthly/annual
+    setCheckoutLoading(plan);
+    setCheckoutError(null);
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: STRIPE_PRICES[plan],
+          clientId: clientData?.id,
+          uid: currentUser?.uid,
+          email: currentUser?.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        // Persist clientId so we can recover after Stripe redirect
+        try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
+        window.location.href = data.url;
+      } else {
+        setCheckoutError(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setCheckoutError('Unable to start checkout');
     } finally {
-      setParqSubmitting(false);
+      setCheckoutLoading(null);
     }
   };
 
@@ -710,82 +748,65 @@ export default function Onboarding() {
       <ThemeToggle className="ob-theme-toggle" />
       <div className={`ob-content ${stepClass}`}>
         <ProgressBar current={3} />
-        <h1 className="ob-title">Health Questionnaire</h1>
-        <p className="ob-subtitle">PAR-Q — please answer honestly for your safety</p>
+        <h1 className="ob-title">Choose Your Plan</h1>
+        <p className="ob-subtitle">Start free or unlock everything with Premium</p>
 
-        <div className="ob-parq">
-          {PARQ_QUESTIONS.map((q, i) => (
-            <div key={i} className="ob-parq-item">
-              <p className="ob-parq-question">{q}</p>
-              <div className="ob-parq-btns">
-                <button
-                  className={`ob-parq-btn${parqAnswers[i] === true ? ' yes' : ''}`}
-                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? true : a)))}
-                >
-                  Yes
-                </button>
-                <button
-                  className={`ob-parq-btn${parqAnswers[i] === false ? ' no' : ''}`}
-                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? false : a)))}
-                >
-                  No
-                </button>
-              </div>
+        <div className="ob-plans">
+          {/* Free */}
+          <button className="ob-plan-card ob-plan-free" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
+            <div className="ob-plan-name">Free</div>
+            <div className="ob-plan-price">
+              <span className="ob-plan-currency">£</span>
+              <span className="ob-plan-amount">0</span>
             </div>
-          ))}
+            <ul className="ob-plan-features">
+              <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
+              <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
+              <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
+            </ul>
+            <div className="ob-plan-cta-free">Get Started Free</div>
+          </button>
+
+          {/* Monthly */}
+          <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
+            <div className="ob-plan-badge">Most Popular</div>
+            <div className="ob-plan-name">Monthly</div>
+            <div className="ob-plan-price">
+              <span className="ob-plan-currency">£</span>
+              <span className="ob-plan-amount">19.99</span>
+              <span className="ob-plan-period">/month</span>
+            </div>
+            <ul className="ob-plan-features">
+              <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+              <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+              <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
+            </ul>
+            <div className="ob-plan-cta">
+              {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
+            </div>
+          </button>
+
+          {/* Annual */}
+          <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
+            <div className="ob-plan-badge">Best Value — Save 17%</div>
+            <div className="ob-plan-name">Annual</div>
+            <div className="ob-plan-price">
+              <span className="ob-plan-currency">£</span>
+              <span className="ob-plan-amount">199.99</span>
+              <span className="ob-plan-period">/year</span>
+            </div>
+            <ul className="ob-plan-features">
+              <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+              <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+              <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
+            </ul>
+            <div className="ob-plan-cta ob-plan-cta-featured">
+              {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
+            </div>
+          </button>
         </div>
 
-        {parqAnswers.includes(true) && (
-          <div className="ob-parq-warning">
-            You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
-          </div>
-        )}
-
-        {/* Declaration */}
-        <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
-          <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
-            {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
-          </span>
-          <span className="ob-declare-text">
-            I confirm that I have read and answered each question honestly.
-            I understand that if my health changes I should inform my trainer.
-            I take full responsibility for my participation in physical activity.
-          </span>
-        </label>
-
-        {/* Signature pad */}
-        <div className="ob-sig-section">
-          <div className="ob-sig-header">
-            <label className="ob-label" style={{ margin: 0 }}>Signature</label>
-            {sigHasContent && (
-              <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
-            )}
-          </div>
-          <canvas
-            ref={sigCanvasRef}
-            className="ob-sig-canvas"
-            onMouseDown={sigStart}
-            onMouseMove={sigMove}
-            onMouseUp={sigEnd}
-            onMouseLeave={sigEnd}
-            onTouchStart={sigStart}
-            onTouchMove={sigMove}
-            onTouchEnd={sigEnd}
-          />
-          {!sigHasContent && (
-            <p className="ob-sig-hint">Draw your signature above</p>
-          )}
-        </div>
-
-        {submitError && <p className="ob-error">{submitError}</p>}
-
-        <button
-          className="ob-primary-btn"
-          disabled={!canSubmitParq || parqSubmitting}
-          onClick={handleParqSubmit}
-        >
-          {parqSubmitting ? 'Saving...' : 'Complete Setup'}
-        </button>
+        {checkoutError && <p className="ob-error">{checkoutError}</p>}
 
         <button className="ob-back-btn" onClick={() => goToStep(2)}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
