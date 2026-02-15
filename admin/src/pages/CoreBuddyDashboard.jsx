@@ -14,6 +14,7 @@ import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import BADGE_DEFS from '../utils/badgeConfig';
+import SpotlightTour from '../components/SpotlightTour';
 
 const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
@@ -185,6 +186,71 @@ export default function CoreBuddyDashboard() {
   const [mentionResults, setMentionResults] = useState([]);
   const [mentionAnchor, setMentionAnchor] = useState(null);
 
+  // Guided tour — only shown once for new users
+  const [showTour, setShowTour] = useState(false);
+
+  // Build tour steps based on tier (premium users see more steps)
+  const tourSteps = (() => {
+    const base = [
+      {
+        selector: '.cb-ring-container',
+        title: 'Your 24-Hour Countdown',
+        body: 'Every day resets. This ring tracks the time you have left — tap your photo to personalise your profile.',
+        cta: 'Next',
+      },
+      {
+        selector: '.cb-stats-row',
+        title: 'Progress at a Glance',
+        body: 'Programme completion, workouts this week, and daily habits — all in one row. These fill up as you go.',
+      },
+      {
+        selector: '.cb-nudge-card',
+        title: 'Smart Suggestions',
+        body: "We'll highlight what needs your attention — your next session, unfinished habits, or a meal to log.",
+      },
+      {
+        selector: '.cb-card-workouts-hero',
+        title: 'Workouts',
+        body: 'Quick randomiser sessions or structured programmes — pick your focus, level and time.',
+        cta: 'Next',
+      },
+    ];
+
+    if (isPremium) {
+      base.push(
+        {
+          selector: '.cb-card-nutrition',
+          title: 'Nutrition Tracking',
+          body: 'Set your macro targets, scan barcodes, and log meals to hit your daily goals.',
+        },
+        {
+          selector: '.cb-card-consistency',
+          title: 'Daily Habits',
+          body: '5 simple habits each day — train, hit protein, 10k steps, sleep, and hydrate. Build your streak.',
+        },
+        {
+          selector: '.cb-card-buddies',
+          title: 'Buddies & Social',
+          body: 'Connect with other members, share your journey, and keep each other accountable.',
+        },
+        {
+          selector: '.cb-achievements-section',
+          title: 'Achievements',
+          body: 'Every rep counts towards badges — volume milestones, workout streaks, and more to unlock.',
+        },
+      );
+    }
+
+    base.push({
+      selector: '.block-bottom-nav',
+      title: "You're All Set!",
+      body: 'Use the nav bar to jump between your profile, workouts, nutrition, and buddies. Time to get after it.',
+      cta: 'Let\'s Go!',
+    });
+
+    return base;
+  })();
+
   // Auth guard
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -198,6 +264,16 @@ export default function CoreBuddyDashboard() {
       navigate('/onboarding');
     }
   }, [authLoading, clientData, navigate]);
+
+  // Start guided tour once for new users (after stats have loaded so all
+  // target elements are in the DOM)
+  useEffect(() => {
+    if (statsLoaded && clientData && !clientData.tourComplete) {
+      // Short delay to ensure the layout has settled after data load
+      const t = setTimeout(() => setShowTour(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, [statsLoaded, clientData]);
 
   // Hydrate from session cache so returning visits render instantly
   useEffect(() => {
@@ -759,6 +835,19 @@ export default function CoreBuddyDashboard() {
      nutritionTotals, nutritionTargetData, todayHabitsCount, nextSession,
      hasProgramme, programmeComplete, weeklyWorkouts, pbCount, topPBs,
      leaderboardTop3, unlockedBadges, streakWeeks, clientData]);
+
+  // Tour finish handler — persist to Firestore so it only shows once
+  const handleTourFinish = useCallback(async () => {
+    setShowTour(false);
+    if (clientData?.id) {
+      try {
+        await updateDoc(doc(db, 'clients', clientData.id), { tourComplete: true });
+        updateClientData({ tourComplete: true });
+      } catch (e) {
+        console.error('Failed to save tour completion:', e);
+      }
+    }
+  }, [clientData, updateClientData]);
 
   // Ripple effect
   const createRipple = (event) => {
@@ -1742,6 +1831,9 @@ export default function CoreBuddyDashboard() {
           {toast.message}
         </div>
       )}
+
+      {/* Guided tour for new users */}
+      <SpotlightTour steps={tourSteps} active={showTour} onFinish={handleTourFinish} />
     </div>
   );
 }
