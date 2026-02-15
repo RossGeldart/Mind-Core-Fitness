@@ -274,7 +274,9 @@ export default function CoreBuddyDashboard() {
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)
   useEffect(() => {
-    if (statsLoaded && clientData && !clientData.tourComplete && !tourDismissedRef.current) {
+    const tourDone = clientData?.tourComplete
+      || (clientData?.id && sessionStorage.getItem(`tourDone_${clientData.id}`));
+    if (statsLoaded && clientData && !tourDone && !tourDismissedRef.current) {
       const t = setTimeout(() => setShowTour(true), 600);
       return () => clearTimeout(t);
     }
@@ -845,10 +847,13 @@ export default function CoreBuddyDashboard() {
   const handleTourFinish = useCallback(async () => {
     tourDismissedRef.current = true;
     setShowTour(false);
+    // Optimistic local update — prevents re-show even if Firestore write
+    // is slow or fails, and survives onSnapshot overwrites via sessionStorage.
+    updateClientData({ tourComplete: true });
     if (clientData?.id) {
+      try { sessionStorage.setItem(`tourDone_${clientData.id}`, '1'); } catch {}
       try {
         await updateDoc(doc(db, 'clients', clientData.id), { tourComplete: true });
-        updateClientData({ tourComplete: true });
       } catch (e) {
         console.error('Failed to save tour completion:', e);
       }
