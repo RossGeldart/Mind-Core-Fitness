@@ -44,6 +44,57 @@
   color: #f44336;
 }
 
+.ob-page--dark .ob-label {
+  color: #f0f0f0;
+}
+
+.ob-page--dark .ob-optional {
+  color: #808080;
+}
+
+.ob-page--dark .ob-input,
+.ob-page--dark .ob-textarea {
+  background: #333331;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f0f0f0;
+}
+
+.ob-page--dark .ob-input:focus,
+.ob-page--dark .ob-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(161, 47, 58, 0.2);
+}
+
+.ob-page--dark .ob-chip {
+  background: #333331;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b0b0b0;
+}
+
+.ob-page--dark .ob-chip.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.ob-page--dark .ob-level-card {
+  background: #333331;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ob-page--dark .ob-level-card strong {
+  color: #f0f0f0;
+}
+
+.ob-page--dark .ob-level-card span {
+  color: #808080;
+}
+
+.ob-page--dark .ob-level-card.active {
+  border-color: var(--color-primary);
+  background: rgba(161, 47, 58, 0.12);
+}
+
 .ob-title {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
@@ -346,6 +397,7 @@
   letter-spacing: 0.04em;
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(161, 47, 58, 0.4);
+  z-index: 2;
 }
 
 .ob-plan-name {

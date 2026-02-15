@@ -79,8 +79,10 @@ const FITNESS_GOALS = [
   'Build muscle',
   'Improve fitness',
   'Get stronger',
-  'Stay active',
+  'Tone up',
   'Sport performance',
+  'Stress relief',
+  'Stay active',
 ];
 
 const EXPERIENCE_LEVELS = [
@@ -403,16 +405,16 @@ export default function Onboarding() {
 
   // ── Step 2: Welcome Form ──
   if (step === 2) {
-    const welcomeValid = dob && goal && experience;
+    const welcomeValid = dob && gender && goal && experience;
 
     return (
-      <div className="ob-page">
+      <div className="ob-page ob-page--dark">
         <div className="ob-content">
           <div className="ob-step-indicator">
             <span className="ob-step-num">2 of 3</span>
           </div>
-          <h1 className="ob-title">About You</h1>
-          <p className="ob-subtitle">Help us personalise your experience</p>
+          <h1 className="ob-title">Let's Get To Know You</h1>
+          <p className="ob-subtitle">Tell us a bit about yourself and where you're at with your fitness — we're in this together</p>
 
           <div className="ob-form">
             <label className="ob-label">Date of Birth</label>
@@ -424,7 +426,7 @@ export default function Onboarding() {
               max={new Date().toISOString().split('T')[0]}
             />
 
-            <label className="ob-label">Gender <span className="ob-optional">(optional)</span></label>
+            <label className="ob-label">Sex</label>
             <div className="ob-chip-group">
               {['Male', 'Female', 'Other', 'Prefer not to say'].map((g) => (
                 <button
@@ -437,7 +439,7 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label className="ob-label">Primary Fitness Goal</label>
+            <label className="ob-label">What's Your Main Fitness Goal?</label>
             <div className="ob-chip-group">
               {FITNESS_GOALS.map((g) => (
                 <button
@@ -450,7 +452,7 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label className="ob-label">Experience Level</label>
+            <label className="ob-label">Where Are You At Right Now?</label>
             <div className="ob-level-group">
               {EXPERIENCE_LEVELS.map((lvl) => (
                 <button
@@ -464,7 +466,7 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label className="ob-label">Injuries or Conditions <span className="ob-optional">(optional)</span></label>
+            <label className="ob-label">Any Injuries or Conditions We Should Know About? <span className="ob-optional">(optional)</span></label>
             <textarea
               className="ob-textarea"
               placeholder="E.g. bad knee, lower back pain, asthma..."
