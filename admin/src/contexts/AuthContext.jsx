@@ -55,15 +55,14 @@ export function AuthProvider({ children }) {
               const clientDoc = snapshot.docs[0];
               setIsClient(true);
               setClientData({ id: clientDoc.id, ...clientDoc.data() });
-            } else {
-              setIsClient(false);
-              setClientData(null);
             }
+            // Don't clear clientData on empty snapshot — during signup the
+            // doc may not be visible to the query yet but signup() already
+            // set clientData directly. The real-time listener will pick up
+            // the doc once it appears.
             setLoading(false);
           }, (error) => {
             console.error('Error listening to client data:', error);
-            setIsClient(false);
-            setClientData(null);
             setLoading(false);
           });
         }
