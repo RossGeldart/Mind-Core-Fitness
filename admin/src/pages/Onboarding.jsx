@@ -342,28 +342,33 @@ export default function Onboarding() {
 
           <div className="ob-plans">
             {/* Free */}
-            <button className="ob-plan-card" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
+            <button className="ob-plan-card ob-plan-free" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
               <div className="ob-plan-name">Free</div>
-              <div className="ob-plan-price"><span className="ob-plan-amount">£0</span></div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">0</span>
+              </div>
               <ul className="ob-plan-features">
-                <li>Randomiser workouts (5 & 10 min)</li>
-                <li>1 workout per week</li>
-                <li>Basic dashboard</li>
+                <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
+                <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
+                <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
               </ul>
               <div className="ob-plan-cta-outline">Continue Free</div>
             </button>
 
             {/* Monthly */}
             <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
+              <div className="ob-plan-badge">Most Popular</div>
               <div className="ob-plan-name">Monthly</div>
               <div className="ob-plan-price">
-                <span className="ob-plan-amount">£19.99</span>
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">19.99</span>
                 <span className="ob-plan-period">/month</span>
               </div>
               <ul className="ob-plan-features">
-                <li>7-day free trial</li>
-                <li>All features unlocked</li>
-                <li>Cancel anytime</li>
+                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
               </ul>
               <div className="ob-plan-cta">
                 {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
@@ -372,16 +377,17 @@ export default function Onboarding() {
 
             {/* Annual */}
             <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
-              <div className="ob-plan-save">Save 17%</div>
+              <div className="ob-plan-badge">Best Value — Save 17%</div>
               <div className="ob-plan-name">Annual</div>
               <div className="ob-plan-price">
-                <span className="ob-plan-amount">£199.99</span>
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">199.99</span>
                 <span className="ob-plan-period">/year</span>
               </div>
               <ul className="ob-plan-features">
-                <li>7-day free trial</li>
-                <li>All features unlocked</li>
-                <li>Best value</li>
+                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
               </ul>
               <div className="ob-plan-cta ob-plan-cta-featured">
                 {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
