@@ -79,13 +79,42 @@ export default function SpotlightTour({ steps, onFinish, active }) {
       // Temporarily unlock scroll so scrollIntoView works, then re-lock
       document.body.style.overflow = '';
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Wait for scroll to settle, then measure + fade back in + re-lock
-      const t = setTimeout(() => {
+
+      // Safari's smooth scroll can be slower than 400ms.  Re-measure in a
+      // loop until the element's position stabilises (two identical reads
+      // in a row), then lock scroll + fade back in.
+      let prev = null;
+      let settled = 0;
+      let frames = 0;
+      const MAX_FRAMES = 60; // ~1 s safety cap
+
+      const poll = () => {
+        frames++;
+        const r = el.getBoundingClientRect();
+        const cur = Math.round(r.top);
+        if (prev !== null && cur === prev) settled++;
+        else settled = 0;
+        prev = cur;
+
+        if (settled >= 3 || frames >= MAX_FRAMES) {
+          if (activeRef.current) document.body.style.overflow = 'hidden';
+          measure();
+          setTransitioning(false);
+          return;
+        }
+        rafId = requestAnimationFrame(poll);
+      };
+
+      // Kick off polling after a short initial delay so the scroll
+      // actually starts (Safari fires scrollIntoView asynchronously)
+      let rafId;
+      const t = setTimeout(() => { rafId = requestAnimationFrame(poll); }, 120);
+
+      return () => {
+        clearTimeout(t);
+        if (rafId) cancelAnimationFrame(rafId);
         if (activeRef.current) document.body.style.overflow = 'hidden';
-        measure();
-        setTransitioning(false);
-      }, 400);
-      return () => { clearTimeout(t); if (activeRef.current) document.body.style.overflow = 'hidden'; };
+      };
     }
   }, [active, idx, selector, measure]);
 
@@ -139,8 +168,18 @@ export default function SpotlightTour({ steps, onFinish, active }) {
         <div
           className={`st-tooltip st-tooltip-${tooltipPos}${transitioning ? ' st-transitioning' : ''}`}
           style={{
-            top: tooltipPos === 'below' ? rect.top + rect.height + 16 : undefined,
-            bottom: tooltipPos === 'above' ? window.innerHeight - rect.top + 16 : undefined,
+            top: tooltipPos === 'below'
+              ? Math.min(
+                  Math.max(rect.top + rect.height + 16, 16),   // never above safe top
+                  window.innerHeight - 200                       // never below viewport
+                )
+              : undefined,
+            bottom: tooltipPos === 'above'
+              ? Math.min(
+                  Math.max(window.innerHeight - rect.top + 16, 16), // never below viewport
+                  window.innerHeight - 60                            // never above viewport
+                )
+              : undefined,
             left: Math.max(16, Math.min(rect.left, window.innerWidth - 320)),
           }}
         >
