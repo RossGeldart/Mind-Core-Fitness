@@ -1273,13 +1273,29 @@
 
 .pb-cb-card {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
+  border-left: 4px solid var(--border-color);
   border-radius: 16px;
   padding: 16px 20px;
   box-shadow: var(--shadow-md), var(--shadow-sm);
+  transition: border-color 0.3s ease;
+}
+
+.pb-cb-card-has-target {
+  border-left-color: var(--color-primary);
+}
+
+.pb-cb-card-target-hit {
+  border-left-color: var(--color-success);
+}
+
+.pb-cb-card-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .pb-cb-card-ring {
@@ -1374,6 +1390,62 @@
 
 .pb-cb-card {
   position: relative;
+}
+
+/* Progress bar inside card */
+.pb-cb-card-progress {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light, var(--border-color));
+}
+
+.pb-cb-progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.pb-cb-progress-current {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pb-cb-progress-target {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.pb-cb-progress-bar {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pb-cb-progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-primary);
+  transition: width 0.6s ease-out;
+  min-width: 0;
+}
+
+.pb-cb-progress-bar-fill.hit {
+  background: var(--color-success);
+}
+
+.pb-cb-progress-pct {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: right;
+  margin-top: 6px;
 }
 
 .pb-cb-card-action {
@@ -1662,9 +1734,18 @@
 [data-theme="dark"] .pb-cb-card {
   background: rgba(30, 30, 30, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 4px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .pb-cb-card-has-target {
+  border-left-color: var(--color-primary);
+}
+
+[data-theme="dark"] .pb-cb-card-target-hit {
+  border-left-color: var(--color-success);
 }
 
 [data-theme="dark"] .pb-cb-achievements-link {
