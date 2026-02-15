@@ -7,22 +7,28 @@
   z-index: 10000;
 }
 
-/* Semi-transparent backdrop — fills the whole screen, click advances */
+/* Click-target fills the screen — transparent so the spotlight box-shadow
+   is the ONLY dark layer (otherwise the cutout can't see through) */
 .st-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
   z-index: 10000;
 }
 
-/* Cutout element — massive box-shadow carves a spotlight hole above the backdrop */
+/* Cutout element — its massive box-shadow IS the dark overlay.
+   The inside of this div is transparent = the "hole" in the overlay. */
 .st-spotlight {
   position: fixed;
   border-radius: 14px;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
   z-index: 10001;
   pointer-events: none;
-  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transition: top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease,
+              opacity 0.25s ease;
+}
+
+.st-spotlight.st-transitioning {
+  opacity: 0.4;
 }
 
 /* Tooltip card */
@@ -35,7 +41,12 @@
   border-radius: 16px;
   padding: 20px;
   z-index: 10002;
-  animation: st-fade-in 0.28s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.st-tooltip.st-transitioning {
+  opacity: 0;
+  transform: translateY(6px);
 }
 
 @keyframes st-fade-in {
