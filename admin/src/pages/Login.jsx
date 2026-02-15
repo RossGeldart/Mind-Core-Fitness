@@ -175,13 +175,6 @@ export default function Login() {
               Forgot password?
             </button>
 
-            <button
-              type="button"
-              className="forgot-link"
-              onClick={() => navigate('/signup')}
-            >
-              Don't have an account? Create one free
-            </button>
 
           </>
         )}
