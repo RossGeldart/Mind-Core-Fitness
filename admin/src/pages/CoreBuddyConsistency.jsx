@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -10,12 +10,16 @@ import PullToRefresh from '../components/PullToRefresh';
 
 
 const DEFAULT_HABITS = [
-  { key: 'trained', label: 'Trained', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
-  { key: 'protein', label: 'Hit Protein', icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z' },
-  { key: 'steps', label: '10k Steps', icon: 'M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7' },
-  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' },
-  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z' },
+  { key: 'trained', label: 'Trained', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z', color: '#A12F3A' },
+  { key: 'protein', label: 'Hit Protein', icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z', color: '#4caf50' },
+  { key: 'steps', label: '10k Steps', icon: 'M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7', color: '#ff9800' },
+  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed' },
+  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3' },
 ];
+
+// Icon for custom habits (star)
+const CUSTOM_ICON = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
+const CUSTOM_COLOR = '#e91e63';
 
 function getMonday(date) {
   const d = new Date(date);
@@ -44,12 +48,16 @@ export default function CoreBuddyConsistency() {
   const navigate = useNavigate();
 
   const [habitLogs, setHabitLogs] = useState({});
+  const [customHabits, setCustomHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [streak, setStreak] = useState(0);
   const [toast, setToast] = useState(null);
   const [justChecked, setJustChecked] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newHabitName, setNewHabitName] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
 
@@ -64,15 +72,22 @@ export default function CoreBuddyConsistency() {
   const weekDates = getWeekDates(monday);
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
+  // Merged habits list
+  const allHabits = [
+    ...DEFAULT_HABITS,
+    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: CUSTOM_COLOR, isCustom: true, id: h.id })),
+  ];
+
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
 
-  // Load all habit logs
+  // Load habit logs + custom habits
   useEffect(() => {
     if (!currentUser || !clientData) return;
     const load = async () => {
       try {
+        // Load logs
         const logsRef = collection(db, 'habitLogs');
         const q = query(logsRef, where('clientId', '==', clientData.id));
         const snap = await getDocs(q);
@@ -82,6 +97,12 @@ export default function CoreBuddyConsistency() {
           logs[data.date] = { ...data, _id: d.id };
         });
         setHabitLogs(logs);
+
+        // Load custom habits
+        const customDoc = await getDoc(doc(db, 'customHabits', clientData.id));
+        if (customDoc.exists()) {
+          setCustomHabits(customDoc.data().habits || []);
+        }
 
         // Calculate streak
         let s = 0;
@@ -98,7 +119,6 @@ export default function CoreBuddyConsistency() {
               break;
             }
           } else {
-            // If today has no log yet, don't break streak
             if (dateStr === todayStr) {
               checkDate.setDate(checkDate.getDate() - 1);
             } else {
@@ -122,7 +142,6 @@ export default function CoreBuddyConsistency() {
     if (!currentUser || saving) return;
     const wasChecked = todayLog.habits?.[habitKey] || false;
 
-    // Trigger check animation (only when checking, not unchecking)
     if (!wasChecked) {
       particlesRef.current = [...Array(10)].map((_, i) => {
         const angle = (i / 10) * 2 * Math.PI;
@@ -157,7 +176,7 @@ export default function CoreBuddyConsistency() {
 
       // All habits complete — trigger celebration
       const completedCount = Object.values(updated).filter(Boolean).length;
-      if (completedCount === DEFAULT_HABITS.length && !wasChecked) {
+      if (completedCount === allHabits.length && !wasChecked) {
         confettiRef.current = [...Array(50)].map((_, i) => ({
           x: 5 + Math.random() * 90,
           delay: Math.random() * 0.6,
@@ -181,12 +200,51 @@ export default function CoreBuddyConsistency() {
     }
   };
 
+  // Add custom habit
+  const addCustomHabit = async () => {
+    const name = newHabitName.trim();
+    if (!name || !clientData) return;
+    const id = Date.now().toString(36);
+    const updated = [...customHabits, { id, label: name }];
+    try {
+      await setDoc(doc(db, 'customHabits', clientData.id), {
+        clientId: clientData.id,
+        habits: updated,
+      });
+      setCustomHabits(updated);
+      setNewHabitName('');
+      setShowAddModal(false);
+      showToast(`Added "${name}"`, 'success');
+    } catch (err) {
+      console.error('Error adding custom habit:', err);
+      showToast('Failed to add habit', 'error');
+    }
+  };
+
+  // Delete custom habit
+  const deleteCustomHabit = async (habitId) => {
+    if (!clientData) return;
+    const updated = customHabits.filter(h => h.id !== habitId);
+    try {
+      await setDoc(doc(db, 'customHabits', clientData.id), {
+        clientId: clientData.id,
+        habits: updated,
+      });
+      setCustomHabits(updated);
+      setDeleteConfirm(null);
+      showToast('Habit removed', 'success');
+    } catch (err) {
+      console.error('Error deleting habit:', err);
+      showToast('Failed to remove', 'error');
+    }
+  };
+
   // Weekly stats
   const weeklyStats = weekDates.map(date => {
     const dateStr = formatDate(date);
     const log = habitLogs[dateStr];
     const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
-    return { date, dateStr, completed, total: DEFAULT_HABITS.length };
+    return { date, dateStr, completed, total: allHabits.length };
   });
 
   const weeklyCompleted = weeklyStats.reduce((sum, d) => sum + d.completed, 0);
@@ -194,7 +252,7 @@ export default function CoreBuddyConsistency() {
   const weeklyPct = weeklyTotal > 0 ? Math.round((weeklyCompleted / weeklyTotal) * 100) : 0;
 
   const todayCompleted = Object.values(todayLog.habits || {}).filter(Boolean).length;
-  const todayPct = Math.round((todayCompleted / DEFAULT_HABITS.length) * 100);
+  const todayPct = allHabits.length > 0 ? Math.round((todayCompleted / allHabits.length) * 100) : 0;
 
   return (
     <PullToRefresh>
@@ -249,23 +307,27 @@ export default function CoreBuddyConsistency() {
         <div className="cbc-section">
           <h2 className="cbc-section-title">Today's Habits</h2>
           <div className="cbc-habits">
-            {DEFAULT_HABITS.map((habit) => {
+            {allHabits.map((habit) => {
               const checked = todayLog.habits?.[habit.key] || false;
               const isJustChecked = justChecked === habit.key;
               return (
                 <button
                   key={habit.key}
-                  className={`cbc-habit-btn cbc-habit-${habit.key} ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
+                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   onClick={() => toggleHabit(habit.key)}
                   disabled={saving}
+                  style={checked ? { '--habit-color': habit.color } : undefined}
                 >
-                  <div className="cbc-habit-check">
-                    {checked ? (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12" className={`cbc-check-path ${isJustChecked ? 'cbc-check-animate' : ''}`} />
-                      </svg>
-                    ) : (
-                      <div className="cbc-habit-circle" />
+                  <div className="cbc-habit-icon-wrap" style={{ '--habit-color': habit.color }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d={habit.icon} />
+                    </svg>
+                    {checked && (
+                      <div className="cbc-habit-done-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
                     )}
                   </div>
                   {isJustChecked && (
@@ -275,20 +337,41 @@ export default function CoreBuddyConsistency() {
                           '--tx': `${p.tx}px`,
                           '--ty': `${p.ty}px`,
                           '--size': `${p.size}px`,
+                          '--particle-color': habit.color,
                           animationDuration: `${p.duration}s`,
                         }} />
                       ))}
                     </div>
                   )}
-                  <div className={`cbc-habit-icon cbc-icon-${habit.key}`}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d={habit.icon} />
-                    </svg>
+                  <div className="cbc-habit-text">
+                    <span className="cbc-habit-label">{habit.label}</span>
+                    {checked && <span className="cbc-habit-done-tag">Done</span>}
                   </div>
-                  <span className="cbc-habit-label">{habit.label}</span>
+                  {/* Delete button for custom habits */}
+                  {habit.isCustom && (
+                    <button
+                      className="cbc-habit-delete"
+                      onClick={(e) => { e.stopPropagation(); setDeleteConfirm(habit.id); }}
+                      aria-label={`Remove ${habit.label}`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  )}
                 </button>
               );
             })}
+
+            {/* Add Habit Button */}
+            <button className="cbc-add-habit-btn" onClick={() => setShowAddModal(true)}>
+              <div className="cbc-add-habit-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </div>
+              <span>Add your own habit</span>
+            </button>
           </div>
         </div>
 
@@ -330,6 +413,44 @@ export default function CoreBuddyConsistency() {
 
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />
+
+      {/* Add Habit Modal */}
+      {showAddModal && (
+        <div className="cbc-modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="cbc-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="cbc-modal-title">Add Habit</h3>
+            <p className="cbc-modal-desc">Track something personal to your routine.</p>
+            <input
+              className="cbc-modal-input"
+              type="text"
+              placeholder="e.g. Meditate, Stretch, Read..."
+              value={newHabitName}
+              onChange={e => setNewHabitName(e.target.value)}
+              maxLength={30}
+              autoFocus
+              onKeyDown={e => e.key === 'Enter' && addCustomHabit()}
+            />
+            <div className="cbc-modal-actions">
+              <button className="cbc-modal-cancel" onClick={() => { setShowAddModal(false); setNewHabitName(''); }}>Cancel</button>
+              <button className="cbc-modal-save" onClick={addCustomHabit} disabled={!newHabitName.trim()}>Add</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      {deleteConfirm && (
+        <div className="cbc-modal-overlay" onClick={() => setDeleteConfirm(null)}>
+          <div className="cbc-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="cbc-modal-title">Remove Habit?</h3>
+            <p className="cbc-modal-desc">This will remove the habit from your daily tracker. Past logs won't be affected.</p>
+            <div className="cbc-modal-actions">
+              <button className="cbc-modal-cancel" onClick={() => setDeleteConfirm(null)}>Keep</button>
+              <button className="cbc-modal-delete" onClick={() => deleteCustomHabit(deleteConfirm)}>Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* All-done celebration */}
       {showCelebration && (

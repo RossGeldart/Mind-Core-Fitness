@@ -36,54 +36,6 @@
   padding-bottom: 40px;
 }
 
-/* Header */
-.cbc-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: transparent;
-  gap: 12px;
-}
-
-.cbc-back {
-  background: none;
-  border: none;
-  color: var(--text-on-header);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-}
-
-.cbc-back:hover { opacity: 1; }
-
-.cbc-title {
-  flex: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text-on-header);
-  letter-spacing: 0.5px;
-}
-
-.cbc-theme-toggle {
-  background: none;
-  border: none;
-  color: var(--text-on-header);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-}
-
-.cbc-theme-toggle:hover { opacity: 1; }
-
 /* Main */
 .cbc-main {
   max-width: 600px;
@@ -200,11 +152,11 @@
   letter-spacing: 0.5px;
 }
 
-/* Habit Buttons */
+/* ====== Habit Cards ====== */
 .cbc-habits {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .cbc-habit-btn {
@@ -212,14 +164,14 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 18px 16px;
+  padding: 14px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.25s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
 }
@@ -228,63 +180,61 @@
   transform: scale(0.98);
 }
 
-/* Done state - card stays same, only tick changes */
+/* Done state — tinted background using the habit's colour */
+.cbc-habit-done {
+  background: color-mix(in srgb, var(--habit-color) 8%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--habit-color) 25%, var(--border-color));
+}
 
-.cbc-habit-check {
+/* ====== Habit Icon (bigger, bolder) ====== */
+.cbc-habit-icon-wrap {
+  position: relative;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--habit-color) 10%, transparent);
+  color: var(--habit-color);
+  transition: all 0.25s ease;
 }
 
-.cbc-habit-circle {
+.cbc-habit-icon-wrap svg {
   width: 22px;
   height: 22px;
+}
+
+/* Done badge — small green circle with tick overlapping the icon */
+.cbc-habit-done-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid var(--border-color);
-  transition: border-color 0.2s;
-}
-
-.cbc-habit-done .cbc-habit-check {
-  color: #4caf50;
-}
-
-.cbc-habit-done .cbc-habit-circle {
-  border-color: #4caf50;
   background: #4caf50;
-}
-
-/* Habit icon - default fallback */
-.cbc-habit-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  border: 2px solid var(--bg-card);
+  animation: badgePop 0.3s ease-out;
 }
 
-/* Per-habit icon colors */
-.cbc-icon-trained { background: rgba(var(--color-primary-rgb), 0.1); color: var(--color-primary); }
-.cbc-icon-protein { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
-.cbc-icon-steps { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
-.cbc-icon-sleep { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
-.cbc-icon-water { background: rgba(33, 150, 243, 0.1); color: #2196f3; }
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 
-[data-theme="dark"] .cbc-icon-trained { background: rgba(199, 95, 107, 0.15); color: #c75f6b; }
-[data-theme="dark"] .cbc-icon-protein { background: rgba(76, 175, 80, 0.15); color: #66bb6a; }
-[data-theme="dark"] .cbc-icon-steps { background: rgba(255, 152, 0, 0.15); color: #ffb74d; }
-[data-theme="dark"] .cbc-icon-sleep { background: rgba(124, 58, 237, 0.15); color: #a78bfa; }
-[data-theme="dark"] .cbc-icon-water { background: rgba(33, 150, 243, 0.15); color: #64b5f6; }
-
-.cbc-habit-icon svg {
-  width: 18px;
-  height: 18px;
+/* Habit text area */
+.cbc-habit-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .cbc-habit-label {
@@ -292,10 +242,45 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
+  transition: color 0.2s;
 }
 
+.cbc-habit-done .cbc-habit-label {
+  color: var(--habit-color);
+}
 
-/* Dark mode habit cards - glassmorphism matching dashboard */
+.cbc-habit-done-tag {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #4caf50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Delete button for custom habits */
+.cbc-habit-delete {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-habit-delete:hover {
+  background: rgba(211, 47, 47, 0.1);
+  color: #d32f2f;
+}
+
+/* Dark mode habit cards */
 [data-theme="dark"] .cbc-habit-btn {
   background: rgba(30, 30, 30, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -304,8 +289,182 @@
   backdrop-filter: blur(12px);
 }
 
+[data-theme="dark"] .cbc-habit-done {
+  background: color-mix(in srgb, var(--habit-color) 12%, rgba(30, 30, 30, 0.8));
+  border-color: color-mix(in srgb, var(--habit-color) 30%, rgba(255, 255, 255, 0.06));
+}
 
-/* Weekly Day Rings */
+/* ====== Add Habit Button ====== */
+.cbc-add-habit-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: transparent;
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-add-habit-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.cbc-add-habit-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* ====== Modal ====== */
+.cbc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cbc-modal {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .cbc-modal {
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cbc-modal-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.cbc-modal-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+}
+
+.cbc-modal-input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  margin-bottom: 20px;
+}
+
+.cbc-modal-input:focus {
+  border-color: var(--color-primary);
+}
+
+.cbc-modal-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.cbc-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cbc-modal-cancel {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-modal-cancel:hover {
+  border-color: var(--text-tertiary);
+  color: var(--text-primary);
+}
+
+.cbc-modal-save {
+  flex: 1;
+  padding: 14px;
+  background: var(--color-primary);
+  border: none;
+  color: var(--text-on-primary);
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-modal-save:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.cbc-modal-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cbc-modal-delete {
+  flex: 1;
+  padding: 14px;
+  background: #d32f2f;
+  border: none;
+  color: #ffffff;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbc-modal-delete:hover {
+  background: #b71c1c;
+}
+
+/* ====== Weekly Day Rings ====== */
 .cbc-week-grid {
   display: flex;
   justify-content: space-between;
@@ -411,15 +570,6 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== Checkmark Draw Animation ===== */
-.cbc-check-path {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 0;
-}
-
-.cbc-check-animate {
-}
-
 /* ===== Habit Card Bounce ===== */
 .cbc-habit-just-checked {
   z-index: 5;
@@ -429,7 +579,7 @@
 .cbc-particles {
   position: absolute;
   top: 50%;
-  left: 30px;
+  left: 38px;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -440,22 +590,9 @@
   position: absolute;
   width: var(--size, 5px);
   height: var(--size, 5px);
-  background: var(--color-primary);
+  background: var(--particle-color, var(--color-primary));
   border-radius: 50%;
 }
-
-/* Per-habit particle colors */
-.cbc-habit-trained .cbc-particle { background: var(--color-primary); }
-.cbc-habit-protein .cbc-particle { background: #4caf50; }
-.cbc-habit-steps .cbc-particle { background: #ff9800; }
-.cbc-habit-sleep .cbc-particle { background: #7c3aed; }
-.cbc-habit-water .cbc-particle { background: #2196f3; }
-
-[data-theme="dark"] .cbc-habit-trained .cbc-particle { background: #c75f6b; }
-[data-theme="dark"] .cbc-habit-protein .cbc-particle { background: #66bb6a; }
-[data-theme="dark"] .cbc-habit-steps .cbc-particle { background: #ffb74d; }
-[data-theme="dark"] .cbc-habit-sleep .cbc-particle { background: #a78bfa; }
-[data-theme="dark"] .cbc-habit-water .cbc-particle { background: #64b5f6; }
 
 /* ===== All-Done Celebration ===== */
 .cbc-celebration {
@@ -557,7 +694,7 @@
   }
 
   .cbc-habit-btn {
-    padding: 18px;
+    padding: 16px 18px;
   }
 }
 
