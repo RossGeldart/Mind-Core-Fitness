@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
+import ThemeToggle from '../components/ThemeToggle';
 import './Onboarding.css';
 
 import featureProfile from '../assets/feature_profile.PNG';
@@ -86,15 +86,18 @@ const FITNESS_GOALS = [
   'Stay active',
 ];
 
+const MAX_GOALS = 3;
+
 const EXPERIENCE_LEVELS = [
   { key: 'beginner', label: 'Beginner', desc: 'New to exercise or returning after a long break' },
   { key: 'intermediate', label: 'Intermediate', desc: 'Training regularly for 6+ months' },
   { key: 'advanced', label: 'Advanced', desc: 'Training consistently for 2+ years' },
 ];
 
+const TOTAL_STEPS = 4; // 0=features, 1=subscription, 2=welcome, 3=parq
+
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -102,7 +105,9 @@ export default function Onboarding() {
   // or is returning from a successful Stripe checkout, skip to the welcome form.
   const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
   const fromCheckout = searchParams.get('checkout') === 'success';
-  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0);
+  const [slideDir, setSlideDir] = useState('right'); // 'right' = forward, 'left' = back
+  const [animating, setAnimating] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -113,7 +118,7 @@ export default function Onboarding() {
   // Welcome form
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
-  const [goal, setGoal] = useState('');
+  const [goals, setGoals] = useState([]); // multi-select (1-3)
   const [experience, setExperience] = useState('');
   const [injuries, setInjuries] = useState('');
 
@@ -128,9 +133,53 @@ export default function Onboarding() {
   const sigDrawingRef = useRef(false);
   const [sigHasContent, setSigHasContent] = useState(false);
 
+  // ── Step transition helper ──
+  const goToStep = useCallback((target) => {
+    if (animating) return;
+    setSlideDir(target > step ? 'right' : 'left');
+    setAnimating(true);
+    // Small delay to let the exit animation play
+    setTimeout(() => {
+      setStep(target);
+      setAnimating(false);
+    }, 250);
+  }, [step, animating]);
+
+  // ── Restore draft from Firestore on mount ──
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const loadDraft = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'onboardingDrafts', clientData.id));
+        if (snap.exists()) {
+          const d = snap.data();
+          if (d.dob) setDob(d.dob);
+          if (d.gender) setGender(d.gender);
+          if (d.goals?.length) setGoals(d.goals);
+          if (d.experience) setExperience(d.experience);
+          if (d.injuries) setInjuries(d.injuries);
+        }
+      } catch (e) {
+        // Non-critical — just start fresh
+      }
+    };
+    loadDraft();
+  }, [clientData?.id]);
+
+  // ── Save draft to Firestore when advancing from welcome form ──
+  const saveDraft = useCallback(async () => {
+    if (!clientData?.id) return;
+    try {
+      await setDoc(doc(db, 'onboardingDrafts', clientData.id), {
+        dob, gender, goals, experience, injuries: injuries.trim(),
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+    } catch (e) {
+      // Non-critical
+    }
+  }, [clientData?.id, dob, gender, goals, experience, injuries]);
+
   // Keep the canvas internal resolution in sync with its CSS display size.
-  // Setting canvas.width/height clears the bitmap, so reset sigHasContent
-  // to prevent submitting a blank signature after a resize/rotation.
   useEffect(() => {
     const canvas = sigCanvasRef.current;
     if (!canvas) return;
@@ -220,6 +269,21 @@ export default function Onboarding() {
     );
   }
 
+  // ── Keyboard handling for feature carousel ──
+  const handleCarouselKeyDown = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (activeSlide < FEATURES.length - 1) scrollToSlide(activeSlide + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (activeSlide > 0) scrollToSlide(activeSlide - 1);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (activeSlide === FEATURES.length - 1) goToStep(1);
+      else scrollToSlide(activeSlide + 1);
+    }
+  };
+
   // Handle feature carousel scroll
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -236,31 +300,70 @@ export default function Onboarding() {
     el.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
   };
 
+  // Multi-goal toggle
+  const toggleGoal = (g) => {
+    setGoals(prev => {
+      if (prev.includes(g)) return prev.filter(x => x !== g);
+      if (prev.length >= MAX_GOALS) return prev;
+      return [...prev, g];
+    });
+  };
+
+  // ── Step animation class ──
+  const stepClass = animating
+    ? `ob-step-anim ob-step-exit-${slideDir}`
+    : 'ob-step-anim ob-step-enter';
+
+  // ── Progress Bar Component ──
+  const ProgressBar = ({ current }) => {
+    // Step 0 (showcase) doesn't count in the numbered progress
+    if (current === 0) return null;
+    const total = TOTAL_STEPS - 1; // 3 numbered steps
+    const pct = (current / total) * 100;
+    return (
+      <div className="ob-progress">
+        <div className="ob-progress-bar">
+          <div className="ob-progress-fill" style={{ width: `${pct}%` }} />
+        </div>
+        <span className="ob-progress-label">Step {current} of {total}</span>
+      </div>
+    );
+  };
+
   // ── Step 0: Feature Showcase ──
   if (step === 0) {
     const isLastSlide = activeSlide === FEATURES.length - 1;
 
     return (
       <div className="ob-page ob-page--showcase">
-        <div className="ob-content ob-content--showcase">
+        <div className={`ob-content ob-content--showcase ${stepClass}`}>
           <div className="ob-showcase-header">
             <img src="/Logo.webp" alt="Mind Core Fitness" className="ob-logo" width="48" height="48" />
             <div style={{ flex: 1 }}>
               <h1 className="ob-title" style={{ textAlign: 'left', marginBottom: 2 }}>Core Buddy</h1>
               <p className="ob-subtitle" style={{ textAlign: 'left', margin: 0 }}>Here's what you can do</p>
             </div>
-            <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-              {isDark ? (
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-              )}
-            </button>
+            <ThemeToggle className="ob-theme-toggle" />
           </div>
 
-          <div className="ob-showcase-carousel" ref={scrollRef} onScroll={handleScroll}>
+          <div
+            className="ob-showcase-carousel"
+            ref={scrollRef}
+            onScroll={handleScroll}
+            onKeyDown={handleCarouselKeyDown}
+            tabIndex={0}
+            role="region"
+            aria-label="Feature showcase"
+            aria-roledescription="carousel"
+          >
             {FEATURES.map((f, i) => (
-              <div key={i} className="ob-showcase-slide">
+              <div
+                key={i}
+                className="ob-showcase-slide"
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${FEATURES.length}: ${f.title}`}
+              >
                 <div className="ob-showcase-img-wrap">
                   <img src={f.image} alt={f.title} className="ob-showcase-img" />
                 </div>
@@ -272,19 +375,22 @@ export default function Onboarding() {
             ))}
           </div>
 
-          <div className="ob-dots">
+          <div className="ob-dots" role="tablist" aria-label="Slide indicators">
             {FEATURES.map((_, i) => (
               <span
                 key={i}
                 className={`ob-dot${activeSlide === i ? ' active' : ''}`}
                 onClick={() => scrollToSlide(i)}
+                role="tab"
+                aria-selected={activeSlide === i}
+                aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
 
           <div className="ob-showcase-actions">
             {isLastSlide ? (
-              <button className="ob-primary-btn" onClick={() => setStep(1)}>
+              <button className="ob-primary-btn" onClick={() => goToStep(1)}>
                 Get Started
               </button>
             ) : (
@@ -292,7 +398,7 @@ export default function Onboarding() {
                 <button className="ob-primary-btn" onClick={() => scrollToSlide(activeSlide + 1)}>
                   Next
                 </button>
-                <button className="ob-skip-btn" onClick={() => setStep(1)}>
+                <button className="ob-skip-btn" onClick={() => goToStep(1)}>
                   Skip
                 </button>
               </>
@@ -307,12 +413,18 @@ export default function Onboarding() {
   if (step === 1) {
     const handlePlanSelect = async (plan) => {
       if (plan === 'free') {
-        setStep(2);
+        goToStep(2);
         return;
       }
 
       if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
         setCheckoutError('Account is still loading — please wait a moment and try again.');
+        return;
+      }
+
+      // Check email is verified before Stripe checkout
+      if (!currentUser.emailVerified) {
+        setCheckoutError('Please verify your email before subscribing. Check your inbox for a verification link.');
         return;
       }
 
@@ -348,17 +460,9 @@ export default function Onboarding() {
 
     return (
       <div className="ob-page">
-        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-          {isDark ? (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-          )}
-        </button>
-        <div className="ob-content">
-          <div className="ob-step-indicator">
-            <span className="ob-step-num">1 of 3</span>
-          </div>
+        <ThemeToggle className="ob-theme-toggle" />
+        <div className={`ob-content ${stepClass}`}>
+          <ProgressBar current={1} />
           <h1 className="ob-title">Choose Your Plan</h1>
           <p className="ob-subtitle">Start free or unlock everything with Premium</p>
 
@@ -375,7 +479,7 @@ export default function Onboarding() {
                 <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
                 <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
               </ul>
-              <div className="ob-plan-cta-outline">Continue Free</div>
+              <div className="ob-plan-cta-free">Get Started Free</div>
             </button>
 
             {/* Monthly */}
@@ -418,6 +522,11 @@ export default function Onboarding() {
           </div>
 
           {checkoutError && <p className="ob-error">{checkoutError}</p>}
+
+          <button className="ob-back-btn" onClick={() => goToStep(0)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
         </div>
       </div>
     );
@@ -425,21 +534,18 @@ export default function Onboarding() {
 
   // ── Step 2: Welcome Form ──
   if (step === 2) {
-    const welcomeValid = dob && gender && goal && experience;
+    const welcomeValid = dob && gender && goals.length > 0 && experience;
+
+    const handleWelcomeContinue = () => {
+      saveDraft();
+      goToStep(3);
+    };
 
     return (
       <div className="ob-page">
-        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-          {isDark ? (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-          )}
-        </button>
-        <div className="ob-content">
-          <div className="ob-step-indicator">
-            <span className="ob-step-num">2 of 3</span>
-          </div>
+        <ThemeToggle className="ob-theme-toggle" />
+        <div className={`ob-content ${stepClass}`}>
+          <ProgressBar current={2} />
           <h1 className="ob-title">Let's Get To Know You</h1>
           <p className="ob-subtitle">Tell us a bit about yourself and where you're at with your fitness — we're in this together</p>
 
@@ -466,13 +572,16 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label className="ob-label">What's Your Main Fitness Goal?</label>
+            <label className="ob-label">
+              What Are Your Fitness Goals? <span className="ob-optional">(pick up to {MAX_GOALS})</span>
+            </label>
             <div className="ob-chip-group">
               {FITNESS_GOALS.map((g) => (
                 <button
                   key={g}
-                  className={`ob-chip${goal === g ? ' active' : ''}`}
-                  onClick={() => setGoal(g)}
+                  className={`ob-chip${goals.includes(g) ? ' active' : ''}${!goals.includes(g) && goals.length >= MAX_GOALS ? ' disabled' : ''}`}
+                  onClick={() => toggleGoal(g)}
+                  disabled={!goals.includes(g) && goals.length >= MAX_GOALS}
                 >
                   {g}
                 </button>
@@ -507,9 +616,14 @@ export default function Onboarding() {
           <button
             className="ob-primary-btn"
             disabled={!welcomeValid}
-            onClick={() => setStep(3)}
+            onClick={handleWelcomeContinue}
           >
             Continue
+          </button>
+
+          <button className="ob-back-btn" onClick={() => goToStep(1)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Back
           </button>
         </div>
       </div>
@@ -526,8 +640,7 @@ export default function Onboarding() {
     setSubmitError(null);
 
     try {
-      // Resolve client record — uses context if available, otherwise falls
-      // back to localStorage / uid-query via AuthContext.resolveClient().
+      // Resolve client record
       const client = await resolveClient();
       if (!client) {
         setSubmitError('Could not find your account. Please try logging out and back in.');
@@ -547,7 +660,7 @@ export default function Onboarding() {
         welcome: {
           dob,
           gender: gender || null,
-          goal,
+          goals,
           experience,
           injuries: injuries.trim() || null,
         },
@@ -561,19 +674,23 @@ export default function Onboarding() {
         submittedAt: serverTimestamp(),
       });
 
-      // Mark onboarding complete on client doc (only whitelisted fields —
-      // tier/subscriptionStatus are managed server-side by the Stripe webhook).
+      // Mark onboarding complete on client doc
       await updateDoc(doc(db, 'clients', client.id), {
         onboardingComplete: true,
-        fitnessGoal: goal,
+        fitnessGoal: goals[0], // primary goal
+        fitnessGoals: goals,   // all selected goals
         experienceLevel: experience,
         dob: dob || null,
       });
 
-      // Optimistically set tier in local state so premium features unlock
-      // immediately. The Stripe webhook writes the real value to Firestore;
-      // the onSnapshot listener in AuthContext will reconcile on next load.
-      const localUpdates = { onboardingComplete: true, fitnessGoal: goal, experienceLevel: experience, dob };
+      // Clean up draft
+      try {
+        const { deleteDoc: delDoc } = await import('firebase/firestore');
+        await delDoc(doc(db, 'onboardingDrafts', client.id));
+      } catch {}
+
+      // Optimistically set tier in local state
+      const localUpdates = { onboardingComplete: true, fitnessGoal: goals[0], fitnessGoals: goals, experienceLevel: experience, dob };
       if (fromCheckout) {
         localUpdates.tier = 'premium';
         localUpdates.subscriptionStatus = 'trialing';
@@ -590,17 +707,9 @@ export default function Onboarding() {
 
   return (
     <div className="ob-page">
-      <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-        {isDark ? (
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-        ) : (
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-        )}
-      </button>
-      <div className="ob-content">
-        <div className="ob-step-indicator">
-          <span className="ob-step-num">3 of 3</span>
-        </div>
+      <ThemeToggle className="ob-theme-toggle" />
+      <div className={`ob-content ${stepClass}`}>
+        <ProgressBar current={3} />
         <h1 className="ob-title">Health Questionnaire</h1>
         <p className="ob-subtitle">PAR-Q — please answer honestly for your safety</p>
 
@@ -676,6 +785,11 @@ export default function Onboarding() {
           onClick={handleParqSubmit}
         >
           {parqSubmitting ? 'Saving...' : 'Complete Setup'}
+        </button>
+
+        <button className="ob-back-btn" onClick={() => goToStep(2)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back
         </button>
       </div>
     </div>
