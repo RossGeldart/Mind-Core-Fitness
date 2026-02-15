@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import getClientHomePath from '../utils/getClientHomePath';
 import './Login.css';
 
 export default function Login() {
@@ -20,19 +21,7 @@ export default function Login() {
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
-        // Redirect to onboarding if not completed (self-signup only)
-        if (clientData?.signupSource === 'self_signup' && !clientData?.onboardingComplete) {
-          navigate('/onboarding');
-          return;
-        }
-        const type = clientData?.clientType;
-        if (type === 'core_buddy') {
-          navigate('/client/core-buddy');
-        } else if (type === 'circuit_vip' || type === 'circuit_dropin') {
-          navigate('/client/circuit');
-        } else {
-          navigate('/client');
-        }
+        navigate(getClientHomePath(clientData));
       } else {
         // Auth succeeded but no client record found — unstick the form
         setLoading(false);

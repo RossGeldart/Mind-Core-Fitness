@@ -153,12 +153,48 @@ export function AuthProvider({ children }) {
     setClientData(prev => prev ? { ...prev, ...fields } : fields);
   };
 
+  // Imperatively resolve the client record — returns the data or null.
+  // Re-uses the same localStorage → uid-query fallback chain as the
+  // onSnapshot listener so the logic lives in one place.
+  const resolveClient = async () => {
+    if (clientData) return clientData;
+
+    const storedId = localStorage.getItem('mcf_clientId');
+    if (storedId) {
+      try {
+        const snap = await getDoc(doc(db, 'clients', storedId));
+        if (snap.exists()) {
+          const data = { id: snap.id, ...snap.data() };
+          setIsClient(true);
+          setClientData(data);
+          return data;
+        }
+      } catch (e) {
+        console.error('resolveClient direct read failed:', e);
+      }
+    }
+
+    if (currentUser) {
+      const q = query(collection(db, 'clients'), where('uid', '==', currentUser.uid));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const data = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        setIsClient(true);
+        setClientData(data);
+        return data;
+      }
+    }
+
+    return null;
+  };
+
   const value = {
     currentUser,
     isAdmin,
     isClient,
     clientData,
     updateClientData,
+    resolveClient,
     login,
     signup,
     logout,

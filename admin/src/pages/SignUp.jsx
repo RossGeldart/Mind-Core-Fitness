@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import getClientHomePath from '../utils/getClientHomePath';
 import './Login.css';
 
 export default function SignUp() {
@@ -16,19 +17,7 @@ export default function SignUp() {
   // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && currentUser && isClient) {
-      // Self-signup user who hasn't finished onboarding → send to onboarding
-      if (clientData?.signupSource === 'self_signup' && !clientData?.onboardingComplete) {
-        navigate('/onboarding');
-        return;
-      }
-      const type = clientData?.clientType;
-      if (type === 'core_buddy') {
-        navigate('/client/core-buddy');
-      } else if (type === 'circuit_vip' || type === 'circuit_dropin') {
-        navigate('/client/circuit');
-      } else {
-        navigate('/client');
-      }
+      navigate(getClientHomePath(clientData));
     }
   }, [authLoading, currentUser, isClient, clientData, navigate]);
 

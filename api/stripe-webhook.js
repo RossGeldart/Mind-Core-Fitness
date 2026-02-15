@@ -34,7 +34,9 @@ function mapStripeStatus(stripeStatus) {
     case 'canceled': return 'cancelled';
     case 'past_due':
     case 'unpaid':   return 'expired';
-    default:         return stripeStatus;
+    default:
+      console.warn(`Unexpected Stripe subscription status: ${stripeStatus}`);
+      return stripeStatus;
   }
 }
 
