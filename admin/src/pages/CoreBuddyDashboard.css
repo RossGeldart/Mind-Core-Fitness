@@ -594,12 +594,12 @@
 }
 
 /* Card colour accents — subtle left border per section */
-.cb-card-nutrition { border-left: 3px solid #4caf50; }
-.cb-card-workouts-hero { border-left: 3px solid var(--color-primary); }
-.cb-card-consistency { border-left: 3px solid #38B6FF; }
-.cb-card-progress { border-left: 3px solid #eab308; }
-.cb-card-leaderboard { border-left: 3px solid #9c27b0; }
-.cb-card-buddies { border-left: 3px solid #ec4899; }
+.cb-feature-card.cb-card-nutrition { border-left: 3px solid #4caf50; }
+.cb-feature-card.cb-card-workouts-hero { border-left: 3px solid var(--color-primary); }
+.cb-feature-card.cb-card-consistency { border-left: 3px solid #38B6FF; }
+.cb-feature-card.cb-card-progress { border-left: 3px solid #eab308; }
+.cb-feature-card.cb-card-leaderboard { border-left: 3px solid #9c27b0; }
+.cb-feature-card.cb-card-buddies { border-left: 3px solid #ec4899; }
 
 /* Workouts Hero Card */
 .cb-card-workouts-hero {
