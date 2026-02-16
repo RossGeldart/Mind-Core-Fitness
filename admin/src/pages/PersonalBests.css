@@ -1252,41 +1252,80 @@
 .pb-cb-section {
 }
 
-/* ====== Grouped PB Layout ====== */
+/* ====== Grouped PB Accordion Layout ====== */
 .pb-cb-grouped {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 14px;
 }
 
 .pb-cb-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
+/* --- Dark accordion card header (matches dashboard style) --- */
 .pb-cb-group-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 2px;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 20px;
+  border: none;
+  border-radius: 16px;
+  background: radial-gradient(circle at 20% 30%, rgba(40, 40, 40, 0.95) 0%, rgba(25, 25, 25, 0.98) 100%);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+[data-theme="light"] .pb-cb-group-header {
+  background: radial-gradient(circle at 20% 30%, rgba(35, 35, 35, 0.97) 0%, rgba(20, 20, 20, 0.99) 100%);
+}
+
+.pb-cb-group-header:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pb-cb-group-header:active {
+  transform: scale(0.985);
+}
+
+/* Color accent strip on the left */
+.pb-cb-group-accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--group-color);
+  border-radius: 5px 0 0 5px;
+}
+
+.pb-cb-group.open .pb-cb-group-header {
+  border-radius: 16px 16px 0 0;
 }
 
 .pb-cb-group-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--group-color) 18%, transparent), color-mix(in srgb, var(--group-color) 6%, transparent));
+  background: color-mix(in srgb, var(--group-color) 15%, transparent);
   color: var(--group-color);
   flex-shrink: 0;
 }
 
 .pb-cb-group-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .pb-cb-group-text {
@@ -1296,29 +1335,72 @@
 
 .pb-cb-group-label {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--group-color);
+  color: #fff;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .pb-cb-group-subtitle {
   font-family: 'Roboto', sans-serif;
   font-size: 0.72rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.45);
+  display: block;
+  margin-top: 2px;
+}
+
+.pb-cb-group-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .pb-cb-group-count {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   color: var(--group-color);
-  background: color-mix(in srgb, var(--group-color) 10%, transparent);
-  padding: 4px 10px;
-  border-radius: 12px;
+  background: color-mix(in srgb, var(--group-color) 15%, transparent);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.pb-cb-group-best {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Chevron */
+.pb-cb-group-chevron {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.pb-cb-group-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* --- Dropdown body --- */
+.pb-cb-group-body {
+  background: var(--bg-page, #f5f5f5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  padding: 14px;
+}
+
+[data-theme="dark"] .pb-cb-group-body {
+  background: rgba(20, 20, 20, 0.5);
+  border-color: rgba(255, 255, 255, 0.04);
 }
 
 .pb-cb-empty-icon {

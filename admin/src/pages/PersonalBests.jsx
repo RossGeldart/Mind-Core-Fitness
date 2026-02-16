@@ -183,6 +183,7 @@ export default function PersonalBests() {
   const [cbAchievements, setCbAchievements] = useState(null);
   const [cbTargetExercise, setCbTargetExercise] = useState(null); // exercise name being targeted
   const [cbTargetInput, setCbTargetInput] = useState('');
+  const [expandedGroups, setExpandedGroups] = useState({});
 
   // Touch/swipe state for carousel
   const carouselRef = useRef(null);
@@ -807,9 +808,16 @@ export default function PersonalBests() {
                       {MUSCLE_GROUPS.map(mg => {
                         const entries = grouped[mg.key];
                         if (!entries || entries.length === 0) return null;
+                        const isOpen = !!expandedGroups[mg.key];
+                        // Find best PB in group (highest weight)
+                        const bestEntry = entries.reduce((best, [, d]) => (!best || d.weight > best.weight) ? d : best, null);
                         return (
-                          <div key={mg.key} className="pb-cb-group">
-                            <div className="pb-cb-group-header" style={{ '--group-color': mg.color }}>
+                          <div key={mg.key} className={`pb-cb-group ${isOpen ? 'open' : ''}`} style={{ '--group-color': mg.color }}>
+                            <button
+                              className="pb-cb-group-header"
+                              onClick={() => setExpandedGroups(prev => ({ ...prev, [mg.key]: !prev[mg.key] }))}
+                            >
+                              <div className="pb-cb-group-accent" />
                               <div className="pb-cb-group-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d={mg.icon} /></svg>
                               </div>
@@ -817,224 +825,249 @@ export default function PersonalBests() {
                                 <h3 className="pb-cb-group-label">{mg.label}</h3>
                                 <span className="pb-cb-group-subtitle">{mg.subtitle}</span>
                               </div>
-                              <span className="pb-cb-group-count">{entries.length}</span>
-                            </div>
-                            <div className="pb-cb-grid">
-                              {entries.map(([name, data]) => {
-                                const target = cbTargets[name];
-                                const progress = getCbTargetProgress(name);
-                                const targetHit = progress !== null && progress >= 1;
-                                const badgeEarned = hasCbBadge(name);
-                                const ringFill = progress !== null ? Math.round(progress * 60) : 60;
-                                const idx = cardIndex++;
+                              <div className="pb-cb-group-meta">
+                                <span className="pb-cb-group-count">{entries.length} PB{entries.length !== 1 ? 's' : ''}</span>
+                                {bestEntry && <span className="pb-cb-group-best">Best: {bestEntry.weight}kg</span>}
+                              </div>
+                              <svg className={`pb-cb-group-chevron ${isOpen ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M6 9l6 6 6-6" />
+                              </svg>
+                            </button>
+                            <div className="pb-cb-group-body" style={{ display: isOpen ? 'block' : 'none' }}>
+                              <div className="pb-cb-grid">
+                                {entries.map(([name, data], idx) => {
+                                  const target = cbTargets[name];
+                                  const progress = getCbTargetProgress(name);
+                                  const targetHit = progress !== null && progress >= 1;
+                                  const badgeEarned = hasCbBadge(name);
+                                  const ringFill = progress !== null ? Math.round(progress * 60) : 60;
 
-                                return (
-                                  <div key={name} className="pb-cb-card" style={{ '--group-color': mg.color, animationDelay: `${idx * 0.05}s` }}>
-                                    <div className="pb-cb-card-top">
-                                      <div className="pb-cb-card-ring">
-                                        <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
-                                          {TICKS_TINY.map((t, j) => {
-                                            const filled = j < ringFill;
-                                            return (
-                                              <line key={j} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                                                className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                                                style={filled && !targetHit ? { stroke: mg.color } : undefined}
-                                                strokeWidth={t.thick ? '2' : '1.5'} />
-                                            );
-                                          })}
-                                        </svg>
-                                        <div className="pb-cb-ring-icon" style={{ color: mg.color }}>
-                                          {badgeEarned ? (
-                                            <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
-                                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                            </svg>
-                                          ) : (
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                              <path d={mg.icon} />
-                                            </svg>
-                                          )}
-                                        </div>
-                                      </div>
-                                      <div className="pb-cb-card-info">
-                                        <h4 className="pb-cb-card-name">{name}</h4>
-                                        <div className="pb-cb-card-value" style={{ color: mg.color }}>{data.weight}kg × {data.reps}</div>
-                                        {data.achievedAt && (
-                                          <div className="pb-cb-card-date">
-                                            {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
-                                              .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                  return (
+                                    <div key={name} className="pb-cb-card" style={{ '--group-color': mg.color, animationDelay: `${idx * 0.05}s` }}>
+                                      <div className="pb-cb-card-top">
+                                        <div className="pb-cb-card-ring">
+                                          <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
+                                            {TICKS_TINY.map((t, j) => {
+                                              const filled = j < ringFill;
+                                              return (
+                                                <line key={j} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                                                  className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
+                                                  style={filled && !targetHit ? { stroke: mg.color } : undefined}
+                                                  strokeWidth={t.thick ? '2' : '1.5'} />
+                                              );
+                                            })}
+                                          </svg>
+                                          <div className="pb-cb-ring-icon" style={{ color: mg.color }}>
+                                            {badgeEarned ? (
+                                              <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                              </svg>
+                                            ) : (
+                                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                <path d={mg.icon} />
+                                              </svg>
+                                            )}
                                           </div>
-                                        )}
-                                        {target && targetHit && !badgeEarned && (
-                                          <div className="pb-cb-target-info hit">Target hit!</div>
-                                        )}
-                                        {badgeEarned && (
-                                          <div className="pb-cb-target-info earned">Badge earned!</div>
-                                        )}
-                                      </div>
-                                      <div className="pb-cb-card-action">
-                                        <button className="pb-cb-target-btn" style={{ borderColor: mg.color, background: `color-mix(in srgb, ${mg.color} 10%, transparent)`, color: mg.color }} onClick={() => {
-                                          setCbTargetExercise(name);
-                                          setCbTargetInput('');
-                                        }}>
-                                          {!target ? (
-                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                              <circle cx="12" cy="12" r="10" />
-                                              <circle cx="12" cy="12" r="6" />
-                                              <circle cx="12" cy="12" r="2" />
-                                            </svg>
-                                          ) : targetHit && badgeEarned ? (
-                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                              <path d="M12 5v14M5 12h14" />
-                                            </svg>
-                                          ) : (
-                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                            </svg>
+                                        </div>
+                                        <div className="pb-cb-card-info">
+                                          <h4 className="pb-cb-card-name">{name}</h4>
+                                          <div className="pb-cb-card-value" style={{ color: mg.color }}>{data.weight}kg × {data.reps}</div>
+                                          {data.achievedAt && (
+                                            <div className="pb-cb-card-date">
+                                              {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
+                                                .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </div>
                                           )}
-                                        </button>
+                                          {target && targetHit && !badgeEarned && (
+                                            <div className="pb-cb-target-info hit">Target hit!</div>
+                                          )}
+                                          {badgeEarned && (
+                                            <div className="pb-cb-target-info earned">Badge earned!</div>
+                                          )}
+                                        </div>
+                                        <div className="pb-cb-card-action">
+                                          <button className="pb-cb-target-btn" style={{ borderColor: mg.color, background: `color-mix(in srgb, ${mg.color} 10%, transparent)`, color: mg.color }} onClick={() => {
+                                            setCbTargetExercise(name);
+                                            setCbTargetInput('');
+                                          }}>
+                                            {!target ? (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <circle cx="12" cy="12" r="6" />
+                                                <circle cx="12" cy="12" r="2" />
+                                              </svg>
+                                            ) : targetHit && badgeEarned ? (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M12 5v14M5 12h14" />
+                                              </svg>
+                                            ) : (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                              </svg>
+                                            )}
+                                          </button>
+                                        </div>
                                       </div>
+                                      {target && !targetHit && (
+                                        <div className="pb-cb-card-progress">
+                                          <div className="pb-cb-progress-labels">
+                                            <span className="pb-cb-progress-current">{data.weight}kg</span>
+                                            <span className="pb-cb-progress-target" style={{ color: mg.color }}>Target: {target.targetWeight}kg</span>
+                                          </div>
+                                          <div className="pb-cb-progress-bar">
+                                            <div
+                                              className="pb-cb-progress-bar-fill"
+                                              style={{ width: `${Math.round((progress || 0) * 100)}%`, background: mg.color }}
+                                            />
+                                          </div>
+                                          <div className="pb-cb-progress-pct" style={{ color: mg.color }}>{Math.round((progress || 0) * 100)}%</div>
+                                        </div>
+                                      )}
+                                      {target && targetHit && (
+                                        <div className="pb-cb-card-progress">
+                                          <div className="pb-cb-progress-bar">
+                                            <div className="pb-cb-progress-bar-fill hit" style={{ width: '100%' }} />
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                    {target && !targetHit && (
-                                      <div className="pb-cb-card-progress">
-                                        <div className="pb-cb-progress-labels">
-                                          <span className="pb-cb-progress-current">{data.weight}kg</span>
-                                          <span className="pb-cb-progress-target" style={{ color: mg.color }}>Target: {target.targetWeight}kg</span>
-                                        </div>
-                                        <div className="pb-cb-progress-bar">
-                                          <div
-                                            className="pb-cb-progress-bar-fill"
-                                            style={{ width: `${Math.round((progress || 0) * 100)}%`, background: mg.color }}
-                                          />
-                                        </div>
-                                        <div className="pb-cb-progress-pct" style={{ color: mg.color }}>{Math.round((progress || 0) * 100)}%</div>
-                                      </div>
-                                    )}
-                                    {target && targetHit && (
-                                      <div className="pb-cb-card-progress">
-                                        <div className="pb-cb-progress-bar">
-                                          <div className="pb-cb-progress-bar-fill hit" style={{ width: '100%' }} />
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                                  );
+                                })}
+                              </div>
                             </div>
                           </div>
                         );
                       })}
-                      {ungrouped.length > 0 && (
-                        <div className="pb-cb-group">
-                          <div className="pb-cb-group-header" style={{ '--group-color': 'var(--text-tertiary)' }}>
-                            <div className="pb-cb-group-text">
-                              <h3 className="pb-cb-group-label">Other</h3>
-                            </div>
-                            <span className="pb-cb-group-count">{ungrouped.length}</span>
-                          </div>
-                          <div className="pb-cb-grid">
-                            {ungrouped.map(([name, data]) => {
-                              const target = cbTargets[name];
-                              const progress = getCbTargetProgress(name);
-                              const targetHit = progress !== null && progress >= 1;
-                              const badgeEarned = hasCbBadge(name);
-                              const ringFill = progress !== null ? Math.round(progress * 60) : 60;
-                              const idx = cardIndex++;
+                      {ungrouped.length > 0 && (() => {
+                        const isOpen = !!expandedGroups['other'];
+                        return (
+                          <div className={`pb-cb-group ${isOpen ? 'open' : ''}`} style={{ '--group-color': 'var(--text-tertiary)' }}>
+                            <button
+                              className="pb-cb-group-header"
+                              onClick={() => setExpandedGroups(prev => ({ ...prev, other: !prev.other }))}
+                            >
+                              <div className="pb-cb-group-accent" />
+                              <div className="pb-cb-group-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                  <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                                </svg>
+                              </div>
+                              <div className="pb-cb-group-text">
+                                <h3 className="pb-cb-group-label">Other</h3>
+                              </div>
+                              <div className="pb-cb-group-meta">
+                                <span className="pb-cb-group-count">{ungrouped.length} PB{ungrouped.length !== 1 ? 's' : ''}</span>
+                              </div>
+                              <svg className={`pb-cb-group-chevron ${isOpen ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M6 9l6 6 6-6" />
+                              </svg>
+                            </button>
+                            <div className="pb-cb-group-body" style={{ display: isOpen ? 'block' : 'none' }}>
+                              <div className="pb-cb-grid">
+                                {ungrouped.map(([name, data], idx) => {
+                                  const target = cbTargets[name];
+                                  const progress = getCbTargetProgress(name);
+                                  const targetHit = progress !== null && progress >= 1;
+                                  const badgeEarned = hasCbBadge(name);
+                                  const ringFill = progress !== null ? Math.round(progress * 60) : 60;
 
-                              return (
-                                <div key={name} className="pb-cb-card" style={{ animationDelay: `${idx * 0.05}s` }}>
-                                  <div className="pb-cb-card-top">
-                                    <div className="pb-cb-card-ring">
-                                      <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
-                                        {TICKS_TINY.map((t, j) => {
-                                          const filled = j < ringFill;
-                                          return (
-                                            <line key={j} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                                              className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
-                                              strokeWidth={t.thick ? '2' : '1.5'} />
-                                          );
-                                        })}
-                                      </svg>
-                                      <div className="pb-cb-ring-icon">
-                                        {badgeEarned ? (
-                                          <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                  return (
+                                    <div key={name} className="pb-cb-card" style={{ animationDelay: `${idx * 0.05}s` }}>
+                                      <div className="pb-cb-card-top">
+                                        <div className="pb-cb-card-ring">
+                                          <svg className="pb-cb-ring-svg" viewBox="0 0 80 80">
+                                            {TICKS_TINY.map((t, j) => {
+                                              const filled = j < ringFill;
+                                              return (
+                                                <line key={j} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                                                  className={`pb-ring-tick ${filled ? (targetHit ? 'hit' : 'filled') : 'empty'}`}
+                                                  strokeWidth={t.thick ? '2' : '1.5'} />
+                                              );
+                                            })}
                                           </svg>
-                                        ) : (
-                                          <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
-                                          </svg>
-                                        )}
+                                          <div className="pb-cb-ring-icon">
+                                            {badgeEarned ? (
+                                              <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                              </svg>
+                                            ) : (
+                                              <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                                              </svg>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div className="pb-cb-card-info">
+                                          <h4 className="pb-cb-card-name">{name}</h4>
+                                          <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
+                                          {data.achievedAt && (
+                                            <div className="pb-cb-card-date">
+                                              {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
+                                                .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </div>
+                                          )}
+                                          {target && targetHit && !badgeEarned && (
+                                            <div className="pb-cb-target-info hit">Target hit!</div>
+                                          )}
+                                          {badgeEarned && (
+                                            <div className="pb-cb-target-info earned">Badge earned!</div>
+                                          )}
+                                        </div>
+                                        <div className="pb-cb-card-action">
+                                          <button className="pb-cb-target-btn" onClick={() => {
+                                            setCbTargetExercise(name);
+                                            setCbTargetInput('');
+                                          }}>
+                                            {!target ? (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <circle cx="12" cy="12" r="6" />
+                                                <circle cx="12" cy="12" r="2" />
+                                              </svg>
+                                            ) : targetHit && badgeEarned ? (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M12 5v14M5 12h14" />
+                                              </svg>
+                                            ) : (
+                                              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                              </svg>
+                                            )}
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className="pb-cb-card-info">
-                                      <h4 className="pb-cb-card-name">{name}</h4>
-                                      <div className="pb-cb-card-value">{data.weight}kg × {data.reps}</div>
-                                      {data.achievedAt && (
-                                        <div className="pb-cb-card-date">
-                                          {(data.achievedAt.toDate ? data.achievedAt.toDate() : new Date(data.achievedAt))
-                                            .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                      {target && !targetHit && (
+                                        <div className="pb-cb-card-progress">
+                                          <div className="pb-cb-progress-labels">
+                                            <span className="pb-cb-progress-current">{data.weight}kg</span>
+                                            <span className="pb-cb-progress-target">Target: {target.targetWeight}kg</span>
+                                          </div>
+                                          <div className="pb-cb-progress-bar">
+                                            <div
+                                              className="pb-cb-progress-bar-fill"
+                                              style={{ width: `${Math.round((progress || 0) * 100)}%` }}
+                                            />
+                                          </div>
+                                          <div className="pb-cb-progress-pct">{Math.round((progress || 0) * 100)}%</div>
                                         </div>
                                       )}
-                                      {target && targetHit && !badgeEarned && (
-                                        <div className="pb-cb-target-info hit">Target hit!</div>
+                                      {target && targetHit && (
+                                        <div className="pb-cb-card-progress">
+                                          <div className="pb-cb-progress-bar">
+                                            <div className="pb-cb-progress-bar-fill hit" style={{ width: '100%' }} />
+                                          </div>
+                                        </div>
                                       )}
-                                      {badgeEarned && (
-                                        <div className="pb-cb-target-info earned">Badge earned!</div>
-                                      )}
                                     </div>
-                                    <div className="pb-cb-card-action">
-                                      <button className="pb-cb-target-btn" onClick={() => {
-                                        setCbTargetExercise(name);
-                                        setCbTargetInput('');
-                                      }}>
-                                        {!target ? (
-                                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <circle cx="12" cy="12" r="6" />
-                                            <circle cx="12" cy="12" r="2" />
-                                          </svg>
-                                        ) : targetHit && badgeEarned ? (
-                                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M12 5v14M5 12h14" />
-                                          </svg>
-                                        ) : (
-                                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                          </svg>
-                                        )}
-                                      </button>
-                                    </div>
-                                  </div>
-                                  {target && !targetHit && (
-                                    <div className="pb-cb-card-progress">
-                                      <div className="pb-cb-progress-labels">
-                                        <span className="pb-cb-progress-current">{data.weight}kg</span>
-                                        <span className="pb-cb-progress-target">Target: {target.targetWeight}kg</span>
-                                      </div>
-                                      <div className="pb-cb-progress-bar">
-                                        <div
-                                          className="pb-cb-progress-bar-fill"
-                                          style={{ width: `${Math.round((progress || 0) * 100)}%` }}
-                                        />
-                                      </div>
-                                      <div className="pb-cb-progress-pct">{Math.round((progress || 0) * 100)}%</div>
-                                    </div>
-                                  )}
-                                  {target && targetHit && (
-                                    <div className="pb-cb-card-progress">
-                                      <div className="pb-cb-progress-bar">
-                                        <div className="pb-cb-progress-bar-fill hit" style={{ width: '100%' }} />
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
+                                  );
+                                })}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                     </>
                   );
                 })()}
