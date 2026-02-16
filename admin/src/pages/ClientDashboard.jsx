@@ -39,10 +39,9 @@ export default function ClientDashboard() {
   const [toast, setToast] = useState(null);
 
   // Pull to refresh state
-  const [refreshing, setRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
-  const mainRef = useRef(null);
-  const touchStartY = useRef(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const startY = useRef(0);
   const isPulling = useRef(false);
 
   // Swipe state for session cards
@@ -98,36 +97,64 @@ export default function ClientDashboard() {
     setTimeout(() => circle.remove(), 600);
   };
 
-  // Pull to refresh handlers
-  const handleTouchStart = (e) => {
-    if (mainRef.current && mainRef.current.scrollTop === 0) {
-      touchStartY.current = e.touches[0].clientY;
-      isPulling.current = true;
-    }
-  };
+  // Pull-to-refresh handlers
+  useEffect(() => {
+    const getScrollTop = () => {
+      return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    };
 
-  const handleTouchMove = (e) => {
-    if (!isPulling.current || !mainRef.current) return;
+    const handleTouchStart = (e) => {
+      if (getScrollTop() <= 0) {
+        startY.current = e.touches[0].clientY;
+        isPulling.current = false;
+      }
+    };
 
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - touchStartY.current;
+    const handleTouchMove = (e) => {
+      const scrollTop = getScrollTop();
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - startY.current;
 
-    // Only start showing indicator after 20px of pull (reduces accidental triggers)
-    if (diff > 20 && mainRef.current.scrollTop === 0) {
-      e.preventDefault();
-      setPullDistance(Math.min((diff - 20) * 0.35, 80));
-    }
-  };
+      if (scrollTop > 5 || diff <= 0) {
+        isPulling.current = false;
+        setPullDistance(0);
+        return;
+      }
 
-  const handleTouchEnd = async () => {
-    if (pullDistance > 55 && !refreshing) {
-      setRefreshing(true);
-      await fetchAllData();
-      showToast('Refreshed!', 'success');
-      setRefreshing(false);
-    }
-    setPullDistance(0);
-    isPulling.current = false;
+      if (diff > 20 && scrollTop <= 0) {
+        isPulling.current = true;
+        setPullDistance(Math.min((diff - 20) * 0.4, 80));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (isPulling.current && pullDistance > 60) {
+        setIsRefreshing(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      } else {
+        setPullDistance(0);
+      }
+      isPulling.current = false;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 
   // Swipe handlers for session cards
@@ -562,32 +589,27 @@ export default function ClientDashboard() {
 
   return (
     <div className="client-dashboard">
+      {/* Pull to refresh indicator */}
+      {pullDistance > 0 && (
+        <div className="pull-indicator" style={{ height: pullDistance }}>
+          <div className={`pull-spinner ${isRefreshing ? 'spinning' : ''}`}>
+            {isRefreshing ? '↻' : '↓'}
+          </div>
+          <span>{isRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}</span>
+        </div>
+      )}
       <header className="client-header">
         <div className="header-content">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+          <div className="header-actions">
+            <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh">
+              {isRefreshing ? '↻' : '⟳'}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Pull to refresh indicator */}
-      <div
-        className={`pull-refresh-indicator ${pullDistance > 0 ? 'visible' : ''} ${refreshing ? 'refreshing' : ''}`}
-        style={{ height: pullDistance }}
-      >
-        <div className={`refresh-spinner ${refreshing ? 'spinning' : ''}`}>
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <path fill="currentColor" d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-          </svg>
-        </div>
-        <span className="refresh-text">{refreshing ? 'Refreshing...' : 'Pull to refresh'}</span>
-      </div>
-
-      <main
-        className="client-main page-transition-enter"
-        ref={mainRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      <main className="client-main page-transition-enter">
         <div className="welcome-section">
           <h2>Welcome, {clientData.name.split(' ')[0]}</h2>
           <div className="welcome-actions">
