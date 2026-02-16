@@ -162,6 +162,12 @@ service cloud.firestore {
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
 
+    // Custom Habits - admin full, clients read/write own (doc ID = clientId)
+    match /customHabits/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
     // ── BUDDY SYSTEM (Phase 2) ──
 
     // Buddy Requests - pending requests between users
