@@ -23,30 +23,6 @@
   animation: circuitSpin 0.8s linear infinite;
 }
 
-.circuit-page .refresh-btn {
-  background: transparent;
-  border: 1px solid var(--border-color, #444);
-  color: var(--text-secondary, #999);
-  width: 32px;
-  height: 32px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.circuit-page .refresh-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.circuit-page .refresh-btn:disabled {
-  animation: circuitSpin 0.8s linear infinite;
-}
-
 @keyframes circuitSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
