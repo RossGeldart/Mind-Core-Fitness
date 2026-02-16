@@ -1252,6 +1252,75 @@
 .pb-cb-section {
 }
 
+/* ====== Grouped PB Layout ====== */
+.pb-cb-grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pb-cb-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pb-cb-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 2px;
+}
+
+.pb-cb-group-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--group-color) 18%, transparent), color-mix(in srgb, var(--group-color) 6%, transparent));
+  color: var(--group-color);
+  flex-shrink: 0;
+}
+
+.pb-cb-group-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pb-cb-group-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-cb-group-label {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--group-color);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pb-cb-group-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.pb-cb-group-count {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--group-color);
+  background: color-mix(in srgb, var(--group-color) 10%, transparent);
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
 .pb-cb-empty-icon {
   width: 64px;
   height: 64px;
@@ -1276,10 +1345,17 @@
   flex-direction: column;
   gap: 0;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-left: 5px solid var(--group-color, var(--color-primary));
   border-radius: 16px;
   padding: 16px 20px;
-  box-shadow: var(--shadow-md), var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pb-cb-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .pb-cb-card-top {
@@ -1723,10 +1799,17 @@
 
 [data-theme="dark"] .pb-cb-card {
   background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.06);
+  border-left: 5px solid var(--group-color, var(--color-primary));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .pb-cb-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--group-color, var(--color-primary));
 }
 
 [data-theme="dark"] .pb-cb-achievements-link {
