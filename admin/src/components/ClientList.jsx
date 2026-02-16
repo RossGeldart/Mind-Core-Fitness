@@ -153,6 +153,7 @@ export default function ClientList() {
       circuitAccess: !!client.circuitAccess,
       coreBuddyAccess: !!client.coreBuddyAccess,
       buddyEnabled: !!client.buddyEnabled,
+      coreBuddyPlan: client.coreBuddyPlan || 'free',
       isJunior: !!client.isJunior
     });
   };
@@ -231,6 +232,9 @@ export default function ClientList() {
         updateData.circuitAccess = editForm.circuitAccess;
         if (editForm.startDate) updateData.startDate = Timestamp.fromDate(new Date(editForm.startDate));
         if (editForm.endDate) updateData.endDate = Timestamp.fromDate(new Date(editForm.endDate));
+      } else if (editForm.clientType === 'core_buddy') {
+        updateData.coreBuddyPlan = editForm.coreBuddyPlan || 'free';
+        updateData.coreBuddyAccess = true;
       } else {
         // Switching to circuit — ensure circuit fields exist
         const client = clients.find(c => c.id === clientId);
@@ -492,6 +496,15 @@ export default function ClientList() {
                       </>
                     )}
 
+                    {editForm.clientType === 'core_buddy' && (
+                      <div className="edit-row">
+                        <select name="coreBuddyPlan" value={editForm.coreBuddyPlan} onChange={handleEditChange}>
+                          <option value="free">Free</option>
+                          <option value="premium">Premium</option>
+                        </select>
+                      </div>
+                    )}
+
                     <div className="edit-row password-row">
                       {editForm.hasPortalAccess ? (
                         <div className="portal-status has-access">Has portal access</div>
@@ -574,6 +587,17 @@ export default function ClientList() {
                         <div className="detail-item">
                           <span className="detail-label">End</span>
                           <span className="detail-value">{formatDate(client.endDate)}</span>
+                        </div>
+                      </div>
+                    ) : client.clientType === 'core_buddy' ? (
+                      <div className="client-details circuit-details">
+                        <div className="detail-item">
+                          <span className="detail-label">Plan</span>
+                          <span className="detail-value">{client.coreBuddyPlan === 'premium' ? 'Premium' : 'Free'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Joined</span>
+                          <span className="detail-value">{formatDate(client.createdAt)}</span>
                         </div>
                       </div>
                     ) : (
