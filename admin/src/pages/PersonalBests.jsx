@@ -762,7 +762,7 @@ export default function PersonalBests() {
 
       <main className="pb-main page-transition-enter">
 
-        <div className="pb-intro">
+        <div className="pb-intro anim-fade-up">
           <h2>Personal Bests</h2>
           <p>{isBlockClient
             ? 'Track your strength benchmarks and body measurements each month.'
@@ -772,7 +772,7 @@ export default function PersonalBests() {
 
         {/* ====== CORE BUDDY PB VIEW ====== */}
         {!isBlockClient && (
-          <div className="pb-cb-section">
+          <div className="pb-cb-section anim-fade-up-d2">
             {Object.keys(cbPBs).length === 0 ? (
               <div className="pb-empty">
                 <div className="pb-cb-empty-icon">
@@ -1076,7 +1076,7 @@ export default function PersonalBests() {
 
             {/* Achievements link */}
             {Object.keys(cbPBs).length > 0 && (
-              <button className="pb-cb-achievements-link" onClick={() => navigate('/client/core-buddy/achievements')}>
+              <button className="pb-cb-achievements-link anim-fade-up-d4" onClick={() => navigate('/client/core-buddy/achievements')}>
                 <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
