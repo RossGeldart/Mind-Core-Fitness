@@ -411,6 +411,53 @@ export default function Onboarding() {
                 {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
               </div>
             </button>
+
+            {/* Core Buddy AI section header */}
+            <div className="ob-plan-divider">
+              <span className="ob-plan-divider-line" />
+              <span className="ob-plan-divider-text">Core Buddy AI</span>
+              <span className="ob-plan-divider-line" />
+            </div>
+
+            {/* Core Buddy AI Monthly */}
+            <div className="ob-plan-card ob-plan-coming-soon">
+              <div className="ob-plan-coming-soon-overlay">
+                <span>Coming Soon</span>
+              </div>
+              <div className="ob-plan-badge">AI Coaching</div>
+              <div className="ob-plan-name">AI Monthly</div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">34.99</span>
+                <span className="ob-plan-period">/month</span>
+              </div>
+              <ul className="ob-plan-features">
+                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
+                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
+              </ul>
+              <div className="ob-plan-cta">Coming Soon</div>
+            </div>
+
+            {/* Core Buddy AI Annual */}
+            <div className="ob-plan-card ob-plan-coming-soon">
+              <div className="ob-plan-coming-soon-overlay">
+                <span>Coming Soon</span>
+              </div>
+              <div className="ob-plan-badge">AI Coaching — Best Value</div>
+              <div className="ob-plan-name">AI Annual</div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">299.99</span>
+                <span className="ob-plan-period">/year</span>
+              </div>
+              <ul className="ob-plan-features">
+                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
+                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
+              </ul>
+              <div className="ob-plan-cta">Coming Soon</div>
+            </div>
           </div>
 
           {checkoutError && <p className="ob-error">{checkoutError}</p>}
