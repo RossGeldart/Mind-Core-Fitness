@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
-import ThemeToggle from '../components/ThemeToggle';
 import './Onboarding.css';
 
 import featureProfile from '../assets/feature_profile.PNG';
@@ -65,20 +65,44 @@ const FEATURES = [
   },
 ];
 
-// Step order: 0=features, 1=buddy chat, 2=choose tier
-const TOTAL_STEPS = 3;
+const PARQ_QUESTIONS = [
+  'Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?',
+  'Do you feel pain in your chest when you do physical activity?',
+  'In the past month, have you had chest pain when you were not doing physical activity?',
+  'Do you lose your balance because of dizziness or do you ever lose consciousness?',
+  'Do you have a bone or joint problem (e.g. back, knee, or hip) that could be made worse by a change in your physical activity?',
+  'Is your doctor currently prescribing drugs (e.g. water pills) for your blood pressure or heart condition?',
+  'Do you know of any other reason why you should not do physical activity?',
+];
+
+const FITNESS_GOALS = [
+  'Lose weight',
+  'Build muscle',
+  'Improve fitness',
+  'Get stronger',
+  'Tone up',
+  'Sport performance',
+  'Stress relief',
+  'Stay active',
+];
+
+const EXPERIENCE_LEVELS = [
+  { key: 'beginner', label: 'Beginner', desc: 'New to exercise or returning after a long break' },
+  { key: 'intermediate', label: 'Intermediate', desc: 'Training regularly for 6+ months' },
+  { key: 'advanced', label: 'Advanced', desc: 'Training consistently for 2+ years' },
+];
 
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // If returning from a successful Stripe checkout, onboarding is complete.
+  // If the user already has a paid subscription (set by Stripe webhook),
+  // or is returning from a successful Stripe checkout, skip to the welcome form.
+  const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
   const fromCheckout = searchParams.get('checkout') === 'success';
-
-  const [step, setStep] = useState(0);
-  const [slideDir, setSlideDir] = useState('right');
-  const [animating, setAnimating] = useState(false);
+  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -86,41 +110,77 @@ export default function Onboarding() {
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [checkoutError, setCheckoutError] = useState(null);
 
-  // ── Buddy Chat State ──
-  const [chatMessages, setChatMessages] = useState([]); // { role: 'user'|'assistant', content: string }
-  const [chatInput, setChatInput] = useState('');
-  const [chatLoading, setChatLoading] = useState(false);
-  const [chatError, setChatError] = useState(null);
-  const [chatComplete, setChatComplete] = useState(false);
-  const chatEndRef = useRef(null);
-  const chatInputRef = useRef(null);
+  // Welcome form
+  const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('');
+  const [goal, setGoal] = useState('');
+  const [experience, setExperience] = useState('');
+  const [injuries, setInjuries] = useState('');
 
-  // ── Step transition helper ──
-  const goToStep = useCallback((target) => {
-    if (animating) return;
-    setSlideDir(target > step ? 'right' : 'left');
-    setAnimating(true);
-    setTimeout(() => {
-      setStep(target);
-      setAnimating(false);
-      window.scrollTo(0, 0);
-    }, 250);
-  }, [step, animating]);
+  // PARQ form
+  const [parqAnswers, setParqAnswers] = useState(PARQ_QUESTIONS.map(() => null));
+  const [parqDeclare, setParqDeclare] = useState(false);
+  const [parqSubmitting, setParqSubmitting] = useState(false);
 
-  // ── Auto-scroll chat to bottom ──
+  // Signature pad
+  const sigCanvasRef = useRef(null);
+  const sigDrawingRef = useRef(false);
+  const [sigHasContent, setSigHasContent] = useState(false);
+
+  // Keep the canvas internal resolution in sync with its CSS display size
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages, chatLoading]);
-
-  // ── Send Buddy's opening message when entering step 1 ──
-  useEffect(() => {
-    if (step === 1 && chatMessages.length === 0 && !chatLoading) {
-      sendBuddyMessage([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const canvas = sigCanvasRef.current;
+    if (!canvas) return;
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
   }, [step]);
+
+  const getSigPos = (e) => {
+    const canvas = sigCanvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  };
+
+  const sigStart = (e) => {
+    e.preventDefault();
+    const canvas = sigCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const pos = getSigPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    sigDrawingRef.current = true;
+  };
+
+  const sigMove = (e) => {
+    if (!sigDrawingRef.current) return;
+    e.preventDefault();
+    const ctx = sigCanvasRef.current.getContext('2d');
+    const pos = getSigPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#fff';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    setSigHasContent(true);
+  };
+
+  const sigEnd = () => { sigDrawingRef.current = false; };
+
+  const sigClear = () => {
+    const canvas = sigCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSigHasContent(false);
+  };
 
   // Redirect if already completed onboarding
   useEffect(() => {
@@ -129,38 +189,14 @@ export default function Onboarding() {
     }
   }, [authLoading, clientData, navigate]);
 
-  // If returning from a successful Stripe checkout, finalise onboarding
+  // If the Stripe webhook fires while the user is still on the feature
+  // showcase or subscription picker, auto-advance to the welcome form.
   useEffect(() => {
-    if (!fromCheckout || !clientData?.id || clientData?.onboardingComplete) return;
-    const finalise = async () => {
-      try {
-        await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
-        updateClientData({ onboardingComplete: true, tier: 'premium', subscriptionStatus: 'trialing' });
-        navigate('/client/core-buddy');
-      } catch (err) {
-        console.error('Post-checkout finalise error:', err);
-      }
-    };
-    finalise();
-  }, [fromCheckout, clientData?.id, clientData?.onboardingComplete, updateClientData, navigate]);
-
-  // Safety net: if Stripe webhook already set premium but onboardingComplete wasn't written
-  useEffect(() => {
-    if (authLoading || !clientData?.id) return;
-    if (clientData.onboardingComplete) return;
-    if (clientData.tier === 'premium' || clientData.stripeSubscriptionId) {
-      const autoComplete = async () => {
-        try {
-          await updateDoc(doc(db, 'clients', clientData.id), { onboardingComplete: true });
-          updateClientData({ onboardingComplete: true });
-          navigate('/client/core-buddy');
-        } catch (err) {
-          console.error('Auto-complete onboarding error:', err);
-        }
-      };
-      autoComplete();
+    const paid = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
+    if (paid && step < 2) {
+      setStep(2);
     }
-  }, [authLoading, clientData?.id, clientData?.tier, clientData?.stripeSubscriptionId, clientData?.onboardingComplete, updateClientData, navigate]);
+  }, [clientData?.tier, clientData?.stripeSubscriptionId, step]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -169,7 +205,7 @@ export default function Onboarding() {
     }
   }, [authLoading, currentUser, navigate]);
 
-  // Wait for auth to initialise
+  // Wait for auth to initialise so we know if the user is logged in
   if (authLoading) {
     return (
       <div className="ob-page">
@@ -180,128 +216,7 @@ export default function Onboarding() {
     );
   }
 
-  // ── Buddy Chat Helpers ──
-  const sendBuddyMessage = async (history) => {
-    setChatLoading(true);
-    setChatError(null);
-    try {
-      const res = await fetch('/api/buddy-onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: history,
-          clientName: clientData?.name || currentUser?.displayName || 'there',
-        }),
-      });
-      const data = await res.json();
-      if (data.error) {
-        setChatError(data.error);
-        return;
-      }
-
-      const assistantMsg = { role: 'assistant', content: data.reply };
-      setChatMessages(prev => [...prev, assistantMsg]);
-
-      // If profile data was extracted, save it
-      if (data.profileData) {
-        await saveProfileData(data.profileData);
-        setChatComplete(true);
-      }
-    } catch (err) {
-      console.error('Buddy chat error:', err);
-      setChatError('Something went wrong — try sending again.');
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
-  const handleChatSend = () => {
-    const text = chatInput.trim();
-    if (!text || chatLoading) return;
-
-    const userMsg = { role: 'user', content: text };
-    const newHistory = [...chatMessages, userMsg];
-    setChatMessages(newHistory);
-    setChatInput('');
-
-    // Focus back on input
-    if (chatInputRef.current) chatInputRef.current.focus();
-
-    sendBuddyMessage(newHistory);
-  };
-
-  const handleChatKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleChatSend();
-    }
-  };
-
-  const saveProfileData = async (profile) => {
-    try {
-      const client = await resolveClient();
-      if (!client) return;
-
-      // Save onboarding submission
-      await setDoc(doc(db, 'onboardingSubmissions', client.id), {
-        clientId: client.id,
-        clientName: client.name,
-        email: client.email,
-        source: 'buddy_chat',
-        welcome: {
-          dob: profile.dob || null,
-          gender: profile.gender || null,
-          goals: profile.goals || [],
-          experience: profile.experience || null,
-          injuries: profile.injuries || null,
-          activityLevel: profile.activityLevel || null,
-          exerciseHistory: profile.exerciseHistory || null,
-          sleepHours: profile.sleepHours || null,
-          stressLevel: profile.stressLevel || null,
-          dietaryInfo: profile.dietaryInfo || null,
-          availability: profile.availability || null,
-          additionalInfo: profile.additionalInfo || null,
-        },
-        submittedAt: serverTimestamp(),
-      });
-
-      // Save fitness data to client doc
-      const goals = profile.goals || [];
-      await updateDoc(doc(db, 'clients', client.id), {
-        fitnessGoal: goals[0] || null,
-        fitnessGoals: goals,
-        experienceLevel: profile.experience || null,
-        dob: profile.dob || null,
-        injuries: profile.injuries || null,
-      });
-
-      // Update local state
-      updateClientData({
-        fitnessGoal: goals[0] || null,
-        fitnessGoals: goals,
-        experienceLevel: profile.experience,
-        dob: profile.dob,
-      });
-    } catch (err) {
-      console.error('Save profile error:', err);
-    }
-  };
-
-  // ── Keyboard handling for feature carousel ──
-  const handleCarouselKeyDown = (e) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (activeSlide < FEATURES.length - 1) scrollToSlide(activeSlide + 1);
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (activeSlide > 0) scrollToSlide(activeSlide - 1);
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (activeSlide === FEATURES.length - 1) goToStep(1);
-      else scrollToSlide(activeSlide + 1);
-    }
-  };
-
+  // Handle feature carousel scroll
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const el = scrollRef.current;
@@ -317,60 +232,31 @@ export default function Onboarding() {
     el.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
   };
 
-  // ── Step animation class ──
-  const stepClass = animating
-    ? `ob-step-anim ob-step-exit-${slideDir}`
-    : 'ob-step-anim ob-step-enter';
-
-  // ── Progress Bar ──
-  const ProgressBar = ({ current }) => {
-    if (current === 0) return null;
-    const total = TOTAL_STEPS - 1; // 2 numbered steps
-    const pct = (current / total) * 100;
-    return (
-      <div className="ob-progress">
-        <div className="ob-progress-bar">
-          <div className="ob-progress-fill" style={{ width: `${pct}%` }} />
-        </div>
-        <span className="ob-progress-label">Step {current} of {total}</span>
-      </div>
-    );
-  };
-
   // ── Step 0: Feature Showcase ──
   if (step === 0) {
     const isLastSlide = activeSlide === FEATURES.length - 1;
 
     return (
       <div className="ob-page ob-page--showcase">
-        <div className={`ob-content ob-content--showcase ${stepClass}`}>
+        <div className="ob-content ob-content--showcase">
           <div className="ob-showcase-header">
             <img src="/Logo.webp" alt="Mind Core Fitness" className="ob-logo" width="48" height="48" />
             <div style={{ flex: 1 }}>
               <h1 className="ob-title" style={{ textAlign: 'left', marginBottom: 2 }}>Core Buddy</h1>
               <p className="ob-subtitle" style={{ textAlign: 'left', margin: 0 }}>Here's what you can do</p>
             </div>
-            <ThemeToggle className="ob-theme-toggle" />
+            <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+              {isDark ? (
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+              )}
+            </button>
           </div>
 
-          <div
-            className="ob-showcase-carousel"
-            ref={scrollRef}
-            onScroll={handleScroll}
-            onKeyDown={handleCarouselKeyDown}
-            tabIndex={0}
-            role="region"
-            aria-label="Feature showcase"
-            aria-roledescription="carousel"
-          >
+          <div className="ob-showcase-carousel" ref={scrollRef} onScroll={handleScroll}>
             {FEATURES.map((f, i) => (
-              <div
-                key={i}
-                className="ob-showcase-slide"
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${i + 1} of ${FEATURES.length}: ${f.title}`}
-              >
+              <div key={i} className="ob-showcase-slide">
                 <div className="ob-showcase-img-wrap">
                   <img src={f.image} alt={f.title} className="ob-showcase-img" />
                 </div>
@@ -382,22 +268,19 @@ export default function Onboarding() {
             ))}
           </div>
 
-          <div className="ob-dots" role="tablist" aria-label="Slide indicators">
+          <div className="ob-dots">
             {FEATURES.map((_, i) => (
               <span
                 key={i}
                 className={`ob-dot${activeSlide === i ? ' active' : ''}`}
                 onClick={() => scrollToSlide(i)}
-                role="tab"
-                aria-selected={activeSlide === i}
-                aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
 
           <div className="ob-showcase-actions">
             {isLastSlide ? (
-              <button className="ob-primary-btn" onClick={() => goToStep(1)}>
+              <button className="ob-primary-btn" onClick={() => setStep(1)}>
                 Get Started
               </button>
             ) : (
@@ -405,7 +288,7 @@ export default function Onboarding() {
                 <button className="ob-primary-btn" onClick={() => scrollToSlide(activeSlide + 1)}>
                   Next
                 </button>
-                <button className="ob-skip-btn" onClick={() => goToStep(1)}>
+                <button className="ob-skip-btn" onClick={() => setStep(1)}>
                   Skip
                 </button>
               </>
@@ -416,227 +299,376 @@ export default function Onboarding() {
     );
   }
 
-  // ── Step 1: Buddy Chat ──
+  // ── Step 1: Subscription Picker ──
   if (step === 1) {
+    const handlePlanSelect = async (plan) => {
+      if (plan === 'free') {
+        setStep(2);
+        return;
+      }
+
+      if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
+        setCheckoutError('Account is still loading — please wait a moment and try again.');
+        return;
+      }
+
+      // Stripe checkout for monthly/annual
+      setCheckoutLoading(plan);
+      setCheckoutError(null);
+      try {
+        const res = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            priceId: STRIPE_PRICES[plan],
+            clientId: clientData?.id,
+            uid: currentUser?.uid,
+            email: currentUser?.email,
+          }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          // Persist clientId so we can recover after Stripe redirect
+          try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
+          window.location.href = data.url;
+        } else {
+          setCheckoutError(data.error || 'Something went wrong');
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+        setCheckoutError('Unable to start checkout');
+      } finally {
+        setCheckoutLoading(null);
+      }
+    };
+
     return (
-      <div className="ob-page ob-page--chat">
-        <ThemeToggle className="ob-theme-toggle" />
-        <div className={`ob-chat-container ${stepClass}`}>
-          <ProgressBar current={1} />
-
-          <div className="ob-chat-header">
-            <div className="ob-chat-avatar">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
-                <path d="M18 14c2 1 3 3 3 5v2H3v-2c0-2 1-4 3-5"/>
-                <circle cx="9" cy="7" r="0.5" fill="currentColor"/>
-                <circle cx="15" cy="7" r="0.5" fill="currentColor"/>
-                <path d="M9.5 10a2.5 2.5 0 0 0 5 0"/>
-              </svg>
-            </div>
-            <div>
-              <h2 className="ob-chat-name">Buddy</h2>
-              <span className="ob-chat-status">
-                {chatLoading ? 'typing...' : 'Your AI Coach'}
-              </span>
-            </div>
-          </div>
-
-          <div className="ob-chat-messages">
-            {chatMessages.map((msg, i) => (
-              <div key={i} className={`ob-chat-bubble ob-chat-${msg.role}`}>
-                {msg.role === 'assistant' && (
-                  <div className="ob-chat-bubble-avatar">B</div>
-                )}
-                <div className="ob-chat-bubble-content">
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-
-            {chatLoading && (
-              <div className="ob-chat-bubble ob-chat-assistant">
-                <div className="ob-chat-bubble-avatar">B</div>
-                <div className="ob-chat-bubble-content ob-chat-typing">
-                  <span /><span /><span />
-                </div>
-              </div>
-            )}
-
-            {chatError && (
-              <div className="ob-chat-error">
-                {chatError}
-                <button onClick={() => sendBuddyMessage(chatMessages)}>Retry</button>
-              </div>
-            )}
-
-            <div ref={chatEndRef} />
-          </div>
-
-          {chatComplete ? (
-            <div className="ob-chat-done">
-              <button className="ob-primary-btn" onClick={() => goToStep(2)}>
-                Continue
-              </button>
-            </div>
+      <div className="ob-page">
+        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+          {isDark ? (
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
           ) : (
-            <div className="ob-chat-input-wrap">
-              <textarea
-                ref={chatInputRef}
-                className="ob-chat-input"
-                placeholder="Type your message..."
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={handleChatKeyDown}
-                rows={1}
-                disabled={chatLoading}
-              />
-              <button
-                className="ob-chat-send"
-                onClick={handleChatSend}
-                disabled={!chatInput.trim() || chatLoading}
-                aria-label="Send message"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13" />
-                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                </svg>
-              </button>
-            </div>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
           )}
+        </button>
+        <div className="ob-content">
+          <div className="ob-step-indicator">
+            <span className="ob-step-num">1 of 3</span>
+          </div>
+          <h1 className="ob-title">Choose Your Plan</h1>
+          <p className="ob-subtitle">Start free or unlock everything with Premium</p>
 
-          <button className="ob-back-btn" onClick={() => goToStep(0)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-            Back
+          <div className="ob-plans">
+            {/* Free */}
+            <button className="ob-plan-card ob-plan-free" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
+              <div className="ob-plan-name">Free</div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">0</span>
+              </div>
+              <ul className="ob-plan-features">
+                <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
+                <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
+                <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
+              </ul>
+              <div className="ob-plan-cta-outline">Continue Free</div>
+            </button>
+
+            {/* Monthly */}
+            <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
+              <div className="ob-plan-badge">Most Popular</div>
+              <div className="ob-plan-name">Monthly</div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">19.99</span>
+                <span className="ob-plan-period">/month</span>
+              </div>
+              <ul className="ob-plan-features">
+                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
+              </ul>
+              <div className="ob-plan-cta">
+                {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
+              </div>
+            </button>
+
+            {/* Annual */}
+            <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
+              <div className="ob-plan-badge">Best Value — Save 17%</div>
+              <div className="ob-plan-name">Annual</div>
+              <div className="ob-plan-price">
+                <span className="ob-plan-currency">£</span>
+                <span className="ob-plan-amount">199.99</span>
+                <span className="ob-plan-period">/year</span>
+              </div>
+              <ul className="ob-plan-features">
+                <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
+                <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
+                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
+              </ul>
+              <div className="ob-plan-cta ob-plan-cta-featured">
+                {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
+              </div>
+            </button>
+          </div>
+
+          {checkoutError && <p className="ob-error">{checkoutError}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step 2: Welcome Form ──
+  if (step === 2) {
+    const welcomeValid = dob && gender && goal && experience;
+
+    return (
+      <div className="ob-page">
+        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+          {isDark ? (
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+          )}
+        </button>
+        <div className="ob-content">
+          <div className="ob-step-indicator">
+            <span className="ob-step-num">2 of 3</span>
+          </div>
+          <h1 className="ob-title">Let's Get To Know You</h1>
+          <p className="ob-subtitle">Tell us a bit about yourself and where you're at with your fitness — we're in this together</p>
+
+          <div className="ob-form">
+            <label className="ob-label">Date of Birth</label>
+            <input
+              type="date"
+              className="ob-input"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+            />
+
+            <label className="ob-label">Sex</label>
+            <div className="ob-chip-group">
+              {['Male', 'Female', 'Other', 'Prefer not to say'].map((g) => (
+                <button
+                  key={g}
+                  className={`ob-chip${gender === g ? ' active' : ''}`}
+                  onClick={() => setGender(g)}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+
+            <label className="ob-label">What's Your Main Fitness Goal?</label>
+            <div className="ob-chip-group">
+              {FITNESS_GOALS.map((g) => (
+                <button
+                  key={g}
+                  className={`ob-chip${goal === g ? ' active' : ''}`}
+                  onClick={() => setGoal(g)}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+
+            <label className="ob-label">Where Are You At Right Now?</label>
+            <div className="ob-level-group">
+              {EXPERIENCE_LEVELS.map((lvl) => (
+                <button
+                  key={lvl.key}
+                  className={`ob-level-card${experience === lvl.key ? ' active' : ''}`}
+                  onClick={() => setExperience(lvl.key)}
+                >
+                  <strong>{lvl.label}</strong>
+                  <span>{lvl.desc}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="ob-label">Any Injuries or Conditions We Should Know About? <span className="ob-optional">(optional)</span></label>
+            <textarea
+              className="ob-textarea"
+              placeholder="E.g. bad knee, lower back pain, asthma..."
+              value={injuries}
+              onChange={(e) => setInjuries(e.target.value)}
+              rows={3}
+              maxLength={500}
+            />
+          </div>
+
+          <button
+            className="ob-primary-btn"
+            disabled={!welcomeValid}
+            onClick={() => setStep(3)}
+          >
+            Continue
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Step 2: Choose Your Plan ──
-  const handlePlanSelect = async (plan) => {
-    if (plan === 'free') {
-      try {
-        const client = await resolveClient();
-        if (client) {
-          await updateDoc(doc(db, 'clients', client.id), { onboardingComplete: true });
-        }
-        updateClientData({ onboardingComplete: true });
-        navigate('/client/core-buddy');
-      } catch (err) {
-        console.error('Free plan finalise error:', err);
-        setCheckoutError('Something went wrong — please try again.');
-      }
-      return;
-    }
+  // ── Step 3: PARQ Form ──
+  const allParqAnswered = parqAnswers.every((a) => a !== null);
+  const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
 
-    if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
-      setCheckoutError('Account is still loading — please wait a moment and try again.');
-      return;
-    }
+  const handleParqSubmit = async () => {
+    if (!canSubmitParq || parqSubmitting) return;
+    setParqSubmitting(true);
 
-    if (!currentUser.emailVerified) {
-      setCheckoutError('Please verify your email before subscribing. Check your inbox for a verification link.');
-      return;
-    }
-
-    setCheckoutLoading(plan);
-    setCheckoutError(null);
     try {
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId: STRIPE_PRICES[plan],
-          clientId: clientData?.id,
-          uid: currentUser?.uid,
-          email: currentUser?.email,
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        try { localStorage.setItem('mcf_clientId', clientData.id); } catch {}
-        window.location.href = data.url;
-      } else {
-        setCheckoutError(data.error || 'Something went wrong');
+      // Resolve client record — uses context if available, otherwise falls
+      // back to localStorage / uid-query via AuthContext.resolveClient().
+      const client = await resolveClient();
+      if (!client) {
+        alert('Could not find your account. Please try logging out and back in.');
+        setParqSubmitting(false);
+        return;
       }
+
+      // Get signature as data URL
+      const signatureData = sigCanvasRef.current.toDataURL('image/png');
+
+      // Save onboarding data
+      await setDoc(doc(db, 'onboardingSubmissions', client.id), {
+        clientId: client.id,
+        clientName: client.name,
+        email: client.email,
+        selectedPlan: client.tier || 'free',
+        welcome: {
+          dob,
+          gender: gender || null,
+          goal,
+          experience,
+          injuries: injuries.trim() || null,
+        },
+        parq: {
+          questions: PARQ_QUESTIONS,
+          answers: parqAnswers,
+          hasYes: parqAnswers.includes(true),
+          declaration: true,
+          signature: signatureData,
+        },
+        submittedAt: serverTimestamp(),
+      });
+
+      // Mark onboarding complete on client doc (only whitelisted fields —
+      // tier/subscriptionStatus are managed server-side by the Stripe webhook).
+      await updateDoc(doc(db, 'clients', client.id), {
+        onboardingComplete: true,
+        fitnessGoal: goal,
+        experienceLevel: experience,
+        dob: dob || null,
+      });
+
+      // Optimistically set tier in local state so premium features unlock
+      // immediately. The Stripe webhook writes the real value to Firestore;
+      // the onSnapshot listener in AuthContext will reconcile on next load.
+      const localUpdates = { onboardingComplete: true, fitnessGoal: goal, experienceLevel: experience, dob };
+      if (fromCheckout) {
+        localUpdates.tier = 'premium';
+        localUpdates.subscriptionStatus = 'trialing';
+      }
+      updateClientData(localUpdates);
+      navigate('/client/core-buddy');
     } catch (err) {
-      console.error('Checkout error:', err);
-      setCheckoutError('Unable to start checkout');
+      console.error('Onboarding submit error:', err);
+      alert('Failed to save — please try again.\n' + (err.code || err.message || ''));
     } finally {
-      setCheckoutLoading(null);
+      setParqSubmitting(false);
     }
   };
 
   return (
     <div className="ob-page">
-      <ThemeToggle className="ob-theme-toggle" />
-      <div className={`ob-content ${stepClass}`}>
-        <ProgressBar current={2} />
-        <h1 className="ob-title">Choose Your Plan</h1>
-        <p className="ob-subtitle">Start free or unlock everything with Premium</p>
+      <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+        {isDark ? (
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+        )}
+      </button>
+      <div className="ob-content">
+        <div className="ob-step-indicator">
+          <span className="ob-step-num">3 of 3</span>
+        </div>
+        <h1 className="ob-title">Health Questionnaire</h1>
+        <p className="ob-subtitle">PAR-Q — please answer honestly for your safety</p>
 
-        <div className="ob-plans">
-          {/* Free */}
-          <button className="ob-plan-card ob-plan-free" onClick={() => handlePlanSelect('free')} disabled={!!checkoutLoading}>
-            <div className="ob-plan-name">Free</div>
-            <div className="ob-plan-price">
-              <span className="ob-plan-currency">£</span>
-              <span className="ob-plan-amount">0</span>
+        <div className="ob-parq">
+          {PARQ_QUESTIONS.map((q, i) => (
+            <div key={i} className="ob-parq-item">
+              <p className="ob-parq-question">{q}</p>
+              <div className="ob-parq-btns">
+                <button
+                  className={`ob-parq-btn${parqAnswers[i] === true ? ' yes' : ''}`}
+                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? true : a)))}
+                >
+                  Yes
+                </button>
+                <button
+                  className={`ob-parq-btn${parqAnswers[i] === false ? ' no' : ''}`}
+                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? false : a)))}
+                >
+                  No
+                </button>
+              </div>
             </div>
-            <ul className="ob-plan-features">
-              <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
-              <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
-              <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
-            </ul>
-            <div className="ob-plan-cta-free">Get Started Free</div>
-          </button>
-
-          {/* Monthly */}
-          <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
-            <div className="ob-plan-badge">Most Popular</div>
-            <div className="ob-plan-name">Monthly</div>
-            <div className="ob-plan-price">
-              <span className="ob-plan-currency">£</span>
-              <span className="ob-plan-amount">19.99</span>
-              <span className="ob-plan-period">/month</span>
-            </div>
-            <ul className="ob-plan-features">
-              <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
-              <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
-              <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
-            </ul>
-            <div className="ob-plan-cta">
-              {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
-            </div>
-          </button>
-
-          {/* Annual */}
-          <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
-            <div className="ob-plan-badge">Best Value — Save 17%</div>
-            <div className="ob-plan-name">Annual</div>
-            <div className="ob-plan-price">
-              <span className="ob-plan-currency">£</span>
-              <span className="ob-plan-amount">199.99</span>
-              <span className="ob-plan-period">/year</span>
-            </div>
-            <ul className="ob-plan-features">
-              <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
-              <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
-              <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
-            </ul>
-            <div className="ob-plan-cta ob-plan-cta-featured">
-              {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
-            </div>
-          </button>
+          ))}
         </div>
 
-        {checkoutError && <p className="ob-error">{checkoutError}</p>}
+        {parqAnswers.includes(true) && (
+          <div className="ob-parq-warning">
+            You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
+          </div>
+        )}
 
-        <button className="ob-back-btn" onClick={() => goToStep(1)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-          Back
+        {/* Declaration */}
+        <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
+          <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
+            {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+          </span>
+          <span className="ob-declare-text">
+            I confirm that I have read and answered each question honestly.
+            I understand that if my health changes I should inform my trainer.
+            I take full responsibility for my participation in physical activity.
+          </span>
+        </label>
+
+        {/* Signature pad */}
+        <div className="ob-sig-section">
+          <div className="ob-sig-header">
+            <label className="ob-label" style={{ margin: 0 }}>Signature</label>
+            {sigHasContent && (
+              <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
+            )}
+          </div>
+          <canvas
+            ref={sigCanvasRef}
+            className="ob-sig-canvas"
+            onMouseDown={sigStart}
+            onMouseMove={sigMove}
+            onMouseUp={sigEnd}
+            onMouseLeave={sigEnd}
+            onTouchStart={sigStart}
+            onTouchMove={sigMove}
+            onTouchEnd={sigEnd}
+          />
+          {!sigHasContent && (
+            <p className="ob-sig-hint">Draw your signature above</p>
+          )}
+        </div>
+
+        <button
+          className="ob-primary-btn"
+          disabled={!canSubmitParq || parqSubmitting}
+          onClick={handleParqSubmit}
+        >
+          {parqSubmitting ? 'Saving...' : 'Complete Setup'}
         </button>
       </div>
     </div>

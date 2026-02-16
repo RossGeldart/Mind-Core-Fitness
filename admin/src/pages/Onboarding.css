@@ -74,78 +74,18 @@
   line-height: 1.4;
 }
 
-/* ── Progress Bar ── */
-.ob-progress {
-  width: 100%;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+.ob-step-indicator {
+  margin-bottom: 16px;
 }
 
-.ob-progress-bar {
-  width: 100%;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.ob-progress-fill {
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-
-.ob-progress-label {
-  font-size: 0.75rem;
+.ob-step-num {
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-secondary);
-  letter-spacing: 0.02em;
-}
-
-/* ── Step Transition Animations ── */
-.ob-step-anim {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.ob-step-enter {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.ob-step-exit-right {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.ob-step-exit-left {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ── Back Button ── */
-.ob-back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.ob-back-btn:hover {
-  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 /* ── Feature Showcase (Step 0) ── */
@@ -193,18 +133,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Never use center — Safari pushes content above the container
-     edge when it overflows, which is exactly the bug we're fixing. */
-  justify-content: flex-start;
+  justify-content: center;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
 .ob-showcase-img-wrap {
   max-width: 240px;
-  /* Hard cap that guarantees room for text (~60px), dots (~28px),
-     buttons (~110px), header (~72px) and page padding (~28px) ≈ 300px */
-  max-height: calc(100dvh - 300px);
+  max-height: 62dvh;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -362,24 +298,11 @@
   cursor: not-allowed;
 }
 
-/* Welcoming free tier */
+/* Dimmed free tier */
 .ob-plan-free {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-}
-
-.ob-plan-cta-free {
-  width: 100%;
-  padding: 14px;
-  border: 2px solid var(--color-success, #2ecc71);
-  border-radius: 30px;
-  background: transparent;
-  color: var(--color-success, #2ecc71);
-  font-size: 0.92rem;
-  font-weight: 600;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
-  transition: background 0.3s, border-color 0.3s;
-  letter-spacing: 0.02em;
+  background: var(--bg-body);
+  border: 1px dashed var(--border-color);
+  opacity: 0.75;
 }
 
 /* Featured card – pulsing glow + accent border */
@@ -646,19 +569,6 @@
   border-color: var(--color-primary);
 }
 
-.ob-chip.disabled,
-.ob-chip:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Focus ring for keyboard accessibility */
-.ob-showcase-carousel:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  border-radius: 8px;
-}
-
 /* Experience level cards */
 .ob-level-group {
   display: flex;
@@ -858,272 +768,4 @@
 
 @keyframes ob-spin {
   to { transform: rotate(360deg); }
-}
-
-/* ══════════════════════════════════════════
-   Buddy Chat (Step 1)
-   ══════════════════════════════════════════ */
-
-.ob-page--chat {
-  padding: 12px 0 0;
-  min-height: 100dvh;
-  max-height: 100dvh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.ob-chat-container {
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  padding: 12px 16px 0;
-  box-sizing: border-box;
-}
-
-.ob-chat-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.ob-chat-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: rgba(255, 107, 53, 0.12);
-  color: #ff6b35;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-[data-theme="dark"] .ob-chat-avatar {
-  background: rgba(255, 107, 53, 0.15);
-}
-
-.ob-chat-name {
-  margin: 0;
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.ob-chat-status {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-}
-
-/* ── Messages area ── */
-.ob-chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-  -webkit-overflow-scrolling: touch;
-}
-
-.ob-chat-bubble {
-  display: flex;
-  gap: 8px;
-  max-width: 88%;
-  animation: ob-msg-in 0.25s ease-out;
-}
-
-@keyframes ob-msg-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.ob-chat-assistant {
-  align-self: flex-start;
-}
-
-.ob-chat-user {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-}
-
-.ob-chat-bubble-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  background: rgba(255, 107, 53, 0.12);
-  color: #ff6b35;
-  font-family: 'Orbitron', monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-[data-theme="dark"] .ob-chat-bubble-avatar {
-  background: rgba(255, 107, 53, 0.18);
-}
-
-.ob-chat-bubble-content {
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.ob-chat-assistant .ob-chat-bubble-content {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  border-bottom-left-radius: 4px;
-}
-
-.ob-chat-user .ob-chat-bubble-content {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-  border-bottom-right-radius: 4px;
-}
-
-/* ── Typing indicator ── */
-.ob-chat-typing {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 12px 18px;
-  min-height: 20px;
-}
-
-.ob-chat-typing span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--text-secondary);
-  opacity: 0.5;
-  animation: ob-typing-dot 1.2s ease-in-out infinite;
-}
-
-.ob-chat-typing span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.ob-chat-typing span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes ob-typing-dot {
-  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-  30% { opacity: 1; transform: translateY(-4px); }
-}
-
-/* ── Chat error ── */
-.ob-chat-error {
-  align-self: center;
-  background: var(--warning-bg, rgba(231, 76, 60, 0.08));
-  border: 1px solid var(--warning-border, rgba(231, 76, 60, 0.2));
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 0.82rem;
-  color: var(--color-danger, #e74c3c);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ob-chat-error button {
-  background: none;
-  border: 1px solid var(--color-danger, #e74c3c);
-  color: var(--color-danger, #e74c3c);
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: 'Montserrat', sans-serif;
-}
-
-/* ── Input area ── */
-.ob-chat-input-wrap {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  padding: 12px 0;
-  border-top: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.ob-chat-input {
-  flex: 1;
-  padding: 10px 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  font-family: 'Roboto', sans-serif;
-  resize: none;
-  min-height: 20px;
-  max-height: 100px;
-  line-height: 1.4;
-  box-sizing: border-box;
-}
-
-.ob-chat-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
-}
-
-.ob-chat-input:disabled {
-  opacity: 0.6;
-}
-
-.ob-chat-send {
-  width: 42px;
-  height: 42px;
-  border: none;
-  border-radius: 12px;
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: opacity 0.15s, transform 0.1s;
-}
-
-.ob-chat-send:active {
-  transform: scale(0.93);
-}
-
-.ob-chat-send:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* ── Chat complete / continue ── */
-.ob-chat-done {
-  padding: 12px 0;
-  flex-shrink: 0;
-}
-
-/* ── Chat step back button positioning ── */
-.ob-page--chat .ob-back-btn {
-  flex-shrink: 0;
-  align-self: flex-start;
-  padding-bottom: 16px;
 }
