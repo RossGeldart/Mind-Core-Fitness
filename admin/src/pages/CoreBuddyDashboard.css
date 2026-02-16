@@ -23,30 +23,6 @@
   animation: spin 0.8s linear infinite;
 }
 
-.cb-dashboard .refresh-btn {
-  background: transparent;
-  border: 1px solid var(--border-color, #444);
-  color: var(--text-secondary, #999);
-  width: 32px;
-  height: 32px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cb-dashboard .refresh-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.cb-dashboard .refresh-btn:disabled {
-  animation: spin 0.8s linear infinite;
-}
-
 @keyframes colonBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }

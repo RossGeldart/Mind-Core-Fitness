@@ -150,13 +150,6 @@ export default function ClientDashboard() {
     };
   }, [pullDistance]);
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      window.location.reload();
-    }, 300);
-  };
-
   // Swipe handlers for session cards
   const handleSwipeStart = (e, sessionId) => {
     const touch = e.touches[0];
@@ -602,9 +595,6 @@ export default function ClientDashboard() {
         <div className="header-content">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
-            <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh">
-              {isRefreshing ? '↻' : '⟳'}
-            </button>
           </div>
         </div>
       </header>
