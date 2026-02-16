@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 
 function getWeekBounds() {
   const now = new Date();
@@ -461,6 +462,7 @@ export default function Leaderboard() {
   }
 
   return (
+    <PullToRefresh>
     <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
       <header className="client-header">
         <div className="header-content">
@@ -703,5 +705,6 @@ export default function Leaderboard() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

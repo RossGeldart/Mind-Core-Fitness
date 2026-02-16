@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyAchievements.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_78_94 } from '../utils/ringTicks';
 import BADGE_DEFS from '../utils/badgeConfig';
 
@@ -158,6 +159,7 @@ export default function CoreBuddyAchievements() {
   const hasAnyContent = totalBadges > 0 || totalVolume > 0 || totalWorkouts > 0;
 
   return (
+    <PullToRefresh>
     <div className="ach-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
       <header className="client-header">
         <div className="header-content">
@@ -400,6 +402,7 @@ export default function CoreBuddyAchievements() {
       </main>
       <CoreBuddyNav active="home" />
     </div>
+    </PullToRefresh>
   );
 }
 
