@@ -3,10 +3,12 @@ import { useTier } from '../contexts/TierContext';
 import './LockedFeature.css';
 
 export default function LockedFeature({ feature, children }) {
-  const { canAccess } = useTier();
+  const { canAccess, loading } = useTier();
   const navigate = useNavigate();
 
-  if (canAccess(feature)) return children;
+  // While auth/tier data is still loading, render children directly
+  // to avoid flashing the premium card for users who are already premium.
+  if (loading || canAccess(feature)) return children;
 
   return (
     <div className="locked-feature-wrap">
