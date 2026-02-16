@@ -326,6 +326,18 @@ export default function Calendar() {
     return sessions.find(s => s.date === dateKey && s.time === time);
   };
 
+  // Find any session that occupies a given time slot (including continuation slots)
+  const getSessionOccupyingSlot = (date, time) => {
+    const dateKey = formatDateKey(date);
+    const slotMinutes = timeToMinutes(time);
+    return sessions.find(s => {
+      if (s.date !== dateKey) return false;
+      const sessionStart = timeToMinutes(s.time);
+      const sessionEnd = sessionStart + (s.duration || 45);
+      return slotMinutes >= sessionStart && slotMinutes < sessionEnd;
+    });
+  };
+
   const isSlotAvailable = (date, time, clientDuration) => {
     const dayName = DAYS[date.getDay() - 1];
     if (!dayName) return false;
@@ -380,10 +392,10 @@ export default function Calendar() {
   };
 
   const handleSlotClick = async (date, time) => {
-    const existingSession = getSessionAtSlot(date, time);
+    const existingSession = getSessionOccupyingSlot(date, time);
 
     if (existingSession) {
-      if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(time)}?`)) {
+      if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(existingSession.time)}?`)) {
         try {
           await deleteDoc(doc(db, 'sessions', existingSession.id));
           setSessions(sessions.filter(s => s.id !== existingSession.id));
@@ -674,11 +686,14 @@ export default function Calendar() {
               </div>
             )}
             {generateTimeSlotsForDay(DAYS[selectedDay]).map(({ time, period }, idx, arr) => {
-              const session = getSessionAtSlot(weekDates[selectedDay], time);
+              const sessionStart = getSessionAtSlot(weekDates[selectedDay], time);
+              const sessionOccupying = getSessionOccupyingSlot(weekDates[selectedDay], time);
+              const isBooked = !!sessionOccupying;
+              const isContinuation = !sessionStart && !!sessionOccupying;
               const dayIsDefaultBlocked = isDayDefaultBlocked(weekDates[selectedDay]);
               const blocked = dayIsDefaultBlocked ? !isTimeOpened(weekDates[selectedDay], time) : isTimeBlocked(weekDates[selectedDay], time);
               const opened = dayIsDefaultBlocked && isTimeOpened(weekDates[selectedDay], time);
-              const available = selectedClient && isSlotAvailable(weekDates[selectedDay], time, selectedClient.sessionDuration || 45);
+              const available = selectedClient && !isBooked && isSlotAvailable(weekDates[selectedDay], time, selectedClient.sessionDuration || 45);
               const showPeriodLabel = idx === 0 || arr[idx - 1]?.period !== period;
 
               return (
@@ -690,13 +705,15 @@ export default function Calendar() {
                   )}
                   <div className="time-slot-row">
                     <button
-                      className={`time-slot ${session ? 'booked' : ''} ${blocked && !session ? 'blocked' : ''} ${opened && !session ? 'opened' : ''} ${available ? 'available' : ''} ${!session && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
-                      onClick={() => (!blocked || session) && handleSlotClick(weekDates[selectedDay], time)}
-                      disabled={blocked && !session}
+                      className={`time-slot ${isBooked ? 'booked' : ''} ${isContinuation ? 'booked-continuation' : ''} ${blocked && !isBooked ? 'blocked' : ''} ${opened && !isBooked ? 'opened' : ''} ${available ? 'available' : ''} ${!isBooked && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
+                      onClick={() => (!blocked || isBooked) && handleSlotClick(weekDates[selectedDay], time)}
+                      disabled={blocked && !isBooked}
                     >
                       <span className="slot-time">{formatTime(time)}</span>
-                      {session ? (
-                        <span className="slot-client">{session.clientName} ({session.duration}m)</span>
+                      {sessionStart ? (
+                        <span className="slot-client">{sessionStart.clientName} ({sessionStart.duration}m)</span>
+                      ) : isContinuation ? (
+                        <span className="slot-client">{sessionOccupying.clientName} ↑</span>
                       ) : blocked ? (
                         <span className="slot-blocked">{dayIsDefaultBlocked ? 'Closed' : 'Blocked'}</span>
                       ) : available ? (
@@ -712,7 +729,7 @@ export default function Calendar() {
                     <button
                       className={`block-toggle-btn ${dayIsDefaultBlocked ? (opened ? 'is-opened' : '') : (blocked ? 'is-blocked' : '')}`}
                       onClick={() => handleToggleBlockedTime(weekDates[selectedDay], time)}
-                      disabled={!!session}
+                      disabled={!!isBooked}
                       title={dayIsDefaultBlocked ? (opened ? 'Close this slot' : 'Open this slot') : (blocked ? 'Unblock this time' : 'Block this time')}
                     >
                       {dayIsDefaultBlocked ? (opened ? '✓' : '+') : (blocked ? '✓' : '✕')}

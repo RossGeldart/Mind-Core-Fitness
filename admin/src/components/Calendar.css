@@ -459,6 +459,11 @@
   border-color: #7a2730;
 }
 
+.time-slot.booked-continuation {
+  opacity: 0.85;
+  border-style: dashed;
+}
+
 .time-slot.available {
   background: #e8f5e9;
   border-color: #4caf50;
