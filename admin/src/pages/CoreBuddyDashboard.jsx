@@ -667,30 +667,6 @@ export default function CoreBuddyDashboard() {
             .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
         }
 
-        // Fall back to block client benchmarks if no Core Buddy PBs
-        if (pbList.length === 0) {
-          const nameMap = { chestPress: 'Chest Press', shoulderPress: 'Shoulder Press', seatedRow: 'Seated Row', latPulldown: 'Lat Pulldown', squat: 'Squat', deadlift: 'Deadlift' };
-          const bq = query(collection(db, 'personalBests'), where('clientId', '==', clientData.id));
-          const bSnap = await getDocs(bq);
-          if (!bSnap.empty) {
-            const best = {};
-            bSnap.docs.forEach(d => {
-              const bench = d.data().benchmarks || {};
-              Object.entries(bench).forEach(([key, val]) => {
-                if (!val.weight || !nameMap[key]) return;
-                const vol = (val.weight || 0) * (val.reps || 1);
-                if (!best[key] || vol > (best[key].weight || 0) * (best[key].reps || 1)) {
-                  best[key] = { name: nameMap[key], weight: val.weight, reps: val.reps };
-                }
-              });
-            });
-            const all = Object.values(best);
-            setPbCount(all.length);
-            localPbCount = all.length;
-            pbList = all.sort((a, b) => (b.weight || 0) - (a.weight || 0)).slice(0, 3);
-          }
-        }
-
         localPbList = pbList;
         setTopPBs(pbList);
       } catch (pbErr) {
