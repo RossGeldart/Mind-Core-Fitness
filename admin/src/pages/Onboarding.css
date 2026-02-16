@@ -474,6 +474,75 @@
   box-shadow: 0 6px 20px rgba(161, 47, 58, 0.45);
 }
 
+/* ── Core Buddy AI divider ── */
+
+.ob-plan-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 0;
+}
+
+.ob-plan-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.ob-plan-divider-text {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* ── Coming Soon overlay ── */
+
+.ob-plan-coming-soon {
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ob-plan-coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .ob-plan-coming-soon-overlay {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.ob-plan-coming-soon-overlay span {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="light"] .ob-plan-coming-soon-overlay span {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.ob-plan-card:nth-child(5) { animation-delay: 0.35s; }
+.ob-plan-card:nth-child(6) { animation-delay: 0.45s; }
+
 .ob-error {
   color: var(--color-danger, #e74c3c);
   font-size: 0.85rem;

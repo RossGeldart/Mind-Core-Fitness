@@ -165,6 +165,51 @@ export default function UpgradePage() {
             {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
           </button>
         </div>
+
+        {/* Core Buddy AI section header */}
+        <div className="plan-divider">
+          <span className="plan-divider-line" />
+          <span className="plan-divider-text">Core Buddy AI</span>
+          <span className="plan-divider-line" />
+        </div>
+
+        {/* Core Buddy AI Monthly */}
+        <div className="plan-card plan-coming-soon">
+          <div className="plan-coming-soon-overlay">
+            <span>Coming Soon</span>
+          </div>
+          <div className="plan-badge-save">AI Coaching</div>
+          <div className="plan-name">AI Monthly</div>
+          <div className="plan-price">
+            <span className="plan-amount">£34.99</span>
+            <span className="plan-period">/month</span>
+          </div>
+          <ul className="plan-features">
+            <li>AI personal coaching</li>
+            <li>All Premium features</li>
+            <li>Cancel anytime</li>
+          </ul>
+          <div className="plan-cta">Coming Soon</div>
+        </div>
+
+        {/* Core Buddy AI Annual */}
+        <div className="plan-card plan-coming-soon">
+          <div className="plan-coming-soon-overlay">
+            <span>Coming Soon</span>
+          </div>
+          <div className="plan-badge-save">AI Coaching — Best Value</div>
+          <div className="plan-name">AI Annual</div>
+          <div className="plan-price">
+            <span className="plan-amount">£299.99</span>
+            <span className="plan-period">/year</span>
+          </div>
+          <ul className="plan-features">
+            <li>AI personal coaching</li>
+            <li>All Premium features</li>
+            <li>Best value</li>
+          </ul>
+          <div className="plan-cta">Coming Soon</div>
+        </div>
       </div>
 
       {error && <p className="upgrade-error">{error}</p>}
