@@ -16,6 +16,7 @@ export default function CoreBuddyCoach() {
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState(null);
   const [chatComplete, setChatComplete] = useState(false);
+  const [savedProfile, setSavedProfile] = useState(null);
   const chatEndRef = useRef(null);
   const chatInputRef = useRef(null);
 
@@ -72,6 +73,7 @@ export default function CoreBuddyCoach() {
       // If profile data was extracted, save it
       if (data.profileData) {
         await saveProfileData(data.profileData);
+        setSavedProfile(data.profileData);
         setChatComplete(true);
       }
     } catch (err) {
@@ -100,6 +102,14 @@ export default function CoreBuddyCoach() {
       e.preventDefault();
       handleChatSend();
     }
+  };
+
+  // Recommend a programme based on collected profile data
+  const getRecommendedProgramme = (profile) => {
+    const exp = profile?.experience || 'beginner';
+    if (exp === 'advanced') return { id: 'fullbody_12wk', name: '12-Week Full Body', duration: 12, level: 'Advanced', daysPerWeek: 3, description: 'Complete transformation programme — push, pull, and legs over three phases.' };
+    if (exp === 'intermediate') return { id: 'fullbody_8wk', name: '8-Week Full Body', duration: 8, level: 'Intermediate', daysPerWeek: 3, description: 'Two-phase programme building strength and endurance across your full body.' };
+    return { id: 'fullbody_4wk', name: '4-Week Full Body', duration: 4, level: 'All Levels', daysPerWeek: 3, description: 'Build total body strength with compound dumbbell movements and bodyweight finishers.' };
   };
 
   const saveProfileData = async (profile) => {
@@ -212,13 +222,36 @@ export default function CoreBuddyCoach() {
 
         {chatComplete ? (
           <div className="buddy-chat-done">
-            <p className="buddy-chat-done-text">Profile saved — you're all set.</p>
-            <button
-              className="buddy-chat-done-btn"
-              onClick={() => navigate('/client/core-buddy')}
-            >
-              Back to Dashboard
-            </button>
+            {savedProfile ? (() => {
+              const rec = getRecommendedProgramme(savedProfile);
+              return (
+                <>
+                  <p className="buddy-chat-done-text">Profile saved! Here's my pick for you:</p>
+                  <div className="buddy-rec-card" onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: rec.id } })}>
+                    <div className="buddy-rec-name">{rec.name}</div>
+                    <div className="buddy-rec-meta">{rec.duration} weeks · {rec.daysPerWeek} days/week · {rec.level}</div>
+                    <div className="buddy-rec-desc">{rec.description}</div>
+                    <div className="buddy-rec-cta">View Programme</div>
+                  </div>
+                  <button
+                    className="buddy-chat-skip-btn"
+                    onClick={() => navigate('/client/core-buddy')}
+                  >
+                    Maybe later
+                  </button>
+                </>
+              );
+            })() : (
+              <>
+                <p className="buddy-chat-done-text">Profile saved — you're all set.</p>
+                <button
+                  className="buddy-chat-done-btn"
+                  onClick={() => navigate('/client/core-buddy')}
+                >
+                  Back to Dashboard
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="buddy-chat-input-wrap">

@@ -318,3 +318,73 @@
 .buddy-chat-done-btn:hover {
   opacity: 0.9;
 }
+
+/* ── Programme Recommendation ── */
+
+.buddy-rec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 0 0 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+}
+
+.buddy-rec-card:active {
+  transform: scale(0.98);
+}
+
+.buddy-rec-card:hover {
+  border-color: var(--color-primary);
+}
+
+.buddy-rec-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.buddy-rec-meta {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.buddy-rec-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.buddy-rec-cta {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.buddy-chat-skip-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  padding: 8px 16px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.buddy-chat-skip-btn:hover {
+  color: var(--text-primary);
+}
