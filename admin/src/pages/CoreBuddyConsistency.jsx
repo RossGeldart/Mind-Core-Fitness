@@ -311,7 +311,7 @@ export default function CoreBuddyConsistency() {
       ) : (
       <main className="cbc-main">
         {/* Today's Progress Ring */}
-        <div className="cbc-ring-section">
+        <div className="cbc-ring-section anim-fade-up">
           <div className="cbc-progress-ring">
             <svg viewBox="0 0 200 200">
               <circle className="cbc-arc-track" cx="100" cy="100" r="80" />
@@ -334,7 +334,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* Today's Habits */}
-        <div className="cbc-section">
+        <div className="cbc-section anim-fade-up-d2">
           <h2 className="cbc-section-title">Today's Habits</h2>
           <div className="cbc-habits">
             {allHabits.map((habit) => {
@@ -410,7 +410,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* Weekly Overview */}
-        <div className="cbc-section">
+        <div className="cbc-section anim-fade-up-d4">
           <h2 className="cbc-section-title">This Week</h2>
           <div className="cbc-week-grid">
             {weeklyStats.map((day, i) => {
