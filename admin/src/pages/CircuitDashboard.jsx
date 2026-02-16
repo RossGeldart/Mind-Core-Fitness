@@ -38,6 +38,12 @@ export default function CircuitDashboard() {
   const [toast, setToast] = useState(null);
   const lastSatDateRef = useRef(null);
 
+  // Pull-to-refresh state
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const startY = useRef(0);
+  const isPulling = useRef(false);
+
   const { currentUser, isClient, clientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -52,6 +58,66 @@ export default function CircuitDashboard() {
       navigate('/');
     }
   }, [currentUser, isClient, authLoading, navigate]);
+
+  // Pull-to-refresh handlers
+  useEffect(() => {
+    const getScrollTop = () => {
+      return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    };
+
+    const handleTouchStart = (e) => {
+      if (getScrollTop() <= 0) {
+        startY.current = e.touches[0].clientY;
+        isPulling.current = false;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      const scrollTop = getScrollTop();
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - startY.current;
+
+      if (scrollTop > 5 || diff <= 0) {
+        isPulling.current = false;
+        setPullDistance(0);
+        return;
+      }
+
+      if (diff > 20 && scrollTop <= 0) {
+        isPulling.current = true;
+        setPullDistance(Math.min((diff - 20) * 0.4, 80));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (isPulling.current && pullDistance > 60) {
+        setIsRefreshing(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      } else {
+        setPullDistance(0);
+      }
+      isPulling.current = false;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  };
 
   // Live countdown to next Saturday 9am — also detects session transition
   useEffect(() => {
@@ -262,10 +328,22 @@ export default function CircuitDashboard() {
 
   return (
     <div className={`circuit-page ${isDark ? 'dark' : ''}`}>
+      {/* Pull to refresh indicator */}
+      {pullDistance > 0 && (
+        <div className="pull-indicator" style={{ height: pullDistance }}>
+          <div className={`pull-spinner ${isRefreshing ? 'spinning' : ''}`}>
+            {isRefreshing ? '↻' : '↓'}
+          </div>
+          <span>{isRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}</span>
+        </div>
+      )}
       <header className="client-header">
         <div className="header-content">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
           <div className="header-actions">
+            <button className="refresh-btn" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh">
+              {isRefreshing ? '↻' : '⟳'}
+            </button>
             <button onClick={toggleTheme} aria-label="Toggle theme">
               {isDark ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
