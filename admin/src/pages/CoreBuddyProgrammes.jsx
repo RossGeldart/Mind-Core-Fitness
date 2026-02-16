@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -925,6 +926,7 @@ export default function CoreBuddyProgrammes() {
   if (view === 'overview' && selectedTemplate) {
     const t = selectedTemplate;
     return (
+      <PullToRefresh>
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {renderHeader(t.name, () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
@@ -985,6 +987,7 @@ export default function CoreBuddyProgrammes() {
         </main>
         {toastEl}
       </div>
+      </PullToRefresh>
     );
   }
 
@@ -998,6 +1001,7 @@ export default function CoreBuddyProgrammes() {
     const ringFilled = Math.round((progress.totalCompleted / (progress.totalSessions || 1)) * TICK_COUNT);
 
     return (
+      <PullToRefresh>
       <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         {renderHeader('Programme', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
@@ -1106,6 +1110,7 @@ export default function CoreBuddyProgrammes() {
         <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
+      </PullToRefresh>
     );
   }
 

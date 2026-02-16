@@ -4,6 +4,7 @@ import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyCoach.css';
 
 export default function CoreBuddyCoach() {
@@ -163,6 +164,7 @@ export default function CoreBuddyCoach() {
   };
 
   return (
+    <PullToRefresh>
     <div className="buddy-page buddy-page--chat">
       <div className="buddy-chat-container">
         <div className="buddy-chat-top">
@@ -282,5 +284,6 @@ export default function CoreBuddyCoach() {
 
       <CoreBuddyNav active="home" />
     </div>
+    </PullToRefresh>
   );
 }

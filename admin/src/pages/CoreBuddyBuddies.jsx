@@ -8,6 +8,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyBuddies.css';
 
 function getInitials(name) {
@@ -244,6 +245,7 @@ export default function CoreBuddyBuddies() {
   if (!currentUser || !isClient || !clientData) return null;
 
   return (
+    <PullToRefresh>
     <div className="bdy-page" data-theme={isDark ? 'dark' : 'light'}>
       <header className="client-header">
         <div className="header-content">
@@ -516,5 +518,6 @@ export default function CoreBuddyBuddies() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }
