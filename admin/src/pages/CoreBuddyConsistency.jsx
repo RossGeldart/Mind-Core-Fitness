@@ -225,7 +225,9 @@ export default function CoreBuddyConsistency() {
       showToast(`Added "${name}"`, 'success');
     } catch (err) {
       console.error('Error adding custom habit:', err);
-      showToast('Failed to add habit', 'error');
+      showToast(err?.code === 'permission-denied'
+        ? 'Permission denied — check Firestore rules for customHabits'
+        : `Failed to add habit: ${err?.message || 'Unknown error'}`, 'error');
     }
   };
 
