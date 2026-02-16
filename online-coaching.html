@@ -18,6 +18,7 @@
     <meta property="og:title" content="Online Coaching | Mind Core Fitness - Train Anywhere">
     <meta property="og:description" content="Personalised online coaching through the Everfit app. Real structure, real feedback, real results - no matter where you are.">
     <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+    <meta property="og:site_name" content="Mind Core Fitness">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -25,6 +26,53 @@
     <meta name="twitter:title" content="Online Coaching | Mind Core Fitness - Train Anywhere">
     <meta name="twitter:description" content="Personalised online coaching through the Everfit app. Real structure, real feedback, real results - no matter where you are.">
     <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
+    <!-- Structured Data - Service -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Online Personal Training",
+      "description": "Remote fitness coaching with personalised workout plans delivered through the Everfit app. Includes custom programming, direct messaging support, and progress tracking.",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "Mind Core Fitness",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Elgin",
+          "addressRegion": "Moray",
+          "addressCountry": "GB"
+        }
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "United Kingdom"
+      },
+      "serviceType": "Online Coaching"
+    }
+    </script>
+
+    <!-- Structured Data - BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.mindcorefitness.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Online Coaching",
+          "item": "https://www.mindcorefitness.com/online-coaching"
+        }
+      ]
+    }
+    </script>
 
 <!-- Vercel Web Analytics -->
 <script>
