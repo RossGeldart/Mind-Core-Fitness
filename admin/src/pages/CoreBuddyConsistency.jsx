@@ -10,15 +10,15 @@ import PullToRefresh from '../components/PullToRefresh';
 
 
 const DEFAULT_HABITS = [
-  { key: 'trained', label: 'Trained', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z', color: '#A12F3A' },
-  { key: 'protein', label: 'Hit Protein', icon: 'M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z', color: '#4caf50' },
-  { key: 'steps', label: '10k Steps', icon: 'M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7', color: '#ff9800' },
+  { key: 'trained', label: 'Trained', icon: 'M4 10v4M8 7v10M8 12h8M16 7v10M20 10v4', color: '#A12F3A' },
+  { key: 'protein', label: 'Hit Protein', icon: 'M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zM12 18c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', color: '#4caf50' },
+  { key: 'steps', label: '10k Steps', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20M4 5.5A2.5 2.5 0 0 1 6.5 3H20', color: '#ff9800' },
   { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed' },
   { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3' },
 ];
 
-// Icon for custom habits (star)
-const CUSTOM_ICON = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
+// Icon for custom habits (sparkle)
+const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
 const CUSTOM_COLOR = '#e91e63';
 
 function getMonday(date) {
@@ -346,7 +346,7 @@ export default function CoreBuddyConsistency() {
                   className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   onClick={() => toggleHabit(habit.key)}
                   disabled={saving}
-                  style={checked ? { '--habit-color': habit.color } : undefined}
+                  style={{ '--habit-color': habit.color }}
                 >
                   <div className="cbc-habit-icon-wrap" style={{ '--habit-color': habit.color }}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
