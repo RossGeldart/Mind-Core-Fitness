@@ -74,78 +74,18 @@
   line-height: 1.4;
 }
 
-/* ── Progress Bar ── */
-.ob-progress {
-  width: 100%;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+.ob-step-indicator {
+  margin-bottom: 16px;
 }
 
-.ob-progress-bar {
-  width: 100%;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.ob-progress-fill {
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-
-.ob-progress-label {
-  font-size: 0.75rem;
+.ob-step-num {
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-secondary);
-  letter-spacing: 0.02em;
-}
-
-/* ── Step Transition Animations ── */
-.ob-step-anim {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.ob-step-enter {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.ob-step-exit-right {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.ob-step-exit-left {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ── Back Button ── */
-.ob-back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.ob-back-btn:hover {
-  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 /* ── Feature Showcase (Step 0) ── */
@@ -193,18 +133,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Never use center — Safari pushes content above the container
-     edge when it overflows, which is exactly the bug we're fixing. */
-  justify-content: flex-start;
+  justify-content: center;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
 .ob-showcase-img-wrap {
   max-width: 240px;
-  /* Hard cap that guarantees room for text (~60px), dots (~28px),
-     buttons (~110px), header (~72px) and page padding (~28px) ≈ 300px */
-  max-height: calc(100dvh - 300px);
+  max-height: 62dvh;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -362,24 +298,11 @@
   cursor: not-allowed;
 }
 
-/* Welcoming free tier */
+/* Dimmed free tier */
 .ob-plan-free {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-}
-
-.ob-plan-cta-free {
-  width: 100%;
-  padding: 14px;
-  border: 2px solid var(--color-success, #2ecc71);
-  border-radius: 30px;
-  background: transparent;
-  color: var(--color-success, #2ecc71);
-  font-size: 0.92rem;
-  font-weight: 600;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
-  transition: background 0.3s, border-color 0.3s;
-  letter-spacing: 0.02em;
+  background: var(--bg-body);
+  border: 1px dashed var(--border-color);
+  opacity: 0.75;
 }
 
 /* Featured card – pulsing glow + accent border */
@@ -644,19 +567,6 @@
   background: var(--color-primary);
   color: var(--text-on-primary);
   border-color: var(--color-primary);
-}
-
-.ob-chip.disabled,
-.ob-chip:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Focus ring for keyboard accessibility */
-.ob-showcase-carousel:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  border-radius: 8px;
 }
 
 /* Experience level cards */
