@@ -152,6 +152,7 @@ export default function ClientList() {
       hasPortalAccess: !!client.uid,
       circuitAccess: !!client.circuitAccess,
       coreBuddyAccess: !!client.coreBuddyAccess,
+      buddyEnabled: !!client.buddyEnabled,
       isJunior: !!client.isJunior
     });
   };
@@ -219,6 +220,7 @@ export default function ClientList() {
         clientType: editForm.clientType,
         status: editForm.status,
         coreBuddyAccess: editForm.coreBuddyAccess,
+        buddyEnabled: editForm.buddyEnabled,
         isJunior: editForm.isJunior,
       };
 
@@ -518,6 +520,13 @@ export default function ClientList() {
                         </label>
                       </div>
                     )}
+
+                    <div className="edit-row circuit-row">
+                      <label className="circuit-access-toggle">
+                        <input type="checkbox" checked={editForm.buddyEnabled} onChange={(e) => setEditForm(prev => ({ ...prev, buddyEnabled: e.target.checked }))} />
+                        <span>AI Buddy</span>
+                      </label>
+                    </div>
 
                     {editForm.clientType === 'block' && (
                       <div className="edit-row circuit-row">
