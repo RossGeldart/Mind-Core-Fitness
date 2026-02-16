@@ -88,7 +88,7 @@ function App() {
             <Route path="/client/tools/macros" element={<MacroCalculator />} />
             <Route path="/client/tools/snacks" element={<ProteinSnacks />} />
             <Route path="/client/tools/motivation" element={<DailyMotivation />} />
-            <Route path="/client/personal-bests" element={<LockedFeature feature="personalBests"><PersonalBests /></LockedFeature>} />
+            <Route path="/client/personal-bests" element={<PersonalBests />} />
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
