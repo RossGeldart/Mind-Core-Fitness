@@ -57,7 +57,8 @@ export default function CoreBuddyConsistency() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newHabitName, setNewHabitName] = useState('');
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);   // { type: 'custom'|'default', id: string }
+  const [hiddenDefaults, setHiddenDefaults] = useState([]);
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
 
@@ -72,9 +73,9 @@ export default function CoreBuddyConsistency() {
   const weekDates = getWeekDates(monday);
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  // Merged habits list
+  // Merged habits list (exclude hidden defaults)
   const allHabits = [
-    ...DEFAULT_HABITS,
+    ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)),
     ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: CUSTOM_COLOR, isCustom: true, id: h.id })),
   ];
 
@@ -98,10 +99,12 @@ export default function CoreBuddyConsistency() {
         });
         setHabitLogs(logs);
 
-        // Load custom habits
+        // Load custom habits + hidden defaults
         const customDoc = await getDoc(doc(db, 'customHabits', clientData.id));
         if (customDoc.exists()) {
-          setCustomHabits(customDoc.data().habits || []);
+          const data = customDoc.data();
+          setCustomHabits(data.habits || []);
+          setHiddenDefaults(data.hiddenDefaults || []);
         }
 
         // Calculate streak
@@ -203,14 +206,19 @@ export default function CoreBuddyConsistency() {
   // Add custom habit
   const addCustomHabit = async () => {
     const name = newHabitName.trim();
-    if (!name || !clientData) return;
+    if (!name) return;
+    if (!clientData?.id) {
+      showToast('Still loading, try again', 'error');
+      return;
+    }
     const id = Date.now().toString(36);
     const updated = [...customHabits, { id, label: name }];
     try {
       await setDoc(doc(db, 'customHabits', clientData.id), {
         clientId: clientData.id,
         habits: updated,
-      });
+        hiddenDefaults,
+      }, { merge: true });
       setCustomHabits(updated);
       setNewHabitName('');
       setShowAddModal(false);
@@ -223,18 +231,38 @@ export default function CoreBuddyConsistency() {
 
   // Delete custom habit
   const deleteCustomHabit = async (habitId) => {
-    if (!clientData) return;
+    if (!clientData?.id) return;
     const updated = customHabits.filter(h => h.id !== habitId);
     try {
       await setDoc(doc(db, 'customHabits', clientData.id), {
         clientId: clientData.id,
         habits: updated,
-      });
+        hiddenDefaults,
+      }, { merge: true });
       setCustomHabits(updated);
       setDeleteConfirm(null);
       showToast('Habit removed', 'success');
     } catch (err) {
       console.error('Error deleting habit:', err);
+      showToast('Failed to remove', 'error');
+    }
+  };
+
+  // Hide a default habit
+  const hideDefaultHabit = async (habitKey) => {
+    if (!clientData?.id) return;
+    const updated = [...hiddenDefaults, habitKey];
+    try {
+      await setDoc(doc(db, 'customHabits', clientData.id), {
+        clientId: clientData.id,
+        habits: customHabits,
+        hiddenDefaults: updated,
+      }, { merge: true });
+      setHiddenDefaults(updated);
+      setDeleteConfirm(null);
+      showToast('Habit removed', 'success');
+    } catch (err) {
+      console.error('Error hiding default habit:', err);
       showToast('Failed to remove', 'error');
     }
   };
@@ -347,18 +375,22 @@ export default function CoreBuddyConsistency() {
                     <span className="cbc-habit-label">{habit.label}</span>
                     {checked && <span className="cbc-habit-done-tag">Done</span>}
                   </div>
-                  {/* Delete button for custom habits */}
-                  {habit.isCustom && (
-                    <button
-                      className="cbc-habit-delete"
-                      onClick={(e) => { e.stopPropagation(); setDeleteConfirm(habit.id); }}
-                      aria-label={`Remove ${habit.label}`}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  )}
+                  {/* Delete / hide button for all habits */}
+                  <button
+                    className="cbc-habit-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteConfirm(habit.isCustom
+                        ? { type: 'custom', id: habit.id, label: habit.label }
+                        : { type: 'default', key: habit.key, label: habit.label }
+                      );
+                    }}
+                    aria-label={`Remove ${habit.label}`}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
                 </button>
               );
             })}
@@ -442,11 +474,15 @@ export default function CoreBuddyConsistency() {
       {deleteConfirm && (
         <div className="cbc-modal-overlay" onClick={() => setDeleteConfirm(null)}>
           <div className="cbc-modal" onClick={e => e.stopPropagation()}>
-            <h3 className="cbc-modal-title">Remove Habit?</h3>
+            <h3 className="cbc-modal-title">Remove "{deleteConfirm.label}"?</h3>
             <p className="cbc-modal-desc">This will remove the habit from your daily tracker. Past logs won't be affected.</p>
             <div className="cbc-modal-actions">
               <button className="cbc-modal-cancel" onClick={() => setDeleteConfirm(null)}>Keep</button>
-              <button className="cbc-modal-delete" onClick={() => deleteCustomHabit(deleteConfirm)}>Remove</button>
+              <button className="cbc-modal-delete" onClick={() =>
+                deleteConfirm.type === 'custom'
+                  ? deleteCustomHabit(deleteConfirm.id)
+                  : hideDefaultHabit(deleteConfirm.key)
+              }>Remove</button>
             </div>
           </div>
         </div>
