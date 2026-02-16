@@ -23,7 +23,7 @@ const FREE_RANDOMISER_DURATIONS = [5, 10];
 const FREE_RANDOMISER_WEEKLY_LIMIT = 1;
 
 export function TierProvider({ children }) {
-  const { clientData } = useAuth();
+  const { clientData, loading } = useAuth();
 
   const value = useMemo(() => {
     const tier = clientData?.tier || 'free';
@@ -42,10 +42,11 @@ export function TierProvider({ children }) {
       subscriptionStatus,
       isPremium,
       canAccess,
+      loading,
       FREE_RANDOMISER_DURATIONS,
       FREE_RANDOMISER_WEEKLY_LIMIT,
     };
-  }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource]);
+  }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource, loading]);
 
   return (
     <TierContext.Provider value={value}>

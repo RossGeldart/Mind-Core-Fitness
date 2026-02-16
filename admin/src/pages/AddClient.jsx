@@ -21,6 +21,7 @@ export default function AddClient() {
     clientType: 'block',
     circuitAccess: false,
     coreBuddyAccess: false,
+    coreBuddyPlan: 'free',
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -104,6 +105,7 @@ export default function AddClient() {
         clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
       } else if (formData.clientType === 'core_buddy') {
         clientDoc.coreBuddyAccess = true;
+        clientDoc.coreBuddyPlan = formData.coreBuddyPlan || 'free';
       } else {
         clientDoc.circuitStrikes = 0;
         clientDoc.circuitBanUntil = null;
@@ -309,6 +311,22 @@ export default function AddClient() {
                 <span className="helper-text">Calculated from start date + weeks</span>
               </div>
             </>
+          )}
+
+          {/* Core Buddy plan selector */}
+          {formData.clientType === 'core_buddy' && (
+            <div className="form-group">
+              <label htmlFor="coreBuddyPlan">Core Buddy Plan</label>
+              <select
+                id="coreBuddyPlan"
+                name="coreBuddyPlan"
+                value={formData.coreBuddyPlan}
+                onChange={handleChange}
+              >
+                <option value="free">Free</option>
+                <option value="premium">Premium</option>
+              </select>
+            </div>
           )}
 
           <div className="form-actions">
