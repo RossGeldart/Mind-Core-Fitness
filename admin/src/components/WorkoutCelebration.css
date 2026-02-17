@@ -1,0 +1,343 @@
+/* ====================================================
+   WorkoutCelebration — Hold-to-Finish + Celebration
+   ==================================================== */
+
+/* ─── Hold-to-Finish Page ─── */
+.wc-hold-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  gap: 8px;
+  padding: 24px;
+  animation: wcFadeIn 0.4s ease-out;
+}
+
+@keyframes wcFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wc-hold-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.wc-hold-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0 0 24px;
+}
+
+/* Ring touch target */
+.wc-hold-ring-touch {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.2s ease;
+  border-radius: 50%;
+}
+
+.wc-hold-ring-touch:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.wc-holding {
+  transform: scale(1.06);
+}
+
+.wc-hold-ring-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);
+}
+
+.wc-hold-ring-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.15);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.wc-hold-ring-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: none;
+}
+
+/* Icon inside ring */
+.wc-hold-icon {
+  position: relative;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.wc-hold-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+
+/* ─── Celebration Overlay ─── */
+.wc-celeb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  animation: wcOverlayIn 0.3s ease-out forwards;
+}
+
+.wc-celeb-dismissing {
+  animation: wcOverlayOut 0.3s ease-in forwards;
+}
+
+@keyframes wcOverlayIn {
+  from { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  to   { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+}
+
+@keyframes wcOverlayOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Confetti */
+.wc-celeb-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wc-celeb-confetti-piece {
+  position: absolute;
+  top: -12px;
+  left: var(--x, 50%);
+  background: var(--color, var(--color-primary));
+  animation: wcConfettiFall var(--duration, 2.5s) ease-in var(--delay, 0s) both;
+}
+
+.wc-confetti-shape-0 { border-radius: 2px; }
+.wc-confetti-shape-1 { border-radius: 50%; }
+.wc-confetti-shape-2 { border-radius: 1px; height: 2px !important; }
+
+@keyframes wcConfettiFall {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(var(--spin, 360deg)); opacity: 0; }
+}
+
+/* Content */
+.wc-celeb-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 32px;
+  max-width: 360px;
+  width: 100%;
+}
+
+/* Logo frame */
+.wc-celeb-logo-frame {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 20px rgba(var(--color-primary-rgb), 0.5),
+    0 0 40px rgba(var(--color-primary-rgb), 0.3);
+  animation:
+    wcLogoIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
+    wcGlowPulse 2s ease-in-out infinite 0.7s;
+  margin-top: -10vh;
+}
+
+.wc-celeb-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes wcLogoIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes wcGlowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(var(--color-primary-rgb), 0.3),
+      0 0 40px rgba(var(--color-primary-rgb), 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(var(--color-primary-rgb), 0.6),
+      0 0 50px rgba(var(--color-primary-rgb), 0.3);
+  }
+}
+
+/* Heading */
+.wc-celeb-heading {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin: 24px 0 0;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 0.6s forwards;
+}
+
+/* Subtitle (e.g. "Back — Session A") */
+.wc-celeb-subtext {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin: 6px 0 0;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 0.7s forwards;
+}
+
+/* Motivational quote */
+.wc-celeb-quote {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 8px 0 0;
+  font-style: italic;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 0.8s forwards;
+}
+
+/* Stats row */
+.wc-celeb-stats-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 0.9s forwards;
+}
+
+.wc-celeb-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.wc-celeb-stat-val {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.wc-celeb-stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes wcTextIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Button */
+.wc-celeb-btn {
+  margin-top: 32px;
+  padding: 14px 48px;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 1.0s forwards;
+}
+
+.wc-celeb-btn:hover { transform: scale(1.03); }
+.wc-celeb-btn:active { transform: scale(0.97); }
+.wc-celeb-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .wc-celeb-confetti-piece { display: none; }
+  .wc-celeb-logo-frame { animation: wcFadeOnly 0.3s ease-out 0.1s both; }
+  .wc-celeb-heading,
+  .wc-celeb-subtext,
+  .wc-celeb-quote,
+  .wc-celeb-stats-row,
+  .wc-celeb-btn { animation: wcFadeOnly 0.3s ease-out 0.2s both; }
+  .wc-holding { transform: none; }
+  .wc-hold-page { animation: wcFadeOnly 0.3s ease-out both; }
+}
+
+@keyframes wcFadeOnly {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Responsive ─── */
+@media (min-width: 400px) {
+  .wc-hold-ring-touch {
+    width: 160px;
+    height: 160px;
+  }
+  .wc-hold-icon svg {
+    width: 50px;
+    height: 50px;
+  }
+  .wc-celeb-logo-frame {
+    width: 140px;
+    height: 140px;
+  }
+  .wc-celeb-heading {
+    font-size: 1.6rem;
+  }
+}

@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import WorkoutCelebration from '../components/WorkoutCelebration';
 import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -1295,51 +1296,21 @@ export default function CoreBuddyProgrammes() {
     const totalSets = sessionLogs.reduce((sum, l) => sum + l.sets.length, 0);
     const totalVolume = sessionLogs.reduce((sum, l) =>
       sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+    const pgStats = [
+      { value: sessionLogs.length, label: 'Exercises' },
+      { value: totalSets, label: 'Sets' },
+    ];
+    if (totalVolume > 0) pgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
 
     return (
       <div className="pg-page pg-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <div className="pg-session-done">
-          {/* Completion ring */}
-          <div className="pg-done-ring">
-            <svg className="pg-done-ring-svg" viewBox="0 0 200 200">
-              {TICKS_78_94.map((t, i) => (
-                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                  className="pg-tick-complete"
-                  strokeWidth={t.thick ? '3.5' : '2'}
-                  style={{ animationDelay: `${i * 0.02}s` }} />
-              ))}
-            </svg>
-            <div className="pg-done-center">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-            </div>
-          </div>
-
-          <h2 className="pg-done-title">Session Complete!</h2>
-          <p className="pg-done-subtitle">
-            Week {sessionWeek} — {day?.name}: {day?.label}
-          </p>
-
-          <div className="pg-done-stats">
-            <div className="pg-done-stat">
-              <span className="pg-done-stat-num">{sessionLogs.length}</span>
-              <span className="pg-done-stat-label">Exercises</span>
-            </div>
-            <div className="pg-done-stat">
-              <span className="pg-done-stat-num">{totalSets}</span>
-              <span className="pg-done-stat-label">Sets</span>
-            </div>
-            {totalVolume > 0 && (
-              <div className="pg-done-stat">
-                <span className="pg-done-stat-num">{Math.round(totalVolume).toLocaleString()}</span>
-                <span className="pg-done-stat-label">Volume (kg)</span>
-              </div>
-            )}
-          </div>
-
-          <button className="pg-start-btn" onClick={() => setView('dashboard')}>
-            Back to Programme
-          </button>
-        </div>
+        <WorkoutCelebration
+          title="Session Complete!"
+          subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
+          stats={pgStats}
+          buttonLabel="Back to Programme"
+          onDone={() => setView('dashboard')}
+        />
 
         {/* Badge Celebration Overlay */}
         {badgeCelebration && (
