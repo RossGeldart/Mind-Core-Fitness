@@ -9,6 +9,7 @@ import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import WorkoutCelebration from '../components/WorkoutCelebration';
+import generateShareImage from '../utils/generateShareImage';
 import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -409,19 +410,21 @@ export default function CoreBuddyProgrammes() {
     setTimeout(() => setToast(null), 4000);
   }, []);
 
-  // Share to Journey helper
-  const shareToJourney = useCallback(async (text) => {
+  // Share to Journey helper — accepts structured data or plain text
+  const shareToJourney = useCallback(async (data) => {
     if (!clientData) return;
+    const isStructured = data && typeof data === 'object' && data.type;
     await addDoc(collection(db, 'posts'), {
       authorId: clientData.id,
       authorName: clientData.name || 'Unknown',
       authorPhotoURL: clientData.photoURL || null,
-      content: text,
-      type: 'text',
+      content: isStructured ? '' : data,
+      type: isStructured ? data.type : 'text',
       imageURL: null,
       createdAt: serverTimestamp(),
       likeCount: 0,
       commentCount: 0,
+      ...(isStructured ? { metadata: { title: data.title, subtitle: data.subtitle, stats: data.stats, quote: data.quote, badges: data.badges } } : {}),
     });
   }, [clientData]);
 
@@ -1323,6 +1326,7 @@ export default function CoreBuddyProgrammes() {
               stats={pgStats}
               buttonLabel="Back to Programme"
               onShareJourney={shareToJourney}
+              userName={clientData?.name}
               onDone={() => { setShowPgFinish(false); setView('dashboard'); }}
             />
           );
@@ -1350,10 +1354,14 @@ export default function CoreBuddyProgrammes() {
               <div className="pg-badge-share-row">
                 <button className="pg-badge-share-btn" onClick={async (e) => {
                   e.stopPropagation();
-                  const text = badgeCelebration.badges.map(b =>
+                  const badgeLabels = badgeCelebration.badges.map(b =>
                     b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  ).join(', ');
-                  await shareToJourney(`Badge Earned! ${text}`);
+                  );
+                  await shareToJourney({
+                    type: 'badge_earned',
+                    title: badgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${badgeCelebration.badges.length} Badges Earned!`,
+                    badges: badgeLabels,
+                  });
                   showToast('Posted to Journey!', 'success');
                 }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1361,13 +1369,20 @@ export default function CoreBuddyProgrammes() {
                 </button>
                 <button className="pg-badge-share-btn" onClick={async (e) => {
                   e.stopPropagation();
-                  const text = badgeCelebration.badges.map(b =>
+                  const badgeLabels = badgeCelebration.badges.map(b =>
                     b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  ).join(', ');
-                  const shareText = `Badge Earned! ${text}\n#MindCoreFitness`;
-                  if (navigator.share) {
-                    try { await navigator.share({ title: 'Mind Core Fitness', text: shareText }); } catch {}
-                  } else {
+                  );
+                  const shareText = `Badge Earned! ${badgeLabels.join(', ')}\n#MindCoreFitness`;
+                  try {
+                    const blob = await generateShareImage({ type: 'badge', title: 'Badge Earned!', badges: badgeLabels, userName: clientData?.name });
+                    if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'badge.png', { type: 'image/png' })] })) {
+                      await navigator.share({ title: 'Mind Core Fitness', text: shareText, files: [new File([blob], 'badge.png', { type: 'image/png' })] });
+                    } else if (navigator.share) {
+                      await navigator.share({ title: 'Mind Core Fitness', text: shareText });
+                    } else {
+                      await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success');
+                    }
+                  } catch {
                     try { await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success'); } catch {}
                   }
                 }}>

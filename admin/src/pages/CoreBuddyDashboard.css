@@ -1420,6 +1420,132 @@
 .journey-post-image { border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
 .journey-post-image img { width: 100%; display: block; border-radius: 12px; }
 
+/* ─── Rich Share Cards (workout_summary / badge_earned) ─── */
+.journey-card {
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+/* Workout variant */
+.journey-card-workout {
+  background: linear-gradient(135deg, rgba(161, 47, 58, 0.08), rgba(161, 47, 58, 0.03));
+  border: 1px solid rgba(161, 47, 58, 0.15);
+}
+.journey-card-workout::before { background: rgba(161, 47, 58, 0.6); }
+[data-theme="dark"] .journey-card-workout {
+  background: linear-gradient(135deg, rgba(161, 47, 58, 0.15), rgba(161, 47, 58, 0.05));
+  border-color: rgba(161, 47, 58, 0.25);
+}
+
+/* Badge variant */
+.journey-card-badge {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 193, 7, 0.02));
+  border: 1px solid rgba(255, 193, 7, 0.18);
+}
+.journey-card-badge::before { background: rgba(255, 193, 7, 0.6); }
+[data-theme="dark"] .journey-card-badge {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 193, 7, 0.04));
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
+.journey-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.journey-card-workout .journey-card-header svg { color: #A12F3A; }
+.journey-card-badge .journey-card-header svg { color: #ffc107; }
+
+.journey-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.journey-card-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.journey-card-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.journey-card-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  background: rgba(150, 150, 150, 0.06);
+  border-radius: 10px;
+}
+[data-theme="dark"] .journey-card-stat { background: rgba(255, 255, 255, 0.05); }
+
+.journey-card-stat-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.journey-card-stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.journey-card-quote {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--text-tertiary);
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.journey-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.journey-card-badge-tag {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #b78600;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+[data-theme="dark"] .journey-card-badge-tag {
+  color: #ffc107;
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
 .journey-post-actions {
   display: flex; align-items: center; gap: 4px; padding-top: 8px;
   border-top: 1px solid rgba(150, 150, 150, 0.12);

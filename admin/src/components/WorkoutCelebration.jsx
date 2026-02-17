@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import generateShareImage from '../utils/generateShareImage';
 import './WorkoutCelebration.css';
 
 const HOLD_DURATION = 700;
@@ -12,7 +13,7 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, onShareJourney, buttonLabel = 'Done' }) {
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onShareJourney, userName, buttonLabel = 'Done' }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [dismissing, setDismissing] = useState(false);
@@ -94,7 +95,13 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
   const handleShareJourney = useCallback(async () => {
     if (journeyPosted || !onShareJourney) return;
     try {
-      await onShareJourney(buildShareText().replace('\n#MindCoreFitness', ''));
+      await onShareJourney({
+        type: 'workout_summary',
+        title: title || 'Workout Complete!',
+        subtitle,
+        stats: stats || [],
+        quote: quoteRef.current,
+      });
       setJourneyPosted(true);
       setShareToast('Posted to Journey!');
       setTimeout(() => setShareToast(null), 2500);
@@ -102,22 +109,42 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
       setShareToast('Failed to post');
       setTimeout(() => setShareToast(null), 2500);
     }
-  }, [journeyPosted, onShareJourney, buildShareText]);
+  }, [journeyPosted, onShareJourney, title, subtitle, stats]);
 
+  const [sharing, setSharing] = useState(false);
   const handleShare = useCallback(async () => {
-    const text = buildShareText();
-    if (navigator.share) {
-      try {
+    setSharing(true);
+    try {
+      const blob = await generateShareImage({
+        type: 'workout',
+        title: title || 'Workout Complete!',
+        subtitle,
+        stats: stats || [],
+        quote: quoteRef.current,
+        userName,
+      });
+      const text = buildShareText();
+      if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'workout.png', { type: 'image/png' })] })) {
+        const file = new File([blob], 'workout.png', { type: 'image/png' });
+        await navigator.share({ title: 'Mind Core Fitness', text, files: [file] });
+      } else if (navigator.share) {
         await navigator.share({ title: 'Mind Core Fitness', text });
-      } catch { /* user cancelled */ }
-    } else {
-      try {
+      } else {
         await navigator.clipboard.writeText(text);
         setShareToast('Copied to clipboard!');
         setTimeout(() => setShareToast(null), 2500);
+      }
+    } catch {
+      // user cancelled or error — fallback to text copy
+      try {
+        await navigator.clipboard.writeText(buildShareText());
+        setShareToast('Copied to clipboard!');
+        setTimeout(() => setShareToast(null), 2500);
       } catch { /* ignore */ }
+    } finally {
+      setSharing(false);
     }
-  }, [buildShareText]);
+  }, [title, subtitle, stats, userName, buildShareText]);
 
   // ─── Hold-to-Finish screen ───
   if (phase === 'hold') {
@@ -235,12 +262,12 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
               {journeyPosted ? 'Posted!' : 'Post to Journey'}
             </button>
           )}
-          <button className="wc-share-btn wc-share-external" onClick={handleShare}>
+          <button className="wc-share-btn wc-share-external" onClick={handleShare} disabled={sharing}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
-            Share
+            {sharing ? 'Generating...' : 'Share'}
           </button>
         </div>
 
