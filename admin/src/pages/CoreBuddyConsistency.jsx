@@ -76,6 +76,7 @@ export default function CoreBuddyConsistency() {
   const holdTimerRef = useRef(null);
   const holdStartRef = useRef(null);
   const rafRef = useRef(null);
+  const holdCompletedRef = useRef(false);
   const ringRefs = useRef({});
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
@@ -276,6 +277,7 @@ export default function CoreBuddyConsistency() {
     const checked = todayLog.habits?.[habitKey] || false;
     if (checked || saving) return;
 
+    holdCompletedRef.current = false;
     setHoldingHabit(habitKey);
     holdStartRef.current = performance.now();
 
@@ -296,7 +298,9 @@ export default function CoreBuddyConsistency() {
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(animate);
       } else {
-        // Hold complete — optimistic update keeps ring full
+        // Hold complete — mark so cancelHold won't reset the ring
+        holdCompletedRef.current = true;
+        rafRef.current = null;
         setHoldingHabit(null);
         completeHabit(habitKey);
       }
@@ -313,10 +317,11 @@ export default function CoreBuddyConsistency() {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
-    // Reset the circle back to empty via DOM
-    if (holdingHabit && ringRefs.current[holdingHabit]) {
+    // Only reset the circle if the hold was cancelled (not completed)
+    if (!holdCompletedRef.current && holdingHabit && ringRefs.current[holdingHabit]) {
       ringRefs.current[holdingHabit].style.strokeDashoffset = RING_CIRCUMFERENCE;
     }
+    holdCompletedRef.current = false;
     setHoldingHabit(null);
     holdStartRef.current = null;
   };
