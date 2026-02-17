@@ -552,7 +552,7 @@ export default function CoreBuddyWorkouts() {
 
   // Share to Journey helper — accepts structured data or plain text
   const shareToJourney = useCallback(async (data) => {
-    if (!clientData) return;
+    if (!clientData) throw new Error('Not signed in');
     const isStructured = data && typeof data === 'object' && data.type;
     await addDoc(collection(db, 'posts'), {
       authorId: clientData.id,
