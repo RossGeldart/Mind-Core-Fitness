@@ -37,7 +37,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
     [...Array(80)].map((_, i) => ({
       x: 5 + Math.random() * 90,
       delay: Math.random() * 3.5,
-      color: ['#A12F3A', '#4caf50', '#ff9800', '#2196f3', '#e91e63', '#ffeb3b', '#FFD700', '#ffffff', '#9c27b0'][i % 9],
+      color: ['#A12F3A', '#ffffff', '#000000'][i % 3],
       drift: (Math.random() - 0.5) * 120,
       spin: Math.random() * 720 - 360,
       duration: 1.8 + Math.random() * 2,
