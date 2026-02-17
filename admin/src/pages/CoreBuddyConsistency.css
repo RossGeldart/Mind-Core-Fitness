@@ -172,14 +172,16 @@
   border-radius: 20px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
   overflow: visible;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-/* Done state — tinted background */
+/* Done state — no tint, keep default tile background */
 .cbc-habit-done {
-  background: color-mix(in srgb, var(--habit-color) 8%, var(--bg-card));
-  border-color: color-mix(in srgb, var(--habit-color) 20%, rgba(0, 0, 0, 0.06));
+  background: var(--bg-card);
 }
 
 /* Dark mode tiles */
@@ -192,8 +194,7 @@
 }
 
 [data-theme="dark"] .cbc-habit-done {
-  background: color-mix(in srgb, var(--habit-color) 12%, rgba(30, 30, 30, 0.8));
-  border-color: color-mix(in srgb, var(--habit-color) 25%, rgba(255, 255, 255, 0.06));
+  background: rgba(30, 30, 30, 0.8);
 }
 
 /* ====== Hold-to-Complete Ring (large) ====== */
@@ -252,15 +253,10 @@
   fill: none;
   stroke-width: 10;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.3s ease-out;
-}
-
-/* During active hold, remove transition so rAF updates are instant */
-.cbc-holding .cbc-habit-ring-fill {
   transition: none;
 }
 
-/* Completed ring */
+/* Completed ring — smooth snap to full */
 .cbc-ring-completed .cbc-habit-ring-fill {
   transition: stroke-dashoffset 0.3s ease-out;
 }
