@@ -169,23 +169,12 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-left: 5px solid var(--habit-color, var(--border-color));
   border-radius: 16px;
-  cursor: pointer;
   font-family: inherit;
   text-align: left;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.25s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.cbc-habit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.cbc-habit-btn:active {
-  transform: scale(0.97);
-  transition: transform 0.1s ease;
 }
 
 /* Done state — tinted background using the habit's colour */
@@ -196,8 +185,8 @@
   border-bottom-color: color-mix(in srgb, var(--habit-color) 25%, var(--border-color));
 }
 
-/* ====== Habit Icon (dashboard-style radial gradient) ====== */
-.cbc-habit-icon-wrap {
+/* ====== Hold-to-Complete Ring ====== */
+.cbc-habit-ring-touch {
   position: relative;
   flex-shrink: 0;
   width: 48px;
@@ -205,37 +194,116 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--habit-color) 18%, transparent), color-mix(in srgb, var(--habit-color) 6%, transparent));
-  color: var(--habit-color);
-  transition: all 0.25s ease;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
+  border-radius: 50%;
 }
 
-.cbc-habit-icon-wrap svg {
+.cbc-habit-ring-touch:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Scale up while holding */
+.cbc-holding {
+  transform: scale(1.05);
+}
+
+/* Completion bounce */
+.cbc-habit-just-checked .cbc-habit-ring-touch {
+  animation: ringCompleteBounce 0.4s ease-out;
+}
+
+@keyframes ringCompleteBounce {
+  0%   { transform: scale(1.05); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+.cbc-habit-ring-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cbc-habit-ring-track {
+  fill: none;
+  stroke: rgba(150, 150, 150, 0.2);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.cbc-habit-ring-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+
+/* During active hold, remove transition so rAF updates are instant */
+.cbc-holding .cbc-habit-ring-fill {
+  transition: none;
+}
+
+/* Completed ring — show full fill */
+.cbc-ring-completed .cbc-habit-ring-fill {
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+
+/* Icon inside the ring */
+.cbc-habit-ring-icon {
+  position: relative;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.cbc-habit-ring-icon svg {
   width: 22px;
   height: 22px;
 }
 
-/* Done badge — small green circle with tick overlapping the icon */
-.cbc-habit-done-badge {
+/* Completed icon gets slight opacity reduction */
+.cbc-ring-completed .cbc-habit-ring-icon {
+  opacity: 0.6;
+}
+
+/* Checkmark overlay */
+.cbc-habit-check-overlay {
   position: absolute;
-  bottom: -4px;
-  right: -4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #4caf50;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--bg-card);
-  animation: badgePop 0.3s ease-out;
+  background: var(--habit-color, var(--color-primary));
+  border-radius: 50%;
+  opacity: 1;
 }
 
-@keyframes badgePop {
-  0% { transform: scale(0); }
-  60% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+.cbc-habit-check-overlay svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Animate checkmark in then fade to persistent state */
+.cbc-check-animate {
+  animation: checkFlash 1s ease-out forwards;
+}
+
+@keyframes checkFlash {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1.1); }
+  40%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* Habit text area */
@@ -269,6 +337,13 @@
   letter-spacing: 0.5px;
 }
 
+.cbc-habit-hold-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.3px;
+}
+
 /* Delete button for custom habits */
 .cbc-habit-delete {
   flex-shrink: 0;
@@ -299,12 +374,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-}
-
-[data-theme="dark"] .cbc-habit-btn:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
-  border-color: rgba(255, 255, 255, 0.1);
-  border-left-color: var(--habit-color, rgba(255, 255, 255, 0.1));
 }
 
 [data-theme="dark"] .cbc-habit-done {
@@ -631,87 +700,209 @@
   border-radius: 50%;
 }
 
-/* ===== All-Done Celebration ===== */
-.cbc-celebration {
+/* ========================================= */
+/* ===== FULLSCREEN CELEBRATION OVERLAY ===== */
+/* ========================================= */
+
+.cbc-celeb-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
-  animation: celebrationFadeIn 0.3s ease-out;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  animation: celebOverlayIn 0.3s ease-out forwards;
 }
 
-@keyframes celebrationFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.cbc-celeb-dismissing {
+  animation: celebOverlayOut 0.3s ease-in forwards;
 }
 
-.cbc-confetti-container {
+@keyframes celebOverlayIn {
+  from { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  to   { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+}
+
+@keyframes celebOverlayOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Confetti container */
+.cbc-celeb-confetti {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
 }
 
-.cbc-confetti-piece {
+.cbc-celeb-confetti-piece {
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: var(--x, 50%);
   background: var(--color, var(--color-primary));
-  border-radius: 2px;
-  animation: confettiFall var(--duration, 2s) ease-in var(--delay, 0s) both;
+  animation: celebConfettiFall var(--duration, 2.5s) ease-in var(--delay, 0s) both;
 }
 
-@keyframes confettiFall {
-  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
-  85% { opacity: 1; }
-  100% {
-    transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(var(--spin, 360deg));
-    opacity: 0;
-  }
+/* Confetti shapes */
+.cbc-confetti-shape-0 { border-radius: 2px; }
+.cbc-confetti-shape-1 { border-radius: 50%; }
+.cbc-confetti-shape-2 { border-radius: 1px; height: 2px !important; }
+
+@keyframes celebConfettiFall {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(var(--spin, 360deg)); opacity: 0; }
 }
 
-.cbc-celebration-card {
+/* Content container */
+.cbc-celeb-content {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 36px 48px;
-  background: var(--bg-card);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.15);
+  padding: 0 32px;
+  max-width: 340px;
+  width: 100%;
 }
 
-[data-theme="dark"] .cbc-celebration-card {
-  border-color: rgba(199, 95, 107, 0.3);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(199, 95, 107, 0.15);
+/* Logo circle frame */
+.cbc-celeb-logo-frame {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 20px rgba(var(--color-primary-rgb), 0.5),
+    0 0 40px rgba(var(--color-primary-rgb), 0.3);
+  animation:
+    celebLogoIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
+    celebGlowPulse 2s ease-in-out infinite 0.7s;
+  margin-top: -10vh;
 }
 
-.cbc-celebration-icon {
-  width: 56px;
-  height: 56px;
-  margin-bottom: 12px;
+.cbc-celeb-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.cbc-celebration-title {
+@keyframes celebLogoIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes celebGlowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(var(--color-primary-rgb), 0.3),
+      0 0 40px rgba(var(--color-primary-rgb), 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(var(--color-primary-rgb), 0.6),
+      0 0 50px rgba(var(--color-primary-rgb), 0.3);
+  }
+}
+
+/* Heading */
+.cbc-celeb-heading {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-primary);
-  margin: 0 0 4px;
+  color: #ffffff;
+  text-align: center;
+  margin: 24px 0 0;
+  opacity: 0;
+  animation: celebTextIn 0.4s ease-out 0.6s forwards;
 }
 
-.cbc-celebration-sub {
+/* Sub-text */
+.cbc-celeb-subtext {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin: 10px 0 0;
+  opacity: 0;
+  animation: celebTextIn 0.4s ease-out 0.8s forwards;
+}
+
+/* Stats line */
+.cbc-celeb-stats {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 8px 0 0;
+  opacity: 0;
+  animation: celebTextIn 0.4s ease-out 0.9s forwards;
+}
+
+@keyframes celebTextIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Continue button */
+.cbc-celeb-btn {
+  margin-top: 32px;
+  padding: 14px 48px;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  animation: celebTextIn 0.4s ease-out 1.0s forwards;
+}
+
+.cbc-celeb-btn:hover {
+  transform: scale(1.03);
+}
+
+.cbc-celeb-btn:active {
+  transform: scale(0.97);
+}
+
+.cbc-celeb-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .cbc-celeb-confetti-piece { display: none; }
+  .cbc-celeb-logo-frame { animation: celebFadeOnly 0.3s ease-out 0.1s both; }
+  .cbc-celeb-heading,
+  .cbc-celeb-subtext,
+  .cbc-celeb-stats,
+  .cbc-celeb-btn { animation: celebFadeOnly 0.3s ease-out 0.2s both; }
+
+  .cbc-holding { transform: none; }
+  .cbc-habit-just-checked .cbc-habit-ring-touch { animation: none; }
+  .cbc-check-animate { animation: celebFadeOnly 0.3s ease-out both; }
+}
+
+@keyframes celebFadeOnly {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Responsive */
@@ -730,8 +921,13 @@
     height: 48px;
   }
 
-  .cbc-habit-btn {
-    padding: 20px 18px;
+  .cbc-celeb-logo-frame {
+    width: 140px;
+    height: 140px;
+  }
+
+  .cbc-celeb-heading {
+    font-size: 1.6rem;
   }
 }
 
