@@ -100,6 +100,8 @@ export default async function generateShareImage(opts) {
   // ── Pre-measure CTA ──
   const ctaText = type === 'badge'
     ? 'I just earned a badge on Core Buddy \uD83C\uDFC6'
+    : type === 'habits'
+    ? 'I just completed my daily habits with Core Buddy \u2705'
     : 'I just completed a workout using Core Buddy \uD83D\uDCAA\uD83C\uDFFB';
   ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
   const ctaLines = wrapText(ctx, ctaText, cardW - 80);

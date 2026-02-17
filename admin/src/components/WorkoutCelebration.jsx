@@ -15,7 +15,7 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done' }) {
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done', holdLabel = 'Hold To Complete Session', shareType = 'workout' }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0); // 0-1 for logo reveal
@@ -130,7 +130,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
     if (journeyPosted || !onShareJourney) return;
     try {
       await onShareJourney({
-        type: 'workout_summary',
+        type: shareType === 'habits' ? 'habits_summary' : 'workout_summary',
         title: title || 'Workout Complete!',
         subtitle,
         stats: stats || [],
@@ -151,7 +151,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
     setSharing(true);
     try {
       const blob = await generateShareImage({
-        type: 'workout',
+        type: shareType || 'workout',
         title: title || 'Workout Complete!',
         subtitle,
         stats: stats || [],
@@ -188,7 +188,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
         {/* Radial glow backdrop */}
         <div className="wc-hold-glow" aria-hidden="true" />
 
-        <p className="wc-hold-label">Hold To Complete Session</p>
+        <p className="wc-hold-label">{holdLabel}</p>
 
         <div
           className={`wc-hold-ring-touch ${holding ? 'wc-holding' : ''}`}
