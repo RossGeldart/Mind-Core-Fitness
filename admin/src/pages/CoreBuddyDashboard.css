@@ -1420,10 +1420,11 @@
 .journey-post-image { border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
 .journey-post-image img { width: 100%; display: block; border-radius: 12px; }
 
-/* ─── Spotify-style Share Cards (workout_summary / badge_earned) ─── */
+/* ─── Premium Share Cards (workout_summary / badge_earned) ─── */
+/* Matches Instagram Story aesthetic: no borders, hero-centric, gradient bleed */
 .journey-card {
   border-radius: 20px;
-  padding: 24px 20px 16px;
+  padding: 18px 18px 16px;
   margin-bottom: 10px;
   position: relative;
   overflow: hidden;
@@ -1433,182 +1434,128 @@
   text-align: center;
 }
 
-/* Accent bar at top */
-.journey-card-accent {
+/* Subtle noise/grain overlay for depth */
+.journey-card::after {
+  content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-
-/* Ambient glow behind logo */
-.journey-card-glow {
-  position: absolute;
-  top: -20px; left: 50%;
-  transform: translateX(-50%);
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  filter: blur(40px);
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
+  border-radius: inherit;
 }
 
 /* ── Workout variant ── */
 .journey-card-workout {
-  background: linear-gradient(160deg, #1e0a0f 0%, #140608 60%, #0f0405 100%);
-  border: 1px solid rgba(161, 47, 58, 0.2);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(170deg, #1a060a 0%, #2d0a10 35%, #1a0608 65%, #120408 100%);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
-.journey-card-workout .journey-card-accent {
-  background: linear-gradient(90deg, #A12F3A, #c9485b, #A12F3A);
-}
-.journey-card-workout .journey-card-glow {
-  background: rgba(161, 47, 58, 0.25);
-}
-.journey-card-workout .journey-card-logo-frame {
-  border-color: #c9485b;
-  box-shadow: 0 0 0 4px rgba(161, 47, 58, 0.12);
-}
-
-/* Light-mode workout: keep dark card for Spotify feel */
 [data-theme="light"] .journey-card-workout {
-  background: linear-gradient(160deg, #1e0a0f 0%, #140608 60%, #0f0405 100%);
+  background: linear-gradient(170deg, #1a060a 0%, #2d0a10 35%, #1a0608 65%, #120408 100%);
 }
 
 /* ── Badge variant ── */
 .journey-card-badge {
-  background: linear-gradient(160deg, #1a1500 0%, #141000 60%, #0d0a00 100%);
-  border: 1px solid rgba(255, 193, 7, 0.2);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-}
-.journey-card-badge .journey-card-accent {
-  background: linear-gradient(90deg, #D4A017, #ffc107, #D4A017);
-}
-.journey-card-badge .journey-card-glow {
-  background: rgba(212, 160, 23, 0.2);
-}
-.journey-card-badge .journey-card-logo-frame {
-  border-color: #ffc107;
-  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+  background: linear-gradient(170deg, #141000 0%, #2a1f00 35%, #1a1400 65%, #110d00 100%);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 [data-theme="light"] .journey-card-badge {
-  background: linear-gradient(160deg, #1a1500 0%, #141000 60%, #0d0a00 100%);
+  background: linear-gradient(170deg, #141000 0%, #2a1f00 35%, #1a1400 65%, #110d00 100%);
 }
 
-/* ── Circle-framed logo ── */
-.journey-card-logo-frame {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2.5px solid;
-  margin-bottom: 14px;
+/* ── Branding (upper-left) ── */
+.journey-card-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  margin-bottom: 16px;
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.04);
-  flex-shrink: 0;
 }
-.journey-card-logo-img {
+.journey-card-brand-icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.journey-card-brand span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Hero image ── */
+.journey-card-hero {
+  width: 180px; height: 180px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Circular hero for badge variant */
+.journey-card-hero-circle {
+  border-radius: 50%;
+}
+
+.journey-card-hero-img {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
 
+/* Subtle glow that makes the hero float */
+.journey-card-workout .journey-card-hero::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(161, 47, 58, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+.journey-card-badge .journey-card-hero::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(212, 160, 23, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* ── Title ── */
 .journey-card-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: #ffffff;
-  margin: 0 0 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin: 0 0 5px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── Subtitle ── */
-.journey-card-subtitle {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 14px;
-}
-
-/* ── Stat pills ── */
-.journey-card-stats {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-}
-
-.journey-card-stat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 10px 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-}
-
-.journey-card-stat-val {
+/* ── Stats / description line ── */
+.journey-card-stats-line {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.journey-card-stat-label {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.58rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.38);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  font-size: 0.76rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Quote ── */
 .journey-card-quote {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-style: italic;
   color: rgba(255, 255, 255, 0.28);
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   text-align: center;
-}
-
-/* ── Badge tags ── */
-.journey-card-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 4px;
-}
-
-.journey-card-badge-tag {
-  display: inline-block;
-  padding: 7px 16px;
-  border-radius: 50px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #ffc107;
-  background: rgba(255, 193, 7, 0.1);
-  border: 1px solid rgba(255, 193, 7, 0.25);
-}
-
-/* ── Footer branding ── */
-.journey-card-footer {
-  margin-top: 14px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  width: 100%;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.22);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
 }
 
 .journey-post-actions {

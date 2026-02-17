@@ -1704,45 +1704,42 @@ export default function CoreBuddyDashboard() {
                       </button>
                     </div>
 
-                    {/* Spotify-style workout summary card */}
+                    {/* Premium share card — matches Instagram Story design */}
                     {post.type === 'workout_summary' && post.metadata ? (
                       <div className="journey-card journey-card-workout">
-                        <div className="journey-card-accent" />
-                        <div className="journey-card-glow" />
-                        <div className="journey-card-logo-frame">
-                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                        <div className="journey-card-brand">
+                          <img src="/Logo.webp" alt="" className="journey-card-brand-icon" />
+                          <span>Core Buddy</span>
+                        </div>
+                        <div className="journey-card-hero">
+                          <img src="/Logo.webp" alt="MCF" className="journey-card-hero-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
-                        {post.metadata.subtitle && <p className="journey-card-subtitle">{post.metadata.subtitle}</p>}
                         {post.metadata.stats?.length > 0 && (
-                          <div className="journey-card-stats">
-                            {post.metadata.stats.map((s, i) => (
-                              <div key={i} className="journey-card-stat">
-                                <span className="journey-card-stat-val">{s.value}</span>
-                                <span className="journey-card-stat-label">{s.label}</span>
-                              </div>
-                            ))}
-                          </div>
+                          <p className="journey-card-stats-line">
+                            {post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}
+                          </p>
+                        )}
+                        {!post.metadata.stats?.length && post.metadata.subtitle && (
+                          <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
                         )}
                         {post.metadata.quote && <p className="journey-card-quote">&ldquo;{post.metadata.quote}&rdquo;</p>}
-                        <div className="journey-card-footer">Mind Core Fitness</div>
                       </div>
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card journey-card-badge">
-                        <div className="journey-card-accent" />
-                        <div className="journey-card-glow" />
-                        <div className="journey-card-logo-frame">
-                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                        <div className="journey-card-brand">
+                          <img src="/Logo.webp" alt="" className="journey-card-brand-icon" />
+                          <span>Core Buddy</span>
+                        </div>
+                        <div className="journey-card-hero journey-card-hero-circle">
+                          <img src="/Logo.webp" alt="MCF" className="journey-card-hero-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.badges?.length > 0 && (
-                          <div className="journey-card-badges">
-                            {post.metadata.badges.map((b, i) => (
-                              <span key={i} className="journey-card-badge-tag">{b}</span>
-                            ))}
-                          </div>
+                          <p className="journey-card-stats-line">
+                            {post.metadata.badges.join('  \u00B7  ')}
+                          </p>
                         )}
-                        <div className="journey-card-footer">Mind Core Fitness</div>
                       </div>
                     ) : (
                       <>
