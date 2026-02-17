@@ -225,6 +225,60 @@
   color: var(--color-primary);
 }
 
+/* ── Sign-up button with Coming Soon overlay ── */
+
+.login-signup-wrapper {
+  position: relative;
+  margin-top: 16px;
+}
+
+.login-btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  font-size: 0.85rem;
+}
+
+.login-coming-soon {
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.login-coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .login-coming-soon-overlay {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.login-coming-soon-overlay span {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="light"] .login-coming-soon-overlay span {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
 /* Loading screen */
 .login-loading {
   display: flex;
