@@ -371,6 +371,9 @@ export default function CoreBuddyProgrammes() {
   // Active programme state
   const [activeProgramme, setActiveProgramme] = useState(null); // { templateId, startDate, completedSessions }
 
+  // Hold-to-finish overlay
+  const [showPgFinish, setShowPgFinish] = useState(false);
+
   // Session state
   const [sessionWeek, setSessionWeek] = useState(1);
   const [sessionDay, setSessionDay] = useState(0);
@@ -754,7 +757,7 @@ export default function CoreBuddyProgrammes() {
       setSessionBadges([]);
     }
 
-    setView('sessionComplete');
+    setShowPgFinish(true);
   };
 
   // Update cumulative volume and check milestone badges
@@ -1284,33 +1287,29 @@ export default function CoreBuddyProgrammes() {
             </div>
           )}
         </div>
-        {toastEl}
-      </div>
-    );
-  }
+        {/* Hold-to-Finish Overlay */}
+        {showPgFinish && (() => {
+          const template = getActiveTemplate();
+          const day = template?.days[sessionDay];
+          const totalSets = sessionLogs.reduce((sum, l) => sum + l.sets.length, 0);
+          const totalVolume = sessionLogs.reduce((sum, l) =>
+            sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+          const pgStats = [
+            { value: sessionLogs.length, label: 'Exercises' },
+            { value: totalSets, label: 'Sets' },
+          ];
+          if (totalVolume > 0) pgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
 
-  // ==================== SESSION COMPLETE VIEW ====================
-  if (view === 'sessionComplete') {
-    const template = getActiveTemplate();
-    const day = template?.days[sessionDay];
-    const totalSets = sessionLogs.reduce((sum, l) => sum + l.sets.length, 0);
-    const totalVolume = sessionLogs.reduce((sum, l) =>
-      sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
-    const pgStats = [
-      { value: sessionLogs.length, label: 'Exercises' },
-      { value: totalSets, label: 'Sets' },
-    ];
-    if (totalVolume > 0) pgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
-
-    return (
-      <div className="pg-page pg-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <WorkoutCelebration
-          title="Session Complete!"
-          subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
-          stats={pgStats}
-          buttonLabel="Back to Programme"
-          onDone={() => setView('dashboard')}
-        />
+          return (
+            <WorkoutCelebration
+              title="Session Complete!"
+              subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
+              stats={pgStats}
+              buttonLabel="Back to Programme"
+              onDone={() => { setShowPgFinish(false); setView('dashboard'); }}
+            />
+          );
+        })()}
 
         {/* Badge Celebration Overlay */}
         {badgeCelebration && (
