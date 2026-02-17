@@ -3,10 +3,10 @@ import generateShareImage from '../utils/generateShareImage';
 import useFeedback from '../hooks/useFeedback';
 import './WorkoutCelebration.css';
 
-const HOLD_DURATION = 700;
+const HOLD_DURATION = 3000;
 const RING_RADIUS = 42;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-const TICK_INTERVAL = 180; // ms between ticks during hold
+const TICK_INTERVAL = 300; // ms between ticks during hold
 
 const QUOTES = [
   'Another one in the bank!',
@@ -68,7 +68,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
       }
       // Update logo blur/grayscale reveal
       if (logoRef.current) {
-        const blur = 4 * (1 - progress);
+        const blur = 8 * (1 - progress);
         const gray = 1 - progress;
         logoRef.current.style.filter = `blur(${blur}px) grayscale(${gray})`;
       }
@@ -100,7 +100,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
     activeRef.current = false;
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     if (ringRef.current) ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE;
-    if (logoRef.current) logoRef.current.style.filter = 'blur(4px) grayscale(1)';
+    if (logoRef.current) logoRef.current.style.filter = 'blur(8px) grayscale(1)';
     setHolding(false);
     setHoldProgress(0);
   }, []);
@@ -181,22 +181,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
         {/* Radial glow backdrop */}
         <div className="wc-hold-glow" aria-hidden="true" />
 
-        <h2 className="wc-hold-title">You Crushed It!</h2>
-        {subtitle && <p className="wc-hold-subtitle">{subtitle}</p>}
-
-        {/* Stats preview */}
-        {stats && stats.length > 0 && (
-          <div className="wc-hold-stats">
-            {stats.map((s, i) => (
-              <div key={i} className="wc-hold-stat">
-                <span className="wc-hold-stat-val">{s.value}</span>
-                <span className="wc-hold-stat-label">{s.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <p className="wc-hold-hint">Hold to finish</p>
+        <p className="wc-hold-label">Hold To Complete Session</p>
 
         <div
           className={`wc-hold-ring-touch ${holding ? 'wc-holding' : ''}`}
@@ -230,7 +215,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
             src="/Logo.webp"
             alt="Mind Core Fitness"
             className="wc-hold-logo"
-            style={{ filter: 'blur(4px) grayscale(1)' }}
+            style={{ filter: 'blur(8px) grayscale(1)' }}
             draggable={false}
           />
         </div>
