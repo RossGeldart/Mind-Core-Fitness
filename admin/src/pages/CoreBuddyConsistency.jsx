@@ -22,7 +22,7 @@ const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
 const CUSTOM_COLOR = '#e91e63';
 
 const HOLD_DURATION = 700; // ms
-const RING_RADIUS = 19;
+const RING_RADIUS = 42;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 const CELEBRATION_QUOTES = [
@@ -455,7 +455,7 @@ export default function CoreBuddyConsistency() {
         {/* Today's Habits */}
         <div className="cbc-section anim-fade-up-d2">
           <h2 className="cbc-section-title">Today's Habits</h2>
-          <div className="cbc-habits">
+          <div className="cbc-habits-grid">
             {allHabits.map((habit) => {
               const checked = todayLog.habits?.[habit.key] || false;
               const isJustChecked = justChecked === habit.key;
@@ -467,9 +467,26 @@ export default function CoreBuddyConsistency() {
               return (
                 <div
                   key={habit.key}
-                  className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
+                  className={`cbc-habit-tile ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   style={{ '--habit-color': habit.color }}
                 >
+                  {/* Delete / hide corner button */}
+                  <button
+                    className="cbc-habit-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteConfirm(habit.isCustom
+                        ? { type: 'custom', id: habit.id, label: habit.label }
+                        : { type: 'default', key: habit.key, label: habit.label }
+                      );
+                    }}
+                    aria-label={`Remove ${habit.label}`}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+
                   {/* Hold-to-complete ring */}
                   <div
                     className={`cbc-habit-ring-touch ${isHolding ? 'cbc-holding' : ''} ${checked ? 'cbc-ring-completed' : ''}`}
@@ -483,7 +500,6 @@ export default function CoreBuddyConsistency() {
                     onPointerCancel={cancelHold}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Tap on completed ring = undo
                       if (checked) undoHabit(habit.key);
                     }}
                     role="button"
@@ -497,11 +513,11 @@ export default function CoreBuddyConsistency() {
                       }
                     }}
                   >
-                    <svg className="cbc-habit-ring-svg" viewBox="0 0 48 48">
-                      <circle className="cbc-habit-ring-track" cx="24" cy="24" r={RING_RADIUS} />
+                    <svg className="cbc-habit-ring-svg" viewBox="0 0 100 100">
+                      <circle className="cbc-habit-ring-track" cx="50" cy="50" r={RING_RADIUS} />
                       <circle
                         className="cbc-habit-ring-fill"
-                        cx="24" cy="24" r={RING_RADIUS}
+                        cx="50" cy="50" r={RING_RADIUS}
                         style={{
                           stroke: habit.color,
                           strokeDasharray: RING_CIRCUMFERENCE,
@@ -513,7 +529,6 @@ export default function CoreBuddyConsistency() {
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d={habit.icon} />
                       </svg>
-                      {/* Checkmark overlay for completed */}
                       {(checked || isJustChecked) && (
                         <div className={`cbc-habit-check-overlay ${isJustChecked ? 'cbc-check-animate' : ''}`}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
@@ -522,57 +537,42 @@ export default function CoreBuddyConsistency() {
                         </div>
                       )}
                     </div>
+
+                    {/* Particle burst */}
+                    {isJustChecked && (
+                      <div className="cbc-particles">
+                        {particlesRef.current.map((p, i) => (
+                          <span key={i} className="cbc-particle" style={{
+                            '--tx': `${p.tx}px`,
+                            '--ty': `${p.ty}px`,
+                            '--size': `${p.size}px`,
+                            '--particle-color': habit.color,
+                            animationDuration: `${p.duration}s`,
+                          }} />
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Particle burst */}
-                  {isJustChecked && (
-                    <div className="cbc-particles">
-                      {particlesRef.current.map((p, i) => (
-                        <span key={i} className="cbc-particle" style={{
-                          '--tx': `${p.tx}px`,
-                          '--ty': `${p.ty}px`,
-                          '--size': `${p.size}px`,
-                          '--particle-color': habit.color,
-                          animationDuration: `${p.duration}s`,
-                        }} />
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="cbc-habit-text">
-                    <span className="cbc-habit-label">{habit.label}</span>
-                    {checked && <span className="cbc-habit-done-tag">Done</span>}
-                    {!checked && <span className="cbc-habit-hold-hint">Hold to complete</span>}
-                  </div>
-                  {/* Delete / hide button for all habits */}
-                  <button
-                    className="cbc-habit-delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirm(habit.isCustom
-                        ? { type: 'custom', id: habit.id, label: habit.label }
-                        : { type: 'default', key: habit.key, label: habit.label }
-                      );
-                    }}
-                    aria-label={`Remove ${habit.label}`}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+                  <span className="cbc-habit-label">{habit.label}</span>
+                  {checked
+                    ? <span className="cbc-habit-done-tag">Done</span>
+                    : <span className="cbc-habit-hold-hint">Hold to complete</span>
+                  }
                 </div>
               );
             })}
 
-            {/* Add Habit Button */}
-            <button className="cbc-add-habit-btn" onClick={() => setShowAddModal(true)}>
-              <div className="cbc-add-habit-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {/* Add Habit Tile */}
+            <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
+              <div className="cbc-add-ring">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
               </div>
-              <span>Add your own habit</span>
-            </button>
+              <span className="cbc-habit-label">Add Habit</span>
+              <span className="cbc-habit-hold-hint">Your own</span>
+            </div>
           </div>
         </div>
 
