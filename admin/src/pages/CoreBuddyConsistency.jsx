@@ -531,7 +531,7 @@ export default function CoreBuddyConsistency() {
                       </svg>
                       {(checked || isJustChecked) && (
                         <div className={`cbc-habit-check-overlay ${isJustChecked ? 'cbc-check-animate' : ''}`}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                         </div>
