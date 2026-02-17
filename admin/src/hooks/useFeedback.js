@@ -23,7 +23,7 @@ export default function useFeedback() {
 
   /**
    * Heartbeat "lub-dub" — two low thumps close together.
-   * First beat (lub) is deeper, second (dub) is slightly higher + softer.
+   * Low-pass filter at 500Hz strips any harshness.
    * Each beat vibrates the device.
    */
   const tick = useCallback(() => {
@@ -33,27 +33,34 @@ export default function useFeedback() {
     if (!ctx) return;
     const t = ctx.currentTime;
 
+    // Low-pass filter — cut everything above 500Hz
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.value = 500;
+    lpf.Q.value = 0.7;
+    lpf.connect(ctx.destination);
+
     // Lub — deep thump at 50Hz
     const osc1 = ctx.createOscillator();
     const vol1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.value = 50;
-    vol1.gain.value = 0.25;
-    vol1.gain.setTargetAtTime(0, t + 0.06, 0.03);
-    osc1.connect(vol1).connect(ctx.destination);
+    vol1.gain.value = 0.3;
+    vol1.gain.setTargetAtTime(0, t + 0.08, 0.04);
+    osc1.connect(vol1).connect(lpf);
     osc1.start(t);
-    osc1.stop(t + 0.15);
+    osc1.stop(t + 0.2);
 
-    // Dub — slightly higher at 70Hz, offset by 120ms
+    // Dub — slightly higher at 70Hz, offset by 150ms
     const osc2 = ctx.createOscillator();
     const vol2 = ctx.createGain();
     osc2.type = 'sine';
     osc2.frequency.value = 70;
-    vol2.gain.value = 0.18;
-    vol2.gain.setTargetAtTime(0, t + 0.18, 0.03);
-    osc2.connect(vol2).connect(ctx.destination);
-    osc2.start(t + 0.12);
-    osc2.stop(t + 0.28);
+    vol2.gain.value = 0.2;
+    vol2.gain.setTargetAtTime(0, t + 0.22, 0.04);
+    osc2.connect(vol2).connect(lpf);
+    osc2.start(t + 0.15);
+    osc2.stop(t + 0.35);
   }, [getCtx]);
 
   /** Tap feedback — single low thump on initial press */
@@ -62,15 +69,20 @@ export default function useFeedback() {
     const ctx = getCtx();
     if (!ctx) return;
     const t = ctx.currentTime;
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.value = 500;
+    lpf.Q.value = 0.7;
+    lpf.connect(ctx.destination);
     const osc = ctx.createOscillator();
     const vol = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.value = 55;
-    vol.gain.value = 0.3;
-    vol.gain.setTargetAtTime(0, t + 0.06, 0.03);
-    osc.connect(vol).connect(ctx.destination);
+    vol.gain.value = 0.35;
+    vol.gain.setTargetAtTime(0, t + 0.08, 0.04);
+    osc.connect(vol).connect(lpf);
     osc.start(t);
-    osc.stop(t + 0.15);
+    osc.stop(t + 0.2);
   }, [getCtx]);
 
   /** Completion — strong double-pulse vibration + rising chime */

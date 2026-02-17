@@ -6,7 +6,7 @@ import './WorkoutCelebration.css';
 const HOLD_DURATION = 2000;
 const RING_RADIUS = 42;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-const TICK_INTERVAL = 600; // ms between heartbeats during hold (~100bpm)
+const TICK_INTERVAL = 1200; // ms between heartbeats during hold (~50bpm)
 
 const QUOTES = [
   'Another one in the bank!',
