@@ -4,14 +4,16 @@
 
 /* ─── Hold-to-Finish Page ─── */
 .wc-hold-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 80vh;
-  gap: 8px;
+  gap: 6px;
   padding: 24px;
-  animation: wcFadeIn 0.4s ease-out;
+  animation: wcFadeIn 0.5s ease-out;
+  overflow: hidden;
 }
 
 @keyframes wcFadeIn {
@@ -19,19 +21,108 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Radial glow backdrop */
+.wc-hold-glow {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(var(--color-primary-rgb), 0.12) 0%,
+    rgba(var(--color-primary-rgb), 0.04) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: wcGlowFloat 4s ease-in-out infinite;
+}
+
+@keyframes wcGlowFloat {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50%      { transform: scale(1.08); opacity: 1; }
+}
+
 .wc-hold-title {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.wc-hold-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats preview on hold page */
+.wc-hold-stats {
+  display: flex;
+  gap: 20px;
+  margin: 16px 0 8px;
+  position: relative;
+  z-index: 1;
+  animation: wcStatsIn 0.5s ease-out 0.15s both;
+}
+
+@keyframes wcStatsIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wc-hold-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
+  border-radius: 14px;
+}
+
+[data-theme="dark"] .wc-hold-stat {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wc-hold-stat-val {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.wc-hold-stat-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .wc-hold-hint {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-tertiary);
-  margin: 0 0 24px;
+  margin: 12px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
+  animation: wcHintPulse 2s ease-in-out infinite;
+}
+
+@keyframes wcHintPulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
 }
 
 /* Ring touch target */
@@ -49,6 +140,7 @@
   user-select: none;
   transition: transform 0.2s ease;
   border-radius: 50%;
+  z-index: 1;
 }
 
 .wc-hold-ring-touch:focus-visible {
@@ -60,6 +152,31 @@
   transform: scale(1.06);
 }
 
+/* Pulsing glow behind the ring */
+.wc-hold-ring-glow {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(var(--color-primary-rgb), 0.15) 0%,
+    transparent 70%
+  );
+  animation: wcRingGlow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes wcRingGlow {
+  0%, 100% { transform: scale(0.9); opacity: 0.5; }
+  50%      { transform: scale(1.1); opacity: 1; }
+}
+
+.wc-holding .wc-hold-ring-glow {
+  animation: none;
+  transform: scale(1.15);
+  opacity: 1;
+}
+
 .wc-hold-ring-svg {
   position: absolute;
   top: 0; left: 0;
@@ -69,7 +186,7 @@
 
 .wc-hold-ring-track {
   fill: none;
-  stroke: rgba(150, 150, 150, 0.15);
+  stroke: rgba(var(--color-primary-rgb), 0.2);
   stroke-width: 10;
   stroke-linecap: round;
 }
@@ -82,7 +199,7 @@
   transition: none;
 }
 
-/* Icon inside ring */
+/* Trophy icon inside ring */
 .wc-hold-icon {
   position: relative;
   z-index: 1;
@@ -316,6 +433,10 @@
   .wc-celeb-btn { animation: wcFadeOnly 0.3s ease-out 0.2s both; }
   .wc-holding { transform: none; }
   .wc-hold-page { animation: wcFadeOnly 0.3s ease-out both; }
+  .wc-hold-glow,
+  .wc-hold-ring-glow { animation: none; }
+  .wc-hold-hint { animation: none; opacity: 0.7; }
+  .wc-hold-stats { animation: wcFadeOnly 0.3s ease-out both; }
 }
 
 @keyframes wcFadeOnly {

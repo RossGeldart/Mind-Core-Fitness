@@ -85,8 +85,25 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
   if (phase === 'hold') {
     return (
       <div className="wc-hold-page">
-        <h2 className="wc-hold-title">Finish Workout</h2>
-        <p className="wc-hold-hint">Hold to complete</p>
+        {/* Radial glow backdrop */}
+        <div className="wc-hold-glow" aria-hidden="true" />
+
+        <h2 className="wc-hold-title">You Crushed It!</h2>
+        {subtitle && <p className="wc-hold-subtitle">{subtitle}</p>}
+
+        {/* Stats preview */}
+        {stats && stats.length > 0 && (
+          <div className="wc-hold-stats">
+            {stats.map((s, i) => (
+              <div key={i} className="wc-hold-stat">
+                <span className="wc-hold-stat-val">{s.value}</span>
+                <span className="wc-hold-stat-label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <p className="wc-hold-hint">Hold to finish</p>
 
         <div
           className={`wc-hold-ring-touch ${holding ? 'wc-holding' : ''}`}
@@ -100,6 +117,8 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
           aria-label="Press and hold to finish workout"
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPhase('celebrate'); } }}
         >
+          {/* Pulsing glow behind ring */}
+          <div className="wc-hold-ring-glow" aria-hidden="true" />
           <svg className="wc-hold-ring-svg" viewBox="0 0 100 100">
             <circle className="wc-hold-ring-track" cx="50" cy="50" r={RING_RADIUS} />
             <circle
@@ -113,8 +132,13 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
             />
           </svg>
           <div className="wc-hold-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 6L9 17l-5-5" />
+            {/* Trophy icon */}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" />
+              <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2" />
+              <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" />
+              <path d="M9 21h6" />
+              <path d="M12 16v5" />
             </svg>
           </div>
         </div>
