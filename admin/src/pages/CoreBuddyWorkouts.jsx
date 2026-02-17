@@ -1864,7 +1864,7 @@ export default function CoreBuddyWorkouts() {
                 { value: workout.length * rounds, label: 'Intervals' },
                 { value: rounds, label: 'Rounds' },
               ]}
-              onShareJourney={shareToJourney}
+              onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}
             />
@@ -2223,7 +2223,7 @@ export default function CoreBuddyWorkouts() {
               title={`${groupLabel} Complete!`}
               subtitle={selectedMuscleSession?.name}
               stats={mgStats}
-              onShareJourney={shareToJourney}
+              onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}
             />

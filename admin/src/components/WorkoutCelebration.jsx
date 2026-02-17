@@ -138,9 +138,10 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
       setJourneyPosted(true);
       setShareToast('Posted to Journey!');
       setTimeout(() => setShareToast(null), 2500);
-    } catch {
-      setShareToast('Failed to post');
-      setTimeout(() => setShareToast(null), 2500);
+    } catch (err) {
+      console.error('Journey post failed:', err);
+      setShareToast(err?.message || 'Failed to post');
+      setTimeout(() => setShareToast(null), 3500);
     }
   }, [journeyPosted, onShareJourney, title, subtitle, stats]);
 
