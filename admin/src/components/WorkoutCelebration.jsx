@@ -3,10 +3,10 @@ import generateShareImage from '../utils/generateShareImage';
 import useFeedback from '../hooks/useFeedback';
 import './WorkoutCelebration.css';
 
-const HOLD_DURATION = 3000;
+const HOLD_DURATION = 2000;
 const RING_RADIUS = 42;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-const TICK_INTERVAL = 300; // ms between ticks during hold
+const TICK_INTERVAL = 400; // ms between clock ticks during hold
 
 const QUOTES = [
   'Another one in the bank!',
@@ -66,11 +66,13 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
       if (ringRef.current) {
         ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE - progress * RING_CIRCUMFERENCE;
       }
-      // Update logo blur/grayscale reveal
+      // Update logo blur/grayscale reveal + scale up
       if (logoRef.current) {
         const blur = 8 * (1 - progress);
         const gray = 1 - progress;
+        const scale = 1 + progress * 0.15; // 1.0 → 1.15
         logoRef.current.style.filter = `blur(${blur}px) grayscale(${gray})`;
+        logoRef.current.style.transform = `scale(${scale})`;
       }
       setHoldProgress(progress);
 
@@ -100,7 +102,10 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
     activeRef.current = false;
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     if (ringRef.current) ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE;
-    if (logoRef.current) logoRef.current.style.filter = 'blur(8px) grayscale(1)';
+    if (logoRef.current) {
+      logoRef.current.style.filter = 'blur(8px) grayscale(1)';
+      logoRef.current.style.transform = 'scale(1)';
+    }
     setHolding(false);
     setHoldProgress(0);
   }, []);
