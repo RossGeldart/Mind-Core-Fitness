@@ -104,21 +104,24 @@ export default async function generateShareImage(opts) {
   ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
   const ctaLines = wrapText(ctx, ctaText, cardW - 80);
 
-  // ── Calculate total height and center ──
-  let totalH = heroDiameter + gapHeroTitle;
-  totalH += titleLines.length * titleLineHeight;
+  // ── Calculate text block height (everything below the logo) ──
+  let textH = titleLines.length * titleLineHeight;
   if (contentLines.length > 0) {
-    totalH += gapTitleContent + contentLines.length * contentLineHeight;
+    textH += gapTitleContent + contentLines.length * contentLineHeight;
   }
-  totalH += gapContentCta + ctaLines.length * ctaLineHeight;
-  totalH += gapCtaSlogan + sloganFontSize;
+  textH += gapContentCta + ctaLines.length * ctaLineHeight;
+  textH += gapCtaSlogan + sloganFontSize;
 
-  const cardCenterY = cardY + cardH / 2;
-  let curY = cardCenterY - totalH / 2;
+  // Place text block in lower portion of card with bottom padding
+  const cardPadBottom = 60;
+  const textBlockTop = cardY + cardH - cardPadBottom - textH;
 
-  // ── Hero image (centered, dominates the card) ──
+  // Centre logo between top of card interior and top of text block
+  const cardPadTop = 40;
+  const logoZoneTop = cardY + cardPadTop;
+  const logoZoneBottom = textBlockTop - gapHeroTitle;
   const heroCX = W / 2;
-  const heroCY = curY + heroRadius;
+  const heroCY = (logoZoneTop + logoZoneBottom) / 2;
 
   // Determine which image to draw as hero
   const heroSrc = (type === 'badge' && badgeImage) ? badgeImage : '/Logo.webp';
@@ -166,7 +169,7 @@ export default async function generateShareImage(opts) {
   }
 
   // ── Title (Orbitron, bold, black) ──
-  curY = heroCY + heroRadius + gapHeroTitle;
+  let curY = textBlockTop;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = TEXT_BLACK;
