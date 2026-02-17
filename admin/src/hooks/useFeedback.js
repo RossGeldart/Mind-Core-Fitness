@@ -21,33 +21,42 @@ export default function useFeedback() {
     return ctx;
   }, []);
 
-  // Play a short sine-wave beep at a given frequency + duration
-  const beep = useCallback((freq, duration, gain = 0.08) => {
+  /** Clock tick — short percussive click like a clock hand advancing */
+  const tick = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(8);
     const ctx = getCtx();
     if (!ctx) return;
+    const t = ctx.currentTime;
+    // Sharp attack oscillator at ~800Hz, dies in ~30ms = clock tick
     const osc = ctx.createOscillator();
     const vol = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    vol.gain.value = gain;
-    // Quick fade-out to avoid click
-    vol.gain.setTargetAtTime(0, ctx.currentTime + duration * 0.8, 0.01);
+    osc.type = 'square';
+    osc.frequency.value = 800;
+    osc.frequency.setTargetAtTime(400, t + 0.005, 0.005); // quick pitch drop
+    vol.gain.value = 0.12;
+    vol.gain.setTargetAtTime(0, t + 0.008, 0.006); // very fast decay
     osc.connect(vol).connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
+    osc.start(t);
+    osc.stop(t + 0.035);
   }, [getCtx]);
 
-  /** Tap feedback — short vibration + quiet tick */
+  /** Tap feedback — slightly louder tick on initial press */
   const tap = useCallback(() => {
     if (navigator.vibrate) navigator.vibrate(15);
-    beep(600, 0.04, 0.05);
-  }, [beep]);
-
-  /** Tick during hold — subtle repeating pulse */
-  const tick = useCallback(() => {
-    if (navigator.vibrate) navigator.vibrate(10);
-    beep(440, 0.03, 0.04);
-  }, [beep]);
+    const ctx = getCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const vol = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 900;
+    osc.frequency.setTargetAtTime(450, t + 0.005, 0.005);
+    vol.gain.value = 0.18;
+    vol.gain.setTargetAtTime(0, t + 0.01, 0.008);
+    osc.connect(vol).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.04);
+  }, [getCtx]);
 
   /** Completion — strong double-pulse vibration + rising chime */
   const complete = useCallback(() => {
