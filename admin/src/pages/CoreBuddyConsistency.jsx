@@ -516,22 +516,24 @@ export default function CoreBuddyConsistency() {
                   className={`cbc-habit-tile ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   style={{ '--habit-color': habit.color }}
                 >
-                  {/* Delete / hide corner button */}
-                  <button
-                    className="cbc-habit-delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirm(habit.isCustom
-                        ? { type: 'custom', id: habit.id, label: habit.label }
-                        : { type: 'default', key: habit.key, label: habit.label }
-                      );
-                    }}
-                    aria-label={`Remove ${habit.label}`}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+                  {/* Delete / hide corner button (premium only) */}
+                  {isPremium && (
+                    <button
+                      className="cbc-habit-delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm(habit.isCustom
+                          ? { type: 'custom', id: habit.id, label: habit.label }
+                          : { type: 'default', key: habit.key, label: habit.label }
+                        );
+                      }}
+                      aria-label={`Remove ${habit.label}`}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  )}
 
                   {/* Hold-to-complete ring */}
                   <div
@@ -622,6 +624,18 @@ export default function CoreBuddyConsistency() {
               <span className="cbc-habit-hold-hint">Your own</span>
             </div>}
           </div>
+
+          {/* Premium upsell for free users */}
+          {!isPremium && (
+            <button className="cbc-premium-card" onClick={() => navigate('/upgrade')}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div className="cbc-premium-card-text">
+                <span className="cbc-premium-card-title">Unlock More Habits</span>
+                <span className="cbc-premium-card-desc">Track all 5 daily habits, add custom habits, and build streaks with Premium</span>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          )}
         </div>
 
         {/* Weekly Overview */}
