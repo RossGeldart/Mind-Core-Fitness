@@ -12,10 +12,12 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, buttonLabel = 'Done' }) {
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onShareJourney, buttonLabel = 'Done' }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [dismissing, setDismissing] = useState(false);
+  const [journeyPosted, setJourneyPosted] = useState(false);
+  const [shareToast, setShareToast] = useState(null);
 
   const ringRef = useRef(null);
   const rafRef = useRef(null);
@@ -80,6 +82,42 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
       onDone?.();
     }, 300);
   }, [onDone]);
+
+  const buildShareText = useCallback(() => {
+    const parts = [title || 'Workout Complete!'];
+    if (subtitle) parts.push(subtitle);
+    if (stats?.length) parts.push(stats.map(s => `${s.value} ${s.label}`).join(' | '));
+    parts.push('#MindCoreFitness');
+    return parts.join('\n');
+  }, [title, subtitle, stats]);
+
+  const handleShareJourney = useCallback(async () => {
+    if (journeyPosted || !onShareJourney) return;
+    try {
+      await onShareJourney(buildShareText().replace('\n#MindCoreFitness', ''));
+      setJourneyPosted(true);
+      setShareToast('Posted to Journey!');
+      setTimeout(() => setShareToast(null), 2500);
+    } catch {
+      setShareToast('Failed to post');
+      setTimeout(() => setShareToast(null), 2500);
+    }
+  }, [journeyPosted, onShareJourney, buildShareText]);
+
+  const handleShare = useCallback(async () => {
+    const text = buildShareText();
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Mind Core Fitness', text });
+      } catch { /* user cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        setShareToast('Copied to clipboard!');
+        setTimeout(() => setShareToast(null), 2500);
+      } catch { /* ignore */ }
+    }
+  }, [buildShareText]);
 
   // ─── Hold-to-Finish screen ───
   if (phase === 'hold') {
@@ -183,9 +221,35 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
           </div>
         )}
 
+        {/* Share buttons */}
+        <div className="wc-share-row">
+          {onShareJourney && (
+            <button
+              className={`wc-share-btn wc-share-journey ${journeyPosted ? 'wc-share-done' : ''}`}
+              onClick={handleShareJourney}
+              disabled={journeyPosted}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              {journeyPosted ? 'Posted!' : 'Post to Journey'}
+            </button>
+          )}
+          <button className="wc-share-btn wc-share-external" onClick={handleShare}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+            Share
+          </button>
+        </div>
+
         <button className="wc-celeb-btn" onClick={dismiss}>
           {buttonLabel}
         </button>
+
+        {/* Toast */}
+        {shareToast && <div className="wc-share-toast">{shareToast}</div>}
       </div>
     </div>
   );

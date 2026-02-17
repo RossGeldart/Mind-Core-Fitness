@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ref, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -408,6 +408,22 @@ export default function CoreBuddyProgrammes() {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   }, []);
+
+  // Share to Journey helper
+  const shareToJourney = useCallback(async (text) => {
+    if (!clientData) return;
+    await addDoc(collection(db, 'posts'), {
+      authorId: clientData.id,
+      authorName: clientData.name || 'Unknown',
+      authorPhotoURL: clientData.photoURL || null,
+      content: text,
+      type: 'text',
+      imageURL: null,
+      createdAt: serverTimestamp(),
+      likeCount: 0,
+      commentCount: 0,
+    });
+  }, [clientData]);
 
   // Audio
   const audioCtxRef = useRef(null);
@@ -1306,6 +1322,7 @@ export default function CoreBuddyProgrammes() {
               subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
               stats={pgStats}
               buttonLabel="Back to Programme"
+              onShareJourney={shareToJourney}
               onDone={() => { setShowPgFinish(false); setView('dashboard'); }}
             />
           );
@@ -1329,6 +1346,34 @@ export default function CoreBuddyProgrammes() {
                       : badge.label}
                   </div>
                 ))}
+              </div>
+              <div className="pg-badge-share-row">
+                <button className="pg-badge-share-btn" onClick={async (e) => {
+                  e.stopPropagation();
+                  const text = badgeCelebration.badges.map(b =>
+                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
+                  ).join(', ');
+                  await shareToJourney(`Badge Earned! ${text}`);
+                  showToast('Posted to Journey!', 'success');
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  Journey
+                </button>
+                <button className="pg-badge-share-btn" onClick={async (e) => {
+                  e.stopPropagation();
+                  const text = badgeCelebration.badges.map(b =>
+                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
+                  ).join(', ');
+                  const shareText = `Badge Earned! ${text}\n#MindCoreFitness`;
+                  if (navigator.share) {
+                    try { await navigator.share({ title: 'Mind Core Fitness', text: shareText }); } catch {}
+                  } else {
+                    try { await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success'); } catch {}
+                  }
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  Share
+                </button>
               </div>
               <button className="pg-badge-celebration-dismiss" onClick={() => setBadgeCelebration(null)}>
                 Tap to dismiss
