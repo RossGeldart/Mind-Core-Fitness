@@ -41,13 +41,13 @@ export default async function generateShareImage(opts) {
   ctx.fillStyle = DARK_BG;
   ctx.fillRect(0, 0, W, H);
 
-  // ── White portrait card (~80% width, ~70% height, centered) ──
-  const cardW = Math.round(W * 0.80);
-  const cardH = Math.round(H * 0.70);
+  // ── White portrait card (~82% width, ~75% height, centered) ──
+  const cardW = Math.round(W * 0.82);
+  const cardH = Math.round(H * 0.75);
   const cardX = Math.round((W - cardW) / 2);
   const cardY = Math.round((H - cardH) / 2);
-  const cardR = 24;
-  const borderWidth = 4;
+  const cardR = 28;
+  const borderWidth = 5;
 
   // Drop shadow
   ctx.save();
@@ -67,22 +67,31 @@ export default async function generateShareImage(opts) {
   ctx.stroke();
   ctx.restore();
 
-  // ── Circle-framed logo (top-center of card) ──
-  const logoRadius = 90;
+  // ── Hero logo (big, centered, dominates the card) ──
+  const logoRadius = 220;
   const logoCX = W / 2;
-  const logoCY = cardY + 160;
+  const logoCY = cardY + logoRadius + 100;
+
+  // Subtle red glow behind the circle
+  ctx.save();
+  const glow = ctx.createRadialGradient(logoCX, logoCY, logoRadius * 0.6, logoCX, logoCY, logoRadius * 1.5);
+  glow.addColorStop(0, 'rgba(161, 47, 58, 0.12)');
+  glow.addColorStop(1, 'rgba(161, 47, 58, 0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(logoCX - logoRadius * 1.5, logoCY - logoRadius * 1.5, logoRadius * 3, logoRadius * 3);
+  ctx.restore();
 
   // White circle background
   ctx.beginPath();
-  ctx.arc(logoCX, logoCY, logoRadius + 4, 0, Math.PI * 2);
+  ctx.arc(logoCX, logoCY, logoRadius + 6, 0, Math.PI * 2);
   ctx.fillStyle = CARD_WHITE;
   ctx.fill();
 
-  // Red circle border
+  // Red circle border (thicker to match scale)
   ctx.beginPath();
   ctx.arc(logoCX, logoCY, logoRadius, 0, Math.PI * 2);
   ctx.strokeStyle = ACCENT_RED;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 5;
   ctx.stroke();
 
   // Draw logo clipped to circle
@@ -90,22 +99,22 @@ export default async function generateShareImage(opts) {
     const logo = await loadImage('/Logo.webp');
     ctx.save();
     ctx.beginPath();
-    ctx.arc(logoCX, logoCY, logoRadius - 4, 0, Math.PI * 2);
+    ctx.arc(logoCX, logoCY, logoRadius - 6, 0, Math.PI * 2);
     ctx.clip();
-    const d = (logoRadius - 4) * 2;
-    ctx.drawImage(logo, logoCX - logoRadius + 4, logoCY - logoRadius + 4, d, d);
+    const d = (logoRadius - 6) * 2;
+    ctx.drawImage(logo, logoCX - logoRadius + 6, logoCY - logoRadius + 6, d, d);
     ctx.restore();
   } catch {
     // Fallback text
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = ACCENT_RED;
-    ctx.font = "bold 54px 'Orbitron', sans-serif";
+    ctx.font = "bold 80px 'Orbitron', sans-serif";
     ctx.fillText('MCF', logoCX, logoCY);
   }
 
   // ── Title (Orbitron, bold, black, punchy) ──
-  let curY = logoCY + logoRadius + 80;
+  let curY = logoCY + logoRadius + 60;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = TEXT_BLACK;
@@ -118,7 +127,7 @@ export default async function generateShareImage(opts) {
   }
 
   // ── Stats line or badge description (Montserrat, muted) ──
-  curY += 10;
+  curY += 6;
   ctx.fillStyle = TEXT_MUTED;
   ctx.font = "500 36px 'Montserrat', sans-serif";
 
