@@ -1,10 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
 import generateShareImage from '../utils/generateShareImage';
+import useFeedback from '../hooks/useFeedback';
 import './WorkoutCelebration.css';
 
 const HOLD_DURATION = 700;
 const RING_RADIUS = 42;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const TICK_INTERVAL = 180; // ms between ticks during hold
 
 const QUOTES = [
   'Another one in the bank!',
@@ -16,15 +18,19 @@ const QUOTES = [
 export default function WorkoutCelebration({ title, subtitle, stats, onDone, onShareJourney, userName, buttonLabel = 'Done' }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
+  const [holdProgress, setHoldProgress] = useState(0); // 0-1 for logo reveal
   const [dismissing, setDismissing] = useState(false);
   const [journeyPosted, setJourneyPosted] = useState(false);
   const [shareToast, setShareToast] = useState(null);
 
+  const feedback = useFeedback();
   const ringRef = useRef(null);
+  const logoRef = useRef(null);
   const rafRef = useRef(null);
   const startRef = useRef(null);
   const activeRef = useRef(false);
   const holdDoneRef = useRef(false);
+  const lastTickRef = useRef(0);
   const quoteRef = useRef(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
   const confetti = useRef(
@@ -45,16 +51,35 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
     if (activeRef.current) return;
     activeRef.current = true;
     holdDoneRef.current = false;
+    lastTickRef.current = 0;
     setHolding(true);
+    setHoldProgress(0);
     startRef.current = performance.now();
+    feedback.tap();
     if (ringRef.current) ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE;
 
     const animate = (now) => {
       const elapsed = now - startRef.current;
       const progress = Math.min(elapsed / HOLD_DURATION, 1);
+
+      // Update ring
       if (ringRef.current) {
         ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE - progress * RING_CIRCUMFERENCE;
       }
+      // Update logo blur/grayscale reveal
+      if (logoRef.current) {
+        const blur = 4 * (1 - progress);
+        const gray = 1 - progress;
+        logoRef.current.style.filter = `blur(${blur}px) grayscale(${gray})`;
+      }
+      setHoldProgress(progress);
+
+      // Tick feedback at intervals
+      if (elapsed - lastTickRef.current >= TICK_INTERVAL) {
+        lastTickRef.current = elapsed;
+        feedback.tick();
+      }
+
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(animate);
       } else {
@@ -62,19 +87,22 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
         holdDoneRef.current = true;
         rafRef.current = null;
         setHolding(false);
-        if (navigator.vibrate) navigator.vibrate(50);
+        setHoldProgress(1);
+        feedback.complete();
         setPhase('celebrate');
       }
     };
     rafRef.current = requestAnimationFrame(animate);
-  }, []);
+  }, [feedback]);
 
   const cancelHold = useCallback(() => {
     if (!activeRef.current) return;
     activeRef.current = false;
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     if (ringRef.current) ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE;
+    if (logoRef.current) logoRef.current.style.filter = 'blur(4px) grayscale(1)';
     setHolding(false);
+    setHoldProgress(0);
   }, []);
 
   const dismiss = useCallback(() => {
@@ -180,7 +208,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
           role="button"
           tabIndex={0}
           aria-label="Press and hold to finish workout"
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPhase('celebrate'); } }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); feedback.complete(); setPhase('celebrate'); } }}
         >
           {/* Pulsing glow behind ring */}
           <div className="wc-hold-ring-glow" aria-hidden="true" />
@@ -196,12 +224,15 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
               }}
             />
           </svg>
-          <div className="wc-hold-icon">
-            {/* Filled trophy icon */}
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M5 3h14v2h3v4a3 3 0 0 1-3 3h-1.07A7.001 7.001 0 0 1 13 16.93V20h3v2H8v-2h3v-3.07A7.001 7.001 0 0 1 5.07 12H5a3 3 0 0 1-3-3V5h3V3zm0 4H4v2a1 1 0 0 0 1 1V7zm14 0v3a1 1 0 0 0 1-1V7h-1z" />
-            </svg>
-          </div>
+          {/* Logo that reveals from blurred/grey → sharp/colour */}
+          <img
+            ref={logoRef}
+            src="/Logo.webp"
+            alt="Mind Core Fitness"
+            className="wc-hold-logo"
+            style={{ filter: 'blur(4px) grayscale(1)' }}
+            draggable={false}
+          />
         </div>
       </div>
     );

@@ -206,22 +206,16 @@
   transition: none;
 }
 
-/* Trophy icon inside ring */
-.wc-hold-icon {
+/* Logo reveal inside ring — starts blurred/grey, sharpens on hold */
+.wc-hold-logo {
   position: relative;
   z-index: 1;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #FFD700;
-  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
-}
-
-.wc-hold-icon svg {
-  width: 44px;
-  height: 44px;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: none; /* JS controls filter directly */
 }
 
 
@@ -547,9 +541,9 @@
     width: 160px;
     height: 160px;
   }
-  .wc-hold-icon svg {
-    width: 50px;
-    height: 50px;
+  .wc-hold-logo {
+    width: 82%;
+    height: 82%;
   }
   .wc-celeb-logo-frame {
     width: 140px;
