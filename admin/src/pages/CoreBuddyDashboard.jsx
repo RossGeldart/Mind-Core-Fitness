@@ -1704,7 +1704,7 @@ export default function CoreBuddyDashboard() {
                       </button>
                     </div>
 
-                    {/* Clean share card — white card, red border, circle logo */}
+                    {/* Clean share card — white card, red border, big logo, CTA */}
                     {post.type === 'workout_summary' && post.metadata ? (
                       <div className="journey-card">
                         <div className="journey-card-logo-frame">
@@ -1719,6 +1719,7 @@ export default function CoreBuddyDashboard() {
                         {!post.metadata.stats?.length && post.metadata.subtitle && (
                           <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
                         )}
+                        <p className="journey-card-cta">I just completed a workout using Core Buddy 💪🏻</p>
                         <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : post.type === 'badge_earned' && post.metadata ? (
@@ -1732,6 +1733,7 @@ export default function CoreBuddyDashboard() {
                             {post.metadata.badges.join('  \u00B7  ')}
                           </p>
                         )}
+                        <p className="journey-card-cta">I just completed a workout using Core Buddy 💪🏻</p>
                         <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : (
