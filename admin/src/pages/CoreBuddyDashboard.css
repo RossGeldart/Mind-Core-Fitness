@@ -1421,10 +1421,10 @@
 .journey-post-image img { width: 100%; display: block; border-radius: 12px; }
 
 /* ─── Share Cards (workout_summary / badge_earned) ─── */
-/* White card, red accent border, drop shadow, circle logo, dark text */
+/* White card, red accent border, big hero logo, dark text */
 .journey-card {
   border-radius: 16px;
-  padding: 20px 18px 14px;
+  padding: 22px 18px 14px;
   margin-bottom: 10px;
   background: #ffffff;
   border: 2px solid #A12F3A;
@@ -1438,14 +1438,15 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Circle-framed logo (top-center) ── */
+/* ── Hero logo (big, centered, pops) ── */
 .journey-card-logo-frame {
-  width: 64px; height: 64px;
+  width: 120px; height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #A12F3A;
-  margin-bottom: 12px;
+  border: 3px solid #A12F3A;
+  margin-bottom: 14px;
   flex-shrink: 0;
+  box-shadow: 0 0 24px rgba(161, 47, 58, 0.15);
 }
 .journey-card-logo-img {
   width: 100%; height: 100%;
