@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, addD
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTier } from '../contexts/TierContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
@@ -57,6 +58,7 @@ function getWeekDates(monday) {
 export default function CoreBuddyConsistency() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme, accent } = useTheme();
+  const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
 
   const [habitLogs, setHabitLogs] = useState({});
@@ -97,10 +99,11 @@ export default function CoreBuddyConsistency() {
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   // Merged habits list (exclude hidden defaults)
-  const allHabits = [
+  const allHabitsRaw = [
     ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)),
     ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: CUSTOM_COLOR, isCustom: true, id: h.id })),
   ];
+  const allHabits = isPremium ? allHabitsRaw : allHabitsRaw.slice(0, FREE_HABIT_LIMIT);
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
@@ -608,8 +611,8 @@ export default function CoreBuddyConsistency() {
               );
             })}
 
-            {/* Add Habit Tile */}
-            <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
+            {/* Add Habit Tile (premium only) */}
+            {isPremium && <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
               <div className="cbc-add-ring">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -617,7 +620,7 @@ export default function CoreBuddyConsistency() {
               </div>
               <span className="cbc-habit-label">Add Habit</span>
               <span className="cbc-habit-hold-hint">Your own</span>
-            </div>
+            </div>}
           </div>
         </div>
 
