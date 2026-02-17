@@ -1452,32 +1452,34 @@ export default function CoreBuddyDashboard() {
               </div>
               <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>
-            <div className="cb-card-preview-row">
-              <div className="cb-mini-rings">
-                {[
-                  { label: 'P', pct: nutPct('protein'), color: '#14b8a6' },
-                  { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
-                  { label: 'F', pct: nutPct('fats'), color: '#eab308' },
-                  { label: 'Cal', pct: nutPct('calories'), color: '#38B6FF' },
-                ].map((ring) => {
-                  const r = 38;
-                  const circ = 2 * Math.PI * r;
-                  const off = circ - (ring.pct / 100) * circ;
-                  return (
-                    <div key={ring.label} className="cb-mini-ring">
-                      <svg viewBox="0 0 100 100">
-                        <circle className="cb-mini-track" cx="50" cy="50" r={r} />
-                        <circle className="cb-mini-fill" cx="50" cy="50" r={r}
-                          style={{ stroke: ring.color }}
-                          strokeDasharray={circ}
-                          strokeDashoffset={off} />
-                      </svg>
-                      <span style={{ color: ring.color }}>{ring.label}</span>
-                    </div>
-                  );
-                })}
+            {isPremium && (
+              <div className="cb-card-preview-row">
+                <div className="cb-mini-rings">
+                  {[
+                    { label: 'P', pct: nutPct('protein'), color: '#14b8a6' },
+                    { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
+                    { label: 'F', pct: nutPct('fats'), color: '#eab308' },
+                    { label: 'Cal', pct: nutPct('calories'), color: '#38B6FF' },
+                  ].map((ring) => {
+                    const r = 38;
+                    const circ = 2 * Math.PI * r;
+                    const off = circ - (ring.pct / 100) * circ;
+                    return (
+                      <div key={ring.label} className="cb-mini-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="cb-mini-track" cx="50" cy="50" r={r} />
+                          <circle className="cb-mini-fill" cx="50" cy="50" r={r}
+                            style={{ stroke: ring.color }}
+                            strokeDasharray={circ}
+                            strokeDashoffset={off} />
+                        </svg>
+                        <span style={{ color: ring.color }}>{ring.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
             <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
           </button>
 

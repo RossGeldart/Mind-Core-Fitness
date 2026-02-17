@@ -974,7 +974,8 @@
 }
 
 .cb-card-locked {
-  opacity: 0.55;
+  opacity: 0.4;
+  filter: grayscale(1);
 }
 
 .cb-card-locked:hover {
@@ -1885,7 +1886,8 @@
 
 /* Premium tier gating */
 .cb-card-locked {
-  opacity: 0.55;
+  opacity: 0.4;
+  filter: grayscale(1);
   position: relative;
 }
 
