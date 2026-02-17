@@ -1704,12 +1704,49 @@ export default function CoreBuddyDashboard() {
                       </button>
                     </div>
 
-                    {post.content && <p className="journey-post-content">{renderWithMentions(post.content)}</p>}
-
-                    {post.imageURL && (
-                      <div className="journey-post-image">
-                        <img src={post.imageURL} alt="Post" loading="lazy" />
+                    {/* Structured workout summary card */}
+                    {post.type === 'workout_summary' && post.metadata ? (
+                      <div className="journey-card journey-card-workout">
+                        <div className="journey-card-header">
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M5 3h14v2h3v4a3 3 0 0 1-3 3h-1.07A7.001 7.001 0 0 1 13 16.93V20h3v2H8v-2h3v-3.07A7.001 7.001 0 0 1 5.07 12H5a3 3 0 0 1-3-3V5h3V3zm0 4H4v2a1 1 0 0 0 1 1V7zm14 0v3a1 1 0 0 0 1-1V7h-1z"/></svg>
+                          <span className="journey-card-title">{post.metadata.title}</span>
+                        </div>
+                        {post.metadata.subtitle && <p className="journey-card-subtitle">{post.metadata.subtitle}</p>}
+                        {post.metadata.stats?.length > 0 && (
+                          <div className="journey-card-stats">
+                            {post.metadata.stats.map((s, i) => (
+                              <div key={i} className="journey-card-stat">
+                                <span className="journey-card-stat-val">{s.value}</span>
+                                <span className="journey-card-stat-label">{s.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {post.metadata.quote && <p className="journey-card-quote">&ldquo;{post.metadata.quote}&rdquo;</p>}
                       </div>
+                    ) : post.type === 'badge_earned' && post.metadata ? (
+                      <div className="journey-card journey-card-badge">
+                        <div className="journey-card-header">
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          <span className="journey-card-title">{post.metadata.title}</span>
+                        </div>
+                        {post.metadata.badges?.length > 0 && (
+                          <div className="journey-card-badges">
+                            {post.metadata.badges.map((b, i) => (
+                              <span key={i} className="journey-card-badge-tag">{b}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        {post.content && <p className="journey-post-content">{renderWithMentions(post.content)}</p>}
+                        {post.imageURL && (
+                          <div className="journey-post-image">
+                            <img src={post.imageURL} alt="Post" loading="lazy" />
+                          </div>
+                        )}
+                      </>
                     )}
 
                     <div className="journey-post-actions">
