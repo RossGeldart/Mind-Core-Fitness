@@ -125,7 +125,10 @@ export default function UpgradePage() {
       </div>
 
       <div className="upgrade-plans">
-        <div className="plan-card">
+        <div className="plan-card plan-coming-soon">
+          <div className="plan-coming-soon-overlay">
+            <span>Coming Soon</span>
+          </div>
           <div className="plan-name">Monthly</div>
           <div className="plan-price">
             <span className="plan-amount">£19.99</span>
@@ -136,16 +139,13 @@ export default function UpgradePage() {
             <li>All premium features</li>
             <li>Cancel anytime</li>
           </ul>
-          <button
-            className="plan-cta"
-            onClick={() => handleSelectPlan('monthly')}
-            disabled={!!loading}
-          >
-            {loading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
-          </button>
+          <div className="plan-cta">Coming Soon</div>
         </div>
 
-        <div className="plan-card plan-card-featured">
+        <div className="plan-card plan-card-featured plan-coming-soon">
+          <div className="plan-coming-soon-overlay">
+            <span>Coming Soon</span>
+          </div>
           <div className="plan-badge-save">Best Value — Save 17%</div>
           <div className="plan-name">Annual</div>
           <div className="plan-price">
@@ -157,13 +157,7 @@ export default function UpgradePage() {
             <li>All premium features</li>
             <li>Best value</li>
           </ul>
-          <button
-            className="plan-cta plan-cta-featured"
-            onClick={() => handleSelectPlan('annual')}
-            disabled={!!loading}
-          >
-            {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
-          </button>
+          <div className="plan-cta plan-cta-featured">Coming Soon</div>
         </div>
 
         {/* Core Buddy AI section header */}
