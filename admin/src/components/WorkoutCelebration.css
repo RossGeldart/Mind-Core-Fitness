@@ -27,9 +27,9 @@
     -webkit-backdrop-filter: blur(0px);
   }
   to {
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 }
 
@@ -58,7 +58,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin: 0;
   position: relative;
   z-index: 1;
@@ -68,7 +68,7 @@
   font-family: 'Montserrat', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.75);
   margin: 0;
   position: relative;
   z-index: 1;
@@ -95,27 +95,22 @@
   align-items: center;
   gap: 2px;
   padding: 10px 16px;
-  background: rgba(var(--color-primary-rgb), 0.06);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-}
-
-[data-theme="dark"] .wc-hold-stat {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .wc-hold-stat-val {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #ffffff;
 }
 
 .wc-hold-stat-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.6rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -123,7 +118,7 @@
 .wc-hold-hint {
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.6);
   margin: 12px 0 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -220,7 +215,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
+  color: #FFD700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
 }
 
 .wc-hold-icon svg {

@@ -132,13 +132,9 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, but
             />
           </svg>
           <div className="wc-hold-icon">
-            {/* Trophy icon */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" />
-              <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2" />
-              <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" />
-              <path d="M9 21h6" />
-              <path d="M12 16v5" />
+            {/* Filled trophy icon */}
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M5 3h14v2h3v4a3 3 0 0 1-3 3h-1.07A7.001 7.001 0 0 1 13 16.93V20h3v2H8v-2h3v-3.07A7.001 7.001 0 0 1 5.07 12H5a3 3 0 0 1-3-3V5h3V3zm0 4H4v2a1 1 0 0 0 1 1V7zm14 0v3a1 1 0 0 0 1-1V7h-1z" />
             </svg>
           </div>
         </div>
