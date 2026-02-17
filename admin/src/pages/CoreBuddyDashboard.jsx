@@ -907,8 +907,8 @@ export default function CoreBuddyDashboard() {
   // Priority-based smart nudge
   const nudge = (() => {
     if (!statsLoaded) return null;
-    // 1. Active programme with next session
-    if (hasProgramme && nextSession && !programmeComplete) {
+    // 1. Active programme with next session (premium only)
+    if (isPremium && hasProgramme && nextSession && !programmeComplete) {
       return {
         label: 'NEXT SESSION',
         message: `Week ${nextSession.week}, Day ${nextSession.dayIdx + 1} — ${nextSession.label}`,
@@ -918,8 +918,8 @@ export default function CoreBuddyDashboard() {
         ringLabel: `${programmePct}%`,
       };
     }
-    // 2. Habits not all done
-    if (todayHabitsCount < HABIT_COUNT) {
+    // 2. Habits not all done (premium only)
+    if (isPremium && todayHabitsCount < HABIT_COUNT) {
       return {
         label: 'DAILY HABITS',
         message: `${todayHabitsCount}/${HABIT_COUNT} completed`,
@@ -929,8 +929,8 @@ export default function CoreBuddyDashboard() {
         ringLabel: `${todayHabitsCount}/${HABIT_COUNT}`,
       };
     }
-    // 3. No nutrition logged
-    if (nutritionTotals.calories === 0) {
+    // 3. No nutrition logged (premium only)
+    if (isPremium && nutritionTotals.calories === 0) {
       return {
         label: 'NUTRITION',
         message: 'No meals logged today',
@@ -940,8 +940,8 @@ export default function CoreBuddyDashboard() {
         ringLabel: '0',
       };
     }
-    // 4. No programme active
-    if (!hasProgramme) {
+    // 4. No programme active (premium only)
+    if (isPremium && !hasProgramme) {
       return {
         label: 'PROGRAMMES',
         message: 'Start a programme to level up',
@@ -951,8 +951,8 @@ export default function CoreBuddyDashboard() {
         ringLabel: '\u2014',
       };
     }
-    // 5. Programme complete
-    if (programmeComplete) {
+    // 5. Programme complete (premium only)
+    if (isPremium && programmeComplete) {
       return {
         label: 'COMPLETE',
         message: 'Programme finished!',
@@ -1258,7 +1258,7 @@ export default function CoreBuddyDashboard() {
                       <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
                         setNotifOpen(false);
                         if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
-                          navigate('/client/core-buddy/buddies');
+                          navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
                         } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
                           // Expand comments and load them if needed
                           if (!expandedComments.has(n.postId)) {

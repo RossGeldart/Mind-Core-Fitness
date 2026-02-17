@@ -114,3 +114,24 @@
 .block-nav-tab:not(.active):hover {
   color: var(--text-secondary);
 }
+
+/* Locked nav tabs (free tier) */
+.block-nav-tab.nav-locked {
+  opacity: 0.4;
+}
+
+.nav-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-lock-icon {
+  position: absolute;
+  bottom: -2px;
+  right: -6px;
+  width: 10px;
+  height: 10px;
+  color: var(--color-primary);
+}
