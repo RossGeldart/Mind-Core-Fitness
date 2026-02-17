@@ -9,6 +9,7 @@ import { useTier } from '../contexts/TierContext';
 import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import WorkoutCelebration from '../components/WorkoutCelebration';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
@@ -1836,39 +1837,15 @@ export default function CoreBuddyWorkouts() {
     const totalTime = workout.length * rounds * (config.work + config.rest);
     return (
       <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <div className="wk-complete">
-          <div className="wk-complete-ring">
-            <svg className="wk-complete-svg" viewBox="0 0 200 200">
-              {TICKS_78_94.map((t, i) => (
-                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                  className="wk-tick-complete"
-                  strokeWidth={t.thick ? '3.5' : '2'}
-                  style={{ animationDelay: `${i * 0.02}s` }} />
-              ))}
-            </svg>
-            <div className="wk-complete-center">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            </div>
-          </div>
-          <h2 className="wk-complete-title">Workout Complete!</h2>
-          <div className="wk-complete-stats">
-            <div className="wk-stat">
-              <span className="wk-stat-val">{Math.ceil(totalTime / 60)}</span>
-              <span className="wk-stat-label">Minutes</span>
-            </div>
-            <div className="wk-stat">
-              <span className="wk-stat-val">{workout.length * rounds}</span>
-              <span className="wk-stat-label">Intervals</span>
-            </div>
-            <div className="wk-stat">
-              <span className="wk-stat-val">{rounds}</span>
-              <span className="wk-stat-label">Rounds</span>
-            </div>
-          </div>
-          <div className="wk-complete-actions">
-            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}>Done</button>
-          </div>
-        </div>
+        <WorkoutCelebration
+          title="Workout Complete!"
+          stats={[
+            { value: Math.ceil(totalTime / 60), label: 'Minutes' },
+            { value: workout.length * rounds, label: 'Intervals' },
+            { value: rounds, label: 'Rounds' },
+          ]}
+          onDone={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}
+        />
       </div>
     );
   }
@@ -2215,44 +2192,20 @@ export default function CoreBuddyWorkouts() {
     const totalVolume = mgLogs.reduce((sum, l) =>
       sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
     const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
+    const mgStats = [
+      { value: mgLogs.length, label: 'Exercises' },
+      { value: totalSets, label: 'Sets' },
+    ];
+    if (totalVolume > 0) mgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
+
     return (
       <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <div className="wk-complete">
-          <div className="wk-complete-ring">
-            <svg className="wk-complete-svg" viewBox="0 0 200 200">
-              {TICKS_78_94.map((t, i) => (
-                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                  className="wk-tick-complete"
-                  strokeWidth={t.thick ? '3.5' : '2'}
-                  style={{ animationDelay: `${i * 0.02}s` }} />
-              ))}
-            </svg>
-            <div className="wk-complete-center">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            </div>
-          </div>
-          <h2 className="wk-complete-title">{groupLabel} Complete!</h2>
-          <p className="mg-complete-session-name">{selectedMuscleSession?.name}</p>
-          <div className="wk-complete-stats">
-            <div className="wk-stat">
-              <span className="wk-stat-val">{mgLogs.length}</span>
-              <span className="wk-stat-label">Exercises</span>
-            </div>
-            <div className="wk-stat">
-              <span className="wk-stat-val">{totalSets}</span>
-              <span className="wk-stat-label">Sets</span>
-            </div>
-            {totalVolume > 0 && (
-              <div className="wk-stat">
-                <span className="wk-stat-val">{Math.round(totalVolume).toLocaleString()}</span>
-                <span className="wk-stat-label">Volume (kg)</span>
-              </div>
-            )}
-          </div>
-          <div className="wk-complete-actions">
-            <button className="wk-btn-primary" onClick={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}>Done</button>
-          </div>
-        </div>
+        <WorkoutCelebration
+          title={`${groupLabel} Complete!`}
+          subtitle={selectedMuscleSession?.name}
+          stats={mgStats}
+          onDone={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}
+        />
 
         {/* Badge celebration overlay */}
         {mgBadgeCelebration && (
