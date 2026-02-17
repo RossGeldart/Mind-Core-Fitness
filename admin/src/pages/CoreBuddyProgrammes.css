@@ -1136,6 +1136,39 @@
   border-radius: 10px;
 }
 
+.pg-badge-share-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pg-badge-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 50px;
+  color: #f59e0b;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.pg-badge-share-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.pg-badge-share-btn:active {
+  transform: scale(0.95);
+}
+
 .pg-badge-celebration-dismiss {
   background: none;
   border: none;
