@@ -10,17 +10,16 @@ export function useTier() {
 // Features that require premium access
 const PREMIUM_FEATURES = [
   'nutrition',
-  'consistency',
   'personalBests',
   'achievements',
   'buddies',
   'programmes',
-  'leaderboard',
 ];
 
-// Free users: only 5 & 10 min, once per week
+// Free users: only 5 & 10 min, 3 per week, 1 habit
 const FREE_RANDOMISER_DURATIONS = [5, 10];
 const FREE_RANDOMISER_WEEKLY_LIMIT = 3;
+const FREE_HABIT_LIMIT = 1;
 
 export function TierProvider({ children }) {
   const { clientData, loading } = useAuth();
@@ -45,6 +44,7 @@ export function TierProvider({ children }) {
       loading,
       FREE_RANDOMISER_DURATIONS,
       FREE_RANDOMISER_WEEKLY_LIMIT,
+      FREE_HABIT_LIMIT,
     };
   }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource, loading]);
 

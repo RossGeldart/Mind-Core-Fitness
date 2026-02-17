@@ -918,8 +918,8 @@ export default function CoreBuddyDashboard() {
         ringLabel: `${programmePct}%`,
       };
     }
-    // 2. Habits not all done (premium only)
-    if (isPremium && todayHabitsCount < HABIT_COUNT) {
+    // 2. Habits not all done
+    if (todayHabitsCount < HABIT_COUNT) {
       return {
         label: 'DAILY HABITS',
         message: `${todayHabitsCount}/${HABIT_COUNT} completed`,
@@ -1498,11 +1498,11 @@ export default function CoreBuddyDashboard() {
           {/* 3 & 4. Habits + PBs — 2-column grid */}
           <div className="cb-grid-row">
             <button
-              className={`cb-feature-card cb-grid-card cb-card-consistency ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
-              onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/core-buddy/consistency' : '/upgrade'); }}
+              className="cb-feature-card cb-grid-card cb-card-consistency ripple-btn"
+              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
             >
               <div className="cb-card-content">
-                <h3>Habits {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
+                <h3>Habits</h3>
                 <div className="cb-habit-dots">
                   {Array.from({ length: HABIT_COUNT }, (_, i) => (
                     <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
@@ -1541,11 +1541,11 @@ export default function CoreBuddyDashboard() {
 
           {/* 6. Leaderboard */}
           <button
-            className={`cb-feature-card cb-card-leaderboard ripple-btn${!isPremium ? ' cb-card-locked' : ''}`}
-            onClick={(e) => { createRipple(e); navigate(isPremium ? '/client/leaderboard' : '/upgrade'); }}
+            className="cb-feature-card cb-card-leaderboard ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
           >
             <div className="cb-card-content">
-              <h3>Leaderboard {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h3>
+              <h3>Leaderboard</h3>
               {leaderboardTop3.length > 0 ? (
                 <div className="cb-lb-preview">
                   {leaderboardTop3.map((entry, idx) => {
