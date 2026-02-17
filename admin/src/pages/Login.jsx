@@ -175,12 +175,13 @@ export default function Login() {
               Forgot password?
             </button>
 
-            <div className="login-signup-wrapper login-coming-soon">
-              <div className="login-coming-soon-overlay"><span>Coming Soon</span></div>
-              <button type="button" className="login-btn login-btn-outline">
-                Don't have an account? Create one free
-              </button>
-            </div>
+            <button
+              type="button"
+              className="login-btn login-btn-outline"
+              onClick={() => navigate('/signup')}
+            >
+              Don't have an account? Create one free
+            </button>
 
           </>
         )}

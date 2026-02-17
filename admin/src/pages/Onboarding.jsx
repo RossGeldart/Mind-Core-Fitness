@@ -375,7 +375,10 @@ export default function Onboarding() {
             </button>
 
             {/* Monthly */}
-            <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
+            <div className="ob-plan-card ob-plan-coming-soon">
+              <div className="ob-plan-coming-soon-overlay">
+                <span>Coming Soon</span>
+              </div>
               <div className="ob-plan-badge">Most Popular</div>
               <div className="ob-plan-name">Monthly</div>
               <div className="ob-plan-price">
@@ -388,13 +391,14 @@ export default function Onboarding() {
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
               </ul>
-              <div className="ob-plan-cta">
-                {checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
-              </div>
-            </button>
+              <div className="ob-plan-cta">Coming Soon</div>
+            </div>
 
             {/* Annual */}
-            <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
+            <div className="ob-plan-card ob-plan-coming-soon">
+              <div className="ob-plan-coming-soon-overlay">
+                <span>Coming Soon</span>
+              </div>
               <div className="ob-plan-badge">Best Value — Save 17%</div>
               <div className="ob-plan-name">Annual</div>
               <div className="ob-plan-price">
@@ -407,10 +411,8 @@ export default function Onboarding() {
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
               </ul>
-              <div className="ob-plan-cta ob-plan-cta-featured">
-                {checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}
-              </div>
-            </button>
+              <div className="ob-plan-cta">Coming Soon</div>
+            </div>
 
             {/* Core Buddy AI section header */}
             <div className="ob-plan-divider">
