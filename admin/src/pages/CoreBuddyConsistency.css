@@ -278,38 +278,38 @@
   height: 32px;
 }
 
-/* Completed — keep icon fully visible */
+/* Completed — icon powered-up look */
 .cbc-ring-completed .cbc-habit-ring-icon {
   opacity: 1;
+  filter: brightness(1.3);
 }
 
-/* Checkmark overlay — no colour fill, just the tick */
-.cbc-habit-check-overlay {
+/* ====== Glowing Orb (completed state) ====== */
+.cbc-habit-glow-orb {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
+  width: 60%;
+  height: 60%;
   border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--habit-color) 40%, transparent) 0%,
+    color-mix(in srgb, var(--habit-color) 15%, transparent) 50%,
+    transparent 70%
+  );
+  z-index: 0;
+  animation: glowOrbIn 0.4s ease-out forwards, glowBreath 2.5s ease-in-out 0.4s infinite;
+  pointer-events: none;
 }
 
-.cbc-habit-check-overlay svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--habit-color, var(--color-primary));
-}
-
-/* Animate checkmark in */
-.cbc-check-animate {
-  animation: checkFlash 1s ease-out forwards;
-}
-
-@keyframes checkFlash {
-  0%   { opacity: 0; transform: scale(0.5); }
-  20%  { opacity: 1; transform: scale(1.1); }
-  40%  { opacity: 1; transform: scale(1); }
+@keyframes glowOrbIn {
+  0%   { opacity: 0; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.15); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowBreath {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%      { transform: scale(1.12); opacity: 0.8; }
 }
 
 /* Habit label (below ring) */
@@ -890,7 +890,7 @@
 
   .cbc-holding { transform: none; }
   .cbc-habit-just-checked .cbc-habit-ring-touch { animation: none; }
-  .cbc-check-animate { animation: celebFadeOnly 0.3s ease-out both; }
+  .cbc-habit-glow-orb { animation: celebFadeOnly 0.3s ease-out both; }
 }
 
 @keyframes celebFadeOnly {
