@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import WorkoutCelebration from '../components/WorkoutCelebration';
 
 
 const DEFAULT_HABITS = [
@@ -350,6 +351,23 @@ export default function CoreBuddyConsistency() {
     }, 300);
   };
 
+  const shareToJourney = useCallback(async (data) => {
+    if (!clientData) throw new Error('Not signed in');
+    const isStructured = data && typeof data === 'object' && data.type;
+    await addDoc(collection(db, 'posts'), {
+      authorId: clientData.id,
+      authorName: clientData.name || 'Unknown',
+      authorPhotoURL: clientData.photoURL || null,
+      content: isStructured ? '' : data,
+      type: isStructured ? data.type : 'text',
+      imageURL: null,
+      createdAt: serverTimestamp(),
+      likeCount: 0,
+      commentCount: 0,
+      ...(isStructured ? { metadata: { title: data.title || '', subtitle: data.subtitle || '', stats: data.stats || [], quote: data.quote || '', badges: data.badges || [] } } : {}),
+    });
+  }, [clientData]);
+
   // Add custom habit
   const addCustomHabit = async () => {
     const name = newHabitName.trim();
@@ -686,55 +704,18 @@ export default function CoreBuddyConsistency() {
 
       {/* ===== Fullscreen Celebration Overlay ===== */}
       {showCelebration && (
-        <div
-          className={`cbc-celeb-overlay ${celebrationDismissing ? 'cbc-celeb-dismissing' : ''}`}
-          onClick={dismissCelebration}
-          role="dialog"
-          aria-modal="true"
-          aria-label="All habits complete celebration"
-        >
-          {/* Confetti */}
-          <div className="cbc-celeb-confetti" aria-hidden="true">
-            {confettiRef.current.map((c, i) => (
-              <span key={i} className={`cbc-celeb-confetti-piece cbc-confetti-shape-${c.shape}`} style={{
-                '--x': `${c.x}%`,
-                '--delay': `${c.delay}s`,
-                '--color': c.color,
-                '--drift': `${c.drift}px`,
-                '--spin': `${c.spin}deg`,
-                '--duration': `${c.duration}s`,
-                width: `${c.width}px`,
-                height: `${c.height}px`,
-              }} />
-            ))}
-          </div>
-
-          {/* Content */}
-          <div className="cbc-celeb-content" onClick={e => e.stopPropagation()}>
-            {/* Logo circle */}
-            <div className="cbc-celeb-logo-frame">
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="cbc-celeb-logo-img" />
-            </div>
-
-            {/* Heading */}
-            <h2 className="cbc-celeb-heading">All Habits Complete!</h2>
-
-            {/* Sub-text */}
-            <p className="cbc-celeb-subtext">{celebrationQuoteRef.current}</p>
-
-            {/* Stats line */}
-            <p className="cbc-celeb-stats">{todayCompleted}/{allHabits.length} habits · Day {streak || 1}</p>
-
-            {/* Continue button */}
-            <button
-              ref={celebrationBtnRef}
-              className="cbc-celeb-btn"
-              onClick={dismissCelebration}
-            >
-              Keep Going
-            </button>
-          </div>
-        </div>
+        <WorkoutCelebration
+          title="All Habits Complete!"
+          subtitle={celebrationQuoteRef.current}
+          stats={[
+            { value: `${todayCompleted}/${allHabits.length}`, label: 'Habits' },
+            { value: streak || 1, label: 'Day Streak' },
+          ]}
+          buttonLabel="Keep Going"
+          onShareJourney={clientData ? shareToJourney : null}
+          userName={clientData?.name}
+          onDone={() => { setShowCelebration(false); setCelebrationDismissing(false); }}
+        />
       )}
 
       {toast && (
