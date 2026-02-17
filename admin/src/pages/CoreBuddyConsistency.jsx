@@ -712,6 +712,8 @@ export default function CoreBuddyConsistency() {
             { value: streak || 1, label: 'Day Streak' },
           ]}
           buttonLabel="Keep Going"
+          holdLabel="Hold To Complete Today's Habits"
+          shareType="habits"
           onShareJourney={clientData ? shareToJourney : null}
           userName={clientData?.name}
           onDone={() => { setShowCelebration(false); setCelebrationDismissing(false); }}
