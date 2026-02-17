@@ -152,45 +152,55 @@
   letter-spacing: 0.5px;
 }
 
-/* ====== Habit Cards ====== */
-.cbc-habits {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ====== Habit Grid — 2 columns ====== */
+.cbc-habits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-.cbc-habit-btn {
+/* Individual habit tile */
+.cbc-habit-tile {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 18px 16px;
+  gap: 8px;
+  padding: 20px 10px 16px;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  border-left: 5px solid var(--habit-color, var(--border-color));
-  border-radius: 16px;
-  font-family: inherit;
-  text-align: left;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.25s ease;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-/* Done state — tinted background using the habit's colour */
+/* Done state — tinted background */
 .cbc-habit-done {
   background: color-mix(in srgb, var(--habit-color) 8%, var(--bg-card));
-  border-top-color: color-mix(in srgb, var(--habit-color) 25%, var(--border-color));
-  border-right-color: color-mix(in srgb, var(--habit-color) 25%, var(--border-color));
-  border-bottom-color: color-mix(in srgb, var(--habit-color) 25%, var(--border-color));
+  border-color: color-mix(in srgb, var(--habit-color) 20%, rgba(0, 0, 0, 0.06));
 }
 
-/* ====== Hold-to-Complete Ring ====== */
+/* Dark mode tiles */
+[data-theme="dark"] .cbc-habit-tile {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .cbc-habit-done {
+  background: color-mix(in srgb, var(--habit-color) 12%, rgba(30, 30, 30, 0.8));
+  border-color: color-mix(in srgb, var(--habit-color) 25%, rgba(255, 255, 255, 0.06));
+}
+
+/* ====== Hold-to-Complete Ring (large) ====== */
 .cbc-habit-ring-touch {
   position: relative;
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,7 +213,7 @@
 
 .cbc-habit-ring-touch:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 /* Scale up while holding */
@@ -233,14 +243,14 @@
 
 .cbc-habit-ring-track {
   fill: none;
-  stroke: rgba(150, 150, 150, 0.2);
-  stroke-width: 3;
+  stroke: rgba(150, 150, 150, 0.15);
+  stroke-width: 5;
   stroke-linecap: round;
 }
 
 .cbc-habit-ring-fill {
   fill: none;
-  stroke-width: 3;
+  stroke-width: 5;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease-out;
 }
@@ -250,7 +260,7 @@
   transition: none;
 }
 
-/* Completed ring — show full fill */
+/* Completed ring */
 .cbc-ring-completed .cbc-habit-ring-fill {
   transition: stroke-dashoffset 0.3s ease-out;
 }
@@ -259,8 +269,8 @@
 .cbc-habit-ring-icon {
   position: relative;
   z-index: 1;
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -268,8 +278,8 @@
 }
 
 .cbc-habit-ring-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
 }
 
 /* Completed icon gets slight opacity reduction */
@@ -290,11 +300,11 @@
 }
 
 .cbc-habit-check-overlay svg {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
 }
 
-/* Animate checkmark in then fade to persistent state */
+/* Animate checkmark in */
 .cbc-check-animate {
   animation: checkFlash 1s ease-out forwards;
 }
@@ -306,22 +316,16 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Habit text area */
-.cbc-habit-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
+/* Habit label (below ring) */
 .cbc-habit-label {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary);
   transition: color 0.2s;
   letter-spacing: 0.3px;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .cbc-habit-done .cbc-habit-label {
@@ -330,7 +334,7 @@
 
 .cbc-habit-done-tag {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: #4caf50;
   text-transform: uppercase;
@@ -339,16 +343,18 @@
 
 .cbc-habit-hold-hint {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--text-tertiary);
   letter-spacing: 0.3px;
 }
 
-/* Delete button for custom habits */
+/* Delete button — top-right corner of tile */
 .cbc-habit-delete {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -359,63 +365,54 @@
   justify-content: center;
   transition: all 0.2s;
   -webkit-tap-highlight-color: transparent;
+  opacity: 0.4;
+  z-index: 2;
 }
 
 .cbc-habit-delete:hover {
   background: rgba(211, 47, 47, 0.1);
   color: #d32f2f;
+  opacity: 1;
 }
 
-/* Dark mode habit cards — matches dashboard card style */
-[data-theme="dark"] .cbc-habit-btn {
-  background: rgba(30, 30, 30, 0.8);
-  border-color: rgba(255, 255, 255, 0.06);
-  border-left: 5px solid var(--habit-color, rgba(255, 255, 255, 0.06));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-[data-theme="dark"] .cbc-habit-done {
-  background: color-mix(in srgb, var(--habit-color) 12%, rgba(30, 30, 30, 0.8));
-  border-top-color: color-mix(in srgb, var(--habit-color) 30%, rgba(255, 255, 255, 0.06));
-  border-right-color: color-mix(in srgb, var(--habit-color) 30%, rgba(255, 255, 255, 0.06));
-  border-bottom-color: color-mix(in srgb, var(--habit-color) 30%, rgba(255, 255, 255, 0.06));
-}
-
-/* ====== Add Habit Button ====== */
-.cbc-add-habit-btn {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  background: transparent;
-  border: 2px dashed var(--border-color);
-  border-radius: 16px;
+/* ====== Add Habit Tile ====== */
+.cbc-add-tile {
   cursor: pointer;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
+  border: 2px dashed var(--border-color);
+  background: transparent;
+  box-shadow: none;
 }
 
-.cbc-add-habit-btn:hover {
+.cbc-add-tile:hover {
   border-color: var(--color-primary);
-  color: var(--color-primary);
   background: var(--color-primary-light);
 }
 
-.cbc-add-habit-icon {
-  width: 44px;
-  height: 44px;
+.cbc-add-tile:hover .cbc-habit-label,
+.cbc-add-tile:hover .cbc-habit-hold-hint {
+  color: var(--color-primary);
+}
+
+.cbc-add-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
   background: var(--color-primary-light);
   color: var(--color-primary);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .cbc-add-tile {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+}
+
+[data-theme="dark"] .cbc-add-tile:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.08);
 }
 
 /* ====== Modal ====== */
@@ -685,7 +682,7 @@
 .cbc-particles {
   position: absolute;
   top: 50%;
-  left: 38px;
+  left: 50%;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -919,6 +916,16 @@
   .cbc-day-ring svg {
     width: 48px;
     height: 48px;
+  }
+
+  .cbc-habit-ring-touch,
+  .cbc-add-ring {
+    width: 110px;
+    height: 110px;
+  }
+
+  .cbc-habits-grid {
+    gap: 16px;
   }
 
   .cbc-celeb-logo-frame {
