@@ -11,7 +11,6 @@
  * @param {string}  [opts.subtitle]
  * @param {Array<{value:string|number, label:string}>} [opts.stats]
  * @param {string}  [opts.quote]
- * @param {string}  [opts.userName]
  * @param {string[]} [opts.badges]
  * @returns {Promise<Blob>} PNG blob
  */
@@ -20,7 +19,6 @@ export default async function generateShareImage(opts) {
     type = 'workout',
     title = 'Workout Complete!',
     stats = [],
-    userName,
     badges = [],
   } = opts;
 
@@ -67,10 +65,56 @@ export default async function generateShareImage(opts) {
   ctx.stroke();
   ctx.restore();
 
-  // ── Hero logo (big, centered, dominates the card) ──
+  // ── Measure content to vertically center everything ──
   const logoRadius = 220;
+  const logoDiameter = logoRadius * 2;
+  const gapLogoTitle = 50;
+  const titleFontSize = 52;
+  const titleLineHeight = 68;
+  const gapTitleStats = 10;
+  const statsFontSize = 36;
+  const statsLineHeight = 48;
+  const gapStatsCta = 30;
+  const ctaFontSize = 34;
+  const ctaLineHeight = 46;
+  const gapCtaSlogan = 30;
+  const sloganFontSize = 28;
+
+  // Pre-measure title lines
+  ctx.font = `bold ${titleFontSize}px 'Orbitron', sans-serif`;
+  const titleLines = wrapText(ctx, title.toUpperCase(), cardW - 100);
+
+  // Pre-measure stats/badges lines
+  ctx.font = `500 ${statsFontSize}px 'Montserrat', sans-serif`;
+  let contentLines = [];
+  if (type === 'badge' && badges.length > 0) {
+    contentLines = wrapText(ctx, badges.join('  \u00B7  '), cardW - 120);
+  } else if (stats.length > 0) {
+    contentLines = wrapText(ctx, stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  '), cardW - 120);
+  }
+
+  // Pre-measure CTA line
+  const ctaText = 'I just completed a workout using Core Buddy \uD83D\uDCAA\uD83C\uDFFB';
+  ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
+  const ctaLines = wrapText(ctx, ctaText, cardW - 80);
+
+  // Calculate total content height
+  let totalH = logoDiameter;
+  totalH += gapLogoTitle;
+  totalH += titleLines.length * titleLineHeight;
+  if (contentLines.length > 0) {
+    totalH += gapTitleStats + contentLines.length * statsLineHeight;
+  }
+  totalH += gapStatsCta + ctaLines.length * ctaLineHeight;
+  totalH += gapCtaSlogan + sloganFontSize;
+
+  // Start Y so everything is vertically centered in the card
+  const cardCenterY = cardY + cardH / 2;
+  let curY = cardCenterY - totalH / 2;
+
+  // ── Hero logo (big, centered, dominates the card) ──
   const logoCX = W / 2;
-  const logoCY = cardY + logoRadius + 100;
+  const logoCY = curY + logoRadius;
 
   // Subtle red glow behind the circle
   ctx.save();
@@ -114,52 +158,42 @@ export default async function generateShareImage(opts) {
   }
 
   // ── Title (Orbitron, bold, black, punchy) ──
-  let curY = logoCY + logoRadius + 60;
+  curY = logoCY + logoRadius + gapLogoTitle;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = TEXT_BLACK;
-  ctx.font = "bold 52px 'Orbitron', sans-serif";
+  ctx.font = `bold ${titleFontSize}px 'Orbitron', sans-serif`;
 
-  const titleLines = wrapText(ctx, title.toUpperCase(), cardW - 100);
   for (const line of titleLines) {
     ctx.fillText(line, W / 2, curY);
-    curY += 68;
+    curY += titleLineHeight;
   }
 
   // ── Stats line or badge description (Montserrat, muted) ──
-  curY += 6;
-  ctx.fillStyle = TEXT_MUTED;
-  ctx.font = "500 36px 'Montserrat', sans-serif";
-
-  if (type === 'badge' && badges.length > 0) {
-    const badgeLine = badges.join('  \u00B7  ');
-    const badgeLines = wrapText(ctx, badgeLine, cardW - 120);
-    for (const line of badgeLines) {
-      ctx.fillText(line, W / 2, curY);
-      curY += 48;
-    }
-  } else if (stats.length > 0) {
-    const statsLine = stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ');
-    const statLines = wrapText(ctx, statsLine, cardW - 120);
-    for (const line of statLines) {
-      ctx.fillText(line, W / 2, curY);
-      curY += 48;
-    }
-  }
-
-  // ── User name (if provided) ──
-  if (userName) {
-    curY += 20;
+  if (contentLines.length > 0) {
+    curY += gapTitleStats;
     ctx.fillStyle = TEXT_MUTED;
-    ctx.font = "400 28px 'Montserrat', sans-serif";
-    ctx.fillText(userName, W / 2, curY);
+    ctx.font = `500 ${statsFontSize}px 'Montserrat', sans-serif`;
+    for (const line of contentLines) {
+      ctx.fillText(line, W / 2, curY);
+      curY += statsLineHeight;
+    }
   }
 
-  // ── Slogan (bottom of card) ──
-  const sloganY = cardY + cardH - 60;
+  // ── Bold CTA line ──
+  curY += gapStatsCta;
+  ctx.fillStyle = TEXT_BLACK;
+  ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
+  for (const line of ctaLines) {
+    ctx.fillText(line, W / 2, curY);
+    curY += ctaLineHeight;
+  }
+
+  // ── Slogan ──
+  curY += gapCtaSlogan;
   ctx.fillStyle = ACCENT_RED;
-  ctx.font = "600 28px 'Montserrat', sans-serif";
-  ctx.fillText('Make It Count with Core Buddy', W / 2, sloganY);
+  ctx.font = `600 ${sloganFontSize}px 'Montserrat', sans-serif`;
+  ctx.fillText('Make It Count with Core Buddy', W / 2, curY);
 
   return new Promise(resolve => {
     canvas.toBlob(blob => resolve(blob), 'image/png');

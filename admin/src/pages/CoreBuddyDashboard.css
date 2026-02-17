@@ -1474,6 +1474,16 @@
   margin: 0;
 }
 
+/* ── Bold CTA line ── */
+.journey-card-cta {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 12px 0 0;
+  line-height: 1.35;
+}
+
 /* ── Slogan ── */
 .journey-card-slogan {
   font-family: 'Montserrat', sans-serif;
