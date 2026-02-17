@@ -19,7 +19,7 @@ import SpotlightTour from '../components/SpotlightTour';
 
 const TICK_COUNT = 60;
 const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
-const HABIT_COUNT = 5;
+const DEFAULT_HABIT_COUNT = 5;
 
 function formatDate(date) {
   return date.toISOString().split('T')[0];
@@ -107,8 +107,9 @@ function compressImage(file, maxSize = 800) {
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  const { isPremium } = useTier();
+  const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
+  const habitCount = isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT;
 
   // 24hr countdown state
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -623,9 +624,9 @@ export default function CoreBuddyDashboard() {
         let todayCompleted = 0;
         if (!habitSnap.empty) {
           const habits = habitSnap.docs[0].data().habits || {};
-          todayCompleted = Object.values(habits).filter(Boolean).length;
+          todayCompleted = Math.min(Object.values(habits).filter(Boolean).length, habitCount);
         }
-        setHabitWeekPct(Math.round((todayCompleted / HABIT_COUNT) * 100));
+        setHabitWeekPct(Math.round((todayCompleted / habitCount) * 100));
         setTodayHabitsCount(todayCompleted);
 
         // 4. Nutrition targets
@@ -724,7 +725,7 @@ export default function CoreBuddyDashboard() {
             const hSnap = await getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', clientData.id), where('date', '==', dStr)));
             if (!hSnap.empty) {
               const habits = hSnap.docs[0].data().habits || {};
-              if (Object.values(habits).filter(Boolean).length >= HABIT_COUNT) { hStreak++; }
+              if (Object.values(habits).filter(Boolean).length >= habitCount) { hStreak++; }
               else break;
             } else break;
           } catch { break; }
@@ -823,7 +824,7 @@ export default function CoreBuddyDashboard() {
       setStatsLoaded(true);
     };
     loadStats();
-  }, [currentUser, clientData]);
+  }, [currentUser, clientData, habitCount]);
 
   // Cache dashboard stats after fresh load so returning visits are instant
   useEffect(() => {
@@ -896,7 +897,7 @@ export default function CoreBuddyDashboard() {
   // Time-aware coach message
   const coachLine = (() => {
     const hour = new Date().getHours();
-    const allDone = statsLoaded && todayHabitsCount >= HABIT_COUNT && nutritionTotals.calories > 0;
+    const allDone = statsLoaded && todayHabitsCount >= habitCount && nutritionTotals.calories > 0;
     if (allDone) return { main: `Smashed it today,`, sub: 'Rest up and go again tomorrow.' };
     if (hour >= 5 && hour < 12) return { main: `Rise and grind,`, sub: "let's get after it!" };
     if (hour >= 12 && hour < 17) return { main: `Oye`, sub: 'crack on and make it count!' };
@@ -919,14 +920,14 @@ export default function CoreBuddyDashboard() {
       };
     }
     // 2. Habits not all done
-    if (todayHabitsCount < HABIT_COUNT) {
+    if (todayHabitsCount < habitCount) {
       return {
         label: 'DAILY HABITS',
-        message: `${todayHabitsCount}/${HABIT_COUNT} completed`,
+        message: `${todayHabitsCount}/${habitCount} completed`,
         cta: 'Open Habits',
         action: () => navigate('/client/core-buddy/consistency'),
         pct: habitWeekPct,
-        ringLabel: `${todayHabitsCount}/${HABIT_COUNT}`,
+        ringLabel: `${todayHabitsCount}/${habitCount}`,
       };
     }
     // 3. No nutrition logged (premium only)
@@ -1506,11 +1507,11 @@ export default function CoreBuddyDashboard() {
               <div className="cb-card-content">
                 <h3>Habits</h3>
                 <div className="cb-habit-dots">
-                  {Array.from({ length: HABIT_COUNT }, (_, i) => (
+                  {Array.from({ length: habitCount }, (_, i) => (
                     <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
                   ))}
                 </div>
-                <span className="cb-habit-dots-label">{todayHabitsCount}/{HABIT_COUNT} today</span>
+                <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
               </div>
               <svg className="cb-card-arrow cb-grid-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
