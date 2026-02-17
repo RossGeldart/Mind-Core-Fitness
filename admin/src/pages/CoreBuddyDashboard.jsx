@@ -1724,16 +1724,14 @@ export default function CoreBuddyDashboard() {
                       </div>
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card">
-                        <div className="journey-card-logo-frame">
-                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                        <div className="journey-card-logo-frame journey-card-logo-badge">
+                          <img src={(BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.img || '/Logo.webp'} alt={post.metadata.title} className="journey-card-logo-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
-                        {post.metadata.badges?.length > 0 && (
-                          <p className="journey-card-stats-line">
-                            {post.metadata.badges.join('  \u00B7  ')}
-                          </p>
+                        {(post.metadata.badgeDesc || (BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.desc) && (
+                          <p className="journey-card-stats-line">{post.metadata.badgeDesc || (BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.desc}</p>
                         )}
-                        <p className="journey-card-cta">I just completed a workout using Core Buddy 💪🏻</p>
+                        <p className="journey-card-cta">I just earned a badge on Core Buddy 🏆</p>
                         <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : (

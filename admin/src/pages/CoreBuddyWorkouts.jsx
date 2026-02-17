@@ -11,6 +11,7 @@ import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import generateShareImage from '../utils/generateShareImage';
+import BADGE_DEFS from '../utils/badgeConfig';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
@@ -2251,13 +2252,16 @@ export default function CoreBuddyWorkouts() {
               <div className="mg-badge-share-row">
                 <button className="mg-badge-share-btn" onClick={async (e) => {
                   e.stopPropagation();
-                  const badgeLabels = mgBadgeCelebration.badges.map(b =>
+                  const firstBadgeJ = mgBadgeCelebration.badges[0];
+                  const badgeLabelsJ = mgBadgeCelebration.badges.map(b =>
                     b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
                   );
+                  const badgeDefJ = BADGE_DEFS.find(d => d.id === firstBadgeJ?.id) || BADGE_DEFS.find(d => d.name === firstBadgeJ?.label);
                   await shareToJourney({
                     type: 'badge_earned',
-                    title: mgBadgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${mgBadgeCelebration.badges.length} Badges Earned!`,
-                    badges: badgeLabels,
+                    title: badgeLabelsJ.length === 1 ? badgeLabelsJ[0] : `${badgeLabelsJ.length} Badges Earned!`,
+                    badges: badgeLabelsJ,
+                    badgeDesc: badgeDefJ?.desc,
                   });
                   showToast('Posted to Journey!', 'success');
                 }}>
@@ -2266,12 +2270,20 @@ export default function CoreBuddyWorkouts() {
                 </button>
                 <button className="mg-badge-share-btn" onClick={async (e) => {
                   e.stopPropagation();
+                  const firstBadge = mgBadgeCelebration.badges[0];
                   const badgeLabels = mgBadgeCelebration.badges.map(b =>
                     b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
                   );
+                  const badgeDef = BADGE_DEFS.find(d => d.id === firstBadge?.id) || BADGE_DEFS.find(d => d.name === firstBadge?.label);
                   const shareText = `Badge Earned! ${badgeLabels.join(', ')}\n#MindCoreFitness`;
                   try {
-                    const blob = await generateShareImage({ type: 'badge', title: 'Badge Earned!', badges: badgeLabels, userName: clientData?.name });
+                    const blob = await generateShareImage({
+                      type: 'badge',
+                      title: badgeLabels.length === 1 ? badgeLabels[0] : 'Badges Earned!',
+                      badges: badgeLabels,
+                      badgeImage: badgeDef?.img,
+                      badgeDesc: badgeDef?.desc,
+                    });
                     if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'badge.png', { type: 'image/png' })] })) {
                       await navigator.share({ title: 'Mind Core Fitness', text: shareText, files: [new File([blob], 'badge.png', { type: 'image/png' })] });
                     } else if (navigator.share) {

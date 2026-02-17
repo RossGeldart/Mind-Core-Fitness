@@ -1,17 +1,17 @@
 /**
- * Generates a clean share card for Instagram Stories (1080 x 1920).
+ * Generates a share card for Instagram Stories (1080 x 1920).
  *
- * Design: dark theme background → white portrait card with red accent
- * border + drop shadow → circle-framed logo → bold Orbitron title →
- * Montserrat stats line → slogan at bottom.
+ * Workout: dark bg → white card → big MCF logo → title → stats → CTA → slogan
+ * Badge:   dark bg → white card → big badge PNG → badge name → description → CTA → slogan
  *
  * @param {object} opts
  * @param {'workout'|'badge'} opts.type
  * @param {string}  opts.title
  * @param {string}  [opts.subtitle]
  * @param {Array<{value:string|number, label:string}>} [opts.stats]
- * @param {string}  [opts.quote]
- * @param {string[]} [opts.badges]
+ * @param {string[]} [opts.badges]        - badge label strings
+ * @param {string}   [opts.badgeImage]    - URL/path to badge PNG (used as hero for badge type)
+ * @param {string}   [opts.badgeDesc]     - description of badge (why it was earned)
  * @returns {Promise<Blob>} PNG blob
  */
 export default async function generateShareImage(opts) {
@@ -20,6 +20,8 @@ export default async function generateShareImage(opts) {
     title = 'Workout Complete!',
     stats = [],
     badges = [],
+    badgeImage,
+    badgeDesc,
   } = opts;
 
   const W = 1080;
@@ -65,100 +67,106 @@ export default async function generateShareImage(opts) {
   ctx.stroke();
   ctx.restore();
 
-  // ── Measure content to vertically center everything ──
-  const logoRadius = 220;
-  const logoDiameter = logoRadius * 2;
-  const gapLogoTitle = 50;
+  // ── Layout constants ──
+  const heroRadius = 220;
+  const heroDiameter = heroRadius * 2;
+  const gapHeroTitle = 50;
   const titleFontSize = 52;
   const titleLineHeight = 68;
-  const gapTitleStats = 10;
-  const statsFontSize = 36;
-  const statsLineHeight = 48;
-  const gapStatsCta = 30;
+  const gapTitleContent = 10;
+  const contentFontSize = 36;
+  const contentLineHeight = 48;
+  const gapContentCta = 30;
   const ctaFontSize = 34;
   const ctaLineHeight = 46;
   const gapCtaSlogan = 30;
   const sloganFontSize = 28;
 
-  // Pre-measure title lines
+  // ── Pre-measure title ──
   ctx.font = `bold ${titleFontSize}px 'Orbitron', sans-serif`;
   const titleLines = wrapText(ctx, title.toUpperCase(), cardW - 100);
 
-  // Pre-measure stats/badges lines
-  ctx.font = `500 ${statsFontSize}px 'Montserrat', sans-serif`;
+  // ── Pre-measure content (stats for workout, description for badge) ──
+  ctx.font = `500 ${contentFontSize}px 'Montserrat', sans-serif`;
   let contentLines = [];
-  if (type === 'badge' && badges.length > 0) {
+  if (type === 'badge' && badgeDesc) {
+    contentLines = wrapText(ctx, badgeDesc, cardW - 120);
+  } else if (type === 'badge' && badges.length > 0) {
     contentLines = wrapText(ctx, badges.join('  \u00B7  '), cardW - 120);
   } else if (stats.length > 0) {
     contentLines = wrapText(ctx, stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  '), cardW - 120);
   }
 
-  // Pre-measure CTA line
-  const ctaText = 'I just completed a workout using Core Buddy \uD83D\uDCAA\uD83C\uDFFB';
+  // ── Pre-measure CTA ──
+  const ctaText = type === 'badge'
+    ? 'I just earned a badge on Core Buddy \uD83C\uDFC6'
+    : 'I just completed a workout using Core Buddy \uD83D\uDCAA\uD83C\uDFFB';
   ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
   const ctaLines = wrapText(ctx, ctaText, cardW - 80);
 
-  // Calculate total content height
-  let totalH = logoDiameter;
-  totalH += gapLogoTitle;
+  // ── Calculate total height and center ──
+  let totalH = heroDiameter + gapHeroTitle;
   totalH += titleLines.length * titleLineHeight;
   if (contentLines.length > 0) {
-    totalH += gapTitleStats + contentLines.length * statsLineHeight;
+    totalH += gapTitleContent + contentLines.length * contentLineHeight;
   }
-  totalH += gapStatsCta + ctaLines.length * ctaLineHeight;
+  totalH += gapContentCta + ctaLines.length * ctaLineHeight;
   totalH += gapCtaSlogan + sloganFontSize;
 
-  // Start Y so everything is vertically centered in the card
   const cardCenterY = cardY + cardH / 2;
   let curY = cardCenterY - totalH / 2;
 
-  // ── Hero logo (big, centered, dominates the card) ──
-  const logoCX = W / 2;
-  const logoCY = curY + logoRadius;
+  // ── Hero image (centered, dominates the card) ──
+  const heroCX = W / 2;
+  const heroCY = curY + heroRadius;
 
-  // Subtle red glow behind the circle
+  // Determine which image to draw as hero
+  const heroSrc = (type === 'badge' && badgeImage) ? badgeImage : '/Logo.webp';
+
+  // Subtle glow behind the circle
   ctx.save();
-  const glow = ctx.createRadialGradient(logoCX, logoCY, logoRadius * 0.6, logoCX, logoCY, logoRadius * 1.5);
-  glow.addColorStop(0, 'rgba(161, 47, 58, 0.12)');
-  glow.addColorStop(1, 'rgba(161, 47, 58, 0)');
+  const glowColor = type === 'badge' ? 'rgba(255, 193, 7, 0.15)' : 'rgba(161, 47, 58, 0.12)';
+  const glow = ctx.createRadialGradient(heroCX, heroCY, heroRadius * 0.6, heroCX, heroCY, heroRadius * 1.5);
+  glow.addColorStop(0, glowColor);
+  glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = glow;
-  ctx.fillRect(logoCX - logoRadius * 1.5, logoCY - logoRadius * 1.5, logoRadius * 3, logoRadius * 3);
+  ctx.fillRect(heroCX - heroRadius * 1.5, heroCY - heroRadius * 1.5, heroRadius * 3, heroRadius * 3);
   ctx.restore();
 
   // White circle background
   ctx.beginPath();
-  ctx.arc(logoCX, logoCY, logoRadius + 6, 0, Math.PI * 2);
+  ctx.arc(heroCX, heroCY, heroRadius + 6, 0, Math.PI * 2);
   ctx.fillStyle = CARD_WHITE;
   ctx.fill();
 
-  // Red circle border (thicker to match scale)
+  // Border ring
+  const ringColor = type === 'badge' ? '#ffc107' : ACCENT_RED;
   ctx.beginPath();
-  ctx.arc(logoCX, logoCY, logoRadius, 0, Math.PI * 2);
-  ctx.strokeStyle = ACCENT_RED;
+  ctx.arc(heroCX, heroCY, heroRadius, 0, Math.PI * 2);
+  ctx.strokeStyle = ringColor;
   ctx.lineWidth = 5;
   ctx.stroke();
 
-  // Draw logo clipped to circle
+  // Draw hero image clipped to circle
   try {
-    const logo = await loadImage('/Logo.webp');
+    const heroImg = await loadImage(heroSrc);
     ctx.save();
     ctx.beginPath();
-    ctx.arc(logoCX, logoCY, logoRadius - 6, 0, Math.PI * 2);
+    ctx.arc(heroCX, heroCY, heroRadius - 6, 0, Math.PI * 2);
     ctx.clip();
-    const d = (logoRadius - 6) * 2;
-    ctx.drawImage(logo, logoCX - logoRadius + 6, logoCY - logoRadius + 6, d, d);
+    const d = (heroRadius - 6) * 2;
+    ctx.drawImage(heroImg, heroCX - heroRadius + 6, heroCY - heroRadius + 6, d, d);
     ctx.restore();
   } catch {
-    // Fallback text
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = ACCENT_RED;
     ctx.font = "bold 80px 'Orbitron', sans-serif";
-    ctx.fillText('MCF', logoCX, logoCY);
+    ctx.fillText(type === 'badge' ? '\uD83C\uDFC6' : 'MCF', heroCX, heroCY);
   }
 
-  // ── Title (Orbitron, bold, black, punchy) ──
-  curY = logoCY + logoRadius + gapLogoTitle;
+  // ── Title (Orbitron, bold, black) ──
+  curY = heroCY + heroRadius + gapHeroTitle;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = TEXT_BLACK;
@@ -169,19 +177,19 @@ export default async function generateShareImage(opts) {
     curY += titleLineHeight;
   }
 
-  // ── Stats line or badge description (Montserrat, muted) ──
+  // ── Content line (stats or badge description) ──
   if (contentLines.length > 0) {
-    curY += gapTitleStats;
+    curY += gapTitleContent;
     ctx.fillStyle = TEXT_MUTED;
-    ctx.font = `500 ${statsFontSize}px 'Montserrat', sans-serif`;
+    ctx.font = `500 ${contentFontSize}px 'Montserrat', sans-serif`;
     for (const line of contentLines) {
       ctx.fillText(line, W / 2, curY);
-      curY += statsLineHeight;
+      curY += contentLineHeight;
     }
   }
 
   // ── Bold CTA line ──
-  curY += gapStatsCta;
+  curY += gapContentCta;
   ctx.fillStyle = TEXT_BLACK;
   ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
   for (const line of ctaLines) {
