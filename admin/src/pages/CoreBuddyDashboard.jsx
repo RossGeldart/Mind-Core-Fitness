@@ -1734,6 +1734,23 @@ export default function CoreBuddyDashboard() {
                         <p className="journey-card-cta">I just earned a badge on Core Buddy 🏆</p>
                         <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
+                    ) : post.type === 'habits_summary' && post.metadata ? (
+                      <div className="journey-card">
+                        <div className="journey-card-logo-frame">
+                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                        </div>
+                        <h3 className="journey-card-title">{post.metadata.title}</h3>
+                        {post.metadata.stats?.length > 0 && (
+                          <p className="journey-card-stats-line">
+                            {post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}
+                          </p>
+                        )}
+                        {post.metadata.subtitle && (
+                          <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
+                        )}
+                        <p className="journey-card-cta">I just completed my daily habits with Core Buddy ✅</p>
+                        <p className="journey-card-slogan">Make It Count with Core Buddy</p>
+                      </div>
                     ) : (
                       <>
                         {post.content && <p className="journey-post-content">{renderWithMentions(post.content)}</p>}
