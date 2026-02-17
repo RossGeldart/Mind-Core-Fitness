@@ -1891,6 +1891,11 @@
   position: relative;
 }
 
+.cb-card-locked .cb-card-content h3,
+.cb-card-locked .cb-card-content p {
+  color: var(--text-tertiary);
+}
+
 .cb-premium-badge {
   display: inline-block;
   font-size: 0.55rem;
