@@ -95,7 +95,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1.6rem;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .cbc-ring-label {
