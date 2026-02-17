@@ -120,18 +120,3 @@
   opacity: 0.4;
 }
 
-.nav-icon-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-lock-icon {
-  position: absolute;
-  bottom: -2px;
-  right: -6px;
-  width: 10px;
-  height: 10px;
-  color: var(--color-primary);
-}
