@@ -20,7 +20,7 @@ const PREMIUM_FEATURES = [
 
 // Free users: only 5 & 10 min, once per week
 const FREE_RANDOMISER_DURATIONS = [5, 10];
-const FREE_RANDOMISER_WEEKLY_LIMIT = 1;
+const FREE_RANDOMISER_WEEKLY_LIMIT = 3;
 
 export function TierProvider({ children }) {
   const { clientData, loading } = useAuth();
