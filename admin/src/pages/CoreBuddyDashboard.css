@@ -1420,142 +1420,67 @@
 .journey-post-image { border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
 .journey-post-image img { width: 100%; display: block; border-radius: 12px; }
 
-/* ─── Premium Share Cards (workout_summary / badge_earned) ─── */
-/* Matches Instagram Story aesthetic: no borders, hero-centric, gradient bleed */
+/* ─── Share Cards (workout_summary / badge_earned) ─── */
+/* White card, red accent border, drop shadow, circle logo, dark text */
 .journey-card {
-  border-radius: 20px;
-  padding: 18px 18px 16px;
+  border-radius: 16px;
+  padding: 20px 18px 14px;
   margin-bottom: 10px;
-  position: relative;
-  overflow: hidden;
+  background: #ffffff;
+  border: 2px solid #A12F3A;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
-
-/* Subtle noise/grain overlay for depth */
-.journey-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  border-radius: inherit;
+[data-theme="dark"] .journey-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Workout variant ── */
-.journey-card-workout {
-  background: linear-gradient(170deg, #1a060a 0%, #2d0a10 35%, #1a0608 65%, #120408 100%);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-}
-[data-theme="light"] .journey-card-workout {
-  background: linear-gradient(170deg, #1a060a 0%, #2d0a10 35%, #1a0608 65%, #120408 100%);
-}
-
-/* ── Badge variant ── */
-.journey-card-badge {
-  background: linear-gradient(170deg, #141000 0%, #2a1f00 35%, #1a1400 65%, #110d00 100%);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-}
-[data-theme="light"] .journey-card-badge {
-  background: linear-gradient(170deg, #141000 0%, #2a1f00 35%, #1a1400 65%, #110d00 100%);
-}
-
-/* ── Branding (upper-left) ── */
-.journey-card-brand {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  align-self: flex-start;
-  margin-bottom: 16px;
-  position: relative;
-  z-index: 1;
-}
-.journey-card-brand-icon {
-  width: 22px; height: 22px;
+/* ── Circle-framed logo (top-center) ── */
+.journey-card-logo-frame {
+  width: 64px; height: 64px;
   border-radius: 50%;
-  object-fit: cover;
-}
-.journey-card-brand span {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* ── Hero image ── */
-.journey-card-hero {
-  width: 180px; height: 180px;
-  border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 16px;
-  position: relative;
-  z-index: 1;
+  border: 2px solid #A12F3A;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
-
-/* Circular hero for badge variant */
-.journey-card-hero-circle {
-  border-radius: 50%;
-}
-
-.journey-card-hero-img {
+.journey-card-logo-img {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
 
-/* Subtle glow that makes the hero float */
-.journey-card-workout .journey-card-hero::before {
-  content: '';
-  position: absolute;
-  inset: -40px;
-  background: radial-gradient(circle, rgba(161, 47, 58, 0.22) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-.journey-card-badge .journey-card-hero::before {
-  content: '';
-  position: absolute;
-  inset: -40px;
-  background: radial-gradient(circle, rgba(212, 160, 23, 0.18) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* ── Title ── */
+/* ── Title (Orbitron, bold, punchy) ── */
 .journey-card-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #ffffff;
-  margin: 0 0 5px;
-  position: relative;
-  z-index: 1;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-/* ── Stats / description line ── */
+/* ── Stats / description line (Montserrat) ── */
 .journey-card-stats-line {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.76rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #555555;
   margin: 0;
-  position: relative;
-  z-index: 1;
 }
 
-/* ── Quote ── */
-.journey-card-quote {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.28);
-  margin: 10px 0 0;
-  text-align: center;
-  position: relative;
-  z-index: 1;
+/* ── Slogan ── */
+.journey-card-slogan {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #A12F3A;
+  margin: 14px 0 0;
+  letter-spacing: 0.2px;
 }
 
 .journey-post-actions {

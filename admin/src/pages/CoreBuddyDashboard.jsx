@@ -1704,15 +1704,11 @@ export default function CoreBuddyDashboard() {
                       </button>
                     </div>
 
-                    {/* Premium share card — matches Instagram Story design */}
+                    {/* Clean share card — white card, red border, circle logo */}
                     {post.type === 'workout_summary' && post.metadata ? (
-                      <div className="journey-card journey-card-workout">
-                        <div className="journey-card-brand">
-                          <img src="/Logo.webp" alt="" className="journey-card-brand-icon" />
-                          <span>Core Buddy</span>
-                        </div>
-                        <div className="journey-card-hero">
-                          <img src="/Logo.webp" alt="MCF" className="journey-card-hero-img" />
+                      <div className="journey-card">
+                        <div className="journey-card-logo-frame">
+                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.stats?.length > 0 && (
@@ -1723,16 +1719,12 @@ export default function CoreBuddyDashboard() {
                         {!post.metadata.stats?.length && post.metadata.subtitle && (
                           <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
                         )}
-                        {post.metadata.quote && <p className="journey-card-quote">&ldquo;{post.metadata.quote}&rdquo;</p>}
+                        <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : post.type === 'badge_earned' && post.metadata ? (
-                      <div className="journey-card journey-card-badge">
-                        <div className="journey-card-brand">
-                          <img src="/Logo.webp" alt="" className="journey-card-brand-icon" />
-                          <span>Core Buddy</span>
-                        </div>
-                        <div className="journey-card-hero journey-card-hero-circle">
-                          <img src="/Logo.webp" alt="MCF" className="journey-card-hero-img" />
+                      <div className="journey-card">
+                        <div className="journey-card-logo-frame">
+                          <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.badges?.length > 0 && (
@@ -1740,6 +1732,7 @@ export default function CoreBuddyDashboard() {
                             {post.metadata.badges.join('  \u00B7  ')}
                           </p>
                         )}
+                        <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : (
                       <>
