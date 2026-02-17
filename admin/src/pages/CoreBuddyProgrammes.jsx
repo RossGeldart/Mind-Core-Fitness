@@ -1326,7 +1326,7 @@ export default function CoreBuddyProgrammes() {
               subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
               stats={pgStats}
               buttonLabel="Back to Programme"
-              onShareJourney={shareToJourney}
+              onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDone={() => { setShowPgFinish(false); setView('dashboard'); }}
             />
