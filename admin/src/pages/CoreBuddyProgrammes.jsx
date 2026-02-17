@@ -425,7 +425,7 @@ export default function CoreBuddyProgrammes() {
       createdAt: serverTimestamp(),
       likeCount: 0,
       commentCount: 0,
-      ...(isStructured ? { metadata: { title: data.title, subtitle: data.subtitle, stats: data.stats, quote: data.quote, badges: data.badges } } : {}),
+      ...(isStructured ? { metadata: { title: data.title || '', subtitle: data.subtitle || '', stats: data.stats || [], quote: data.quote || '', badges: data.badges || [] } } : {}),
     });
   }, [clientData]);
 
