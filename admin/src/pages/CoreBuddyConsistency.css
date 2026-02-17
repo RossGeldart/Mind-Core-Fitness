@@ -78,7 +78,7 @@
 
 .cbc-arc-fill {
   fill: none;
-  stroke: #38B6FF;
+  stroke: var(--color-primary);
   stroke-width: 24;
   stroke-linecap: round;
 }
@@ -95,7 +95,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
   font-size: 1.6rem;
-  color: #38B6FF;
+  color: #ffffff;
 }
 
 .cbc-ring-label {
@@ -325,7 +325,7 @@
 }
 
 .cbc-habit-done .cbc-habit-label {
-  color: var(--habit-color);
+  color: var(--text-primary);
 }
 
 .cbc-habit-done-tag {
