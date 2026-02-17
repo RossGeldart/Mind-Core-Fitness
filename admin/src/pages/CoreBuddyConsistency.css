@@ -244,13 +244,13 @@
 .cbc-habit-ring-track {
   fill: none;
   stroke: rgba(150, 150, 150, 0.15);
-  stroke-width: 5;
+  stroke-width: 10;
   stroke-linecap: round;
 }
 
 .cbc-habit-ring-fill {
   fill: none;
-  stroke-width: 5;
+  stroke-width: 10;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease-out;
 }
@@ -282,26 +282,26 @@
   height: 32px;
 }
 
-/* Completed icon gets slight opacity reduction */
+/* Completed — keep icon fully visible */
 .cbc-ring-completed .cbc-habit-ring-icon {
-  opacity: 0.6;
+  opacity: 1;
 }
 
-/* Checkmark overlay */
+/* Checkmark overlay — no colour fill, just the tick */
 .cbc-habit-check-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--habit-color, var(--color-primary));
+  background: none;
   border-radius: 50%;
-  opacity: 1;
 }
 
 .cbc-habit-check-overlay svg {
   width: 18px;
   height: 18px;
+  stroke: var(--habit-color, var(--color-primary));
 }
 
 /* Animate checkmark in */
