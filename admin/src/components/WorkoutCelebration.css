@@ -156,7 +156,19 @@
   border-radius: 50%;
   object-fit: cover;
   pointer-events: none;
-  transition: none; /* JS controls filter directly */
+  filter: blur(8px) grayscale(1);
+  animation: wcLogoPulse 2.5s ease-in-out infinite;
+}
+
+/* Idle breathing pulse — entices user to press */
+@keyframes wcLogoPulse {
+  0%, 100% { filter: blur(8px) grayscale(1); transform: scale(1); }
+  50%      { filter: blur(4px) grayscale(0.5); transform: scale(1.04); }
+}
+
+/* When holding, JS controls filter/transform directly — kill animation */
+.wc-holding .wc-hold-logo {
+  animation: none;
 }
 
 

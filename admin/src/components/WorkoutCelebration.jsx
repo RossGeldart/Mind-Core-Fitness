@@ -103,8 +103,8 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     if (ringRef.current) ringRef.current.style.strokeDashoffset = RING_CIRCUMFERENCE;
     if (logoRef.current) {
-      logoRef.current.style.filter = 'blur(8px) grayscale(1)';
-      logoRef.current.style.transform = 'scale(1)';
+      logoRef.current.style.filter = '';
+      logoRef.current.style.transform = '';
     }
     setHolding(false);
     setHoldProgress(0);
@@ -220,7 +220,6 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
             src="/Logo.webp"
             alt="Mind Core Fitness"
             className="wc-hold-logo"
-            style={{ filter: 'blur(8px) grayscale(1)' }}
             draggable={false}
           />
         </div>
