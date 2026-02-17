@@ -516,22 +516,24 @@ export default function CoreBuddyConsistency() {
                   className={`cbc-habit-tile ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
                   style={{ '--habit-color': habit.color }}
                 >
-                  {/* Delete / hide corner button */}
-                  <button
-                    className="cbc-habit-delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirm(habit.isCustom
-                        ? { type: 'custom', id: habit.id, label: habit.label }
-                        : { type: 'default', key: habit.key, label: habit.label }
-                      );
-                    }}
-                    aria-label={`Remove ${habit.label}`}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
+                  {/* Delete / hide corner button (premium only) */}
+                  {isPremium && (
+                    <button
+                      className="cbc-habit-delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm(habit.isCustom
+                          ? { type: 'custom', id: habit.id, label: habit.label }
+                          : { type: 'default', key: habit.key, label: habit.label }
+                        );
+                      }}
+                      aria-label={`Remove ${habit.label}`}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  )}
 
                   {/* Hold-to-complete ring */}
                   <div
