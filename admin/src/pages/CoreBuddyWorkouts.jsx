@@ -527,6 +527,10 @@ export default function CoreBuddyWorkouts() {
   const [isPaused, setIsPaused] = useState(false);
   const [startCountdown, setStartCountdown] = useState(0);
 
+  // Hold-to-finish overlay
+  const [showFinish, setShowFinish] = useState(false);
+  const [showMgFinish, setShowMgFinish] = useState(false);
+
   // Quick-preview modal for exercise thumbnails
   const [previewEx, setPreviewEx] = useState(null);
 
@@ -906,7 +910,7 @@ export default function CoreBuddyWorkouts() {
         // End of round
         const nextRound = currentRound + 1;
         if (nextRound > rounds) {
-          setView('complete');
+          setShowFinish(true);
           saveWorkoutLog();
           return;
         }
@@ -1192,7 +1196,7 @@ export default function CoreBuddyWorkouts() {
       } else {
         // All exercises done
         await saveMgWorkoutLog(updated);
-        setView('muscle_complete');
+        setShowMgFinish(true);
       }
     }
   };
@@ -1827,25 +1831,23 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-progress-bar">
           <div className="wk-progress-fill" style={{ width: `${getTotalProgress() * 100}%` }} />
         </div>
-      </div>
-    );
-  }
 
-  // ==================== COMPLETE VIEW ====================
-  if (view === 'complete') {
-    const config = LEVELS.find(l => l.key === level);
-    const totalTime = workout.length * rounds * (config.work + config.rest);
-    return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <WorkoutCelebration
-          title="Workout Complete!"
-          stats={[
-            { value: Math.ceil(totalTime / 60), label: 'Minutes' },
-            { value: workout.length * rounds, label: 'Intervals' },
-            { value: rounds, label: 'Rounds' },
-          ]}
-          onDone={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}
-        />
+        {/* Hold-to-finish overlay */}
+        {showFinish && (() => {
+          const config = LEVELS.find(l => l.key === level);
+          const totalTime = workout.length * rounds * (config.work + config.rest);
+          return (
+            <WorkoutCelebration
+              title="Workout Complete!"
+              stats={[
+                { value: Math.ceil(totalTime / 60), label: 'Minutes' },
+                { value: workout.length * rounds, label: 'Intervals' },
+                { value: rounds, label: 'Rounds' },
+              ]}
+              onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}
+            />
+          );
+        })()}
       </div>
     );
   }
@@ -2182,30 +2184,27 @@ export default function CoreBuddyWorkouts() {
           </div>
         </main>
         {toastEl}
-      </div>
-    );
-  }
 
-  // ==================== MUSCLE GROUP COMPLETE VIEW ====================
-  if (view === 'muscle_complete') {
-    const totalSets = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
-    const totalVolume = mgLogs.reduce((sum, l) =>
-      sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
-    const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
-    const mgStats = [
-      { value: mgLogs.length, label: 'Exercises' },
-      { value: totalSets, label: 'Sets' },
-    ];
-    if (totalVolume > 0) mgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
-
-    return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
-        <WorkoutCelebration
-          title={`${groupLabel} Complete!`}
-          subtitle={selectedMuscleSession?.name}
-          stats={mgStats}
-          onDone={() => { setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}
-        />
+        {/* Hold-to-finish overlay */}
+        {showMgFinish && (() => {
+          const totalSets = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
+          const totalVolume = mgLogs.reduce((sum, l) =>
+            sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
+          const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
+          const mgStats = [
+            { value: mgLogs.length, label: 'Exercises' },
+            { value: totalSets, label: 'Sets' },
+          ];
+          if (totalVolume > 0) mgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
+          return (
+            <WorkoutCelebration
+              title={`${groupLabel} Complete!`}
+              subtitle={selectedMuscleSession?.name}
+              stats={mgStats}
+              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}
+            />
+          );
+        })()}
 
         {/* Badge celebration overlay */}
         {mgBadgeCelebration && (
