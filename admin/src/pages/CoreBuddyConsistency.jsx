@@ -76,7 +76,7 @@ export default function CoreBuddyConsistency() {
   const holdTimerRef = useRef(null);
   const holdStartRef = useRef(null);
   const rafRef = useRef(null);
-  const holdCompletedRef = useRef(false);
+  const activeHoldKeyRef = useRef(null);
   const ringRefs = useRef({});
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
@@ -275,9 +275,9 @@ export default function CoreBuddyConsistency() {
   // Press-and-hold handlers
   const startHold = (habitKey) => {
     const checked = todayLog.habits?.[habitKey] || false;
-    if (checked || saving) return;
+    if (checked || saving || activeHoldKeyRef.current) return;
 
-    holdCompletedRef.current = false;
+    activeHoldKeyRef.current = habitKey;
     setHoldingHabit(habitKey);
     holdStartRef.current = performance.now();
 
@@ -298,8 +298,8 @@ export default function CoreBuddyConsistency() {
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(animate);
       } else {
-        // Hold complete — mark so cancelHold won't reset the ring
-        holdCompletedRef.current = true;
+        // Hold complete — clear active hold and complete the habit
+        activeHoldKeyRef.current = null;
         rafRef.current = null;
         setHoldingHabit(null);
         completeHabit(habitKey);
@@ -309,6 +309,12 @@ export default function CoreBuddyConsistency() {
   };
 
   const cancelHold = () => {
+    // No active hold to cancel — ignore (handles duplicate pointer events)
+    if (!activeHoldKeyRef.current) return;
+
+    const habitKey = activeHoldKeyRef.current;
+    activeHoldKeyRef.current = null;
+
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -317,11 +323,10 @@ export default function CoreBuddyConsistency() {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
-    // Only reset the circle if the hold was cancelled (not completed)
-    if (!holdCompletedRef.current && holdingHabit && ringRefs.current[holdingHabit]) {
-      ringRefs.current[holdingHabit].style.strokeDashoffset = RING_CIRCUMFERENCE;
+    // Reset the circle back to empty
+    if (ringRefs.current[habitKey]) {
+      ringRefs.current[habitKey].style.strokeDashoffset = RING_CIRCUMFERENCE;
     }
-    holdCompletedRef.current = false;
     setHoldingHabit(null);
     holdStartRef.current = null;
   };
