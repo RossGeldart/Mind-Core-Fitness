@@ -134,15 +134,15 @@
 
 .wc-hold-ring-track {
   fill: none;
-  stroke: transparent;
-  stroke-width: 10;
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 6;
   stroke-linecap: round;
 }
 
 .wc-hold-ring-fill {
   fill: none;
-  stroke: transparent;
-  stroke-width: 10;
+  stroke: #ffffff;
+  stroke-width: 6;
   stroke-linecap: round;
   transition: none;
 }
