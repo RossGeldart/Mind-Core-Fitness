@@ -1328,7 +1328,8 @@ export default function CoreBuddyProgrammes() {
               buttonLabel="Back to Programme"
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDone={() => { setShowPgFinish(false); setView('dashboard'); }}
+              onDismissStart={() => setView('dashboard')}
+              onDone={() => { setShowPgFinish(false); }}
             />
           );
         })()}

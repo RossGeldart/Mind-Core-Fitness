@@ -1866,7 +1866,8 @@ export default function CoreBuddyWorkouts() {
               ]}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setView('menu'); }}
+              onDismissStart={() => setView('menu')}
+              onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
           );
         })()}
@@ -2225,7 +2226,8 @@ export default function CoreBuddyWorkouts() {
               stats={mgStats}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); setView('menu'); }}
+              onDismissStart={() => setView('menu')}
+              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); }}
             />
           );
         })()}

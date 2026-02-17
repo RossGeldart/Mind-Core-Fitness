@@ -15,7 +15,7 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, onShareJourney, userName, buttonLabel = 'Done' }) {
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done' }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0); // 0-1 for logo reveal
@@ -112,10 +112,11 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onS
 
   const dismiss = useCallback(() => {
     setDismissing(true);
+    onDismissStart?.();
     setTimeout(() => {
       onDone?.();
     }, 300);
-  }, [onDone]);
+  }, [onDone, onDismissStart]);
 
   const buildShareText = useCallback(() => {
     const parts = [title || 'Workout Complete!'];
