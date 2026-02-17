@@ -21,6 +21,17 @@ const DEFAULT_HABITS = [
 const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
 const CUSTOM_COLOR = '#e91e63';
 
+const HOLD_DURATION = 700; // ms
+const RING_RADIUS = 19;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+const CELEBRATION_QUOTES = [
+  'Every day counts. See you tomorrow!',
+  'Consistency is your superpower.',
+  'Perfect day — keep the streak alive!',
+  'You showed up for yourself today.',
+];
+
 function getMonday(date) {
   const d = new Date(date);
   const day = d.getDay();
@@ -55,12 +66,21 @@ export default function CoreBuddyConsistency() {
   const [toast, setToast] = useState(null);
   const [justChecked, setJustChecked] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationDismissing, setCelebrationDismissing] = useState(false);
+  const [celebrationShownToday, setCelebrationShownToday] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newHabitName, setNewHabitName] = useState('');
-  const [deleteConfirm, setDeleteConfirm] = useState(null);   // { type: 'custom'|'default', id: string }
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [hiddenDefaults, setHiddenDefaults] = useState([]);
+  const [holdingHabit, setHoldingHabit] = useState(null);
+  const holdTimerRef = useRef(null);
+  const holdStartRef = useRef(null);
+  const rafRef = useRef(null);
+  const [holdProgress, setHoldProgress] = useState(0);
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
+  const celebrationBtnRef = useRef(null);
+  const celebrationQuoteRef = useRef(CELEBRATION_QUOTES[Math.floor(Math.random() * CELEBRATION_QUOTES.length)]);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -141,29 +161,40 @@ export default function CoreBuddyConsistency() {
 
   const todayLog = habitLogs[todayStr] || { habits: {} };
 
-  const toggleHabit = async (habitKey) => {
+  // Reset celebrationShownToday flag when habits change (new custom habit added or habit undone)
+  useEffect(() => {
+    const completedCount = Object.values(todayLog.habits || {}).filter(Boolean).length;
+    if (completedCount < allHabits.length && celebrationShownToday) {
+      setCelebrationShownToday(false);
+    }
+  }, [allHabits.length, todayLog.habits]);
+
+  const completeHabit = async (habitKey) => {
     if (!currentUser || saving) return;
     const wasChecked = todayLog.habits?.[habitKey] || false;
+    if (wasChecked) return; // Already done — no-op for hold-to-complete
 
-    if (!wasChecked) {
-      particlesRef.current = [...Array(10)].map((_, i) => {
-        const angle = (i / 10) * 2 * Math.PI;
-        const dist = 18 + Math.random() * 20;
-        return {
-          tx: Math.cos(angle) * dist,
-          ty: Math.sin(angle) * dist,
-          size: 3 + Math.random() * 4,
-          duration: 0.4 + Math.random() * 0.3,
-        };
-      });
-      setJustChecked(habitKey);
-      setTimeout(() => setJustChecked(null), 700);
-    }
+    // Particle burst
+    particlesRef.current = [...Array(10)].map((_, i) => {
+      const angle = (i / 10) * 2 * Math.PI;
+      const dist = 18 + Math.random() * 20;
+      return {
+        tx: Math.cos(angle) * dist,
+        ty: Math.sin(angle) * dist,
+        size: 3 + Math.random() * 4,
+        duration: 0.4 + Math.random() * 0.3,
+      };
+    });
+    setJustChecked(habitKey);
+    setTimeout(() => setJustChecked(null), 700);
+
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(50);
 
     setSaving(true);
     try {
       const current = todayLog.habits || {};
-      const updated = { ...current, [habitKey]: !current[habitKey] };
+      const updated = { ...current, [habitKey]: true };
       const docId = todayLog._id || `${clientData.id}_${todayStr}`;
 
       await setDoc(doc(db, 'habitLogs', docId), {
@@ -179,21 +210,25 @@ export default function CoreBuddyConsistency() {
 
       // All habits complete — trigger celebration
       const completedCount = Object.values(updated).filter(Boolean).length;
-      if (completedCount === allHabits.length && !wasChecked) {
-        confettiRef.current = [...Array(50)].map((_, i) => ({
+      if (completedCount === allHabits.length && !celebrationShownToday) {
+        celebrationQuoteRef.current = CELEBRATION_QUOTES[Math.floor(Math.random() * CELEBRATION_QUOTES.length)];
+        confettiRef.current = [...Array(80)].map((_, i) => ({
           x: 5 + Math.random() * 90,
-          delay: Math.random() * 0.6,
-          color: ['#4caf50', '#ff9800', '#2196f3', '#e91e63', '#ffeb3b', '#9c27b0'][i % 6],
+          delay: Math.random() * 3.5,
+          color: ['#A12F3A', '#4caf50', '#ff9800', '#2196f3', '#e91e63', '#ffeb3b', '#FFD700', '#ffffff', '#9c27b0'][i % 9],
           drift: (Math.random() - 0.5) * 120,
           spin: Math.random() * 720 - 360,
-          duration: 1.5 + Math.random() * 1.5,
-          width: 4 + Math.random() * 8,
-          height: 4 + Math.random() * 10,
+          duration: 1.8 + Math.random() * 2,
+          width: 4 + Math.random() * 6,
+          height: 4 + Math.random() * 8,
+          shape: i % 3, // 0=rect, 1=circle, 2=strip
         }));
         setTimeout(() => {
           setShowCelebration(true);
-          setTimeout(() => setShowCelebration(false), 3500);
-        }, 500);
+          setCelebrationShownToday(true);
+          // Focus the continue button for a11y
+          setTimeout(() => celebrationBtnRef.current?.focus(), 1100);
+        }, 400);
       }
     } catch (err) {
       console.error('Error saving habit:', err);
@@ -201,6 +236,90 @@ export default function CoreBuddyConsistency() {
     } finally {
       setSaving(false);
     }
+  };
+
+  // Undo habit (tap on completed habit)
+  const undoHabit = async (habitKey) => {
+    if (!currentUser || saving) return;
+    setSaving(true);
+    try {
+      const current = todayLog.habits || {};
+      const updated = { ...current, [habitKey]: false };
+      const docId = todayLog._id || `${clientData.id}_${todayStr}`;
+
+      await setDoc(doc(db, 'habitLogs', docId), {
+        clientId: clientData.id,
+        date: todayStr,
+        habits: updated,
+      });
+
+      setHabitLogs(prev => ({
+        ...prev,
+        [todayStr]: { clientId: clientData.id, date: todayStr, habits: updated, _id: docId },
+      }));
+    } catch (err) {
+      console.error('Error undoing habit:', err);
+      showToast('Failed to undo. Try again.', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Press-and-hold handlers
+  const startHold = (habitKey) => {
+    const checked = todayLog.habits?.[habitKey] || false;
+    if (checked || saving) return;
+
+    setHoldingHabit(habitKey);
+    setHoldProgress(0);
+    holdStartRef.current = performance.now();
+
+    const animate = (now) => {
+      const elapsed = now - holdStartRef.current;
+      const progress = Math.min(elapsed / HOLD_DURATION, 1);
+      setHoldProgress(progress);
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        // Hold complete
+        setHoldingHabit(null);
+        setHoldProgress(0);
+        completeHabit(habitKey);
+      }
+    };
+    rafRef.current = requestAnimationFrame(animate);
+  };
+
+  const cancelHold = () => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    setHoldingHabit(null);
+    setHoldProgress(0);
+    holdStartRef.current = null;
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    };
+  }, []);
+
+  // Dismiss celebration overlay
+  const dismissCelebration = () => {
+    setCelebrationDismissing(true);
+    setTimeout(() => {
+      setShowCelebration(false);
+      setCelebrationDismissing(false);
+    }, 300);
   };
 
   // Add custom habit
@@ -340,26 +459,72 @@ export default function CoreBuddyConsistency() {
             {allHabits.map((habit) => {
               const checked = todayLog.habits?.[habit.key] || false;
               const isJustChecked = justChecked === habit.key;
+              const isHolding = holdingHabit === habit.key;
+              const fillOffset = isHolding
+                ? RING_CIRCUMFERENCE - (holdProgress * RING_CIRCUMFERENCE)
+                : checked ? 0 : RING_CIRCUMFERENCE;
+
               return (
-                <button
+                <div
                   key={habit.key}
                   className={`cbc-habit-btn ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
-                  onClick={() => toggleHabit(habit.key)}
-                  disabled={saving}
                   style={{ '--habit-color': habit.color }}
                 >
-                  <div className="cbc-habit-icon-wrap" style={{ '--habit-color': habit.color }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d={habit.icon} />
+                  {/* Hold-to-complete ring */}
+                  <div
+                    className={`cbc-habit-ring-touch ${isHolding ? 'cbc-holding' : ''} ${checked ? 'cbc-ring-completed' : ''}`}
+                    onPointerDown={(e) => {
+                      if (checked) return;
+                      e.preventDefault();
+                      startHold(habit.key);
+                    }}
+                    onPointerUp={cancelHold}
+                    onPointerLeave={cancelHold}
+                    onPointerCancel={cancelHold}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Tap on completed ring = undo
+                      if (checked) undoHabit(habit.key);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={checked ? `Undo ${habit.label}` : `Press and hold to complete ${habit.label}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (checked) { undoHabit(habit.key); }
+                        else { completeHabit(habit.key); }
+                      }
+                    }}
+                  >
+                    <svg className="cbc-habit-ring-svg" viewBox="0 0 48 48">
+                      <circle className="cbc-habit-ring-track" cx="24" cy="24" r={RING_RADIUS} />
+                      <circle
+                        className="cbc-habit-ring-fill"
+                        cx="24" cy="24" r={RING_RADIUS}
+                        style={{
+                          stroke: habit.color,
+                          strokeDasharray: RING_CIRCUMFERENCE,
+                          strokeDashoffset: fillOffset,
+                        }}
+                      />
                     </svg>
-                    {checked && (
-                      <div className="cbc-habit-done-badge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </div>
-                    )}
+                    <div className="cbc-habit-ring-icon" style={{ color: habit.color }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d={habit.icon} />
+                      </svg>
+                      {/* Checkmark overlay for completed */}
+                      {(checked || isJustChecked) && (
+                        <div className={`cbc-habit-check-overlay ${isJustChecked ? 'cbc-check-animate' : ''}`}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Particle burst */}
                   {isJustChecked && (
                     <div className="cbc-particles">
                       {particlesRef.current.map((p, i) => (
@@ -373,9 +538,11 @@ export default function CoreBuddyConsistency() {
                       ))}
                     </div>
                   )}
+
                   <div className="cbc-habit-text">
                     <span className="cbc-habit-label">{habit.label}</span>
                     {checked && <span className="cbc-habit-done-tag">Done</span>}
+                    {!checked && <span className="cbc-habit-hold-hint">Hold to complete</span>}
                   </div>
                   {/* Delete / hide button for all habits */}
                   <button
@@ -393,7 +560,7 @@ export default function CoreBuddyConsistency() {
                       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
-                </button>
+                </div>
               );
             })}
 
@@ -490,12 +657,19 @@ export default function CoreBuddyConsistency() {
         </div>
       )}
 
-      {/* All-done celebration */}
+      {/* ===== Fullscreen Celebration Overlay ===== */}
       {showCelebration && (
-        <div className="cbc-celebration" onClick={() => setShowCelebration(false)}>
-          <div className="cbc-confetti-container">
+        <div
+          className={`cbc-celeb-overlay ${celebrationDismissing ? 'cbc-celeb-dismissing' : ''}`}
+          onClick={dismissCelebration}
+          role="dialog"
+          aria-modal="true"
+          aria-label="All habits complete celebration"
+        >
+          {/* Confetti */}
+          <div className="cbc-celeb-confetti" aria-hidden="true">
             {confettiRef.current.map((c, i) => (
-              <span key={i} className="cbc-confetti-piece" style={{
+              <span key={i} className={`cbc-celeb-confetti-piece cbc-confetti-shape-${c.shape}`} style={{
                 '--x': `${c.x}%`,
                 '--delay': `${c.delay}s`,
                 '--color': c.color,
@@ -507,13 +681,31 @@ export default function CoreBuddyConsistency() {
               }} />
             ))}
           </div>
-          <div className="cbc-celebration-card">
-            <svg className="cbc-celebration-icon" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <h2 className="cbc-celebration-title">Crushed it!</h2>
-            <p className="cbc-celebration-sub">All habits complete today</p>
+
+          {/* Content */}
+          <div className="cbc-celeb-content" onClick={e => e.stopPropagation()}>
+            {/* Logo circle */}
+            <div className="cbc-celeb-logo-frame">
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="cbc-celeb-logo-img" />
+            </div>
+
+            {/* Heading */}
+            <h2 className="cbc-celeb-heading">All Habits Complete!</h2>
+
+            {/* Sub-text */}
+            <p className="cbc-celeb-subtext">{celebrationQuoteRef.current}</p>
+
+            {/* Stats line */}
+            <p className="cbc-celeb-stats">{todayCompleted}/{allHabits.length} habits · Day {streak || 1}</p>
+
+            {/* Continue button */}
+            <button
+              ref={celebrationBtnRef}
+              className="cbc-celeb-btn"
+              onClick={dismissCelebration}
+            >
+              Keep Going
+            </button>
           </div>
         </div>
       )}
