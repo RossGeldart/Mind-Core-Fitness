@@ -52,6 +52,28 @@
     }
     </script>
 
+    <!-- Structured Data - BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.mindcorefitness.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Personal Training",
+          "item": "https://www.mindcorefitness.com/personal-training"
+        }
+      ]
+    }
+    </script>
+
 <!-- Vercel Web Analytics -->
 <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
