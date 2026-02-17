@@ -76,7 +76,7 @@ export default function CoreBuddyConsistency() {
   const holdTimerRef = useRef(null);
   const holdStartRef = useRef(null);
   const rafRef = useRef(null);
-  const [holdProgress, setHoldProgress] = useState(0);
+  const ringRefs = useRef({});
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
   const celebrationBtnRef = useRef(null);
@@ -197,16 +197,17 @@ export default function CoreBuddyConsistency() {
       const updated = { ...current, [habitKey]: true };
       const docId = todayLog._id || `${clientData.id}_${todayStr}`;
 
+      // Optimistic update — mark checked immediately so ring stays full
+      setHabitLogs(prev => ({
+        ...prev,
+        [todayStr]: { clientId: clientData.id, date: todayStr, habits: updated, _id: docId },
+      }));
+
       await setDoc(doc(db, 'habitLogs', docId), {
         clientId: clientData.id,
         date: todayStr,
         habits: updated,
       });
-
-      setHabitLogs(prev => ({
-        ...prev,
-        [todayStr]: { clientId: clientData.id, date: todayStr, habits: updated, _id: docId },
-      }));
 
       // All habits complete — trigger celebration
       const completedCount = Object.values(updated).filter(Boolean).length;
@@ -233,6 +234,11 @@ export default function CoreBuddyConsistency() {
     } catch (err) {
       console.error('Error saving habit:', err);
       showToast('Failed to save. Try again.', 'error');
+      // Rollback optimistic update
+      setHabitLogs(prev => ({
+        ...prev,
+        [todayStr]: { ...prev[todayStr], habits: { ...(prev[todayStr]?.habits || {}), [habitKey]: false } },
+      }));
     } finally {
       setSaving(false);
     }
@@ -271,20 +277,27 @@ export default function CoreBuddyConsistency() {
     if (checked || saving) return;
 
     setHoldingHabit(habitKey);
-    setHoldProgress(0);
     holdStartRef.current = performance.now();
+
+    // Drive the ring fill via direct DOM updates (no React re-renders)
+    const circle = ringRefs.current[habitKey];
+    if (circle) circle.style.strokeDashoffset = RING_CIRCUMFERENCE;
 
     const animate = (now) => {
       const elapsed = now - holdStartRef.current;
       const progress = Math.min(elapsed / HOLD_DURATION, 1);
-      setHoldProgress(progress);
+
+      // Update SVG directly — avoids 60 re-renders/sec
+      const el = ringRefs.current[habitKey];
+      if (el) {
+        el.style.strokeDashoffset = RING_CIRCUMFERENCE - (progress * RING_CIRCUMFERENCE);
+      }
 
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(animate);
       } else {
-        // Hold complete
+        // Hold complete — optimistic update keeps ring full
         setHoldingHabit(null);
-        setHoldProgress(0);
         completeHabit(habitKey);
       }
     };
@@ -300,8 +313,11 @@ export default function CoreBuddyConsistency() {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
+    // Reset the circle back to empty via DOM
+    if (holdingHabit && ringRefs.current[holdingHabit]) {
+      ringRefs.current[holdingHabit].style.strokeDashoffset = RING_CIRCUMFERENCE;
+    }
     setHoldingHabit(null);
-    setHoldProgress(0);
     holdStartRef.current = null;
   };
 
@@ -460,9 +476,6 @@ export default function CoreBuddyConsistency() {
               const checked = todayLog.habits?.[habit.key] || false;
               const isJustChecked = justChecked === habit.key;
               const isHolding = holdingHabit === habit.key;
-              const fillOffset = isHolding
-                ? RING_CIRCUMFERENCE - (holdProgress * RING_CIRCUMFERENCE)
-                : checked ? 0 : RING_CIRCUMFERENCE;
 
               return (
                 <div
@@ -517,11 +530,12 @@ export default function CoreBuddyConsistency() {
                       <circle className="cbc-habit-ring-track" cx="50" cy="50" r={RING_RADIUS} />
                       <circle
                         className="cbc-habit-ring-fill"
+                        ref={el => { if (el) ringRefs.current[habit.key] = el; }}
                         cx="50" cy="50" r={RING_RADIUS}
                         style={{
                           stroke: habit.color,
                           strokeDasharray: RING_CIRCUMFERENCE,
-                          strokeDashoffset: fillOffset,
+                          strokeDashoffset: checked ? 0 : RING_CIRCUMFERENCE,
                         }}
                       />
                     </svg>
