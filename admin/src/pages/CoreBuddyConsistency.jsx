@@ -555,17 +555,14 @@ export default function CoreBuddyConsistency() {
                         }}
                       />
                     </svg>
+                    {/* Glowing orb behind icon when completed */}
+                    {checked && (
+                      <div className="cbc-habit-glow-orb" style={{ '--habit-color': habit.color }} />
+                    )}
                     <div className="cbc-habit-ring-icon" style={{ color: habit.color }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d={habit.icon} />
                       </svg>
-                      {(checked || isJustChecked) && (
-                        <div className={`cbc-habit-check-overlay ${isJustChecked ? 'cbc-check-animate' : ''}`}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                      )}
                     </div>
 
                     {/* Particle burst */}
