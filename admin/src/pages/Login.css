@@ -225,6 +225,100 @@
   color: var(--color-primary);
 }
 
+/* ── Divider ── */
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.login-divider span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Social sign-in buttons ── */
+
+.login-social-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-input);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 10px;
+}
+
+.login-social-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ── Coming Soon overlay (matches UpgradePage pattern) ── */
+
+.login-social-coming-soon {
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.login-social-coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .login-social-coming-soon-overlay {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.login-social-coming-soon-overlay span {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="light"] .login-social-coming-soon-overlay span {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
 /* Loading screen */
 .login-loading {
   display: flex;
