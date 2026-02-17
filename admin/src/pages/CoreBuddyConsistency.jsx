@@ -77,6 +77,7 @@ export default function CoreBuddyConsistency() {
   const holdStartRef = useRef(null);
   const rafRef = useRef(null);
   const activeHoldKeyRef = useRef(null);
+  const holdJustCompletedRef = useRef(false);
   const ringRefs = useRef({});
   const particlesRef = useRef([]);
   const confettiRef = useRef([]);
@@ -300,6 +301,7 @@ export default function CoreBuddyConsistency() {
       } else {
         // Hold complete — clear active hold and complete the habit
         activeHoldKeyRef.current = null;
+        holdJustCompletedRef.current = true;   // suppress the click that follows pointerup
         rafRef.current = null;
         setHoldingHabit(null);
         completeHabit(habitKey);
@@ -523,6 +525,10 @@ export default function CoreBuddyConsistency() {
                     onPointerCancel={cancelHold}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (holdJustCompletedRef.current) {
+                        holdJustCompletedRef.current = false;
+                        return;
+                      }
                       if (checked) undoHabit(habit.key);
                     }}
                     role="button"
