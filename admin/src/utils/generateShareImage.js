@@ -1,12 +1,9 @@
 /**
- * Generates a premium Instagram Story share card (1080 x 1920, 9:16).
+ * Generates a clean share card for Instagram Stories (1080 x 1920).
  *
- * Matches Spotify's clean, minimal, achievement-forward aesthetic:
- * rich gradient background with color bleeding from the hero →
- * large hero image (rounded-rect for workouts, circular for badges) →
- * bold white title → stats/description line → subtle noise texture.
- *
- * Safe zone: 250 px margin top & bottom to avoid Instagram UI overlays.
+ * Design: dark theme background → white portrait card with red accent
+ * border + drop shadow → circle-framed logo → bold Orbitron title →
+ * Montserrat stats line → slogan at bottom.
  *
  * @param {object} opts
  * @param {'workout'|'badge'} opts.type
@@ -22,9 +19,7 @@ export default async function generateShareImage(opts) {
   const {
     type = 'workout',
     title = 'Workout Complete!',
-    subtitle,
     stats = [],
-    quote,
     userName,
     badges = [],
   } = opts;
@@ -36,173 +31,126 @@ export default async function generateShareImage(opts) {
   canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  const isWorkout = type !== 'badge';
-  const accent = isWorkout ? [161, 47, 58] : [212, 160, 23];
+  const DARK_BG = '#2a2a28';
+  const CARD_WHITE = '#ffffff';
+  const ACCENT_RED = '#A12F3A';
+  const TEXT_BLACK = '#1a1a1a';
+  const TEXT_MUTED = '#555555';
 
-  // ── Rich vertical gradient (dark top → subtly lighter bottom) ──
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  if (isWorkout) {
-    bg.addColorStop(0, '#1a060a');
-    bg.addColorStop(0.3, '#2d0a10');
-    bg.addColorStop(0.6, '#1a0608');
-    bg.addColorStop(1, '#120408');
-  } else {
-    bg.addColorStop(0, '#141000');
-    bg.addColorStop(0.3, '#2a1f00');
-    bg.addColorStop(0.6, '#1a1400');
-    bg.addColorStop(1, '#110d00');
-  }
-  ctx.fillStyle = bg;
+  // ── Dark theme background (full bleed) ──
+  ctx.fillStyle = DARK_BG;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Color bleeding from hero position ──
-  const heroCenter = H * 0.38;
-  const glow = ctx.createRadialGradient(W / 2, heroCenter, 80, W / 2, heroCenter, W * 0.75);
-  glow.addColorStop(0, `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, 0.30)`);
-  glow.addColorStop(0.4, `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, 0.10)`);
-  glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
+  // ── White portrait card (~80% width, ~70% height, centered) ──
+  const cardW = Math.round(W * 0.80);
+  const cardH = Math.round(H * 0.70);
+  const cardX = Math.round((W - cardW) / 2);
+  const cardY = Math.round((H - cardH) / 2);
+  const cardR = 24;
+  const borderWidth = 4;
 
-  // ── Noise / grain texture (3% opacity for depth) ──
-  addNoiseTexture(ctx, W, H, 0.03);
+  // Drop shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+  ctx.shadowBlur = 40;
+  ctx.shadowOffsetY = 10;
+  roundRect(ctx, cardX, cardY, cardW, cardH, cardR);
+  ctx.fillStyle = CARD_WHITE;
+  ctx.fill();
+  ctx.restore();
 
-  // ── Core Buddy branding (upper-left, inside safe zone) ──
-  const safeTop = 260;
-  const brandLogoSize = 44;
+  // Red accent border
+  ctx.save();
+  roundRect(ctx, cardX, cardY, cardW, cardH, cardR);
+  ctx.strokeStyle = ACCENT_RED;
+  ctx.lineWidth = borderWidth;
+  ctx.stroke();
+  ctx.restore();
 
+  // ── Circle-framed logo (top-center of card) ──
+  const logoRadius = 90;
+  const logoCX = W / 2;
+  const logoCY = cardY + 160;
+
+  // White circle background
+  ctx.beginPath();
+  ctx.arc(logoCX, logoCY, logoRadius + 4, 0, Math.PI * 2);
+  ctx.fillStyle = CARD_WHITE;
+  ctx.fill();
+
+  // Red circle border
+  ctx.beginPath();
+  ctx.arc(logoCX, logoCY, logoRadius, 0, Math.PI * 2);
+  ctx.strokeStyle = ACCENT_RED;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Draw logo clipped to circle
   try {
     const logo = await loadImage('/Logo.webp');
     ctx.save();
     ctx.beginPath();
-    ctx.arc(72 + brandLogoSize / 2, safeTop + brandLogoSize / 2, brandLogoSize / 2, 0, Math.PI * 2);
+    ctx.arc(logoCX, logoCY, logoRadius - 4, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(logo, 72, safeTop, brandLogoSize, brandLogoSize);
+    const d = (logoRadius - 4) * 2;
+    ctx.drawImage(logo, logoCX - logoRadius + 4, logoCY - logoRadius + 4, d, d);
     ctx.restore();
   } catch {
-    // Skip brand icon on failure
-  }
-
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-  ctx.font = "600 28px 'Montserrat', sans-serif";
-  ctx.fillText('Core Buddy', 72 + brandLogoSize + 12, safeTop + brandLogoSize / 2);
-
-  // ── Hero image ──
-  // Workout → large rounded rectangle (8px radius)
-  // Badge   → circular frame
-  const heroSize = 680;
-  const heroX = (W - heroSize) / 2;
-  const heroY = heroCenter - heroSize / 2;
-
-  // Subtle glow behind hero to float it
-  const heroGlow = ctx.createRadialGradient(
-    W / 2, heroCenter, heroSize * 0.25,
-    W / 2, heroCenter, heroSize * 0.72,
-  );
-  heroGlow.addColorStop(0, `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, 0.22)`);
-  heroGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = heroGlow;
-  ctx.fillRect(0, heroY - heroSize * 0.2, W, heroSize * 1.4);
-
-  try {
-    const heroImg = await loadImage('/Logo.webp');
-    ctx.save();
-    if (isWorkout) {
-      // Rounded-rectangle clip (8px radius per spec)
-      roundRect(ctx, heroX, heroY, heroSize, heroSize, 8);
-    } else {
-      // Circular clip for badge hero
-      ctx.beginPath();
-      ctx.arc(W / 2, heroCenter, heroSize / 2, 0, Math.PI * 2);
-    }
-    ctx.clip();
-    ctx.drawImage(heroImg, heroX, heroY, heroSize, heroSize);
-    ctx.restore();
-  } catch {
-    // Fallback: accent-tinted shape with text
-    ctx.save();
-    if (isWorkout) {
-      roundRect(ctx, heroX, heroY, heroSize, heroSize, 8);
-    } else {
-      ctx.beginPath();
-      ctx.arc(W / 2, heroCenter, heroSize / 2, 0, Math.PI * 2);
-    }
-    ctx.fillStyle = `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, 0.12)`;
-    ctx.fill();
-    ctx.restore();
-
+    // Fallback text
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#ffffff';
-    ctx.font = "bold 120px 'Montserrat', sans-serif";
-    ctx.fillText('MCF', W / 2, heroCenter);
+    ctx.fillStyle = ACCENT_RED;
+    ctx.font = "bold 54px 'Orbitron', sans-serif";
+    ctx.fillText('MCF', logoCX, logoCY);
   }
 
-  // ── Title (bold white, centered below hero) ──
-  const titleY = heroY + heroSize + 56;
+  // ── Title (Orbitron, bold, black, punchy) ──
+  let curY = logoCY + logoRadius + 80;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = "bold 52px 'Montserrat', sans-serif";
+  ctx.fillStyle = TEXT_BLACK;
+  ctx.font = "bold 52px 'Orbitron', sans-serif";
 
-  // Wrap title if too wide
-  const titleLines = wrapText(ctx, title, W - 160);
-  let curY = titleY;
+  const titleLines = wrapText(ctx, title.toUpperCase(), cardW - 100);
   for (const line of titleLines) {
     ctx.fillText(line, W / 2, curY);
-    curY += 64;
+    curY += 68;
   }
-  if (titleLines.length > 1) curY -= 10; // tighten after multi-line
 
-  // ── Stats line or badge description (lighter, 70-80% opacity) ──
+  // ── Stats line or badge description (Montserrat, muted) ──
   curY += 10;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-  ctx.font = "400 40px 'Montserrat', sans-serif";
+  ctx.fillStyle = TEXT_MUTED;
+  ctx.font = "500 36px 'Montserrat', sans-serif";
 
   if (type === 'badge' && badges.length > 0) {
     const badgeLine = badges.join('  \u00B7  ');
-    const badgeLines = wrapText(ctx, badgeLine, W - 140);
+    const badgeLines = wrapText(ctx, badgeLine, cardW - 120);
     for (const line of badgeLines) {
       ctx.fillText(line, W / 2, curY);
-      curY += 52;
+      curY += 48;
     }
   } else if (stats.length > 0) {
     const statsLine = stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ');
-    ctx.fillText(statsLine, W / 2, curY);
-    curY += 52;
-  } else if (subtitle) {
-    const subLines = wrapText(ctx, subtitle, W - 140);
-    for (const line of subLines) {
+    const statLines = wrapText(ctx, statsLine, cardW - 120);
+    for (const line of statLines) {
       ctx.fillText(line, W / 2, curY);
-      curY += 52;
+      curY += 48;
     }
   }
 
-  // ── Quote (optional) ──
-  if (quote) {
-    curY += 20;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
-    ctx.font = "italic 30px 'Montserrat', sans-serif";
-    const quoteLines = wrapText(ctx, `\u201C${quote}\u201D`, W - 180);
-    for (const line of quoteLines) {
-      ctx.fillText(line, W / 2, curY);
-      curY += 40;
-    }
-  }
-
-  // ── User name (bottom area, subtle) ──
+  // ── User name (if provided) ──
   if (userName) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.font = "500 26px 'Montserrat', sans-serif";
-    ctx.fillText(userName, W / 2, H - 310);
+    curY += 20;
+    ctx.fillStyle = TEXT_MUTED;
+    ctx.font = "400 28px 'Montserrat', sans-serif";
+    ctx.fillText(userName, W / 2, curY);
   }
 
-  // ── Bottom CTA (unobtrusive) ──
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
-  ctx.font = "500 24px 'Montserrat', sans-serif";
-  ctx.fillText('mindcorefitness.co.uk', W / 2, H - 265);
+  // ── Slogan (bottom of card) ──
+  const sloganY = cardY + cardH - 60;
+  ctx.fillStyle = ACCENT_RED;
+  ctx.font = "600 28px 'Montserrat', sans-serif";
+  ctx.fillText('Make It Count with Core Buddy', W / 2, sloganY);
 
   return new Promise(resolve => {
     canvas.toBlob(blob => resolve(blob), 'image/png');
@@ -211,22 +159,18 @@ export default async function generateShareImage(opts) {
 
 /**
  * Draws a rounded rectangle path.
- * `r` can be a number (all corners) or { tl, tr, br, bl }.
  */
 function roundRect(ctx, x, y, w, h, r) {
-  const radii = typeof r === 'number'
-    ? { tl: r, tr: r, br: r, bl: r }
-    : { tl: 0, tr: 0, br: 0, bl: 0, ...r };
   ctx.beginPath();
-  ctx.moveTo(x + radii.tl, y);
-  ctx.lineTo(x + w - radii.tr, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + radii.tr);
-  ctx.lineTo(x + w, y + h - radii.br);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - radii.br, y + h);
-  ctx.lineTo(x + radii.bl, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - radii.bl);
-  ctx.lineTo(x, y + radii.tl);
-  ctx.quadraticCurveTo(x, y, x + radii.tl, y);
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
 
@@ -258,32 +202,4 @@ function wrapText(ctx, text, maxWidth) {
   }
   if (line) lines.push(line);
   return lines;
-}
-
-/**
- * Overlays a subtle noise/grain texture for depth.
- * Uses a half-res temp canvas drawn at the target opacity.
- */
-function addNoiseTexture(ctx, w, h, opacity) {
-  const scale = 2;
-  const nw = Math.ceil(w / scale);
-  const nh = Math.ceil(h / scale);
-  const nc = document.createElement('canvas');
-  nc.width = nw;
-  nc.height = nh;
-  const nCtx = nc.getContext('2d');
-  const imageData = nCtx.createImageData(nw, nh);
-  const data = imageData.data;
-  for (let i = 0; i < data.length; i += 4) {
-    const v = Math.random() * 255;
-    data[i] = v;
-    data[i + 1] = v;
-    data[i + 2] = v;
-    data[i + 3] = 255;
-  }
-  nCtx.putImageData(imageData, 0, 0);
-  ctx.save();
-  ctx.globalAlpha = opacity;
-  ctx.drawImage(nc, 0, 0, nw, nh, 0, 0, w, h);
-  ctx.restore();
 }
