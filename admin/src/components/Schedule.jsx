@@ -67,6 +67,7 @@ export default function Schedule() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [jumpDate, setJumpDate] = useState('');
 
   useEffect(() => {
     fetchSessions();
@@ -134,6 +135,26 @@ export default function Schedule() {
   const completedToday = todaySessions.filter(s => isSessionCompleted(s)).length;
   const remainingToday = todaySessions.length - completedToday;
 
+  // Find the very next upcoming session (not yet completed)
+  const nextSession = sessions.find(s => !isSessionCompleted(s));
+
+  // Minutes until next session
+  const getNextSessionCountdown = () => {
+    if (!nextSession) return null;
+    const now = new Date();
+    const todayKey = formatDateKey(now);
+    if (nextSession.date !== todayKey) return null; // only show countdown for today
+    const [h, m] = nextSession.time.split(':').map(Number);
+    const sessionStart = h * 60 + m;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const diff = sessionStart - nowMinutes;
+    if (diff <= 0 || diff > 180) return null; // only within 3 hours
+    if (diff < 60) return `${diff}m`;
+    return `${Math.floor(diff / 60)}h ${diff % 60}m`;
+  };
+
+  const countdown = getNextSessionCountdown();
+
   return (
     <div className="schedule">
       {/* Today's Summary */}
@@ -151,15 +172,51 @@ export default function Schedule() {
         </div>
       </div>
 
+      {/* Next Session Banner — shown when a session is within 3 hours */}
+      {nextSession && countdown && (
+        <div className="next-session-banner">
+          <div className="next-session-label">Up next</div>
+          <div className="next-session-info">
+            <span className="next-session-name">{nextSession.clientName}</span>
+            <span className="next-session-time">{formatTime(nextSession.time)}</span>
+          </div>
+          <div className="next-session-countdown">{countdown}</div>
+        </div>
+      )}
+
       {/* Sessions List */}
       {dates.length === 0 ? (
         <div className="no-upcoming">
           <p>No upcoming sessions booked</p>
         </div>
       ) : (
+        <>
+          {/* Jump-to-date nav */}
+          <div className="schedule-nav">
+            <select
+              className="date-jump-select"
+              value={jumpDate}
+              onChange={(e) => {
+                const date = e.target.value;
+                setJumpDate(date);
+                if (date) {
+                  document.getElementById(`date-${date}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  setTimeout(() => setJumpDate(''), 600);
+                }
+              }}
+            >
+              <option value="">Jump to date...</option>
+              {dates.map(date => (
+                <option key={date} value={date}>
+                  {formatDateLabel(date)} ({groupedSessions[date].length})
+                </option>
+              ))}
+            </select>
+          </div>
+
         <div className="sessions-list">
           {dates.map(date => (
-            <div key={date} className={`date-group ${isToday(date) ? 'today' : ''}`}>
+            <div key={date} id={`date-${date}`} className={`date-group ${isToday(date) ? 'today' : ''}`}>
               <div className="date-header">
                 <span className="date-label">{formatDateLabel(date)}</span>
                 <span className="date-count">{groupedSessions[date].length} session{groupedSessions[date].length !== 1 ? 's' : ''}</span>
@@ -191,6 +248,7 @@ export default function Schedule() {
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   );
