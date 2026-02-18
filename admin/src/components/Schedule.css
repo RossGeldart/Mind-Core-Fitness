@@ -64,6 +64,84 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Next Session Banner */
+.next-session-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid #A12F3A;
+  border-left: 4px solid #A12F3A;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.next-session-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #A12F3A;
+  white-space: nowrap;
+}
+
+.next-session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.next-session-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.next-session-time {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.next-session-countdown {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #A12F3A;
+  white-space: nowrap;
+}
+
+/* Jump-to-date nav */
+.schedule-nav {
+  margin-bottom: 16px;
+}
+
+.date-jump-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.date-jump-select:focus {
+  outline: none;
+  border-color: #A12F3A;
+}
+
 /* Sessions List */
 .sessions-list {
   display: flex;
