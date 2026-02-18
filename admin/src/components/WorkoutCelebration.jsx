@@ -15,7 +15,7 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done', holdLabel = 'Hold To Complete Session', shareType = 'workout' }) {
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done', holdLabel = 'Hold To Complete Session', shareType = 'workout', hideShare = false }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0); // 0-1 for logo reveal
@@ -271,6 +271,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
         )}
 
         {/* Share buttons */}
+        {!hideShare && (
         <div className="wc-share-row">
           {onShareJourney && (
             <button
@@ -292,6 +293,7 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
             {sharing ? 'Generating...' : 'Share'}
           </button>
         </div>
+        )}
 
         <button className="wc-celeb-btn" onClick={dismiss}>
           {buttonLabel}

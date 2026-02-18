@@ -4,6 +4,7 @@ import { ref, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTier } from '../contexts/TierContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
@@ -361,6 +362,7 @@ const FOCUS_ICONS = {
 
 export default function CoreBuddyProgrammes() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
+  const { isPremium } = useTier();
   const { isDark, toggleTheme, accent } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -1326,6 +1328,7 @@ export default function CoreBuddyProgrammes() {
               subtitle={`Week ${sessionWeek} — ${day?.name}: ${day?.label}`}
               stats={pgStats}
               buttonLabel="Back to Programme"
+              hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('dashboard')}
