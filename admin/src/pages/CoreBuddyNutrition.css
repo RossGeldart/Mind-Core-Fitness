@@ -2272,6 +2272,17 @@
   opacity: 1;
 }
 
+.nut-fav-star.log {
+  width: 28px;
+  height: 28px;
+  opacity: 0.3;
+}
+
+.nut-fav-star.log.active {
+  color: #ff9800;
+  opacity: 1;
+}
+
 .nut-fav-star.confirm {
   width: 40px;
   height: 40px;
