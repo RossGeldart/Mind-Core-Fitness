@@ -357,6 +357,9 @@ export default function CoreBuddyNutrition() {
 
   // ==================== BARCODE SCANNER (Quagga2 — loaded on demand) ====================
   const quaggaRef = useRef(null);
+  const scanBuffer = useRef([]);       // rolling buffer of recent barcode reads
+  const SCAN_CONSENSUS = 3;            // require same code N times before accepting
+  const SCAN_BUFFER_SIZE = 5;          // keep last N reads
 
   const startScanner = async () => {
     setScannerActive(true);
@@ -418,6 +421,8 @@ export default function CoreBuddyNutrition() {
       quaggaRunning.current = true;
     });
 
+    scanBuffer.current = []; // reset buffer on each scan session
+
     Quagga.onDetected((result) => {
       // Confidence check - only accept high-confidence reads
       const errors = result.codeResult.decodedCodes
@@ -429,8 +434,17 @@ export default function CoreBuddyNutrition() {
 
       if (avgError < 0.15) {
         const code = result.codeResult.code;
-        Quagga.offDetected();
-        setScanDetected(code);
+        const buf = scanBuffer.current;
+        buf.push(code);
+        if (buf.length > SCAN_BUFFER_SIZE) buf.shift();
+
+        // Only accept when the same code appears SCAN_CONSENSUS times in buffer
+        const count = buf.filter(c => c === code).length;
+        if (count >= SCAN_CONSENSUS) {
+          Quagga.offDetected();
+          scanBuffer.current = [];
+          setScanDetected(code);
+        }
       }
     });
   };
