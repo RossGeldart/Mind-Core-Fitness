@@ -77,7 +77,7 @@ function App() {
         <BrowserRouter basename="/login">
           <RedirectHandler />
           <ScrollToTop>
-          <Suspense fallback={null}>
+          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}><div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} /></div>}>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />

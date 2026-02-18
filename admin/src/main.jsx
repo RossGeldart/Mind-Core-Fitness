@@ -12,6 +12,11 @@ createRoot(document.getElementById('root')).render(
 // Register service worker for offline caching
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/login/sw.js').catch(() => {});
+    navigator.serviceWorker.register('/login/sw.js')
+      .then((reg) => {
+        // Check for updates periodically (every 60 minutes)
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+      })
+      .catch((err) => console.warn('SW registration failed:', err));
   });
 }

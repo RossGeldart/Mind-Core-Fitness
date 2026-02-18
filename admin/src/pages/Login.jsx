@@ -31,8 +31,14 @@ export default function Login() {
     }
   }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
 
-  // While checking auth state or already logged in, render nothing (avoids flash)
-  if (authLoading || currentUser) return null;
+  // While checking auth state or already logged in, show a loading spinner
+  if (authLoading || currentUser) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
+        <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
