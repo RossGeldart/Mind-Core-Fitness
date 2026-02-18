@@ -613,16 +613,28 @@ export default function CoreBuddyConsistency() {
               );
             })}
 
-            {/* Add Habit Tile (premium only) */}
-            {isPremium && <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
-              <div className="cbc-add-ring">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
+            {/* Add Habit Tile (premium) / Unlock Tile (free) */}
+            {isPremium ? (
+              <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
+                <div className="cbc-add-ring">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </div>
+                <span className="cbc-habit-label">Add Habit</span>
+                <span className="cbc-habit-hold-hint">Your own</span>
               </div>
-              <span className="cbc-habit-label">Add Habit</span>
-              <span className="cbc-habit-hold-hint">Your own</span>
-            </div>}
+            ) : (
+              <div className="cbc-habit-tile cbc-unlock-tile" onClick={() => navigate('/upgrade')} role="button" tabIndex={0}>
+                <div className="cbc-unlock-ring">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <span className="cbc-habit-label">More Habits</span>
+                <span className="cbc-habit-hold-hint">Custom &amp; editable</span>
+              </div>
+            )}
           </div>
 
         </div>
