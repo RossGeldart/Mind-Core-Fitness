@@ -8,5 +8,10 @@ export default defineConfig({
     outDir: '../login',
     emptyOutDir: true,
     assetsDir: 'assets'
-  }
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.js',
+  },
 })
