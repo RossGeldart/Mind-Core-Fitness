@@ -663,25 +663,18 @@ export default function ClientList() {
         )}
       </div>
 
-      {/* Type Filter Tabs */}
-      <div className="client-type-filter">
-        {[
-          { value: 'all', label: 'All', count: activeSearched.length },
-          { value: 'block', label: 'Block', count: blockClients.length },
-          { value: 'circuit', label: 'Circuit', count: circuitClients.length },
-          { value: 'core_buddy', label: 'Core Buddy', count: coreBuddyClients.length },
-          { value: 'archived', label: 'Archived', count: archivedClients.length },
-        ].map(tab => (
-          <button
-            key={tab.value}
-            className={`client-filter-btn ${typeFilter === tab.value ? 'active' : ''}`}
-            onClick={() => setTypeFilter(tab.value)}
-          >
-            {tab.label}
-            <span className="client-filter-count">{tab.count}</span>
-          </button>
-        ))}
-      </div>
+      {/* Type Filter Dropdown */}
+      <select
+        className="client-type-select"
+        value={typeFilter}
+        onChange={e => setTypeFilter(e.target.value)}
+      >
+        <option value="all">All Clients ({activeSearched.length})</option>
+        <option value="block">Block Members ({blockClients.length})</option>
+        <option value="circuit">Circuit Members ({circuitClients.length})</option>
+        <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
+        <option value="archived">Archived ({archivedClients.length})</option>
+      </select>
 
       {/* Grouped or flat list */}
       {typeFilter === 'all' ? (

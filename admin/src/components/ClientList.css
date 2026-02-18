@@ -89,54 +89,30 @@
   height: 16px;
 }
 
-/* ====== Type Filter Tabs ====== */
-.client-type-filter {
-  display: flex;
-  gap: 0;
-  border-radius: 10px;
-  overflow: hidden;
+/* ====== Type Filter Dropdown ====== */
+.client-type-select {
+  width: 100%;
+  padding: 11px 36px 11px 14px;
   border: 1px solid var(--border-color);
-  margin-bottom: 16px;
-}
-
-.client-filter-btn {
-  flex: 1;
-  padding: 10px 8px;
-  border: none;
+  border-radius: 10px;
   background: var(--bg-card);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  -webkit-tap-highlight-color: transparent;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 
-.client-filter-btn:not(:last-child) {
-  border-right: 1px solid var(--border-color);
-}
-
-.client-filter-btn.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.client-filter-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 1px 6px;
-  border-radius: 8px;
-}
-
-.client-filter-btn.active .client-filter-count {
-  background: rgba(255, 255, 255, 0.25);
+.client-type-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 /* ====== Section Headers ====== */
