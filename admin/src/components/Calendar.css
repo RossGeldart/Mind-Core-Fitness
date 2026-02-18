@@ -900,6 +900,132 @@
   color: white;
 }
 
+/* Session note indicator dot */
+.note-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2196f3;
+  margin-left: 5px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Edit Session Modal */
+.edit-session-info {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.edit-session-date {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.edit-session-time {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.edit-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.reschedule-edit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #A12F3A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reschedule-edit-btn:hover {
+  background: #7a2730;
+}
+
+.cancel-session-btn {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #c62828;
+  border: 1px solid #c62828;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-session-btn:hover {
+  background: #c62828;
+  color: white;
+}
+
+/* Date / time option rows in edit modal (reuses .client-option base) */
+.date-option,
+.time-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.time-option.selected {
+  background: rgba(161, 47, 58, 0.08);
+  color: #A12F3A;
+  font-weight: 600;
+}
+
+.time-option-period {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: capitalize;
+}
+
+.edit-confirm-bar {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.confirm-reschedule-btn {
+  width: 100%;
+  padding: 14px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.confirm-reschedule-btn:hover:not(:disabled) {
+  background: #1b5e20;
+}
+
+.confirm-reschedule-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .calendar {
