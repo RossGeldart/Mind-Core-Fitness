@@ -1386,25 +1386,21 @@ export default function CoreBuddyWorkouts() {
             <p>No excuses. Just results.</p>
           </div>
 
-          {/* Workout Cards – free: 2-col grid with randomiser + premium bait; premium: full-width hero */}
-          {isPremium ? (
-            <button className="wk-hero-card" onClick={() => setView('setup')}>
-              <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
+          {/* Hero Card: Randomise Workout */}
+          <button className="wk-hero-card" onClick={() => setView('setup')}>
+            <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
+          </button>
+
+          {/* Premium bait card (free users only) */}
+          {!isPremium && (
+            <button className="wk-hero-card wk-free-card-premium" onClick={() => navigate('/upgrade')}>
+              <img src={programmeCardImg} alt="Programmes" className="wk-hero-bg" />
+              <div className="wk-free-card-overlay" />
+              <div className="wk-free-card-content">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span className="wk-free-card-label">Unlock Full Access</span>
+              </div>
             </button>
-          ) : (
-            <div className="wk-free-cards-grid">
-              <button className="wk-free-card" onClick={() => setView('setup')}>
-                <img src={randomiserCardImg} alt="Randomise Workout" className="wk-free-card-bg" />
-              </button>
-              <button className="wk-free-card wk-free-card-premium" onClick={() => navigate('/upgrade')}>
-                <img src={programmeCardImg} alt="Programmes" className="wk-free-card-bg" />
-                <div className="wk-free-card-overlay" />
-                <div className="wk-free-card-content">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <span className="wk-free-card-label">Unlock Full Access</span>
-                </div>
-              </button>
-            </div>
           )}
 
           {/* Programmes Section (premium only) */}
