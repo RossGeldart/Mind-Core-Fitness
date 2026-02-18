@@ -35,6 +35,10 @@ import mgBackImg from '../assets/muscle-group-back.png';
 import backStrengthImg from '../assets/back-strength.png';
 import backHypertrophyImg from '../assets/back-hypertrophy.png';
 import backEnduranceImg from '../assets/back-endurance.png';
+import mgLegsImg from '../assets/muscle-group-legs.png';
+import legsQuadImg from '../assets/legs-quads.png';
+import legsHamGluteImg from '../assets/legs-hamstrings-glutes.png';
+import legsPowerImg from '../assets/legs-power-plyo.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -128,7 +132,7 @@ const MUSCLE_GROUPS = [
   { key: 'chest', label: 'Chest', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm4 0h-2v-2h2v2zm3-6c0 1.1-.36 2.12-.97 2.95l-.87-.87C16.7 12.53 17 11.8 17 11c0-2.76-2.24-5-5-5S7 8.24 7 11c0 .8.3 1.53.84 2.08l-.87.87A4.977 4.977 0 0 1 6 11c0-3.31 2.69-6 6-6s6 2.69 6 6z', image: mgChestImg },
   { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z', image: mgBackImg },
   { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z', image: mgShouldersImg },
-  { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z' },
+  { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z', image: mgLegsImg },
   { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z', image: mgCoreImg },
 ];
 
@@ -370,6 +374,7 @@ const MUSCLE_GROUP_SESSIONS = {
   legs: [
     {
       id: 'legs_quad', name: 'Quad Dominant', desc: 'Squats and lunges for quad power',
+      image: legsQuadImg,
       level: 'All Levels',
       overview: 'A quad-focused leg session built around squats and lunges. Heavy compound movements to build strong, powerful quads and overall leg strength.',
       tips: [
@@ -388,6 +393,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_ham_glute', name: 'Hamstring & Glute', desc: 'Posterior chain focus',
+      image: legsHamGluteImg,
       level: 'Intermediate',
       overview: 'Target the back of your legs with deadlift and hip hinge variations. This session builds a strong posterior chain \u2014 hamstrings, glutes, and lower back.',
       tips: [
@@ -406,6 +412,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_power', name: 'Power & Plyo', desc: 'Explosive leg training',
+      image: legsPowerImg,
       level: 'Intermediate',
       overview: 'An explosive leg session combining plyometrics with weighted movements. Build power, speed, and athletic performance.',
       tips: [
