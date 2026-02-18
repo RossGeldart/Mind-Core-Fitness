@@ -666,11 +666,12 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== RING HELPERS ====================
+  const isDarkMode = isDark;
   const MACRO_COLORS = {
-    'ring-protein': '#14b8a6',
-    'ring-carbs': 'var(--color-primary)',
-    'ring-fats': '#eab308',
-    'ring-cals': 'rgba(150,150,150,0.55)',
+    'ring-protein': isDarkMode ? '#2dd4bf' : '#14b8a6',
+    'ring-carbs':   isDarkMode ? '#fbbf24' : '#f59e0b',
+    'ring-fats':    isDarkMode ? '#a78bfa' : '#8b5cf6',
+    'ring-cals':    'var(--color-primary)',
   };
   const NUT_RING_RADIUS = 80;
   const NUT_RING_CIRC = 2 * Math.PI * NUT_RING_RADIUS;
