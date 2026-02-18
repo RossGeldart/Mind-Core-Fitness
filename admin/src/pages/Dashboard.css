@@ -885,6 +885,7 @@
 
   .dashboard-main {
     padding: 16px;
+    padding-bottom: 80px;
   }
 
   .toast-container {
