@@ -15,7 +15,10 @@ import BADGE_DEFS from '../utils/badgeConfig';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
-import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
+import mgArmsImg from '../assets/muscle-group-arms.png';
+import armsBicepImg from '../assets/arms-bicep.png';
+import armsTricepImg from '../assets/arms-tricep.png';
+import armsFullArmsImg from '../assets/arms-full-arms.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -285,7 +288,7 @@ const MUSCLE_GROUP_SESSIONS = {
   ],
   arms: [
     {
-      id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps',
+      id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps', image: armsBicepImg,
       level: 'All Levels',
       overview: 'An arm session dedicated entirely to biceps. Multiple curl variations target different parts of the bicep for maximum peak and thickness.',
       tips: [
@@ -303,7 +306,7 @@ const MUSCLE_GROUP_SESSIONS = {
       ],
     },
     {
-      id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps',
+      id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps', image: armsTricepImg,
       level: 'All Levels',
       overview: 'All-out tricep training with extensions, dips, and pressing movements. The triceps make up two-thirds of your arm \u2014 this session builds serious size.',
       tips: [
@@ -321,7 +324,7 @@ const MUSCLE_GROUP_SESSIONS = {
       ],
     },
     {
-      id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps',
+      id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps', image: armsFullArmsImg,
       level: 'All Levels',
       overview: 'A balanced arm session alternating between biceps and triceps. Superset style keeps the intensity high and maximises the pump.',
       tips: [
@@ -1976,10 +1979,14 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main mg-overview-main">
           {/* 16:9 Hero Image */}
-          <div className="mg-overview-hero" style={{ background: MUSCLE_GRADIENTS[selectedMuscleGroup] }}>
-            <div className="mg-overview-hero-content">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="mg-overview-hero-icon"><path d={groupData?.icon} /></svg>
-            </div>
+          <div className="mg-overview-hero" style={!session.image ? { background: MUSCLE_GRADIENTS[selectedMuscleGroup] } : undefined}>
+            {session.image ? (
+              <img src={session.image} alt={session.name} className="mg-overview-hero-img" />
+            ) : (
+              <div className="mg-overview-hero-content">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="mg-overview-hero-icon"><path d={groupData?.icon} /></svg>
+              </div>
+            )}
           </div>
 
           {/* Session Header */}
