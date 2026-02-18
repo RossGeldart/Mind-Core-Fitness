@@ -680,6 +680,7 @@
   fill: none;
   stroke-width: 24;
   stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease-out;
 }
 
 .nut-ring-center {
@@ -1021,7 +1022,7 @@
 
 .nut-meal-bar-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 700;
   width: 12px;
   text-align: center;
@@ -1030,7 +1031,7 @@
 
 .nut-meal-bar-track {
   flex: 1;
-  height: 5px;
+  height: 6px;
   background: var(--bg-secondary);
   border-radius: 3px;
   overflow: hidden;
@@ -1043,14 +1044,18 @@
   min-width: 0;
 }
 
-.bar-protein { background: #4caf50; }
-.bar-carbs { background: #2196f3; }
-.bar-fats { background: #ff9800; }
+.bar-protein { background: #14b8a6; }
+.bar-carbs { background: #f59e0b; }
+.bar-fats { background: #8b5cf6; }
 .bar-cals { background: var(--color-primary); }
+
+[data-theme="dark"] .bar-protein { background: #2dd4bf; }
+[data-theme="dark"] .bar-carbs { background: #fbbf24; }
+[data-theme="dark"] .bar-fats { background: #a78bfa; }
 
 .nut-meal-bar-val {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
   width: 32px;
@@ -1584,31 +1589,35 @@
 
 .nut-macro-p {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #4caf50;
+  color: #14b8a6;
 }
 
 .nut-macro-c {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #2196f3;
+  color: #f59e0b;
 }
 
 .nut-macro-f {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #ff9800;
+  color: #8b5cf6;
 }
 
 .nut-macro-cal {
   font-family: 'Orbitron', monospace;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
 }
+
+[data-theme="dark"] .nut-macro-p { color: #2dd4bf; }
+[data-theme="dark"] .nut-macro-c { color: #fbbf24; }
+[data-theme="dark"] .nut-macro-f { color: #a78bfa; }
 
 .nut-log-delete {
   background: none;
