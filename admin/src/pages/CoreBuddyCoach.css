@@ -294,6 +294,8 @@
   text-align: center;
   flex-shrink: 0;
   border-top: 1px solid var(--border-color);
+  overflow-y: auto;
+  max-height: 60vh;
 }
 
 .buddy-chat-done-text {
@@ -319,60 +321,6 @@
   opacity: 0.9;
 }
 
-/* ── Programme Recommendation ── */
-
-.buddy-rec-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  padding: 16px;
-  margin: 0 0 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.15s, transform 0.1s;
-}
-
-.buddy-rec-card:active {
-  transform: scale(0.98);
-}
-
-.buddy-rec-card:hover {
-  border-color: var(--color-primary);
-}
-
-.buddy-rec-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.buddy-rec-meta {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.buddy-rec-desc {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-  margin-bottom: 12px;
-}
-
-.buddy-rec-cta {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-  border-radius: 10px;
-  padding: 10px;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-family: 'Montserrat', sans-serif;
-}
-
 .buddy-chat-skip-btn {
   background: none;
   border: none;
@@ -387,4 +335,221 @@
 
 .buddy-chat-skip-btn:hover {
   color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════
+   Generated Plan Preview
+   ══════════════════════════════════════════ */
+
+.buddy-plan-preview {
+  text-align: left;
+  margin-bottom: 16px;
+  animation: buddy-msg-in 0.3s ease-out;
+}
+
+.buddy-plan-header {
+  margin-bottom: 14px;
+}
+
+.buddy-plan-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.buddy-plan-meta {
+  font-size: 0.78rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.buddy-plan-goals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.buddy-plan-goal-tag {
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+[data-theme="dark"] .buddy-plan-goal-tag {
+  background: rgba(255, 107, 53, 0.15);
+}
+
+/* ── Weeks ── */
+
+.buddy-plan-weeks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.buddy-plan-week {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.buddy-plan-week-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.buddy-plan-week-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.buddy-plan-week-toggle.active {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.buddy-plan-week-toggle svg {
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+/* ── Days ── */
+
+.buddy-plan-days {
+  padding: 8px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: buddy-msg-in 0.2s ease-out;
+}
+
+.buddy-plan-day {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 12px;
+}
+
+.buddy-plan-day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.buddy-plan-day-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(255, 107, 53, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+[data-theme="dark"] .buddy-plan-day-num {
+  background: rgba(255, 107, 53, 0.15);
+}
+
+.buddy-plan-day-focus {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Exercises ── */
+
+.buddy-plan-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.buddy-plan-exercise {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.buddy-plan-ex-name {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.buddy-plan-ex-detail {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.buddy-plan-ex-note {
+  display: block;
+  width: 100%;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 1px;
+}
+
+/* ── Plan Loading ── */
+
+.buddy-plan-loading {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.buddy-plan-loading p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.buddy-plan-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: buddy-spin 0.8s linear infinite;
+}
+
+@keyframes buddy-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Plan Error ── */
+
+.buddy-plan-error {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.buddy-plan-error p {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  margin: 0;
 }
