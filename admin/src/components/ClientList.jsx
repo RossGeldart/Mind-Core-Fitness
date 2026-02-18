@@ -424,6 +424,26 @@ export default function ClientList() {
         const isEditing = editingClient === client.id;
         const isBlock = !client.clientType || client.clientType === 'block';
 
+        // Warning badges for block clients (not archived)
+        let sessionBadge = null;
+        let expiryBadge = null;
+        if (isBlock && client.status !== 'archived') {
+          const remaining = getSessionsRemaining(client);
+          if (remaining <= 2) {
+            sessionBadge = { text: remaining <= 0 ? 'No sessions' : `${remaining} left`, urgent: remaining <= 0 };
+          }
+          if (client.endDate) {
+            const end = client.endDate.toDate ? client.endDate.toDate() : new Date(client.endDate);
+            const daysLeft = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
+            if (daysLeft <= 7) {
+              expiryBadge = {
+                text: daysLeft <= 0 ? 'Expired' : daysLeft === 1 ? 'Ends today' : `${daysLeft}d left`,
+                urgent: daysLeft <= 1
+              };
+            }
+          }
+        }
+
         return (
           <div key={client.id} className={`client-card ${client.status === 'archived' ? 'archived' : ''} ${isExpanded || isEditing ? 'expanded' : 'collapsed'}`}>
             {/* Compact Name Row — always visible */}
@@ -438,6 +458,16 @@ export default function ClientList() {
                 </div>
               </div>
               <div className="client-name-row-right">
+                {sessionBadge && (
+                  <span className={`client-warn-badge ${sessionBadge.urgent ? 'urgent' : 'warning'}`}>
+                    {sessionBadge.text}
+                  </span>
+                )}
+                {expiryBadge && (
+                  <span className={`client-warn-badge ${expiryBadge.urgent ? 'urgent' : 'expiry'}`}>
+                    {expiryBadge.text}
+                  </span>
+                )}
                 {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin' || client.clientType === 'core_buddy') && (
                   <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : client.clientType === 'core_buddy' ? 'core-buddy' : 'dropin'}`}>
                     {getTypeLabel(client)}

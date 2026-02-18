@@ -520,6 +520,35 @@
   color: var(--color-primary);
 }
 
+/* ====== Warning Badges on Collapsed Cards ====== */
+.client-warn-badge {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 8px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.client-warn-badge.urgent {
+  background: rgba(211, 47, 47, 0.15);
+  color: #ef5350;
+  border: 1px solid rgba(211, 47, 47, 0.25);
+}
+
+.client-warn-badge.warning {
+  background: rgba(245, 124, 0, 0.12);
+  color: #fb8c00;
+  border: 1px solid rgba(245, 124, 0, 0.25);
+}
+
+.client-warn-badge.expiry {
+  background: rgba(255, 167, 38, 0.12);
+  color: #ffa726;
+  border: 1px solid rgba(255, 167, 38, 0.25);
+}
+
 /* ====== Edit Form Type Toggle ====== */
 .edit-type-toggle {
   display: flex;
