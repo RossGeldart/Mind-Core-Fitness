@@ -122,6 +122,7 @@ export default function CoreBuddyDashboard() {
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [weeklyWorkoutTarget, setWeeklyWorkoutTarget] = useState(DEFAULT_WEEKLY_TARGET);
   const [showTargetPicker, setShowTargetPicker] = useState(false);
+  const [showTargetHint, setShowTargetHint] = useState(false);
   const [pbCount, setPbCount] = useState(0);
   const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
@@ -278,6 +279,19 @@ export default function CoreBuddyDashboard() {
     }
     if (statsLoaded && clientData && !tourDone) {
       const t = setTimeout(() => setShowTour(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, [statsLoaded, clientData]);
+
+  // Show workout ring hint pulse once for users who haven't set a target
+  useEffect(() => {
+    if (!statsLoaded || !clientData?.id) return;
+    try {
+      if (localStorage.getItem(`targetHint_${clientData.id}`)) return;
+    } catch {}
+    // Only hint if they haven't explicitly set a target yet
+    if (!clientData?.weeklyWorkoutTarget) {
+      const t = setTimeout(() => setShowTargetHint(true), 1500);
       return () => clearTimeout(t);
     }
   }, [statsLoaded, clientData]);
@@ -862,7 +876,11 @@ export default function CoreBuddyDashboard() {
   const saveWeeklyTarget = useCallback(async (target) => {
     setWeeklyWorkoutTarget(target);
     setShowTargetPicker(false);
+    setShowTargetHint(false);
     if (clientData?.id) {
+      try {
+        localStorage.setItem(`targetHint_${clientData.id}`, '1');
+      } catch {}
       try {
         await updateDoc(doc(db, 'clients', clientData.id), { weeklyWorkoutTarget: target });
       } catch (e) {
@@ -1383,9 +1401,13 @@ export default function CoreBuddyDashboard() {
             const r = ring.size === 'large' ? 38 : 38;
             const circ = 2 * Math.PI * r;
             const offset = circ - (ring.pct / 100) * circ;
+            const isEditable = ring.editable;
             return (
               <div key={ring.label} className={`cb-stat-item${ring.size === 'large' ? ' cb-stat-large' : ''}`}>
-                <div className="cb-stat-ring">
+                <div
+                  className={`cb-stat-ring${isEditable ? ' cb-stat-tappable' : ''}${isEditable && showTargetHint ? ' cb-stat-hint' : ''}`}
+                  onClick={isEditable ? () => { setShowTargetPicker(true); setShowTargetHint(false); } : undefined}
+                >
                   <svg viewBox="0 0 100 100">
                     <circle className="cb-stat-track" cx="50" cy="50" r={r} />
                     <circle className="cb-stat-fill" cx="50" cy="50" r={r}
@@ -1394,11 +1416,6 @@ export default function CoreBuddyDashboard() {
                       strokeDashoffset={offset} />
                   </svg>
                   <span className="cb-stat-value" style={{ color: ring.color }}>{ring.value}</span>
-                  {ring.editable && (
-                    <button className="cb-stat-edit" onClick={() => setShowTargetPicker(true)} aria-label="Edit weekly target">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                    </button>
-                  )}
                 </div>
                 <span className="cb-stat-label">{ring.label}</span>
               </div>

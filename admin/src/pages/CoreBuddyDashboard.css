@@ -457,33 +457,27 @@
   letter-spacing: 0.5px;
 }
 
-/* Stat Ring Edit Button */
-.cb-stat-edit {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: var(--bg-card-elevated);
-  color: var(--text-tertiary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Tappable Stat Ring (workout target) */
+.cb-stat-tappable {
   cursor: pointer;
-  z-index: 2;
-  transition: color 0.2s, background 0.2s;
   -webkit-tap-highlight-color: transparent;
-  border: 1px solid var(--border-color);
+  transition: transform 0.15s;
 }
 
-.cb-stat-edit:active {
-  transform: scale(0.9);
+.cb-stat-tappable:active {
+  transform: scale(0.93);
 }
 
-.cb-stat-edit:hover {
-  color: var(--color-primary);
+/* Hint pulse — plays once to teach user the ring is tappable */
+@keyframes statRingHintPulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(var(--color-primary-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0); }
+}
+
+.cb-stat-hint {
+  border-radius: 50%;
+  animation: statRingHintPulse 1.6s ease-out 3;
 }
 
 /* Weekly Target Picker Overlay */
