@@ -883,9 +883,9 @@ export default function CoreBuddyDashboard() {
   const workoutPct = wNext > wPrev ? Math.round(((totalWorkouts - wPrev) / (wNext - wPrev)) * 100) : 100;
 
   const statRings = [
-    { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: '#14b8a6', size: 'normal' },
+    { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: 'var(--color-primary)', size: 'normal' },
     { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large' },
-    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: '#38B6FF', size: 'normal' },
+    { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
 
   // Nutrition percentage helper
@@ -1457,10 +1457,10 @@ export default function CoreBuddyDashboard() {
             <div className="cb-card-preview-row">
               <div className="cb-mini-rings">
                 {[
-                  { label: 'P', pct: nutPct('protein'), color: '#14b8a6' },
+                  { label: 'P', pct: nutPct('protein'), color: 'var(--color-primary)' },
                   { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
-                  { label: 'F', pct: nutPct('fats'), color: '#eab308' },
-                  { label: 'Cal', pct: nutPct('calories'), color: '#38B6FF' },
+                  { label: 'F', pct: nutPct('fats'), color: 'var(--color-primary)' },
+                  { label: 'Cal', pct: nutPct('calories'), color: 'var(--color-primary)' },
                 ].map((ring) => {
                   const r = 38;
                   const circ = 2 * Math.PI * r;
