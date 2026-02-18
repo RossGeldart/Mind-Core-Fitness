@@ -102,7 +102,10 @@ export default function Schedule() {
   const [jumpDate, setJumpDate] = useState('');
   const [clientFilter, setClientFilter] = useState('');
   const [hideCompleted, setHideCompleted] = useState(false);
-  const [collapsedWeeks, setCollapsedWeeks] = useState(new Set());
+  // Tracks groups the user has explicitly toggled.
+  // This/Next Week default open; month groups default collapsed.
+  // A toggle flips whichever the default is for that group.
+  const [userToggledWeeks, setUserToggledWeeks] = useState(new Set());
 
   useEffect(() => {
     fetchSessions();
@@ -137,7 +140,7 @@ export default function Schedule() {
   };
 
   const toggleWeek = (key) => {
-    setCollapsedWeeks(prev => {
+    setUserToggledWeeks(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -259,7 +262,9 @@ export default function Schedule() {
           {/* Week-grouped session list */}
           <div className="sessions-list">
             {weekGroups.map(({ key, label, dates: groupDates }) => {
-              const isCollapsed = collapsedWeeks.has(key);
+              // Month groups (beyond Next Week) collapse by default; This/Next Week expand by default
+              const isMonthGroup = key !== 'this-week' && key !== 'next-week';
+              const isCollapsed = isMonthGroup ? !userToggledWeeks.has(key) : userToggledWeeks.has(key);
               const sessionCount = groupDates.reduce((sum, d) => sum + groupedSessions[d].length, 0);
 
               return (
