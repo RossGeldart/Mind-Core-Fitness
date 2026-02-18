@@ -18,21 +18,13 @@ import BADGE_DEFS from '../utils/badgeConfig';
 import SpotlightTour from '../components/SpotlightTour';
 
 const TICK_COUNT = 60;
-const WORKOUT_MILESTONES = [10, 25, 50, 100, 200, 500, 1000];
+const DEFAULT_WEEKLY_TARGET = 3;
 const DEFAULT_HABIT_COUNT = 5;
 
 function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function getWorkoutMilestone(total) {
-  let prev = 0;
-  for (const m of WORKOUT_MILESTONES) {
-    if (total < m) return { prev, next: m };
-    prev = m;
-  }
-  return { prev: WORKOUT_MILESTONES[WORKOUT_MILESTONES.length - 1], next: total + 100 };
-}
 
 // Programme templates (must match CoreBuddyProgrammes)
 const TEMPLATE_META = {
@@ -128,6 +120,8 @@ export default function CoreBuddyDashboard() {
   const [hasProgramme, setHasProgramme] = useState(false);
   const [programmeComplete, setProgrammeComplete] = useState(false);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
+  const [weeklyWorkoutTarget, setWeeklyWorkoutTarget] = useState(DEFAULT_WEEKLY_TARGET);
+  const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [pbCount, setPbCount] = useState(0);
   const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
@@ -306,6 +300,7 @@ export default function CoreBuddyDashboard() {
         setHasProgramme(c.hasProgramme ?? false);
         setProgrammeComplete(c.programmeComplete ?? false);
         setWeeklyWorkouts(c.weeklyWorkouts ?? 0);
+        setWeeklyWorkoutTarget(c.weeklyWorkoutTarget ?? DEFAULT_WEEKLY_TARGET);
         setPbCount(c.pbCount ?? 0);
         setTopPBs(c.topPBs ?? []);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
@@ -317,10 +312,13 @@ export default function CoreBuddyDashboard() {
     } catch {}
   }, [clientData]);
 
-  // Load profile photo from client data
+  // Load profile photo and weekly target from client data
   useEffect(() => {
     if (clientData?.photoURL) {
       setPhotoURL(clientData.photoURL);
+    }
+    if (clientData?.weeklyWorkoutTarget) {
+      setWeeklyWorkoutTarget(clientData.weeklyWorkoutTarget);
     }
   }, [clientData]);
 
@@ -834,13 +832,13 @@ export default function CoreBuddyDashboard() {
         programmePct, programmeName, totalWorkouts, habitWeekPct,
         nutritionTotals, nutritionTargetData, todayHabitsCount,
         nextSession, hasProgramme, programmeComplete,
-        weeklyWorkouts, pbCount, topPBs, leaderboardTop3,
+        weeklyWorkouts, weeklyWorkoutTarget, pbCount, topPBs, leaderboardTop3,
         unlockedBadges, streakWeeks
       }));
     } catch {}
   }, [statsLoaded, programmePct, programmeName, totalWorkouts, habitWeekPct,
      nutritionTotals, nutritionTargetData, todayHabitsCount, nextSession,
-     hasProgramme, programmeComplete, weeklyWorkouts, pbCount, topPBs,
+     hasProgramme, programmeComplete, weeklyWorkouts, weeklyWorkoutTarget, pbCount, topPBs,
      leaderboardTop3, unlockedBadges, streakWeeks, clientData]);
 
   // Tour finish handler — persist to Firestore so it only shows once
@@ -859,6 +857,19 @@ export default function CoreBuddyDashboard() {
       }
     }
   }, [clientData, updateClientData]);
+
+  // Save weekly workout target
+  const saveWeeklyTarget = useCallback(async (target) => {
+    setWeeklyWorkoutTarget(target);
+    setShowTargetPicker(false);
+    if (clientData?.id) {
+      try {
+        await updateDoc(doc(db, 'clients', clientData.id), { weeklyWorkoutTarget: target });
+      } catch (e) {
+        console.error('Failed to save weekly target:', e);
+      }
+    }
+  }, [clientData]);
 
   // Ripple effect
   const createRipple = (event) => {
@@ -879,12 +890,11 @@ export default function CoreBuddyDashboard() {
   const firstName = clientData?.name?.split(' ')[0] || 'there';
 
   // Calculate percentages for 3 stat rings (solid arc style)
-  const { prev: wPrev, next: wNext } = getWorkoutMilestone(totalWorkouts);
-  const workoutPct = wNext > wPrev ? Math.round(((totalWorkouts - wPrev) / (wNext - wPrev)) * 100) : 100;
+  const workoutPct = Math.min(Math.round((weeklyWorkouts / weeklyWorkoutTarget) * 100), 100);
 
   const statRings = [
     { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: 'var(--color-primary)', size: 'normal' },
-    { label: 'Workouts', value: `${totalWorkouts}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large' },
+    { label: 'Workouts', value: `${weeklyWorkouts}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
 
@@ -1384,12 +1394,38 @@ export default function CoreBuddyDashboard() {
                       strokeDashoffset={offset} />
                   </svg>
                   <span className="cb-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  {ring.editable && (
+                    <button className="cb-stat-edit" onClick={() => setShowTargetPicker(true)} aria-label="Edit weekly target">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                    </button>
+                  )}
                 </div>
                 <span className="cb-stat-label">{ring.label}</span>
               </div>
             );
           })}
         </div>
+
+        {/* Weekly target picker */}
+        {showTargetPicker && (
+          <div className="cb-target-overlay" onClick={() => setShowTargetPicker(false)}>
+            <div className="cb-target-picker" onClick={(e) => e.stopPropagation()}>
+              <h4>Weekly workout goal</h4>
+              <p>How many sessions per week?</p>
+              <div className="cb-target-options">
+                {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                  <button
+                    key={n}
+                    className={`cb-target-option${n === weeklyWorkoutTarget ? ' active' : ''}`}
+                    onClick={() => saveWeeklyTarget(n)}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
