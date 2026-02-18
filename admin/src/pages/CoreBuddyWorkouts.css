@@ -233,47 +233,11 @@
   transform: scale(1.03);
 }
 
-/* ===== Free-tier 2-column card grid ===== */
-.wk-free-cards-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.wk-free-card {
-  position: relative;
-  display: flex;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border: none;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  font-family: inherit;
-  box-shadow: var(--shadow-lg);
-  transition: transform 0.2s ease;
-  padding: 0;
-  background: transparent;
-}
-
-.wk-free-card:active {
-  transform: scale(0.97);
-}
-
-.wk-free-card-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-
+/* ===== Free-tier premium bait card (stacked full-width) ===== */
 .wk-free-card-premium .wk-free-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);
   z-index: 1;
 }
 
