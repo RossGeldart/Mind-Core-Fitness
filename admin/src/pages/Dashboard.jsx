@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
   const [processingRequest, setProcessingRequest] = useState(null);
   const [toast, setToast] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [requestHistory, setRequestHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [dashClients, setDashClients] = useState([]);
   const [dashSessions, setDashSessions] = useState([]);
   const [activeCard, setActiveCard] = useState(null); // 'expiring' | 'low' | null
@@ -69,6 +72,34 @@ export default function Dashboard() {
       fetchRescheduleRequests();
     }
   }, [currentUser, isAdmin]);
+
+  const fetchRequestHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const historyQuery = query(
+        collection(db, 'rescheduleRequests'),
+        where('status', 'in', ['approved', 'rejected'])
+      );
+      const snapshot = await getDocs(historyQuery);
+      const history = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      history.sort((a, b) => {
+        const dateA = a.respondedAt?.toDate ? a.respondedAt.toDate() : new Date(0);
+        const dateB = b.respondedAt?.toDate ? b.respondedAt.toDate() : new Date(0);
+        return dateB - dateA;
+      });
+      setRequestHistory(history);
+    } catch (error) {
+      console.error('Error fetching request history:', error);
+    }
+    setLoadingHistory(false);
+  };
+
+  const handleToggleHistory = () => {
+    if (!showHistory && requestHistory.length === 0) {
+      fetchRequestHistory();
+    }
+    setShowHistory(prev => !prev);
+  };
 
   const fetchRescheduleRequests = async () => {
     try {
@@ -226,6 +257,21 @@ export default function Dashboard() {
 
     setProcessingRequest(request.id);
     try {
+      // Check the requested slot is still free before approving
+      const conflictQuery = query(
+        collection(db, 'sessions'),
+        where('date', '==', request.requestedDate),
+        where('time', '==', request.requestedTime)
+      );
+      const conflictSnap = await getDocs(conflictQuery);
+      const conflicts = conflictSnap.docs.filter(d => d.id !== request.sessionId);
+      if (conflicts.length > 0) {
+        const takenBy = conflicts[0].data().clientName;
+        showToast(`Cannot approve — ${takenBy} is already booked at that time`, 'error');
+        setProcessingRequest(null);
+        return;
+      }
+
       // Update the session with new date/time
       await updateDoc(doc(db, 'sessions', request.sessionId), {
         date: request.requestedDate,
@@ -567,7 +613,40 @@ export default function Dashboard() {
           <div className="requests-view">
             <div className="view-header">
               <h2>Reschedule Requests</h2>
+              <button className="history-toggle-btn" onClick={handleToggleHistory}>
+                {showHistory ? 'Hide History' : 'View History'}
+              </button>
             </div>
+
+            {showHistory && (
+              <div className="request-history-section">
+                <div className="history-section-header">Past Requests</div>
+                {loadingHistory ? (
+                  <p className="history-empty">Loading...</p>
+                ) : requestHistory.length === 0 ? (
+                  <p className="history-empty">No past requests</p>
+                ) : (
+                  requestHistory.map(r => (
+                    <div key={r.id} className="history-request-card">
+                      <div className="history-request-top">
+                        <span className="history-client-name">{r.clientName}</span>
+                        <span className={`history-status-badge ${r.status}`}>{r.status}</span>
+                      </div>
+                      <div className="history-request-detail">
+                        <span>{formatDate(r.originalDate)} {formatTime(r.originalTime)}</span>
+                        <span className="history-arrow">→</span>
+                        <span>{formatDate(r.requestedDate)} {formatTime(r.requestedTime)}</span>
+                      </div>
+                      {r.respondedAt && (
+                        <div className="history-responded-at">
+                          {r.respondedAt.toDate ? r.respondedAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
 
             {rescheduleRequests.length === 0 ? (
               <div className="no-requests">

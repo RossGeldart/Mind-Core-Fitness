@@ -154,3 +154,16 @@ export const getAvailableSlotsForDate = (date, sessionDuration, sessions, holida
   const allSlots = generateTimeSlotsForDay(dayName);
   return allSlots.filter(slot => isSlotAvailable(date, slot.time, sessionDuration, sessions, holidays, excludeSessionId, blockedTimes, openedSlots));
 };
+
+// Check if a session has been completed (start time + duration has passed)
+export const isSessionCompleted = (session) => {
+  const now = new Date();
+  const today = formatDateKey(now);
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  if (session.date < today) return true;
+  if (session.date === today) {
+    const sessionEndMinutes = timeToMinutes(session.time) + (session.duration || 45);
+    return timeToMinutes(currentTime) >= sessionEndMinutes;
+  }
+  return false;
+};
