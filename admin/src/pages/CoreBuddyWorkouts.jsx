@@ -27,6 +27,10 @@ import mgShouldersImg from '../assets/muscle-group-shoulders.png';
 import shouldersStrengthImg from '../assets/shoulders-strength.png';
 import shouldersHypertrophyImg from '../assets/shoulders-hypertrophy.png';
 import shouldersEnduranceImg from '../assets/shoulders-endurance.png';
+import mgCoreImg from '../assets/muscle-group-core.png';
+import coreLowerAbsImg from '../assets/core-lower-abs.png';
+import coreObliquesImg from '../assets/core-obliques-rotation.png';
+import coreWeightedImg from '../assets/core-weighted-core.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -121,7 +125,7 @@ const MUSCLE_GROUPS = [
   { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z' },
   { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z', image: mgShouldersImg },
   { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z' },
-  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z' },
+  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z', image: mgCoreImg },
 ];
 
 // Muscle group workout sessions (3 per group)
@@ -415,6 +419,7 @@ const MUSCLE_GROUP_SESSIONS = {
   core: [
     {
       id: 'core_lower_abs', name: 'Lower Abs Blast', desc: '40s work / 20s rest — 3 rounds',
+      image: coreLowerAbsImg,
       level: 'Intermediate',
       overview: 'An interval-based core burner targeting the lower abdominals. 40 seconds of work followed by 20 seconds of rest — keep the intensity high and your lower back pressed into the floor throughout.',
       tips: [
@@ -435,6 +440,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_obliques', name: 'Obliques & Rotation', desc: '35s work / 25s rest — 3 rounds',
+      image: coreObliquesImg,
       level: 'Intermediate',
       overview: 'Target the obliques and rotational core muscles with this interval session. 35 seconds of work with 25 seconds rest — every exercise involves twisting, rotating, or side-bracing movements.',
       tips: [
@@ -455,6 +461,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_weighted', name: 'Weighted Core', desc: '40s work / 20s rest — 3 rounds',
+      image: coreWeightedImg,
       level: 'Advanced',
       overview: 'Add resistance to your core training with dumbbells and kettlebells. 40 seconds of weighted work followed by 20 seconds rest — this session builds serious core strength and stability.',
       tips: [
