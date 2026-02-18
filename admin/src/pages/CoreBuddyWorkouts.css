@@ -215,6 +215,10 @@
   transition: transform 0.2s ease;
 }
 
+.wk-hero-card + .wk-hero-card {
+  margin-top: 16px;
+}
+
 .wk-hero-card:active {
   transform: scale(0.98);
 }
