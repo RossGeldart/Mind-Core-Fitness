@@ -4,6 +4,7 @@ import { db } from '../config/firebase';
 import {
   SCHEDULE, DAYS, DAY_LABELS,
   formatTime, formatDateKey, timeToMinutes, addMinutesToTime, generateTimeSlotsForDay,
+  isSessionCompleted, getAvailableSlotsForDate,
 } from '../utils/scheduleUtils';
 import './Calendar.css';
 
@@ -35,6 +36,9 @@ export default function Calendar() {
   const [showClientPicker, setShowClientPicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [clientSearch, setClientSearch] = useState('');
+  const [sessionNotes, setSessionNotes] = useState([]);
+  const [editModal, setEditModal] = useState(null); // { session, step: 'action'|'date'|'time', selectedDate, selectedTime }
+  const [editSaving, setEditSaving] = useState(false);
 
   useEffect(() => {
     setWeekDates(getWeekDates(currentDate));
@@ -132,15 +136,6 @@ export default function Calendar() {
     }).length;
   };
 
-  const isSessionCompleted = (session) => {
-    const now = new Date();
-    const today = formatDateKey(now);
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    if (session.date < today) return true;
-    if (session.date === today && session.time < currentTime) return true;
-    return false;
-  };
-
   const fetchData = async () => {
     try {
       const clientsSnapshot = await getDocs(collection(db, 'clients'));
@@ -165,10 +160,103 @@ export default function Calendar() {
       const openedSlotsSnapshot = await getDocs(collection(db, 'openedSlots'));
       const openedSlotsData = openedSlotsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setOpenedSlots(openedSlotsData);
+
+      const notesSnapshot = await getDocs(collection(db, 'sessionNotes'));
+      const notesData = notesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setSessionNotes(notesData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
     setLoading(false);
+  };
+
+  // Check if a completed session has a trainer note
+  const hasSessionNote = (session) => {
+    return sessionNotes.some(n => n.clientId === session.clientId && n.date === session.date);
+  };
+
+  // Explain why a slot is unavailable for the selected client
+  const getUnavailabilityReason = (date, time) => {
+    if (!selectedClient) return 'Unavailable';
+    const duration = selectedClient.sessionDuration || 45;
+    const dateKey = formatDateKey(date);
+    const slotStart = timeToMinutes(time);
+    const slotEnd = slotStart + duration;
+
+    const conflict = sessions.find(s => {
+      if (s.date !== dateKey) return false;
+      const sStart = timeToMinutes(s.time);
+      const sEnd = sStart + (s.duration || 45);
+      return slotStart < sEnd && slotEnd > sStart;
+    });
+    if (conflict) return `Taken — ${conflict.clientName}`;
+
+    const dayName = DAYS[date.getDay() - 1];
+    const schedule = SCHEDULE[dayName];
+    if (schedule) {
+      const endTime = addMinutesToTime(time, duration);
+      const startsInMorning = schedule.morning && time >= schedule.morning.start && time < schedule.morning.end;
+      const startsInAfternoon = schedule.afternoon && time >= schedule.afternoon.start && time < schedule.afternoon.end;
+      if (startsInMorning && endTime > schedule.morning.end) return 'Splits break';
+      if (startsInAfternoon && endTime > schedule.afternoon.end) return 'Overruns end';
+    }
+    return 'Unavailable';
+  };
+
+  // Get all valid dates an admin can reschedule a session to
+  const getAvailableDatesForEdit = (session) => {
+    const client = clients.find(c => c.id === session.clientId);
+    if (!client || !client.startDate || !client.endDate) return [];
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate);
+    const now = new Date();
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dates = [];
+    const cursor = new Date(Math.max(blockStart.getTime(), todayMidnight.getTime()));
+    while (cursor <= blockEnd) {
+      const day = cursor.getDay();
+      if (day >= 1 && day <= 5) {
+        const dateKey = formatDateKey(cursor);
+        if (!holidays.some(h => h.date === dateKey)) {
+          dates.push(new Date(cursor));
+        }
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return dates;
+  };
+
+  // Get available time slots for a date when rescheduling (excludes the session's own slot)
+  const getAvailableSlotsForEdit = (session, date) => {
+    if (!date) return [];
+    return getAvailableSlotsForDate(date, session.duration || 45, sessions, holidays, session.id, blockedTimes, openedSlots);
+  };
+
+  const handleCancelSession = async (session) => {
+    setEditModal(null);
+    if (window.confirm(`Cancel ${session.clientName}'s session at ${formatTime(session.time)}?`)) {
+      try {
+        await deleteDoc(doc(db, 'sessions', session.id));
+        setSessions(sessions.filter(s => s.id !== session.id));
+      } catch (error) {
+        console.error('Error cancelling session:', error);
+        alert('Failed to cancel session');
+      }
+    }
+  };
+
+  const handleConfirmReschedule = async (session, newDate, newTime) => {
+    setEditSaving(true);
+    try {
+      const dateKey = formatDateKey(newDate);
+      await updateDoc(doc(db, 'sessions', session.id), { date: dateKey, time: newTime });
+      setSessions(sessions.map(s => s.id === session.id ? { ...s, date: dateKey, time: newTime } : s));
+      setEditModal(null);
+    } catch (error) {
+      console.error('Error rescheduling session:', error);
+      alert('Failed to reschedule session');
+    }
+    setEditSaving(false);
   };
 
   const navigateWeek = (direction) => {
@@ -337,16 +425,8 @@ export default function Calendar() {
     const existingSession = getSessionOccupyingSlot(date, time);
 
     if (existingSession) {
-      if (isSessionCompleted(existingSession)) return; // completed — not cancellable
-      if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(existingSession.time)}?`)) {
-        try {
-          await deleteDoc(doc(db, 'sessions', existingSession.id));
-          setSessions(sessions.filter(s => s.id !== existingSession.id));
-        } catch (error) {
-          console.error('Error cancelling session:', error);
-          alert('Failed to cancel session');
-        }
-      }
+      if (isSessionCompleted(existingSession)) return; // completed — not editable
+      setEditModal({ session: existingSession, step: 'action', selectedDate: null, selectedTime: null });
       return;
     }
 
@@ -672,7 +752,10 @@ export default function Calendar() {
                     >
                       <span className="slot-time">{formatTime(time)}</span>
                       {sessionStart && isCompleted ? (
-                        <span className="slot-done">{sessionStart.clientName} ✓</span>
+                        <span className="slot-done">
+                          {sessionStart.clientName} ({sessionStart.duration}m) ✓
+                          {hasSessionNote(sessionStart) && <span className="note-dot" title="Has session note" />}
+                        </span>
                       ) : sessionStart ? (
                         <span className="slot-client">{sessionStart.clientName} ({sessionStart.duration}m)</span>
                       ) : isContinuation && isCompleted ? (
@@ -684,7 +767,7 @@ export default function Calendar() {
                       ) : available ? (
                         <span className="slot-available">Available</span>
                       ) : selectedClient ? (
-                        <span className="slot-unavailable">Unavailable</span>
+                        <span className="slot-unavailable">{getUnavailabilityReason(weekDates[selectedDay], time)}</span>
                       ) : opened ? (
                         <span className="slot-available">Open</span>
                       ) : (
@@ -705,6 +788,111 @@ export default function Calendar() {
             })}
           </div>
           )}
+        </div>
+      )}
+
+      {/* Edit Session Modal */}
+      {editModal && (
+        <div className="modal-overlay" onClick={() => setEditModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+
+            {editModal.step === 'action' && (
+              <>
+                <div className="modal-header">
+                  <h3>{editModal.session.clientName}</h3>
+                  <button className="close-btn" onClick={() => setEditModal(null)}>&times;</button>
+                </div>
+                <div className="edit-session-info">
+                  <p className="edit-session-date">
+                    {new Date(editModal.session.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' })}
+                  </p>
+                  <p className="edit-session-time">{formatTime(editModal.session.time)} · {editModal.session.duration}min</p>
+                </div>
+                <div className="edit-actions">
+                  <button
+                    className="reschedule-edit-btn"
+                    onClick={() => setEditModal({ ...editModal, step: 'date' })}
+                  >
+                    Reschedule
+                  </button>
+                  <button
+                    className="cancel-session-btn"
+                    onClick={() => handleCancelSession(editModal.session)}
+                  >
+                    Cancel Session
+                  </button>
+                </div>
+              </>
+            )}
+
+            {editModal.step === 'date' && (
+              <>
+                <div className="modal-header">
+                  <button className="close-btn" onClick={() => setEditModal({ ...editModal, step: 'action' })}>&#8592;</button>
+                  <h3>Pick New Date</h3>
+                  <button className="close-btn" onClick={() => setEditModal(null)}>&times;</button>
+                </div>
+                <div className="client-list-picker">
+                  {(() => {
+                    const dates = getAvailableDatesForEdit(editModal.session);
+                    if (dates.length === 0) return <p className="no-items">No available dates in block</p>;
+                    return dates.map(date => {
+                      const dateKey = formatDateKey(date);
+                      return (
+                        <button
+                          key={dateKey}
+                          className="client-option date-option"
+                          onClick={() => setEditModal({ ...editModal, step: 'time', selectedDate: date, selectedTime: null })}
+                        >
+                          {date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
+                        </button>
+                      );
+                    });
+                  })()}
+                </div>
+              </>
+            )}
+
+            {editModal.step === 'time' && (
+              <>
+                <div className="modal-header">
+                  <button className="close-btn" onClick={() => setEditModal({ ...editModal, step: 'date', selectedTime: null })}>&#8592;</button>
+                  <h3>
+                    {editModal.selectedDate?.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </h3>
+                  <button className="close-btn" onClick={() => setEditModal(null)}>&times;</button>
+                </div>
+                <div className="client-list-picker">
+                  {(() => {
+                    const slots = getAvailableSlotsForEdit(editModal.session, editModal.selectedDate);
+                    if (slots.length === 0) return <p className="no-items">No available slots on this day</p>;
+                    return slots.map(slot => (
+                      <button
+                        key={slot.time}
+                        className={`client-option time-option ${editModal.selectedTime === slot.time ? 'selected' : ''}`}
+                        onClick={() => setEditModal({ ...editModal, selectedTime: slot.time })}
+                      >
+                        {formatTime(slot.time)}
+                        <span className="time-option-period">{slot.period}</span>
+                      </button>
+                    ));
+                  })()}
+                </div>
+                {editModal.selectedTime && (
+                  <div className="edit-confirm-bar">
+                    <button
+                      className="confirm-reschedule-btn"
+                      onClick={() => handleConfirmReschedule(editModal.session, editModal.selectedDate, editModal.selectedTime)}
+                      disabled={editSaving}
+                    >
+                      {editSaving ? 'Saving...' : `Confirm — ${formatTime(editModal.selectedTime)}`}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+          </div>
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { isSessionCompleted } from '../utils/scheduleUtils';
 import './Schedule.css';
 
 const formatTime = (time) => {
@@ -38,18 +39,6 @@ const timeToMinutes = (time) => {
   return hours * 60 + minutes;
 };
 
-// Check if a session has been completed (time + duration has passed)
-const isSessionCompleted = (session) => {
-  const now = new Date();
-  const today = formatDateKey(now);
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  if (session.date < today) return true;
-  if (session.date === today) {
-    const sessionEndMinutes = timeToMinutes(session.time) + (session.duration || 45);
-    return timeToMinutes(currentTime) >= sessionEndMinutes;
-  }
-  return false;
-};
 
 // Group a sorted array of date strings into week buckets for the collapsible sections
 const groupDatesIntoWeeks = (dates) => {
