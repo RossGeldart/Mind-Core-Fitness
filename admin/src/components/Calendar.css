@@ -459,6 +459,24 @@
   border-color: #7a2730;
 }
 
+.time-slot.completed {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-tertiary);
+  cursor: default;
+  opacity: 0.7;
+}
+
+.time-slot.completed:hover {
+  border-color: var(--border-color);
+}
+
+.slot-done {
+  font-size: 0.85rem;
+  color: #4caf50;
+  font-weight: 500;
+}
+
 .time-slot.booked-continuation {
   opacity: 0.85;
   border-style: dashed;
