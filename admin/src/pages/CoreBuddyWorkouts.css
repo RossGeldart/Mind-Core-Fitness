@@ -233,6 +233,75 @@
   transform: scale(1.03);
 }
 
+/* ===== Free-tier 2-column card grid ===== */
+.wk-free-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wk-free-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s ease;
+  padding: 0;
+  background: transparent;
+}
+
+.wk-free-card:active {
+  transform: scale(0.97);
+}
+
+.wk-free-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.wk-free-card-premium .wk-free-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+  z-index: 1;
+}
+
+.wk-free-card-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.wk-free-card-content svg {
+  opacity: 0.9;
+}
+
+.wk-free-card-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  line-height: 1.3;
+}
+
 .wk-hero-overlay {
   position: absolute;
   inset: 0;
