@@ -62,11 +62,11 @@
 }
 
 [data-theme="dark"] {
-  /* Primary colors */
-  --color-primary: #A12F3A;
-  --color-primary-dark: #832630;
-  --color-primary-light: rgba(161, 47, 58, 0.15);
-  --color-primary-rgb: 161, 47, 58;
+  /* Primary colors — lifted saturation for dark backgrounds */
+  --color-primary: #C83846;
+  --color-primary-dark: #A12F3A;
+  --color-primary-light: rgba(200, 56, 70, 0.15);
+  --color-primary-rgb: 200, 56, 70;
 
   /* Backgrounds — deeper, cooler, more premium */
   --bg-body: #111114;
@@ -112,7 +112,7 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-primary: 0 6px 20px rgba(161, 47, 58, 0.4);
+  --shadow-primary: 0 6px 20px rgba(200, 56, 70, 0.4);
 
   /* Overlays */
   --overlay-bg: rgba(0, 0, 0, 0.8);

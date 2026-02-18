@@ -12,16 +12,17 @@ import WorkoutCelebration from '../components/WorkoutCelebration';
 
 
 const DEFAULT_HABITS = [
-  { key: 'trained', label: 'Trained', icon: 'M4 10v4M8 7v10M8 12h8M16 7v10M20 10v4', color: '#A12F3A' },
-  { key: 'protein', label: 'Hit Protein', icon: 'M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zM12 18c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', color: '#4caf50' },
-  { key: 'steps', label: '10k Steps', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20M4 5.5A2.5 2.5 0 0 1 6.5 3H20', color: '#ff9800' },
-  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed' },
-  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3' },
+  { key: 'trained', label: 'Trained', icon: 'M4 10v4M8 7v10M8 12h8M16 7v10M20 10v4', color: '#A12F3A', darkColor: '#E8475A' },
+  { key: 'protein', label: 'Hit Protein', icon: 'M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zM12 18c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', color: '#4caf50', darkColor: '#5CDB61' },
+  { key: 'steps', label: '10k Steps', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20M4 5.5A2.5 2.5 0 0 1 6.5 3H20', color: '#ff9800', darkColor: '#FFB020' },
+  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed', darkColor: '#9B5AF2' },
+  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3', darkColor: '#42A5F5' },
 ];
 
 // Icon for custom habits (sparkle)
 const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
 const CUSTOM_COLOR = '#e91e63';
+const CUSTOM_DARK_COLOR = '#FF4D88';
 
 const HOLD_DURATION = 700; // ms
 const RING_RADIUS = 42;
@@ -98,10 +99,11 @@ export default function CoreBuddyConsistency() {
   const weekDates = getWeekDates(monday);
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  // Merged habits list (exclude hidden defaults)
+  // Merged habits list (exclude hidden defaults) — resolve dark mode colors
+  const resolveColor = (light, dark) => isDark && dark ? dark : light;
   const allHabitsRaw = [
-    ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)),
-    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: CUSTOM_COLOR, isCustom: true, id: h.id })),
+    ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)).map(h => ({ ...h, color: resolveColor(h.color, h.darkColor) })),
+    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(CUSTOM_COLOR, CUSTOM_DARK_COLOR), isCustom: true, id: h.id })),
   ];
   const allHabits = isPremium ? allHabitsRaw : allHabitsRaw.slice(0, FREE_HABIT_LIMIT);
 
@@ -647,7 +649,7 @@ export default function CoreBuddyConsistency() {
                       <div className="cbc-habit-glow-orb" style={{ '--habit-color': habit.color }} />
                     )}
                     <div className="cbc-habit-ring-icon" style={{ color: habit.color }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d={habit.icon} />
                       </svg>
                     </div>
