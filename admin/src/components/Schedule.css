@@ -64,11 +64,208 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Next Session Banner */
+.next-session-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid #A12F3A;
+  border-left: 4px solid #A12F3A;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.next-session-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #A12F3A;
+  white-space: nowrap;
+}
+
+.next-session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.next-session-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.next-session-time {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.next-session-countdown {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #A12F3A;
+  white-space: nowrap;
+}
+
+/* Hide-done toggle button inside today-summary */
+.hide-completed-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.hide-completed-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Controls row: client filter + jump-to-date */
+.schedule-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 500px) {
+  .schedule-controls {
+    flex-direction: row;
+  }
+
+  .schedule-controls .client-filter-input,
+  .schedule-controls .date-jump-select {
+    flex: 1;
+  }
+}
+
+.client-filter-input {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+}
+
+.client-filter-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.client-filter-input:focus {
+  outline: none;
+  border-color: #A12F3A;
+}
+
+.date-jump-select {
+  padding: 10px 36px 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.date-jump-select:focus {
+  outline: none;
+  border-color: #A12F3A;
+}
+
+/* Week group collapsible sections */
+.week-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.week-group-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.week-group-header:hover {
+  border-color: #A12F3A;
+  color: var(--text-primary);
+}
+
+.week-group-header.collapsed {
+  margin-bottom: 12px;
+  opacity: 0.75;
+}
+
+.week-label {
+  flex: 1;
+  text-align: left;
+}
+
+.week-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-right: 10px;
+  opacity: 0.8;
+}
+
+.week-chevron {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.week-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* "All sessions completed" message when hiding done sessions */
+.all-done-msg {
+  padding: 14px 12px;
+  text-align: center;
+  color: #4caf50;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
 /* Sessions List */
 .sessions-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
 }
 
 .date-group {
@@ -208,10 +405,20 @@
   }
 
   .today-summary {
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 8px;
-    text-align: center;
     padding: 16px;
+  }
+
+  .today-summary h3 {
+    font-size: 1rem;
+    flex: 1;
+  }
+
+  .hide-completed-btn {
+    order: 3;
+    width: 100%;
+    text-align: center;
   }
 
   .session-card {

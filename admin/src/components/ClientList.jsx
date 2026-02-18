@@ -424,6 +424,26 @@ export default function ClientList() {
         const isEditing = editingClient === client.id;
         const isBlock = !client.clientType || client.clientType === 'block';
 
+        // Warning badges for block clients (not archived)
+        let sessionBadge = null;
+        let expiryBadge = null;
+        if (isBlock && client.status !== 'archived') {
+          const remaining = getSessionsRemaining(client);
+          if (remaining <= 2) {
+            sessionBadge = { text: remaining <= 0 ? 'No sessions' : `${remaining} left`, urgent: remaining <= 0 };
+          }
+          if (client.endDate) {
+            const end = client.endDate.toDate ? client.endDate.toDate() : new Date(client.endDate);
+            const daysLeft = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
+            if (daysLeft <= 7) {
+              expiryBadge = {
+                text: daysLeft <= 0 ? 'Expired' : daysLeft === 1 ? 'Ends today' : `${daysLeft}d left`,
+                urgent: daysLeft <= 1
+              };
+            }
+          }
+        }
+
         return (
           <div key={client.id} className={`client-card ${client.status === 'archived' ? 'archived' : ''} ${isExpanded || isEditing ? 'expanded' : 'collapsed'}`}>
             {/* Compact Name Row — always visible */}
@@ -438,6 +458,16 @@ export default function ClientList() {
                 </div>
               </div>
               <div className="client-name-row-right">
+                {sessionBadge && (
+                  <span className={`client-warn-badge ${sessionBadge.urgent ? 'urgent' : 'warning'}`}>
+                    {sessionBadge.text}
+                  </span>
+                )}
+                {expiryBadge && (
+                  <span className={`client-warn-badge ${expiryBadge.urgent ? 'urgent' : 'expiry'}`}>
+                    {expiryBadge.text}
+                  </span>
+                )}
                 {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin' || client.clientType === 'core_buddy') && (
                   <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : client.clientType === 'core_buddy' ? 'core-buddy' : 'dropin'}`}>
                     {getTypeLabel(client)}
@@ -663,25 +693,18 @@ export default function ClientList() {
         )}
       </div>
 
-      {/* Type Filter Tabs */}
-      <div className="client-type-filter">
-        {[
-          { value: 'all', label: 'All', count: activeSearched.length },
-          { value: 'block', label: 'Block', count: blockClients.length },
-          { value: 'circuit', label: 'Circuit', count: circuitClients.length },
-          { value: 'core_buddy', label: 'Core Buddy', count: coreBuddyClients.length },
-          { value: 'archived', label: 'Archived', count: archivedClients.length },
-        ].map(tab => (
-          <button
-            key={tab.value}
-            className={`client-filter-btn ${typeFilter === tab.value ? 'active' : ''}`}
-            onClick={() => setTypeFilter(tab.value)}
-          >
-            {tab.label}
-            <span className="client-filter-count">{tab.count}</span>
-          </button>
-        ))}
-      </div>
+      {/* Type Filter Dropdown */}
+      <select
+        className="client-type-select"
+        value={typeFilter}
+        onChange={e => setTypeFilter(e.target.value)}
+      >
+        <option value="all">All Clients ({activeSearched.length})</option>
+        <option value="block">Block Members ({blockClients.length})</option>
+        <option value="circuit">Circuit Members ({circuitClients.length})</option>
+        <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
+        <option value="archived">Archived ({archivedClients.length})</option>
+      </select>
 
       {/* Grouped or flat list */}
       {typeFilter === 'all' ? (

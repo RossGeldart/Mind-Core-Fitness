@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { calculateMacros } from '../utils/macroCalculations';
 import './ClientTools.css';
 import './ClientDashboard.css';
 
@@ -38,97 +39,8 @@ export default function MacroCalculator() {
     setShowResults(false);
   };
 
-  const calculateMacros = () => {
-    let weightKg = parseFloat(formData.weight);
-    if (formData.weightUnit === 'lbs') {
-      weightKg = weightKg * 0.453592;
-    }
-
-    let heightCm;
-    if (formData.heightUnit === 'cm') {
-      heightCm = parseFloat(formData.height);
-    } else {
-      const feet = parseFloat(formData.heightFeet) || 0;
-      const inches = parseFloat(formData.heightInches) || 0;
-      heightCm = (feet * 30.48) + (inches * 2.54);
-    }
-
-    const age = parseInt(formData.age);
-
-    let bmr;
-    if (formData.gender === 'male') {
-      bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5;
-    } else {
-      bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
-    }
-
-    // Step 1: NEAT — daily lifestyle activity (outside of training)
-    const neatMultipliers = {
-      sedentary: 1.2,    // desk job, drive to work, <5k steps
-      light: 1.3,        // office job + some walking, 5-8k steps
-      moderate: 1.4,     // on feet often, retail/teaching, 8-12k steps
-      active: 1.5        // physical job, 12k+ steps
-    };
-
-    const neat = bmr * neatMultipliers[formData.dailyActivity];
-
-    // Step 2: Exercise add-on — average daily calories from training sessions
-    const exerciseAddOns = {
-      low: 100,           // 1-2 sessions/week
-      moderate: 200,      // 3-4 sessions/week
-      high: 300,          // 5-6 sessions/week
-      daily: 400          // 7+ sessions/week
-    };
-
-    const tdee = Math.round(neat + exerciseAddOns[formData.trainingFrequency]);
-
-    let targetCalories = tdee;
-    let proteinPerKg;
-    let fatPct;
-
-    switch (formData.goal) {
-      case 'lose':
-        // Percentage-based deficits scale with body size
-        const deficitPcts = { light: 0.15, moderate: 0.20, harsh: 0.25 };
-        targetCalories = tdee * (1 - deficitPcts[formData.deficitLevel]);
-        proteinPerKg = 2.2;
-        fatPct = 0.30;
-        break;
-      case 'build':
-        targetCalories = tdee * 1.10; // 10% surplus
-        proteinPerKg = 2.0;
-        fatPct = 0.22;
-        break;
-      case 'maintain':
-      default:
-        proteinPerKg = 1.8;
-        fatPct = 0.25;
-        break;
-    }
-
-    const minCalories = formData.gender === 'male' ? 1400 : 1100;
-    targetCalories = Math.max(targetCalories, minCalories);
-
-    const proteinGrams = Math.round(weightKg * proteinPerKg);
-    const proteinCalories = proteinGrams * 4;
-    const fatCalories = targetCalories * fatPct;
-    const fatGrams = Math.round(fatCalories / 9);
-    const carbCalories = targetCalories - proteinCalories - fatCalories;
-    const carbGrams = Math.max(0, Math.round(carbCalories / 4));
-
-    setResults({
-      bmr: Math.round(bmr),
-      neat: Math.round(neat),
-      exerciseAdd: exerciseAddOns[formData.trainingFrequency],
-      tdee: Math.round(tdee),
-      targetCalories: Math.round(targetCalories),
-      protein: proteinGrams,
-      carbs: carbGrams,
-      fats: fatGrams,
-      proteinCalories: Math.round(proteinCalories),
-      carbCalories: Math.round(carbCalories),
-      fatCalories: Math.round(fatCalories)
-    });
+  const handleCalculate = () => {
+    setResults(calculateMacros(formData));
     setShowResults(true);
   };
 
@@ -285,7 +197,7 @@ export default function MacroCalculator() {
               </div>
             )}
 
-            <button className="calculate-btn" onClick={calculateMacros} disabled={!isFormValid()}>
+            <button className="calculate-btn" onClick={handleCalculate} disabled={!isFormValid()}>
               Calculate Macros
             </button>
           </div>

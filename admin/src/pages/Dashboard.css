@@ -542,6 +542,11 @@
   transform: scale(0.97);
 }
 
+.summary-card.active {
+  border-color: #A12F3A;
+  background: var(--bg-secondary);
+}
+
 .summary-icon {
   width: 40px;
   height: 40px;
@@ -609,6 +614,112 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 2px;
+}
+
+/* Card Detail Panel */
+.card-detail-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top: 3px solid #A12F3A;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.card-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-detail-header span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.card-detail-close {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.card-detail-close:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.card-detail-empty {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 8px 0;
+  margin: 0;
+}
+
+.card-detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.card-detail-item:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.card-detail-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.card-detail-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.card-detail-tag {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.card-detail-tag.warning {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ff9800;
+}
+
+.card-detail-tag.urgent {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+
+.card-detail-tag.low {
+  background: rgba(255, 152, 0, 0.12);
+  color: #e65100;
+}
+
+.card-detail-tag.info {
+  background: rgba(33, 150, 243, 0.12);
+  color: #1565c0;
 }
 
 /* Attention Alerts */
@@ -774,6 +885,7 @@
 
   .dashboard-main {
     padding: 16px;
+    padding-bottom: 80px;
   }
 
   .toast-container {

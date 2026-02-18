@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [toast, setToast] = useState(null);
   const [dashClients, setDashClients] = useState([]);
   const [dashSessions, setDashSessions] = useState([]);
+  const [activeCard, setActiveCard] = useState(null); // 'expiring' | 'low' | null
   const { currentUser, logout, isAdmin, loading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -319,23 +320,6 @@ export default function Dashboard() {
     return remaining <= 2;
   });
 
-  // Combine for attention list (deduplicated)
-  const attentionMap = new Map();
-  expiringClients.forEach(c => {
-    const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
-    const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-    attentionMap.set(c.id, { client: c, reasons: [`Block ends in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`] });
-  });
-  lowSessionClients.forEach(c => {
-    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
-    const reason = remaining <= 0 ? 'No sessions left' : `${remaining} session${remaining !== 1 ? 's' : ''} left`;
-    if (attentionMap.has(c.id)) {
-      attentionMap.get(c.id).reasons.push(reason);
-    } else {
-      attentionMap.set(c.id, { client: c, reasons: [reason] });
-    }
-  });
-  const attentionList = Array.from(attentionMap.values());
 
   return (
     <div className="dashboard">
@@ -441,7 +425,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="summary-card" onClick={() => pendingCount > 0 && setActiveView('requests')}>
+              <div className="summary-card" onClick={() => setActiveView('requests')}>
                 <div className={`summary-icon requests-icon ${pendingCount > 0 ? 'has-items' : ''}`}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 </div>
@@ -451,7 +435,10 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="summary-card" onClick={() => setActiveView('clients')}>
+              <div
+                className={`summary-card ${activeCard === 'expiring' ? 'active' : ''}`}
+                onClick={() => setActiveCard(activeCard === 'expiring' ? null : 'expiring')}
+              >
                 <div className={`summary-icon expiring-icon ${expiringClients.length > 0 ? 'has-items' : ''}`}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
@@ -461,7 +448,10 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="summary-card" onClick={() => setActiveView('clients')}>
+              <div
+                className={`summary-card ${activeCard === 'low' ? 'active' : ''}`}
+                onClick={() => setActiveCard(activeCard === 'low' ? null : 'low')}
+              >
                 <div className={`summary-icon low-icon ${lowSessionClients.length > 0 ? 'has-items' : ''}`}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 </div>
@@ -472,23 +462,75 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Attention Alerts */}
-            {attentionList.length > 0 && (
-              <div className="attention-section">
-                <div className="attention-header">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <span>Needs Attention</span>
+            {/* Expiring clients detail panel */}
+            {activeCard === 'expiring' && (
+              <div className="card-detail-panel">
+                <div className="card-detail-header">
+                  <span>Expiring Soon</span>
+                  <button className="card-detail-close" onClick={() => setActiveCard(null)}>✕</button>
                 </div>
-                {attentionList.map(({ client, reasons }) => (
-                  <div key={client.id} className="attention-item">
-                    <span className="attention-name">{client.name}</span>
-                    <div className="attention-reasons">
-                      {reasons.map((r, i) => (
-                        <span key={i} className={`attention-tag ${r.includes('No sessions') ? 'urgent' : r.includes('ends') ? 'warning' : 'low'}`}>{r}</span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                {expiringClients.length === 0 ? (
+                  <p className="card-detail-empty">No clients expiring within 7 days</p>
+                ) : (
+                  expiringClients.map(c => {
+                    const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
+                    const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+                    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+                    return (
+                      <div key={c.id} className="card-detail-item">
+                        <span className="card-detail-name">{c.name}</span>
+                        <div className="card-detail-tags">
+                          <span className="card-detail-tag warning">
+                            {daysLeft <= 1 ? 'Ends today' : `Ends in ${daysLeft} days`}
+                          </span>
+                          <span className={`card-detail-tag ${remaining <= 0 ? 'urgent' : 'info'}`}>
+                            {remaining <= 0 ? 'No sessions left' : `${remaining} session${remaining !== 1 ? 's' : ''} left`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {/* Low sessions detail panel */}
+            {activeCard === 'low' && (
+              <div className="card-detail-panel">
+                <div className="card-detail-header">
+                  <span>Low / No Sessions</span>
+                  <button className="card-detail-close" onClick={() => setActiveCard(null)}>✕</button>
+                </div>
+                {lowSessionClients.length === 0 ? (
+                  <p className="card-detail-empty">All clients have sessions available</p>
+                ) : (
+                  [...lowSessionClients]
+                    .sort((a, b) => {
+                      const ra = (a.totalSessions || 0) - getCompletedCount(a.id);
+                      const rb = (b.totalSessions || 0) - getCompletedCount(b.id);
+                      return ra - rb; // 0 remaining first
+                    })
+                    .map(c => {
+                      const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+                      const end = c.endDate ? (c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate)) : null;
+                      const daysLeft = end ? Math.ceil((end - now) / (1000 * 60 * 60 * 24)) : null;
+                      return (
+                        <div key={c.id} className="card-detail-item">
+                          <span className="card-detail-name">{c.name}</span>
+                          <div className="card-detail-tags">
+                            <span className={`card-detail-tag ${remaining <= 0 ? 'urgent' : 'low'}`}>
+                              {remaining <= 0 ? 'No sessions left' : `${remaining} session${remaining !== 1 ? 's' : ''} left`}
+                            </span>
+                            {daysLeft !== null && daysLeft <= 14 && (
+                              <span className="card-detail-tag warning">
+                                Block ends {daysLeft <= 1 ? 'today' : `in ${daysLeft}d`}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                )}
               </div>
             )}
 

@@ -1,28 +1,13 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import {
+  SCHEDULE, DAYS, DAY_LABELS,
+  formatTime, formatDateKey, timeToMinutes, addMinutesToTime, generateTimeSlotsForDay,
+} from '../utils/scheduleUtils';
 import './Calendar.css';
 
-// Working hours configuration
-const SCHEDULE = {
-  monday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  tuesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  wednesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  thursday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  friday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '12:00', end: '17:00' }, defaultBlocked: true }
-};
-
-const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-const DAY_LABELS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
-const formatTime = (time) => {
-  const [hours, minutes] = time.split(':');
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? 'pm' : 'am';
-  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-  return `${displayHour}:${minutes}${ampm}`;
-};
 
 const getWeekDates = (date) => {
   const start = new Date(date);
@@ -37,54 +22,6 @@ const getWeekDates = (date) => {
   });
 };
 
-const formatDateKey = (date) => {
-  // Use local date to avoid timezone issues
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const timeToMinutes = (time) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const addMinutesToTime = (time, minutes) => {
-  const totalMinutes = timeToMinutes(time) + minutes;
-  const hours = Math.floor(totalMinutes / 60);
-  const mins = totalMinutes % 60;
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-};
-
-// Generate time slots for a specific day
-const generateTimeSlotsForDay = (dayName) => {
-  const schedule = SCHEDULE[dayName];
-  if (!schedule) return [];
-
-  const slots = [];
-
-  // Morning slots
-  if (schedule.morning) {
-    let current = schedule.morning.start;
-    while (current < schedule.morning.end) {
-      slots.push({ time: current, period: 'morning' });
-      current = addMinutesToTime(current, 15);
-    }
-  }
-
-  // Afternoon slots
-  if (schedule.afternoon) {
-    let current = schedule.afternoon.start;
-    while (current < schedule.afternoon.end) {
-      slots.push({ time: current, period: 'afternoon' });
-      current = addMinutesToTime(current, 15);
-    }
-  }
-
-  return slots;
-};
-
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
@@ -97,6 +34,7 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showClientPicker, setShowClientPicker] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [clientSearch, setClientSearch] = useState('');
 
   useEffect(() => {
     setWeekDates(getWeekDates(currentDate));
@@ -106,17 +44,11 @@ export default function Calendar() {
     fetchData();
   }, []);
 
-  // When a client is selected, jump to their start date
   const handleClientSelect = (client) => {
     setSelectedClient(client);
     setShowClientPicker(false);
-
-    // Jump to client's start date
-    if (client.startDate) {
-      const startDate = client.startDate.toDate ? client.startDate.toDate() : new Date(client.startDate);
-      setCurrentDate(startDate);
-    }
     setSelectedDay(null);
+    // Stay on current week — use the block nav buttons to jump to start/end if needed
   };
 
   // Get client's date range info
@@ -200,12 +132,22 @@ export default function Calendar() {
     }).length;
   };
 
+  const isSessionCompleted = (session) => {
+    const now = new Date();
+    const today = formatDateKey(now);
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    if (session.date < today) return true;
+    if (session.date === today && session.time < currentTime) return true;
+    return false;
+  };
+
   const fetchData = async () => {
     try {
       const clientsSnapshot = await getDocs(collection(db, 'clients'));
       const clientsData = clientsSnapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(c => c.status === 'active');
+        .filter(c => c.status === 'active')
+        .sort((a, b) => a.name.localeCompare(b.name));
       setClients(clientsData);
 
       const sessionsSnapshot = await getDocs(collection(db, 'sessions'));
@@ -395,6 +337,7 @@ export default function Calendar() {
     const existingSession = getSessionOccupyingSlot(date, time);
 
     if (existingSession) {
+      if (isSessionCompleted(existingSession)) return; // completed — not cancellable
       if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(existingSession.time)}?`)) {
         try {
           await deleteDoc(doc(db, 'sessions', existingSession.id));
@@ -417,10 +360,10 @@ export default function Calendar() {
       return;
     }
 
-    // Check if client can book more sessions (only count upcoming, not completed)
     const clientBookedSessions = getBookedSessionsCount(selectedClient.id);
-    if (clientBookedSessions >= selectedClient.totalSessions) {
-      alert(`${selectedClient.name} has already booked all ${selectedClient.totalSessions} sessions`);
+    const clientCompletedSessions = getCompletedSessionsCount(selectedClient.id);
+    if (clientCompletedSessions + clientBookedSessions >= selectedClient.totalSessions) {
+      alert(`${selectedClient.name} has used all ${selectedClient.totalSessions} sessions in their package`);
       return;
     }
 
@@ -473,7 +416,7 @@ export default function Calendar() {
 
     // First pass: count how many sessions would actually be created
     let sessionsToCreate = [];
-    const existingClientSessions = getBookedSessionsCount(selectedClient.id);
+    const existingClientSessions = getBookedSessionsCount(selectedClient.id) + getCompletedSessionsCount(selectedClient.id);
 
     for (let week = 0; week < totalWeeks; week++) {
       const weekStartDate = new Date(clientStart);
@@ -616,6 +559,23 @@ export default function Calendar() {
         )}
       </div>
 
+      {/* Block Navigation */}
+      {selectedClient && selectedClient.startDate && selectedClient.endDate && (() => {
+        const info = getClientDateInfo();
+        if (!info) return null;
+        return (
+          <div className="block-nav">
+            <button onClick={goToClientStart}>← Block Start</button>
+            <span className="block-range">
+              {info.isWithinBlock
+                ? `Week ${info.weekNumber} of ${info.totalWeeks}`
+                : weekDates[0] < info.startDate ? 'Before block' : 'After block'}
+            </span>
+            <button onClick={goToClientEnd}>Block End →</button>
+          </div>
+        );
+      })()}
+
       {/* Repeat Weekly Button */}
       {selectedClient && (
         <div className="repeat-weekly-section">
@@ -690,6 +650,7 @@ export default function Calendar() {
               const sessionOccupying = getSessionOccupyingSlot(weekDates[selectedDay], time);
               const isBooked = !!sessionOccupying;
               const isContinuation = !sessionStart && !!sessionOccupying;
+              const isCompleted = sessionOccupying ? isSessionCompleted(sessionOccupying) : false;
               const dayIsDefaultBlocked = isDayDefaultBlocked(weekDates[selectedDay]);
               const blocked = dayIsDefaultBlocked ? !isTimeOpened(weekDates[selectedDay], time) : isTimeBlocked(weekDates[selectedDay], time);
               const opened = dayIsDefaultBlocked && isTimeOpened(weekDates[selectedDay], time);
@@ -705,13 +666,17 @@ export default function Calendar() {
                   )}
                   <div className="time-slot-row">
                     <button
-                      className={`time-slot ${isBooked ? 'booked' : ''} ${isContinuation ? 'booked-continuation' : ''} ${blocked && !isBooked ? 'blocked' : ''} ${opened && !isBooked ? 'opened' : ''} ${available ? 'available' : ''} ${!isBooked && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
-                      onClick={() => (!blocked || isBooked) && handleSlotClick(weekDates[selectedDay], time)}
-                      disabled={blocked && !isBooked}
+                      className={`time-slot ${isBooked && isCompleted ? 'completed' : ''} ${isBooked && !isCompleted ? 'booked' : ''} ${isContinuation ? 'booked-continuation' : ''} ${blocked && !isBooked ? 'blocked' : ''} ${opened && !isBooked ? 'opened' : ''} ${available ? 'available' : ''} ${!isBooked && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
+                      onClick={() => !isCompleted && (!blocked || isBooked) && handleSlotClick(weekDates[selectedDay], time)}
+                      disabled={isCompleted || (blocked && !isBooked)}
                     >
                       <span className="slot-time">{formatTime(time)}</span>
-                      {sessionStart ? (
+                      {sessionStart && isCompleted ? (
+                        <span className="slot-done">{sessionStart.clientName} ✓</span>
+                      ) : sessionStart ? (
                         <span className="slot-client">{sessionStart.clientName} ({sessionStart.duration}m)</span>
+                      ) : isContinuation && isCompleted ? (
+                        <span className="slot-done">{sessionOccupying.clientName} ↑</span>
                       ) : isContinuation ? (
                         <span className="slot-client">{sessionOccupying.clientName} ↑</span>
                       ) : blocked ? (
@@ -729,7 +694,7 @@ export default function Calendar() {
                     <button
                       className={`block-toggle-btn ${dayIsDefaultBlocked ? (opened ? 'is-opened' : '') : (blocked ? 'is-blocked' : '')}`}
                       onClick={() => handleToggleBlockedTime(weekDates[selectedDay], time)}
-                      disabled={!!isBooked}
+                      disabled={isCompleted || !!isBooked}
                       title={dayIsDefaultBlocked ? (opened ? 'Close this slot' : 'Open this slot') : (blocked ? 'Unblock this time' : 'Block this time')}
                     >
                       {dayIsDefaultBlocked ? (opened ? '✓' : '+') : (blocked ? '✓' : '✕')}
@@ -745,36 +710,66 @@ export default function Calendar() {
 
       {/* Client Picker Modal */}
       {showClientPicker && (
-        <div className="modal-overlay" onClick={() => setShowClientPicker(false)}>
+        <div className="modal-overlay" onClick={() => { setShowClientPicker(false); setClientSearch(''); }}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Select Client</h3>
-              <button className="close-btn" onClick={() => setShowClientPicker(false)}>&times;</button>
+              <button className="close-btn" onClick={() => { setShowClientPicker(false); setClientSearch(''); }}>&times;</button>
+            </div>
+            <div className="client-search-wrapper">
+              <input
+                className="client-search-input"
+                type="text"
+                placeholder="Search by name..."
+                value={clientSearch}
+                onChange={e => setClientSearch(e.target.value)}
+                autoFocus
+              />
             </div>
             <div className="client-list-picker">
               {clients.length === 0 ? (
                 <p className="no-items">No active clients</p>
-              ) : (
-                clients.map(client => {
-                  const clientStart = client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate);
-                  const clientEnd = client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate);
+              ) : (() => {
+                const TYPE_LABELS = {
+                  block: 'Block',
+                  core_buddy: 'Core Buddy',
+                  circuit_vip: 'Circuit VIP',
+                  circuit_dropin: 'Circuit Drop-in',
+                };
+                const filtered = clients.filter(c =>
+                  c.name.toLowerCase().includes(clientSearch.toLowerCase())
+                );
+                if (filtered.length === 0) {
+                  return <p className="no-items">No clients match "{clientSearch}"</p>;
+                }
+                return filtered.map(client => {
+                  const hasBlock = client.startDate && client.endDate;
+                  const clientStart = hasBlock ? (client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate)) : null;
+                  const clientEnd = hasBlock ? (client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate)) : null;
                   const remaining = getSessionsRemaining(client);
                   const booked = getBookedSessionsCount(client.id);
                   return (
                     <button
                       key={client.id}
                       className="client-option"
-                      onClick={() => handleClientSelect(client)}
+                      onClick={() => { handleClientSelect(client); setClientSearch(''); }}
                     >
-                      <strong>{client.name}</strong>
+                      <div className="client-option-header">
+                        <strong>{client.name}</strong>
+                        {client.clientType && (
+                          <span className="client-type-badge">{TYPE_LABELS[client.clientType] || client.clientType}</span>
+                        )}
+                      </div>
                       <span>{client.sessionDuration || 45}min • {remaining}/{client.totalSessions} remaining • {booked} booked</span>
-                      <span className="client-dates">
-                        {clientStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - {clientEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </span>
+                      {clientStart && clientEnd && (
+                        <span className="client-dates">
+                          {clientStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – {clientEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                      )}
                     </button>
                   );
-                })
-              )}
+                });
+              })()}
             </div>
           </div>
         </div>

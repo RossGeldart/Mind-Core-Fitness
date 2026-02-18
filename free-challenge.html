@@ -18,6 +18,7 @@
     <meta property="og:title" content="Free 30 Day Core Challenge | Mind Core Fitness">
     <meta property="og:description" content="Transform your core in 30 days with daily 10-15 minute workouts. 100% free. No equipment needed.">
     <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+    <meta property="og:site_name" content="Mind Core Fitness">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -25,6 +26,55 @@
     <meta name="twitter:title" content="Free 30 Day Core Challenge | Mind Core Fitness">
     <meta name="twitter:description" content="Transform your core in 30 days with daily 10-15 minute workouts. 100% free. No equipment needed.">
     <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
+    <!-- Structured Data - Course -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "Free 30 Day Core Challenge",
+      "description": "A free 30-day fitness challenge with daily 10-15 minute core workouts delivered through the Everfit app. No equipment needed. Build real core strength in just 30 days.",
+      "provider": {
+        "@type": "Organization",
+        "name": "Mind Core Fitness",
+        "url": "https://www.mindcorefitness.com"
+      },
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "GBP",
+        "availability": "https://schema.org/InStock"
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online",
+        "duration": "P30D"
+      }
+    }
+    </script>
+
+    <!-- Structured Data - BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.mindcorefitness.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Free 30 Day Core Challenge",
+          "item": "https://www.mindcorefitness.com/free-challenge"
+        }
+      ]
+    }
+    </script>
 
     <!-- Vercel Web Analytics -->
 <script>
