@@ -731,6 +731,7 @@ export default function CoreBuddyConsistency() {
           buttonLabel="Keep Going"
           holdLabel="Hold To Complete Today's Habits"
           shareType="habits"
+          hideShare={!isPremium}
           onShareJourney={clientData ? shareToJourney : null}
           userName={clientData?.name}
           onDone={() => { setShowCelebration(false); setCelebrationDismissing(false); }}

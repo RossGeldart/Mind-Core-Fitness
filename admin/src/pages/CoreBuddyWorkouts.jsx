@@ -1864,6 +1864,7 @@ export default function CoreBuddyWorkouts() {
                 { value: workout.length * rounds, label: 'Intervals' },
                 { value: rounds, label: 'Rounds' },
               ]}
+              hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('menu')}
@@ -2224,6 +2225,7 @@ export default function CoreBuddyWorkouts() {
               title={`${groupLabel} Complete!`}
               subtitle={selectedMuscleSession?.name}
               stats={mgStats}
+              hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('menu')}
