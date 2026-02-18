@@ -44,17 +44,11 @@ export default function Calendar() {
     fetchData();
   }, []);
 
-  // When a client is selected, jump to their start date
   const handleClientSelect = (client) => {
     setSelectedClient(client);
     setShowClientPicker(false);
-
-    // Jump to client's start date
-    if (client.startDate) {
-      const startDate = client.startDate.toDate ? client.startDate.toDate() : new Date(client.startDate);
-      setCurrentDate(startDate);
-    }
     setSelectedDay(null);
+    // Stay on current week — use the block nav buttons to jump to start/end if needed
   };
 
   // Get client's date range info
@@ -136,6 +130,15 @@ export default function Calendar() {
       if (s.date === today && s.time >= currentTime) return true;
       return false;
     }).length;
+  };
+
+  const isSessionCompleted = (session) => {
+    const now = new Date();
+    const today = formatDateKey(now);
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    if (session.date < today) return true;
+    if (session.date === today && session.time < currentTime) return true;
+    return false;
   };
 
   const fetchData = async () => {
@@ -334,6 +337,7 @@ export default function Calendar() {
     const existingSession = getSessionOccupyingSlot(date, time);
 
     if (existingSession) {
+      if (isSessionCompleted(existingSession)) return; // completed — not cancellable
       if (window.confirm(`Cancel ${existingSession.clientName}'s session at ${formatTime(existingSession.time)}?`)) {
         try {
           await deleteDoc(doc(db, 'sessions', existingSession.id));
@@ -555,6 +559,23 @@ export default function Calendar() {
         )}
       </div>
 
+      {/* Block Navigation */}
+      {selectedClient && selectedClient.startDate && selectedClient.endDate && (() => {
+        const info = getClientDateInfo();
+        if (!info) return null;
+        return (
+          <div className="block-nav">
+            <button onClick={goToClientStart}>← Block Start</button>
+            <span className="block-range">
+              {info.isWithinBlock
+                ? `Week ${info.weekNumber} of ${info.totalWeeks}`
+                : weekDates[0] < info.startDate ? 'Before block' : 'After block'}
+            </span>
+            <button onClick={goToClientEnd}>Block End →</button>
+          </div>
+        );
+      })()}
+
       {/* Repeat Weekly Button */}
       {selectedClient && (
         <div className="repeat-weekly-section">
@@ -629,6 +650,7 @@ export default function Calendar() {
               const sessionOccupying = getSessionOccupyingSlot(weekDates[selectedDay], time);
               const isBooked = !!sessionOccupying;
               const isContinuation = !sessionStart && !!sessionOccupying;
+              const isCompleted = sessionOccupying ? isSessionCompleted(sessionOccupying) : false;
               const dayIsDefaultBlocked = isDayDefaultBlocked(weekDates[selectedDay]);
               const blocked = dayIsDefaultBlocked ? !isTimeOpened(weekDates[selectedDay], time) : isTimeBlocked(weekDates[selectedDay], time);
               const opened = dayIsDefaultBlocked && isTimeOpened(weekDates[selectedDay], time);
@@ -644,13 +666,17 @@ export default function Calendar() {
                   )}
                   <div className="time-slot-row">
                     <button
-                      className={`time-slot ${isBooked ? 'booked' : ''} ${isContinuation ? 'booked-continuation' : ''} ${blocked && !isBooked ? 'blocked' : ''} ${opened && !isBooked ? 'opened' : ''} ${available ? 'available' : ''} ${!isBooked && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
-                      onClick={() => (!blocked || isBooked) && handleSlotClick(weekDates[selectedDay], time)}
-                      disabled={blocked && !isBooked}
+                      className={`time-slot ${isBooked && isCompleted ? 'completed' : ''} ${isBooked && !isCompleted ? 'booked' : ''} ${isContinuation ? 'booked-continuation' : ''} ${blocked && !isBooked ? 'blocked' : ''} ${opened && !isBooked ? 'opened' : ''} ${available ? 'available' : ''} ${!isBooked && !blocked && !available && selectedClient ? 'unavailable' : ''}`}
+                      onClick={() => !isCompleted && (!blocked || isBooked) && handleSlotClick(weekDates[selectedDay], time)}
+                      disabled={isCompleted || (blocked && !isBooked)}
                     >
                       <span className="slot-time">{formatTime(time)}</span>
-                      {sessionStart ? (
+                      {sessionStart && isCompleted ? (
+                        <span className="slot-done">{sessionStart.clientName} ✓</span>
+                      ) : sessionStart ? (
                         <span className="slot-client">{sessionStart.clientName} ({sessionStart.duration}m)</span>
+                      ) : isContinuation && isCompleted ? (
+                        <span className="slot-done">{sessionOccupying.clientName} ↑</span>
                       ) : isContinuation ? (
                         <span className="slot-client">{sessionOccupying.clientName} ↑</span>
                       ) : blocked ? (
@@ -668,7 +694,7 @@ export default function Calendar() {
                     <button
                       className={`block-toggle-btn ${dayIsDefaultBlocked ? (opened ? 'is-opened' : '') : (blocked ? 'is-blocked' : '')}`}
                       onClick={() => handleToggleBlockedTime(weekDates[selectedDay], time)}
-                      disabled={!!isBooked}
+                      disabled={isCompleted || !!isBooked}
                       title={dayIsDefaultBlocked ? (opened ? 'Close this slot' : 'Open this slot') : (blocked ? 'Unblock this time' : 'Block this time')}
                     >
                       {dayIsDefaultBlocked ? (opened ? '✓' : '+') : (blocked ? '✓' : '✕')}
