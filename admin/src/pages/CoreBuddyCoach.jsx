@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { PROGRAMMABLE_EXERCISES } from '../config/buddyExercises';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyCoach.css';
@@ -20,6 +21,12 @@ export default function CoreBuddyCoach() {
   const [savedProfile, setSavedProfile] = useState(null);
   const chatEndRef = useRef(null);
   const chatInputRef = useRef(null);
+
+  // Plan generation state
+  const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [generatedPlan, setGeneratedPlan] = useState(null);
+  const [planError, setPlanError] = useState(null);
+  const [expandedWeek, setExpandedWeek] = useState(1);
 
   // Guard — if buddy not enabled, bounce back
   if (!clientData?.buddyEnabled) {
@@ -105,12 +112,52 @@ export default function CoreBuddyCoach() {
     }
   };
 
-  // Recommend a programme based on collected profile data
-  const getRecommendedProgramme = (profile) => {
-    const exp = profile?.experience || 'beginner';
-    if (exp === 'advanced') return { id: 'fullbody_12wk', name: '12-Week Full Body', duration: 12, level: 'Advanced', daysPerWeek: 3, description: 'Complete transformation programme — push, pull, and legs over three phases.' };
-    if (exp === 'intermediate') return { id: 'fullbody_8wk', name: '8-Week Full Body', duration: 8, level: 'Intermediate', daysPerWeek: 3, description: 'Two-phase programme building strength and endurance across your full body.' };
-    return { id: 'fullbody_4wk', name: '4-Week Full Body', duration: 4, level: 'All Levels', daysPerWeek: 3, description: 'Build total body strength with compound dumbbell movements and bodyweight finishers.' };
+  // Generate a personalised monthly plan using Buddy AI
+  const generatePlan = async (profile) => {
+    setGeneratingPlan(true);
+    setPlanError(null);
+    try {
+      // Build a slim exercise library for the API (no storagePaths to save tokens)
+      const exerciseLibrary = PROGRAMMABLE_EXERCISES.map(e => ({
+        name: e.name,
+        type: e.type,
+        equipment: e.equipment,
+        group: e.group,
+      }));
+
+      const res = await fetch('/api/buddy-generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: {
+            name: clientData?.name || currentUser?.displayName || 'Client',
+            ...profile,
+          },
+          exerciseLibrary,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.error && !data.plan) {
+        setPlanError(data.error);
+        return;
+      }
+
+      if (data.reply) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      }
+
+      if (data.plan) {
+        setGeneratedPlan(data.plan);
+      } else {
+        setPlanError('Buddy couldn\'t structure the plan — try again.');
+      }
+    } catch (err) {
+      console.error('Plan generation error:', err);
+      setPlanError('Something went wrong generating your plan — try again.');
+    } finally {
+      setGeneratingPlan(false);
+    }
   };
 
   const saveProfileData = async (profile) => {
@@ -224,26 +271,104 @@ export default function CoreBuddyCoach() {
 
         {chatComplete ? (
           <div className="buddy-chat-done">
-            {savedProfile ? (() => {
-              const rec = getRecommendedProgramme(savedProfile);
-              return (
-                <>
-                  <p className="buddy-chat-done-text">Profile saved! Here's my pick for you:</p>
-                  <div className="buddy-rec-card" onClick={() => navigate('/client/core-buddy/programmes', { state: { templateId: rec.id } })}>
-                    <div className="buddy-rec-name">{rec.name}</div>
-                    <div className="buddy-rec-meta">{rec.duration} weeks · {rec.daysPerWeek} days/week · {rec.level}</div>
-                    <div className="buddy-rec-desc">{rec.description}</div>
-                    <div className="buddy-rec-cta">View Programme</div>
+            {generatedPlan ? (
+              <>
+                <div className="buddy-plan-preview">
+                  <div className="buddy-plan-header">
+                    <h3 className="buddy-plan-name">{generatedPlan.planName}</h3>
+                    <div className="buddy-plan-meta">
+                      {generatedPlan.daysPerWeek} days/week · 4 weeks · {generatedPlan.experienceLevel}
+                    </div>
+                    <div className="buddy-plan-goals">
+                      {(generatedPlan.goals || []).map((g, i) => (
+                        <span key={i} className="buddy-plan-goal-tag">{g}</span>
+                      ))}
+                    </div>
                   </div>
-                  <button
-                    className="buddy-chat-skip-btn"
-                    onClick={() => navigate('/client/core-buddy')}
-                  >
-                    Maybe later
-                  </button>
-                </>
-              );
-            })() : (
+
+                  <div className="buddy-plan-weeks">
+                    {(generatedPlan.weeks || []).map((week) => (
+                      <div key={week.weekNumber} className="buddy-plan-week">
+                        <button
+                          className={`buddy-plan-week-toggle ${expandedWeek === week.weekNumber ? 'active' : ''}`}
+                          onClick={() => setExpandedWeek(expandedWeek === week.weekNumber ? null : week.weekNumber)}
+                        >
+                          <span>Week {week.weekNumber}</span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d={expandedWeek === week.weekNumber ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'} />
+                          </svg>
+                        </button>
+
+                        {expandedWeek === week.weekNumber && (
+                          <div className="buddy-plan-days">
+                            {(week.days || []).map((day) => (
+                              <div key={day.dayNumber} className="buddy-plan-day">
+                                <div className="buddy-plan-day-header">
+                                  <span className="buddy-plan-day-num">Day {day.dayNumber}</span>
+                                  <span className="buddy-plan-day-focus">{day.focus}</span>
+                                </div>
+                                <div className="buddy-plan-exercises">
+                                  {(day.exercises || []).map((ex, ei) => (
+                                    <div key={ei} className="buddy-plan-exercise">
+                                      <span className="buddy-plan-ex-name">{ex.name}</span>
+                                      <span className="buddy-plan-ex-detail">
+                                        {ex.type === 'timed'
+                                          ? `${ex.sets}×${ex.duration}s`
+                                          : `${ex.sets}×${ex.reps}`
+                                        }
+                                      </span>
+                                      {ex.notes && <span className="buddy-plan-ex-note">{ex.notes}</span>}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  className="buddy-chat-done-btn"
+                  onClick={() => navigate('/client/core-buddy')}
+                >
+                  Back to Dashboard
+                </button>
+              </>
+            ) : generatingPlan ? (
+              <div className="buddy-plan-loading">
+                <div className="buddy-plan-spinner" />
+                <p>Buddy is building your monthly plan...</p>
+              </div>
+            ) : planError ? (
+              <div className="buddy-plan-error">
+                <p>{planError}</p>
+                <button
+                  className="buddy-chat-done-btn"
+                  onClick={() => generatePlan(savedProfile)}
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : savedProfile ? (
+              <>
+                <p className="buddy-chat-done-text">Profile saved! Ready to build your personalised monthly plan?</p>
+                <button
+                  className="buddy-chat-done-btn"
+                  onClick={() => generatePlan(savedProfile)}
+                >
+                  Generate My Plan
+                </button>
+                <button
+                  className="buddy-chat-skip-btn"
+                  onClick={() => navigate('/client/core-buddy')}
+                >
+                  Maybe later
+                </button>
+              </>
+            ) : (
               <>
                 <p className="buddy-chat-done-text">Profile saved — you're all set.</p>
                 <button
