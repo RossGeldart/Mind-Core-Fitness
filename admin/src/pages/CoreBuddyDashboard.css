@@ -457,6 +457,109 @@
   letter-spacing: 0.5px;
 }
 
+/* Stat Ring Edit Button */
+.cb-stat-edit {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-card-elevated);
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid var(--border-color);
+}
+
+.cb-stat-edit:active {
+  transform: scale(0.9);
+}
+
+.cb-stat-edit:hover {
+  color: var(--color-primary);
+}
+
+/* Weekly Target Picker Overlay */
+.cb-target-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: cbOverlayFadeIn 0.2s ease-out;
+}
+
+.cb-target-picker {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  animation: cbBadgeZoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cb-target-picker h4 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.cb-target-picker p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+  margin: 0 0 20px;
+}
+
+.cb-target-options {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cb-target-option {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cb-target-option:hover {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+  color: var(--text-primary);
+}
+
+.cb-target-option.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
 /* Feature Cards */
 .cb-features {
   display: flex;
