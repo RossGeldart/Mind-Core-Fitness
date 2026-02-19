@@ -1126,3 +1126,75 @@
     padding: 18px;
   }
 }
+
+/* ==================== JOURNEY SHARE CARDS ==================== */
+.journey-card {
+  border-radius: 16px;
+  padding: 22px 18px 14px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border: 2px solid #A12F3A;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+[data-theme="dark"] .journey-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.journey-card-logo-frame {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #A12F3A;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 0 24px rgba(161, 47, 58, 0.15);
+}
+.journey-card-logo-badge {
+  border-color: #ffc107;
+  box-shadow: 0 0 24px rgba(255, 193, 7, 0.2);
+}
+.journey-card-logo-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.journey-card-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.journey-card-stats-line {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #555555;
+  margin: 0;
+}
+
+.journey-card-cta {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 12px 0 0;
+  line-height: 1.35;
+}
+
+.journey-card-slogan {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #A12F3A;
+  margin: 14px 0 0;
+  letter-spacing: 0.2px;
+}

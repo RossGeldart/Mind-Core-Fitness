@@ -668,12 +668,62 @@ const [streakWeeks, setStreakWeeks] = useState(0);
                     )}
                   </div>
 
-                  {post.content && <p className="journey-post-content">{post.content}</p>}
-
-                  {post.imageURL && (
-                    <div className="journey-post-image">
-                      <img src={post.imageURL} alt="Post" loading="lazy" />
+                  {/* Clean share card — white card, red border, big logo, CTA */}
+                  {post.type === 'workout_summary' && post.metadata ? (
+                    <div className="journey-card">
+                      <div className="journey-card-logo-frame">
+                        <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                      </div>
+                      <h3 className="journey-card-title">{post.metadata.title}</h3>
+                      {post.metadata.stats?.length > 0 && (
+                        <p className="journey-card-stats-line">
+                          {post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}
+                        </p>
+                      )}
+                      {!post.metadata.stats?.length && post.metadata.subtitle && (
+                        <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
+                      )}
+                      <p className="journey-card-cta">I just completed a workout using Core Buddy 💪🏻</p>
+                      <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                     </div>
+                  ) : post.type === 'badge_earned' && post.metadata ? (
+                    <div className="journey-card">
+                      <div className="journey-card-logo-frame journey-card-logo-badge">
+                        <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />
+                      </div>
+                      <h3 className="journey-card-title">{post.metadata.title}</h3>
+                      {post.metadata.badgeDesc && (
+                        <p className="journey-card-stats-line">{post.metadata.badgeDesc}</p>
+                      )}
+                      <p className="journey-card-cta">I just earned a badge on Core Buddy</p>
+                      <p className="journey-card-slogan">Make It Count with Core Buddy</p>
+                    </div>
+                  ) : post.type === 'habits_summary' && post.metadata ? (
+                    <div className="journey-card">
+                      <div className="journey-card-logo-frame">
+                        <img src="/Logo.webp" alt="MCF" className="journey-card-logo-img" />
+                      </div>
+                      <h3 className="journey-card-title">{post.metadata.title}</h3>
+                      {post.metadata.stats?.length > 0 && (
+                        <p className="journey-card-stats-line">
+                          {post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}
+                        </p>
+                      )}
+                      {post.metadata.subtitle && (
+                        <p className="journey-card-stats-line">{post.metadata.subtitle}</p>
+                      )}
+                      <p className="journey-card-cta">I just completed my daily habits with Core Buddy ✅</p>
+                      <p className="journey-card-slogan">Make It Count with Core Buddy</p>
+                    </div>
+                  ) : (
+                    <>
+                      {post.content && <p className="journey-post-content">{post.content}</p>}
+                      {post.imageURL && (
+                        <div className="journey-post-image">
+                          <img src={post.imageURL} alt="Post" loading="lazy" />
+                        </div>
+                      )}
+                    </>
                   )}
 
                   <div className="journey-post-actions">
