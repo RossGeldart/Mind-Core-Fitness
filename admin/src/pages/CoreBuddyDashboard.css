@@ -716,38 +716,6 @@
 
 /* Card colour accents — unified, no rainbow borders */
 
-/* AI Buddy Card */
-.cb-card-buddy {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.cb-buddy-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(var(--color-primary-rgb), 0.1);
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.cb-buddy-badge {
-  display: inline-block;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(var(--color-primary-rgb), 0.12);
-  color: var(--color-primary);
-  vertical-align: middle;
-  margin-left: 6px;
-}
-
 /* Workouts Hero Card */
 .cb-card-workouts-hero {
   flex-direction: column;
