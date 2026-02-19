@@ -519,6 +519,25 @@ const LEVELS = [
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
+const FOCUS_COLORS = {
+  core: '#e85d04',
+  upper: '#2196f3',
+  lower: '#4caf50',
+  fullbody: '#9c27b0',
+  mix: '#ff9800',
+};
+
+const HUB_TIPS = [
+  "Mix up your focus areas to build balanced strength.",
+  "Consistency beats intensity — show up and press play.",
+  "Try a new difficulty level to keep your body guessing.",
+  "Short on time? A 5-minute blast still counts.",
+  "Save your favourite combos so you can replay them anytime.",
+  "Your body adapts — switch equipment for fresh stimulus.",
+  "Rest days are growth days. Listen to your body.",
+  "Challenge yourself: go one level higher this week.",
+];
+
 function toTitleCase(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -648,6 +667,9 @@ export default function CoreBuddyWorkouts() {
 
   // Recent workouts (last 3 for hub)
   const [recentWorkouts, setRecentWorkouts] = useState([]);
+
+  // Hub stats (total, favourite focus, streak)
+  const [hubStats, setHubStats] = useState({ total: 0, favouriteFocus: null, streak: 0 });
 
   // Active programme info (for the "Continue Programme" card)
   const [activeProgrammeId, setActiveProgrammeId] = useState(null);
@@ -823,6 +845,32 @@ export default function CoreBuddyWorkouts() {
         // Recent randomiser-only for hub display
         const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
         setRecentWorkouts(randomiser.slice(0, 3));
+
+        // Compute hub stats
+        const total = randomiser.length;
+        const focusFreq = {};
+        randomiser.forEach(d => { if (d.focus) focusFreq[d.focus] = (focusFreq[d.focus] || 0) + 1; });
+        const favouriteFocus = Object.keys(focusFreq).sort((a, b) => focusFreq[b] - focusFreq[a])[0] || null;
+        // Streak: consecutive days with a workout (looking back from today)
+        let streak = 0;
+        if (randomiser.length > 0) {
+          const daySet = new Set();
+          randomiser.forEach(d => {
+            const ts = d.completedAt?.toDate ? d.completedAt.toDate() : d.completedAt ? new Date(d.completedAt) : null;
+            if (ts) daySet.add(new Date(ts.getFullYear(), ts.getMonth(), ts.getDate()).toDateString());
+          });
+          const today = new Date(); today.setHours(0, 0, 0, 0);
+          // Check if today or yesterday starts the streak
+          let check = new Date(today);
+          if (!daySet.has(check.toDateString())) {
+            check.setDate(check.getDate() - 1);
+          }
+          while (daySet.has(check.toDateString())) {
+            streak++;
+            check.setDate(check.getDate() - 1);
+          }
+        }
+        setHubStats({ total, favouriteFocus, streak });
 
         // Smart suggestion: find which focus area is most neglected
         const focusCounts = { core: null, upper: null, lower: null, fullbody: null };
@@ -1730,13 +1778,53 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main">
           <div className="wk-hub-heading">
+            <div className="wk-hub-icon-wrap">
+              <svg className="wk-hub-dice-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+              </svg>
+            </div>
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
           </div>
 
+          {/* Stats banner */}
+          {hubStats.total > 0 && (
+            <div className="wk-hub-stats">
+              <div className="wk-hub-stat">
+                <span className="wk-hub-stat-value">{hubStats.total}</span>
+                <span className="wk-hub-stat-label">Workouts</span>
+              </div>
+              {hubStats.streak > 0 && (
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
+                  <span className="wk-hub-stat-label">Streak</span>
+                </div>
+              )}
+              {hubStats.favouriteFocus && (
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
+                    {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
+                  </span>
+                  <span className="wk-hub-stat-label">Top Focus</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Motivational tip */}
+          <div className="wk-hub-tip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
+          </div>
+
           {/* Action buttons */}
           <div className="wk-hub-actions">
-            <button className="wk-hub-action-btn wk-hub-new" onClick={() => setView('setup')}>
+            <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               New Workout
             </button>
@@ -1779,8 +1867,10 @@ export default function CoreBuddyWorkouts() {
             {!savedWorkoutsLoaded ? (
               <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
             ) : savedWorkouts.length === 0 ? (
-              <div className="wk-hub-empty">
-                <p>No saved workouts yet. Generate a workout and tap the save button to keep it here.</p>
+              <div className="wk-hub-empty wk-hub-empty-enhanced">
+                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <p><strong>No saved workouts yet</strong></p>
+                <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
               </div>
             ) : (
               <div className="wk-hub-saved-list">
@@ -1793,8 +1883,11 @@ export default function CoreBuddyWorkouts() {
                       <button className="wk-hub-saved-main" onClick={() => replaySavedWorkout(sw)}>
                         <div className="wk-hub-saved-info">
                           <span className="wk-hub-saved-name">{sw.name}</span>
-                          <span className="wk-hub-saved-meta">{focusLbl} &middot; {levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} exercises</span>
-                          <span className="wk-hub-saved-equip">{eqLabels}</span>
+                          <span className="wk-hub-saved-tags">
+                            <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[sw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
+                            <span className="wk-hub-saved-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
+                          </span>
+                          {eqLabels && <span className="wk-hub-saved-equip">{eqLabels}</span>}
                         </div>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                       </button>
@@ -1829,8 +1922,10 @@ export default function CoreBuddyWorkouts() {
                   return (
                     <div key={i} className="wk-hub-recent-card" style={{ animationDelay: `${i * 0.05}s` }}>
                       <div className="wk-hub-recent-info">
-                        <span className="wk-hub-recent-focus">{focusLbl}</span>
-                        <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} exercises</span>
+                        <span className="wk-hub-recent-tags">
+                          <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
+                          <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
+                        </span>
                       </div>
                       <span className="wk-hub-recent-time">{ago}</span>
                     </div>
