@@ -1,30 +1,50 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const config = { runtime: 'edge' };
 
 /**
  * POST /api/buddy-chat
+ * Edge Runtime — works within Vercel Hobby 30s limit.
+ *
  * Body: { messages: [], profile: {}, exerciseNames: [] }
  *
  * messages   – chat history array [{ role: 'user'|'assistant', content: '' }]
  * profile    – client data (name, goals, experience, injuries, stats)
  * exerciseNames – list of allowed exercise names (with video demos)
  */
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Allow': 'POST', 'Content-Type': 'application/json' },
+    });
   }
 
-  const { messages, profile, exerciseNames } = req.body;
+  let body;
+  try { body = await req.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { messages, profile, exerciseNames } = body;
 
   if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'messages array is required' });
+    return new Response(JSON.stringify({ error: 'messages array is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   if (!profile) {
-    return res.status(400).json({ error: 'profile is required' });
+    return new Response(JSON.stringify({ error: 'profile is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
+
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
     const systemPrompt = buildSystemPrompt(profile, exerciseNames || []);
@@ -41,10 +61,15 @@ export default async function handler(req, res) {
 
     const reply = completion.choices[0]?.message?.content || '';
 
-    return res.status(200).json({ reply });
+    return new Response(JSON.stringify({ reply }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
-    console.error('Buddy chat error:', err);
-    return res.status(500).json({ error: 'Failed to get a response from Buddy' });
+    return new Response(JSON.stringify({ error: 'Failed to get a response from Buddy' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 

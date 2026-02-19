@@ -8,6 +8,42 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyCoach.css';
 
+/** Read an SSE stream and return the final { done: true, ... } event data. */
+async function readSSE(response) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let result = null;
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split('\n');
+    buffer = lines.pop(); // keep incomplete line in buffer
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        try {
+          const data = JSON.parse(line.slice(6));
+          if (data.done) result = data;
+        } catch { /* partial JSON — skip */ }
+      }
+    }
+  }
+
+  // Process remaining buffer
+  if (buffer.startsWith('data: ')) {
+    try {
+      const data = JSON.parse(buffer.slice(6));
+      if (data.done) result = data;
+    } catch { /* ignore */ }
+  }
+
+  return result;
+}
+
 export default function CoreBuddyCoach() {
   const navigate = useNavigate();
   const { clientData, currentUser, resolveClient, updateClientData } = useAuth();
@@ -69,9 +105,12 @@ export default function CoreBuddyCoach() {
           clientName: clientData?.name || currentUser?.displayName || 'there',
         }),
       });
-      const data = await res.json();
-      if (data.error) {
-        setChatError(data.error);
+
+      // SSE stream — read until final event
+      const data = await readSSE(res);
+
+      if (!data || data.error) {
+        setChatError(data?.error || 'No response from Buddy — try again.');
         return;
       }
 
@@ -125,10 +164,6 @@ export default function CoreBuddyCoach() {
         group: e.group,
       }));
 
-      // 55s timeout — slightly under Vercel's max to catch timeouts gracefully
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 55000);
-
       const res = await fetch('/api/buddy-generate-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,19 +174,15 @@ export default function CoreBuddyCoach() {
           },
           exerciseLibrary,
         }),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeout);
+      // SSE stream — read until final event
+      const data = await readSSE(res);
 
-      if (!res.ok) {
-        const errText = await res.text().catch(() => '');
-        console.error('Plan API error:', res.status, errText);
-        setPlanError(`Buddy hit a snag (${res.status}) — try again.`);
+      if (!data) {
+        setPlanError('No response from Buddy — try again.');
         return;
       }
-
-      const data = await res.json();
 
       if (data.error && !data.plan) {
         setPlanError(data.error);
@@ -169,11 +200,7 @@ export default function CoreBuddyCoach() {
       }
     } catch (err) {
       console.error('Plan generation error:', err);
-      if (err.name === 'AbortError') {
-        setPlanError('Plan generation timed out — Buddy needed more time. Try again.');
-      } else {
-        setPlanError('Something went wrong generating your plan — try again.');
-      }
+      setPlanError('Something went wrong generating your plan — try again.');
     } finally {
       setGeneratingPlan(false);
     }
