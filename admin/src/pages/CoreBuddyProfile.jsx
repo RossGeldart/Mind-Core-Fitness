@@ -28,18 +28,6 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function formatVolume(kg) {
-  if (kg >= 1000000) return `${(kg / 1000000).toFixed(1)}M`;
-  if (kg >= 1000) return `${(kg / 1000).toFixed(1)}T`;
-  return `${Math.round(kg)}`;
-}
-
-function formatVolumeUnit(kg) {
-  if (kg >= 1000000) return 'million kg';
-  if (kg >= 1000) return 'tonnes';
-  return 'kg';
-}
-
 function timeAgo(date) {
   if (!date) return '';
   const d = date instanceof Date ? date : date.toDate ? date.toDate() : new Date(date);
@@ -76,8 +64,7 @@ export default function CoreBuddyProfile() {
   // Stats state
   const [statsLoading, setStatsLoading] = useState(true);
   const [totalWorkouts, setTotalWorkouts] = useState(0);
-  const [totalVolume, setTotalVolume] = useState(0);
-  const [streakWeeks, setStreakWeeks] = useState(0);
+const [streakWeeks, setStreakWeeks] = useState(0);
   const [habitStreak, setHabitStreak] = useState(0);
 
   // @ Mention state
@@ -158,21 +145,13 @@ export default function CoreBuddyProfile() {
       setStatsLoading(true);
       try {
         // Parallel fetches
-        const [logsSnap, achSnap] = await Promise.all([
-          getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId))),
-          getDoc(doc(db, 'coreBuddyAchievements', userId)),
-        ]);
+        const logsSnap = await getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId)));
 
         if (cancelled) return;
 
         // Total workouts
         const totalAll = logsSnap.docs.length;
         setTotalWorkouts(totalAll);
-
-        // Total volume
-        if (achSnap.exists()) {
-          setTotalVolume(achSnap.data().totalVolume || 0);
-        }
 
         // Workout streak (consecutive weeks)
         let wkStreak = 0;
@@ -627,10 +606,6 @@ export default function CoreBuddyProfile() {
               <div className="prf-stat">
                 <span className="prf-stat-value">{totalWorkouts}</span>
                 <span className="prf-stat-label">Workouts</span>
-              </div>
-              <div className="prf-stat">
-                <span className="prf-stat-value">{formatVolume(totalVolume)}<span className="prf-stat-unit">{totalVolume >= 1000 ? '' : 'kg'}</span></span>
-                <span className="prf-stat-label">{totalVolume >= 1000000 ? 'Million kg' : totalVolume >= 1000 ? 'Tonnes' : 'Volume'} Lifted</span>
               </div>
               <div className="prf-stat">
                 <span className="prf-stat-value">{streakWeeks}<span className="prf-stat-unit">wk</span></span>
