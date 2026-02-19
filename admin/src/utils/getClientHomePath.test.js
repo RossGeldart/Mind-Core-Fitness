@@ -12,6 +12,11 @@ describe('getClientHomePath', () => {
     expect(getClientHomePath(clientData)).toBe('/client');
   });
 
+  it('sends core_buddy client to /client/core-buddy', () => {
+    const clientData = { clientType: 'core_buddy' };
+    expect(getClientHomePath(clientData)).toBe('/client/core-buddy');
+  });
+
   it('sends circuit_vip client to /client/circuit', () => {
     const clientData = { clientType: 'circuit_vip' };
     expect(getClientHomePath(clientData)).toBe('/client/circuit');
@@ -31,9 +36,9 @@ describe('getClientHomePath', () => {
     expect(getClientHomePath(null)).toBe('/client');
   });
 
-  it('onboarding check only applies to self_signup — admin-added client goes to /client', () => {
+  it('onboarding check only applies to self_signup — admin-added core_buddy goes to /client/core-buddy', () => {
     // admin-added user: no signupSource field, has a clientType
-    const clientData = { clientType: 'block', onboardingComplete: false };
-    expect(getClientHomePath(clientData)).toBe('/client');
+    const clientData = { clientType: 'core_buddy', onboardingComplete: false };
+    expect(getClientHomePath(clientData)).toBe('/client/core-buddy');
   });
 });

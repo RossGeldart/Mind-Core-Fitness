@@ -10,6 +10,7 @@ const CLIENT_TYPES = [
   { value: 'block', label: 'Block (1-2-1)' },
   { value: 'circuit_vip', label: 'Circuit VIP' },
   { value: 'circuit_dropin', label: 'Circuit Drop-in' },
+  { value: 'core_buddy', label: 'Core Buddy' },
 ];
 
 export default function AddClient() {
@@ -19,6 +20,8 @@ export default function AddClient() {
     password: '',
     clientType: 'block',
     circuitAccess: false,
+    coreBuddyAccess: false,
+    coreBuddyPlan: 'free',
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -93,12 +96,16 @@ export default function AddClient() {
 
       if (isBlock) {
         clientDoc.circuitAccess = formData.circuitAccess;
+        clientDoc.coreBuddyAccess = formData.coreBuddyAccess;
         clientDoc.weeksInBlock = parseInt(formData.weeksInBlock);
         clientDoc.totalSessions = parseInt(formData.numberOfSessions);
         clientDoc.sessionsRemaining = parseInt(formData.numberOfSessions);
         clientDoc.sessionDuration = parseInt(formData.sessionDuration);
         clientDoc.startDate = Timestamp.fromDate(new Date(formData.startDate));
         clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
+      } else if (formData.clientType === 'core_buddy') {
+        clientDoc.coreBuddyAccess = true;
+        clientDoc.coreBuddyPlan = formData.coreBuddyPlan || 'free';
       } else {
         clientDoc.circuitStrikes = 0;
         clientDoc.circuitBanUntil = null;
@@ -219,6 +226,21 @@ export default function AddClient() {
             </div>
           )}
 
+          {/* Core Buddy access toggle for block clients */}
+          {isBlock && (
+            <div className="form-group">
+              <label className="circuit-toggle-label">
+                <input
+                  type="checkbox"
+                  name="coreBuddyAccess"
+                  checked={formData.coreBuddyAccess}
+                  onChange={handleChange}
+                />
+                <span>Enable Core Buddy access</span>
+              </label>
+            </div>
+          )}
+
           {/* Block-specific fields */}
           {isBlock && (
             <>
@@ -289,6 +311,22 @@ export default function AddClient() {
                 <span className="helper-text">Calculated from start date + weeks</span>
               </div>
             </>
+          )}
+
+          {/* Core Buddy plan selector */}
+          {formData.clientType === 'core_buddy' && (
+            <div className="form-group">
+              <label htmlFor="coreBuddyPlan">Core Buddy Plan</label>
+              <select
+                id="coreBuddyPlan"
+                name="coreBuddyPlan"
+                value={formData.coreBuddyPlan}
+                onChange={handleChange}
+              >
+                <option value="free">Free</option>
+                <option value="premium">Premium</option>
+              </select>
+            </div>
           )}
 
           <div className="form-actions">

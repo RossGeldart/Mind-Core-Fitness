@@ -151,6 +151,9 @@ export default function ClientList() {
       status: client.status,
       hasPortalAccess: !!client.uid,
       circuitAccess: !!client.circuitAccess,
+      coreBuddyAccess: !!client.coreBuddyAccess,
+      buddyEnabled: !!client.buddyEnabled,
+      coreBuddyPlan: client.coreBuddyPlan || 'free',
       isJunior: !!client.isJunior
     });
   };
@@ -217,6 +220,8 @@ export default function ClientList() {
         email: editForm.email.trim().toLowerCase(),
         clientType: editForm.clientType,
         status: editForm.status,
+        coreBuddyAccess: editForm.coreBuddyAccess,
+        buddyEnabled: editForm.buddyEnabled,
         isJunior: editForm.isJunior,
       };
 
@@ -227,6 +232,9 @@ export default function ClientList() {
         updateData.circuitAccess = editForm.circuitAccess;
         if (editForm.startDate) updateData.startDate = Timestamp.fromDate(new Date(editForm.startDate));
         if (editForm.endDate) updateData.endDate = Timestamp.fromDate(new Date(editForm.endDate));
+      } else if (editForm.clientType === 'core_buddy') {
+        updateData.coreBuddyPlan = editForm.coreBuddyPlan || 'free';
+        updateData.coreBuddyAccess = true;
       } else {
         // Switching to circuit — ensure circuit fields exist
         const client = clients.find(c => c.id === clientId);
@@ -380,6 +388,7 @@ export default function ClientList() {
   const getTypeLabel = (client) => {
     if (client.clientType === 'circuit_vip') return 'VIP';
     if (client.clientType === 'circuit_dropin') return 'Drop-in';
+    if (client.clientType === 'core_buddy') return 'Core Buddy';
     return 'Block';
   };
 
@@ -389,16 +398,19 @@ export default function ClientList() {
   ).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
   const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
+  const isCoreBuddy = (c) => c.clientType === 'core_buddy';
   const isArchived = (c) => c.status === 'archived';
 
   // For non-archived filters, exclude archived clients
   const activeSearched = searched.filter(c => !isArchived(c));
-  const blockClients = activeSearched.filter(c => !isCircuit(c));
+  const blockClients = activeSearched.filter(c => !isCircuit(c) && !isCoreBuddy(c));
   const circuitClients = activeSearched.filter(c => isCircuit(c));
+  const coreBuddyClients = activeSearched.filter(c => isCoreBuddy(c));
   const archivedClients = searched.filter(c => isArchived(c));
 
   const filtered = typeFilter === 'block' ? blockClients
     : typeFilter === 'circuit' ? circuitClients
+    : typeFilter === 'core_buddy' ? coreBuddyClients
     : typeFilter === 'archived' ? archivedClients
     : activeSearched;
 
@@ -456,8 +468,8 @@ export default function ClientList() {
                     {expiryBadge.text}
                   </span>
                 )}
-                {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin') && (
-                  <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : 'dropin'}`}>
+                {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin' || client.clientType === 'core_buddy') && (
+                  <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : client.clientType === 'core_buddy' ? 'core-buddy' : 'dropin'}`}>
                     {getTypeLabel(client)}
                   </span>
                 )}
@@ -479,6 +491,7 @@ export default function ClientList() {
                         { value: 'block', label: 'Block' },
                         { value: 'circuit_vip', label: 'VIP' },
                         { value: 'circuit_dropin', label: 'Drop-in' },
+                        { value: 'core_buddy', label: 'Core Buddy' },
                       ].map(t => (
                         <button
                           key={t.value}
@@ -513,6 +526,15 @@ export default function ClientList() {
                       </>
                     )}
 
+                    {editForm.clientType === 'core_buddy' && (
+                      <div className="edit-row">
+                        <select name="coreBuddyPlan" value={editForm.coreBuddyPlan} onChange={handleEditChange}>
+                          <option value="free">Free</option>
+                          <option value="premium">Premium</option>
+                        </select>
+                      </div>
+                    )}
+
                     <div className="edit-row password-row">
                       {editForm.hasPortalAccess ? (
                         <div className="portal-status has-access">Has portal access</div>
@@ -532,6 +554,22 @@ export default function ClientList() {
                         </label>
                       </div>
                     )}
+
+                    {editForm.clientType !== 'core_buddy' && (
+                      <div className="edit-row circuit-row">
+                        <label className="circuit-access-toggle">
+                          <input type="checkbox" checked={editForm.coreBuddyAccess} onChange={(e) => setEditForm(prev => ({ ...prev, coreBuddyAccess: e.target.checked }))} />
+                          <span>Core Buddy Access</span>
+                        </label>
+                      </div>
+                    )}
+
+                    <div className="edit-row circuit-row">
+                      <label className="circuit-access-toggle">
+                        <input type="checkbox" checked={editForm.buddyEnabled} onChange={(e) => setEditForm(prev => ({ ...prev, buddyEnabled: e.target.checked }))} />
+                        <span>AI Buddy</span>
+                      </label>
+                    </div>
 
                     {editForm.clientType === 'block' && (
                       <div className="edit-row circuit-row">
@@ -579,6 +617,17 @@ export default function ClientList() {
                         <div className="detail-item">
                           <span className="detail-label">End</span>
                           <span className="detail-value">{formatDate(client.endDate)}</span>
+                        </div>
+                      </div>
+                    ) : client.clientType === 'core_buddy' ? (
+                      <div className="client-details circuit-details">
+                        <div className="detail-item">
+                          <span className="detail-label">Plan</span>
+                          <span className="detail-value">{client.coreBuddyPlan === 'premium' ? 'Premium' : 'Free'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Joined</span>
+                          <span className="detail-value">{formatDate(client.createdAt)}</span>
                         </div>
                       </div>
                     ) : (
@@ -653,6 +702,7 @@ export default function ClientList() {
         <option value="all">All Clients ({activeSearched.length})</option>
         <option value="block">Block Members ({blockClients.length})</option>
         <option value="circuit">Circuit Members ({circuitClients.length})</option>
+        <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
         <option value="archived">Archived ({archivedClients.length})</option>
       </select>
 
@@ -669,6 +719,12 @@ export default function ClientList() {
             <>
               <div className="client-section-header">Circuit Members <span>{circuitClients.length}</span></div>
               {circuitClients.map(renderClientRow)}
+            </>
+          )}
+          {coreBuddyClients.length > 0 && (
+            <>
+              <div className="client-section-header">Core Buddy Members <span>{coreBuddyClients.length}</span></div>
+              {coreBuddyClients.map(renderClientRow)}
             </>
           )}
         </>

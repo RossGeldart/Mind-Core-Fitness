@@ -128,6 +128,8 @@ export function AuthProvider({ children }) {
       uid: user.uid,
       name: name.trim(),
       email: email.trim().toLowerCase(),
+      clientType: 'core_buddy',
+      coreBuddyAccess: true,
       status: 'active',
       tier: 'free',
       subscriptionStatus: null,

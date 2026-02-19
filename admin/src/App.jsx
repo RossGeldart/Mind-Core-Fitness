@@ -7,7 +7,20 @@ import Login from './pages/Login';
 import LockedFeature from './components/LockedFeature';
 import './styles/theme.css';
 
-// Lazy-load pages
+// Eagerly import CoreBuddy pages (shared bottom-nav group — no loading gap)
+import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
+import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
+import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
+import CoreBuddyProgrammes from './pages/CoreBuddyProgrammes';
+import CoreBuddyAchievements from './pages/CoreBuddyAchievements';
+import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
+import CoreBuddyBuddies from './pages/CoreBuddyBuddies';
+import CoreBuddyProfile from './pages/CoreBuddyProfile';
+import CoreBuddyCoach from './pages/CoreBuddyCoach';
+import CoreBuddyBuilder from './pages/CoreBuddyBuilder';
+import PersonalBests from './pages/PersonalBests';
+
+// Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AddClient = lazy(() => import('./pages/AddClient'));
 const ClientDashboard = lazy(() => import('./pages/ClientDashboard'));
@@ -18,7 +31,6 @@ const ProteinSnacks = lazy(() => import('./pages/ProteinSnacks'));
 const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
 const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
 const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
-const PersonalBests = lazy(() => import('./pages/PersonalBests'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 const UpgradePage = lazy(() => import('./pages/UpgradePage'));
 const SignUp = lazy(() => import('./pages/SignUp'));
@@ -80,6 +92,16 @@ function App() {
             <Route path="/client/personal-bests" element={<PersonalBests />} />
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
+            <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
+            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
+            <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
+            <Route path="/client/core-buddy/programmes" element={<LockedFeature feature="programmes"><CoreBuddyProgrammes /></LockedFeature>} />
+            <Route path="/client/core-buddy/achievements" element={<LockedFeature feature="achievements"><CoreBuddyAchievements /></LockedFeature>} />
+            <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
+            <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
+            <Route path="/client/core-buddy/buddy" element={<CoreBuddyCoach />} />
+            <Route path="/client/core-buddy/builder" element={<CoreBuddyBuilder />} />
+            <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
