@@ -1,5 +1,3 @@
-import OpenAI from 'openai';
-
 export const config = { runtime: 'edge' };
 
 const PROFILE_MARKER_START = '|||PROFILE|||';
@@ -7,7 +5,7 @@ const PROFILE_MARKER_END = '|||END|||';
 
 /**
  * POST /api/buddy-onboarding
- * Edge Runtime + streaming — works within Vercel Hobby 30s limit.
+ * Edge Runtime + raw fetch streaming — no SDK, guaranteed Edge compatibility.
  *
  * Body: { messages: [], clientName: string }
  * Returns: SSE stream — intermediate chunks + final { done, reply, profileData? } event
@@ -23,8 +21,7 @@ export default async function handler(req) {
   let body;
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -32,25 +29,38 @@ export default async function handler(req) {
 
   if (!messages || !Array.isArray(messages)) {
     return new Response(JSON.stringify({ error: 'messages array is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const systemPrompt = buildOnboardingPrompt(clientName || 'there');
 
   try {
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
-      temperature: 0.7,
-      max_tokens: 1024,
-      stream: true,
+    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.7,
+        max_tokens: 1024,
+        stream: true,
+      }),
     });
+
+    if (!openaiRes.ok) {
+      const errText = await openaiRes.text().catch(() => '');
+      console.error('OpenAI error:', openaiRes.status, errText);
+      return new Response(JSON.stringify({ error: `AI service error (${openaiRes.status})` }), {
+        status: 502, headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const encoder = new TextEncoder();
 
@@ -58,15 +68,33 @@ export default async function handler(req) {
       async start(controller) {
         let fullText = '';
         try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || '';
-            if (content) {
-              fullText += content;
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+          const reader = openaiRes.body.getReader();
+          const decoder = new TextDecoder();
+          let sseBuffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            sseBuffer += decoder.decode(value, { stream: true });
+
+            const lines = sseBuffer.split('\n');
+            sseBuffer = lines.pop();
+
+            for (const line of lines) {
+              if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                try {
+                  const parsed = JSON.parse(line.slice(6));
+                  const content = parsed.choices?.[0]?.delta?.content || '';
+                  if (content) {
+                    fullText += content;
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+                  }
+                } catch { /* skip */ }
+              }
             }
           }
 
-          // Check if Buddy included profile data (onboarding complete)
+          // Check if Buddy included profile data
           const markerStart = fullText.indexOf(PROFILE_MARKER_START);
           const markerEnd = fullText.indexOf(PROFILE_MARKER_END);
 
@@ -77,7 +105,6 @@ export default async function handler(req) {
               const profileData = JSON.parse(jsonStr);
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply, profileData })}\n\n`));
             } catch {
-              // JSON parse failed — return raw reply without profile data
               const cleanReply = fullText
                 .replace(PROFILE_MARKER_START, '')
                 .replace(PROFILE_MARKER_END, '')
@@ -99,13 +126,11 @@ export default async function handler(req) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to get a response from Buddy' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      status: 500, headers: { 'Content-Type': 'application/json' },
     });
   }
 }

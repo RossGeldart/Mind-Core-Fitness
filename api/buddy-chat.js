@@ -1,16 +1,10 @@
-import OpenAI from 'openai';
-
 export const config = { runtime: 'edge' };
 
 /**
  * POST /api/buddy-chat
- * Edge Runtime — works within Vercel Hobby 30s limit.
+ * Edge Runtime + raw fetch — no SDK, guaranteed Edge compatibility.
  *
  * Body: { messages: [], profile: {}, exerciseNames: [] }
- *
- * messages   – chat history array [{ role: 'user'|'assistant', content: '' }]
- * profile    – client data (name, goals, experience, injuries, stats)
- * exerciseNames – list of allowed exercise names (with video demos)
  */
 export default async function handler(req) {
   if (req.method !== 'POST') {
@@ -23,8 +17,7 @@ export default async function handler(req) {
   let body;
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -32,34 +25,46 @@ export default async function handler(req) {
 
   if (!messages || !Array.isArray(messages)) {
     return new Response(JSON.stringify({ error: 'messages array is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
   if (!profile) {
     return new Response(JSON.stringify({ error: 'profile is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const systemPrompt = buildSystemPrompt(profile, exerciseNames || []);
 
   try {
-    const systemPrompt = buildSystemPrompt(profile, exerciseNames || []);
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
-      temperature: 0.7,
-      max_tokens: 2048,
+    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+      }),
     });
 
-    const reply = completion.choices[0]?.message?.content || '';
+    if (!openaiRes.ok) {
+      const errText = await openaiRes.text().catch(() => '');
+      console.error('OpenAI error:', openaiRes.status, errText);
+      return new Response(JSON.stringify({ error: 'Failed to get a response from Buddy' }), {
+        status: 502, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const data = await openaiRes.json();
+    const reply = data.choices?.[0]?.message?.content || '';
 
     return new Response(JSON.stringify({ reply }), {
       status: 200,
@@ -67,8 +72,7 @@ export default async function handler(req) {
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to get a response from Buddy' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      status: 500, headers: { 'Content-Type': 'application/json' },
     });
   }
 }
@@ -128,8 +132,6 @@ function calculateAge(dob) {
   const now = new Date();
   let age = now.getFullYear() - birth.getFullYear();
   const monthDiff = now.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
-    age--;
-  }
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--;
   return age;
 }
