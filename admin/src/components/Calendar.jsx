@@ -97,15 +97,21 @@ export default function Calendar() {
     }
   };
 
-  // Calculate completed sessions (sessions that have passed)
-  const getCompletedSessionsCount = (clientId) => {
+  // Calculate completed sessions within the client's current block only
+  const getCompletedSessionsCount = (client) => {
     const now = new Date();
     const today = formatDateKey(now);
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : (client.startDate ? new Date(client.startDate) : null);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : (client.endDate ? new Date(client.endDate) : null);
+    const blockStartKey = blockStart ? formatDateKey(blockStart) : null;
+    const blockEndKey = blockEnd ? formatDateKey(blockEnd) : null;
+
     return sessions.filter(s => {
-      if (s.clientId !== clientId) return false;
-      // Session is completed if date is in past, or if today and time has passed
+      if (s.clientId !== client.id) return false;
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
       if (s.date < today) return true;
       if (s.date === today && s.time < currentTime) return true;
       return false;
@@ -114,22 +120,25 @@ export default function Calendar() {
 
   // Calculate remaining sessions for a client
   const getSessionsRemaining = (client) => {
-    const completed = getCompletedSessionsCount(client.id);
+    const completed = getCompletedSessionsCount(client);
     return (client.totalSessions || 0) - completed;
   };
 
-  // Calculate booked sessions for a client (upcoming only)
-  const getBookedSessionsCount = (clientId) => {
+  // Calculate booked (upcoming) sessions within the client's current block only
+  const getBookedSessionsCount = (client) => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const today = `${year}-${month}-${day}`;
+    const today = formatDateKey(now);
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : (client.startDate ? new Date(client.startDate) : null);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : (client.endDate ? new Date(client.endDate) : null);
+    const blockStartKey = blockStart ? formatDateKey(blockStart) : null;
+    const blockEndKey = blockEnd ? formatDateKey(blockEnd) : null;
+
     return sessions.filter(s => {
-      if (s.clientId !== clientId) return false;
-      // Only count future sessions
+      if (s.clientId !== client.id) return false;
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
       if (s.date > today) return true;
       if (s.date === today && s.time >= currentTime) return true;
       return false;
@@ -440,8 +449,8 @@ export default function Calendar() {
       return;
     }
 
-    const clientBookedSessions = getBookedSessionsCount(selectedClient.id);
-    const clientCompletedSessions = getCompletedSessionsCount(selectedClient.id);
+    const clientBookedSessions = getBookedSessionsCount(selectedClient);
+    const clientCompletedSessions = getCompletedSessionsCount(selectedClient);
     if (clientCompletedSessions + clientBookedSessions >= selectedClient.totalSessions) {
       alert(`${selectedClient.name} has used all ${selectedClient.totalSessions} sessions in their package`);
       return;
@@ -496,7 +505,7 @@ export default function Calendar() {
 
     // First pass: count how many sessions would actually be created
     let sessionsToCreate = [];
-    const existingClientSessions = getBookedSessionsCount(selectedClient.id) + getCompletedSessionsCount(selectedClient.id);
+    const existingClientSessions = getBookedSessionsCount(selectedClient) + getCompletedSessionsCount(selectedClient);
 
     for (let week = 0; week < totalWeeks; week++) {
       const weekStartDate = new Date(clientStart);
@@ -628,7 +637,7 @@ export default function Calendar() {
             <div className="selected-info">
               <strong>{selectedClient.name}</strong>
               <span>{selectedClient.sessionDuration || 45}min • {getSessionsRemaining(selectedClient)}/{selectedClient.totalSessions} remaining</span>
-              <span className="booked-info">{getBookedSessionsCount(selectedClient.id)} booked</span>
+              <span className="booked-info">{getBookedSessionsCount(selectedClient)} booked</span>
             </div>
             <button onClick={() => setSelectedClient(null)}>Change</button>
           </div>
@@ -935,7 +944,7 @@ export default function Calendar() {
                   const clientStart = hasBlock ? (client.startDate?.toDate ? client.startDate.toDate() : new Date(client.startDate)) : null;
                   const clientEnd = hasBlock ? (client.endDate?.toDate ? client.endDate.toDate() : new Date(client.endDate)) : null;
                   const remaining = getSessionsRemaining(client);
-                  const booked = getBookedSessionsCount(client.id);
+                  const booked = getBookedSessionsCount(client);
                   return (
                     <button
                       key={client.id}

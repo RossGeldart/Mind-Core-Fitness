@@ -335,10 +335,17 @@ export default function Dashboard() {
   const todaySessions = dashSessions.filter(s => s.date === todayStr);
   const sessionsToday = todaySessions.length;
 
-  // Completed sessions helper
-  const getCompletedCount = (clientId) => {
+  // Completed sessions helper — scoped to client's current block only
+  const getCompletedCount = (client) => {
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : (client.startDate ? new Date(client.startDate) : null);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : (client.endDate ? new Date(client.endDate) : null);
+    const blockStartKey = blockStart ? `${blockStart.getFullYear()}-${(blockStart.getMonth() + 1).toString().padStart(2, '0')}-${blockStart.getDate().toString().padStart(2, '0')}` : null;
+    const blockEndKey = blockEnd ? `${blockEnd.getFullYear()}-${(blockEnd.getMonth() + 1).toString().padStart(2, '0')}-${blockEnd.getDate().toString().padStart(2, '0')}` : null;
+
     return dashSessions.filter(s => {
-      if (s.clientId !== clientId) return false;
+      if (s.clientId !== client.id) return false;
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
       if (s.date < todayStr) return true;
       if (s.date === todayStr && s.time < currentTimeStr) return true;
       return false;
@@ -362,7 +369,7 @@ export default function Dashboard() {
 
   // Low sessions (1-2 remaining) or empty (0)
   const lowSessionClients = activeBlockClients.filter(c => {
-    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+    const remaining = (c.totalSessions || 0) - getCompletedCount(c);
     return remaining <= 2;
   });
 
@@ -521,7 +528,7 @@ export default function Dashboard() {
                   expiringClients.map(c => {
                     const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
                     const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-                    const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+                    const remaining = (c.totalSessions || 0) - getCompletedCount(c);
                     return (
                       <div key={c.id} className="card-detail-item">
                         <span className="card-detail-name">{c.name}</span>
@@ -552,12 +559,12 @@ export default function Dashboard() {
                 ) : (
                   [...lowSessionClients]
                     .sort((a, b) => {
-                      const ra = (a.totalSessions || 0) - getCompletedCount(a.id);
-                      const rb = (b.totalSessions || 0) - getCompletedCount(b.id);
+                      const ra = (a.totalSessions || 0) - getCompletedCount(a);
+                      const rb = (b.totalSessions || 0) - getCompletedCount(b);
                       return ra - rb; // 0 remaining first
                     })
                     .map(c => {
-                      const remaining = (c.totalSessions || 0) - getCompletedCount(c.id);
+                      const remaining = (c.totalSessions || 0) - getCompletedCount(c);
                       const end = c.endDate ? (c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate)) : null;
                       const daysLeft = end ? Math.ceil((end - now) / (1000 * 60 * 60 * 24)) : null;
                       return (
