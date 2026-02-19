@@ -959,12 +959,10 @@ export default function CoreBuddyWorkouts() {
   // Quick Start: store last settings and generate instantly
   const quickStart = async () => {
     const last = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
-    if (last) {
-      setSelectedEquipment(last.equipment || ['bodyweight']);
-      setFocusArea(last.focus || 'core');
-      setLevel(last.level || 'intermediate');
-      setDuration(last.duration || 15);
-    }
+    setSelectedEquipment(last?.equipment || ['bodyweight']);
+    setFocusArea(last?.focus || 'core');
+    setLevel(last?.level || 'intermediate');
+    setDuration(last?.duration || 15);
     // Small delay to let state settle, then generate
     setTimeout(() => generateWorkout(), 50);
   };
@@ -1656,9 +1654,9 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== RANDOMISER HUB VIEW ====================
   if (view === 'randomiser_hub') {
-    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
-    const lastFocusLabel = lastSettings ? (FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus) : null;
-    const lastLevelLabel = lastSettings ? (LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level) : null;
+    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null') || { equipment: ['bodyweight'], focus: 'core', level: 'intermediate', duration: 15 };
+    const lastFocusLabel = FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus;
+    const lastLevelLabel = LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level;
 
     return (
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
@@ -1734,13 +1732,11 @@ export default function CoreBuddyWorkouts() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               New Workout
             </button>
-            {lastSettings && (
-              <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                Quick Start
-                <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
-              </button>
-            )}
+            <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Quick Start
+              <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
+            </button>
           </div>
 
           {/* Smart Suggestion */}
