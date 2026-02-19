@@ -125,6 +125,10 @@ export default function CoreBuddyCoach() {
         group: e.group,
       }));
 
+      // 55s timeout — slightly under Vercel's max to catch timeouts gracefully
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 55000);
+
       const res = await fetch('/api/buddy-generate-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,7 +139,18 @@ export default function CoreBuddyCoach() {
           },
           exerciseLibrary,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.error('Plan API error:', res.status, errText);
+        setPlanError(`Buddy hit a snag (${res.status}) — try again.`);
+        return;
+      }
+
       const data = await res.json();
 
       if (data.error && !data.plan) {
@@ -154,7 +169,11 @@ export default function CoreBuddyCoach() {
       }
     } catch (err) {
       console.error('Plan generation error:', err);
-      setPlanError('Something went wrong generating your plan — try again.');
+      if (err.name === 'AbortError') {
+        setPlanError('Plan generation timed out — Buddy needed more time. Try again.');
+      } else {
+        setPlanError('Something went wrong generating your plan — try again.');
+      }
     } finally {
       setGeneratingPlan(false);
     }
@@ -232,7 +251,7 @@ export default function CoreBuddyCoach() {
             <div>
               <h2 className="buddy-chat-name">Buddy</h2>
               <span className="buddy-chat-status">
-                {chatLoading ? 'typing...' : 'Your AI Coach'}
+                {chatLoading ? 'typing...' : generatingPlan ? 'building your plan...' : 'Your AI Coach'}
               </span>
             </div>
           </div>

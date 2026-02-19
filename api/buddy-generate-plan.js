@@ -5,6 +5,9 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const PLAN_MARKER_START = '|||PLAN|||';
 const PLAN_MARKER_END = '|||END_PLAN|||';
 
+// Allow up to 60s for plan generation (Vercel Pro) — Hobby allows 10s max
+export const config = { maxDuration: 60 };
+
 /**
  * POST /api/buddy-generate-plan
  * Body: { profile: {}, exerciseLibrary: [] }
@@ -40,7 +43,7 @@ export default async function handler(req, res) {
         { role: 'user', content: 'Generate my personalised monthly plan based on my profile.' },
       ],
       temperature: 0.6,
-      max_tokens: 4096,
+      max_tokens: 8192,
     });
 
     const raw = completion.choices[0]?.message?.content || '';
