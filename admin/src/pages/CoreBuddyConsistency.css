@@ -43,8 +43,8 @@
   padding: 0 16px 80px;
 }
 
-/* Progress Ring Section */
-.cbc-ring-section {
+/* ====== Hero Section ====== */
+.cbc-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,6 +81,11 @@
   stroke: var(--color-primary);
   stroke-width: 24;
   stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease-out;
+}
+
+.cbc-ring-complete .cbc-arc-fill {
+  filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb), 0.5));
 }
 
 .cbc-ring-center {
@@ -91,11 +96,19 @@
   align-items: center;
 }
 
-.cbc-ring-pct {
+.cbc-ring-count {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   color: var(--text-primary);
+  line-height: 1;
+}
+
+.cbc-ring-divider {
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--text-tertiary);
+  margin: 0 1px;
 }
 
 .cbc-ring-label {
@@ -104,30 +117,61 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text-tertiary);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-/* Streak */
-.cbc-streak {
+.cbc-hero-tagline {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ====== Streak Card ====== */
+.cbc-streak-card {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 8px 16px;
-  background: rgba(var(--color-primary-rgb), 0.08);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-  border-radius: 20px;
+  gap: 12px;
+  margin: 12px 0 4px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="dark"] .cbc-streak {
-  background: rgba(199, 95, 107, 0.1);
-  border-color: rgba(199, 95, 107, 0.25);
+[data-theme="dark"] .cbc-streak-card {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cbc-streak-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cbc-streak-info {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .cbc-streak-count {
   font-family: 'Orbitron', 'Courier New', monospace;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--color-primary);
 }
 
@@ -137,6 +181,30 @@
   color: var(--text-secondary);
 }
 
+.cbc-streak-best {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border-radius: 10px;
+}
+
+.cbc-streak-best-val {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.cbc-streak-best-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
 /* Section */
 .cbc-section {
   padding: 16px 0;
@@ -144,7 +212,7 @@
 
 .cbc-section-title {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 14px;
@@ -166,7 +234,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 20px 10px 16px;
+  padding: 20px 14px 16px;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 20px;
@@ -261,7 +329,7 @@
   transition: stroke-dashoffset 0.3s ease-out;
 }
 
-/* Icon inside the ring */
+/* Icon inside the ring — dimmed when incomplete */
 .cbc-habit-ring-icon {
   position: relative;
   z-index: 1;
@@ -270,7 +338,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s;
+  opacity: 0.4;
+  filter: grayscale(0.3);
+  transition: opacity 0.25s ease, filter 0.25s ease;
 }
 
 .cbc-habit-ring-icon svg {
@@ -278,10 +348,10 @@
   height: 32px;
 }
 
-/* Completed — icon powered-up look */
+/* Completed — icon powered-up, full saturation */
 .cbc-ring-completed .cbc-habit-ring-icon {
   opacity: 1;
-  filter: brightness(1.3);
+  filter: brightness(1.3) grayscale(0);
 }
 
 /* ====== Glowing Orb (completed state) ====== */
@@ -315,7 +385,7 @@
 /* Habit label (below ring) */
 .cbc-habit-label {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
   transition: color 0.2s;
@@ -330,7 +400,7 @@
 
 .cbc-habit-done-tag {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #4caf50;
   text-transform: uppercase;
@@ -339,7 +409,7 @@
 
 .cbc-habit-hold-hint {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   color: var(--text-tertiary);
   letter-spacing: 0.3px;
 }
@@ -407,6 +477,45 @@
 }
 
 [data-theme="dark"] .cbc-add-tile:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.08);
+}
+
+/* ====== Unlock Habits Tile (free tier) ====== */
+.cbc-unlock-tile {
+  cursor: pointer;
+  border: 2px dashed var(--color-primary);
+  background: var(--color-primary-light);
+  box-shadow: none;
+}
+
+.cbc-unlock-tile:active {
+  transform: scale(0.96);
+}
+
+.cbc-unlock-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  transition: all 0.2s ease;
+}
+
+.cbc-unlock-tile .cbc-habit-label {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.cbc-unlock-tile .cbc-habit-hold-hint {
+  color: var(--color-primary);
+  opacity: 0.75;
+}
+
+[data-theme="dark"] .cbc-unlock-tile {
   border-color: var(--color-primary);
   background: rgba(var(--color-primary-rgb), 0.08);
 }
@@ -546,66 +655,113 @@
   background: #b71c1c;
 }
 
-/* ====== Weekly Day Rings ====== */
-.cbc-week-grid {
+/* ====== Section Header with Badge ====== */
+.cbc-section-header {
   display: flex;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.cbc-day-ring {
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cbc-section-header .cbc-section-title {
+  margin-bottom: 0;
+}
+
+.cbc-section-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+/* ====== Weekly Card with Per-Habit Dot Rows ====== */
+.cbc-weekly-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .cbc-weekly-card {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cbc-weekly-header {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 28px);
   gap: 4px;
-  flex: 1;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(150, 150, 150, 0.1);
 }
 
-.cbc-day-ring svg {
-  width: 42px;
-  height: 42px;
-  transform: rotate(-90deg);
-}
-
-.cbc-day-track {
-  fill: none;
-  stroke: rgba(150, 150, 150, 0.2);
-  stroke-width: 12;
-  stroke-linecap: round;
-}
-
-.cbc-day-fill {
-  fill: none;
-  stroke: #38B6FF;
-  stroke-width: 12;
-  stroke-linecap: round;
-}
-
-.cbc-day-label {
+.cbc-weekly-day-label {
   font-family: 'Montserrat', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-tertiary);
   text-transform: uppercase;
+  text-align: center;
 }
 
-.cbc-day-today .cbc-day-label {
-  color: #38B6FF;
+.cbc-today-label {
+  color: var(--color-primary);
 }
 
-.cbc-day-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.5rem;
-  color: var(--text-tertiary);
+.cbc-weekly-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 28px);
+  gap: 4px;
+  align-items: center;
+  padding: 8px 0;
 }
 
-.cbc-day-active .cbc-day-count {
-  color: #38B6FF;
+.cbc-weekly-row + .cbc-weekly-row {
+  border-top: 1px solid rgba(150, 150, 150, 0.06);
+}
+
+.cbc-weekly-habit-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cbc-weekly-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.12);
+  border: 1.5px solid rgba(150, 150, 150, 0.2);
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.cbc-dot-done {
+  border-color: transparent;
+}
+
+.cbc-dot-today:not(.cbc-dot-done) {
+  border-color: var(--color-primary);
+  border-style: dashed;
 }
 
 /* Weekly Summary Bar */
 .cbc-week-summary {
-  margin-top: 16px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(150, 150, 150, 0.1);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -613,8 +769,8 @@
 
 .cbc-week-summary-bar {
   width: 100%;
-  height: 6px;
-  background: var(--border-color);
+  height: 5px;
+  background: rgba(150, 150, 150, 0.12);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -628,10 +784,132 @@
 
 .cbc-week-summary-text {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-tertiary);
   text-align: center;
 }
+
+/* ====== Monthly Calendar Heat-Map ====== */
+.cbc-calendar-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .cbc-calendar-card {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cbc-cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.cbc-cal-day-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.cbc-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cbc-cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.cbc-cal-empty {
+  background: transparent;
+}
+
+/* Heat levels */
+.cbc-cal-heat-future {
+  color: var(--text-tertiary);
+  opacity: 0.3;
+}
+
+.cbc-cal-heat-0 {
+  background: rgba(150, 150, 150, 0.08);
+}
+
+.cbc-cal-heat-1 {
+  background: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--text-primary);
+}
+
+.cbc-cal-heat-2 {
+  background: rgba(var(--color-primary-rgb), 0.25);
+  color: var(--text-primary);
+}
+
+.cbc-cal-heat-3 {
+  background: rgba(var(--color-primary-rgb), 0.45);
+  color: #fff;
+}
+
+.cbc-cal-heat-4 {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.cbc-cal-today {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -1px;
+}
+
+.cbc-cal-perfect {
+  box-shadow: 0 0 8px rgba(var(--color-primary-rgb), 0.3);
+}
+
+/* Calendar Legend */
+.cbc-cal-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.cbc-cal-legend-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.55rem;
+  color: var(--text-tertiary);
+  margin: 0 2px;
+}
+
+.cbc-cal-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.cbc-cal-legend-swatch.cbc-cal-heat-0 { background: rgba(150, 150, 150, 0.08); border: 1px solid rgba(150, 150, 150, 0.15); }
+.cbc-cal-legend-swatch.cbc-cal-heat-1 { background: rgba(var(--color-primary-rgb), 0.12); }
+.cbc-cal-legend-swatch.cbc-cal-heat-2 { background: rgba(var(--color-primary-rgb), 0.25); }
+.cbc-cal-legend-swatch.cbc-cal-heat-3 { background: rgba(var(--color-primary-rgb), 0.45); }
+.cbc-cal-legend-swatch.cbc-cal-heat-4 { background: var(--color-primary); }
 
 /* Toast */
 .toast-notification {
@@ -905,23 +1183,29 @@
     height: 180px;
   }
 
-  .cbc-ring-pct {
-    font-size: 1.8rem;
-  }
-
-  .cbc-day-ring svg {
-    width: 48px;
-    height: 48px;
+  .cbc-ring-count {
+    font-size: 2rem;
   }
 
   .cbc-habit-ring-touch,
-  .cbc-add-ring {
+  .cbc-add-ring,
+  .cbc-unlock-ring {
     width: 110px;
     height: 110px;
   }
 
   .cbc-habits-grid {
     gap: 16px;
+  }
+
+  .cbc-weekly-header,
+  .cbc-weekly-row {
+    grid-template-columns: 1fr repeat(7, 32px);
+  }
+
+  .cbc-weekly-dot {
+    width: 14px;
+    height: 14px;
   }
 
   .cbc-celeb-logo-frame {
@@ -936,7 +1220,7 @@
 
 @media (min-width: 500px) {
   .cbc-main {
-    padding: 0 24px;
+    padding: 0 24px 80px;
   }
 }
 

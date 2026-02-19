@@ -73,8 +73,13 @@
     },
     {
       "source": "/quick",
-      "destination": "/core-buddy",
-      "permanent": true
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/core-buddy",
+      "destination": "/",
+      "permanent": false
     }
   ]
 }

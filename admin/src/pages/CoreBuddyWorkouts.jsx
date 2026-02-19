@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, serverTimestamp, orderBy, limit as firestoreLimit } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -15,7 +15,30 @@ import BADGE_DEFS from '../utils/badgeConfig';
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
-import mgArmsImg from '../assets/images/cards/mg-arms.jpg';
+import mgArmsImg from '../assets/muscle-group-arms.png';
+import armsBicepImg from '../assets/arms-bicep.png';
+import armsTricepImg from '../assets/arms-tricep.png';
+import armsFullArmsImg from '../assets/arms-full-arms.png';
+import mgChestImg from '../assets/muscle-group-chest.png';
+import chestStrengthImg from '../assets/chest-strength.png';
+import chestHypertrophyImg from '../assets/chest-hypertrophy.png';
+import chestEnduranceImg from '../assets/chest-endurance.png';
+import mgShouldersImg from '../assets/muscle-group-shoulders.png';
+import shouldersStrengthImg from '../assets/shoulders-strength.png';
+import shouldersHypertrophyImg from '../assets/shoulders-hypertrophy.png';
+import shouldersEnduranceImg from '../assets/shoulders-endurance.png';
+import mgCoreImg from '../assets/muscle-group-core.png';
+import coreLowerAbsImg from '../assets/core-lower-abs.png';
+import coreObliquesImg from '../assets/core-obliques-rotation.png';
+import coreWeightedImg from '../assets/core-weighted-core.png';
+import mgBackImg from '../assets/muscle-group-back.png';
+import backStrengthImg from '../assets/back-strength.png';
+import backHypertrophyImg from '../assets/back-hypertrophy.png';
+import backEnduranceImg from '../assets/back-endurance.png';
+import mgLegsImg from '../assets/muscle-group-legs.png';
+import legsQuadImg from '../assets/legs-quads.png';
+import legsHamGluteImg from '../assets/legs-hamstrings-glutes.png';
+import legsPowerImg from '../assets/legs-power-plyo.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -106,11 +129,11 @@ const FOCUS_ICONS = {
 // Muscle group placeholders
 const MUSCLE_GROUPS = [
   { key: 'arms', label: 'Arms', icon: 'M7 5h2v14H7V5zm8 0h2v14h-2V5zm-5 4h4v6h-4V9z', image: mgArmsImg },
-  { key: 'chest', label: 'Chest', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm4 0h-2v-2h2v2zm3-6c0 1.1-.36 2.12-.97 2.95l-.87-.87C16.7 12.53 17 11.8 17 11c0-2.76-2.24-5-5-5S7 8.24 7 11c0 .8.3 1.53.84 2.08l-.87.87A4.977 4.977 0 0 1 6 11c0-3.31 2.69-6 6-6s6 2.69 6 6z' },
-  { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z' },
-  { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z' },
-  { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z' },
-  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z' },
+  { key: 'chest', label: 'Chest', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm4 0h-2v-2h2v2zm3-6c0 1.1-.36 2.12-.97 2.95l-.87-.87C16.7 12.53 17 11.8 17 11c0-2.76-2.24-5-5-5S7 8.24 7 11c0 .8.3 1.53.84 2.08l-.87.87A4.977 4.977 0 0 1 6 11c0-3.31 2.69-6 6-6s6 2.69 6 6z', image: mgChestImg },
+  { key: 'back', label: 'Back', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm4 18H8v-6l-4-4 1.41-1.41L8 11.17V8h8v3.17l2.59-2.58L20 10l-4 4v6z', image: mgBackImg },
+  { key: 'shoulders', label: 'Shoulders', icon: 'M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm8 10l-3-1.5c-.5-.25-1-.5-1.5-.5h-7c-.5 0-1 .25-1.5.5L4 12l-2 6h4l1.5 4h9L18 18h4l-2-6z', image: mgShouldersImg },
+  { key: 'legs', label: 'Legs', icon: 'M16.5 3A2.5 2.5 0 0 0 14 5.5 2.5 2.5 0 0 0 16.5 8 2.5 2.5 0 0 0 19 5.5 2.5 2.5 0 0 0 16.5 3zM14 9l-3 7h2l1 6h2l1-6h2l-3-7h-2z', image: mgLegsImg },
+  { key: 'core', label: 'Core', icon: 'M12 2a4 4 0 0 1 4 4v1h-2V6a2 2 0 1 0-4 0v1H8V6a4 4 0 0 1 4-4zM8 9h8v2H8V9zm-1 4h10l-1 9H8l-1-9z', image: mgCoreImg },
 ];
 
 // Muscle group workout sessions (3 per group)
@@ -118,6 +141,7 @@ const MUSCLE_GROUP_SESSIONS = {
   chest: [
     {
       id: 'chest_strength', name: 'Chest Strength', desc: 'Heavy pressing for max strength',
+      image: chestStrengthImg,
       level: 'Intermediate',
       overview: 'A heavy pressing session designed to build raw chest strength. Focus on controlled negatives and powerful pressing movements.',
       tips: [
@@ -136,6 +160,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'chest_hypertrophy', name: 'Chest Hypertrophy', desc: 'Volume training for muscle growth',
+      image: chestHypertrophyImg,
       level: 'Intermediate',
       overview: 'A high-volume chest session focused on time under tension and muscle growth. Lighter weights, more reps, and slow controlled movements.',
       tips: [
@@ -154,6 +179,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'chest_endurance', name: 'Chest Endurance', desc: 'Bodyweight pushing to failure',
+      image: chestEnduranceImg,
       level: 'All Levels',
       overview: 'No weights needed. This bodyweight-only session builds chest endurance and muscular stamina through high-rep push up variations.',
       tips: [
@@ -174,6 +200,7 @@ const MUSCLE_GROUP_SESSIONS = {
   back: [
     {
       id: 'back_strength', name: 'Back Strength', desc: 'Heavy rows for a thick back',
+      image: backStrengthImg,
       level: 'Intermediate',
       overview: 'Build a thick, powerful back with heavy rowing movements. This session targets your lats, rhomboids, and traps for overall back development.',
       tips: [
@@ -192,6 +219,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'back_hypertrophy', name: 'Back Hypertrophy', desc: 'Width and thickness volume work',
+      image: backHypertrophyImg,
       level: 'Intermediate',
       overview: 'A volume-focused back session combining rows and isolation moves to build width and thickness. Focus on the mind-muscle connection.',
       tips: [
@@ -210,6 +238,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'back_endurance', name: 'Back Endurance', desc: 'Bodyweight back conditioning',
+      image: backEnduranceImg,
       level: 'All Levels',
       overview: 'A bodyweight session to strengthen your posterior chain and improve posture. Great for back health, mobility, and muscular endurance.',
       tips: [
@@ -230,6 +259,7 @@ const MUSCLE_GROUP_SESSIONS = {
   shoulders: [
     {
       id: 'shoulders_strength', name: 'Shoulder Strength', desc: 'Heavy pressing for boulder shoulders',
+      image: shouldersStrengthImg,
       level: 'Intermediate',
       overview: 'A heavy overhead pressing session to build strong, powerful shoulders. Compound movements first, followed by isolation work for all three delt heads.',
       tips: [
@@ -248,6 +278,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'shoulders_hypertrophy', name: 'Shoulder Hypertrophy', desc: 'Volume and isolation for 3D delts',
+      image: shouldersHypertrophyImg,
       level: 'Intermediate',
       overview: 'A high-volume session targeting all three heads of the deltoid for that 3D capped shoulder look. Moderate weight, high reps, constant tension.',
       tips: [
@@ -266,6 +297,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'shoulders_endurance', name: 'Shoulder Endurance', desc: 'Bodyweight and high-rep work',
+      image: shouldersEnduranceImg,
       level: 'All Levels',
       overview: 'A shoulder endurance session combining bodyweight movements with high-rep dumbbell work. Builds stamina, stability, and shoulder resilience.',
       tips: [
@@ -285,7 +317,7 @@ const MUSCLE_GROUP_SESSIONS = {
   ],
   arms: [
     {
-      id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps',
+      id: 'arms_bicep', name: 'Bicep Focus', desc: 'Curl variations for peak biceps', image: armsBicepImg,
       level: 'All Levels',
       overview: 'An arm session dedicated entirely to biceps. Multiple curl variations target different parts of the bicep for maximum peak and thickness.',
       tips: [
@@ -303,7 +335,7 @@ const MUSCLE_GROUP_SESSIONS = {
       ],
     },
     {
-      id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps',
+      id: 'arms_tricep', name: 'Tricep Focus', desc: 'Extensions and dips for horseshoe triceps', image: armsTricepImg,
       level: 'All Levels',
       overview: 'All-out tricep training with extensions, dips, and pressing movements. The triceps make up two-thirds of your arm \u2014 this session builds serious size.',
       tips: [
@@ -321,7 +353,7 @@ const MUSCLE_GROUP_SESSIONS = {
       ],
     },
     {
-      id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps',
+      id: 'arms_full', name: 'Full Arms', desc: 'Superset biceps and triceps', image: armsFullArmsImg,
       level: 'All Levels',
       overview: 'A balanced arm session alternating between biceps and triceps. Superset style keeps the intensity high and maximises the pump.',
       tips: [
@@ -342,6 +374,7 @@ const MUSCLE_GROUP_SESSIONS = {
   legs: [
     {
       id: 'legs_quad', name: 'Quad Dominant', desc: 'Squats and lunges for quad power',
+      image: legsQuadImg,
       level: 'All Levels',
       overview: 'A quad-focused leg session built around squats and lunges. Heavy compound movements to build strong, powerful quads and overall leg strength.',
       tips: [
@@ -360,6 +393,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_ham_glute', name: 'Hamstring & Glute', desc: 'Posterior chain focus',
+      image: legsHamGluteImg,
       level: 'Intermediate',
       overview: 'Target the back of your legs with deadlift and hip hinge variations. This session builds a strong posterior chain \u2014 hamstrings, glutes, and lower back.',
       tips: [
@@ -378,6 +412,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'legs_power', name: 'Power & Plyo', desc: 'Explosive leg training',
+      image: legsPowerImg,
       level: 'Intermediate',
       overview: 'An explosive leg session combining plyometrics with weighted movements. Build power, speed, and athletic performance.',
       tips: [
@@ -398,6 +433,7 @@ const MUSCLE_GROUP_SESSIONS = {
   core: [
     {
       id: 'core_lower_abs', name: 'Lower Abs Blast', desc: '40s work / 20s rest — 3 rounds',
+      image: coreLowerAbsImg,
       level: 'Intermediate',
       overview: 'An interval-based core burner targeting the lower abdominals. 40 seconds of work followed by 20 seconds of rest — keep the intensity high and your lower back pressed into the floor throughout.',
       tips: [
@@ -418,6 +454,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_obliques', name: 'Obliques & Rotation', desc: '35s work / 25s rest — 3 rounds',
+      image: coreObliquesImg,
       level: 'Intermediate',
       overview: 'Target the obliques and rotational core muscles with this interval session. 35 seconds of work with 25 seconds rest — every exercise involves twisting, rotating, or side-bracing movements.',
       tips: [
@@ -438,6 +475,7 @@ const MUSCLE_GROUP_SESSIONS = {
     },
     {
       id: 'core_weighted', name: 'Weighted Core', desc: '40s work / 20s rest — 3 rounds',
+      image: coreWeightedImg,
       level: 'Advanced',
       overview: 'Add resistance to your core training with dumbbells and kettlebells. 40 seconds of weighted work followed by 20 seconds rest — this session builds serious core strength and stability.',
       tips: [
@@ -481,6 +519,25 @@ const LEVELS = [
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
+const FOCUS_COLORS = {
+  core: '#e85d04',
+  upper: '#2196f3',
+  lower: '#4caf50',
+  fullbody: '#9c27b0',
+  mix: '#ff9800',
+};
+
+const HUB_TIPS = [
+  "Mix up your focus areas to build balanced strength.",
+  "Consistency beats intensity — show up and press play.",
+  "Try a new difficulty level to keep your body guessing.",
+  "Short on time? A 5-minute blast still counts.",
+  "Save your favourite combos so you can replay them anytime.",
+  "Your body adapts — switch equipment for fresh stimulus.",
+  "Rest days are growth days. Listen to your body.",
+  "Challenge yourself: go one level higher this week.",
+];
+
 function toTitleCase(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -500,7 +557,7 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
+  // Views: 'menu' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
   //        | 'muscle_sessions' | 'muscle_overview' | 'muscle_workout' | 'muscle_complete'
   const [view, setView] = useState('menu');
 
@@ -597,6 +654,23 @@ export default function CoreBuddyWorkouts() {
   // Free-tier gating: limit available durations and weekly usage
   const availableTimeOptions = isPremium ? TIME_OPTIONS : TIME_OPTIONS.filter(t => FREE_RANDOMISER_DURATIONS.includes(t));
   const freeRandomiserLimitReached = !isPremium && weeklyCount >= FREE_RANDOMISER_WEEKLY_LIMIT;
+
+  // Saved workouts
+  const [savedWorkouts, setSavedWorkouts] = useState([]);
+  const [savedWorkoutsLoaded, setSavedWorkoutsLoaded] = useState(false);
+  const [expandedSavedCats, setExpandedSavedCats] = useState({});
+  const [savingWorkout, setSavingWorkout] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveWorkoutName, setSaveWorkoutName] = useState('');
+
+  // Smart suggestion
+  const [smartSuggestion, setSmartSuggestion] = useState(null);
+
+  // Recent workouts (last 3 for hub)
+  const [recentWorkouts, setRecentWorkouts] = useState([]);
+
+  // Hub stats (total, favourite focus, streak)
+  const [hubStats, setHubStats] = useState({ total: 0, favouriteFocus: null, streak: 0 });
 
   // Active programme info (for the "Continue Programme" card)
   const [activeProgrammeId, setActiveProgrammeId] = useState(null);
@@ -735,6 +809,193 @@ export default function CoreBuddyWorkouts() {
     loadStats();
   }, [currentUser, clientData, view]);
 
+  // Load saved workouts
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadSaved = async () => {
+      try {
+        const q = query(
+          collection(db, 'savedWorkouts'),
+          where('clientId', '==', clientData.id)
+        );
+        const snap = await getDocs(q);
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Sort client-side to avoid requiring a composite Firestore index
+        docs.sort((a, b) => {
+          const aTime = a.savedAt?.toMillis?.() || a.savedAt?.seconds * 1000 || 0;
+          const bTime = b.savedAt?.toMillis?.() || b.savedAt?.seconds * 1000 || 0;
+          return bTime - aTime;
+        });
+        setSavedWorkouts(docs);
+      } catch (err) {
+        console.error('Error loading saved workouts:', err);
+      } finally {
+        setSavedWorkoutsLoaded(true);
+      }
+    };
+    loadSaved();
+  }, [currentUser, clientData]);
+
+  // Load recent randomiser workouts + compute smart suggestion
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadRecent = async () => {
+      try {
+        const q = query(
+          collection(db, 'workoutLogs'),
+          where('clientId', '==', clientData.id),
+          orderBy('completedAt', 'desc'),
+          firestoreLimit(20)
+        );
+        const snap = await getDocs(q);
+        const all = snap.docs.map(d => d.data());
+        // Recent randomiser-only for hub display
+        const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
+        setRecentWorkouts(randomiser.slice(0, 3));
+
+        // Compute hub stats
+        const total = randomiser.length;
+        const focusFreq = {};
+        randomiser.forEach(d => { if (d.focus) focusFreq[d.focus] = (focusFreq[d.focus] || 0) + 1; });
+        const favouriteFocus = Object.keys(focusFreq).sort((a, b) => focusFreq[b] - focusFreq[a])[0] || null;
+        // Streak: consecutive days with a workout (looking back from today)
+        let streak = 0;
+        if (randomiser.length > 0) {
+          const daySet = new Set();
+          randomiser.forEach(d => {
+            const ts = d.completedAt?.toDate ? d.completedAt.toDate() : d.completedAt ? new Date(d.completedAt) : null;
+            if (ts) daySet.add(new Date(ts.getFullYear(), ts.getMonth(), ts.getDate()).toDateString());
+          });
+          const today = new Date(); today.setHours(0, 0, 0, 0);
+          // Check if today or yesterday starts the streak
+          let check = new Date(today);
+          if (!daySet.has(check.toDateString())) {
+            check.setDate(check.getDate() - 1);
+          }
+          while (daySet.has(check.toDateString())) {
+            streak++;
+            check.setDate(check.getDate() - 1);
+          }
+        }
+        setHubStats({ total, favouriteFocus, streak });
+
+        // Smart suggestion: find which focus area is most neglected
+        const focusCounts = { core: null, upper: null, lower: null, fullbody: null };
+        randomiser.forEach(d => {
+          if (d.focus && focusCounts[d.focus] === null && d.completedAt) {
+            const ts = d.completedAt.toDate ? d.completedAt.toDate() : new Date(d.completedAt);
+            focusCounts[d.focus] = ts;
+          }
+        });
+
+        // Find the focus area with the oldest (or no) workout
+        let suggestion = null;
+        let oldestDate = new Date();
+        const focusKeys = ['core', 'upper', 'lower', 'fullbody'];
+        for (const key of focusKeys) {
+          if (focusCounts[key] === null) {
+            // Never done this focus - top priority
+            const label = FOCUS_AREAS.find(f => f.key === key)?.label || key;
+            suggestion = { focus: key, label, daysAgo: null, message: `You haven't tried ${label} yet` };
+            break;
+          }
+          if (focusCounts[key] < oldestDate) {
+            oldestDate = focusCounts[key];
+            const daysAgo = Math.floor((Date.now() - focusCounts[key].getTime()) / 86400000);
+            if (daysAgo >= 5) {
+              const label = FOCUS_AREAS.find(f => f.key === key)?.label || key;
+              suggestion = { focus: key, label, daysAgo, message: `${label} — ${daysAgo} days ago` };
+            }
+          }
+        }
+        setSmartSuggestion(suggestion);
+      } catch (err) {
+        console.error('Error loading recent workouts:', err);
+      }
+    };
+    loadRecent();
+  }, [currentUser, clientData, view]);
+
+  // Save workout to favourites
+  const saveWorkoutToFavourites = async (name) => {
+    if (!currentUser || !clientData || workout.length === 0) return;
+    setSavingWorkout(true);
+    try {
+      const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
+      const autoName = name || `${focusLabel} ${duration}min`;
+      const docRef = await addDoc(collection(db, 'savedWorkouts'), {
+        clientId: clientData.id,
+        name: autoName,
+        equipment: selectedEquipment,
+        focus: focusArea,
+        level,
+        duration,
+        exercises: workout.map(e => ({ name: e.name, videoUrl: e.videoUrl, isGif: e.isGif || false })),
+        rounds,
+        savedAt: Timestamp.now(),
+      });
+      setSavedWorkouts(prev => [{ id: docRef.id, clientId: clientData.id, name: autoName, equipment: selectedEquipment, focus: focusArea, level, duration, exercises: workout.map(e => ({ name: e.name, videoUrl: e.videoUrl, isGif: e.isGif || false })), rounds, savedAt: Timestamp.now() }, ...prev]);
+      showToast('Workout saved!', 'success');
+    } catch (err) {
+      console.error('Error saving workout:', err);
+      showToast('Failed to save workout', 'error');
+    } finally {
+      setSavingWorkout(false);
+      setShowSaveModal(false);
+      setSaveWorkoutName('');
+    }
+  };
+
+  // Delete saved workout
+  const deleteSavedWorkout = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'savedWorkouts', id));
+      setSavedWorkouts(prev => prev.filter(w => w.id !== id));
+      showToast('Workout removed', 'info');
+    } catch (err) {
+      console.error('Error deleting saved workout:', err);
+      showToast('Failed to remove workout', 'error');
+    }
+  };
+
+  // Replay a saved workout
+  const replaySavedWorkout = (saved) => {
+    setSelectedEquipment(saved.equipment || ['bodyweight']);
+    setFocusArea(saved.focus || 'core');
+    setLevel(saved.level || 'intermediate');
+    setDuration(saved.duration || 15);
+    const config = LEVELS.find(l => l.key === (saved.level || 'intermediate'));
+    setLevelConfig(config);
+    setWorkout(saved.exercises || []);
+    setRounds(saved.rounds || 2);
+    setView('preview');
+  };
+
+  // Quick Start: store last settings and generate instantly
+  const quickStart = async () => {
+    const last = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
+    if (last) {
+      setSelectedEquipment(last.equipment || ['bodyweight']);
+      setFocusArea(last.focus || 'core');
+      setLevel(last.level || 'intermediate');
+      setDuration(last.duration || 15);
+    }
+    // Small delay to let state settle, then generate
+    setTimeout(() => generateWorkout(), 50);
+  };
+
+  // Save last-used settings to localStorage whenever we generate
+  const saveLastSettings = () => {
+    localStorage.setItem('mcf_last_randomiser', JSON.stringify({
+      equipment: selectedEquipment,
+      focus: focusArea,
+      level,
+      duration,
+    }));
+  };
+
+  const hasLastSettings = !!localStorage.getItem('mcf_last_randomiser');
+
   // Build storage paths from equipment + focus selection
   const getStoragePaths = () => {
     // New structure: exercises/{equipment}/{focus}/
@@ -841,6 +1102,7 @@ export default function CoreBuddyWorkouts() {
   // Generate random workout
   const generateWorkout = async () => {
     if (freeRandomiserLimitReached) return;
+    saveLastSettings();
     setView('spinning');
     // Clear cache so new selections load fresh exercises
     exercisesRef.current = [];
@@ -1387,17 +1649,30 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           {/* Hero Card: Randomise Workout */}
-          <button className="wk-hero-card" onClick={() => setView('setup')}>
+          <button className="wk-hero-card" onClick={() => setView('randomiser_hub')}>
             <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
           </button>
 
-          {/* Programmes Section */}
+          {/* Premium bait card (free users only) */}
+          {!isPremium && (
+            <button className="wk-hero-card wk-free-card-premium" onClick={() => navigate('/upgrade')}>
+              <img src={programmeCardImg} alt="Programmes" className="wk-hero-bg" />
+              <div className="wk-free-card-overlay" />
+              <div className="wk-free-card-content">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span className="wk-free-card-label">Unlock Full Access</span>
+              </div>
+            </button>
+          )}
+
+          {/* Programmes Section (premium only) */}
+          {isPremium && (
+          <>
           <div className="wk-section-header">
-            <h2>Programmes {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h2>
+            <h2>Programmes</h2>
             <span className="wk-section-count">{PROGRAMME_CARDS.length} available</span>
           </div>
 
-          {isPremium ? (
           <div className="wk-prog-scroll-wrap">
             <div className="wk-prog-scroll">
               {PROGRAMME_CARDS.map((prog, i) => prog.image ? (
@@ -1437,20 +1712,17 @@ export default function CoreBuddyWorkouts() {
               ))}
             </div>
           </div>
-          ) : (
-            <button className="cb-upgrade-teaser" onClick={() => navigate('/upgrade')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>Upgrade to unlock programmes</span>
-            </button>
+          </>
           )}
 
-          {/* Muscle Groups Section */}
+          {/* Muscle Groups Section (premium only) */}
+          {isPremium && (
+          <>
           <div className="wk-section-header">
-            <h2>Muscle Groups {!isPremium && <span className="cb-premium-badge">PREMIUM</span>}</h2>
+            <h2>Muscle Groups</h2>
             <span className="wk-section-count">{MUSCLE_GROUPS.length} groups</span>
           </div>
 
-          {isPremium ? (
           <div className="wk-muscle-grid">
             {MUSCLE_GROUPS.map((mg, i) => (
               <button key={mg.key} className={`wk-muscle-hero-card${mg.image ? ' wk-muscle-thumb' : ''}`}
@@ -1476,17 +1748,224 @@ export default function CoreBuddyWorkouts() {
               </button>
             ))}
           </div>
-          ) : (
-            <button className="cb-upgrade-teaser" onClick={() => navigate('/upgrade')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>Upgrade to unlock muscle group workouts</span>
-            </button>
+          </>
           )}
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
       </PullToRefresh>
+    );
+  }
+
+  // ==================== RANDOMISER HUB VIEW ====================
+  if (view === 'randomiser_hub') {
+    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
+    const lastFocusLabel = lastSettings ? (FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus) : null;
+    const lastLevelLabel = lastSettings ? (LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level) : null;
+
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
+          <div className="wk-hub-heading">
+            <div className="wk-hub-icon-wrap">
+              <svg className="wk-hub-dice-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+                <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+              </svg>
+            </div>
+            <h2>Randomiser</h2>
+            <p>Generate, save &amp; replay workouts</p>
+          </div>
+
+          {/* Stats banner */}
+          {hubStats.total > 0 && (
+            <div className="wk-hub-stats">
+              <div className="wk-hub-stat">
+                <span className="wk-hub-stat-value">{hubStats.total}</span>
+                <span className="wk-hub-stat-label">Workouts</span>
+              </div>
+              {hubStats.streak > 0 && (
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
+                  <span className="wk-hub-stat-label">Streak</span>
+                </div>
+              )}
+              {hubStats.favouriteFocus && (
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
+                    {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
+                  </span>
+                  <span className="wk-hub-stat-label">Top Focus</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Motivational tip */}
+          <div className="wk-hub-tip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
+          </div>
+
+          {/* Action buttons */}
+          <div className="wk-hub-actions">
+            <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Workout
+            </button>
+            {lastSettings && (
+              <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Quick Start
+                <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
+              </button>
+            )}
+          </div>
+
+          {/* Smart Suggestion */}
+          {smartSuggestion && (
+            <div className="wk-hub-section">
+              <h3 className="wk-hub-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Suggested For You
+              </h3>
+              <button className="wk-hub-suggestion" onClick={() => {
+                setFocusArea(smartSuggestion.focus);
+                setView('setup');
+              }}>
+                <div className="wk-hub-suggestion-info">
+                  <span className="wk-hub-suggestion-label">{smartSuggestion.message}</span>
+                  <span className="wk-hub-suggestion-cta">Tap to set up &rarr;</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* Saved Workouts */}
+          <div className="wk-hub-section">
+            <h3 className="wk-hub-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Saved Workouts
+              {savedWorkouts.length > 0 && <span className="wk-hub-count">{savedWorkouts.length}</span>}
+            </h3>
+            {!savedWorkoutsLoaded ? (
+              <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
+            ) : savedWorkouts.length === 0 ? (
+              <div className="wk-hub-empty wk-hub-empty-enhanced">
+                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <p><strong>No saved workouts yet</strong></p>
+                <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
+              </div>
+            ) : (
+              <div className="wk-hub-saved-categories">
+                {FOCUS_AREAS.map(fa => {
+                  const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
+                  if (catWorkouts.length === 0) return null;
+                  const isOpen = expandedSavedCats[fa.key] || false;
+                  return (
+                    <div key={fa.key} className="wk-hub-saved-cat">
+                      <button
+                        className={`wk-hub-saved-cat-header${isOpen ? ' wk-hub-saved-cat-open' : ''}`}
+                        style={{ '--cat-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}
+                        onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
+                      >
+                        <span className="wk-hub-saved-cat-label">
+                          <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}>{fa.label}</span>
+                          <span className="wk-hub-saved-cat-count">{catWorkouts.length}</span>
+                        </span>
+                        <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      {isOpen && (
+                        <div className="wk-hub-saved-list">
+                          {catWorkouts.map((sw, i) => {
+                            const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
+                            const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
+                            return (
+                              <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                                <button className="wk-hub-saved-main" onClick={() => replaySavedWorkout(sw)}>
+                                  <div className="wk-hub-saved-info">
+                                    <span className="wk-hub-saved-name">{sw.name}</span>
+                                    <span className="wk-hub-saved-tags">
+                                      <span className="wk-hub-saved-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
+                                    </span>
+                                    {eqLabels && <span className="wk-hub-saved-equip">{eqLabels}</span>}
+                                  </div>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                </button>
+                                <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Recent History */}
+          {recentWorkouts.length > 0 && (
+            <div className="wk-hub-section">
+              <h3 className="wk-hub-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent
+              </h3>
+              <div className="wk-hub-recent-list">
+                {recentWorkouts.map((rw, i) => {
+                  const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
+                  const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
+                  const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
+                  const ago = ts ? (() => {
+                    const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
+                    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                    return `${Math.floor(diff / 86400)}d ago`;
+                  })() : '';
+                  return (
+                    <div key={i} className="wk-hub-recent-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <div className="wk-hub-recent-info">
+                        <span className="wk-hub-recent-tags">
+                          <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
+                          <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
+                        </span>
+                      </div>
+                      <span className="wk-hub-recent-time">{ago}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </main>
+        {toastEl}
+      </div>
     );
   }
 
@@ -1498,7 +1977,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => setView('randomiser_hub')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -1739,15 +2218,46 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-actions">
             {!selectedMuscleSession?.interval && (
-              <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                Reshuffle
-              </button>
+              <>
+                <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  Reshuffle
+                </button>
+                <button className="wk-btn-save" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  Save
+                </button>
+              </>
             )}
             <button className="wk-btn-primary" onClick={startWorkout}>
               Start Workout
             </button>
           </div>
+
+          {/* Save workout modal */}
+          {showSaveModal && (
+            <div className="wk-save-modal-backdrop" onClick={() => setShowSaveModal(false)}>
+              <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
+                <h3>Save Workout</h3>
+                <p>Give this workout a name (or leave blank for auto-name)</p>
+                <input
+                  type="text"
+                  className="wk-save-input"
+                  value={saveWorkoutName}
+                  onChange={e => setSaveWorkoutName(e.target.value)}
+                  placeholder={`${FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea} ${duration}min`}
+                  maxLength={40}
+                  autoFocus
+                />
+                <div className="wk-save-modal-actions">
+                  <button className="wk-btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                  <button className="wk-btn-primary" onClick={() => saveWorkoutToFavourites(saveWorkoutName)} disabled={savingWorkout}>
+                    {savingWorkout ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     );
@@ -1857,6 +2367,7 @@ export default function CoreBuddyWorkouts() {
           const config = LEVELS.find(l => l.key === level);
           const totalTime = workout.length * rounds * (config.work + config.rest);
           return (
+            <>
             <WorkoutCelebration
               title="Workout Complete!"
               stats={[
@@ -1864,11 +2375,43 @@ export default function CoreBuddyWorkouts() {
                 { value: workout.length * rounds, label: 'Intervals' },
                 { value: rounds, label: 'Rounds' },
               ]}
+              hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('menu')}
               onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
+            {/* Save workout prompt on completion */}
+            {!selectedMuscleSession?.interval && (
+              <button className="wk-complete-save-btn" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Save This Workout
+              </button>
+            )}
+            {showSaveModal && (
+              <div className="wk-save-modal-backdrop" onClick={() => setShowSaveModal(false)} style={{ zIndex: 10001 }}>
+                <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
+                  <h3>Save Workout</h3>
+                  <p>Give this workout a name (or leave blank for auto-name)</p>
+                  <input
+                    type="text"
+                    className="wk-save-input"
+                    value={saveWorkoutName}
+                    onChange={e => setSaveWorkoutName(e.target.value)}
+                    placeholder={`${FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea} ${duration}min`}
+                    maxLength={40}
+                    autoFocus
+                  />
+                  <div className="wk-save-modal-actions">
+                    <button className="wk-btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                    <button className="wk-btn-primary" onClick={() => saveWorkoutToFavourites(saveWorkoutName)} disabled={savingWorkout}>
+                      {savingWorkout ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
           );
         })()}
       </div>
@@ -1969,10 +2512,14 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main mg-overview-main">
           {/* 16:9 Hero Image */}
-          <div className="mg-overview-hero" style={{ background: MUSCLE_GRADIENTS[selectedMuscleGroup] }}>
-            <div className="mg-overview-hero-content">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="mg-overview-hero-icon"><path d={groupData?.icon} /></svg>
-            </div>
+          <div className="mg-overview-hero" style={!session.image ? { background: MUSCLE_GRADIENTS[selectedMuscleGroup] } : undefined}>
+            {session.image ? (
+              <img src={session.image} alt={session.name} className="mg-overview-hero-img" />
+            ) : (
+              <div className="mg-overview-hero-content">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="mg-overview-hero-icon"><path d={groupData?.icon} /></svg>
+              </div>
+            )}
           </div>
 
           {/* Session Header */}
@@ -2224,6 +2771,7 @@ export default function CoreBuddyWorkouts() {
               title={`${groupLabel} Complete!`}
               subtitle={selectedMuscleSession?.name}
               stats={mgStats}
+              hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('menu')}

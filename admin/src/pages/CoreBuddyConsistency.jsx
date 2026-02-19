@@ -12,16 +12,17 @@ import WorkoutCelebration from '../components/WorkoutCelebration';
 
 
 const DEFAULT_HABITS = [
-  { key: 'trained', label: 'Trained', icon: 'M4 10v4M8 7v10M8 12h8M16 7v10M20 10v4', color: '#A12F3A' },
-  { key: 'protein', label: 'Hit Protein', icon: 'M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zM12 18c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', color: '#4caf50' },
-  { key: 'steps', label: '10k Steps', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20M4 5.5A2.5 2.5 0 0 1 6.5 3H20', color: '#ff9800' },
-  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed' },
-  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3' },
+  { key: 'trained', label: 'Trained', icon: 'M4 10v4M8 7v10M8 12h8M16 7v10M20 10v4', color: '#A12F3A', darkColor: '#E8475A' },
+  { key: 'protein', label: 'Hit Protein', icon: 'M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zM12 18c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', color: '#4caf50', darkColor: '#5CDB61' },
+  { key: 'steps', label: '10k Steps', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20M4 5.5A2.5 2.5 0 0 1 6.5 3H20', color: '#ff9800', darkColor: '#FFB020' },
+  { key: 'sleep', label: '8hrs Sleep', icon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z', color: '#7c3aed', darkColor: '#9B5AF2' },
+  { key: 'water', label: '2L Water', icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z', color: '#2196f3', darkColor: '#42A5F5' },
 ];
 
 // Icon for custom habits (sparkle)
 const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
 const CUSTOM_COLOR = '#e91e63';
+const CUSTOM_DARK_COLOR = '#FF4D88';
 
 const HOLD_DURATION = 700; // ms
 const RING_RADIUS = 42;
@@ -98,10 +99,11 @@ export default function CoreBuddyConsistency() {
   const weekDates = getWeekDates(monday);
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  // Merged habits list (exclude hidden defaults)
+  // Merged habits list (exclude hidden defaults) — resolve dark mode colors
+  const resolveColor = (light, dark) => isDark && dark ? dark : light;
   const allHabitsRaw = [
-    ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)),
-    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: CUSTOM_COLOR, isCustom: true, id: h.id })),
+    ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)).map(h => ({ ...h, color: resolveColor(h.color, h.darkColor) })),
+    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(CUSTOM_COLOR, CUSTOM_DARK_COLOR), isCustom: true, id: h.id })),
   ];
   const allHabits = isPremium ? allHabitsRaw : allHabitsRaw.slice(0, FREE_HABIT_LIMIT);
 
@@ -451,6 +453,60 @@ export default function CoreBuddyConsistency() {
 
   const todayCompleted = Object.values(todayLog.habits || {}).filter(Boolean).length;
   const todayPct = allHabits.length > 0 ? Math.round((todayCompleted / allHabits.length) * 100) : 0;
+  const allDone = todayCompleted === allHabits.length && allHabits.length > 0;
+
+  // Best streak ever (scan all loaded logs)
+  const bestStreak = (() => {
+    const dates = Object.keys(habitLogs).sort();
+    let best = 0, cur = 0, prev = null;
+    for (const d of dates) {
+      const log = habitLogs[d];
+      const done = Object.values(log.habits || {}).filter(Boolean).length;
+      if (done >= 3) {
+        if (prev) {
+          const prevDate = new Date(prev);
+          const curDate = new Date(d);
+          const diff = (curDate - prevDate) / (1000 * 60 * 60 * 24);
+          cur = diff === 1 ? cur + 1 : 1;
+        } else {
+          cur = 1;
+        }
+        if (cur > best) best = cur;
+        prev = d;
+      } else {
+        cur = 0;
+        prev = null;
+      }
+    }
+    return Math.max(best, streak);
+  })();
+
+  // Monthly calendar data
+  const calendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const calendarMonthName = calendarMonth.toLocaleString('default', { month: 'long' });
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const firstDayOffset = (calendarMonth.getDay() + 6) % 7; // Monday = 0
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => {
+    const d = new Date(today.getFullYear(), today.getMonth(), i + 1);
+    const dateStr = formatDate(d);
+    const log = habitLogs[dateStr];
+    const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
+    const isFuture = d > today;
+    return { day: i + 1, dateStr, completed, total: allHabits.length, isFuture, isToday: dateStr === todayStr };
+  });
+
+  // Weekly per-habit breakdown
+  const perHabitWeekly = allHabits.map(habit => ({
+    ...habit,
+    days: weekDates.map(date => {
+      const dateStr = formatDate(date);
+      const log = habitLogs[dateStr];
+      return log?.habits?.[habit.key] || false;
+    }),
+  }));
+
+  // Weekly day success count (how many days had ALL habits done)
+  const perfectDays = weeklyStats.filter(d => d.completed === d.total && d.total > 0).length;
 
   return (
     <PullToRefresh>
@@ -478,9 +534,9 @@ export default function CoreBuddyConsistency() {
         <div className="cbc-loading-inline"><div className="cbc-loading-spinner" /></div>
       ) : (
       <main className="cbc-main">
-        {/* Today's Progress Ring */}
-        <div className="cbc-ring-section anim-fade-up">
-          <div className="cbc-progress-ring">
+        {/* ===== Hero: Today's Progress Ring ===== */}
+        <div className="cbc-hero anim-fade-up">
+          <div className={`cbc-progress-ring${allDone ? ' cbc-ring-complete' : ''}`}>
             <svg viewBox="0 0 200 200">
               <circle className="cbc-arc-track" cx="100" cy="100" r="80" />
               <circle className="cbc-arc-fill" cx="100" cy="100" r="80"
@@ -488,20 +544,31 @@ export default function CoreBuddyConsistency() {
                 strokeDashoffset={2 * Math.PI * 80 - (todayPct / 100) * 2 * Math.PI * 80} />
             </svg>
             <div className="cbc-ring-center">
-              <span className="cbc-ring-pct">{todayPct}%</span>
-              <span className="cbc-ring-label">today</span>
+              <span className="cbc-ring-count">{todayCompleted}<span className="cbc-ring-divider">/</span>{allHabits.length}</span>
+              <span className="cbc-ring-label">{allDone ? 'complete' : 'today'}</span>
             </div>
           </div>
+          <p className="cbc-hero-tagline">
+            {allDone ? 'You showed up for yourself today.' : todayCompleted === 0 ? 'Start your day strong.' : `${allHabits.length - todayCompleted} to go — keep pushing.`}
+          </p>
+        </div>
 
-          {/* Streak */}
-          <div className="cbc-streak">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        {/* ===== Streak Banner ===== */}
+        <div className="cbc-streak-card anim-fade-up-d1">
+          <div className="cbc-streak-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div className="cbc-streak-info">
             <span className="cbc-streak-count">{streak}</span>
             <span className="cbc-streak-label">day streak</span>
           </div>
+          <div className="cbc-streak-best">
+            <span className="cbc-streak-best-val">{bestStreak}</span>
+            <span className="cbc-streak-best-label">best</span>
+          </div>
         </div>
 
-        {/* Today's Habits */}
+        {/* ===== Today's Habits ===== */}
         <div className="cbc-section anim-fade-up-d2">
           <h2 className="cbc-section-title">Today's Habits</h2>
           <div className="cbc-habits-grid">
@@ -578,17 +645,15 @@ export default function CoreBuddyConsistency() {
                         }}
                       />
                     </svg>
-                    {/* Glowing orb behind icon when completed */}
                     {checked && (
                       <div className="cbc-habit-glow-orb" style={{ '--habit-color': habit.color }} />
                     )}
                     <div className="cbc-habit-ring-icon" style={{ color: habit.color }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d={habit.icon} />
                       </svg>
                     </div>
 
-                    {/* Particle burst */}
                     {isJustChecked && (
                       <div className="cbc-particles">
                         {particlesRef.current.map((p, i) => (
@@ -613,62 +678,113 @@ export default function CoreBuddyConsistency() {
               );
             })}
 
-            {/* Add Habit Tile (premium only) */}
-            {isPremium && <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
-              <div className="cbc-add-ring">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
+            {/* Add Habit Tile (premium) / Unlock Tile (free) */}
+            {isPremium ? (
+              <div className="cbc-habit-tile cbc-add-tile" onClick={() => setShowAddModal(true)} role="button" tabIndex={0}>
+                <div className="cbc-add-ring">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </div>
+                <span className="cbc-habit-label">Add Habit</span>
+                <span className="cbc-habit-hold-hint">Your own</span>
               </div>
-              <span className="cbc-habit-label">Add Habit</span>
-              <span className="cbc-habit-hold-hint">Your own</span>
-            </div>}
+            ) : (
+              <div className="cbc-habit-tile cbc-unlock-tile" onClick={() => navigate('/upgrade')} role="button" tabIndex={0}>
+                <div className="cbc-unlock-ring">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <span className="cbc-habit-label">More Habits</span>
+                <span className="cbc-habit-hold-hint">Custom &amp; editable</span>
+              </div>
+            )}
           </div>
-
-          {/* Premium upsell for free users */}
-          {!isPremium && (
-            <button className="cbc-premium-card" onClick={() => navigate('/upgrade')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              <div className="cbc-premium-card-text">
-                <span className="cbc-premium-card-title">Unlock More Habits</span>
-                <span className="cbc-premium-card-desc">Track all 5 daily habits, add custom habits, and build streaks</span>
-              </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          )}
         </div>
 
-        {/* Weekly Overview */}
-        <div className="cbc-section anim-fade-up-d4">
-          <h2 className="cbc-section-title">This Week</h2>
-          <div className="cbc-week-grid">
-            {weeklyStats.map((day, i) => {
-              const isToday = day.dateStr === todayStr;
-              const pct = day.total > 0 ? day.completed / day.total : 0;
-              const r = 38;
-              const circ = 2 * Math.PI * r;
-              const offset = circ - pct * circ;
+        {/* ===== Weekly Overview — per-habit dot rows ===== */}
+        <div className="cbc-section anim-fade-up-d3">
+          <div className="cbc-section-header">
+            <h2 className="cbc-section-title">This Week</h2>
+            <span className="cbc-section-badge">{perfectDays}/7 perfect</span>
+          </div>
+
+          <div className="cbc-weekly-card">
+            {/* Day headers */}
+            <div className="cbc-weekly-header">
+              <span className="cbc-weekly-habit-name" />
+              {dayLabels.map((label, i) => (
+                <span key={i} className={`cbc-weekly-day-label${weekDates[i] && formatDate(weekDates[i]) === todayStr ? ' cbc-today-label' : ''}`}>{label}</span>
+              ))}
+            </div>
+
+            {/* Per-habit rows */}
+            {perHabitWeekly.map((habit) => {
+              const doneCount = habit.days.filter(Boolean).length;
               return (
-                <div key={i} className={`cbc-day-ring ${isToday ? 'cbc-day-today' : ''} ${day.completed > 0 ? 'cbc-day-active' : ''}`}>
-                  <svg viewBox="0 0 100 100">
-                    <circle className="cbc-day-track" cx="50" cy="50" r={r} />
-                    <circle className="cbc-day-fill" cx="50" cy="50" r={r}
-                      strokeDasharray={circ}
-                      strokeDashoffset={offset} />
-                  </svg>
-                  <span className="cbc-day-label">{dayLabels[i]}</span>
-                  <span className="cbc-day-count">{day.completed}/{day.total}</span>
+                <div key={habit.key} className="cbc-weekly-row">
+                  <span className="cbc-weekly-habit-name" style={{ color: habit.color }}>{habit.label}</span>
+                  {habit.days.map((done, i) => (
+                    <span
+                      key={i}
+                      className={`cbc-weekly-dot${done ? ' cbc-dot-done' : ''}${weekDates[i] && formatDate(weekDates[i]) === todayStr ? ' cbc-dot-today' : ''}`}
+                      style={done ? { background: habit.color, borderColor: habit.color, boxShadow: `0 0 6px ${habit.color}40` } : undefined}
+                    />
+                  ))}
                 </div>
               );
             })}
-          </div>
 
-          {/* Weekly summary bar */}
-          <div className="cbc-week-summary">
-            <div className="cbc-week-summary-bar">
-              <div className="cbc-week-summary-fill" style={{ width: `${weeklyPct}%` }} />
+            {/* Weekly summary bar */}
+            <div className="cbc-week-summary">
+              <div className="cbc-week-summary-bar">
+                <div className="cbc-week-summary-fill" style={{ width: `${weeklyPct}%` }} />
+              </div>
+              <span className="cbc-week-summary-text">{weeklyCompleted}/{weeklyTotal} completed ({weeklyPct}%)</span>
             </div>
-            <span className="cbc-week-summary-text">{weeklyCompleted} / {weeklyTotal} habits this week ({weeklyPct}%)</span>
+          </div>
+        </div>
+
+        {/* ===== Monthly Calendar Heat-Map ===== */}
+        <div className="cbc-section anim-fade-up-d4">
+          <h2 className="cbc-section-title">{calendarMonthName}</h2>
+          <div className="cbc-calendar-card">
+            {/* Weekday headers */}
+            <div className="cbc-cal-header">
+              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+                <span key={i} className="cbc-cal-day-label">{d}</span>
+              ))}
+            </div>
+            <div className="cbc-cal-grid">
+              {/* Empty cells for offset */}
+              {Array.from({ length: firstDayOffset }, (_, i) => (
+                <span key={`e${i}`} className="cbc-cal-cell cbc-cal-empty" />
+              ))}
+              {calendarDays.map((d) => {
+                const pct = d.total > 0 ? d.completed / d.total : 0;
+                // Heat level: 0=none, 1=low, 2=mid, 3=high, 4=full
+                const heat = d.isFuture ? -1 : pct === 0 ? 0 : pct < 0.4 ? 1 : pct < 0.75 ? 2 : pct < 1 ? 3 : 4;
+                return (
+                  <span
+                    key={d.day}
+                    className={`cbc-cal-cell${d.isToday ? ' cbc-cal-today' : ''}${heat === 4 ? ' cbc-cal-perfect' : ''} cbc-cal-heat-${heat < 0 ? 'future' : heat}`}
+                  >
+                    {d.day}
+                  </span>
+                );
+              })}
+            </div>
+            {/* Legend */}
+            <div className="cbc-cal-legend">
+              <span className="cbc-cal-legend-label">Less</span>
+              <span className="cbc-cal-legend-swatch cbc-cal-heat-0" />
+              <span className="cbc-cal-legend-swatch cbc-cal-heat-1" />
+              <span className="cbc-cal-legend-swatch cbc-cal-heat-2" />
+              <span className="cbc-cal-legend-swatch cbc-cal-heat-3" />
+              <span className="cbc-cal-legend-swatch cbc-cal-heat-4" />
+              <span className="cbc-cal-legend-label">More</span>
+            </div>
           </div>
         </div>
       </main>
@@ -731,6 +847,7 @@ export default function CoreBuddyConsistency() {
           buttonLabel="Keep Going"
           holdLabel="Hold To Complete Today's Habits"
           shareType="habits"
+          hideShare={!isPremium}
           onShareJourney={clientData ? shareToJourney : null}
           userName={clientData?.name}
           onDone={() => { setShowCelebration(false); setCelebrationDismissing(false); }}

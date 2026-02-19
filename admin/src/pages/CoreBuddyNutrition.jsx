@@ -83,6 +83,14 @@ export default function CoreBuddyNutrition() {
     return { year: d.getFullYear(), month: d.getMonth() };
   });
 
+  // Copy from day
+  const [copyFromOpen, setCopyFromOpen] = useState(false);
+  const [copyFromMonth, setCopyFromMonth] = useState(() => {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const [copyingDay, setCopyingDay] = useState(false);
+
   // Meal selector
   const [selectedMeal, setSelectedMeal] = useState(getDefaultMeal);
 
@@ -307,6 +315,30 @@ export default function CoreBuddyNutrition() {
     } catch { return []; }
   };
 
+  // Load favourites from Firestore on mount (localStorage is just a fast cache)
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const loadFavourites = async () => {
+      try {
+        const favDoc = await getDoc(doc(db, 'favouriteFoods', clientData.id));
+        if (favDoc.exists()) {
+          const items = favDoc.data().items || [];
+          localStorage.setItem(FAVS_KEY, JSON.stringify(items));
+          setFavTick(t => t + 1);
+        } else {
+          // First load: migrate any existing localStorage favourites to Firestore
+          const localFavs = getFavourites();
+          if (localFavs.length > 0) {
+            await setDoc(doc(db, 'favouriteFoods', clientData.id), { items: localFavs, updatedAt: Timestamp.now() });
+          }
+        }
+      } catch (err) {
+        console.error('Error loading favourites:', err);
+      }
+    };
+    loadFavourites();
+  }, [clientData?.id]);
+
   const isFavourite = (name) => {
     return getFavourites().some(f => f.name.toLowerCase() === (name || '').toLowerCase());
   };
@@ -330,6 +362,11 @@ export default function CoreBuddyNutrition() {
       });
     }
     localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+    // Persist to Firestore for cross-session reliability
+    if (clientData?.id) {
+      setDoc(doc(db, 'favouriteFoods', clientData.id), { items: favs, updatedAt: Timestamp.now() })
+        .catch(err => console.error('Error saving favourites:', err));
+    }
     setFavTick(t => t + 1); // trigger re-render
   };
 
@@ -355,8 +392,40 @@ export default function CoreBuddyNutrition() {
     saveLog(newLog);
   };
 
+  // ==================== COPY FROM DAY ====================
+  const copyFromDay = async (sourceDate) => {
+    if (!clientData?.id || sourceDate === selectedDate) return;
+    setCopyingDay(true);
+    try {
+      const srcDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${sourceDate}`));
+      if (!srcDoc.exists() || !srcDoc.data().entries?.length) {
+        showToast('No food logged on that day', 'error');
+        return;
+      }
+      const srcEntries = srcDoc.data().entries.map(e => ({
+        ...e,
+        id: Date.now() + Math.random(),
+        addedAt: new Date().toISOString()
+      }));
+      const mergedEntries = [...todayLog.entries, ...srcEntries];
+      const newLog = { ...todayLog, entries: mergedEntries };
+      setTodayLog(newLog);
+      saveLog(newLog);
+      setCopyFromOpen(false);
+      showToast(`Copied ${srcEntries.length} items from ${formatDisplayDate(sourceDate)}`, 'success');
+    } catch (err) {
+      console.error('Error copying day:', err);
+      showToast('Failed to copy day', 'error');
+    } finally {
+      setCopyingDay(false);
+    }
+  };
+
   // ==================== BARCODE SCANNER (Quagga2 — loaded on demand) ====================
   const quaggaRef = useRef(null);
+  const scanBuffer = useRef([]);       // rolling buffer of recent barcode reads
+  const SCAN_CONSENSUS = 3;            // require same code N times before accepting
+  const SCAN_BUFFER_SIZE = 5;          // keep last N reads
 
   const startScanner = async () => {
     setScannerActive(true);
@@ -418,6 +487,8 @@ export default function CoreBuddyNutrition() {
       quaggaRunning.current = true;
     });
 
+    scanBuffer.current = []; // reset buffer on each scan session
+
     Quagga.onDetected((result) => {
       // Confidence check - only accept high-confidence reads
       const errors = result.codeResult.decodedCodes
@@ -429,8 +500,17 @@ export default function CoreBuddyNutrition() {
 
       if (avgError < 0.15) {
         const code = result.codeResult.code;
-        Quagga.offDetected();
-        setScanDetected(code);
+        const buf = scanBuffer.current;
+        buf.push(code);
+        if (buf.length > SCAN_BUFFER_SIZE) buf.shift();
+
+        // Only accept when the same code appears SCAN_CONSENSUS times in buffer
+        const count = buf.filter(c => c === code).length;
+        if (count >= SCAN_CONSENSUS) {
+          Quagga.offDetected();
+          scanBuffer.current = [];
+          setScanDetected(code);
+        }
       }
     });
   };
@@ -652,11 +732,12 @@ export default function CoreBuddyNutrition() {
   };
 
   // ==================== RING HELPERS ====================
+  const isDarkMode = isDark;
   const MACRO_COLORS = {
-    'ring-protein': '#14b8a6',
-    'ring-carbs': 'var(--color-primary)',
-    'ring-fats': '#eab308',
-    'ring-cals': 'rgba(150,150,150,0.55)',
+    'ring-protein': isDarkMode ? '#2dd4bf' : '#14b8a6',
+    'ring-carbs':   isDarkMode ? '#fbbf24' : '#f59e0b',
+    'ring-fats':    isDarkMode ? '#a78bfa' : '#8b5cf6',
+    'ring-cals':    'var(--color-primary)',
   };
   const NUT_RING_RADIUS = 80;
   const NUT_RING_CIRC = 2 * Math.PI * NUT_RING_RADIUS;
@@ -1041,17 +1122,25 @@ export default function CoreBuddyNutrition() {
       <div className="nut-light-zone anim-fade-up-d4">
         <div className="nut-light-content">
 
-          {/* Water Quick Button (today only) */}
+          {/* Quick Actions Row (today only) */}
           {isToday && (
-            <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
-              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-              </svg>
-              <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </button>
+            <div className="nut-quick-row">
+              <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button className="nut-copy-day-btn" onClick={() => { setCopyFromOpen(true); setCopyFromMonth({ year: new Date().getFullYear(), month: new Date().getMonth() }); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span>Copy day</span>
+              </button>
+            </div>
           )}
 
           {/* Meal Sections - always show all 4 */}
@@ -1106,6 +1195,15 @@ export default function CoreBuddyNutrition() {
                       <div className="nut-log-list">
                         {items.map(entry => (
                           <div key={entry.id} className="nut-log-item">
+                            <button
+                              className={`nut-fav-star log${isFavourite(entry.name) ? ' active' : ''}`}
+                              onClick={() => toggleFavourite(entry)}
+                              aria-label={isFavourite(entry.name) ? 'Remove from favourites' : 'Add to favourites'}
+                            >
+                              <svg viewBox="0 0 24 24" width="16" height="16" fill={isFavourite(entry.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            </button>
                             <div className="nut-log-item-info">
                               <span className="nut-log-item-name">{entry.name}</span>
                               {entry.serving && <span className="nut-log-item-serving">{entry.serving}</span>}
@@ -1168,6 +1266,69 @@ export default function CoreBuddyNutrition() {
       )}
 
       {/* ==================== WATER POPUP ==================== */}
+      {/* ==================== COPY FROM DAY MODAL ==================== */}
+      {copyFromOpen && (
+        <div className="nut-modal-overlay" onClick={() => setCopyFromOpen(false)}>
+          <div className="nut-copy-from-popup" onClick={e => e.stopPropagation()}>
+            <div className="nut-copy-from-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>Copy from...</span>
+              <button className="nut-modal-close" onClick={() => setCopyFromOpen(false)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <p className="nut-copy-from-hint">Pick a day to copy its food log into today</p>
+            <div className="nut-cal-header">
+              <button onClick={() => setCopyFromMonth(p => {
+                let m = p.month - 1, y = p.year;
+                if (m < 0) { m = 11; y--; }
+                return { year: y, month: m };
+              })}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <span>{MONTH_NAMES[copyFromMonth.month]} {copyFromMonth.year}</span>
+              <button onClick={() => setCopyFromMonth(p => {
+                let m = p.month + 1, y = p.year;
+                if (m > 11) { m = 0; y++; }
+                return { year: y, month: m };
+              })} disabled={copyFromMonth.year === new Date().getFullYear() && copyFromMonth.month >= new Date().getMonth()}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+            <div className="nut-cal-days-header">
+              {DAY_LABELS.map(d => <span key={d}>{d}</span>)}
+            </div>
+            <div className="nut-cal-grid">
+              {[...Array(getFirstDayOfMonth(copyFromMonth.year, copyFromMonth.month))].map((_, i) => (
+                <span key={`e${i}`} />
+              ))}
+              {[...Array(getDaysInMonth(copyFromMonth.year, copyFromMonth.month))].map((_, i) => {
+                const day = i + 1;
+                const dateKey = `${copyFromMonth.year}-${String(copyFromMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isFuture = dateKey > getTodayKey();
+                const isCurrent = dateKey === selectedDate;
+                const isTodayDate = dateKey === getTodayKey();
+                const isDisabled = isFuture || isCurrent;
+                return (
+                  <button key={day} className={`nut-cal-day${isCurrent ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
+                    disabled={isDisabled} onClick={() => copyFromDay(dateKey)}>
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+            {copyingDay && (
+              <div className="nut-copy-from-loading">
+                <div className="wk-loading-spinner" />
+                <span>Copying...</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {waterPopupOpen && (
         <div className="nut-modal-overlay" onClick={() => setWaterPopupOpen(false)}>
           <div className="nut-water-popup" onClick={e => e.stopPropagation()}>

@@ -29,7 +29,7 @@ service cloud.firestore {
         && request.resource.data.signupSource == 'self_signup';
       // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'tourComplete']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'tourComplete', 'dashboardWidgets']);
     }
 
     // Onboarding Drafts - clients read/write/delete own (doc ID = clientId)
@@ -135,6 +135,14 @@ service cloud.firestore {
       allow create: if isClientOwner(request.resource.data.clientId);
     }
 
+    // Saved Workouts - admin full, clients read/write/delete own
+    match /savedWorkouts/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create: if isClientOwner(request.resource.data.clientId);
+      allow delete: if isClientOwner(resource.data.clientId);
+    }
+
     // Client Programmes - admin full, clients read/write own (doc ID = clientId)
     match /clientProgrammes/{docId} {
       allow read, write: if isAdmin();
@@ -144,6 +152,12 @@ service cloud.firestore {
 
     // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
     match /nutritionTargets/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
+    // Favourite Foods - admin full, clients read/write own (doc ID = clientId)
+    match /favouriteFoods/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }

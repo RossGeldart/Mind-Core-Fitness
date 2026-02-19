@@ -110,13 +110,13 @@
   gap: 16px;
   width: 100%;
   padding: 16px 18px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
-  border: none;
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
   border-radius: 16px;
   cursor: pointer;
   margin-bottom: 24px;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
   font-family: inherit;
   text-align: left;
   animation: fadeSlideUp 0.8s ease-out both;
@@ -128,7 +128,8 @@
 }
 
 [data-theme="light"] .cb-nudge-card {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border-color: rgba(var(--color-primary-rgb), 0.15);
 }
 
 .cb-nudge-ring {
@@ -151,17 +152,16 @@
 
 .cb-nudge-ring-track {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.25);
+  stroke: rgba(var(--color-primary-rgb), 0.2);
   stroke-width: 10;
   stroke-linecap: round;
 }
 
 .cb-nudge-ring-fill {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-primary);
   stroke-width: 10;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
   animation: ringFillIn 1.6s ease-out;
 }
 
@@ -171,7 +171,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-primary);
 }
 
 .cb-nudge-info {
@@ -181,10 +181,10 @@
 }
 
 .cb-nudge-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-tertiary);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -193,14 +193,14 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .cb-nudge-cta {
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-primary);
 }
 
 
@@ -209,7 +209,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 28px 0 12px;
   animation: fadeSlideUp 0.8s ease-out both;
 }
 
@@ -425,7 +425,7 @@
 
 .cb-stat-track {
   fill: none;
-  stroke: rgba(150, 150, 150, 0.2);
+  stroke: rgba(var(--color-primary-rgb), 0.1);
   stroke-width: 12;
   stroke-linecap: round;
 }
@@ -455,6 +455,103 @@
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Tappable Stat Ring (workout target) */
+.cb-stat-tappable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.cb-stat-tappable:active {
+  transform: scale(0.93);
+}
+
+/* Hint pulse — plays once to teach user the ring is tappable */
+@keyframes statRingHintPulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(var(--color-primary-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0); }
+}
+
+.cb-stat-hint {
+  border-radius: 50%;
+  animation: statRingHintPulse 1.6s ease-out 3;
+}
+
+/* Weekly Target Picker Overlay */
+.cb-target-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: cbOverlayFadeIn 0.2s ease-out;
+}
+
+.cb-target-picker {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  animation: cbBadgeZoomIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cb-target-picker h4 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.cb-target-picker p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+  margin: 0 0 20px;
+}
+
+.cb-target-options {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cb-target-option {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cb-target-option:hover {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+  color: var(--text-primary);
+}
+
+.cb-target-option.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
 }
 
 /* Feature Cards */
@@ -493,10 +590,8 @@
 
 [data-theme="dark"] .cb-feature-card {
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  box-shadow: none;
+  background: var(--bg-card);
 }
 
 /* 2-Column Grid Row */
@@ -504,6 +599,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+}
+.cb-grid-row.cb-grid-single {
+  grid-template-columns: 1fr;
 }
 
 .cb-grid-card {
@@ -607,8 +705,8 @@
 }
 
 [data-theme="dark"] .cb-feature-card:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
-  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .cb-feature-card:active {
@@ -616,50 +714,7 @@
   transition: transform 0.1s ease;
 }
 
-/* Card colour accents — left border per section */
-.cb-feature-card.cb-card-nutrition { border-left: 5px solid #4caf50; }
-.cb-feature-card.cb-card-workouts-hero { border-left: 5px solid var(--color-primary); }
-.cb-feature-card.cb-card-consistency { border-left: 5px solid #38B6FF; }
-.cb-feature-card.cb-card-progress { border-left: 5px solid #eab308; }
-.cb-feature-card.cb-card-leaderboard { border-left: 5px solid #9c27b0; }
-.cb-feature-card.cb-card-buddies { border-left: 5px solid #ec4899; }
-.cb-feature-card.cb-card-buddy { border-left: 5px solid #ff6b35; }
-
-/* AI Buddy Card */
-.cb-card-buddy {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.cb-buddy-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(255, 107, 53, 0.12);
-  color: #ff6b35;
-  flex-shrink: 0;
-}
-
-[data-theme="dark"] .cb-buddy-icon {
-  background: rgba(255, 107, 53, 0.15);
-}
-
-.cb-buddy-badge {
-  display: inline-block;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(255, 107, 53, 0.15);
-  color: #ff6b35;
-  vertical-align: middle;
-  margin-left: 6px;
-}
+/* Card colour accents — unified, no rainbow borders */
 
 /* Workouts Hero Card */
 .cb-card-workouts-hero {
@@ -713,7 +768,7 @@
 
 .cb-progress-icon {
   flex-shrink: 0;
-  color: #eab308;
+  color: var(--color-primary);
 }
 
 .cb-progress-preview span {
@@ -751,7 +806,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #eab308;
+  color: var(--color-primary);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -783,7 +838,7 @@
 }
 
 .cb-lb-avatar span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -819,15 +874,15 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(150, 150, 150, 0.25);
-  border: 1.5px solid rgba(56, 182, 255, 0.3);
+  background: rgba(var(--color-primary-rgb), 0.15);
+  border: 1.5px solid rgba(var(--color-primary-rgb), 0.25);
   transition: background 0.3s, border-color 0.3s;
 }
 
 .cb-habit-dot.done {
-  background: #38B6FF;
-  border-color: #38B6FF;
-  box-shadow: 0 0 4px rgba(56, 182, 255, 0.4);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 4px rgba(var(--color-primary-rgb), 0.4);
 }
 
 .cb-habit-dots-label {
@@ -855,34 +910,10 @@
   height: 22px;
 }
 
-.cb-icon-nutrition {
-  background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.18), rgba(76, 175, 80, 0.06));
-  color: #4caf50;
-}
-
-.cb-icon-workouts {
-  background: radial-gradient(circle at 30% 30%, rgba(var(--color-primary-rgb), 0.16), rgba(var(--color-primary-rgb), 0.05));
+/* Unified icon backgrounds — all use brand primary */
+.cb-card-icon {
+  background: rgba(var(--color-primary-rgb), 0.1);
   color: var(--color-primary);
-}
-
-.cb-icon-progress {
-  background: radial-gradient(circle at 30% 30%, rgba(33, 150, 243, 0.16), rgba(33, 150, 243, 0.05));
-  color: #2196f3;
-}
-
-.cb-icon-achievements {
-  background: radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.05));
-  color: #f59e0b;
-}
-
-.cb-icon-consistency {
-  background: radial-gradient(circle at 30% 30%, rgba(255, 152, 0, 0.16), rgba(255, 152, 0, 0.05));
-  color: #ff9800;
-}
-
-.cb-icon-leaderboard {
-  background: radial-gradient(circle at 30% 30%, rgba(156, 39, 176, 0.16), rgba(156, 39, 176, 0.05));
-  color: #9c27b0;
 }
 
 /* Card Content */
@@ -910,7 +941,7 @@
 .cb-card-arrow {
   flex-shrink: 0;
   color: var(--text-tertiary);
-  opacity: 0.5;
+  opacity: 0.25;
 }
 
 /* Mini Macro Rings Preview */
@@ -940,14 +971,14 @@
 .cb-mini-ring span {
   position: relative;
   z-index: 1;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
 }
 
 .cb-mini-track {
   fill: none;
-  stroke: rgba(150, 150, 150, 0.2);
+  stroke: rgba(var(--color-primary-rgb), 0.1);
   stroke-width: 10;
   stroke-linecap: round;
 }
@@ -962,7 +993,7 @@
 /* Coming Soon Badge */
 .cb-coming-soon {
   flex-shrink: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -1145,7 +1176,7 @@
 }
 
 [data-theme="dark"] .cb-badge {
-  background: rgba(30, 30, 30, 0.8);
+  background: var(--bg-card);
 }
 
 .cb-badge:active {
@@ -1168,7 +1199,7 @@
 }
 
 .cb-badge-status {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1293,11 +1324,9 @@
 }
 
 [data-theme="dark"] .journey-compose {
-  background: rgba(30, 30, 30, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: var(--bg-card);
   border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
 }
 
 .journey-compose-avatar {
@@ -1314,7 +1343,7 @@
 }
 
 .journey-compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-compose-avatar span { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--color-primary); }
+.journey-compose-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-compose-body {
   flex: 1;
@@ -1361,7 +1390,7 @@
 
 .journey-post-btn {
   padding: 8px 20px; border-radius: 20px; border: none; background: var(--color-primary);
-  color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8rem;
+  color: #fff; font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 0.8rem;
   cursor: pointer; transition: opacity 0.2s, transform 0.15s; -webkit-tap-highlight-color: transparent;
   display: flex; align-items: center; justify-content: center; min-width: 70px;
 }
@@ -1387,8 +1416,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 [data-theme="dark"] .journey-post {
-  background: rgba(30, 30, 30, 0.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border-color: rgba(255, 255, 255, 0.06); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--bg-card);
+  border-color: rgba(255, 255, 255, 0.06); box-shadow: none;
 }
 
 .journey-post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -1400,10 +1429,10 @@
   border: 2px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
 }
 .journey-post-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-post-avatar span { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; color: var(--color-primary); }
+.journey-post-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.6rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-post-meta { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.journey-post-name { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+.journey-post-name { font-family: 'Roboto', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
 .journey-post-time { font-family: 'Roboto', sans-serif; font-size: 0.7rem; color: var(--text-tertiary); }
 
 .journey-delete-btn {
@@ -1470,9 +1499,9 @@
   letter-spacing: 0.3px;
 }
 
-/* ── Stats / description line (Montserrat) ── */
+/* ── Stats / description line ── */
 .journey-card-stats-line {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.74rem;
   font-weight: 500;
   color: #555555;
@@ -1481,7 +1510,7 @@
 
 /* ── Bold CTA line ── */
 .journey-card-cta {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
   font-weight: 700;
   color: #1a1a1a;
@@ -1491,7 +1520,7 @@
 
 /* ── Slogan ── */
 .journey-card-slogan {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
   color: #A12F3A;
@@ -1532,7 +1561,7 @@
   display: flex; align-items: center; justify-content: center;
 }
 .journey-comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-comment-avatar span { font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 700; color: var(--color-primary); }
+.journey-comment-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.5rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-comment-body { flex: 1; min-width: 0; }
 .journey-comment-bubble {
@@ -1541,7 +1570,7 @@
 }
 [data-theme="dark"] .journey-comment-bubble { background: rgba(255, 255, 255, 0.06); }
 
-.journey-comment-name { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--text-primary); }
+.journey-comment-name { font-family: 'Roboto', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--text-primary); }
 .journey-comment-text { font-family: 'Roboto', sans-serif; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; word-break: break-word; }
 .journey-comment-time { font-family: 'Roboto', sans-serif; font-size: 0.62rem; color: var(--text-tertiary); }
 .journey-no-comments { font-family: 'Roboto', sans-serif; font-size: 0.78rem; color: var(--text-tertiary); text-align: center; margin: 4px 0; }
@@ -1931,6 +1960,48 @@
   border-color: var(--color-primary);
 }
 
+/* Single upgrade CTA for free tier */
+.cb-upgrade-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  padding: 24px 20px;
+  margin-top: 4px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cb-upgrade-cta:active {
+  transform: scale(0.98);
+}
+.cb-upgrade-cta-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.cb-upgrade-cta-sub {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 300;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+.cb-upgrade-cta-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.7;
+}
+
 /* ==================== BADGE CELEBRATION OVERLAY ==================== */
 
 @keyframes celebrationFadeIn {
@@ -2053,7 +2124,7 @@
 }
 
 .cb-celebration-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
