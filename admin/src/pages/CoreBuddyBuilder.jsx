@@ -20,11 +20,11 @@ const WIDGET_DEFS = [
   { id: 'stats', label: 'Stats Rings', desc: 'Programme %, workouts this week, habits today', icon: 'rings', defaultOn: true },
   { id: 'workouts', label: 'Workouts', desc: 'Sessions this week and total count', icon: 'dumbbell', defaultOn: true },
   { id: 'habits', label: 'Habits', desc: 'Daily habit tracker dots', icon: 'check', defaultOn: true },
-  { id: 'pbs', label: 'Personal Bests', desc: 'Your top lifts at a glance', icon: 'trophy', premium: true },
-  { id: 'nutrition', label: 'Nutrition', desc: 'Macro rings — protein, carbs, fats, cals', icon: 'apple', premium: true },
-  { id: 'leaderboard', label: 'Leaderboard', desc: 'See where you rank among buddies', icon: 'podium', premium: true },
+  { id: 'pbs', label: 'Personal Bests', desc: 'Your top lifts at a glance', icon: 'trophy' },
+  { id: 'nutrition', label: 'Nutrition', desc: 'Macro rings — protein, carbs, fats, cals', icon: 'apple' },
+  { id: 'leaderboard', label: 'Leaderboard', desc: 'See where you rank among buddies', icon: 'podium' },
   { id: 'achievements', label: 'Achievements', desc: 'Badge showcase and progress', icon: 'medal' },
-  { id: 'journey', label: 'Journey', desc: 'Your posts, likes and comments feed', icon: 'feed', premium: true },
+  { id: 'journey', label: 'Journey', desc: 'Your posts, likes and comments feed', icon: 'feed' },
   { id: 'coach', label: 'Coach Message', desc: 'Motivational nudge from Buddy', icon: 'message', defaultOn: true },
   { id: 'nudge', label: 'Smart Nudge', desc: 'Contextual reminder of what to do next', icon: 'lightbulb' },
 ];
@@ -47,7 +47,7 @@ function widgetIcon(icon) {
 
 export default function CoreBuddyBuilder() {
   const navigate = useNavigate();
-  const { clientData, currentUser, updateClientData } = useAuth();
+  const { clientData, currentUser, updateClientData, resolveClient } = useAuth();
 
   // Timer state
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -68,6 +68,7 @@ export default function CoreBuddyBuilder() {
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // Load photo from client data
   useEffect(() => {
@@ -142,16 +143,24 @@ export default function CoreBuddyBuilder() {
 
   // Save config
   const saveConfig = async () => {
-    if (!clientData?.id) return;
     setSaving(true);
+    setSaveError(null);
     try {
-      await updateDoc(doc(db, 'clients', clientData.id), {
+      // Resolve client if not loaded yet
+      const client = clientData || await resolveClient();
+      if (!client?.id) {
+        setSaveError('Could not find your profile. Try refreshing.');
+        setSaving(false);
+        return;
+      }
+      await updateDoc(doc(db, 'clients', client.id), {
         dashboardWidgets: widgets,
       });
       updateClientData({ dashboardWidgets: widgets });
       setSaved(true);
     } catch (err) {
       console.error('Save config error:', err);
+      setSaveError('Save failed — please try again.');
     } finally {
       setSaving(false);
     }
@@ -241,12 +250,11 @@ export default function CoreBuddyBuilder() {
               const isOn = widgets.includes(w.id);
               const idx = widgets.indexOf(w.id);
               return (
-                <div key={w.id} className={`bldr-widget-card${isOn ? ' active' : ''}${w.premium ? ' premium' : ''}`}>
+                <div key={w.id} className={`bldr-widget-card${isOn ? ' active' : ''}`}>
                   <div className="bldr-widget-icon">{widgetIcon(w.icon)}</div>
                   <div className="bldr-widget-info">
                     <div className="bldr-widget-label">
                       {w.label}
-                      {w.premium && <span className="bldr-premium-tag">PRO</span>}
                     </div>
                     <div className="bldr-widget-desc">{w.desc}</div>
                   </div>
@@ -295,6 +303,7 @@ export default function CoreBuddyBuilder() {
           >
             {saving ? 'Saving...' : saved ? 'Saved' : 'Save Dashboard'}
           </button>
+          {saveError && <p className="bldr-save-error">{saveError}</p>}
           {saved && (
             <button className="bldr-view-btn" onClick={() => navigate('/client/core-buddy')}>
               View Dashboard

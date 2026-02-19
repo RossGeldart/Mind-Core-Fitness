@@ -494,3 +494,11 @@
 .bldr-view-btn:hover {
   border-color: var(--color-primary);
 }
+
+.bldr-save-error {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: #e74c3c;
+  margin: 0;
+  text-align: center;
+}
