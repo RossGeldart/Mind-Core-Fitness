@@ -25,7 +25,7 @@ const FEATURES = [
   },
   {
     title: 'Profile Tabs',
-    desc: 'Explore your achievements, personal bests, and activity history — all organised in one place.',
+    desc: 'Explore your personal bests, targets, and activity history — all organised in one place.',
     image: featureProfileTabs,
   },
   {

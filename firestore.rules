@@ -102,13 +102,6 @@ service cloud.firestore {
       allow read, write: if isClientOwner(docId);
     }
 
-    // Core Buddy Achievements - admin full, clients read/write own, all authenticated can read (for profiles)
-    match /coreBuddyAchievements/{docId} {
-      allow read, write: if isAdmin();
-      allow read: if isAuthenticated(); // PROFILES: view other users' badges
-      allow write: if isClientOwner(docId);
-    }
-
     // Achievements - admin full, clients read/write own (doc ID = clientId)
     match /achievements/{docId} {
       allow read, write: if isAdmin();

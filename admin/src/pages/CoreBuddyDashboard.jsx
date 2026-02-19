@@ -1627,7 +1627,7 @@ export default function CoreBuddyDashboard() {
           {!isPremium && (
             <button className="cb-upgrade-cta" onClick={() => navigate('/upgrade')}>
               <span className="cb-upgrade-cta-text">Unlock the full experience</span>
-              <span className="cb-upgrade-cta-sub">Nutrition, buddies, achievements & more</span>
+              <span className="cb-upgrade-cta-sub">Nutrition, buddies, programmes & more</span>
               <svg className="cb-upgrade-cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
             </button>
           )}

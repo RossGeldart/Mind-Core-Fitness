@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 // Test the tier access logic in isolation (pure function extracted from TierContext)
-const PREMIUM_FEATURES = ['nutrition', 'personalBests', 'achievements', 'buddies', 'programmes'];
+const PREMIUM_FEATURES = ['nutrition', 'personalBests', 'buddies', 'programmes'];
 
 function buildTierValue(clientData) {
   const tier = clientData?.tier || 'free';
@@ -48,11 +48,6 @@ describe('TierContext — canAccess', () => {
   it('free user cannot access personalBests', () => {
     const { canAccess } = buildTierValue({ tier: 'free', signupSource: 'self_signup' });
     expect(canAccess('personalBests')).toBe(false);
-  });
-
-  it('free user cannot access achievements', () => {
-    const { canAccess } = buildTierValue({ tier: 'free', signupSource: 'self_signup' });
-    expect(canAccess('achievements')).toBe(false);
   });
 
   it('free user cannot access buddies', () => {

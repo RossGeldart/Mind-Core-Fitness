@@ -111,16 +111,9 @@ function calculateWeekStreak(workoutDates) {
   return streak;
 }
 
-function formatVolume(kg) {
-  if (kg >= 1000000) return `${(kg / 1000000).toFixed(1)}M kg`;
-  if (kg >= 1000) return `${(kg / 1000).toFixed(1)}T`;
-  return `${kg} kg`;
-}
-
 const TABS = [
   { key: 'workouts', label: 'Workouts', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
   { key: 'minutes', label: 'Minutes', icon: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z' },
-  { key: 'volume', label: 'Volume', icon: 'M6.5 2H4v20h2.5M17.5 2H20v20h-2.5M4 12h16M7 7h10M7 17h10' },
   { key: 'streak', label: 'Streak', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
 ];
 
@@ -129,7 +122,6 @@ const MEDAL_COLORS = ['#FFD700', '#A8B4C0', '#CD7F32'];
 const TAB_DESCRIPTIONS = {
   workouts: 'Total completed workouts across randomiser, muscle group and programme sessions',
   minutes: 'Active minutes from randomiser workouts only',
-  volume: 'Total weight lifted (kg) from programme and muscle group workouts',
   streak: 'Consecutive weeks with at least one workout completed (Mon\u2013Sun)',
 };
 
@@ -272,7 +264,6 @@ export default function Leaderboard() {
           photoURL: c.photoURL || null,
           workouts: 0,
           minutes: 0,
-          volume: 0,
           workoutDates: new Set(),
         };
       });
@@ -289,11 +280,6 @@ export default function Leaderboard() {
         // Minutes: only randomiser workouts (no type field = randomiser)
         if (!data.type) {
           s.minutes += data.duration || 0;
-        }
-
-        // Volume: programme + muscle_group only
-        if (data.type === 'programme' || data.type === 'muscle_group') {
-          s.volume += data.volume || 0;
         }
 
         // Streak dates: all workout types count
@@ -316,8 +302,6 @@ export default function Leaderboard() {
         sorted.sort((a, b) => b.workouts - a.workouts || a.name.localeCompare(b.name));
       } else if (activeTab === 'minutes') {
         sorted.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
-      } else if (activeTab === 'volume') {
-        sorted.sort((a, b) => b.volume - a.volume || a.name.localeCompare(b.name));
       } else {
         sorted.sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name));
       }
@@ -335,21 +319,18 @@ export default function Leaderboard() {
   const getValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return entry.minutes;
-    if (activeTab === 'volume') return entry.volume;
     return entry.streak;
   };
 
   const formatValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return formatMinutes(entry.minutes);
-    if (activeTab === 'volume') return formatVolume(entry.volume);
     return entry.streak;
   };
 
   const getUnit = () => {
     if (activeTab === 'workouts') return '';
     if (activeTab === 'minutes') return '';
-    if (activeTab === 'volume') return '';
     return 'wk';
   };
 
@@ -438,7 +419,6 @@ export default function Leaderboard() {
                     <span className="lb-optin-category-desc">
                       {tab.key === 'workouts' && 'Randomiser, muscle group & programme workouts'}
                       {tab.key === 'minutes' && 'Total minutes from randomiser workouts'}
-                      {tab.key === 'volume' && 'Total weight lifted in programmes & muscle groups'}
                       {tab.key === 'streak' && 'Consecutive weeks with at least one workout'}
                     </span>
                   </div>
