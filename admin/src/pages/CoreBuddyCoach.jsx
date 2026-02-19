@@ -8,8 +8,20 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyCoach.css';
 
-/** Read an SSE stream and return the final { done: true, ... } event data. */
+/** Read an SSE stream and return the final { done: true, ... } event data.
+ *  If the response is not SSE (e.g. a JSON error), parse it as JSON instead. */
 async function readSSE(response) {
+  // Non-OK or JSON error responses — parse as regular JSON
+  const ct = response.headers.get('content-type') || '';
+  if (!response.ok || ct.includes('application/json')) {
+    try {
+      const json = await response.json();
+      return { done: true, error: json.error || `Server error (${response.status})` };
+    } catch {
+      return { done: true, error: `Server error (${response.status})` };
+    }
+  }
+
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let result = null;

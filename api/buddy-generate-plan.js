@@ -1,5 +1,3 @@
-import OpenAI from 'openai';
-
 export const config = { runtime: 'edge' };
 
 const PLAN_MARKER_START = '|||PLAN|||';
@@ -7,7 +5,7 @@ const PLAN_MARKER_END = '|||END_PLAN|||';
 
 /**
  * POST /api/buddy-generate-plan
- * Edge Runtime + streaming — works within Vercel Hobby 30s limit.
+ * Edge Runtime + raw fetch streaming — no SDK, guaranteed Edge compatibility.
  *
  * Body: { profile: {}, exerciseLibrary: [] }
  * Returns: SSE stream — intermediate chunks + final { done, reply, plan } event
@@ -23,8 +21,7 @@ export default async function handler(req) {
   let body;
   try { body = await req.json(); } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -32,32 +29,45 @@ export default async function handler(req) {
 
   if (!profile) {
     return new Response(JSON.stringify({ error: 'profile is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
   if (!exerciseLibrary || !Array.isArray(exerciseLibrary) || exerciseLibrary.length === 0) {
     return new Response(JSON.stringify({ error: 'exerciseLibrary array is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      status: 400, headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const systemPrompt = buildPlanPrompt(profile, exerciseLibrary);
 
   try {
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: 'Generate my personalised monthly plan based on my profile.' },
-      ],
-      temperature: 0.6,
-      max_tokens: 8192,
-      stream: true,
+    // Call OpenAI directly with fetch — no SDK needed on Edge
+    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: 'Generate my personalised monthly plan based on my profile.' },
+        ],
+        temperature: 0.6,
+        max_tokens: 8192,
+        stream: true,
+      }),
     });
+
+    if (!openaiRes.ok) {
+      const errText = await openaiRes.text().catch(() => '');
+      console.error('OpenAI error:', openaiRes.status, errText);
+      return new Response(JSON.stringify({ error: `AI service error (${openaiRes.status})` }), {
+        status: 502, headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const encoder = new TextEncoder();
 
@@ -65,11 +75,31 @@ export default async function handler(req) {
       async start(controller) {
         let fullText = '';
         try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || '';
-            if (content) {
-              fullText += content;
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+          // Read OpenAI's SSE stream
+          const reader = openaiRes.body.getReader();
+          const decoder = new TextDecoder();
+          let sseBuffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            sseBuffer += decoder.decode(value, { stream: true });
+
+            const lines = sseBuffer.split('\n');
+            sseBuffer = lines.pop();
+
+            for (const line of lines) {
+              if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                try {
+                  const parsed = JSON.parse(line.slice(6));
+                  const content = parsed.choices?.[0]?.delta?.content || '';
+                  if (content) {
+                    fullText += content;
+                    // Forward chunk to our client
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+                  }
+                } catch { /* skip malformed */ }
+              }
             }
           }
 
@@ -100,13 +130,11 @@ export default async function handler(req) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to generate plan' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      status: 500, headers: { 'Content-Type': 'application/json' },
     });
   }
 }
@@ -115,7 +143,6 @@ function buildPlanPrompt(profile, exerciseLibrary) {
   const age = profile.dob ? calculateAge(profile.dob) : null;
   const daysPerWeek = parseDaysPerWeek(profile.availability);
 
-  // Group exercises for the prompt
   const exercisesByGroup = {};
   for (const ex of exerciseLibrary) {
     if (!exercisesByGroup[ex.group]) exercisesByGroup[ex.group] = [];
@@ -210,13 +237,12 @@ function parseDaysPerWeek(availability) {
     const days = parseInt(match[1], 10);
     if (days >= 1 && days <= 7) return days;
   }
-  // Keyword fallback
   const lower = availability.toLowerCase();
   if (lower.includes('every day') || lower.includes('daily')) return 5;
   if (lower.includes('5') || lower.includes('five')) return 5;
   if (lower.includes('4') || lower.includes('four')) return 4;
   if (lower.includes('2') || lower.includes('two') || lower.includes('twice')) return 2;
-  return 3; // sensible default
+  return 3;
 }
 
 function calculateAge(dob) {
@@ -224,8 +250,6 @@ function calculateAge(dob) {
   const now = new Date();
   let age = now.getFullYear() - birth.getFullYear();
   const monthDiff = now.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
-    age--;
-  }
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--;
   return age;
 }
