@@ -83,6 +83,14 @@ export default function CoreBuddyNutrition() {
     return { year: d.getFullYear(), month: d.getMonth() };
   });
 
+  // Copy from day
+  const [copyFromOpen, setCopyFromOpen] = useState(false);
+  const [copyFromMonth, setCopyFromMonth] = useState(() => {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const [copyingDay, setCopyingDay] = useState(false);
+
   // Meal selector
   const [selectedMeal, setSelectedMeal] = useState(getDefaultMeal);
 
@@ -353,6 +361,35 @@ export default function CoreBuddyNutrition() {
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
+  };
+
+  // ==================== COPY FROM DAY ====================
+  const copyFromDay = async (sourceDate) => {
+    if (!clientData?.id || sourceDate === selectedDate) return;
+    setCopyingDay(true);
+    try {
+      const srcDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${sourceDate}`));
+      if (!srcDoc.exists() || !srcDoc.data().entries?.length) {
+        showToast('No food logged on that day', 'error');
+        return;
+      }
+      const srcEntries = srcDoc.data().entries.map(e => ({
+        ...e,
+        id: Date.now() + Math.random(),
+        addedAt: new Date().toISOString()
+      }));
+      const mergedEntries = [...todayLog.entries, ...srcEntries];
+      const newLog = { ...todayLog, entries: mergedEntries };
+      setTodayLog(newLog);
+      saveLog(newLog);
+      setCopyFromOpen(false);
+      showToast(`Copied ${srcEntries.length} items from ${formatDisplayDate(sourceDate)}`, 'success');
+    } catch (err) {
+      console.error('Error copying day:', err);
+      showToast('Failed to copy day', 'error');
+    } finally {
+      setCopyingDay(false);
+    }
   };
 
   // ==================== BARCODE SCANNER (Quagga2 — loaded on demand) ====================
@@ -1056,17 +1093,25 @@ export default function CoreBuddyNutrition() {
       <div className="nut-light-zone anim-fade-up-d4">
         <div className="nut-light-content">
 
-          {/* Water Quick Button (today only) */}
+          {/* Quick Actions Row (today only) */}
           {isToday && (
-            <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
-              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-              </svg>
-              <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </button>
+            <div className="nut-quick-row">
+              <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <button className="nut-copy-day-btn" onClick={() => { setCopyFromOpen(true); setCopyFromMonth({ year: new Date().getFullYear(), month: new Date().getMonth() }); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span>Copy day</span>
+              </button>
+            </div>
           )}
 
           {/* Meal Sections - always show all 4 */}
@@ -1192,6 +1237,69 @@ export default function CoreBuddyNutrition() {
       )}
 
       {/* ==================== WATER POPUP ==================== */}
+      {/* ==================== COPY FROM DAY MODAL ==================== */}
+      {copyFromOpen && (
+        <div className="nut-modal-overlay" onClick={() => setCopyFromOpen(false)}>
+          <div className="nut-copy-from-popup" onClick={e => e.stopPropagation()}>
+            <div className="nut-copy-from-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>Copy from...</span>
+              <button className="nut-modal-close" onClick={() => setCopyFromOpen(false)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <p className="nut-copy-from-hint">Pick a day to copy its food log into today</p>
+            <div className="nut-cal-header">
+              <button onClick={() => setCopyFromMonth(p => {
+                let m = p.month - 1, y = p.year;
+                if (m < 0) { m = 11; y--; }
+                return { year: y, month: m };
+              })}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <span>{MONTH_NAMES[copyFromMonth.month]} {copyFromMonth.year}</span>
+              <button onClick={() => setCopyFromMonth(p => {
+                let m = p.month + 1, y = p.year;
+                if (m > 11) { m = 0; y++; }
+                return { year: y, month: m };
+              })} disabled={copyFromMonth.year === new Date().getFullYear() && copyFromMonth.month >= new Date().getMonth()}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+            <div className="nut-cal-days-header">
+              {DAY_LABELS.map(d => <span key={d}>{d}</span>)}
+            </div>
+            <div className="nut-cal-grid">
+              {[...Array(getFirstDayOfMonth(copyFromMonth.year, copyFromMonth.month))].map((_, i) => (
+                <span key={`e${i}`} />
+              ))}
+              {[...Array(getDaysInMonth(copyFromMonth.year, copyFromMonth.month))].map((_, i) => {
+                const day = i + 1;
+                const dateKey = `${copyFromMonth.year}-${String(copyFromMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isFuture = dateKey > getTodayKey();
+                const isCurrent = dateKey === selectedDate;
+                const isTodayDate = dateKey === getTodayKey();
+                const isDisabled = isFuture || isCurrent;
+                return (
+                  <button key={day} className={`nut-cal-day${isCurrent ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
+                    disabled={isDisabled} onClick={() => copyFromDay(dateKey)}>
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+            {copyingDay && (
+              <div className="nut-copy-from-loading">
+                <div className="wk-loading-spinner" />
+                <span>Copying...</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {waterPopupOpen && (
         <div className="nut-modal-overlay" onClick={() => setWaterPopupOpen(false)}>
           <div className="nut-water-popup" onClick={e => e.stopPropagation()}>

@@ -1175,6 +1175,48 @@
 
 /* ==================== WATER TRACKER ==================== */
 /* Quick button in light zone */
+.nut-quick-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.nut-quick-row .nut-water-quick {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.nut-copy-day-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .nut-copy-day-btn {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.nut-copy-day-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.nut-copy-day-btn:active {
+  transform: scale(0.98);
+}
+
 .nut-water-quick {
   display: flex;
   align-items: center;
@@ -1223,6 +1265,64 @@
   height: 14px;
   flex-shrink: 0;
   opacity: 0.5;
+}
+
+/* Copy From Day Popup */
+.nut-copy-from-popup {
+  width: 90%;
+  max-width: 360px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  margin: auto;
+}
+
+[data-theme="dark"] .nut-copy-from-popup {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nut-copy-from-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: var(--color-primary);
+}
+
+.nut-copy-from-header span {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.nut-copy-from-hint {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.nut-copy-from-popup .nut-cal-header {
+  margin-bottom: 10px;
+}
+
+.nut-copy-from-popup .nut-cal-day.selected {
+  background: var(--text-secondary);
+  opacity: 0.4;
+}
+
+.nut-copy-from-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 0 4px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 /* Water Popup */
