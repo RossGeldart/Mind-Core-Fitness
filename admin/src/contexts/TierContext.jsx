@@ -10,10 +10,7 @@ export function useTier() {
 // Features that require premium access
 const PREMIUM_FEATURES = [
   'nutrition',
-  'personalBests',
-  'achievements',
   'buddies',
-  'programmes',
 ];
 
 // Free users: only 5 & 10 min, 3 per week, 1 habit

@@ -9,7 +9,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
-import BADGE_DEFS from '../utils/badgeConfig';
 import './CoreBuddyProfile.css';
 
 function getInitials(name) {
@@ -40,17 +39,6 @@ function formatVolumeUnit(kg) {
   if (kg >= 1000) return 'tonnes';
   return 'kg';
 }
-
-const TEMPLATE_META = {
-  fullbody_4wk: { duration: 4, daysPerWeek: 3 },
-  fullbody_8wk: { duration: 8, daysPerWeek: 3 },
-  fullbody_12wk: { duration: 12, daysPerWeek: 3 },
-  core_4wk: { duration: 4, daysPerWeek: 3 },
-  core_8wk: { duration: 8, daysPerWeek: 3 },
-  core_12wk: { duration: 12, daysPerWeek: 3 },
-  upper_4wk: { duration: 4, daysPerWeek: 3 },
-  lower_4wk: { duration: 4, daysPerWeek: 3 },
-};
 
 function timeAgo(date) {
   if (!date) return '';
@@ -91,11 +79,6 @@ export default function CoreBuddyProfile() {
   const [totalVolume, setTotalVolume] = useState(0);
   const [streakWeeks, setStreakWeeks] = useState(0);
   const [habitStreak, setHabitStreak] = useState(0);
-  const [topPBs, setTopPBs] = useState([]);
-  const [unlockedBadges, setUnlockedBadges] = useState([]);
-  const [selectedBadge, setSelectedBadge] = useState(null);
-  const [programmeName, setProgrammeName] = useState(null);
-  const [programmePct, setProgrammePct] = useState(0);
 
   // @ Mention state
   const [allClients, setAllClients] = useState([]);
@@ -175,11 +158,9 @@ export default function CoreBuddyProfile() {
       setStatsLoading(true);
       try {
         // Parallel fetches
-        const [logsSnap, achSnap, pbSnap, progSnap] = await Promise.all([
+        const [logsSnap, achSnap] = await Promise.all([
           getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId))),
           getDoc(doc(db, 'coreBuddyAchievements', userId)),
-          getDoc(doc(db, 'coreBuddyPBs', userId)),
-          getDoc(doc(db, 'clientProgrammes', userId)),
         ]);
 
         if (cancelled) return;
@@ -217,37 +198,6 @@ export default function CoreBuddyProfile() {
           }
         }
         if (!cancelled) setStreakWeeks(wkStreak);
-
-        // Personal bests (top 3)
-        if (pbSnap.exists()) {
-          const exercises = pbSnap.data().exercises || {};
-          const pbList = Object.entries(exercises)
-            .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
-            .slice(0, 3)
-            .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
-          if (!cancelled) setTopPBs(pbList);
-        }
-
-        // Programme progress
-        if (progSnap.exists()) {
-          const prog = progSnap.data();
-          const meta = TEMPLATE_META[prog.templateId];
-          if (meta) {
-            const completedCount = Object.keys(prog.completedSessions || {}).length;
-            const total = meta.duration * meta.daysPerWeek;
-            if (!cancelled) {
-              setProgrammeName(prog.templateId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
-              setProgrammePct(total > 0 ? Math.round((completedCount / total) * 100) : 0);
-            }
-          }
-        }
-
-        // Badges from achievements collection
-        const achBadgesSnap = await getDoc(doc(db, 'achievements', userId));
-        if (!cancelled && achBadgesSnap.exists()) {
-          const badges = achBadgesSnap.data().badges || {};
-          setUnlockedBadges(Object.keys(badges));
-        }
 
         // Habit streak (consecutive days with all 5 done)
         let hStreak = 0;
@@ -688,83 +638,21 @@ export default function CoreBuddyProfile() {
               </div>
             </div>
 
-            {/* Programme + Habit Streak Row */}
-            {(programmeName || habitStreak > 0) && (
+            {/* Habit Streak */}
+            {habitStreak > 0 && (
               <div className="prf-info-row">
-                {programmeName && (
-                  <div className="prf-info-card info-programme">
-                    <div className="prf-info-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                    </div>
-                    <div className="prf-info-text">
-                      <span className="prf-info-label">{programmeName}</span>
-                      <div className="prf-info-progress-bar">
-                        <div className="prf-info-progress-fill" style={{ width: `${Math.min(programmePct, 100)}%` }} />
-                      </div>
-                      <span className="prf-info-sub">{programmePct}% complete</span>
-                    </div>
+                <div className="prf-info-card info-habit">
+                  <div className="prf-info-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
                   </div>
-                )}
-                {habitStreak > 0 && (
-                  <div className="prf-info-card info-habit">
-                    <div className="prf-info-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-                    </div>
-                    <div className="prf-info-text">
-                      <span className="prf-info-value">{habitStreak} day{habitStreak !== 1 ? 's' : ''}</span>
-                      <span className="prf-info-sub">Habit Streak</span>
-                    </div>
+                  <div className="prf-info-text">
+                    <span className="prf-info-value">{habitStreak} day{habitStreak !== 1 ? 's' : ''}</span>
+                    <span className="prf-info-sub">Habit Streak</span>
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* Top PBs */}
-            {topPBs.length > 0 && (
-              <div className="prf-section">
-                <h2 className="prf-section-title">Top Lifts</h2>
-                <div className="prf-pb-list">
-                  {topPBs.map((pb, i) => (
-                    <div key={i} className="prf-pb-item">
-                      <div className="prf-pb-rank">{i === 0 ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2L12 16.6 5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>
-                      ) : `#${i + 1}`}</div>
-                      <span className="prf-pb-name">{pb.name}</span>
-                      <span className="prf-pb-weight">{pb.weight}<span className="prf-pb-unit">kg</span> x{pb.reps}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
             )}
 
-            {/* Badges */}
-            {unlockedBadges.length > 0 && (
-              <div className="prf-section">
-                <h2 className="prf-section-title">Badges Earned ({unlockedBadges.length})</h2>
-                <div className="prf-badge-row">
-                  {unlockedBadges.map(id => {
-                    const badge = BADGE_DEFS.find(b => b.id === id);
-                    if (!badge) return null;
-                    return (
-                      <button key={id} className="prf-badge-chip" onClick={() => setSelectedBadge(badge)}>
-                        <img src={badge.img} alt={badge.name} className="prf-badge-chip-img" />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Badge fullscreen overlay */}
-            {selectedBadge && (
-              <div className="prf-badge-overlay" onClick={() => setSelectedBadge(null)}>
-                <div className="prf-badge-overlay-content" onClick={e => e.stopPropagation()}>
-                  <img src={selectedBadge.img} alt={selectedBadge.name} className="prf-badge-overlay-img" />
-                  <p className="prf-badge-overlay-desc">{selectedBadge.desc}</p>
-                  <button className="prf-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
-                </div>
-              </div>
-            )}
           </>
         )}
 

@@ -14,7 +14,6 @@ import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
-import BADGE_DEFS from '../utils/badgeConfig';
 import SpotlightTour from '../components/SpotlightTour';
 
 const TICK_COUNT = 60;
@@ -25,29 +24,6 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-
-// Programme templates (must match CoreBuddyProgrammes)
-const TEMPLATE_META = {
-  fullbody_4wk: { duration: 4, daysPerWeek: 3 },
-  fullbody_8wk: { duration: 8, daysPerWeek: 3 },
-  fullbody_12wk: { duration: 12, daysPerWeek: 3 },
-  core_4wk: { duration: 4, daysPerWeek: 3 },
-  core_8wk: { duration: 8, daysPerWeek: 3 },
-  core_12wk: { duration: 12, daysPerWeek: 3 },
-  upper_4wk: { duration: 4, daysPerWeek: 3 },
-  lower_4wk: { duration: 4, daysPerWeek: 3 },
-};
-
-const TEMPLATE_DAYS = {
-  fullbody_4wk: ['Push Focus', 'Pull Focus', 'Legs & Core'],
-  fullbody_8wk: ['Strength', 'Power', 'Endurance'],
-  fullbody_12wk: ['Upper Push', 'Lower Body', 'Upper Pull'],
-  core_4wk: ['Abs', 'Stability', 'Power Core'],
-  core_8wk: ['Anti-Extension', 'Rotation', 'Power'],
-  core_12wk: ['Strength', 'Endurance', 'Power'],
-  upper_4wk: ['Push', 'Pull', 'Mixed'],
-  lower_4wk: ['Quad Dominant', 'Hamstring & Glute', 'Power & Stability'],
-};
 
 const TAGLINES = [
   { text: 'You have 24 hours a day...', bold: 'make it count' },
@@ -108,23 +84,16 @@ export default function CoreBuddyDashboard() {
   const [ticksElapsed, setTicksElapsed] = useState(0);
 
   // Ring stats
-  const [programmePct, setProgrammePct] = useState(0);
-  const [programmeName, setProgrammeName] = useState('');
   const [totalWorkouts, setTotalWorkouts] = useState(0);
   const [habitWeekPct, setHabitWeekPct] = useState(0);
   const [statsLoaded, setStatsLoaded] = useState(false);
   const [nutritionTotals, setNutritionTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
   const [nutritionTargetData, setNutritionTargetData] = useState(null);
   const [todayHabitsCount, setTodayHabitsCount] = useState(0);
-  const [nextSession, setNextSession] = useState(null);
-  const [hasProgramme, setHasProgramme] = useState(false);
-  const [programmeComplete, setProgrammeComplete] = useState(false);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [weeklyWorkoutTarget, setWeeklyWorkoutTarget] = useState(DEFAULT_WEEKLY_TARGET);
   const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [showTargetHint, setShowTargetHint] = useState(false);
-  const [pbCount, setPbCount] = useState(0);
-  const [topPBs, setTopPBs] = useState([]);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
 
   // Profile photo
@@ -132,16 +101,8 @@ export default function CoreBuddyDashboard() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInputRef = useRef(null);
 
-  // Achievements
-  const [unlockedBadges, setUnlockedBadges] = useState([]);
-  const [selectedBadge, setSelectedBadge] = useState(null);
-  const [celebrationBadge, setCelebrationBadge] = useState(null);
-  const previousBadgesRef = useRef(null);
-
-  // Streak data for achievements
+  // Streak data
   const [streakWeeks, setStreakWeeks] = useState(0);
-  const [habitStreak, setHabitStreak] = useState(0);
-  const [nutritionStreak, setNutritionStreak] = useState(0);
 
   // Rotating tagline
   const [taglineIdx, setTaglineIdx] = useState(0);
@@ -201,7 +162,7 @@ export default function CoreBuddyDashboard() {
       {
         selector: '.cb-stats-row',
         title: 'Progress at a Glance',
-        body: 'Programme completion, workouts this week, and daily habits — all in one row. These fill up as you go.',
+        body: 'Your workout streak, sessions this week, and daily habits — all in one row. These fill up as you go.',
       },
       {
         selector: '.cb-nudge-card',
@@ -210,8 +171,8 @@ export default function CoreBuddyDashboard() {
       },
       {
         selector: '.cb-card-workouts-hero',
-        title: 'Workouts',
-        body: 'Quick randomiser sessions or structured programmes — pick your focus, level and time.',
+        title: 'Workout',
+        body: 'Randomiser workouts — pick your focus, level and time. Save and replay your favourites.',
         cta: 'Next',
       },
     ];
@@ -237,11 +198,6 @@ export default function CoreBuddyDashboard() {
           selector: '.cb-journey-section',
           title: 'Share Your Journey',
           body: 'Post photos, updates, and milestones — your fitness journey in one place. Like and comment on each other\'s posts.',
-        },
-        {
-          selector: '.cb-achievements-section',
-          title: 'Achievements',
-          body: 'Every rep counts towards badges — volume milestones, workout streaks, and more to unlock.',
         },
       );
     }
@@ -303,23 +259,14 @@ export default function CoreBuddyDashboard() {
       const cached = sessionStorage.getItem(`cbDash_${clientData.id}`);
       if (cached) {
         const c = JSON.parse(cached);
-        setProgrammePct(c.programmePct ?? 0);
-        setProgrammeName(c.programmeName ?? '');
         setTotalWorkouts(c.totalWorkouts ?? 0);
         setHabitWeekPct(c.habitWeekPct ?? 0);
         setNutritionTotals(c.nutritionTotals ?? { protein: 0, carbs: 0, fats: 0, calories: 0 });
         setNutritionTargetData(c.nutritionTargetData ?? null);
         setTodayHabitsCount(c.todayHabitsCount ?? 0);
-        setNextSession(c.nextSession ?? null);
-        setHasProgramme(c.hasProgramme ?? false);
-        setProgrammeComplete(c.programmeComplete ?? false);
         setWeeklyWorkouts(c.weeklyWorkouts ?? 0);
         setWeeklyWorkoutTarget(c.weeklyWorkoutTarget ?? DEFAULT_WEEKLY_TARGET);
-        setPbCount(c.pbCount ?? 0);
-        setTopPBs(c.topPBs ?? []);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
-        setUnlockedBadges(c.unlockedBadges ?? []);
-        previousBadgesRef.current = c.unlockedBadges ?? [];
         setStreakWeeks(c.streakWeeks ?? 0);
         setStatsLoaded(true);
       }
@@ -572,43 +519,12 @@ export default function CoreBuddyDashboard() {
     if (!currentUser || !clientData) return;
     const loadStats = async () => {
       let logsSnap = null;
-      let localPbCount = 0;
-      let localPbList = [];
-      let localProgrammeComplete = false;
       let localNutTargets = null;
 
       try {
         const todayStr = formatDate(new Date());
 
-        // 1. Programme progress + next session
-        const progSnap = await getDoc(doc(db, 'clientProgrammes', clientData.id));
-        if (progSnap.exists()) {
-          const prog = progSnap.data();
-          const meta = TEMPLATE_META[prog.templateId];
-          setHasProgramme(true);
-          if (meta) {
-            const completedKeys = prog.completedSessions || {};
-            const completedCount = Object.keys(completedKeys).length;
-            const total = meta.duration * meta.daysPerWeek;
-            setProgrammePct(total > 0 ? Math.round((completedCount / total) * 100) : 0);
-            const name = prog.templateId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-            setProgrammeName(name);
-            // Find next uncompleted session
-            const dayLabels = TEMPLATE_DAYS[prog.templateId];
-            let foundNext = false;
-            for (let w = 1; w <= meta.duration && !foundNext; w++) {
-              for (let d = 0; d < meta.daysPerWeek && !foundNext; d++) {
-                if (!completedKeys[`w${w}d${d}`]) {
-                  setNextSession({ week: w, dayIdx: d, label: dayLabels?.[d] || `Day ${d + 1}` });
-                  foundNext = true;
-                }
-              }
-            }
-            if (!foundNext) { setProgrammeComplete(true); localProgrammeComplete = true; }
-          }
-        }
-
-        // 2. Total workouts (all types)
+        // 1. Total workouts (all types)
         const logsRef = collection(db, 'workoutLogs');
         const q = query(logsRef, where('clientId', '==', clientData.id));
         logsSnap = await getDocs(q);
@@ -664,29 +580,7 @@ export default function CoreBuddyDashboard() {
         console.error('Error loading dashboard stats:', err);
       }
 
-      // 6. Personal Bests (independent so earlier errors don't block it)
-      try {
-        let pbList = [];
-
-        // Try Core Buddy PBs first
-        const cbPbSnap = await getDoc(doc(db, 'coreBuddyPBs', clientData.id));
-        if (cbPbSnap.exists()) {
-          const exercises = cbPbSnap.data().exercises || {};
-          setPbCount(Object.keys(exercises).length);
-          localPbCount = Object.keys(exercises).length;
-          pbList = Object.entries(exercises)
-            .sort(([, a], [, b]) => (b.weight || 0) - (a.weight || 0))
-            .slice(0, 3)
-            .map(([name, data]) => ({ name, weight: data.weight, reps: data.reps }));
-        }
-
-        localPbList = pbList;
-        setTopPBs(pbList);
-      } catch (pbErr) {
-        console.error('PB fetch error:', pbErr);
-      }
-
-      // 7. Leaderboard top 3 preview (opted-in clients)
+      // 6. Leaderboard top 3 preview (opted-in clients)
       try {
         const clientsRef = collection(db, 'clients');
         const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
@@ -697,16 +591,14 @@ export default function CoreBuddyDashboard() {
         console.error('Leaderboard preview error:', lbErr);
       }
 
-      // 8. Compute achievements
+      // 7. Compute workout streak (consecutive weeks with at least 1 workout)
       try {
-        // Calculate workout streak (consecutive weeks with at least 1 workout)
         let wkStreak = 0;
         if (logsSnap) {
           const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
           if (allDates.length > 0) {
             const now2 = new Date();
             let checkWeek = new Date(now2);
-            // Go back week by week
             outer: for (let w = 0; w < 52; w++) {
               const weekStart = new Date(checkWeek);
               const dow = weekStart.getDay();
@@ -719,118 +611,15 @@ export default function CoreBuddyDashboard() {
               const weStr = formatDate(weekEnd);
               const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
               if (hasWorkout) { wkStreak++; }
-              else if (w > 0) break outer; // allow current week to be empty
+              else if (w > 0) break outer;
               else break;
               checkWeek.setDate(checkWeek.getDate() - 7);
             }
           }
         }
         setStreakWeeks(wkStreak);
-
-        // Habit streak (consecutive days with all 5 done, up to 30 days back)
-        let hStreak = 0;
-        for (let d = 0; d < 30; d++) {
-          const checkDate = new Date();
-          checkDate.setDate(checkDate.getDate() - d);
-          const dStr = formatDate(checkDate);
-          try {
-            const hSnap = await getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', clientData.id), where('date', '==', dStr)));
-            if (!hSnap.empty) {
-              const habits = hSnap.docs[0].data().habits || {};
-              if (Object.values(habits).filter(Boolean).length >= habitCount) { hStreak++; }
-              else break;
-            } else break;
-          } catch { break; }
-        }
-        setHabitStreak(hStreak);
-
-        // Nutrition streak (consecutive days hitting macro targets, up to 30 days back)
-        let nStreak = 0;
-        for (let d = 0; d < 30; d++) {
-          const checkDate = new Date();
-          checkDate.setDate(checkDate.getDate() - d);
-          const dStr = formatDate(checkDate);
-          try {
-            const nSnap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${dStr}`));
-            if (nSnap.exists() && (nSnap.data().entries || []).length > 0) {
-              if (localNutTargets) {
-                const entries = nSnap.data().entries || [];
-                const totals = entries.reduce((acc, e) => ({
-                  protein: acc.protein + (e.protein || 0),
-                  carbs: acc.carbs + (e.carbs || 0),
-                  fats: acc.fats + (e.fats || 0),
-                }), { protein: 0, carbs: 0, fats: 0 });
-                if (totals.protein >= (localNutTargets.protein || 0) &&
-                    totals.carbs >= (localNutTargets.carbs || 0) &&
-                    totals.fats >= (localNutTargets.fats || 0)) {
-                  nStreak++;
-                } else break;
-              } else {
-                nStreak++;
-              }
-            } else break;
-          } catch { break; }
-        }
-        setNutritionStreak(nStreak);
-
-        // Total workouts across all types
-        const totalAll = logsSnap ? logsSnap.docs.length : 0;
-
-        // Determine unlocked badges
-        const unlocked = [];
-        const addBadge = (id) => unlocked.push(id);
-
-        if (totalAll >= 1) addBadge('first_workout');
-        if (totalAll >= 10) addBadge('workouts_10');
-        if (totalAll >= 25) addBadge('workouts_25');
-        if (totalAll >= 50) addBadge('workouts_50');
-        if (totalAll >= 100) addBadge('workouts_100');
-
-        // Streak badges
-        if (wkStreak >= 2) addBadge('streak_2');
-        if (wkStreak >= 4) addBadge('streak_4');
-        if (wkStreak >= 8) addBadge('streak_8');
-
-        // PB count badges
-        if (localPbCount >= 1) addBadge('first_pb');
-        if (localPbCount >= 5) addBadge('pbs_5');
-        if (localPbCount >= 10) addBadge('pbs_10');
-        if (localPbCount >= 100) addBadge('pbs_100');
-
-        // Nutrition streak badge
-        if (nStreak >= 7) addBadge('nutrition_7');
-
-        // Leaderboard badge
-        if (clientData.leaderboardOptIn) addBadge('leaderboard_join');
-
-        // Habit streak badge
-        if (hStreak >= 7) addBadge('habits_7');
-
-        setUnlockedBadges(unlocked);
-
-        // Detect newly unlocked badges and celebrate
-        const prev = previousBadgesRef.current;
-        if (prev !== null) {
-          const newlyUnlocked = unlocked.filter(id => !prev.includes(id));
-          if (newlyUnlocked.length > 0) {
-            const badgeDef = BADGE_DEFS.find(b => b.id === newlyUnlocked[newlyUnlocked.length - 1]);
-            if (badgeDef) {
-              setTimeout(() => setCelebrationBadge(badgeDef), 600);
-            }
-          }
-        }
-        previousBadgesRef.current = unlocked;
-
-        // Persist to Firestore (fire and forget)
-        const badgeMap = {};
-        unlocked.forEach(id => { badgeMap[id] = { unlockedAt: new Date().toISOString() }; });
-        setDoc(doc(db, 'achievements', clientData.id), {
-          badges: badgeMap,
-          progress: { streakWeeks: wkStreak, pbCount: localPbCount, nutritionStreak: nStreak, habitStreak: hStreak },
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch(() => {});
-      } catch (achErr) {
-        console.error('Achievement computation error:', achErr);
+      } catch (streakErr) {
+        console.error('Streak computation error:', streakErr);
       }
 
       setStatsLoaded(true);
@@ -843,17 +632,16 @@ export default function CoreBuddyDashboard() {
     if (!statsLoaded || !clientData) return;
     try {
       sessionStorage.setItem(`cbDash_${clientData.id}`, JSON.stringify({
-        programmePct, programmeName, totalWorkouts, habitWeekPct,
+        totalWorkouts, habitWeekPct,
         nutritionTotals, nutritionTargetData, todayHabitsCount,
-        nextSession, hasProgramme, programmeComplete,
-        weeklyWorkouts, weeklyWorkoutTarget, pbCount, topPBs, leaderboardTop3,
-        unlockedBadges, streakWeeks
+        weeklyWorkouts, weeklyWorkoutTarget, leaderboardTop3,
+        streakWeeks
       }));
     } catch {}
-  }, [statsLoaded, programmePct, programmeName, totalWorkouts, habitWeekPct,
-     nutritionTotals, nutritionTargetData, todayHabitsCount, nextSession,
-     hasProgramme, programmeComplete, weeklyWorkouts, weeklyWorkoutTarget, pbCount, topPBs,
-     leaderboardTop3, unlockedBadges, streakWeeks, clientData]);
+  }, [statsLoaded, totalWorkouts, habitWeekPct,
+     nutritionTotals, nutritionTargetData, todayHabitsCount,
+     weeklyWorkouts, weeklyWorkoutTarget,
+     leaderboardTop3, streakWeeks, clientData]);
 
   // Tour finish handler — persist to Firestore so it only shows once
   const handleTourFinish = useCallback(async () => {
@@ -910,8 +698,10 @@ export default function CoreBuddyDashboard() {
   // Calculate percentages for 3 stat rings (solid arc style)
   const workoutPct = Math.min(Math.round((weeklyWorkouts / weeklyWorkoutTarget) * 100), 100);
 
+  const streakPct = streakWeeks > 0 ? Math.min(Math.round((streakWeeks / 12) * 100), 100) : 0;
+
   const statRings = [
-    { label: 'Programme', value: `${programmePct}%`, pct: programmePct, color: 'var(--color-primary)', size: 'normal' },
+    { label: 'Wk Streak', value: `${streakWeeks}`, pct: streakPct, color: '#38B6FF', size: 'normal' },
     { label: 'Workouts', value: `${weeklyWorkouts}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
@@ -936,15 +726,15 @@ export default function CoreBuddyDashboard() {
   // Priority-based smart nudge
   const nudge = (() => {
     if (!statsLoaded) return null;
-    // 1. Active programme with next session (premium only)
-    if (isPremium && hasProgramme && nextSession && !programmeComplete) {
+    // 1. No workouts this week — suggest a session
+    if (weeklyWorkouts === 0) {
       return {
-        label: 'NEXT SESSION',
-        message: `Week ${nextSession.week}, Day ${nextSession.dayIdx + 1} — ${nextSession.label}`,
-        cta: 'Continue',
-        action: () => navigate('/client/core-buddy/programmes'),
-        pct: programmePct,
-        ringLabel: `${programmePct}%`,
+        label: 'WORKOUT',
+        message: 'No workouts this week yet',
+        cta: 'Start One',
+        action: () => navigate('/client/core-buddy/workouts'),
+        pct: 0,
+        ringLabel: '0',
       };
     }
     // 2. Habits not all done
@@ -969,29 +759,7 @@ export default function CoreBuddyDashboard() {
         ringLabel: '0',
       };
     }
-    // 4. No programme active (premium only)
-    if (isPremium && !hasProgramme) {
-      return {
-        label: 'PROGRAMMES',
-        message: 'Start a programme to level up',
-        cta: 'Browse',
-        action: () => navigate('/client/core-buddy/workouts'),
-        pct: 0,
-        ringLabel: '\u2014',
-      };
-    }
-    // 5. Programme complete (premium only)
-    if (isPremium && programmeComplete) {
-      return {
-        label: 'COMPLETE',
-        message: 'Programme finished!',
-        cta: 'New Programme',
-        action: () => navigate('/client/core-buddy/workouts'),
-        pct: 100,
-        ringLabel: '100%',
-      };
-    }
-    // 6. Everything done
+    // 4. Everything done
     return {
       label: 'TODAY',
       message: "You're crushing it!",
@@ -1518,7 +1286,7 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-workouts-hero ripple-btn"
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <h3 className="cb-hero-title">Workouts</h3>
+            <h3 className="cb-hero-title">Workout</h3>
             <div className="cb-hero-stats">
               <span>{weeklyWorkouts} this week</span>
               <span className="cb-hero-dot">&middot;</span>
@@ -1527,51 +1295,22 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 3 & 4. Habits + PBs — 2-column grid when premium, single when free */}
-          <div className={`cb-grid-row${!isPremium ? ' cb-grid-single' : ''}`}>
-            <button
-              className="cb-feature-card cb-grid-card cb-card-consistency ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
-            >
-              <div className="cb-card-content">
-                <h3>Habits</h3>
-                <div className="cb-habit-dots">
-                  {Array.from({ length: habitCount }, (_, i) => (
-                    <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
-                  ))}
-                </div>
-                <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
+          {/* 3. Habits */}
+          <button
+            className="cb-feature-card cb-card-consistency ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
+          >
+            <div className="cb-card-content">
+              <h3>Habits</h3>
+              <div className="cb-habit-dots">
+                {Array.from({ length: habitCount }, (_, i) => (
+                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
+                ))}
               </div>
-              <svg className="cb-card-arrow cb-grid-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-
-            {isPremium && (
-            <button
-              className="cb-feature-card cb-grid-card cb-card-progress ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/personal-bests?mode=corebuddy'); }}
-            >
-              <div className="cb-card-content">
-                <h3>PBs</h3>
-                {topPBs.length > 0 ? (
-                  <div className="cb-pb-preview">
-                    {topPBs.slice(0, 2).map((pb) => (
-                      <div key={pb.name} className="cb-pb-entry">
-                        <span className="cb-pb-name">{pb.name}</span>
-                        <span className="cb-pb-value">{pb.weight}kg</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="cb-progress-preview">
-                    <svg className="cb-progress-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    <span>Start lifting!</span>
-                  </div>
-                )}
-              </div>
-              <svg className="cb-card-arrow cb-grid-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-            )}
-          </div>
+              <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
 
           {/* 6. Leaderboard */}
           <button
@@ -1617,27 +1356,6 @@ export default function CoreBuddyDashboard() {
           </button>
           )}
 
-          {/* 8. Achievements — hidden for free tier */}
-          {isPremium && (
-          <div className="cb-achievements-section">
-            <h3 className="cb-achievements-title">Achievements</h3>
-            <div className="cb-badges-scroll">
-              {BADGE_DEFS.map((badge) => {
-                const isUnlocked = unlockedBadges.includes(badge.id);
-                return (
-                  <button
-                    key={badge.id}
-                    className={`cb-badge${isUnlocked ? ' unlocked' : ' locked'}`}
-                    onClick={() => setSelectedBadge(badge)}
-                  >
-                    <img src={badge.img} alt={badge.name} className="cb-badge-img" />
-                  </button>
-                );
-              })}
-            </div>
-            <p className="cb-badges-count">{unlockedBadges.length}/{BADGE_DEFS.length} unlocked</p>
-          </div>
-          )}
 
           {/* My Journey — hidden for free tier */}
           {isPremium && (
@@ -1749,13 +1467,13 @@ export default function CoreBuddyDashboard() {
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card">
                         <div className="journey-card-logo-frame journey-card-logo-badge">
-                          <img src={(BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.img || '/Logo.webp'} alt={post.metadata.title} className="journey-card-logo-img" />
+                          <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
-                        {(post.metadata.badgeDesc || (BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.desc) && (
-                          <p className="journey-card-stats-line">{post.metadata.badgeDesc || (BADGE_DEFS.find(d => d.name === post.metadata.title) || BADGE_DEFS.find(d => post.metadata.badges?.includes(d.name)))?.desc}</p>
+                        {post.metadata.badgeDesc && (
+                          <p className="journey-card-stats-line">{post.metadata.badgeDesc}</p>
                         )}
-                        <p className="journey-card-cta">I just earned a badge on Core Buddy 🏆</p>
+                        <p className="journey-card-cta">I just earned a badge on Core Buddy</p>
                         <p className="journey-card-slogan">Make It Count with Core Buddy</p>
                       </div>
                     ) : post.type === 'habits_summary' && post.metadata ? (
@@ -1917,25 +1635,6 @@ export default function CoreBuddyDashboard() {
         </div>
       </main>
 
-      {/* Badge fullscreen overlay — outside cb-features to avoid re-triggering stagger animations */}
-      {selectedBadge && (
-        <div className="cb-badge-overlay" onClick={() => setSelectedBadge(null)}>
-          <div className="cb-badge-overlay-content" onClick={e => e.stopPropagation()}>
-            <img
-              src={selectedBadge.img}
-              alt={selectedBadge.name}
-              className={`cb-badge-overlay-img${!unlockedBadges.includes(selectedBadge.id) ? ' cb-badge-overlay-img-locked' : ''}`}
-            />
-            {unlockedBadges.includes(selectedBadge.id) ? (
-              <span className="cb-badge-status unlocked">Unlocked</span>
-            ) : (
-              <span className="cb-badge-status locked">Locked</span>
-            )}
-            <button className="cb-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Tap to close</button>
-          </div>
-        </div>
-      )}
-
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />
 
@@ -1951,31 +1650,6 @@ export default function CoreBuddyDashboard() {
 
       {/* Guided tour for new users */}
       <SpotlightTour steps={tourSteps} active={showTour} onFinish={handleTourFinish} />
-
-      {/* Badge unlock celebration */}
-      {celebrationBadge && (
-        <div className="cb-celebration-overlay" onClick={() => setCelebrationBadge(null)}>
-          <div className="cb-confetti-container">
-            {Array.from({ length: 30 }, (_, i) => (
-              <span key={i} className="cb-confetti-piece" style={{
-                '--angle': `${Math.random() * 360}deg`,
-                '--distance': `${80 + Math.random() * 120}px`,
-                '--delay': `${Math.random() * 0.3}s`,
-                '--color': ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE', '#FF8C42', '#38B6FF'][i % 8],
-                '--size': `${6 + Math.random() * 6}px`,
-                '--drift': `${(Math.random() - 0.5) * 60}px`,
-              }} />
-            ))}
-          </div>
-          <div className="cb-celebration-content" onClick={e => e.stopPropagation()}>
-            <div className="cb-celebration-glow" />
-            <img src={celebrationBadge.img} alt={celebrationBadge.name} className="cb-celebration-badge-img" />
-            <h2 className="cb-celebration-title">Badge Unlocked!</h2>
-            <p className="cb-celebration-name">{celebrationBadge.name}</p>
-            <button className="cb-celebration-dismiss" onClick={() => setCelebrationBadge(null)}>Tap to continue</button>
-          </div>
-        </div>
-      )}
     </div>
     </PullToRefresh>
   );
