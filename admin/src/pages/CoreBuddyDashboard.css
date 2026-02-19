@@ -1416,8 +1416,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 [data-theme="dark"] .journey-post {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.06); box-shadow: none;
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .journey-post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
