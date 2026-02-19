@@ -1783,16 +1783,19 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
-          <div className="wk-hub-heading">
-            <div className="wk-hub-icon-wrap">
-              <svg className="wk-hub-dice-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="3"/>
-                <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-              </svg>
+          <div className="wk-hub-heading wk-hub-heading-hero">
+            <div className="wk-hub-logo-wrap">
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-hub-logo-img" />
+              <div className="wk-hub-dice-float">
+                <svg className="wk-hub-dice-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+                </svg>
+              </div>
             </div>
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
