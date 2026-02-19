@@ -172,9 +172,9 @@
   color: var(--text-primary);
 }
 
-.prf-stats .prf-stat:nth-child(1) { border-top: 3px solid #00bcd4; }
-.prf-stats .prf-stat:nth-child(2) { border-top: 3px solid #2196f3; }
-.prf-stats .prf-stat:nth-child(3) { border-top: 3px solid #00bcd4; }
+.prf-stats .prf-stat:nth-child(1) { border-top: 3px solid var(--color-primary); }
+.prf-stats .prf-stat:nth-child(2) { border-top: 3px solid var(--color-primary); }
+.prf-stats .prf-stat:nth-child(3) { border-top: 3px solid var(--color-primary); }
 
 .prf-stat-unit {
   font-size: 0.7rem;
@@ -346,17 +346,17 @@
 }
 
 .prf-info-card.info-programme .prf-info-icon {
-  background: rgba(33, 150, 243, 0.1);
-  color: #2196f3;
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.1);
+  color: var(--color-primary);
 }
 
 .prf-info-card.info-programme .prf-info-progress-fill {
-  background: #2196f3;
+  background: var(--color-primary);
 }
 
 .prf-info-card.info-habit .prf-info-icon {
-  background: rgba(0, 188, 212, 0.1);
-  color: #00bcd4;
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.1);
+  color: var(--color-primary);
 }
 
 [data-theme="dark"] .prf-info-card {
