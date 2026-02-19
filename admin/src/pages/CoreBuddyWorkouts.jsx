@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, serverTimestamp, orderBy, limit as firestoreLimit } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -538,7 +538,7 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'menu' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
+  // Views: 'menu' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
   //        | 'muscle_sessions' | 'muscle_overview' | 'muscle_workout' | 'muscle_complete'
   const [view, setView] = useState('menu');
 
@@ -635,6 +635,19 @@ export default function CoreBuddyWorkouts() {
   // Free-tier gating: limit available durations and weekly usage
   const availableTimeOptions = isPremium ? TIME_OPTIONS : TIME_OPTIONS.filter(t => FREE_RANDOMISER_DURATIONS.includes(t));
   const freeRandomiserLimitReached = !isPremium && weeklyCount >= FREE_RANDOMISER_WEEKLY_LIMIT;
+
+  // Saved workouts
+  const [savedWorkouts, setSavedWorkouts] = useState([]);
+  const [savedWorkoutsLoaded, setSavedWorkoutsLoaded] = useState(false);
+  const [savingWorkout, setSavingWorkout] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveWorkoutName, setSaveWorkoutName] = useState('');
+
+  // Smart suggestion
+  const [smartSuggestion, setSmartSuggestion] = useState(null);
+
+  // Recent workouts (last 3 for hub)
+  const [recentWorkouts, setRecentWorkouts] = useState([]);
 
   // Active programme info (for the "Continue Programme" card)
   const [activeProgrammeId, setActiveProgrammeId] = useState(null);
@@ -773,6 +786,161 @@ export default function CoreBuddyWorkouts() {
     loadStats();
   }, [currentUser, clientData, view]);
 
+  // Load saved workouts
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadSaved = async () => {
+      try {
+        const q = query(
+          collection(db, 'savedWorkouts'),
+          where('clientId', '==', clientData.id),
+          orderBy('savedAt', 'desc')
+        );
+        const snap = await getDocs(q);
+        setSavedWorkouts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error('Error loading saved workouts:', err);
+      } finally {
+        setSavedWorkoutsLoaded(true);
+      }
+    };
+    loadSaved();
+  }, [currentUser, clientData]);
+
+  // Load recent randomiser workouts + compute smart suggestion
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadRecent = async () => {
+      try {
+        const q = query(
+          collection(db, 'workoutLogs'),
+          where('clientId', '==', clientData.id),
+          orderBy('completedAt', 'desc'),
+          firestoreLimit(20)
+        );
+        const snap = await getDocs(q);
+        const all = snap.docs.map(d => d.data());
+        // Recent randomiser-only for hub display
+        const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
+        setRecentWorkouts(randomiser.slice(0, 3));
+
+        // Smart suggestion: find which focus area is most neglected
+        const focusCounts = { core: null, upper: null, lower: null, fullbody: null };
+        randomiser.forEach(d => {
+          if (d.focus && focusCounts[d.focus] === null && d.completedAt) {
+            const ts = d.completedAt.toDate ? d.completedAt.toDate() : new Date(d.completedAt);
+            focusCounts[d.focus] = ts;
+          }
+        });
+
+        // Find the focus area with the oldest (or no) workout
+        let suggestion = null;
+        let oldestDate = new Date();
+        const focusKeys = ['core', 'upper', 'lower', 'fullbody'];
+        for (const key of focusKeys) {
+          if (focusCounts[key] === null) {
+            // Never done this focus - top priority
+            const label = FOCUS_AREAS.find(f => f.key === key)?.label || key;
+            suggestion = { focus: key, label, daysAgo: null, message: `You haven't tried ${label} yet` };
+            break;
+          }
+          if (focusCounts[key] < oldestDate) {
+            oldestDate = focusCounts[key];
+            const daysAgo = Math.floor((Date.now() - focusCounts[key].getTime()) / 86400000);
+            if (daysAgo >= 5) {
+              const label = FOCUS_AREAS.find(f => f.key === key)?.label || key;
+              suggestion = { focus: key, label, daysAgo, message: `${label} — ${daysAgo} days ago` };
+            }
+          }
+        }
+        setSmartSuggestion(suggestion);
+      } catch (err) {
+        console.error('Error loading recent workouts:', err);
+      }
+    };
+    loadRecent();
+  }, [currentUser, clientData, view]);
+
+  // Save workout to favourites
+  const saveWorkoutToFavourites = async (name) => {
+    if (!currentUser || !clientData || workout.length === 0) return;
+    setSavingWorkout(true);
+    try {
+      const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
+      const autoName = name || `${focusLabel} ${duration}min`;
+      const docRef = await addDoc(collection(db, 'savedWorkouts'), {
+        clientId: clientData.id,
+        name: autoName,
+        equipment: selectedEquipment,
+        focus: focusArea,
+        level,
+        duration,
+        exercises: workout.map(e => ({ name: e.name, videoUrl: e.videoUrl, isGif: e.isGif || false })),
+        rounds,
+        savedAt: Timestamp.now(),
+      });
+      setSavedWorkouts(prev => [{ id: docRef.id, clientId: clientData.id, name: autoName, equipment: selectedEquipment, focus: focusArea, level, duration, exercises: workout.map(e => ({ name: e.name, videoUrl: e.videoUrl, isGif: e.isGif || false })), rounds, savedAt: Timestamp.now() }, ...prev]);
+      showToast('Workout saved!', 'success');
+    } catch (err) {
+      console.error('Error saving workout:', err);
+      showToast('Failed to save workout', 'error');
+    } finally {
+      setSavingWorkout(false);
+      setShowSaveModal(false);
+      setSaveWorkoutName('');
+    }
+  };
+
+  // Delete saved workout
+  const deleteSavedWorkout = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'savedWorkouts', id));
+      setSavedWorkouts(prev => prev.filter(w => w.id !== id));
+      showToast('Workout removed', 'info');
+    } catch (err) {
+      console.error('Error deleting saved workout:', err);
+      showToast('Failed to remove workout', 'error');
+    }
+  };
+
+  // Replay a saved workout
+  const replaySavedWorkout = (saved) => {
+    setSelectedEquipment(saved.equipment || ['bodyweight']);
+    setFocusArea(saved.focus || 'core');
+    setLevel(saved.level || 'intermediate');
+    setDuration(saved.duration || 15);
+    const config = LEVELS.find(l => l.key === (saved.level || 'intermediate'));
+    setLevelConfig(config);
+    setWorkout(saved.exercises || []);
+    setRounds(saved.rounds || 2);
+    setView('preview');
+  };
+
+  // Quick Start: store last settings and generate instantly
+  const quickStart = async () => {
+    const last = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
+    if (last) {
+      setSelectedEquipment(last.equipment || ['bodyweight']);
+      setFocusArea(last.focus || 'core');
+      setLevel(last.level || 'intermediate');
+      setDuration(last.duration || 15);
+    }
+    // Small delay to let state settle, then generate
+    setTimeout(() => generateWorkout(), 50);
+  };
+
+  // Save last-used settings to localStorage whenever we generate
+  const saveLastSettings = () => {
+    localStorage.setItem('mcf_last_randomiser', JSON.stringify({
+      equipment: selectedEquipment,
+      focus: focusArea,
+      level,
+      duration,
+    }));
+  };
+
+  const hasLastSettings = !!localStorage.getItem('mcf_last_randomiser');
+
   // Build storage paths from equipment + focus selection
   const getStoragePaths = () => {
     // New structure: exercises/{equipment}/{focus}/
@@ -879,6 +1047,7 @@ export default function CoreBuddyWorkouts() {
   // Generate random workout
   const generateWorkout = async () => {
     if (freeRandomiserLimitReached) return;
+    saveLastSettings();
     setView('spinning');
     // Clear cache so new selections load fresh exercises
     exercisesRef.current = [];
@@ -1425,7 +1594,7 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           {/* Hero Card: Randomise Workout */}
-          <button className="wk-hero-card" onClick={() => setView('setup')}>
+          <button className="wk-hero-card" onClick={() => setView('randomiser_hub')}>
             <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
           </button>
 
@@ -1534,6 +1703,148 @@ export default function CoreBuddyWorkouts() {
     );
   }
 
+  // ==================== RANDOMISER HUB VIEW ====================
+  if (view === 'randomiser_hub') {
+    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
+    const lastFocusLabel = lastSettings ? (FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus) : null;
+    const lastLevelLabel = lastSettings ? (LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level) : null;
+
+    return (
+      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
+          <div className="wk-hub-heading">
+            <h2>Randomiser</h2>
+            <p>Generate, save &amp; replay workouts</p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="wk-hub-actions">
+            <button className="wk-hub-action-btn wk-hub-new" onClick={() => setView('setup')}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Workout
+            </button>
+            {lastSettings && (
+              <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Quick Start
+                <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
+              </button>
+            )}
+          </div>
+
+          {/* Smart Suggestion */}
+          {smartSuggestion && (
+            <div className="wk-hub-section">
+              <h3 className="wk-hub-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Suggested For You
+              </h3>
+              <button className="wk-hub-suggestion" onClick={() => {
+                setFocusArea(smartSuggestion.focus);
+                setView('setup');
+              }}>
+                <div className="wk-hub-suggestion-info">
+                  <span className="wk-hub-suggestion-label">{smartSuggestion.message}</span>
+                  <span className="wk-hub-suggestion-cta">Tap to set up &rarr;</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* Saved Workouts */}
+          <div className="wk-hub-section">
+            <h3 className="wk-hub-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Saved Workouts
+              {savedWorkouts.length > 0 && <span className="wk-hub-count">{savedWorkouts.length}</span>}
+            </h3>
+            {!savedWorkoutsLoaded ? (
+              <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
+            ) : savedWorkouts.length === 0 ? (
+              <div className="wk-hub-empty">
+                <p>No saved workouts yet. Generate a workout and tap the save button to keep it here.</p>
+              </div>
+            ) : (
+              <div className="wk-hub-saved-list">
+                {savedWorkouts.map((sw, i) => {
+                  const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
+                  const focusLbl = FOCUS_AREAS.find(f => f.key === sw.focus)?.label || sw.focus;
+                  const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
+                  return (
+                    <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <button className="wk-hub-saved-main" onClick={() => replaySavedWorkout(sw)}>
+                        <div className="wk-hub-saved-info">
+                          <span className="wk-hub-saved-name">{sw.name}</span>
+                          <span className="wk-hub-saved-meta">{focusLbl} &middot; {levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} exercises</span>
+                          <span className="wk-hub-saved-equip">{eqLabels}</span>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      </button>
+                      <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Recent History */}
+          {recentWorkouts.length > 0 && (
+            <div className="wk-hub-section">
+              <h3 className="wk-hub-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent
+              </h3>
+              <div className="wk-hub-recent-list">
+                {recentWorkouts.map((rw, i) => {
+                  const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
+                  const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
+                  const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
+                  const ago = ts ? (() => {
+                    const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
+                    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                    return `${Math.floor(diff / 86400)}d ago`;
+                  })() : '';
+                  return (
+                    <div key={i} className="wk-hub-recent-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <div className="wk-hub-recent-info">
+                        <span className="wk-hub-recent-focus">{focusLbl}</span>
+                        <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} exercises</span>
+                      </div>
+                      <span className="wk-hub-recent-time">{ago}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </main>
+        {toastEl}
+      </div>
+    );
+  }
+
   // ==================== SETUP VIEW ====================
   if (view === 'setup') {
     const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
@@ -1542,7 +1853,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => setView('randomiser_hub')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -1783,15 +2094,46 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-actions">
             {!selectedMuscleSession?.interval && (
-              <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                Reshuffle
-              </button>
+              <>
+                <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  Reshuffle
+                </button>
+                <button className="wk-btn-save" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  Save
+                </button>
+              </>
             )}
             <button className="wk-btn-primary" onClick={startWorkout}>
               Start Workout
             </button>
           </div>
+
+          {/* Save workout modal */}
+          {showSaveModal && (
+            <div className="wk-save-modal-backdrop" onClick={() => setShowSaveModal(false)}>
+              <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
+                <h3>Save Workout</h3>
+                <p>Give this workout a name (or leave blank for auto-name)</p>
+                <input
+                  type="text"
+                  className="wk-save-input"
+                  value={saveWorkoutName}
+                  onChange={e => setSaveWorkoutName(e.target.value)}
+                  placeholder={`${FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea} ${duration}min`}
+                  maxLength={40}
+                  autoFocus
+                />
+                <div className="wk-save-modal-actions">
+                  <button className="wk-btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                  <button className="wk-btn-primary" onClick={() => saveWorkoutToFavourites(saveWorkoutName)} disabled={savingWorkout}>
+                    {savingWorkout ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     );
@@ -1901,6 +2243,7 @@ export default function CoreBuddyWorkouts() {
           const config = LEVELS.find(l => l.key === level);
           const totalTime = workout.length * rounds * (config.work + config.rest);
           return (
+            <>
             <WorkoutCelebration
               title="Workout Complete!"
               stats={[
@@ -1914,6 +2257,37 @@ export default function CoreBuddyWorkouts() {
               onDismissStart={() => setView('menu')}
               onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
+            {/* Save workout prompt on completion */}
+            {!selectedMuscleSession?.interval && (
+              <button className="wk-complete-save-btn" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Save This Workout
+              </button>
+            )}
+            {showSaveModal && (
+              <div className="wk-save-modal-backdrop" onClick={() => setShowSaveModal(false)} style={{ zIndex: 10001 }}>
+                <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
+                  <h3>Save Workout</h3>
+                  <p>Give this workout a name (or leave blank for auto-name)</p>
+                  <input
+                    type="text"
+                    className="wk-save-input"
+                    value={saveWorkoutName}
+                    onChange={e => setSaveWorkoutName(e.target.value)}
+                    placeholder={`${FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea} ${duration}min`}
+                    maxLength={40}
+                    autoFocus
+                  />
+                  <div className="wk-save-modal-actions">
+                    <button className="wk-btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                    <button className="wk-btn-primary" onClick={() => saveWorkoutToFavourites(saveWorkoutName)} disabled={savingWorkout}>
+                      {savingWorkout ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
           );
         })()}
       </div>
