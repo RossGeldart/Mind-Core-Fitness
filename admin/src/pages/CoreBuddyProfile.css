@@ -1129,33 +1129,37 @@
 
 /* ==================== JOURNEY SHARE CARDS ==================== */
 .journey-card {
-  border-radius: 16px;
-  padding: 22px 18px 14px;
+  border-radius: 14px;
+  padding: 20px 16px 14px;
   margin-bottom: 10px;
-  background: #ffffff;
-  border: 2px solid #A12F3A;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 [data-theme="dark"] .journey-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  background: rgba(30, 30, 30, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .journey-card-logo-frame {
-  width: 120px; height: 120px;
+  width: 72px; height: 72px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #A12F3A;
-  margin-bottom: 14px;
+  border: 2px solid rgba(161, 47, 58, 0.25);
+  margin-bottom: 12px;
   flex-shrink: 0;
-  box-shadow: 0 0 24px rgba(161, 47, 58, 0.15);
+  background: #fff;
+}
+[data-theme="dark"] .journey-card-logo-frame {
+  border-color: rgba(161, 47, 58, 0.4);
 }
 .journey-card-logo-badge {
-  border-color: #ffc107;
-  box-shadow: 0 0 24px rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.4);
 }
 .journey-card-logo-img {
   width: 100%; height: 100%;
@@ -1165,9 +1169,9 @@
 
 .journey-card-title {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -1177,16 +1181,16 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.74rem;
   font-weight: 500;
-  color: #555555;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .journey-card-cta {
   font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 12px 0 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 10px 0 0;
   line-height: 1.35;
 }
 
@@ -1194,7 +1198,7 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
-  color: #A12F3A;
-  margin: 14px 0 0;
+  color: var(--color-primary);
+  margin: 10px 0 0;
   letter-spacing: 0.2px;
 }
