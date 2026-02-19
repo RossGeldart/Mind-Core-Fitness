@@ -315,6 +315,30 @@ export default function CoreBuddyNutrition() {
     } catch { return []; }
   };
 
+  // Load favourites from Firestore on mount (localStorage is just a fast cache)
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const loadFavourites = async () => {
+      try {
+        const favDoc = await getDoc(doc(db, 'favouriteFoods', clientData.id));
+        if (favDoc.exists()) {
+          const items = favDoc.data().items || [];
+          localStorage.setItem(FAVS_KEY, JSON.stringify(items));
+          setFavTick(t => t + 1);
+        } else {
+          // First load: migrate any existing localStorage favourites to Firestore
+          const localFavs = getFavourites();
+          if (localFavs.length > 0) {
+            await setDoc(doc(db, 'favouriteFoods', clientData.id), { items: localFavs, updatedAt: Timestamp.now() });
+          }
+        }
+      } catch (err) {
+        console.error('Error loading favourites:', err);
+      }
+    };
+    loadFavourites();
+  }, [clientData?.id]);
+
   const isFavourite = (name) => {
     return getFavourites().some(f => f.name.toLowerCase() === (name || '').toLowerCase());
   };
@@ -338,6 +362,11 @@ export default function CoreBuddyNutrition() {
       });
     }
     localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+    // Persist to Firestore for cross-session reliability
+    if (clientData?.id) {
+      setDoc(doc(db, 'favouriteFoods', clientData.id), { items: favs, updatedAt: Timestamp.now() })
+        .catch(err => console.error('Error saving favourites:', err));
+    }
     setFavTick(t => t + 1); // trigger re-render
   };
 
