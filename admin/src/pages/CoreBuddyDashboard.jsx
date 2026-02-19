@@ -701,7 +701,7 @@ export default function CoreBuddyDashboard() {
   const streakPct = streakWeeks > 0 ? Math.min(Math.round((streakWeeks / 12) * 100), 100) : 0;
 
   const statRings = [
-    { label: 'Wk Streak', value: `${streakWeeks}`, pct: streakPct, color: '#38B6FF', size: 'normal' },
+    { label: 'Wk Streak', value: `${streakWeeks}`, pct: streakPct, color: 'var(--color-primary)', size: 'normal' },
     { label: 'Workouts', value: `${weeklyWorkouts}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
