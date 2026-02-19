@@ -1,42 +1,54 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const config = { runtime: 'edge' };
 
 const PLAN_MARKER_START = '|||PLAN|||';
 const PLAN_MARKER_END = '|||END_PLAN|||';
 
-// Allow up to 60s for plan generation (Vercel Pro) — Hobby allows 10s max
-export const config = { maxDuration: 60 };
-
 /**
  * POST /api/buddy-generate-plan
+ * Edge Runtime + streaming — works within Vercel Hobby 30s limit.
+ *
  * Body: { profile: {}, exerciseLibrary: [] }
- *
- * profile        – onboarding data (goals, experience, injuries, availability, etc.)
- * exerciseLibrary – array of { name, type, equipment, group } for allowed exercises
- *
- * Returns: { reply: string, plan?: object }
+ * Returns: SSE stream — intermediate chunks + final { done, reply, plan } event
  */
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Allow': 'POST', 'Content-Type': 'application/json' },
+    });
   }
 
-  const { profile, exerciseLibrary } = req.body;
+  let body;
+  try { body = await req.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { profile, exerciseLibrary } = body;
 
   if (!profile) {
-    return res.status(400).json({ error: 'profile is required' });
+    return new Response(JSON.stringify({ error: 'profile is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   if (!exerciseLibrary || !Array.isArray(exerciseLibrary) || exerciseLibrary.length === 0) {
-    return res.status(400).json({ error: 'exerciseLibrary array is required' });
+    return new Response(JSON.stringify({ error: 'exerciseLibrary array is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  try {
-    const systemPrompt = buildPlanPrompt(profile, exerciseLibrary);
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const systemPrompt = buildPlanPrompt(profile, exerciseLibrary);
 
-    const completion = await openai.chat.completions.create({
+  try {
+    const stream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
@@ -44,35 +56,58 @@ export default async function handler(req, res) {
       ],
       temperature: 0.6,
       max_tokens: 8192,
+      stream: true,
     });
 
-    const raw = completion.choices[0]?.message?.content || '';
+    const encoder = new TextEncoder();
 
-    // Extract structured plan JSON
-    const markerStart = raw.indexOf(PLAN_MARKER_START);
-    const markerEnd = raw.indexOf(PLAN_MARKER_END);
+    const readable = new ReadableStream({
+      async start(controller) {
+        let fullText = '';
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              fullText += content;
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+            }
+          }
 
-    if (markerStart !== -1 && markerEnd !== -1) {
-      const jsonStr = raw.slice(markerStart + PLAN_MARKER_START.length, markerEnd).trim();
-      const reply = raw.slice(0, markerStart).trim();
+          // Parse the accumulated response
+          const planStart = fullText.indexOf(PLAN_MARKER_START);
+          const planEnd = fullText.indexOf(PLAN_MARKER_END);
 
-      try {
-        const plan = JSON.parse(jsonStr);
-        return res.status(200).json({ reply, plan });
-      } catch {
-        // JSON parse failed — return raw reply
-        return res.status(200).json({
-          reply: raw.replace(PLAN_MARKER_START, '').replace(PLAN_MARKER_END, '').replace(jsonStr, '').trim(),
-          error: 'Plan generation produced invalid structure — try again',
-        });
-      }
-    }
+          if (planStart !== -1 && planEnd !== -1) {
+            const jsonStr = fullText.slice(planStart + PLAN_MARKER_START.length, planEnd).trim();
+            const reply = fullText.slice(0, planStart).trim();
+            try {
+              const plan = JSON.parse(jsonStr);
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply, plan })}\n\n`));
+            } catch {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply, error: 'Plan structure was invalid — try again' })}\n\n`));
+            }
+          } else {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply: fullText })}\n\n`));
+          }
+        } catch (err) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, error: 'Failed to generate plan' })}\n\n`));
+        }
+        controller.close();
+      },
+    });
 
-    // No markers found — return raw reply
-    return res.status(200).json({ reply: raw });
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (err) {
-    console.error('Buddy generate plan error:', err);
-    return res.status(500).json({ error: 'Failed to generate plan' });
+    return new Response(JSON.stringify({ error: 'Failed to generate plan' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 

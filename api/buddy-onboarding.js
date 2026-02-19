@@ -1,33 +1,47 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const config = { runtime: 'edge' };
 
 const PROFILE_MARKER_START = '|||PROFILE|||';
 const PROFILE_MARKER_END = '|||END|||';
 
 /**
  * POST /api/buddy-onboarding
- * Body: { messages: [], clientName: string }
+ * Edge Runtime + streaming — works within Vercel Hobby 30s limit.
  *
- * Returns: { reply: string, profileData?: object }
- * profileData is present only when Buddy has collected all info and the user confirmed.
+ * Body: { messages: [], clientName: string }
+ * Returns: SSE stream — intermediate chunks + final { done, reply, profileData? } event
  */
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Allow': 'POST', 'Content-Type': 'application/json' },
+    });
   }
 
-  const { messages, clientName } = req.body;
+  let body;
+  try { body = await req.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { messages, clientName } = body;
 
   if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'messages array is required' });
+    return new Response(JSON.stringify({ error: 'messages array is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  try {
-    const systemPrompt = buildOnboardingPrompt(clientName || 'there');
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const systemPrompt = buildOnboardingPrompt(clientName || 'there');
 
-    const completion = await openai.chat.completions.create({
+  try {
+    const stream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
@@ -35,31 +49,64 @@ export default async function handler(req, res) {
       ],
       temperature: 0.7,
       max_tokens: 1024,
+      stream: true,
     });
 
-    const raw = completion.choices[0]?.message?.content || '';
+    const encoder = new TextEncoder();
 
-    // Check if Buddy included profile data (onboarding complete)
-    const markerStart = raw.indexOf(PROFILE_MARKER_START);
-    const markerEnd = raw.indexOf(PROFILE_MARKER_END);
+    const readable = new ReadableStream({
+      async start(controller) {
+        let fullText = '';
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              fullText += content;
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t: content })}\n\n`));
+            }
+          }
 
-    if (markerStart !== -1 && markerEnd !== -1) {
-      const jsonStr = raw.slice(markerStart + PROFILE_MARKER_START.length, markerEnd).trim();
-      const reply = raw.slice(0, markerStart).trim();
+          // Check if Buddy included profile data (onboarding complete)
+          const markerStart = fullText.indexOf(PROFILE_MARKER_START);
+          const markerEnd = fullText.indexOf(PROFILE_MARKER_END);
 
-      try {
-        const profileData = JSON.parse(jsonStr);
-        return res.status(200).json({ reply, profileData });
-      } catch {
-        // JSON parse failed — return raw reply without profile data
-        return res.status(200).json({ reply: raw.replace(PROFILE_MARKER_START, '').replace(PROFILE_MARKER_END, '').replace(jsonStr, '').trim() });
-      }
-    }
+          if (markerStart !== -1 && markerEnd !== -1) {
+            const jsonStr = fullText.slice(markerStart + PROFILE_MARKER_START.length, markerEnd).trim();
+            const reply = fullText.slice(0, markerStart).trim();
+            try {
+              const profileData = JSON.parse(jsonStr);
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply, profileData })}\n\n`));
+            } catch {
+              // JSON parse failed — return raw reply without profile data
+              const cleanReply = fullText
+                .replace(PROFILE_MARKER_START, '')
+                .replace(PROFILE_MARKER_END, '')
+                .replace(jsonStr, '')
+                .trim();
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply: cleanReply })}\n\n`));
+            }
+          } else {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, reply: fullText })}\n\n`));
+          }
+        } catch (err) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true, error: 'Failed to get a response from Buddy' })}\n\n`));
+        }
+        controller.close();
+      },
+    });
 
-    return res.status(200).json({ reply: raw });
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (err) {
-    console.error('Buddy onboarding error:', err);
-    return res.status(500).json({ error: 'Failed to get a response from Buddy' });
+    return new Response(JSON.stringify({ error: 'Failed to get a response from Buddy' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
 
