@@ -156,6 +156,12 @@ service cloud.firestore {
       allow read, write: if isClientOwner(docId);
     }
 
+    // Favourite Foods - admin full, clients read/write own (doc ID = clientId)
+    match /favouriteFoods/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+
     // Nutrition Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /nutritionLogs/{docId} {
       allow read, write: if isAdmin();
