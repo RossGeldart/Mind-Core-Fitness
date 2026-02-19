@@ -240,13 +240,7 @@ export default function CoreBuddyCoach() {
 
           <div className="buddy-chat-header">
             <div className="buddy-chat-avatar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
-                <path d="M18 14c2 1 3 3 3 5v2H3v-2c0-2 1-4 3-5"/>
-                <circle cx="9" cy="7" r="0.5" fill="currentColor"/>
-                <circle cx="15" cy="7" r="0.5" fill="currentColor"/>
-                <path d="M9.5 10a2.5 2.5 0 0 0 5 0"/>
-              </svg>
+              <img src="/Logo.webp" alt="Buddy" className="buddy-chat-avatar-img" />
             </div>
             <div>
               <h2 className="buddy-chat-name">Buddy</h2>
@@ -258,10 +252,24 @@ export default function CoreBuddyCoach() {
         </div>
 
         <div className="buddy-chat-messages">
+          <div className="buddy-chat-watermark">
+            <img src="/Logo.webp" alt="" className="buddy-chat-watermark-img" />
+          </div>
+
           {chatMessages.map((msg, i) => (
             <div key={i} className={`buddy-chat-bubble buddy-chat-${msg.role}`}>
-              {msg.role === 'assistant' && (
-                <div className="buddy-chat-bubble-avatar">B</div>
+              {msg.role === 'assistant' ? (
+                <div className="buddy-chat-bubble-avatar buddy-chat-bubble-avatar--logo">
+                  <img src="/Logo.webp" alt="Buddy" />
+                </div>
+              ) : (
+                <div className="buddy-chat-bubble-avatar buddy-chat-bubble-avatar--user">
+                  {clientData?.photoURL ? (
+                    <img src={clientData.photoURL} alt="You" />
+                  ) : (
+                    <span>{(clientData?.name || '?').charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
               )}
               <div className="buddy-chat-bubble-content">
                 {msg.content}
@@ -271,7 +279,9 @@ export default function CoreBuddyCoach() {
 
           {chatLoading && (
             <div className="buddy-chat-bubble buddy-chat-assistant">
-              <div className="buddy-chat-bubble-avatar">B</div>
+              <div className="buddy-chat-bubble-avatar buddy-chat-bubble-avatar--logo">
+                <img src="/Logo.webp" alt="Buddy" />
+              </div>
               <div className="buddy-chat-bubble-content buddy-chat-typing">
                 <span /><span /><span />
               </div>
