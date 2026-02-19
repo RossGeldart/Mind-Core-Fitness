@@ -399,7 +399,13 @@ export default function CoreBuddyCoach() {
                 </div>
 
                 <button
-                  className="buddy-chat-done-btn"
+                  className="buddy-chat-done-btn buddy-chat-build-btn"
+                  onClick={() => navigate('/client/core-buddy/builder')}
+                >
+                  Build Your Routine
+                </button>
+                <button
+                  className="buddy-chat-skip-btn"
                   onClick={() => navigate('/client/core-buddy')}
                 >
                   Back to Dashboard
@@ -440,7 +446,13 @@ export default function CoreBuddyCoach() {
               <>
                 <p className="buddy-chat-done-text">Profile saved — you're all set.</p>
                 <button
-                  className="buddy-chat-done-btn"
+                  className="buddy-chat-done-btn buddy-chat-build-btn"
+                  onClick={() => navigate('/client/core-buddy/builder')}
+                >
+                  Build Your Routine
+                </button>
+                <button
+                  className="buddy-chat-skip-btn"
                   onClick={() => navigate('/client/core-buddy')}
                 >
                   Back to Dashboard
