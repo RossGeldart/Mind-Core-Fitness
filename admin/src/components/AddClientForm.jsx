@@ -8,7 +8,6 @@ const CLIENT_TYPES = [
   { value: 'block', label: 'Block (1-2-1)' },
   { value: 'circuit_vip', label: 'Circuit VIP' },
   { value: 'circuit_dropin', label: 'Circuit Drop-in' },
-  { value: 'core_buddy', label: 'Core Buddy' },
 ];
 
 export default function AddClientForm({ onClose, onClientAdded }) {
@@ -18,7 +17,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     password: '',
     clientType: 'block',
     circuitAccess: false,
-    coreBuddyPlan: 'free',
     weeksInBlock: '',
     numberOfSessions: '',
     sessionDuration: '45',
@@ -102,9 +100,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
         clientDoc.sessionDuration = parseInt(formData.sessionDuration);
         clientDoc.startDate = Timestamp.fromDate(new Date(formData.startDate));
         clientDoc.endDate = Timestamp.fromDate(new Date(formData.endDate));
-      } else if (formData.clientType === 'core_buddy') {
-        clientDoc.coreBuddyAccess = true;
-        clientDoc.coreBuddyPlan = formData.coreBuddyPlan || 'free';
       } else {
         // Circuit members get strike tracking
         clientDoc.circuitStrikes = 0;
@@ -298,24 +293,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
                 </div>
               </div>
             </>
-          )}
-
-          {/* Core Buddy plan selector */}
-          {formData.clientType === 'core_buddy' && (
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="coreBuddyPlan">Core Buddy Plan</label>
-                <select
-                  id="coreBuddyPlan"
-                  name="coreBuddyPlan"
-                  value={formData.coreBuddyPlan}
-                  onChange={handleChange}
-                >
-                  <option value="free">Free</option>
-                  <option value="premium">Premium</option>
-                </select>
-              </div>
-            </div>
           )}
 
           <div className="form-actions">

@@ -74,8 +74,8 @@
     },
     {
       "source": "/quick",
-      "destination": "/core-buddy",
-      "permanent": true
+      "destination": "/login/signup",
+      "permanent": false
     }
   ]
 }

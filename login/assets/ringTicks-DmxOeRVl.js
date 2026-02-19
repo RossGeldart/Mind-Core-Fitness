@@ -1,0 +1,1 @@
+function t(h,i,c,n,o){const M=[];for(let s=0;s<h;s++){const a=(s*(360/h)-90)*(Math.PI/180);M.push({x1:i+n*Math.cos(a),y1:c+n*Math.sin(a),x2:i+o*Math.cos(a),y2:c+o*Math.sin(a),thick:s%5===0})}return M}const k=t(60,100,100,85,96);t(60,100,100,78,94);t(60,100,100,82,94);t(60,50,50,38,46);t(60,40,40,30,37);export{k as T};

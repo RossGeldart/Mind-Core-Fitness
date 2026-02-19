@@ -185,7 +185,7 @@ export default function Onboarding() {
   // Redirect if already completed onboarding
   useEffect(() => {
     if (!authLoading && clientData?.onboardingComplete) {
-      navigate('/client/core-buddy');
+      navigate('/client');
     }
   }, [authLoading, clientData, navigate]);
 
@@ -242,7 +242,7 @@ export default function Onboarding() {
           <div className="ob-showcase-header">
             <img src="/Logo.webp" alt="Mind Core Fitness" className="ob-logo" width="48" height="48" />
             <div style={{ flex: 1 }}>
-              <h1 className="ob-title" style={{ textAlign: 'left', marginBottom: 2 }}>Core Buddy</h1>
+              <h1 className="ob-title" style={{ textAlign: 'left', marginBottom: 2 }}>Mind Core Fitness</h1>
               <p className="ob-subtitle" style={{ textAlign: 'left', margin: 0 }}>Here's what you can do</p>
             </div>
             <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
@@ -414,52 +414,6 @@ export default function Onboarding() {
               <div className="ob-plan-cta">Coming Soon</div>
             </div>
 
-            {/* Core Buddy AI section header */}
-            <div className="ob-plan-divider">
-              <span className="ob-plan-divider-line" />
-              <span className="ob-plan-divider-text">Core Buddy AI</span>
-              <span className="ob-plan-divider-line" />
-            </div>
-
-            {/* Core Buddy AI Monthly */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching</div>
-              <div className="ob-plan-name">AI Monthly</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">34.99</span>
-                <span className="ob-plan-period">/month</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
-
-            {/* Core Buddy AI Annual */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching — Best Value</div>
-              <div className="ob-plan-name">AI Annual</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">299.99</span>
-                <span className="ob-plan-period">/year</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
           </div>
 
           {checkoutError && <p className="ob-error">{checkoutError}</p>}
@@ -623,7 +577,7 @@ export default function Onboarding() {
         localUpdates.subscriptionStatus = 'trialing';
       }
       updateClientData(localUpdates);
-      navigate('/client/core-buddy');
+      navigate('/client');
     } catch (err) {
       console.error('Onboarding submit error:', err);
       alert('Failed to save — please try again.\n' + (err.code || err.message || ''));

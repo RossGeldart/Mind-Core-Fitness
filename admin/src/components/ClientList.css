@@ -515,11 +515,6 @@
   color: #42a5f5;
 }
 
-.client-type-badge.core-buddy {
-  background: rgba(161, 47, 58, 0.15);
-  color: var(--color-primary);
-}
-
 /* ====== Warning Badges on Collapsed Cards ====== */
 .client-warn-badge {
   font-family: 'Roboto', sans-serif;

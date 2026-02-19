@@ -5,7 +5,6 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
-import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 
 function getWeekBounds() {
@@ -226,12 +225,11 @@ export default function Leaderboard() {
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
-      // Get all opted-in Core Buddy clients only
+      // Get all opted-in clients
       const clientsQ = query(collection(db, 'clients'), where('leaderboardOptIn', '==', true));
       const clientsSnap = await getDocs(clientsQ);
       const clients = clientsSnap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(c => c.clientType === 'core_buddy' || c.coreBuddyAccess === true);
+        .map(d => ({ id: d.id, ...d.data() }));
 
       if (clients.length === 0) {
         setRankings([]);
@@ -396,7 +394,7 @@ export default function Leaderboard() {
       <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => navigate('/client')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -456,7 +454,6 @@ export default function Leaderboard() {
             <p className="lb-optin-note">Your full name will be visible to other members</p>
           </div>
         </main>
-        <CoreBuddyNav />
       </div>
     );
   }
@@ -466,7 +463,7 @@ export default function Leaderboard() {
     <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
       <header className="client-header">
         <div className="header-content">
-          <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+          <button className="header-back-btn" onClick={() => navigate('/client')} aria-label="Go back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -563,7 +560,7 @@ export default function Leaderboard() {
             {podiumEntries.length > 0 && (
               <div className="lb-podium">
                 {/* 2nd place */}
-                <div className="lb-podium-place lb-podium-2nd" onClick={() => podiumEntries[1] && navigate(`/client/core-buddy/profile/${podiumEntries[1].id}`)} role={podiumEntries[1] ? 'button' : undefined}>
+                <div className="lb-podium-place lb-podium-2nd" onClick={() => podiumEntries[1] && navigate(`/client/profile/${podiumEntries[1].id}`)} role={podiumEntries[1] ? 'button' : undefined}>
                   {podiumEntries[1] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[1]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[1] }}>
@@ -579,7 +576,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* 1st place */}
-                <div className="lb-podium-place lb-podium-1st" onClick={() => navigate(`/client/core-buddy/profile/${podiumEntries[0].id}`)} role="button">
+                <div className="lb-podium-place lb-podium-1st" onClick={() => navigate(`/client/profile/${podiumEntries[0].id}`)} role="button">
                   <div className="lb-podium-crown">
                     <svg viewBox="0 0 24 24" fill="#FFD700" stroke="none">
                       <path d="M2.5 18.5l3-7 4 4 3-9 3 9 4-4 3 7z"/>
@@ -597,7 +594,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* 3rd place */}
-                <div className="lb-podium-place lb-podium-3rd" onClick={() => podiumEntries[2] && navigate(`/client/core-buddy/profile/${podiumEntries[2].id}`)} role={podiumEntries[2] ? 'button' : undefined}>
+                <div className="lb-podium-place lb-podium-3rd" onClick={() => podiumEntries[2] && navigate(`/client/profile/${podiumEntries[2].id}`)} role={podiumEntries[2] ? 'button' : undefined}>
                   {podiumEntries[2] ? (
                     <>
                       <div className={`lb-podium-avatar ${isCurrentUser(podiumEntries[2]) ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[2] }}>
@@ -622,7 +619,7 @@ export default function Leaderboard() {
                     key={entry.id}
                     className={`lb-rank-item ${isCurrentUser(entry) ? 'lb-rank-you' : ''}`}
                     style={{ animationDelay: `${i * 0.04}s` }}
-                    onClick={() => navigate(`/client/core-buddy/profile/${entry.id}`)}
+                    onClick={() => navigate(`/client/profile/${entry.id}`)}
                     role="button"
                   >
                     <span className="lb-rank-number">{entry.rank}</span>
@@ -676,9 +673,6 @@ export default function Leaderboard() {
           </div>
         </div>
       )}
-
-      {/* Core Buddy Bottom Nav */}
-      <CoreBuddyNav />
 
       {/* Toast */}
       {toast && (
