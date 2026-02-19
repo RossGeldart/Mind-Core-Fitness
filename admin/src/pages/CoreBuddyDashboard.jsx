@@ -1471,30 +1471,6 @@ export default function CoreBuddyDashboard() {
         {/* Feature Cards */}
         <div className="cb-features">
 
-          {/* 0. AI Buddy — only visible when enabled by admin */}
-          {clientData?.buddyEnabled && (
-            <button
-              className="cb-feature-card cb-card-buddy ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/buddy'); }}
-            >
-              <div className="cb-buddy-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
-                  <path d="M18 14c2 1 3 3 3 5v2H3v-2c0-2 1-4 3-5"/>
-                  <circle cx="9" cy="7" r="0.5" fill="currentColor"/>
-                  <circle cx="15" cy="7" r="0.5" fill="currentColor"/>
-                  <path d="M9.5 10a2.5 2.5 0 0 0 5 0"/>
-                  <path d="M7 13c1.5 1 3.5 1.5 5 1.5s3.5-.5 5-1.5"/>
-                </svg>
-              </div>
-              <div className="cb-card-content">
-                <h3>Buddy <span className="cb-buddy-badge">AI</span></h3>
-                <p className="cb-card-desc">Your AI training partner</p>
-              </div>
-              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          )}
-
           {/* 1. Nutrition / Macros — hidden for free tier */}
           {isPremium && (
           <button
