@@ -816,11 +816,17 @@ export default function CoreBuddyWorkouts() {
       try {
         const q = query(
           collection(db, 'savedWorkouts'),
-          where('clientId', '==', clientData.id),
-          orderBy('savedAt', 'desc')
+          where('clientId', '==', clientData.id)
         );
         const snap = await getDocs(q);
-        setSavedWorkouts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Sort client-side to avoid requiring a composite Firestore index
+        docs.sort((a, b) => {
+          const aTime = a.savedAt?.toMillis?.() || a.savedAt?.seconds * 1000 || 0;
+          const bTime = b.savedAt?.toMillis?.() || b.savedAt?.seconds * 1000 || 0;
+          return bTime - aTime;
+        });
+        setSavedWorkouts(docs);
       } catch (err) {
         console.error('Error loading saved workouts:', err);
       } finally {
