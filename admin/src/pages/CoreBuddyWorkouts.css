@@ -2209,9 +2209,24 @@
 /* Preview Actions */
 .wk-preview-actions {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
   padding-bottom: 16px;
+}
+
+.wk-preview-actions-row {
+  display: flex;
+  gap: 10px;
+}
+
+.wk-btn-half {
+  flex: 1;
+  justify-content: center;
+}
+
+.wk-btn-full {
+  width: 100%;
+  justify-content: center;
 }
 
 .wk-btn-secondary {

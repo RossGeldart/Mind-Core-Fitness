@@ -2221,18 +2221,18 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-actions">
             {!selectedMuscleSession?.interval && (
-              <>
-                <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
+              <div className="wk-preview-actions-row">
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => generateWorkout()}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
                   Reshuffle
                 </button>
-                <button className="wk-btn-save" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                   Save
                 </button>
-              </>
+              </div>
             )}
-            <button className="wk-btn-primary" onClick={startWorkout}>
+            <button className="wk-btn-primary wk-btn-full" onClick={startWorkout}>
               Start Workout
             </button>
           </div>
