@@ -1623,37 +1623,6 @@
   transform: scale(1.1);
 }
 
-.pb-cb-achievements-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px;
-  margin-top: 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.pb-cb-achievements-link:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.pb-cb-achievements-link svg:first-child {
-  color: #f59e0b;
-}
-
 /* Target Setting Modal */
 .pb-cb-target-modal-overlay {
   position: fixed;
@@ -1892,14 +1861,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
   border-color: rgba(255, 255, 255, 0.1);
   border-left-color: var(--group-color, var(--color-primary));
-}
-
-[data-theme="dark"] .pb-cb-achievements-link {
-  background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
 [data-theme="dark"] .pb-carousel-arrow {

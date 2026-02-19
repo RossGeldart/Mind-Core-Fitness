@@ -180,7 +180,6 @@ export default function PersonalBests() {
   // Core Buddy PB state
   const [cbPBs, setCbPBs] = useState({});
   const [cbTargets, setCbTargets] = useState({});
-  const [cbAchievements, setCbAchievements] = useState(null);
   const [cbTargetExercise, setCbTargetExercise] = useState(null); // exercise name being targeted
   const [cbTargetInput, setCbTargetInput] = useState('');
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -226,14 +225,12 @@ export default function PersonalBests() {
       // Core Buddy clients: load PBs, targets, and achievements
       const loadCBPBs = async () => {
         try {
-          const [pbSnap, targetSnap, achSnap] = await Promise.all([
+          const [pbSnap, targetSnap] = await Promise.all([
             getDoc(doc(db, 'coreBuddyPBs', clientData.id)),
             getDoc(doc(db, 'coreBuddyTargets', clientData.id)),
-            getDoc(doc(db, 'coreBuddyAchievements', clientData.id)),
           ]);
           if (pbSnap.exists()) setCbPBs(pbSnap.data().exercises || {});
           if (targetSnap.exists()) setCbTargets(targetSnap.data().targets || {});
-          if (achSnap.exists()) setCbAchievements(achSnap.data());
         } catch (err) {
           console.error('Error loading Core Buddy PBs:', err);
         }
@@ -316,16 +313,6 @@ export default function PersonalBests() {
       showToast('Failed to save target', 'error');
     }
     setSaving(false);
-  };
-
-  // Core Buddy: check if a PB badge was earned for an exercise
-  const hasCbBadge = (exerciseName) => {
-    if (!cbAchievements?.badges) return false;
-    const target = cbTargets[exerciseName];
-    if (!target) return false;
-    return cbAchievements.badges.some(
-      b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
-    );
   };
 
   // Core Buddy: get progress toward target (0-1)
@@ -839,7 +826,6 @@ export default function PersonalBests() {
                                   const target = cbTargets[name];
                                   const progress = getCbTargetProgress(name);
                                   const targetHit = progress !== null && progress >= 1;
-                                  const badgeEarned = hasCbBadge(name);
                                   const ringFill = progress !== null ? Math.round(progress * 60) : 60;
 
                                   return (
@@ -858,15 +844,9 @@ export default function PersonalBests() {
                                             })}
                                           </svg>
                                           <div className="pb-cb-ring-icon" style={{ color: mg.color }}>
-                                            {badgeEarned ? (
-                                              <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                              </svg>
-                                            ) : (
-                                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                                <path d={mg.icon} />
-                                              </svg>
-                                            )}
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                              <path d={mg.icon} />
+                                            </svg>
                                           </div>
                                         </div>
                                         <div className="pb-cb-card-info">
@@ -878,11 +858,8 @@ export default function PersonalBests() {
                                                 .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                                             </div>
                                           )}
-                                          {target && targetHit && !badgeEarned && (
+                                          {target && targetHit && (
                                             <div className="pb-cb-target-info hit">Target hit!</div>
-                                          )}
-                                          {badgeEarned && (
-                                            <div className="pb-cb-target-info earned">Badge earned!</div>
                                           )}
                                         </div>
                                         <div className="pb-cb-card-action">
@@ -896,7 +873,7 @@ export default function PersonalBests() {
                                                 <circle cx="12" cy="12" r="6" />
                                                 <circle cx="12" cy="12" r="2" />
                                               </svg>
-                                            ) : targetHit && badgeEarned ? (
+                                            ) : targetHit ? (
                                               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M12 5v14M5 12h14" />
                                               </svg>
@@ -969,7 +946,6 @@ export default function PersonalBests() {
                                   const target = cbTargets[name];
                                   const progress = getCbTargetProgress(name);
                                   const targetHit = progress !== null && progress >= 1;
-                                  const badgeEarned = hasCbBadge(name);
                                   const ringFill = progress !== null ? Math.round(progress * 60) : 60;
 
                                   return (
@@ -987,15 +963,9 @@ export default function PersonalBests() {
                                             })}
                                           </svg>
                                           <div className="pb-cb-ring-icon">
-                                            {badgeEarned ? (
-                                              <svg viewBox="0 0 24 24" fill="currentColor" className="pb-cb-badge-earned">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                              </svg>
-                                            ) : (
-                                              <svg viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
-                                              </svg>
-                                            )}
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                              <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                                            </svg>
                                           </div>
                                         </div>
                                         <div className="pb-cb-card-info">
@@ -1007,11 +977,8 @@ export default function PersonalBests() {
                                                 .toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                                             </div>
                                           )}
-                                          {target && targetHit && !badgeEarned && (
+                                          {target && targetHit && (
                                             <div className="pb-cb-target-info hit">Target hit!</div>
-                                          )}
-                                          {badgeEarned && (
-                                            <div className="pb-cb-target-info earned">Badge earned!</div>
                                           )}
                                         </div>
                                         <div className="pb-cb-card-action">
@@ -1025,7 +992,7 @@ export default function PersonalBests() {
                                                 <circle cx="12" cy="12" r="6" />
                                                 <circle cx="12" cy="12" r="2" />
                                               </svg>
-                                            ) : targetHit && badgeEarned ? (
+                                            ) : targetHit ? (
                                               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M12 5v14M5 12h14" />
                                               </svg>
@@ -1072,19 +1039,6 @@ export default function PersonalBests() {
                   );
                 })()}
               </div>
-            )}
-
-            {/* Achievements link */}
-            {Object.keys(cbPBs).length > 0 && (
-              <button className="pb-cb-achievements-link anim-fade-up-d4" onClick={() => navigate('/client/core-buddy/achievements')}>
-                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                View Achievements
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
             )}
 
             {/* Target Setting Modal */}

@@ -23,7 +23,7 @@ const WIDGET_DEFS = [
   { id: 'pbs', label: 'Personal Bests', desc: 'Your top lifts at a glance', icon: 'trophy' },
   { id: 'nutrition', label: 'Nutrition', desc: 'Macro rings — protein, carbs, fats, cals', icon: 'apple' },
   { id: 'leaderboard', label: 'Leaderboard', desc: 'See where you rank among buddies', icon: 'podium' },
-  { id: 'achievements', label: 'Achievements', desc: 'Badge showcase and progress', icon: 'medal' },
+
   { id: 'journey', label: 'Journey', desc: 'Your posts, likes and comments feed', icon: 'feed' },
   { id: 'coach', label: 'Coach Message', desc: 'Motivational nudge from Buddy', icon: 'message', defaultOn: true },
   { id: 'nudge', label: 'Smart Nudge', desc: 'Contextual reminder of what to do next', icon: 'lightbulb' },

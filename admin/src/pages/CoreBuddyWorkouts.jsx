@@ -10,8 +10,8 @@ import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
-import generateShareImage from '../utils/generateShareImage';
-import BADGE_DEFS from '../utils/badgeConfig';
+
+
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
@@ -44,18 +44,6 @@ import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
 
-// Volume milestones for badge tracking
-const VOLUME_MILESTONES = [
-  { threshold: 1000, label: '1 Tonne' },
-  { threshold: 5000, label: '5 Tonne' },
-  { threshold: 10000, label: '10 Tonne' },
-  { threshold: 25000, label: '25 Tonne' },
-  { threshold: 50000, label: '50 Tonne' },
-  { threshold: 100000, label: '100 Tonne' },
-  { threshold: 250000, label: '250 Tonne' },
-  { threshold: 500000, label: '500 Tonne' },
-  { threshold: 1000000, label: '1 Million kg' },
-];
 
 // Exercise group mapping for badge categorisation
 const EXERCISE_GROUPS = {
@@ -638,8 +626,6 @@ export default function CoreBuddyWorkouts() {
   const [mgVideoUrls, setMgVideoUrls] = useState({});
   const mgVideoRef = useRef(null);
   const mgTimerRef = useRef(null);
-  const [mgSessionBadges, setMgSessionBadges] = useState([]);
-  const [mgBadgeCelebration, setMgBadgeCelebration] = useState(null);
 
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
@@ -1264,88 +1250,12 @@ export default function CoreBuddyWorkouts() {
         });
         showToast(`New PB! ${weight}kg \u00D7 ${reps} reps`, 'success');
         playBeep();
-        await mgCheckTargetBadge(exerciseName, weight);
       }
     } catch (err) {
       console.error('Error checking PB:', err);
     }
   };
 
-  const mgCheckTargetBadge = async (exerciseName, newWeight) => {
-    if (!clientData) return;
-    try {
-      const targetDoc = await getDoc(doc(db, 'coreBuddyTargets', clientData.id));
-      if (!targetDoc.exists()) return;
-      const targets = targetDoc.data().targets || {};
-      const target = targets[exerciseName];
-      if (!target || newWeight < target.targetWeight) return;
-
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const alreadyEarned = achData.badges.some(
-        b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
-      );
-      if (alreadyEarned) return;
-
-      const newBadge = {
-        type: 'pb_target',
-        exercise: exerciseName,
-        group: EXERCISE_GROUPS[exerciseName] || 'push',
-        targetWeight: target.targetWeight,
-        achievedAt: Timestamp.now(),
-      };
-      const updatedBadges = [...achData.badges, newBadge];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        ...achData,
-        badges: updatedBadges,
-        updatedAt: Timestamp.now(),
-      });
-      setMgSessionBadges(prev => [...prev, newBadge]);
-    } catch (err) {
-      console.error('Error checking target badge:', err);
-    }
-  };
-
-  const mgUpdateVolume = async (sessionVolume) => {
-    if (!clientData || sessionVolume <= 0) return;
-    try {
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const oldVolume = achData.totalVolume || 0;
-      const newVolume = oldVolume + sessionVolume;
-
-      const newMilestoneBadges = [];
-      VOLUME_MILESTONES.forEach(milestone => {
-        if (newVolume >= milestone.threshold && oldVolume < milestone.threshold) {
-          const alreadyEarned = achData.badges.some(
-            b => b.type === 'volume_milestone' && b.milestone === milestone.threshold
-          );
-          if (!alreadyEarned) {
-            newMilestoneBadges.push({
-              type: 'volume_milestone',
-              milestone: milestone.threshold,
-              label: milestone.label,
-              achievedAt: Timestamp.now(),
-            });
-          }
-        }
-      });
-
-      const allBadges = [...achData.badges, ...newMilestoneBadges];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        clientId: clientData.id,
-        badges: allBadges,
-        totalVolume: Math.round(newVolume),
-        updatedAt: Timestamp.now(),
-      });
-
-      if (newMilestoneBadges.length > 0) {
-        setMgSessionBadges(prev => [...prev, ...newMilestoneBadges]);
-      }
-    } catch (err) {
-      console.error('Error updating volume:', err);
-    }
-  };
 
   // ==================== MUSCLE GROUP WORKOUT FUNCTIONS ====================
 
@@ -1486,8 +1396,6 @@ export default function CoreBuddyWorkouts() {
   const saveMgWorkoutLog = async (logs) => {
     if (!currentUser || !clientData) return;
     try {
-      const volume = logs.reduce((sum, l) =>
-        sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
       const totalSets = logs.reduce((sum, l) => sum + l.sets.length, 0);
       await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
@@ -1498,20 +1406,9 @@ export default function CoreBuddyWorkouts() {
         exerciseCount: logs.length,
         totalSets,
         duration: Math.round(totalSets * 1.5),
-        volume: Math.round(volume),
         exercises: logs.map(l => ({ name: l.name, type: l.type, sets: l.sets })),
         completedAt: Timestamp.now(),
       });
-
-      // Update cumulative volume and check milestones
-      if (volume > 0) {
-        await mgUpdateVolume(volume);
-      }
-
-      // Trigger badge celebration if any badges earned during session
-      if (mgSessionBadges.length > 0) {
-        setMgBadgeCelebration({ badges: [...mgSessionBadges] });
-      }
     } catch (err) {
       console.error('Error saving muscle group workout log:', err);
     }
@@ -2761,14 +2658,11 @@ export default function CoreBuddyWorkouts() {
         {/* Hold-to-finish overlay */}
         {showMgFinish && (() => {
           const totalSets = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
-          const totalVolume = mgLogs.reduce((sum, l) =>
-            sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
           const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
           const mgStats = [
             { value: mgLogs.length, label: 'Exercises' },
             { value: totalSets, label: 'Sets' },
           ];
-          if (totalVolume > 0) mgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
           return (
             <WorkoutCelebration
               title={`${groupLabel} Complete!`}
@@ -2778,84 +2672,11 @@ export default function CoreBuddyWorkouts() {
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
               onDismissStart={() => setView('randomiser_hub')}
-              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); }}
+              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
           );
         })()}
 
-        {/* Badge celebration overlay */}
-        {mgBadgeCelebration && (
-          <div className="mg-badge-celebration" onClick={() => setMgBadgeCelebration(null)}>
-            <div className="mg-badge-celebration-card">
-              <div className="mg-badge-celebration-icon">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="#ffc107"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <h3 className="mg-badge-celebration-title">
-                {mgBadgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${mgBadgeCelebration.badges.length} Badges Earned!`}
-              </h3>
-              <div className="mg-badge-celebration-list">
-                {mgBadgeCelebration.badges.map((badge, i) => (
-                  <div key={i} className="mg-badge-celebration-item">
-                    {badge.type === 'pb_target'
-                      ? `${badge.exercise} \u2014 ${badge.targetWeight}kg`
-                      : badge.label}
-                  </div>
-                ))}
-              </div>
-              <div className="mg-badge-share-row">
-                <button className="mg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadgeJ = mgBadgeCelebration.badges[0];
-                  const badgeLabelsJ = mgBadgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDefJ = BADGE_DEFS.find(d => d.id === firstBadgeJ?.id) || BADGE_DEFS.find(d => d.name === firstBadgeJ?.label);
-                  await shareToJourney({
-                    type: 'badge_earned',
-                    title: badgeLabelsJ.length === 1 ? badgeLabelsJ[0] : `${badgeLabelsJ.length} Badges Earned!`,
-                    badges: badgeLabelsJ,
-                    badgeDesc: badgeDefJ?.desc,
-                  });
-                  showToast('Posted to Journey!', 'success');
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  Journey
-                </button>
-                <button className="mg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadge = mgBadgeCelebration.badges[0];
-                  const badgeLabels = mgBadgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDef = BADGE_DEFS.find(d => d.id === firstBadge?.id) || BADGE_DEFS.find(d => d.name === firstBadge?.label);
-                  const shareText = `Badge Earned! ${badgeLabels.join(', ')}\n#MindCoreFitness`;
-                  try {
-                    const blob = await generateShareImage({
-                      type: 'badge',
-                      title: badgeLabels.length === 1 ? badgeLabels[0] : 'Badges Earned!',
-                      badges: badgeLabels,
-                      badgeImage: badgeDef?.img,
-                      badgeDesc: badgeDef?.desc,
-                    });
-                    if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'badge.png', { type: 'image/png' })] })) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText, files: [new File([blob], 'badge.png', { type: 'image/png' })] });
-                    } else if (navigator.share) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText });
-                    } else {
-                      await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success');
-                    }
-                  } catch {
-                    try { await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success'); } catch {}
-                  }
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  Share
-                </button>
-              </div>
-              <button className="mg-badge-celebration-dismiss">Tap to dismiss</button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
