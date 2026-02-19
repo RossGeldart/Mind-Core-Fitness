@@ -804,6 +804,28 @@ body {
     color: var(--accent-color);
 }
 
+/* Coming Soon Card */
+.coming-soon-card {
+    opacity: 0.55;
+    cursor: default;
+    pointer-events: none;
+    position: relative;
+}
+
+.coming-soon-badge {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: var(--accent-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
 /* Testimonials Section */
 .testimonials {
     padding: 100px 20px;
