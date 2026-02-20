@@ -10,7 +10,6 @@ import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
-import useFeedback from '../hooks/useFeedback';
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -545,7 +544,6 @@ export default function CoreBuddyWorkouts() {
   const { isDark, toggleTheme, accent } = useTheme();
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
-  const { tap } = useFeedback();
 
   // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout'
   const [view, setView] = useState('randomiser_hub');
@@ -1938,7 +1936,7 @@ export default function CoreBuddyWorkouts() {
                 {FOCUS_AREAS.map(f => (
                   <button key={f.key}
                     className={`wk-equip-btn${focusArea === f.key ? ' active' : ''}${f.key === 'mix' ? ' wk-mix-btn' : ''}`}
-                    onClick={() => { tap(); setFocusArea(f.key); }}>
+                    onClick={() => { playBeep(); setFocusArea(f.key); }}>
                     <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={f.icon} /></svg>
                     <span>{f.label}</span>
                   </button>
@@ -1951,7 +1949,7 @@ export default function CoreBuddyWorkouts() {
               <h2>Level</h2>
               <div className="wk-level-cards">
                 {LEVELS.map(l => (
-                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => { tap(); setLevel(l.key); }}>
+                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
                     <span className="wk-level-desc">{l.desc}</span>
                   </button>
@@ -1966,7 +1964,7 @@ export default function CoreBuddyWorkouts() {
                 {TIME_OPTIONS.map(t => {
                   const locked = !availableTimeOptions.includes(t);
                   return (
-                    <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}${locked ? ' locked' : ''}`} onClick={() => { if (!locked) { tap(); setDuration(t); } }} disabled={locked}>
+                    <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}${locked ? ' locked' : ''}`} onClick={() => { if (!locked) { playBeep(); setDuration(t); } }} disabled={locked}>
                       <span className="wk-time-num">{t}</span>
                       <span className="wk-time-unit">{locked ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> : 'min'}</span>
                     </button>
@@ -1986,7 +1984,7 @@ export default function CoreBuddyWorkouts() {
                       className={`wk-equip-btn${isSelected ? ' active' : ''}`}
                       onClick={() => {
                         if (isSelected && selectedEquipment.length === 1) return;
-                        tap();
+                        playBeep();
                         setSelectedEquipment(prev => {
                           if (isSelected && prev.length === 1) return prev;
                           return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
