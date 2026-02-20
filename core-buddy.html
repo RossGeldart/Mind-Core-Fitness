@@ -538,123 +538,61 @@
             background: var(--bg-elevated);
         }
 
-        .install-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        .install-platforms {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
             margin-top: 50px;
-            max-width: 100%;
-            overflow: hidden;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .install-card {
+        .install-platform {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
-            min-width: 0;
-            overflow: hidden;
+            border-radius: 16px;
+            padding: 24px 28px;
         }
 
-        .install-card-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .install-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--bg-elevated);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .install-card-header h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .install-card-header span {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 300;
-        }
-
-        .install-steps {
-            list-style: none;
-            counter-reset: step;
-        }
-
-        .install-steps li {
-            counter-increment: step;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            word-break: break-word;
-        }
-
-        .install-steps li:last-child { border-bottom: none; }
-
-        .install-steps li::before {
-            content: counter(step);
-            width: 24px;
-            height: 24px;
-            background: rgba(161, 47, 58, 0.15);
-            color: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .install-platform-title {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 0.75rem;
-            flex-shrink: 0;
-            margin-top: 1px;
+            font-size: 1rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .install-steps li strong {
+        .install-platform-icon {
+            font-size: 1.2rem;
+        }
+
+        .install-platform-steps {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.8;
+        }
+
+        .install-platform-steps strong {
             color: var(--text);
         }
 
         .install-badges {
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin-top: 50px;
+            gap: 30px;
+            margin-top: 40px;
             flex-wrap: wrap;
         }
 
         .install-badge {
+            color: var(--text-tertiary);
+            font-size: 0.82rem;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .install-badge-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(161, 47, 58, 0.12);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
+            gap: 6px;
         }
 
         /* ===== Pricing ===== */
@@ -1118,7 +1056,6 @@
                 gap: 30px;
             }
 
-            .install-grid { grid-template-columns: 1fr; }
             .pricing-cards { grid-template-columns: 1fr; max-width: 400px; }
             .faq-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -1323,59 +1260,30 @@
                 <p class="section-subtitle">Core Buddy is a web app you install straight from your browser. No downloads, no waiting for updates &mdash; always the latest version.</p>
             </div>
 
-            <div class="install-grid">
-                <!-- iPhone -->
-                <div class="install-card fade-in">
-                    <div class="install-card-header">
-                        <div class="install-icon">&#63743;</div>
-                        <div>
-                            <h4>iPhone / iPad</h4>
-                            <span>Install via Safari</span>
-                        </div>
+            <div class="install-platforms">
+                <div class="install-platform fade-in">
+                    <div class="install-platform-title">
+                        <span class="install-platform-icon">&#63743;</span> iPhone / iPad
                     </div>
-                    <ol class="install-steps">
-                        <li>Open <strong>mindcorefitness.com/login</strong> in <strong>Safari</strong></li>
-                        <li>Tap the <strong>Share</strong> button (square with arrow at the bottom)</li>
-                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-                        <li>Tap <strong>Add</strong> &mdash; done! Opens like a native app</li>
-                    </ol>
+                    <div class="install-platform-steps">
+                        Open in <strong>Safari</strong> &rarr; Tap <strong>Share</strong> (square with arrow) &rarr; <strong>"Add to Home Screen"</strong> &rarr; <strong>Add</strong>
+                    </div>
                 </div>
 
-                <!-- Android -->
-                <div class="install-card fade-in">
-                    <div class="install-card-header">
-                        <div class="install-icon">&#129302;</div>
-                        <div>
-                            <h4>Android</h4>
-                            <span>Install via Chrome</span>
-                        </div>
+                <div class="install-platform fade-in">
+                    <div class="install-platform-title">
+                        <span class="install-platform-icon">&#129302;</span> Android
                     </div>
-                    <ol class="install-steps">
-                        <li>Open <strong>mindcorefitness.com/login</strong> in <strong>Chrome</strong></li>
-                        <li>Tap the <strong>three-dot menu</strong> (top right corner)</li>
-                        <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></li>
-                        <li>Tap <strong>Install</strong> &mdash; done! Opens like a native app</li>
-                    </ol>
+                    <div class="install-platform-steps">
+                        Open in <strong>Chrome</strong> &rarr; Tap <strong>&#8942; menu</strong> (top right) &rarr; <strong>"Install app"</strong> &rarr; <strong>Install</strong>
+                    </div>
                 </div>
             </div>
 
             <div class="install-badges">
-                <div class="install-badge">
-                    <div class="install-badge-icon">&#128246;</div>
-                    <span>Works Offline</span>
-                </div>
-                <div class="install-badge">
-                    <div class="install-badge-icon">&#128276;</div>
-                    <span>Push Notifications</span>
-                </div>
-                <div class="install-badge">
-                    <div class="install-badge-icon">&#9889;</div>
-                    <span>Fast Loading</span>
-                </div>
-                <div class="install-badge">
-                    <div class="install-badge-icon">&#128260;</div>
-                    <span>Auto Updates</span>
-                </div>
+                <span class="install-badge">&#128246; Works Offline</span>
+                <span class="install-badge">&#9889; Fast Loading</span>
+                <span class="install-badge">&#128260; Auto Updates</span>
             </div>
         </div>
     </section>
