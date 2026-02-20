@@ -321,23 +321,33 @@ export default function Onboarding() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             priceId: STRIPE_PRICES[plan],
-            clientId: clientData?.id,
-            uid: currentUser?.uid,
-            email: currentUser?.email,
+            clientId: clientData.id,
+            uid: currentUser.uid,
+            email: currentUser.email,
           }),
         });
+
+        if (!res.ok) {
+          const text = await res.text();
+          let msg;
+          try { msg = JSON.parse(text).error; } catch { msg = text; }
+          setCheckoutError(msg || `Server error (${res.status})`);
+          setCheckoutLoading(null);
+          return;
+        }
+
         const data = await res.json();
         if (data.url) {
           // Persist clientId so we can recover after Stripe redirect
           try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
           window.location.href = data.url;
         } else {
-          setCheckoutError(data.error || 'Something went wrong');
+          setCheckoutError('No checkout URL returned — please try again');
+          setCheckoutLoading(null);
         }
       } catch (err) {
         console.error('Checkout error:', err);
-        setCheckoutError('Unable to start checkout');
-      } finally {
+        setCheckoutError('Unable to reach checkout — check your connection');
         setCheckoutLoading(null);
       }
     };
@@ -375,15 +385,12 @@ export default function Onboarding() {
             </button>
 
             {/* Monthly */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
+            <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
               <div className="ob-plan-badge">Most Popular</div>
               <div className="ob-plan-name">Monthly</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">19.99</span>
+                <span className="ob-plan-amount">9.99</span>
                 <span className="ob-plan-period">/month</span>
               </div>
               <ul className="ob-plan-features">
@@ -391,75 +398,26 @@ export default function Onboarding() {
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
               </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
+              <div className="ob-plan-cta">{checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}</div>
+            </button>
 
             {/* Annual */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
+            <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
               <div className="ob-plan-badge">Best Value — Save 17%</div>
               <div className="ob-plan-name">Annual</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">199.99</span>
+                <span className="ob-plan-amount">99.99</span>
                 <span className="ob-plan-period">/year</span>
               </div>
+              <div className="ob-plan-price-sub">Just £8.33/month</div>
               <ul className="ob-plan-features">
                 <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
               </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
-
-            {/* Core Buddy AI section header */}
-            <div className="ob-plan-divider">
-              <span className="ob-plan-divider-line" />
-              <span className="ob-plan-divider-text">Core Buddy AI</span>
-              <span className="ob-plan-divider-line" />
-            </div>
-
-            {/* Core Buddy AI Monthly */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching</div>
-              <div className="ob-plan-name">AI Monthly</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">34.99</span>
-                <span className="ob-plan-period">/month</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
-
-            {/* Core Buddy AI Annual */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching — Best Value</div>
-              <div className="ob-plan-name">AI Annual</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">299.99</span>
-                <span className="ob-plan-period">/year</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
+              <div className="ob-plan-cta ob-plan-cta-featured">{checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}</div>
+            </button>
           </div>
 
           {checkoutError && <p className="ob-error">{checkoutError}</p>}
