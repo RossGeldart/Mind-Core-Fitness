@@ -19,6 +19,11 @@ export default function Login() {
   // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && currentUser) {
+      // Unverified self-signup users must verify before continuing
+      if (!currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
+        navigate('/signup');
+        return;
+      }
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
