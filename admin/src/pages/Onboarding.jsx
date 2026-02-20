@@ -7,61 +7,43 @@ import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import './Onboarding.css';
 
-import featureProfile from '../assets/feature_profile.PNG';
-import featureProfileTabs from '../assets/feature_profile_tabs.PNG';
-import featurePickAProgramme from '../assets/feature_pickaprogramme.PNG';
-import featureMuscleGroup from '../assets/feature_musclegroup.PNG';
-import featureRandomiseSelection from '../assets/feature_randomise_selection.PNG';
-import featureRandomiseGenerated from '../assets/feature_randomise_generated_workout.PNG';
-import featureWorkoutView from '../assets/feature_workout_view.PNG';
-import featureNutritionView from '../assets/feature_nutritionview.PNG';
-import featureJourneyPosts from '../assets/feature_journey_posts.PNG';
+import onboardSelectOptions from '../assets/onboard-select-options.PNG';
+import onboardGeneratedWorkout from '../assets/onboard-generated-workout.PNG';
+import onboardWorkoutView from '../assets/onboard-workout-view.PNG';
+import onboardTrackFoods from '../assets/onboard-track-foods.PNG';
+import onboardHabits from '../assets/onboard-habits.PNG';
+import onboardProfileView from '../assets/onboard-profile-view.PNG';
 
 const FEATURES = [
   {
-    title: 'Your Profile',
-    desc: 'Set up your personal profile to track your fitness journey, view your stats, and showcase your progress.',
-    image: featureProfile,
+    title: 'Build Your Workout',
+    desc: 'Choose your equipment, time, focus area and difficulty — then let Core Buddy generate a workout tailored to you.',
+    image: onboardSelectOptions,
   },
   {
-    title: 'Profile Tabs',
-    desc: 'Explore your personal bests, targets, and activity history — all organised in one place.',
-    image: featureProfileTabs,
+    title: 'Your Workout, Ready to Go',
+    desc: 'Your personalised workout is generated instantly. Not feeling it? Hit reshuffle for a new one, or save it for later.',
+    image: onboardGeneratedWorkout,
   },
   {
-    title: 'Pick a Programme',
-    desc: 'Choose from structured 4, 8, or 12-week programmes designed by professionals to match your goals.',
-    image: featurePickAProgramme,
+    title: 'Follow Along with Video',
+    desc: 'Every exercise comes with a video demo so you can nail your form. Track sets, reps and weights as you go.',
+    image: onboardWorkoutView,
   },
   {
-    title: 'Target Muscle Groups',
-    desc: 'Select specific muscle groups to focus on and get workouts tailored to exactly what you want to train.',
-    image: featureMuscleGroup,
+    title: 'Track Your Nutrition',
+    desc: 'Log meals with our barcode scanner, save favourites for quick logging, and use copy day to repeat a good day of eating.',
+    image: onboardTrackFoods,
   },
   {
-    title: 'Randomise Your Workout',
-    desc: 'Pick your preferences — focus area, difficulty, and duration — and let Core Buddy generate a workout for you.',
-    image: featureRandomiseSelection,
+    title: 'Build Better Habits',
+    desc: 'Set daily habits and track your streaks. Small wins every day add up to big results.',
+    image: onboardHabits,
   },
   {
-    title: 'Generated Workout',
-    desc: 'Your personalised workout is ready to go. Follow along with exercises, sets, and reps all laid out for you.',
-    image: featureRandomiseGenerated,
-  },
-  {
-    title: 'Workout View',
-    desc: 'Track your progress in real time as you work through each exercise with a clear, easy-to-follow layout.',
-    image: featureWorkoutView,
-  },
-  {
-    title: 'Nutrition Tracking',
-    desc: 'Log meals, scan barcodes, and track your macros and water intake to stay on top of your daily targets.',
-    image: featureNutritionView,
-  },
-  {
-    title: 'Journey Posts',
-    desc: 'Share updates, celebrate wins, and connect with your Core Buddies through the community feed.',
-    image: featureJourneyPosts,
+    title: 'Your Profile & Community',
+    desc: 'Track your stats, climb the leaderboards, and connect with your Core Buddies — all from your profile dashboard.',
+    image: onboardProfileView,
   },
 ];
 
