@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mcf-v2';
+const CACHE_NAME = 'mcf-v3';
 
 // App-shell assets cached on install
 const APP_SHELL = [
