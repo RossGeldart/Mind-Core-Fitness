@@ -1205,6 +1205,14 @@ export default function CoreBuddyWorkouts() {
         exercises: workout.map(e => e.name),
         completedAt: Timestamp.now(),
       });
+      if (typeof fbq === 'function') {
+        fbq('trackCustom', 'WorkoutCompleted', {
+          duration: duration,
+          level: level,
+          focus_area: focusArea,
+          exercise_count: workout.length
+        });
+      }
       setWeeklyCount(c => c + 1);
       setTotalCount(c => c + 1);
       setTotalMinutes(m => m + duration);

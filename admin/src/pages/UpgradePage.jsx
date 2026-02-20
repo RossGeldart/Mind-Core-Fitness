@@ -64,6 +64,15 @@ export default function UpgradePage() {
     }
 
     try {
+      if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+          content_name: 'Core Buddy ' + (plan === 'annual' ? 'Annual' : 'Monthly'),
+          content_category: 'Fitness App',
+          value: plan === 'annual' ? 99.99 : 9.99,
+          currency: 'GBP'
+        });
+      }
+
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
