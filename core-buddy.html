@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Buddy | Food. Habits. Move. — Your Complete Fitness System</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Core Buddy — Food. Habits. Move. The all-in-one fitness app for busy people. Randomised workouts in 5–30 minutes, quick nutrition logging, daily habit tracking. No complexity, just consistency.">
+    <meta name="keywords" content="fitness app, workout app, Core Buddy, Mind Core Fitness, workout randomiser, nutrition tracker, habit tracker, quick workouts, busy people fitness">
+    <meta name="author" content="Mind Core Fitness">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.mindcorefitness.com/core-buddy">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mindcorefitness.com/core-buddy">
+    <meta property="og:title" content="Core Buddy | Food. Habits. Move.">
+    <meta property="og:description" content="The all-in-one fitness app for busy people. Randomised workouts, quick nutrition logging, and daily habit tracking — all in one place.">
+    <meta property="og:image" content="https://www.mindcorefitness.com/Logo.PNG">
+    <meta property="og:site_name" content="Mind Core Fitness">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.mindcorefitness.com/core-buddy">
+    <meta name="twitter:title" content="Core Buddy | Food. Habits. Move.">
+    <meta name="twitter:description" content="The all-in-one fitness app for busy people. Randomised workouts, quick nutrition logging, and daily habit tracking.">
+    <meta name="twitter:image" content="https://www.mindcorefitness.com/Logo.PNG">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Core Buddy",
+      "description": "Food. Habits. Move. The all-in-one fitness app for busy people. Randomised workouts, quick nutrition logging, and daily habit tracking.",
+      "url": "https://www.mindcorefitness.com/core-buddy",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web",
+      "offers": [
+        { "@type": "Offer", "price": "0", "priceCurrency": "GBP", "name": "Free" },
+        { "@type": "Offer", "price": "9.99", "priceCurrency": "GBP", "name": "Monthly" },
+        { "@type": "Offer", "price": "99.99", "priceCurrency": "GBP", "name": "Annual" }
+      ],
+      "provider": {
+        "@type": "Organization",
+        "name": "Mind Core Fitness",
+        "url": "https://www.mindcorefitness.com"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.mindcorefitness.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Core Buddy", "item": "https://www.mindcorefitness.com/core-buddy" }
+      ]
+    }
+    </script>
+
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ECBK32DRR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0ECBK32DRR');
+    </script>
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1512543690146167');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== Reset ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        /* ===== Variables ===== */
+        :root {
+            --bg: #0a0a0c;
+            --bg-elevated: #111116;
+            --bg-card: #1a1a1f;
+            --accent: #A12F3A;
+            --accent-hover: #c83846;
+            --accent-glow: rgba(161, 47, 58, 0.25);
+            --text: #f0f0f2;
+            --text-secondary: #a0a0a8;
+            --text-tertiary: #606068;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== Utility ===== */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 100px 0; }
+
+        .section-label {
+            display: inline-block;
+            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        .text-center { text-align: center; }
+        .text-center .section-subtitle { margin: 0 auto; }
+
+        /* ===== Phone Mockup ===== */
+        .phone {
+            background: var(--bg-card);
+            border-radius: 36px;
+            padding: 8px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px var(--border-light);
+            max-width: 300px;
+            position: relative;
+        }
+
+        .phone img {
+            width: 100%;
+            border-radius: 28px;
+            display: block;
+        }
+
+        .phone-glow::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(60px);
+        }
+
+        /* ===== Navigation ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 12, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-logo img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+        }
+
+        .nav-logo span {
+            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-back {
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover { color: var(--text); }
+
+        .nav-cta {
+            padding: 10px 22px;
+            background: var(--accent);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 140px 0 100px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(ellipse at top right, rgba(161, 47, 58, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero .container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-tagline {
+            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-tagline .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            line-height: 1.08;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            line-height: 1.7;
+            max-width: 480px;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 36px;
+            background: var(--accent);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 25px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .btn-outline {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hero-note {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-phone {
+            max-width: 320px;
+        }
+
+        /* ===== Features ===== */
+        .features {
+            background: var(--bg-elevated);
+        }
+
+        .feature-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            padding: 70px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .feature-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .feature-row.reverse .feature-text { order: 2; }
+        .feature-row.reverse .feature-visual { order: 1; }
+
+        .feature-visual {
+            display: flex;
+            justify-content: center;
+        }
+
+        .feature-text .section-label {
+            margin-bottom: 12px;
+        }
+
+        .feature-text h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-text p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .feature-highlight {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(161, 47, 58, 0.12);
+            color: var(--accent);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Feature cards row */
+        .feature-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding-top: 70px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(161, 47, 58, 0.3);
+        }
+
+        .feature-card .phone {
+            max-width: 220px;
+            margin: 0 auto 24px;
+        }
+
+        .feature-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== Stats ===== */
+        .stats {
+            background: var(--bg);
+            padding: 70px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ===== Install / PWA ===== */
+        .install {
+            background: var(--bg-elevated);
+        }
+
+        .install-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .install-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+        }
+
+        .install-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .install-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .install-card-header h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .install-card-header span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+        }
+
+        .install-steps {
+            list-style: none;
+            counter-reset: step;
+        }
+
+        .install-steps li {
+            counter-increment: step;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .install-steps li:last-child { border-bottom: none; }
+
+        .install-steps li::before {
+            content: counter(step);
+            width: 28px;
+            height: 28px;
+            background: rgba(161, 47, 58, 0.15);
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .install-steps li strong {
+            color: var(--text);
+        }
+
+        .install-badges {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .install-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .install-badge-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(161, 47, 58, 0.12);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* ===== Pricing ===== */
+        .pricing {
+            background: var(--bg);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 960px;
+            margin: 50px auto 0;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            border-color: rgba(161, 47, 58, 0.3);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 0 1px var(--accent), 0 8px 40px rgba(161, 47, 58, 0.2);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 7px 18px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .pricing-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .pricing-amount {
+            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.8rem;
+            line-height: 1;
+        }
+
+        .pricing-currency {
+            font-size: 1.4rem;
+            vertical-align: super;
+        }
+
+        .pricing-period {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .pricing-sub {
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li::before {
+            content: '\2713';
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .pricing-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .pricing-btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .pricing-btn-outline:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .pricing-btn-filled {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .pricing-btn-filled:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .pricing-btn-featured {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .pricing-btn-featured:hover {
+            background: #fff;
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
+        }
+
+        .pricing-guarantee {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+        }
+
+        /* ===== FAQ ===== */
+        .faq {
+            background: var(--bg-elevated);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 50px;
+        }
+
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .faq-item summary {
+            padding: 20px 24px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .faq-item summary::-webkit-details-marker { display: none; }
+
+        .faq-item summary::after {
+            content: '+';
+            font-size: 1.3rem;
+            color: var(--accent);
+            font-weight: 300;
+            transition: transform 0.2s;
+        }
+
+        .faq-item[open] summary::after {
+            content: '\2212';
+        }
+
+        .faq-item summary:hover { color: var(--accent); }
+
+        .faq-answer {
+            padding: 0 24px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ===== Final CTA ===== */
+        .final-cta {
+            text-align: center;
+            padding: 120px 0;
+            position: relative;
+            background: var(--bg);
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(161, 47, 58, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .final-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 28px;
+            filter: drop-shadow(0 0 30px var(--accent-glow));
+        }
+
+        .final-cta h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            margin-bottom: 16px;
+        }
+
+        .final-cta > p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        .final-cta .btn-primary { margin-bottom: 28px; }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            color: var(--text-tertiary);
+            font-size: 0.82rem;
+        }
+
+        .trust-badges span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: var(--bg-elevated);
+            padding: 60px 0 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-bottom: 14px;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .footer-tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .footer-links h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            margin-bottom: 18px;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links ul { list-style: none; }
+
+        .footer-links li { margin-bottom: 10px; }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover { color: var(--accent); }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+        }
+
+        /* ===== Cookie Banner ===== */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            color: var(--text);
+            padding: 20px;
+            z-index: 9999;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-top: 1px solid var(--border);
+        }
+
+        .cookie-banner.show { transform: translateY(0); }
+
+        .cookie-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cookie-text {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .cookie-text p {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .cookie-text a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .cookie-buttons {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .cookie-btn {
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .cookie-btn.accept {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .cookie-btn.accept:hover { background: var(--accent-hover); }
+
+        .cookie-btn.decline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border-light);
+        }
+
+        .cookie-btn.decline:hover { border-color: var(--text); }
+
+        /* ===== Animations ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 900px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-visual { order: -1; }
+            .hero-phone { max-width: 260px; }
+            .hero-sub { margin: 0 auto 36px; }
+            .hero-tagline { justify-content: center; }
+
+            .hero-cta-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .hero-note { display: block; text-align: center; }
+
+            .feature-row {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .feature-row .phone { max-width: 260px; margin: 0 auto; }
+            .feature-row.reverse .feature-text { order: 0; }
+            .feature-row.reverse .feature-visual { order: 0; }
+
+            .feature-cards { grid-template-columns: 1fr; }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .install-grid { grid-template-columns: 1fr; }
+            .pricing-cards { grid-template-columns: 1fr; max-width: 400px; }
+            .faq-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .nav { padding: 12px 20px; }
+            .nav-logo span { display: none; }
+            .nav-links { display: none; }
+            section { padding: 70px 0; }
+            .stats-grid { gap: 20px; }
+            .stat-number { font-size: 1.8rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .trust-badges { flex-direction: column; align-items: center; gap: 12px; }
+            .install-badges { gap: 20px; }
+
+            .cookie-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cookie-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ===== Focus / Accessibility ===== */
+        .btn-primary:focus-visible,
+        .btn-outline:focus-visible,
+        .nav-cta:focus-visible,
+        .nav-back:focus-visible,
+        .nav-links a:focus-visible,
+        .pricing-btn:focus-visible,
+        .cookie-btn:focus-visible,
+        .footer-links a:focus-visible,
+        .faq-item summary:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .fade-in { opacity: 1; transform: none; transition: none; }
+            .nav-cta, .btn-primary, .btn-outline, .pricing-btn, .pricing-card, .feature-card, .cookie-banner, .footer-links a {
+                transition: none;
+            }
+            .btn-primary:hover, .nav-cta:hover { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Navigation ===== -->
+    <nav class="nav">
+        <a href="/" class="nav-logo">
+            <picture>
+                <source srcset="Logo.webp" type="image/webp">
+                <img src="Logo.PNG" alt="Mind Core Fitness" width="38" height="38">
+            </picture>
+            <span>Mind Core Fitness</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#install">Web App</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="/" class="nav-back">&larr; Back</a>
+            <a href="/login" class="nav-cta">Try Free</a>
+        </div>
+    </nav>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-tagline">
+                    FOOD <span class="dot"></span> HABITS <span class="dot"></span> MOVE
+                </div>
+                <h1>Your Fitness.<br>Simplified.</h1>
+                <p class="hero-sub">Too busy to plan workouts? Too tired to count every calorie? Core Buddy gives you randomised workouts, quick nutrition logging, and daily habit tracking &mdash; all in one app.</p>
+                <div class="hero-cta-group">
+                    <a href="/login" class="btn-primary">Start Free &rarr;</a>
+                    <a href="#features" class="btn-outline">See Features</a>
+                </div>
+                <p class="hero-note">No credit card required. Free plan available.</p>
+            </div>
+            <div class="hero-visual">
+                <div class="phone phone-glow hero-phone">
+                    <img src="core-buddy-assets/dashboard.PNG" alt="Core Buddy dashboard showing workout stats, daily habits, and motivational countdown timer" width="640" height="1386">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Features ===== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Features</span>
+                <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
+                <p class="section-subtitle">Built for busy people who want results without the complexity.</p>
+            </div>
+
+            <!-- Feature 1: Randomise -->
+            <div class="feature-row fade-in">
+                <div class="feature-text">
+                    <span class="section-label">Instant Workouts</span>
+                    <h3>Randomise. Press Play. Done.</h3>
+                    <p>Pick your focus area &mdash; Core, Upper, Lower, Full Body, or Mix It Up. Choose your level and time. Hit Randomise and get a unique workout every time. No planning. No decision fatigue.</p>
+                    <span class="feature-highlight">5 &ndash; 30 minute workouts</span>
+                </div>
+                <div class="feature-visual">
+                    <div class="phone phone-glow">
+                        <img src="core-buddy-assets/select-workout.PNG" alt="Workout customisation screen with focus area, level, and time selection" loading="lazy" width="640" height="1386">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2: Follow Along -->
+            <div class="feature-row reverse fade-in">
+                <div class="feature-text">
+                    <span class="section-label">Video Guided</span>
+                    <h3>Follow Along With Every Exercise</h3>
+                    <p>Every exercise comes with a video demonstration so you always know what to do. Connect Spotify and train with your own music. Work and rest timers keep you on track.</p>
+                    <span class="feature-highlight">105+ exercises with video demos</span>
+                </div>
+                <div class="feature-visual">
+                    <div class="phone phone-glow">
+                        <img src="core-buddy-assets/workout-video.PNG" alt="Workout in progress showing exercise video, Spotify integration, and countdown timer" loading="lazy" width="640" height="1386">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: Nutrition -->
+            <div class="feature-row fade-in">
+                <div class="feature-text">
+                    <span class="section-label">Quick Nutrition</span>
+                    <h3>Log Meals in Seconds</h3>
+                    <p>Track protein, carbs, fats and calories without the hassle. Scan barcodes for instant food logging. Save favourites for one-tap logging. See your daily macro breakdown at a glance.</p>
+                    <span class="feature-highlight">Barcode scanner built in</span>
+                </div>
+                <div class="feature-visual">
+                    <div class="phone phone-glow">
+                        <img src="core-buddy-assets/nutrition.PNG" alt="Nutrition tracking screen showing macro rings, meal breakdown, and food log" loading="lazy" width="640" height="1386">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small feature cards -->
+            <div class="feature-cards">
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/generated-workout.PNG" alt="Generated workout showing exercise list with thumbnails and reshuffle option" loading="lazy" width="640" height="1386">
+                    </div>
+                    <h4>Your Workout Plan</h4>
+                    <p>See your full exercise list with video thumbnails. Don't like it? Hit Reshuffle. Ready? Start Workout.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/habits.PNG" alt="Daily habit tracker showing Trained, Hit Protein, 10k Steps, and 2L Water circles" loading="lazy" width="640" height="1386">
+                    </div>
+                    <h4>Build Daily Habits</h4>
+                    <p>Track the habits that matter &mdash; Trained, Hit Protein, 10k Steps, 2L Water. Build streaks and stay consistent.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Stats ===== -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="fade-in">
+                    <div class="stat-number">105+</div>
+                    <div class="stat-label">Exercises</div>
+                </div>
+                <div class="fade-in">
+                    <div class="stat-number">5&ndash;30</div>
+                    <div class="stat-label">Minute Workouts</div>
+                </div>
+                <div class="fade-in">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Focus Areas</div>
+                </div>
+                <div class="fade-in">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Video Demos</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Install / Web App ===== -->
+    <section class="install" id="install">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Web App</span>
+                <h2 class="section-title">No App Store. No Problem.</h2>
+                <p class="section-subtitle">Core Buddy is a web app you install straight from your browser. No downloads, no waiting for updates &mdash; always the latest version.</p>
+            </div>
+
+            <div class="install-grid">
+                <!-- iPhone -->
+                <div class="install-card fade-in">
+                    <div class="install-card-header">
+                        <div class="install-icon">&#63743;</div>
+                        <div>
+                            <h4>iPhone / iPad</h4>
+                            <span>Install via Safari</span>
+                        </div>
+                    </div>
+                    <ol class="install-steps">
+                        <li>Open <strong>mindcorefitness.com/login</strong> in <strong>Safari</strong></li>
+                        <li>Tap the <strong>Share</strong> button (square with arrow at the bottom)</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>Add</strong> &mdash; done! Opens like a native app</li>
+                    </ol>
+                </div>
+
+                <!-- Android -->
+                <div class="install-card fade-in">
+                    <div class="install-card-header">
+                        <div class="install-icon">&#129302;</div>
+                        <div>
+                            <h4>Android</h4>
+                            <span>Install via Chrome</span>
+                        </div>
+                    </div>
+                    <ol class="install-steps">
+                        <li>Open <strong>mindcorefitness.com/login</strong> in <strong>Chrome</strong></li>
+                        <li>Tap the <strong>three-dot menu</strong> (top right corner)</li>
+                        <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>Install</strong> &mdash; done! Opens like a native app</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="install-badges">
+                <div class="install-badge">
+                    <div class="install-badge-icon">&#128246;</div>
+                    <span>Works Offline</span>
+                </div>
+                <div class="install-badge">
+                    <div class="install-badge-icon">&#128276;</div>
+                    <span>Push Notifications</span>
+                </div>
+                <div class="install-badge">
+                    <div class="install-badge-icon">&#9889;</div>
+                    <span>Fast Loading</span>
+                </div>
+                <div class="install-badge">
+                    <div class="install-badge-icon">&#128260;</div>
+                    <span>Auto Updates</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Pricing ===== -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">Pricing</span>
+                <h2 class="section-title">Start Free. Upgrade When You're Ready.</h2>
+                <p class="section-subtitle">No pressure. No commitment. Try everything that matters at no cost.</p>
+            </div>
+
+            <div class="pricing-cards">
+                <!-- Free -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-name">Free</div>
+                    <div class="pricing-amount"><span class="pricing-currency">&pound;</span>0</div>
+                    <div class="pricing-period">forever free</div>
+                    <div class="pricing-sub">&nbsp;</div>
+                    <ul class="pricing-features">
+                        <li>2 workouts per week</li>
+                        <li>Limited time selection (5 &amp; 10 min)</li>
+                        <li>Basic dashboard</li>
+                    </ul>
+                    <a href="/login" class="pricing-btn pricing-btn-outline">Start Free</a>
+                </div>
+
+                <!-- Monthly -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-name">Monthly</div>
+                    <div class="pricing-amount"><span class="pricing-currency">&pound;</span>9.99</div>
+                    <div class="pricing-period">per month</div>
+                    <div class="pricing-sub">&nbsp;</div>
+                    <ul class="pricing-features">
+                        <li>7-day free trial</li>
+                        <li>All features unlocked</li>
+                        <li>Unlimited workouts</li>
+                        <li>Cancel anytime</li>
+                    </ul>
+                    <a href="/login" class="pricing-btn pricing-btn-filled">Start Free Trial</a>
+                </div>
+
+                <!-- Annual -->
+                <div class="pricing-card featured fade-in">
+                    <div class="pricing-badge">Best Value &mdash; Save 17%</div>
+                    <div class="pricing-name">Annual</div>
+                    <div class="pricing-amount"><span class="pricing-currency">&pound;</span>99.99</div>
+                    <div class="pricing-period">per year</div>
+                    <div class="pricing-sub">Just &pound;8.33/month</div>
+                    <ul class="pricing-features">
+                        <li>7-day free trial</li>
+                        <li>All features unlocked</li>
+                        <li>Unlimited workouts</li>
+                        <li>Cancel anytime</li>
+                    </ul>
+                    <a href="/login" class="pricing-btn pricing-btn-featured">Start Free Trial</a>
+                </div>
+            </div>
+
+            <p class="pricing-guarantee">All paid plans include a 7-day free trial. Cancel anytime from your account.</p>
+        </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">Got Questions?</h2>
+            </div>
+
+            <div class="faq-grid">
+                <details class="faq-item fade-in">
+                    <summary>Do I need equipment?</summary>
+                    <div class="faq-answer">Nope. Core Buddy works with whatever you have &mdash; bodyweight, dumbbells, kettlebells, or a full gym. The randomiser adapts to your available equipment.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>How long are the workouts?</summary>
+                    <div class="faq-answer">You choose. Workouts range from 5 to 30 minutes. Perfect for busy schedules &mdash; even a 5-minute session counts.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>Is it really free to start?</summary>
+                    <div class="faq-answer">Yes. The free plan gives you 2 workouts per week with 5 and 10 minute options. No credit card required. Upgrade whenever you want.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>Can I cancel anytime?</summary>
+                    <div class="faq-answer">Absolutely. Cancel from your account settings at any time. No penalties, no hassle. Your free trial won't be charged if you cancel before it ends.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>Does it work offline?</summary>
+                    <div class="faq-answer">Yes. Core Buddy is a Progressive Web App that works offline. Complete workouts without an internet connection &mdash; your data syncs when you're back online.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>What devices does it work on?</summary>
+                    <div class="faq-answer">Any device with a browser. iPhone, Android, tablet, laptop, desktop. Install it to your home screen and it works just like a native app.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>Is my data private?</summary>
+                    <div class="faq-answer">100%. Your data is stored securely and is private by default. We don't sell your information to third parties.</div>
+                </details>
+
+                <details class="faq-item fade-in">
+                    <summary>Do I need to download from the App Store?</summary>
+                    <div class="faq-answer">No. Core Buddy is a web app &mdash; just visit the site in your browser and add it to your home screen. No app store, no downloads, no storage space wasted.</div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="final-cta">
+        <picture>
+            <source srcset="Logo.webp" type="image/webp">
+            <img src="Logo.PNG" alt="Mind Core Fitness" class="final-logo" width="80" height="80">
+        </picture>
+        <h2>Ready to Get Started?</h2>
+        <p>Start building sustainable fitness habits today. No credit card required. No app store needed.</p>
+        <a href="/login" class="btn-primary">Start Free &rarr;</a>
+        <div class="trust-badges">
+            <span>&#128274; Free to start</span>
+            <span>&#10060; Cancel anytime</span>
+            <span>&#128246; Works offline</span>
+            <span>&#128272; Your data is private</span>
+        </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <picture>
+                        <source srcset="Logo.webp" type="image/webp">
+                        <img src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                    </picture>
+                    <p>The all-in-one fitness app for busy people. Randomised workouts, quick nutrition logging, and daily habit tracking.</p>
+                    <div class="footer-tagline">Food &bull; Habits &bull; Move</div>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#install">Web App</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/online-coaching">Online Coaching</a></li>
+                        <li><a href="/personal-training">Personal Training</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms &amp; Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== Cookie Banner ===== -->
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <p>We use cookies to enhance your experience. By continuing to browse, you agree to our use of cookies. <a href="/privacy-policy">Learn more</a></p>
+            </div>
+            <div class="cookie-buttons">
+                <button class="cookie-btn decline" onclick="declineCookies()">Decline</button>
+                <button class="cookie-btn accept" onclick="acceptCookies()">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Scripts ===== -->
+    <script>
+        // Scroll reveal
+        const fadeEls = document.querySelectorAll('.fade-in');
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        fadeEls.forEach(el => obs.observe(el));
+
+        // Cookie consent
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('cookieBanner').classList.remove('show');
+        }
+        function declineCookies() {
+            localStorage.setItem('cookieConsent', 'declined');
+            document.getElementById('cookieBanner').classList.remove('show');
+        }
+        if (!localStorage.getItem('cookieConsent')) {
+            setTimeout(function() {
+                document.getElementById('cookieBanner').classList.add('show');
+            }, 1500);
+        }
+    </script>
+
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>
