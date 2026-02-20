@@ -98,6 +98,13 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Block unverified self-signup users — send them back to the verification screen
+  useEffect(() => {
+    if (!authLoading && currentUser && !currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
+      navigate('/signup', { replace: true });
+    }
+  }, [authLoading, currentUser, clientData, navigate]);
+
   // If the user already has a paid subscription (set by Stripe webhook),
   // or is returning from a successful Stripe checkout, skip to the welcome form.
   const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
