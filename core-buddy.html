@@ -88,6 +88,13 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    fbq('track', 'ViewContent', {
+      content_name: 'Core Buddy',
+      content_category: 'Fitness App',
+      content_type: 'product',
+      value: 0,
+      currency: 'GBP'
+    });
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
 
@@ -1499,6 +1506,44 @@
                 document.getElementById('cookieBanner').classList.add('show');
             }, 1500);
         }
+    </script>
+
+    <!-- Meta Pixel CTA Events -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // All CTA links that go to /login
+            document.querySelectorAll('a[href="/login"]').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    var text = (this.textContent || '').trim();
+                    // Paid pricing buttons trigger InitiateCheckout
+                    if (this.closest('.pricing-card')) {
+                        var card = this.closest('.pricing-card');
+                        var planName = card.querySelector('.pricing-name')?.textContent || '';
+                        var amount = card.querySelector('.pricing-amount')?.textContent.replace(/[^0-9.]/g, '') || '0';
+                        var isFree = planName.toLowerCase() === 'free';
+                        if (isFree) {
+                            fbq('track', 'Lead', {
+                                content_name: 'Core Buddy Free Signup',
+                                content_category: 'Fitness App'
+                            });
+                        } else {
+                            fbq('track', 'InitiateCheckout', {
+                                content_name: 'Core Buddy ' + planName,
+                                content_category: 'Fitness App',
+                                value: parseFloat(amount),
+                                currency: 'GBP'
+                            });
+                        }
+                    } else {
+                        // Hero / nav / final CTA buttons
+                        fbq('track', 'Lead', {
+                            content_name: 'Core Buddy Free Signup',
+                            content_category: 'Fitness App'
+                        });
+                    }
+                });
+            });
+        });
     </script>
 
     <!-- Vercel Speed Insights -->
