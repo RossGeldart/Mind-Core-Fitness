@@ -545,8 +545,8 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'menu' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout'
-  const [view, setView] = useState('menu');
+  // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout'
+  const [view, setView] = useState('randomiser_hub');
 
   // Setup
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
@@ -1662,7 +1662,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
