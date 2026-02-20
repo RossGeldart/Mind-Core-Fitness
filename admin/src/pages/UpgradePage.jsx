@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTier } from '../contexts/TierContext';
@@ -12,6 +12,13 @@ export default function UpgradePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+
+  // Clear loading state when user navigates back from Stripe (bfcache restore)
+  useEffect(() => {
+    const onPageShow = (e) => { if (e.persisted) setLoading(null); };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   async function handleManageSubscription() {
     if (!clientData?.stripeCustomerId) return;
