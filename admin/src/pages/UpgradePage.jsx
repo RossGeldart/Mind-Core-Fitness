@@ -49,27 +49,44 @@ export default function UpgradePage() {
   async function handleSelectPlan(plan) {
     setLoading(plan);
     setError(null);
+
+    if (!currentUser?.uid || !currentUser?.email || !clientData?.id) {
+      setError('Please sign in again and retry');
+      setLoading(null);
+      return;
+    }
+
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           priceId: STRIPE_PRICES[plan],
-          clientId: clientData?.id,
-          uid: currentUser?.uid,
-          email: currentUser?.email,
+          clientId: clientData.id,
+          uid: currentUser.uid,
+          email: currentUser.email,
         }),
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        let msg;
+        try { msg = JSON.parse(text).error; } catch { msg = text; }
+        setError(msg || `Server error (${res.status})`);
+        setLoading(null);
+        return;
+      }
+
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        setError(data.error || 'Something went wrong');
+        setError('No checkout URL returned — please try again');
+        setLoading(null);
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      setError('Unable to start checkout');
-    } finally {
+      setError('Unable to reach checkout — check your connection');
       setLoading(null);
     }
   }
