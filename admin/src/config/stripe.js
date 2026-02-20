@@ -4,6 +4,6 @@ export const STRIPE_PUBLISHABLE_KEY =
 
 // Price IDs — update after creating products in Stripe Dashboard
 export const STRIPE_PRICES = {
-  monthly: 'price_1T0qMBGd5tLfJN5xhoSuoDS2',
-  annual: 'price_1T0rLbGd5tLfJN5xQ08woInI',
+  monthly: 'price_1T2m17Gd5tLfJN5xqomFwI0a',
+  annual: 'price_1T2lzJGd5tLfJN5x2JEm8wCf',
 };
