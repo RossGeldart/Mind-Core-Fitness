@@ -110,6 +110,13 @@ export default function Onboarding() {
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [checkoutError, setCheckoutError] = useState(null);
 
+  // Clear loading state when user navigates back from Stripe (bfcache restore)
+  useEffect(() => {
+    const onPageShow = (e) => { if (e.persisted) setCheckoutLoading(null); };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
+
   // Welcome form
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
