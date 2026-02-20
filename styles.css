@@ -724,6 +724,23 @@ body {
     transform: scale(1.03);
 }
 
+.service-image-phone {
+    display: block;
+    max-width: 280px;
+    margin: 0 auto;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.service-image-phone img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 24px;
+    transition: transform 0.5s ease;
+}
+
 /* Quick Links - Tertiary Options */
 .quick-links-label {
     font-family: 'Montserrat', sans-serif;
