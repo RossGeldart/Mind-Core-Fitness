@@ -125,84 +125,46 @@ export default function UpgradePage() {
       </div>
 
       <div className="upgrade-plans">
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
+        <div className="plan-card">
           <div className="plan-name">Monthly</div>
           <div className="plan-price">
-            <span className="plan-amount">£19.99</span>
+            <span className="plan-amount">£9.99</span>
             <span className="plan-period">/month</span>
           </div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>All premium features</li>
+            <li>Unlimited workout durations</li>
+            <li>Unlimited weekly workouts</li>
+            <li>Save & replay workouts</li>
+            <li>Nutrition tracking</li>
+            <li>Buddies & social</li>
             <li>Cancel anytime</li>
           </ul>
-          <div className="plan-cta">Coming Soon</div>
+          <button className="plan-cta" onClick={() => handleSelectPlan('monthly')} disabled={!!loading}>
+            {loading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
+          </button>
         </div>
 
-        <div className="plan-card plan-card-featured plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
+        <div className="plan-card plan-card-featured">
           <div className="plan-badge-save">Best Value — Save 17%</div>
           <div className="plan-name">Annual</div>
           <div className="plan-price">
-            <span className="plan-amount">£199.99</span>
+            <span className="plan-amount">£99.99</span>
             <span className="plan-period">/year</span>
           </div>
+          <div className="plan-price-sub">That's just £8.33/month</div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>All premium features</li>
+            <li>Unlimited workout durations</li>
+            <li>Unlimited weekly workouts</li>
+            <li>Save & replay workouts</li>
+            <li>Nutrition tracking</li>
+            <li>Buddies & social</li>
             <li>Best value</li>
           </ul>
-          <div className="plan-cta plan-cta-featured">Coming Soon</div>
-        </div>
-
-        {/* Core Buddy AI section header */}
-        <div className="plan-divider">
-          <span className="plan-divider-line" />
-          <span className="plan-divider-text">Core Buddy AI</span>
-          <span className="plan-divider-line" />
-        </div>
-
-        {/* Core Buddy AI Monthly */}
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
-          <div className="plan-badge-save">AI Coaching</div>
-          <div className="plan-name">AI Monthly</div>
-          <div className="plan-price">
-            <span className="plan-amount">£34.99</span>
-            <span className="plan-period">/month</span>
-          </div>
-          <ul className="plan-features">
-            <li>AI personal coaching</li>
-            <li>All Premium features</li>
-            <li>Cancel anytime</li>
-          </ul>
-          <div className="plan-cta">Coming Soon</div>
-        </div>
-
-        {/* Core Buddy AI Annual */}
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
-          <div className="plan-badge-save">AI Coaching — Best Value</div>
-          <div className="plan-name">AI Annual</div>
-          <div className="plan-price">
-            <span className="plan-amount">£299.99</span>
-            <span className="plan-period">/year</span>
-          </div>
-          <ul className="plan-features">
-            <li>AI personal coaching</li>
-            <li>All Premium features</li>
-            <li>Best value</li>
-          </ul>
-          <div className="plan-cta">Coming Soon</div>
+          <button className="plan-cta plan-cta-featured" onClick={() => handleSelectPlan('annual')} disabled={!!loading}>
+            {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
+          </button>
         </div>
       </div>
 
