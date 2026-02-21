@@ -69,12 +69,6 @@ export default function CoreBuddySettings() {
   const handlePushToggle = async () => {
     if (!clientData) return;
 
-    // If browser permission is denied, show a clear message instead of silently doing nothing
-    if (!pushEnabled && getPermissionState() === 'denied') {
-      showToast('Notifications blocked — enable them in your browser/device settings, then try again', 'error');
-      return;
-    }
-
     setPushLoading(true);
     try {
       if (pushEnabled) {
@@ -92,6 +86,10 @@ export default function CoreBuddySettings() {
           showToast('Push notifications are not supported on this device', 'error');
           return;
         }
+        // Always attempt requestPermission — on iOS Safari the cached
+        // Notification.permission can stay 'denied' even after the user
+        // re-enables notifications in iOS Settings.  Calling
+        // requestPermission() again will pick up the updated state.
         const token = await requestPushPermission(clientData.id);
         const state = getPermissionState();
         setPermissionState(state);
@@ -101,9 +99,8 @@ export default function CoreBuddySettings() {
           updateClientData({ fcmTokens: [...(clientData.fcmTokens || []), token] });
           showToast('Push notifications enabled!', 'success');
         } else if (state === 'denied') {
-          showToast('Notifications blocked — enable them in your browser/device settings', 'error');
+          showToast('Notifications blocked — enable them in your device settings, remove the app from your home screen and re-add it', 'error');
         } else if (state === 'granted') {
-          // Permission was granted but FCM token failed — common on iOS Safari PWA
           showToast('Permission granted but setup failed — try closing and reopening the app, then toggle again', 'error');
         } else {
           showToast('Could not enable notifications — please try again', 'error');
@@ -181,9 +178,7 @@ export default function CoreBuddySettings() {
             <div className="settings-row-text">
               <span className="settings-row-label">Push notifications</span>
               <span className="settings-row-desc">
-                {permissionState === 'denied'
-                  ? 'Blocked in browser — update in your device/browser settings'
-                  : 'Receive notifications even when the app is closed'}
+                Receive notifications even when the app is closed
               </span>
             </div>
             <button
