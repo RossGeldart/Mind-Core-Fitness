@@ -4,6 +4,7 @@
   background: var(--bg-body);
   color: var(--text-primary);
   padding-bottom: 90px;
+  font-family: 'Roboto', sans-serif;
 }
 
 .ch-main {
@@ -13,14 +14,17 @@
 }
 
 .ch-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
   margin: 0 0 4px;
 }
 
 .ch-subtitle {
+  font-family: 'Roboto', sans-serif;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   margin: 0 0 24px;
 }
 
@@ -63,17 +67,16 @@
   gap: 14px;
   padding: 18px 16px;
   background: var(--bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   cursor: pointer;
   text-align: left;
-  font-family: inherit;
+  font-family: 'Roboto', sans-serif;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 [data-theme="dark"] .ch-card {
-  border-color: rgba(255, 255, 255, 0.06);
   box-shadow: none;
 }
 
@@ -93,7 +96,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .ch-card-icon {
@@ -114,12 +117,17 @@
 }
 
 .ch-card-body h3 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0 0 3px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0 0 4px;
 }
 
 .ch-card-body p {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   margin: 0;
@@ -133,6 +141,7 @@
 }
 
 .ch-tag {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -140,12 +149,12 @@
 }
 
 .ch-tag-dur {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .ch-card-arrow {
   flex-shrink: 0;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   opacity: 0.5;
 }
 
@@ -158,6 +167,7 @@
   background: var(--color-primary-light);
   border-radius: 12px;
   margin-bottom: 20px;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--color-primary);
@@ -170,10 +180,10 @@
   border: none;
   border-radius: 8px;
   padding: 6px 14px;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
 }
 
 /* ── Active Challenge ── */
@@ -210,20 +220,24 @@
 }
 
 .ch-ring-num {
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.8rem;
   font-weight: 700;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .ch-ring-slash {
+  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .ch-ring-label {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   margin-top: 4px;
 }
 
@@ -247,16 +261,20 @@
 }
 
 .ch-info-val {
+  font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 1.3rem;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .ch-info-key {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .ch-pace {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   padding: 4px 12px;
@@ -268,13 +286,18 @@
 .ch-pace-behind { background: rgba(255, 59, 48, 0.12); color: #FF3B30; }
 
 .ch-active-name {
-  font-size: 1.2rem;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.1rem;
   font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin: 0 0 4px;
 }
 
 .ch-active-desc {
-  font-size: 0.9rem;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
   color: var(--text-secondary);
   margin: 0;
 }
@@ -282,12 +305,13 @@
 .ch-give-up {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  font-family: 'Roboto', sans-serif;
   font-size: 0.82rem;
   cursor: pointer;
   padding: 8px 16px;
-  font-family: inherit;
   opacity: 0.6;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ch-give-up:hover { opacity: 1; }
@@ -299,8 +323,9 @@
 
 .ch-browse-locked-note {
   text-align: center;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   margin: 0 0 12px;
 }
 
@@ -327,20 +352,27 @@
 }
 
 .ch-completed-heading {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
   margin: 0;
 }
 
 .ch-completed-name {
+  font-family: 'Roboto', sans-serif;
   font-size: 1rem;
+  font-weight: 600;
   color: var(--text-secondary);
   margin: 0;
 }
 
 .ch-completed-count {
+  font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -351,11 +383,12 @@
   padding: 14px 20px;
   border-radius: 12px;
   border: none;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
   transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ch-btn:disabled {
@@ -382,7 +415,9 @@
 .ch-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -392,6 +427,7 @@
 
 .ch-modal {
   background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 28px 24px;
   max-width: 340px;
@@ -401,15 +437,22 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
 }
 
 .ch-modal h2 {
-  font-size: 1.2rem;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
   margin: 0;
 }
 
 .ch-modal p {
-  font-size: 0.9rem;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
   color: var(--text-secondary);
   margin: 0;
   line-height: 1.4;
@@ -429,8 +472,10 @@
 .ch-modal-details {
   display: flex;
   gap: 16px;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
+  color: var(--text-secondary);
 }
 
 /* ── Toast ── */
@@ -441,6 +486,7 @@
   transform: translateX(-50%);
   padding: 12px 20px;
   border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   z-index: 2000;
