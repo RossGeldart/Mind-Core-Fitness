@@ -240,6 +240,90 @@ export default function CoreBuddySettings() {
             </div>
           </div>
         </section>
+
+        {/* ===== Support & Feedback Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Support & Feedback
+          </h2>
+          <a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Bug%20Report" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Report a Bug</span>
+              <span className="settings-row-desc">Found something not working? Let us know</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Feature%20Request" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Request a Feature</span>
+              <span className="settings-row-desc">Have an idea to improve Core Buddy?</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Feedback" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">General Feedback</span>
+              <span className="settings-row-desc">We'd love to hear from you</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Contact Email</span>
+              <span className="settings-row-desc">ross@mindcorefitness.com</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== Legal Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Legal
+          </h2>
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Privacy Policy</span>
+              <span className="settings-row-desc">How we collect, use, and protect your data</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Terms & Conditions</span>
+              <span className="settings-row-desc">Terms of use for Core Buddy</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </section>
+
+        {/* ===== About Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            About
+          </h2>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Core Buddy</span>
+              <span className="settings-row-desc">Food. Habits. Move.</span>
+            </div>
+          </div>
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Version</span>
+              <span className="settings-row-desc">1.0.0</span>
+            </div>
+          </div>
+          <a href="/core-buddy" target="_blank" rel="noopener noreferrer" className="settings-link-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Visit Our Website</span>
+              <span className="settings-row-desc">mindcorefitness.com</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </section>
       </main>
 
       {/* Toast */}
