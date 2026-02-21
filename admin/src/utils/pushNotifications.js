@@ -39,9 +39,49 @@ export function getPermissionState() {
 }
 
 /**
+ * Temporarily override Notification.permission so Firebase's getToken()
+ * doesn't bail before it even tries PushManager.subscribe().
+ * On iOS Safari PWA the browser can cache 'denied' even after the user
+ * re-enables notifications in iOS Settings.  PushManager.subscribe()
+ * (called internally by getToken) respects the *OS-level* permission,
+ * so if we get past Firebase's guard the subscription will succeed.
+ */
+function withPermissionOverride(fn) {
+  const desc = Object.getOwnPropertyDescriptor(Notification, 'permission');
+  Object.defineProperty(Notification, 'permission', {
+    get: () => 'granted',
+    configurable: true,
+  });
+  const restore = () => {
+    if (desc) {
+      Object.defineProperty(Notification, 'permission', desc);
+    } else {
+      delete Notification.permission;
+    }
+  };
+  try {
+    const result = fn();
+    if (result && typeof result.then === 'function') {
+      return result.then(
+        (v) => { restore(); return v; },
+        (e) => { restore(); throw e; },
+      );
+    }
+    restore();
+    return result;
+  } catch (e) {
+    restore();
+    throw e;
+  }
+}
+
+/**
  * Request push notification permission & register FCM token.
- * Includes retry logic for iOS Safari PWA where getToken() can fail
- * on the first attempt even after permission is granted.
+ *
+ * Handles the iOS Safari PWA quirk where Notification.permission stays
+ * 'denied' even after the user re-enables notifications in Settings.
+ * Falls back to PushManager.subscribe() which respects the OS setting.
+ *
  * @param {string} clientId - The Firestore client document ID
  * @returns {Promise<string|null>} The FCM token or null
  */
@@ -53,8 +93,8 @@ export async function requestPushPermission(clientId) {
   }
 
   try {
+    // 1. Ask the browser for permission (shows prompt on first use).
     const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return null;
 
     const msg = getMessagingInstance();
     if (!msg) {
@@ -62,19 +102,30 @@ export async function requestPushPermission(clientId) {
       return null;
     }
 
-    // Wait for service worker registration
     const swReg = await navigator.serviceWorker.ready;
 
-    // Retry getToken up to 3 times — on iOS Safari PWAs the first
-    // attempt frequently fails even though permission was just granted.
+    // 2. Determine whether we need to override the stale permission value.
+    //    If the browser said 'granted' we can go straight through.
+    //    Otherwise we override so Firebase's getToken() doesn't throw
+    //    before PushManager even gets a chance to try.
+    const needsOverride = permission !== 'granted';
+
+    // 3. Retry getToken up to 3 times — on iOS Safari PWAs the first
+    //    attempt frequently fails even though permission was just granted.
     let token = null;
     const MAX_RETRIES = 3;
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
-        token = await getToken(msg, {
-          vapidKey: VAPID_KEY,
-          serviceWorkerRegistration: swReg,
-        });
+        const attemptGetToken = () =>
+          getToken(msg, {
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: swReg,
+          });
+
+        token = needsOverride
+          ? await withPermissionOverride(attemptGetToken)
+          : await attemptGetToken();
+
         if (token) break;
       } catch (tokenErr) {
         console.warn(`Push getToken attempt ${attempt}/${MAX_RETRIES} failed:`, tokenErr);
