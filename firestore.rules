@@ -1,21 +1,17 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function isAdmin() {
       return request.auth != null && request.auth.uid == 'EYdciKDOi3UYBLk1u8hHams5tmO2';
     }
-
     function isAuthenticated() {
       return request.auth != null;
     }
-
     // Verify the authenticated user owns the given client document
     function isClientOwner(clientId) {
       return isAuthenticated() &&
         get(/databases/$(database)/documents/clients/$(clientId)).data.uid == request.auth.uid;
     }
-
     // Clients - admin full, clients read own profile
     match /clients/{clientId} {
       allow read, write: if isAdmin();
@@ -29,238 +25,192 @@ service cloud.firestore {
         && request.resource.data.signupSource == 'self_signup';
       // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'tourComplete', 'dashboardWidgets', 'fcmTokens', 'notificationPrefs', 'weeklyWorkoutTarget']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'dashboardWidgets', 'tourComplete', 'fcmTokens', 'notificationPrefs', 'weeklyWorkoutTarget']);
     }
-
     // Onboarding Drafts - clients read/write/delete own (doc ID = clientId)
     match /onboardingDrafts/{docId} {
       allow read, write: if isAdmin();
       allow read, write, delete: if isClientOwner(docId);
     }
-
     // Onboarding Submissions - admin full, clients write own (doc ID = clientId)
     match /onboardingSubmissions/{docId} {
       allow read, write: if isAdmin();
       allow create, update: if isClientOwner(docId);
     }
-
     // Sessions - admin full, clients read own
     match /sessions/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
     }
-
     // Holidays - admin full, clients read
     match /holidays/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated();
     }
-
     // Blocked Times - admin full, clients read
     match /blockedTimes/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated();
     }
-
     // Opened Slots - admin full, clients read
     match /openedSlots/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated();
     }
-
     // Reschedule Requests - admin full, clients read own + create
     match /rescheduleRequests/{docId} {
       allow read, write: if isAdmin();
       allow read: if isClientOwner(resource.data.clientId);
       allow create: if isClientOwner(request.resource.data.clientId);
     }
-
     // Personal Bests - admin full, clients read/write own (doc ID = {clientId}_{month})
     match /personalBests/{docId} {
       allow read, write: if isAdmin();
       allow read, delete: if isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
-
     // PB Targets - admin full, clients read/write/delete own (doc ID = targets_{clientId})
     match /personalBestTargets/{docId} {
       allow read, write: if isAdmin();
       allow read, delete: if isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
-
-    // Core Buddy PBs - admin full, clients read/write own (doc ID = clientId)
+    // Core Buddy PBs - admin full, clients write own, all authenticated can read (for profiles)
     match /coreBuddyPBs/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // PROFILES: view buddy PBs
       allow write: if isClientOwner(docId);
     }
-
     // Core Buddy Targets - admin full, clients read/write own (doc ID = clientId)
     match /coreBuddyTargets/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }
-
-    // Achievements - admin full, clients read/write own (doc ID = clientId)
+    // Core Buddy Achievements - admin full, clients write own, all authenticated can read (for profiles)
+    match /coreBuddyAchievements/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+      allow write: if isClientOwner(docId);
+    }
+    // Achievements - admin full, clients write own, all authenticated can read (for profiles)
     match /achievements/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // PROFILES: view buddy badges
       allow write: if isClientOwner(docId);
     }
-
     // Session Notes - admin full, clients read own
     match /sessionNotes/{docId} {
       allow read, write: if isAdmin();
       allow read: if isClientOwner(resource.data.clientId);
     }
-
     // Circuit Sessions - admin full, clients read + update (slot-based booking, can't scope per-member)
     match /circuitSessions/{docId} {
       allow read, write: if isAdmin();
       allow read, update: if isAuthenticated();
     }
-
     // Workout Logs - admin full, clients read + create
     match /workoutLogs/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
       allow create: if isClientOwner(request.resource.data.clientId);
     }
-
-    // Saved Workouts - admin full, clients read/write/delete own
+    // Saved Workouts - admin full, clients read/create/delete own
     match /savedWorkouts/{docId} {
       allow read, write: if isAdmin();
       allow read: if isClientOwner(resource.data.clientId);
       allow create: if isClientOwner(request.resource.data.clientId);
       allow delete: if isClientOwner(resource.data.clientId);
     }
-
-    // Client Programmes - admin full, clients read/write own (doc ID = clientId)
+    // Client Programmes - admin full, clients write own, all authenticated can read (for profiles)
     match /clientProgrammes/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // PROFILES: view buddy programme progress
       allow write: if isClientOwner(docId);
     }
-
     // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
     match /nutritionTargets/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }
-
     // Favourite Foods - admin full, clients read/write own (doc ID = clientId)
     match /favouriteFoods/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }
-
     // Nutrition Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /nutritionLogs/{docId} {
       allow read, write: if isAdmin();
       allow read: if isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
-
     // Habit Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /habitLogs/{docId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated(); // PROFILES: view buddy habit streak
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
-
     // Custom Habits - admin full, clients read/write own (doc ID = clientId)
     match /customHabits/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }
-
-    // ── BUDDY SYSTEM (Phase 2) ──
-
     // Buddy Requests - pending requests between users
     // Doc ID = "{fromClientId}_{toClientId}"
     // Fields: fromId, toId, status ("pending"), createdAt
     match /buddyRequests/{reqId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read requests (to check incoming/outgoing)
       allow read: if isAuthenticated();
-      // Any authenticated user can create a request
       allow create: if isAuthenticated();
-      // Any authenticated user can delete (sender cancels, recipient declines)
       allow delete: if isAuthenticated();
-      // Any authenticated user can update status (accept/decline)
       allow update: if isAuthenticated();
     }
-
     // Buddies - confirmed buddy connections
     // Doc ID = sorted pair "{clientA}_{clientB}" (alphabetical)
     // Fields: user1, user2, connectedAt
     match /buddies/{pairId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read (for buddy lists, leaderboard filter)
       allow read: if isAuthenticated();
-      // Any authenticated user can create (on accepting a request)
       allow create: if isAuthenticated();
-      // Either side can remove the buddy connection
       allow delete: if isAuthenticated();
     }
-
     // ── SOCIAL FEED (Phase 3) ──
-
     // Posts - text updates shared with buddies
     // Doc ID = auto-generated
     // Fields: authorId, authorName, authorPhotoURL, content, type, createdAt, likeCount, commentCount
     match /posts/{postId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read (client-side filters to buddies only)
       allow read: if isAuthenticated();
-      // Any authenticated user can create a post
       allow create: if isAuthenticated();
-      // Any authenticated user can update (like/comment count increments)
       allow update: if isAuthenticated();
-      // Author can delete their own post
       allow delete: if isClientOwner(resource.data.authorId);
     }
-
     // Post Likes - one doc per user per post
     // Doc ID = "{postId}_{clientId}"
     // Fields: postId, userId, createdAt
     match /postLikes/{likeId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read
       allow read: if isAuthenticated();
-      // Any authenticated user can create/delete likes
       allow create: if isAuthenticated();
       allow delete: if isAuthenticated();
     }
-
     // Post Comments - comments on posts
     // Doc ID = auto-generated
     // Fields: postId, authorId, authorName, authorPhotoURL, content, createdAt
     match /postComments/{commentId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read comments
       allow read: if isAuthenticated();
-      // Any authenticated user can create a comment
       allow create: if isAuthenticated();
     }
-
     // ── NOTIFICATIONS (Phase 4) ──
-
     // Notifications - in-app notifications for each user
     // Doc ID = auto-generated
     // Fields: toId, fromId, fromName, fromPhotoURL, type, postId?, createdAt, read
     match /notifications/{notifId} {
       allow read, write: if isAdmin();
-      // Any authenticated user can read their own notifications
       allow read: if isAuthenticated();
-      // Any authenticated user can create notifications (triggered by actions)
       allow create: if isAuthenticated();
-      // Recipients can mark their notifications as read
       allow update: if isAuthenticated();
-      // Recipients can delete/clear their notifications
       allow delete: if isAuthenticated();
     }
-
   }
 }
