@@ -68,40 +68,53 @@ export default function CoreBuddySettings() {
   // Toggle master push notifications
   const handlePushToggle = async () => {
     if (!clientData) return;
-    setPushLoading(true);
 
-    if (pushEnabled) {
-      // Disable push
-      if (pushToken) {
-        await revokePushToken(clientData.id, pushToken);
-      }
-      setPushEnabled(false);
-      setPushToken(null);
-      showToast('Push notifications disabled', 'info');
-    } else {
-      // Enable push
-      if (!isPushSupported()) {
-        showToast('Push notifications are not supported on this device', 'error');
-        setPushLoading(false);
-        return;
-      }
-      const token = await requestPushPermission(clientData.id);
-      if (token) {
-        setPushEnabled(true);
-        setPushToken(token);
-        setPermissionState('granted');
-        showToast('Push notifications enabled!', 'success');
+    // If browser permission is denied, show a clear message instead of silently doing nothing
+    if (!pushEnabled && getPermissionState() === 'denied') {
+      showToast('Notifications blocked — enable them in your browser/device settings, then try again', 'error');
+      return;
+    }
+
+    setPushLoading(true);
+    try {
+      if (pushEnabled) {
+        // Disable push
+        if (pushToken) {
+          await revokePushToken(clientData.id, pushToken);
+        }
+        setPushEnabled(false);
+        setPushToken(null);
+        updateClientData({ fcmTokens: [] });
+        showToast('Push notifications disabled', 'info');
       } else {
-        const state = getPermissionState();
-        setPermissionState(state);
-        if (state === 'denied') {
-          showToast('Notifications blocked — enable them in your browser settings', 'error');
+        // Enable push
+        if (!isPushSupported()) {
+          showToast('Push notifications are not supported on this device', 'error');
+          return;
+        }
+        const token = await requestPushPermission(clientData.id);
+        if (token) {
+          setPushEnabled(true);
+          setPushToken(token);
+          setPermissionState('granted');
+          updateClientData({ fcmTokens: [...(clientData.fcmTokens || []), token] });
+          showToast('Push notifications enabled!', 'success');
         } else {
-          showToast('Could not enable notifications', 'error');
+          const state = getPermissionState();
+          setPermissionState(state);
+          if (state === 'denied') {
+            showToast('Notifications blocked — enable them in your browser settings', 'error');
+          } else {
+            showToast('Could not enable notifications — please try again', 'error');
+          }
         }
       }
+    } catch (err) {
+      console.error('Push toggle failed:', err);
+      showToast('Something went wrong — please try again', 'error');
+    } finally {
+      setPushLoading(false);
     }
-    setPushLoading(false);
   };
 
   // Toggle individual notification type
@@ -176,7 +189,7 @@ export default function CoreBuddySettings() {
             <button
               className={`settings-toggle${pushEnabled ? ' on' : ''}${pushLoading ? ' loading' : ''}`}
               onClick={handlePushToggle}
-              disabled={pushLoading || permissionState === 'denied'}
+              disabled={pushLoading}
               aria-label="Toggle push notifications"
             >
               <span className="settings-toggle-knob" />
