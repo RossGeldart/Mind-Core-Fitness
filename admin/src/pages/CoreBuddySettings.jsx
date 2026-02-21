@@ -93,20 +93,20 @@ export default function CoreBuddySettings() {
           return;
         }
         const token = await requestPushPermission(clientData.id);
+        const state = getPermissionState();
+        setPermissionState(state);
         if (token) {
           setPushEnabled(true);
           setPushToken(token);
-          setPermissionState('granted');
           updateClientData({ fcmTokens: [...(clientData.fcmTokens || []), token] });
           showToast('Push notifications enabled!', 'success');
+        } else if (state === 'denied') {
+          showToast('Notifications blocked — enable them in your browser/device settings', 'error');
+        } else if (state === 'granted') {
+          // Permission was granted but FCM token failed — common on iOS Safari PWA
+          showToast('Permission granted but setup failed — try closing and reopening the app, then toggle again', 'error');
         } else {
-          const state = getPermissionState();
-          setPermissionState(state);
-          if (state === 'denied') {
-            showToast('Notifications blocked — enable them in your browser settings', 'error');
-          } else {
-            showToast('Could not enable notifications — please try again', 'error');
-          }
+          showToast('Could not enable notifications — please try again', 'error');
         }
       }
     } catch (err) {
