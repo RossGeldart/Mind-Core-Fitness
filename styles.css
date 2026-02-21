@@ -1,5 +1,26 @@
 /* Mind Core Fitness - Landing Page Styles */
 
+.skip-to-content {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-color);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 0 0 6px 6px;
+    z-index: 10000;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+    top: 0;
+}
+
 * {
     margin: 0;
     padding: 0;
