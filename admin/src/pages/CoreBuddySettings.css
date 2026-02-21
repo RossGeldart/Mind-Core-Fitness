@@ -129,6 +129,42 @@
   transform: translateX(20px);
 }
 
+/* Link rows (clickable) */
+.settings-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.settings-link-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settings-link-row:first-of-type {
+  padding-top: 0;
+}
+
+.settings-link-row:hover {
+  opacity: 0.75;
+}
+
+.settings-link-row:active {
+  opacity: 0.5;
+}
+
+.settings-link-row svg {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
 /* Sub-section */
 .settings-sub-section {
   margin-top: 8px;
