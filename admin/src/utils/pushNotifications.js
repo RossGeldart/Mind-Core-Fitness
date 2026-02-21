@@ -2,9 +2,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-// ⚠️  Replace with your VAPID key from Firebase Console:
-//     Project Settings → Cloud Messaging → Web Push certificates → Generate key pair
-const VAPID_KEY = '';
+const VAPID_KEY = 'EyaTuH_1seGfPlajAPE8cm2OBytJjemZMEEosV6qrlY';
 
 let messaging = null;
 
