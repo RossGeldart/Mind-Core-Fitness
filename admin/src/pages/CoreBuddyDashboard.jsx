@@ -15,6 +15,7 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
+import BADGE_DEFS from '../utils/badgeConfig';
 
 const TICK_COUNT = 60;
 const DEFAULT_WEEKLY_TARGET = 3;
@@ -1338,7 +1339,24 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 7. Buddies — hidden for free tier */}
+          {/* 7. Challenges — premium only */}
+          {isPremium && (
+          <button
+            className="cb-feature-card cb-card-challenge ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
+          >
+            <div className="cb-card-icon-wrap cb-card-icon-challenge">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg>
+            </div>
+            <div className="cb-card-content">
+              <h3>Challenges</h3>
+              <p>Push yourself with timed fitness challenges</p>
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          )}
+
+          {/* 8. Buddies — hidden for free tier */}
           {isPremium && (
           <button
             className="cb-feature-card cb-card-buddies ripple-btn"
@@ -1463,7 +1481,7 @@ export default function CoreBuddyDashboard() {
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card">
                         <div className="journey-card-logo-frame journey-card-logo-badge">
-                          <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />
+                          {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.badgeDesc && (

@@ -569,6 +569,8 @@
 .cb-features > *:nth-child(5) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.4s; }
 .cb-features > *:nth-child(6) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.55s; }
 .cb-features > *:nth-child(7) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.7s; }
+.cb-features > *:nth-child(8) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.85s; }
+.cb-features > *:nth-child(9) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 2.0s; }
 
 .cb-feature-card {
   position: relative;
@@ -860,6 +862,22 @@
 
 .cb-lb-me .cb-lb-avatar {
   box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+/* Challenge Card */
+.cb-card-icon-wrap {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.cb-card-icon-challenge {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 /* Habit Dots Preview */
