@@ -173,26 +173,29 @@ export default function CoreBuddySettings() {
             Notifications
           </h2>
 
-          {/* Push master toggle */}
-          <div className="settings-row">
-            <div className="settings-row-text">
-              <span className="settings-row-label">Push notifications</span>
-              <span className="settings-row-desc">
-                Receive notifications even when the app is closed
-              </span>
+          {/* Push master toggle — only shown when device supports it */}
+          {isPushSupported() ? (
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <span className="settings-row-label">Push notifications</span>
+                <span className="settings-row-desc">
+                  Receive notifications even when the app is closed
+                </span>
+              </div>
+              <button
+                className={`settings-toggle${pushEnabled ? ' on' : ''}${pushLoading ? ' loading' : ''}`}
+                onClick={handlePushToggle}
+                disabled={pushLoading}
+                aria-label="Toggle push notifications"
+              >
+                <span className="settings-toggle-knob" />
+              </button>
             </div>
-            <button
-              className={`settings-toggle${pushEnabled ? ' on' : ''}${pushLoading ? ' loading' : ''}`}
-              onClick={handlePushToggle}
-              disabled={pushLoading}
-              aria-label="Toggle push notifications"
-            >
-              <span className="settings-toggle-knob" />
-            </button>
-          </div>
-
-          {!isPushSupported() && (
-            <p className="settings-hint">Push notifications aren't supported on this browser. Try using the app from your home screen.</p>
+          ) : (
+            <p className="settings-hint">
+              Add the app to your home screen for background push notifications.
+              In-app notifications still work below.
+            </p>
           )}
 
           {/* Individual notification type toggles */}
