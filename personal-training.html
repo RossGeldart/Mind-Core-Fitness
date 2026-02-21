@@ -185,16 +185,18 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 8px;
         }
 
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
-            transition: color 0.2s;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
         .nav-links a:hover {
@@ -210,7 +212,8 @@
         .nav-back {
             padding: 8px 16px;
             color: rgba(255, 255, 255, 0.7);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
             transition: color 0.2s;
@@ -224,7 +227,7 @@
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.8rem;
             text-decoration: none;
@@ -250,6 +253,10 @@
         .nav-back:focus:not(:focus-visible),
         .nav-cta:focus:not(:focus-visible) {
             outline: none;
+        }
+
+        .mobile-social-links {
+            display: none;
         }
 
         /* Mobile Menu */
@@ -1691,7 +1698,7 @@
                 -webkit-backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
-                gap: 16px;
+                gap: 0;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             }
@@ -1701,8 +1708,15 @@
             }
 
             .nav-links a {
-                padding: 12px 0;
+                padding: 14px 16px;
                 font-size: 1rem;
+                border-radius: 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.05);
             }
 
             .mobile-menu-toggle {
