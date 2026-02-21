@@ -2,8 +2,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-// Paste the PUBLIC "Key pair" value from Firebase Console > Cloud Messaging > Web Push certificates
-const VAPID_KEY = '';
+const VAPID_KEY = 'BNVNdqAPfJYhKBjF9qd-YPEMYIbecZLWiOGUF5tOBfNuv6P1iXgJS6IoS9dHLM5gp-WMrExfir0pCpkMzOdTWKY';
 
 let messaging = null;
 
