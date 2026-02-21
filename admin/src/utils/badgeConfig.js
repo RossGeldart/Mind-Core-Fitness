@@ -36,10 +36,13 @@ const BADGE_DEFS = [
   { id: 'leaderboard_join', img: leaderboardJoinBadge, name: 'Competitor', desc: 'Join the leaderboard', category: 'leaderboard', threshold: 1 },
   // Habit badges
   { id: 'habits_7', img: habits7Badge, name: 'Habit Streak', desc: 'Complete your daily habits 7 days in a row', category: 'habits', threshold: 7 },
-  // Challenge badges (placeholder images — swap for real PNGs later)
-  { id: 'first_challenge', img: null, name: 'Challenger', desc: 'Complete your first challenge', category: 'challenges', threshold: 1 },
-  { id: 'five_challenges', img: null, name: 'Challenge Veteran', desc: 'Complete 5 challenges', category: 'challenges', threshold: 5 },
-  { id: 'ten_challenges', img: null, name: 'Challenge Legend', desc: 'Complete 10 challenges', category: 'challenges', threshold: 10 },
+  // Challenge badges (one per challenge — images TBD)
+  { id: 'starter_streak', img: null, name: 'Starter Streak', desc: 'Complete 5 workouts in 7 days', category: 'challenges', threshold: 1 },
+  { id: 'consistency_king', img: null, name: 'Consistency King', desc: 'Complete 12 workouts in 30 days', category: 'challenges', threshold: 1 },
+  { id: 'thirty_in_thirty', img: null, name: '30 in 30', desc: 'Complete 30 workouts in 30 days', category: 'challenges', threshold: 1 },
+  { id: 'minute_master', img: null, name: 'Minute Master', desc: 'Train for 300 total minutes in 30 days', category: 'challenges', threshold: 1 },
+  { id: 'habit_machine', img: null, name: 'Habit Machine', desc: 'Hit all daily habits for 7 days straight', category: 'challenges', threshold: 1 },
+  { id: 'iron_will', img: null, name: 'Iron Will', desc: 'Work out every day for 14 days straight', category: 'challenges', threshold: 1 },
 ];
 
 export default BADGE_DEFS;
