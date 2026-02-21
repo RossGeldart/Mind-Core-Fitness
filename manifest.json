@@ -1,0 +1,21 @@
+{
+  "name": "Mind Core Fitness",
+  "short_name": "MCF",
+  "description": "Personal training, online coaching, and the Core Buddy fitness app.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#99313c",
+  "icons": [
+    {
+      "src": "/Logo.PNG",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/Logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

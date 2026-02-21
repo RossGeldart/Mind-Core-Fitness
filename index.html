@@ -6,7 +6,7 @@
     <title>Mind Core Fitness | Personal Training & Online Coaching</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Transform your fitness with Mind Core Fitness. Expert 1-2-1 personal training, online coaching, and Core Buddy — your all-in-one fitness app. Build strength, improve posture, and achieve your fitness goals.">
+    <meta name="description" content="Expert 1-2-1 personal training in Elgin, online coaching, and the Core Buddy fitness app. Build strength and transform your life with Mind Core Fitness.">
     <meta name="keywords" content="personal training, online coaching, core fitness, fitness challenge, 1-2-1 training, core strength, Mind Core Fitness">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
@@ -137,6 +137,7 @@
     <link rel="stylesheet" href="social-share.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
     <!-- Header with Navigation -->
     <header class="site-header">
         <div class="header-container">
@@ -179,13 +180,13 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="main-content">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="logo-wrapper">
                 <picture>
                     <source srcset="Logo.webp" type="image/webp">
-                    <img src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="200" height="200">
+                    <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="200" height="200">
                 </picture>
             </div>
             <h1 class="hero-title">Build Strength.<br>Transform Your Life.</h1>
@@ -515,10 +516,10 @@
     </section>
 
     <!-- Contact Form Modal -->
-    <div class="modal-overlay" id="contactModal">
+    <div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
             <button class="modal-close" onclick="closeContactModal()" aria-label="Close contact form">&times;</button>
-            <h2 class="modal-title">Get In Touch</h2>
+            <h2 class="modal-title" id="modalTitle">Get In Touch</h2>
             <p class="modal-subtitle">Have a question or ready to start your fitness journey? Send me a message!</p>
             <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){fbq('track','Lead',{content_name:'Contact Form',content_category:'Homepage'});}">
                 <div class="form-group">
