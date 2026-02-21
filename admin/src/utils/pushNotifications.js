@@ -39,7 +39,9 @@ export function getPermissionState() {
 }
 
 /**
- * Request push notification permission & register FCM token
+ * Request push notification permission & register FCM token.
+ * Includes retry logic for iOS Safari PWA where getToken() can fail
+ * on the first attempt even after permission is granted.
  * @param {string} clientId - The Firestore client document ID
  * @returns {Promise<string|null>} The FCM token or null
  */
@@ -55,15 +57,33 @@ export async function requestPushPermission(clientId) {
     if (permission !== 'granted') return null;
 
     const msg = getMessagingInstance();
-    if (!msg) return null;
+    if (!msg) {
+      console.error('Push: could not initialise Firebase Messaging');
+      return null;
+    }
 
     // Wait for service worker registration
     const swReg = await navigator.serviceWorker.ready;
 
-    const token = await getToken(msg, {
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: swReg,
-    });
+    // Retry getToken up to 3 times — on iOS Safari PWAs the first
+    // attempt frequently fails even though permission was just granted.
+    let token = null;
+    const MAX_RETRIES = 3;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        token = await getToken(msg, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: swReg,
+        });
+        if (token) break;
+      } catch (tokenErr) {
+        console.warn(`Push getToken attempt ${attempt}/${MAX_RETRIES} failed:`, tokenErr);
+      }
+      // Small delay before retry to let the SW settle
+      if (attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+      }
+    }
 
     if (token && clientId) {
       // Store token in the client's Firestore doc (supports multiple devices)
