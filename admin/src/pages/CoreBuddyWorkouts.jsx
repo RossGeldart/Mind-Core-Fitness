@@ -1687,89 +1687,77 @@ export default function CoreBuddyWorkouts() {
         </header>
         <main className="wk-main">
           <div className="wk-hub-heading wk-hub-heading-hero">
-            <div className="wk-hub-logo-wrap">
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-hub-logo-img" />
-              <div className="wk-hub-dice-float">
-                <svg className="wk-hub-dice-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="3"/>
-                  <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                  <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                  <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-                  <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-                  <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-                </svg>
-              </div>
+            <div className="wk-hub-circle-frame">
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-hub-circle-logo" />
             </div>
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
           </div>
 
-          {/* Stats banner */}
-          {hubStats.total > 0 && (
-            <div className="wk-hub-stats">
-              <div className="wk-hub-stat">
-                <span className="wk-hub-stat-value">{hubStats.total}</span>
-                <span className="wk-hub-stat-label">Workouts</span>
+          {/* ===== Launch Zone ===== */}
+          <div className="wk-hub-launch-zone">
+            {/* Stats banner */}
+            {hubStats.total > 0 && (
+              <div className="wk-hub-stats">
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value">{hubStats.total}</span>
+                  <span className="wk-hub-stat-label">Workouts</span>
+                </div>
+                {hubStats.streak > 0 && (
+                  <div className="wk-hub-stat">
+                    <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
+                    <span className="wk-hub-stat-label">Streak</span>
+                  </div>
+                )}
+                {hubStats.favouriteFocus && (
+                  <div className="wk-hub-stat">
+                    <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
+                      {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
+                    </span>
+                    <span className="wk-hub-stat-label">Top Focus</span>
+                  </div>
+                )}
               </div>
-              {hubStats.streak > 0 && (
-                <div className="wk-hub-stat">
-                  <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
-                  <span className="wk-hub-stat-label">Streak</span>
-                </div>
-              )}
-              {hubStats.favouriteFocus && (
-                <div className="wk-hub-stat">
-                  <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
-                    {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
-                  </span>
-                  <span className="wk-hub-stat-label">Top Focus</span>
-                </div>
-              )}
+            )}
+
+            {/* Action buttons */}
+            <div className="wk-hub-actions">
+              <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Workout
+              </button>
+              <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Quick Start
+                <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
+              </button>
             </div>
-          )}
 
-          {/* Motivational tip */}
-          <div className="wk-hub-tip">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
-          </div>
-
-          {/* Action buttons */}
-          <div className="wk-hub-actions">
-            <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              New Workout
-            </button>
-            <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Quick Start
-              <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
-            </button>
-          </div>
-
-          {/* Smart Suggestion */}
-          {smartSuggestion && (
-            <div className="wk-hub-section">
-              <h3 className="wk-hub-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                Suggested For You
-              </h3>
+            {/* Smart Suggestion */}
+            {smartSuggestion && (
               <button className="wk-hub-suggestion" onClick={() => {
                 setFocusArea(smartSuggestion.focus);
                 setView('setup');
               }}>
+                <svg className="wk-hub-suggestion-bulb" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                 <div className="wk-hub-suggestion-info">
                   <span className="wk-hub-suggestion-label">{smartSuggestion.message}</span>
                   <span className="wk-hub-suggestion-cta">Tap to set up &rarr;</span>
                 </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
               </button>
+            )}
+
+            {/* Motivational tip */}
+            <div className="wk-hub-tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
             </div>
-          )}
+          </div>
 
           {/* Saved Workouts (premium only) */}
           {isPremium && (
-          <div className="wk-hub-section">
+          <div className="wk-hub-section wk-hub-section--saved">
             <h3 className="wk-hub-section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
               Saved Workouts
@@ -1836,12 +1824,18 @@ export default function CoreBuddyWorkouts() {
           )}
 
           {/* Recent History */}
-          {recentWorkouts.length > 0 && (
-            <div className="wk-hub-section">
-              <h3 className="wk-hub-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Recent
-              </h3>
+          <div className="wk-hub-section wk-hub-section--recent">
+            <h3 className="wk-hub-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Recent
+            </h3>
+            {recentWorkouts.length === 0 ? (
+              <div className="wk-hub-empty wk-hub-empty-enhanced">
+                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p><strong>No workouts yet</strong></p>
+                <p className="wk-hub-empty-sub">Complete your first workout to see your history here.</p>
+              </div>
+            ) : (
               <div className="wk-hub-recent-list">
                 {recentWorkouts.map((rw, i) => {
                   const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
@@ -1854,20 +1848,34 @@ export default function CoreBuddyWorkouts() {
                     return `${Math.floor(diff / 86400)}d ago`;
                   })() : '';
                   return (
-                    <div key={i} className="wk-hub-recent-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                    <button
+                      key={i}
+                      className="wk-hub-recent-card"
+                      style={{ animationDelay: `${i * 0.05}s` }}
+                      onClick={() => {
+                        setFocusArea(rw.focus || 'core');
+                        setLevel(rw.level || 'intermediate');
+                        setDuration(rw.duration || 15);
+                        if (rw.equipment) setSelectedEquipment(rw.equipment);
+                        setView('setup');
+                      }}
+                    >
                       <div className="wk-hub-recent-info">
                         <span className="wk-hub-recent-tags">
                           <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
                           <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
                         </span>
                       </div>
-                      <span className="wk-hub-recent-time">{ago}</span>
-                    </div>
+                      <div className="wk-hub-recent-action">
+                        <span className="wk-hub-recent-time">{ago}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                      </div>
+                    </button>
                   );
                 })}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
