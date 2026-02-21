@@ -201,6 +201,16 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
     }
+    // ── CHALLENGES ──
+    // User Challenges - one doc per challenge attempt
+    // Doc ID = auto-generated
+    // Fields: clientId, challengeId, startDate, endDate, status, completedAt, badgeAwarded
+    match /userChallenges/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create: if isClientOwner(request.resource.data.clientId);
+      allow update: if isClientOwner(resource.data.clientId);
+    }
     // ── NOTIFICATIONS (Phase 4) ──
     // Notifications - in-app notifications for each user
     // Doc ID = auto-generated

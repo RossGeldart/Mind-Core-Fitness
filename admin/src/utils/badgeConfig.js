@@ -36,6 +36,10 @@ const BADGE_DEFS = [
   { id: 'leaderboard_join', img: leaderboardJoinBadge, name: 'Competitor', desc: 'Join the leaderboard', category: 'leaderboard', threshold: 1 },
   // Habit badges
   { id: 'habits_7', img: habits7Badge, name: 'Habit Streak', desc: 'Complete your daily habits 7 days in a row', category: 'habits', threshold: 7 },
+  // Challenge badges (placeholder images — swap for real PNGs later)
+  { id: 'first_challenge', img: null, name: 'Challenger', desc: 'Complete your first challenge', category: 'challenges', threshold: 1 },
+  { id: 'five_challenges', img: null, name: 'Challenge Veteran', desc: 'Complete 5 challenges', category: 'challenges', threshold: 5 },
+  { id: 'ten_challenges', img: null, name: 'Challenge Legend', desc: 'Complete 10 challenges', category: 'challenges', threshold: 10 },
 ];
 
 export default BADGE_DEFS;
