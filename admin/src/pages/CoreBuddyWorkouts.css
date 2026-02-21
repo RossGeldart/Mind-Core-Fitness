@@ -52,6 +52,8 @@
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* Main Content */
@@ -2330,6 +2332,7 @@
   margin: 12px 12px 0;
   width: calc(100% - 24px);
   border-radius: 12px;
+  max-height: 340px;
 }
 
 .wk-video {
