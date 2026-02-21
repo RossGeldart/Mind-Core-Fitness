@@ -248,6 +248,19 @@ export default function Challenges() {
     try {
       const challenge = CHALLENGES.find(c => c.id === challengeId);
       if (!challenge) return;
+
+      // Guard: prevent duplicate active challenges
+      const existingQ = query(collection(db, 'userChallenges'),
+        where('clientId', '==', clientData.id),
+        where('status', '==', 'active'));
+      const existingSnap = await getDocs(existingQ);
+      if (!existingSnap.empty) {
+        setConfirmModal(null);
+        showToast('You already have an active challenge', 'info');
+        await loadData();
+        return;
+      }
+
       const now = Timestamp.now();
       const end = Timestamp.fromDate(new Date(Date.now() + challenge.duration * 86400000));
       await addDoc(collection(db, 'userChallenges'), {
@@ -258,13 +271,18 @@ export default function Challenges() {
         status: 'active',
         completedAt: null,
         badgeAwarded: false,
+        createdAt: serverTimestamp(),
       });
       setConfirmModal(null);
       showToast(`${challenge.name} started — let's go!`, 'success');
       await loadData();
     } catch (err) {
       console.error('Start challenge failed:', err);
-      showToast('Something went wrong — try again', 'error');
+      if (err?.code === 'permission-denied') {
+        showToast('Permission denied — please re-login and try again', 'error');
+      } else {
+        showToast('Something went wrong — try again', 'error');
+      }
     } finally {
       setActionLoading(false);
     }
