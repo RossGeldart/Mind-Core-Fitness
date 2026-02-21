@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  collection, query, where, getDocs, addDoc, updateDoc, doc,
+  collection, query, where, getDocs, addDoc, updateDoc, setDoc, doc, getDoc,
   Timestamp, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import { CHALLENGES } from '../config/challengeConfig';
+import BADGE_DEFS from '../utils/badgeConfig';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import './Challenges.css';
 
@@ -123,6 +124,7 @@ export default function Challenges() {
   const [confirmModal, setConfirmModal] = useState(null);         // challenge def or 'giveup'
   const [toast, setToast] = useState(null);
   const [justCompleted, setJustCompleted] = useState(false);
+  const [celebration, setCelebration] = useState(null);           // badge def for overlay
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -170,6 +172,45 @@ export default function Challenges() {
               });
               setJustCompleted(true);
               setActiveChallenge(prev => prev ? { ...prev, status: 'completed' } : null);
+
+              // Award badge if not already earned
+              if (!data.badgeAwarded) {
+                const badge = BADGE_DEFS.find(b => b.id === def.id);
+                if (badge) {
+                  try {
+                    // Store earned badge in coreBuddyBadges doc
+                    const badgeDocRef = doc(db, 'coreBuddyBadges', clientData.id);
+                    const badgeSnap = await getDoc(badgeDocRef);
+                    const existing = badgeSnap.exists() ? (badgeSnap.data().earned || []) : [];
+                    if (!existing.some(b => b.id === badge.id)) {
+                      const newBadge = { id: badge.id, earnedAt: new Date().toISOString() };
+                      if (badgeSnap.exists()) {
+                        await updateDoc(badgeDocRef, { earned: [...existing, newBadge] });
+                      } else {
+                        await setDoc(badgeDocRef, { earned: [newBadge] });
+                      }
+                    }
+                    // Mark badge awarded on challenge doc
+                    await updateDoc(doc(db, 'userChallenges', docSnap.id), { badgeAwarded: true });
+                    // Create journey post
+                    await addDoc(collection(db, 'posts'), {
+                      authorId: clientData.id,
+                      authorName: clientData.name || 'Anonymous',
+                      authorPhotoURL: clientData.photoURL || null,
+                      type: 'badge_earned',
+                      metadata: { title: badge.name, badgeDesc: badge.desc, badgeId: badge.id },
+                      createdAt: serverTimestamp(),
+                      likeCount: 0,
+                      commentCount: 0,
+                    });
+                    // Show celebration overlay
+                    setCelebration(badge);
+                  } catch (err) {
+                    console.error('Badge award failed:', err);
+                  }
+                }
+              }
+
               if (typeof fbq === 'function') {
                 fbq('trackCustom', 'ChallengeCompleted', {
                   challenge_name: def.name,
@@ -407,6 +448,38 @@ export default function Challenges() {
               {actionLoading ? 'Abandoning...' : 'Yes, Give Up'}
             </button>
             <button className="ch-btn ch-btn-secondary" onClick={() => setConfirmModal(null)} disabled={actionLoading}>Keep Going</button>
+          </div>
+        </div>
+      )}
+
+      {/* Badge celebration overlay */}
+      {celebration && (
+        <div className="cb-celebration-overlay" onClick={() => setCelebration(null)}>
+          <div className="cb-confetti-container">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <div
+                key={i}
+                className="cb-confetti-piece"
+                style={{
+                  '--angle': `${(i / 24) * 360}deg`,
+                  '--distance': `${80 + Math.random() * 60}px`,
+                  '--drift': `${(Math.random() - 0.5) * 40}px`,
+                  '--size': `${4 + Math.random() * 4}px`,
+                  '--color': ['#FFD700', '#FF6B6B', '#4ECDC4', '#A1C4FD', '#F093FB', '#FFECD2'][i % 6],
+                  '--delay': `${Math.random() * 0.3}s`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="cb-celebration-content">
+            <div className="cb-celebration-glow" />
+            {celebration.img && (
+              <img src={celebration.img} alt={celebration.name} className="cb-celebration-badge-img" />
+            )}
+            <h2 className="cb-celebration-title">Badge Unlocked!</h2>
+            <p className="cb-celebration-name">{celebration.name}</p>
+            <p className="cb-celebration-desc">{celebration.desc}</p>
+            <button className="cb-celebration-dismiss">Tap to dismiss</button>
           </div>
         </div>
       )}

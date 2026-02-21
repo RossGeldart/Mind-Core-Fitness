@@ -92,6 +92,12 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isClientOwner(docId);
     }
+    // Core Buddy Badges - admin full, clients write own, all authenticated can read (for badge showcase)
+    match /coreBuddyBadges/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+      allow write: if isClientOwner(docId);
+    }
     // Achievements - admin full, clients write own, all authenticated can read (for profiles)
     match /achievements/{docId} {
       allow read, write: if isAdmin();

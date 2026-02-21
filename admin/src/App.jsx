@@ -17,6 +17,7 @@ import CoreBuddyProfile from './pages/CoreBuddyProfile';
 import CoreBuddyBuilder from './pages/CoreBuddyBuilder';
 import CoreBuddySettings from './pages/CoreBuddySettings';
 import Challenges from './pages/Challenges';
+import CoreBuddyBadges from './pages/CoreBuddyBadges';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -100,6 +101,7 @@ function App() {
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/core-buddy/settings" element={<CoreBuddySettings />} />
             <Route path="/client/core-buddy/challenges" element={<Challenges />} />
+            <Route path="/client/core-buddy/badges" element={<CoreBuddyBadges />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />

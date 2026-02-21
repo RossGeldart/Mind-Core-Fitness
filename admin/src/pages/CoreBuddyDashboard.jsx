@@ -15,6 +15,7 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
+import BADGE_DEFS from '../utils/badgeConfig';
 
 const TICK_COUNT = 60;
 const DEFAULT_WEEKLY_TARGET = 3;
@@ -1480,7 +1481,7 @@ export default function CoreBuddyDashboard() {
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card">
                         <div className="journey-card-logo-frame journey-card-logo-badge">
-                          <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />
+                          {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.badgeDesc && (
