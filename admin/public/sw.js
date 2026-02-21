@@ -1,3 +1,54 @@
+/* ==================== FIREBASE CLOUD MESSAGING ==================== */
+
+// Import Firebase scripts for push notifications
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: 'AIzaSyBCIgMJd3By7qkWH27YiW9VooIBGE3bFLs',
+  authDomain: 'mind-core-fitness-client.firebaseapp.com',
+  projectId: 'mind-core-fitness-client',
+  storageBucket: 'mind-core-fitness-client.firebasestorage.app',
+  messagingSenderId: '669343392406',
+  appId: '1:669343392406:web:f5a35ee062387e7d6f58b7',
+});
+
+const messaging = firebase.messaging();
+
+// Handle background push messages (when app is not in foreground)
+messaging.onBackgroundMessage((payload) => {
+  const { title, body, icon } = payload.notification || {};
+  const notifTitle = title || 'Core Buddy';
+  const notifOptions = {
+    body: body || 'You have a new notification',
+    icon: icon || '/login/Logo.webp',
+    badge: '/login/Logo.webp',
+    data: payload.data || {},
+    tag: payload.data?.type || 'general',
+  };
+  self.registration.showNotification(notifTitle, notifOptions);
+});
+
+// Handle notification click — open the app
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const urlToOpen = '/login/#/client/core-buddy';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Focus existing window if open
+      for (const client of clientList) {
+        if (client.url.includes('/login') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise open a new one
+      return self.clients.openWindow(urlToOpen);
+    })
+  );
+});
+
+/* ==================== CACHING ==================== */
+
 const CACHE_NAME = 'mcf-v3';
 
 // App-shell assets cached on install
