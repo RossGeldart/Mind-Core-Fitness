@@ -1,3 +1,4 @@
+import { getApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -9,7 +10,6 @@ let messaging = null;
 function getMessagingInstance() {
   if (!messaging) {
     try {
-      const { getApp } = require('firebase/app');
       messaging = getMessaging(getApp());
     } catch {
       return null;
