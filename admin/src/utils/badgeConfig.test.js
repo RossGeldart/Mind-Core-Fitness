@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import BADGE_DEFS from './badgeConfig';
 
-const VALID_CATEGORIES = ['workouts', 'streaks', 'pbs', 'nutrition', 'leaderboard', 'habits'];
+const VALID_CATEGORIES = ['workouts', 'streaks', 'pbs', 'nutrition', 'leaderboard', 'habits', 'challenges'];
 
 describe('BADGE_DEFS integrity', () => {
   it('exports a non-empty array', () => {
@@ -63,6 +63,7 @@ describe('BADGE_DEFS integrity', () => {
         nutrition: ['nutrition_'],
         leaderboard: ['leaderboard_'],
         habits: ['habits_'],
+        challenges: ['starter_streak', 'consistency_king', 'thirty_in_thirty', 'minute_master', 'habit_machine', 'iron_will'],
       };
       const prefixes = categoryPrefixMap[badge.category] || [];
       const matches = prefixes.some(prefix => badge.id.startsWith(prefix));
