@@ -1,7 +1,7 @@
 /* ── Challenges Page ── */
 .ch-page {
   min-height: 100dvh;
-  background: var(--bg-main);
+  background: var(--bg-body);
   color: var(--text-primary);
   padding-bottom: 90px;
 }
