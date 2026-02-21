@@ -362,16 +362,6 @@
             <!-- Quick Links - Tertiary Options -->
             <span class="quick-links-label">Explore More</span>
             <div class="quick-links">
-                <a href="protein-calculator.html" class="quick-link option-card">
-                    <div class="quick-link-icon" style="background: #99313c; display: flex; align-items: center; justify-content: center;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
-                    </div>
-                    <div class="quick-link-content">
-                        <span class="quick-link-title">Protein Is King</span>
-                        <span class="quick-link-desc">Calculate your daily target</span>
-                    </div>
-                    <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
                 <a href="#" class="quick-link option-card" id="getInTouchBtn" onclick="openContactModal(event)">
                     <picture>
                         <source srcset="Client Bond.webp" type="image/webp">
@@ -391,33 +381,6 @@
                     </div>
                     <svg class="quick-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Workbook Section -->
-    <section class="workbook-section" id="workbook">
-        <div class="container">
-            <span class="section-label">New Release</span>
-            <h2 class="section-title">The Mind Core Mindset Workbook</h2>
-            <div class="workbook-content">
-                <div class="workbook-image">
-                    <picture>
-                        <source srcset="downloads/front-cover-square.webp" type="image/webp">
-                        <img src="downloads/front-cover-square.jpeg" alt="The Mind Core Mindset Workbook - 6-Month Transformation Journal" class="book-cover" loading="lazy" width="400" height="400">
-                    </picture>
-                </div>
-                <div class="workbook-details">
-                    <p class="workbook-tagline">Stop waiting. Start becoming.</p>
-                    <p class="workbook-intro">Tired of waiting for motivation to strike? The Mind Core Mindset Workbook is a hands-on 6-month transformation journal designed for busy professionals who are done with the endless restart cycle.</p>
-
-                    <a href="workbook.html" class="workbook-more-info-btn">
-                        Learn More
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                </div>
             </div>
         </div>
     </section>
@@ -705,7 +668,7 @@
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .workbook-image, .workbook-details, .social-link').forEach(function(el) {
+            document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .social-link').forEach(function(el) {
                 observer.observe(el);
             });
         });
@@ -719,14 +682,14 @@
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 // Page was restored from bfcache - show all elements immediately
-                document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .workbook-image, .workbook-details, .social-link, .hero-content').forEach(function(el) {
+                document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .social-link, .hero-content').forEach(function(el) {
                     el.classList.add('visible');
                     el.style.transition = 'none';
                 });
                 // Re-enable transitions after a frame
                 requestAnimationFrame(function() {
                     requestAnimationFrame(function() {
-                        document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .workbook-image, .workbook-details, .social-link, .hero-content').forEach(function(el) {
+                        document.querySelectorAll('.value-card, .testimonial-card, .option-card, .service-block, .social-link, .hero-content').forEach(function(el) {
                             el.style.transition = '';
                         });
                     });
