@@ -727,6 +727,13 @@
   text-align: center;
   padding: 28px 18px 18px;
   min-height: 120px;
+}
+
+.cb-feature-card.cb-card-workouts-hero {
+  border: 3px solid var(--color-primary);
+}
+
+[data-theme="dark"] .cb-feature-card.cb-card-workouts-hero {
   border: 3px solid var(--color-primary);
 }
 
