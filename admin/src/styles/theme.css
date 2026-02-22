@@ -306,6 +306,86 @@
   stroke: #B8313D;
 }
 
+/* ========== Mono: force all rings / fills to B&W ========== */
+
+/* Dark mono — all ring fills become white */
+[data-mono="true"][data-theme="dark"] .cb-stat-fill,
+[data-mono="true"][data-theme="dark"] .cb-fill-near,
+[data-mono="true"][data-theme="dark"] .cb-fill-complete,
+[data-mono="true"][data-theme="dark"] .cb-mini-fill,
+[data-mono="true"][data-theme="dark"] .cb-nudge-ring-fill,
+[data-mono="true"][data-theme="dark"] .wk-stat-fill,
+[data-mono="true"][data-theme="dark"] .wk-tick-filled.wk-tick-work,
+[data-mono="true"][data-theme="dark"] .wk-tick-filled.wk-tick-rest,
+[data-mono="true"][data-theme="dark"] .cbc-arc-fill,
+[data-mono="true"][data-theme="dark"] .cbc-habit-ring-fill,
+[data-mono="true"][data-theme="dark"] .ch-ring-svg circle:last-child,
+[data-mono="true"][data-theme="dark"] .progress-ring-fill,
+[data-mono="true"][data-theme="dark"] .wc-hold-ring-fill {
+  stroke: #f0f0f0 !important;
+}
+
+/* Dark mono — completed ring values */
+[data-mono="true"][data-theme="dark"] .cb-val-complete {
+  color: #f0f0f0 !important;
+}
+
+/* Dark mono — habit ring icons & labels */
+[data-mono="true"][data-theme="dark"] .cbc-habit-ring-icon,
+[data-mono="true"][data-theme="dark"] .cbc-habit-glow-orb {
+  color: #f0f0f0 !important;
+  --habit-color: #f0f0f0 !important;
+}
+
+/* Light mono — all ring fills become black */
+[data-mono="true"][data-theme="light"] .cb-stat-fill,
+[data-mono="true"][data-theme="light"] .cb-fill-near,
+[data-mono="true"][data-theme="light"] .cb-fill-complete,
+[data-mono="true"][data-theme="light"] .cb-mini-fill,
+[data-mono="true"][data-theme="light"] .cb-nudge-ring-fill,
+[data-mono="true"][data-theme="light"] .wk-stat-fill,
+[data-mono="true"][data-theme="light"] .wk-tick-filled.wk-tick-work,
+[data-mono="true"][data-theme="light"] .wk-tick-filled.wk-tick-rest,
+[data-mono="true"][data-theme="light"] .cbc-arc-fill,
+[data-mono="true"][data-theme="light"] .cbc-habit-ring-fill,
+[data-mono="true"][data-theme="light"] .ch-ring-svg circle:last-child,
+[data-mono="true"][data-theme="light"] .progress-ring-fill,
+[data-mono="true"][data-theme="light"] .wc-hold-ring-fill {
+  stroke: #111111 !important;
+}
+
+/* Light mono — completed ring values */
+[data-mono="true"][data-theme="light"] .cb-val-complete {
+  color: #111111 !important;
+}
+
+/* Light mono — habit ring icons & labels */
+[data-mono="true"][data-theme="light"] .cbc-habit-ring-icon,
+[data-mono="true"][data-theme="light"] .cbc-habit-glow-orb {
+  color: #111111 !important;
+  --habit-color: #111111 !important;
+}
+
+/* Dark mono — ring value text / labels with inline colour */
+[data-mono="true"][data-theme="dark"] .wk-stat-value,
+[data-mono="true"][data-theme="dark"] .cb-mini-ring span {
+  color: #f0f0f0 !important;
+}
+
+/* Light mono — ring value text / labels with inline colour */
+[data-mono="true"][data-theme="light"] .wk-stat-value,
+[data-mono="true"][data-theme="light"] .cb-mini-ring span {
+  color: #111111 !important;
+}
+
+/* Mono — kill colour glows on rings */
+[data-mono="true"] .cbc-ring-complete .cbc-arc-fill,
+[data-mono="true"] .cb-stat-near,
+[data-mono="true"] .cb-stat-complete {
+  filter: none !important;
+  animation: none !important;
+}
+
 /* Smooth theme transition — scoped to theme toggle only */
 [data-theme-transitioning] * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
