@@ -1904,7 +1904,7 @@
   max-width: 320px;
   padding: 16px 24px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 14px;
   font-family: 'Montserrat', sans-serif;
