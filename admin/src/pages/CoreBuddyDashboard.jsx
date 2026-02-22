@@ -1030,80 +1030,95 @@ export default function CoreBuddyDashboard() {
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
-          {/* Notification bell — top left */}
-          <div className="header-notif-wrap" ref={notifRef}>
-            <button className="header-notif-btn" onClick={() => { setNotifOpen(!notifOpen); if (!notifOpen) markAllRead(); }} aria-label="Notifications">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              {unreadCount > 0 && <span className="header-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
-            </button>
+          {/* Left group — bell + settings */}
+          <div className="header-left-group">
+            <div className="header-notif-wrap" ref={notifRef}>
+              <button className="header-notif-btn" onClick={() => { setNotifOpen(!notifOpen); if (!notifOpen) markAllRead(); }} aria-label="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                {unreadCount > 0 && <span className="header-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+              </button>
 
-            {notifOpen && (
-              <div className="notif-panel">
-                <div className="notif-panel-header">
-                  <span className="notif-panel-title">Notifications</span>
-                  {notifications.length > 0 && (
-                    <button className="notif-clear-btn" onClick={clearAllNotifications}>Clear all</button>
-                  )}
-                </div>
-                <div className="notif-panel-list">
-                  {notifications.length === 0 ? (
-                    <div className="notif-empty">No notifications yet</div>
-                  ) : (
-                    notifications.map(n => (
-                      <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
-                        setNotifOpen(false);
-                        if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
-                          navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
-                        } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
-                          // Expand comments and load them if needed
-                          if (!expandedComments.has(n.postId)) {
-                            const newExpanded = new Set(expandedComments);
-                            newExpanded.add(n.postId);
-                            setExpandedComments(newExpanded);
-                            if (!comments[n.postId]) loadJourneyComments(n.postId);
+              {notifOpen && (
+                <div className="notif-panel">
+                  <div className="notif-panel-header">
+                    <span className="notif-panel-title">Notifications</span>
+                    {notifications.length > 0 && (
+                      <button className="notif-clear-btn" onClick={clearAllNotifications}>Clear all</button>
+                    )}
+                  </div>
+                  <div className="notif-panel-list">
+                    {notifications.length === 0 ? (
+                      <div className="notif-empty">No notifications yet</div>
+                    ) : (
+                      notifications.map(n => (
+                        <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
+                          setNotifOpen(false);
+                          if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
+                            navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
+                          } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
+                            // Expand comments and load them if needed
+                            if (!expandedComments.has(n.postId)) {
+                              const newExpanded = new Set(expandedComments);
+                              newExpanded.add(n.postId);
+                              setExpandedComments(newExpanded);
+                              if (!comments[n.postId]) loadJourneyComments(n.postId);
+                            }
+                            // Scroll to the specific post after React renders
+                            setTimeout(() => {
+                              const el = document.getElementById(`post-${n.postId}`);
+                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 150);
+                          } else if (n.type === 'like' || n.type === 'comment') {
+                            document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
+                          } else if (n.type === 'mention') {
+                            navigate(`/client/core-buddy/profile/${n.fromId}`);
                           }
-                          // Scroll to the specific post after React renders
-                          setTimeout(() => {
-                            const el = document.getElementById(`post-${n.postId}`);
-                            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          }, 150);
-                        } else if (n.type === 'like' || n.type === 'comment') {
-                          document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
-                        } else if (n.type === 'mention') {
-                          navigate(`/client/core-buddy/profile/${n.fromId}`);
-                        }
-                      }}>
-                        <div className="notif-item-avatar">
-                          {n.fromPhotoURL ? <img src={n.fromPhotoURL} alt="" /> : <span>{(n.fromName || '?')[0]}</span>}
+                        }}>
+                          <div className="notif-item-avatar">
+                            {n.fromPhotoURL ? <img src={n.fromPhotoURL} alt="" /> : <span>{(n.fromName || '?')[0]}</span>}
+                          </div>
+                          <div className="notif-item-body">
+                            <p className="notif-item-text">
+                              <strong>{n.fromName}</strong>{' '}
+                              {n.type === 'buddy_request' && 'sent you a buddy request'}
+                              {n.type === 'buddy_accept' && 'accepted your buddy request'}
+                              {n.type === 'like' && 'liked your post'}
+                              {n.type === 'comment' && 'commented on your post'}
+                              {n.type === 'mention' && 'mentioned you'}
+                            </p>
+                            <span className="notif-item-time">{timeAgo(n.createdAt)}</span>
+                          </div>
                         </div>
-                        <div className="notif-item-body">
-                          <p className="notif-item-text">
-                            <strong>{n.fromName}</strong>{' '}
-                            {n.type === 'buddy_request' && 'sent you a buddy request'}
-                            {n.type === 'buddy_accept' && 'accepted your buddy request'}
-                            {n.type === 'like' && 'liked your post'}
-                            {n.type === 'comment' && 'commented on your post'}
-                            {n.type === 'mention' && 'mentioned you'}
-                          </p>
-                          <span className="notif-item-time">{timeAgo(n.createdAt)}</span>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+            <button className="header-icon-btn" onClick={() => navigate('/client/core-buddy/settings')} aria-label="Settings">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
           </div>
 
           <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+
+          {/* Right group — theme toggle + logout */}
           <div className="header-actions">
-            <button onClick={() => navigate('/client/core-buddy/settings')} aria-label="Settings">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <button className="header-icon-btn" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+              {isDark ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+                </svg>
+              )}
             </button>
-            <button onClick={logout} aria-label="Log out">
+            <button className="header-icon-btn" onClick={logout} aria-label="Log out">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             </button>
           </div>
