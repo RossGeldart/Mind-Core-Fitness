@@ -1515,11 +1515,38 @@
   .journey-post { padding: 18px; }
 }
 
+/* ==================== HEADER LEFT/RIGHT GROUPS ==================== */
+
+.header-left-group {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 100;
+}
+
+.header-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.header-icon-btn:hover {
+  color: var(--text-primary, #fff);
+}
+
 /* ==================== NOTIFICATION BELL & PANEL ==================== */
 
 .header-notif-wrap {
-  position: absolute;
-  left: 10px;
+  position: relative;
   z-index: 100;
 }
 
