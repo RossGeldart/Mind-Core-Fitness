@@ -46,6 +46,49 @@
   flex-shrink: 0;
 }
 
+/* Accent colour picker */
+.settings-accent-row {
+  display: flex;
+  gap: 12px;
+}
+
+.settings-accent-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-accent-option.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.settings-accent-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.settings-accent-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.settings-accent-option.active .settings-accent-label {
+  color: var(--color-primary);
+}
+
 /* Rows */
 .settings-row {
   display: flex;

@@ -382,36 +382,6 @@
   font-weight: 500;
 }
 
-/* Accent Colour Picker */
-.cb-accent-picker {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 8px 0 4px;
-}
-
-.cb-accent-dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  background: var(--dot-color);
-  cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  padding: 0;
-}
-
-.cb-accent-dot:hover {
-  transform: scale(1.1);
-}
-
-.cb-accent-dot.active {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--dot-color);
-  transform: scale(1.15);
-}
-
 /* Stats Rings Row — 3 separate rings */
 .cb-stats-row {
   display: flex;
