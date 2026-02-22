@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { awardBadge } from '../utils/awardBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
@@ -191,6 +192,27 @@ export default function CoreBuddyNutrition() {
         entries: newLog.entries,
         updatedAt: Timestamp.now()
       });
+
+      // Check nutrition_7 badge: 7 consecutive days hitting protein target
+      if (targets?.protein && selectedDate === getTodayKey()) {
+        const todayTotals = newLog.entries.reduce((acc, e) => acc + (e.protein || 0), 0);
+        if (todayTotals >= targets.protein) {
+          let streak = 1;
+          for (let i = 1; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().split('T')[0];
+            try {
+              const snap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${key}`));
+              if (snap.exists()) {
+                const dayProtein = (snap.data().entries || []).reduce((acc, e) => acc + (e.protein || 0), 0);
+                if (dayProtein >= targets.protein) { streak++; } else { break; }
+              } else { break; }
+            } catch { break; }
+          }
+          if (streak >= 7) awardBadge('nutrition_7', clientData);
+        }
+      }
     } catch (err) {
       console.error('Error saving nutrition log:', err);
     }

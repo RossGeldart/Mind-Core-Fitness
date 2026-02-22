@@ -10,6 +10,7 @@ import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
+import { awardBadge } from '../utils/awardBadge';
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -1214,9 +1215,37 @@ export default function CoreBuddyWorkouts() {
         });
       }
       setWeeklyCount(c => c + 1);
-      setTotalCount(c => c + 1);
+      const newTotal = totalCount + 1;
+      setTotalCount(newTotal);
       setTotalMinutes(m => m + duration);
       setLevelBreakdown(lb => ({ ...lb, [level]: (lb[level] || 0) + 1 }));
+
+      // Check workout count badges
+      const workoutThresholds = [
+        { count: 1, id: 'first_workout' },
+        { count: 10, id: 'workouts_10' },
+        { count: 25, id: 'workouts_25' },
+        { count: 50, id: 'workouts_50' },
+        { count: 100, id: 'workouts_100' },
+      ];
+      for (const t of workoutThresholds) {
+        if (newTotal >= t.count) {
+          awardBadge(t.id, clientData);
+        }
+      }
+
+      // Check streak badges (streak is already calculated in state)
+      const newStreak = streak + (weeklyCount === 0 ? 1 : 0); // streak bumps if first workout of the week
+      const streakThresholds = [
+        { weeks: 2, id: 'streak_2' },
+        { weeks: 4, id: 'streak_4' },
+        { weeks: 8, id: 'streak_8' },
+      ];
+      for (const t of streakThresholds) {
+        if (newStreak >= t.weeks) {
+          awardBadge(t.id, clientData);
+        }
+      }
     } catch (err) {
       console.error('Error saving workout log:', err);
     }

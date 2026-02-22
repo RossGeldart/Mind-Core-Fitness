@@ -6,10 +6,7 @@ import workouts100Badge from '../assets/workouts_100.PNG';
 import streak2Badge from '../assets/streak_2.PNG';
 import streak4Badge from '../assets/streak_4.PNG';
 import streak8Badge from '../assets/streak_8.PNG';
-import firstPbBadge from '../assets/first_pb.PNG';
-import pbs5Badge from '../assets/pbs_5.PNG';
-import pbs10Badge from '../assets/pbs_10.PNG';
-import pbs100Badge from '../assets/pbs_100.PNG';
+
 import nutrition7Badge from '../assets/nutrition_7.PNG';
 import leaderboardJoinBadge from '../assets/leaderboard_join.PNG';
 import habits7Badge from '../assets/habits_7.PNG';
@@ -31,11 +28,6 @@ const BADGE_DEFS = [
   { id: 'streak_2', img: streak2Badge, name: '2 Week Streak', desc: 'Work out for 2 weeks in a row', category: 'streaks', threshold: 2 },
   { id: 'streak_4', img: streak4Badge, name: 'Month Strong', desc: 'Work out for 4 weeks in a row', category: 'streaks', threshold: 4 },
   { id: 'streak_8', img: streak8Badge, name: 'Iron Will', desc: 'Work out for 8 weeks in a row', category: 'streaks', threshold: 8 },
-  // Personal best badges
-  { id: 'first_pb', img: firstPbBadge, name: 'First PB', desc: 'Set your first personal best', category: 'pbs', threshold: 1 },
-  { id: 'pbs_5', img: pbs5Badge, name: 'PB Hunter', desc: 'Set 5 personal bests', category: 'pbs', threshold: 5 },
-  { id: 'pbs_10', img: pbs10Badge, name: 'PB Machine', desc: 'Set 10 personal bests', category: 'pbs', threshold: 10 },
-  { id: 'pbs_100', img: pbs100Badge, name: 'PB Legend', desc: 'Set 100 personal bests', category: 'pbs', threshold: 100 },
   // Nutrition badges
   { id: 'nutrition_7', img: nutrition7Badge, name: 'Macro Master', desc: 'Hit your macro targets 7 days in a row', category: 'nutrition', threshold: 7 },
   // Leaderboard badges

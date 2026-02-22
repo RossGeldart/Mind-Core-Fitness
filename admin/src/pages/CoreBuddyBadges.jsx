@@ -11,14 +11,13 @@ import './CoreBuddyBadges.css';
 const CATEGORY_LABELS = {
   workouts: 'Workouts',
   streaks: 'Streaks',
-  pbs: 'Personal Bests',
   nutrition: 'Nutrition',
   leaderboard: 'Leaderboard',
   habits: 'Habits',
   challenges: 'Challenges',
 };
 
-const CATEGORY_ORDER = ['workouts', 'streaks', 'pbs', 'nutrition', 'leaderboard', 'habits', 'challenges'];
+const CATEGORY_ORDER = ['workouts', 'streaks', 'nutrition', 'leaderboard', 'habits', 'challenges'];
 
 export default function CoreBuddyBadges() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();

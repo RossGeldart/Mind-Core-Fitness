@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, getDoc, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { awardBadge } from '../utils/awardBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
@@ -190,6 +191,9 @@ export default function Leaderboard() {
       updateClientData({ leaderboardOptIn: true });
       setOptedIn(true);
       showToast('You\'re on the leaderboard!', 'success');
+      // Award leaderboard badge
+      const badge = await awardBadge('leaderboard_join', clientData);
+      if (badge) showToast(`Badge earned: ${badge.name}!`, 'success');
     } catch (err) {
       console.error('Error opting in:', err);
       showToast('Failed to join. Try again.', 'error');
