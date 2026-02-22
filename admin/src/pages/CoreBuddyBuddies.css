@@ -91,7 +91,7 @@
 .bdy-tab.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .bdy-tab:active { transform: scale(0.97); }
@@ -213,7 +213,7 @@
 .bdy-add-btn,
 .bdy-accept-btn,
 .bdy-decline-btn,
-.bdy-remove-btn {
+.bdy-view-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -237,23 +237,27 @@
   color: #fff;
 }
 
-.bdy-decline-btn,
-.bdy-remove-btn {
+.bdy-decline-btn {
   background: rgba(244, 67, 54, 0.1);
   color: var(--color-error);
+}
+
+.bdy-view-btn {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .bdy-add-btn:active,
 .bdy-accept-btn:active,
 .bdy-decline-btn:active,
-.bdy-remove-btn:active {
+.bdy-view-btn:active {
   transform: scale(0.9);
 }
 
 .bdy-add-btn:disabled,
 .bdy-accept-btn:disabled,
 .bdy-decline-btn:disabled,
-.bdy-remove-btn:disabled {
+.bdy-view-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
