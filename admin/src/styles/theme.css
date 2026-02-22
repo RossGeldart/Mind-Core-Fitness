@@ -174,6 +174,130 @@
   --color-primary-light: rgba(203, 108, 230, 0.15);
 }
 
+/* ========== Mono Theme — Light ========== */
+[data-mono="true"][data-theme="light"] {
+  --color-primary: #111111;
+  --color-primary-dark: #000000;
+  --color-primary-light: rgba(0, 0, 0, 0.06);
+  --color-primary-rgb: 17, 17, 17;
+
+  --bg-body: #f0f0f0;
+  --bg-secondary: #f0f0f0;
+  --bg-card: rgba(255, 255, 255, 0.55);
+  --bg-card-elevated: rgba(255, 255, 255, 0.65);
+  --bg-header: #1a1a1a;
+  --header-bg: #1a1a1a;
+  --bg-input: rgba(255, 255, 255, 0.5);
+
+  --text-primary: #111111;
+  --text-secondary: #444444;
+  --text-tertiary: #888888;
+  --text-on-primary: #ffffff;
+  --text-on-header: #ffffff;
+
+  --border-color: rgba(0, 0, 0, 0.12);
+  --border-light: rgba(0, 0, 0, 0.06);
+
+  --color-success: #222222;
+  --color-success-bg: rgba(0, 0, 0, 0.06);
+  --success-bg: rgba(0, 0, 0, 0.06);
+  --success-text: #222222;
+  --color-error: #333333;
+  --color-error-bg: rgba(0, 0, 0, 0.06);
+  --color-warning: #555555;
+  --color-warning-bg: rgba(0, 0, 0, 0.04);
+  --warning-bg: rgba(0, 0, 0, 0.04);
+  --warning-border: rgba(0, 0, 0, 0.1);
+  --warning-text: #555555;
+  --color-info: #333333;
+  --color-info-bg: rgba(0, 0, 0, 0.04);
+  --info-bg: rgba(0, 0, 0, 0.04);
+  --info-border: rgba(0, 0, 0, 0.1);
+  --info-text: #333333;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-primary: 0 6px 20px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  --time-morning: rgba(0, 0, 0, 0.03);
+  --time-afternoon: rgba(0, 0, 0, 0.03);
+}
+
+/* ========== Mono Theme — Dark ========== */
+[data-mono="true"][data-theme="dark"] {
+  --color-primary: #f0f0f0;
+  --color-primary-dark: #cccccc;
+  --color-primary-light: rgba(255, 255, 255, 0.08);
+  --color-primary-rgb: 240, 240, 240;
+
+  --bg-body: #0a0a0a;
+  --bg-secondary: #0a0a0a;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-elevated: rgba(255, 255, 255, 0.08);
+  --bg-header: rgba(255, 255, 255, 0.04);
+  --header-bg: rgba(255, 255, 255, 0.04);
+  --bg-input: rgba(255, 255, 255, 0.04);
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #aaaaaa;
+  --text-tertiary: #666666;
+  --text-on-primary: #0a0a0a;
+  --text-on-header: #f0f0f0;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
+
+  --color-success: #cccccc;
+  --color-success-bg: rgba(255, 255, 255, 0.06);
+  --success-bg: rgba(255, 255, 255, 0.06);
+  --success-text: #cccccc;
+  --color-error: #cccccc;
+  --color-error-bg: rgba(255, 255, 255, 0.06);
+  --color-warning: #999999;
+  --color-warning-bg: rgba(255, 255, 255, 0.04);
+  --warning-bg: rgba(255, 255, 255, 0.04);
+  --warning-border: rgba(255, 255, 255, 0.1);
+  --warning-text: #999999;
+  --color-info: #cccccc;
+  --color-info-bg: rgba(255, 255, 255, 0.04);
+  --info-bg: rgba(255, 255, 255, 0.04);
+  --info-border: rgba(255, 255, 255, 0.08);
+  --info-text: #cccccc;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --shadow-primary: 0 6px 20px rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2);
+
+  --time-morning: rgba(255, 255, 255, 0.03);
+  --time-afternoon: rgba(255, 255, 255, 0.03);
+}
+
+/* Frosted glass effect for cards when mono is active */
+[data-mono="true"] .settings-section,
+[data-mono="true"] .cb-card,
+[data-mono="true"] .card,
+[data-mono="true"] .dashboard-card,
+[data-mono="true"] .stat-card,
+[data-mono="true"] .workout-card,
+[data-mono="true"] .nutrition-card,
+[data-mono="true"] .buddy-card,
+[data-mono="true"] .challenge-card,
+[data-mono="true"] .leaderboard-card,
+[data-mono="true"] .consistency-card,
+[data-mono="true"] .profile-card,
+[data-mono="true"] .session-card,
+[data-mono="true"] .modal-content,
+[data-mono="true"] .onboarding-card {
+  -webkit-backdrop-filter: blur(20px) saturate(100%);
+  backdrop-filter: blur(20px) saturate(100%);
+}
+
 /* Smooth theme transition — scoped to theme toggle only */
 [data-theme-transitioning] * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
