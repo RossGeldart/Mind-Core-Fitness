@@ -876,8 +876,16 @@
 }
 
 .cb-card-icon-challenge {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background: transparent;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.cb-card-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 /* Habit Dots Preview */
