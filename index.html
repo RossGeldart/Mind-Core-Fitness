@@ -489,6 +489,42 @@
         </div>
     </section>
 
+    <!-- Inline Contact Form Section -->
+    <section class="contact-form-section" id="contact">
+        <div class="container" style="text-align:center;">
+            <span class="section-label">Get In Touch</span>
+            <h2 class="section-title">Ready to Start Your Journey?</h2>
+            <p class="section-subtitle">Fill out the form below and I'll get back to you within 24 hours to discuss your fitness goals.</p>
+            <div class="contact-form-wrapper">
+                <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){var cat=this.querySelector('#contactInterest').value;fbq('track','Lead',{content_name:'Contact Form',content_category:cat});}">
+                    <div class="form-group">
+                        <label for="contactName">Name</label>
+                        <input type="text" id="contactName" name="name" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactInterest">I'm interested in</label>
+                        <select id="contactInterest" name="interest" required>
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="Personal Training">Personal Training</option>
+                            <option value="Fitness App">Core Buddy App</option>
+                            <option value="Online Coaching">Online Coaching</option>
+                            <option value="General Enquiry">Other / General Enquiry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" name="message" rows="4" required placeholder="How can I help you?"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <!-- Social Links Section -->
     <section class="social-section">
         <div class="container">
