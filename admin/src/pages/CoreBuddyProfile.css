@@ -42,7 +42,7 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  border: 3px solid var(--color-primary);
+  border: none;
   overflow: hidden;
   display: flex;
   align-items: center;
