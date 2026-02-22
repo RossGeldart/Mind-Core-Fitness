@@ -1054,6 +1054,61 @@ body {
     background: #000000;
 }
 
+/* Inline Contact Form Section */
+.contact-form-section {
+    background: var(--text-color);
+    color: #ffffff;
+    padding: 100px 20px;
+}
+
+.contact-form-section .section-label {
+    color: var(--accent-color);
+}
+
+.contact-form-section .section-title {
+    color: #ffffff;
+}
+
+.contact-form-section .section-subtitle {
+    color: #aaa;
+    font-size: 1.05rem;
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.contact-form-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.contact-form-section .form-group input,
+.contact-form-section .form-group textarea,
+.contact-form-section .form-group select {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.15);
+    color: #ffffff;
+}
+
+.contact-form-section .form-group input::placeholder,
+.contact-form-section .form-group textarea::placeholder,
+.contact-form-section .form-group select:invalid {
+    color: #888;
+}
+
+.contact-form-section .form-group input:focus,
+.contact-form-section .form-group textarea:focus,
+.contact-form-section .form-group select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(153,49,60,0.2);
+    background: rgba(255,255,255,0.08);
+}
+
+.contact-form-section .form-group label {
+    color: #ddd;
+}
+
 /* Contact Form Modal */
 .modal-overlay {
     position: fixed;

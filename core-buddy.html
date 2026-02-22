@@ -1196,6 +1196,101 @@
             }
             .btn-primary:hover, .nav-cta:hover { transform: none; }
         }
+
+        /* Contact Form Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none;
+            font-size: 28px; color: #666; cursor: pointer;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .modal-close:hover { background: rgba(0,0,0,0.1); color: #333; }
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1.8rem;
+            color: #373737; margin-bottom: 8px; text-align: center;
+        }
+        .modal-subtitle {
+            font-size: 0.95rem; color: #666;
+            text-align: center; margin-bottom: 28px; line-height: 1.5;
+        }
+        .modal-overlay .contact-form {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .modal-overlay .form-group {
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .modal-overlay .form-group label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500; font-size: 0.9rem; color: #373737;
+        }
+        .modal-overlay .form-group input,
+        .modal-overlay .form-group textarea,
+        .modal-overlay .form-group select {
+            padding: 14px 16px;
+            border: 1.5px solid rgba(55,55,55,0.2);
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem; color: #373737;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+        }
+        .modal-overlay .form-group input::placeholder,
+        .modal-overlay .form-group textarea::placeholder,
+        .modal-overlay .form-group select:invalid { color: #999; }
+        .modal-overlay .form-group input:focus,
+        .modal-overlay .form-group textarea:focus,
+        .modal-overlay .form-group select:focus {
+            outline: none;
+            border-color: #99313c;
+            box-shadow: 0 0 0 3px rgba(153,49,60,0.1);
+        }
+        .modal-overlay .form-group textarea { resize: vertical; min-height: 100px; }
+        .modal-overlay .submit-btn {
+            padding: 16px 32px;
+            background: #99313c; color: #ffffff;
+            border: none; border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 8px;
+        }
+        .modal-overlay .submit-btn:hover {
+            background: #b33a47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(153,49,60,0.3);
+        }
     </style>
 </head>
 <body>
@@ -1569,7 +1664,7 @@
                 <div class="footer-links">
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
+                        <li><a href="#" onclick="openContactModal(event)">Contact Us</a></li>
                         <li><a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Bug%20Report">Report a Bug</a></li>
                         <li><a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Feedback">Feedback</a></li>
                     </ul>
@@ -1594,8 +1689,67 @@
         </div>
     </div>
 
+    <!-- Contact Form Modal -->
+    <div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeContactModal()" aria-label="Close contact form">&times;</button>
+            <h2 class="modal-title" id="modalTitle">Get In Touch</h2>
+            <p class="modal-subtitle">Have a question or ready to start your fitness journey? Send me a message!</p>
+            <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){var cat=this.querySelector('#interest').value;fbq('track','Lead',{content_name:'Contact Form',content_category:cat});}">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="interest">I'm interested in</label>
+                    <select id="interest" name="interest" required>
+                        <option value="" disabled selected>Select an option</option>
+                        <option value="Personal Training">Personal Training</option>
+                        <option value="Fitness App">Core Buddy App</option>
+                        <option value="Online Coaching">Online Coaching</option>
+                        <option value="General Enquiry">Other / General Enquiry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" required placeholder="How can I help you?"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
     <!-- ===== Scripts ===== -->
     <script>
+        // Contact Modal Functions
+        function openContactModal(event) {
+            event.preventDefault();
+            document.getElementById('contactModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Contact', {
+                    content_name: 'Contact Modal Open',
+                    content_category: 'Core Buddy'
+                });
+            }
+        }
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('contactModal').addEventListener('click', function(e) {
+            if (e.target === this) closeContactModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('contactModal').classList.contains('show')) {
+                closeContactModal();
+            }
+        });
+
         // Mobile menu toggle
         const mobileToggle = document.querySelector('.mobile-menu-toggle');
         const navLinks = document.querySelector('.nav-links');
