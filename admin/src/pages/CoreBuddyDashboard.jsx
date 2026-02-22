@@ -20,6 +20,7 @@ import BADGE_DEFS from '../utils/badgeConfig';
 const TICK_COUNT = 60;
 const DEFAULT_WEEKLY_TARGET = 3;
 const DEFAULT_HABIT_COUNT = 5;
+const DEFAULT_HABIT_KEYS = ['trained', 'protein', 'steps', 'sleep', 'water'];
 
 function formatDate(date) {
   return date.toISOString().split('T')[0];
@@ -110,7 +111,8 @@ export default function CoreBuddyDashboard() {
   const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
-  const habitCount = isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT;
+  const [realHabitCount, setRealHabitCount] = useState(isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT);
+  const habitCount = realHabitCount;
 
   // 24hr countdown state
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -304,6 +306,7 @@ export default function CoreBuddyDashboard() {
         setNutritionTotals(c.nutritionTotals ?? { protein: 0, carbs: 0, fats: 0, calories: 0 });
         setNutritionTargetData(c.nutritionTargetData ?? null);
         setTodayHabitsCount(c.todayHabitsCount ?? 0);
+        if (c.realHabitCount) setRealHabitCount(c.realHabitCount);
         setWeeklyWorkouts(c.weeklyWorkouts ?? 0);
         setWeeklyWorkoutTarget(c.weeklyWorkoutTarget ?? DEFAULT_WEEKLY_TARGET);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
@@ -585,16 +588,29 @@ export default function CoreBuddyDashboard() {
         }).length;
         setWeeklyWorkouts(weekCount);
 
-        // 3. Habit completion today
-        const habitRef = collection(db, 'habitLogs');
-        const hq = query(habitRef, where('clientId', '==', clientData.id), where('date', '==', todayStr));
-        const habitSnap = await getDocs(hq);
+        // 3. Habit completion today — fetch custom habits to get real total
+        const [habitSnap, customHabitsSnap] = await Promise.all([
+          getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', clientData.id), where('date', '==', todayStr))),
+          getDoc(doc(db, 'customHabits', clientData.id)),
+        ]);
+        // Compute real habit count: defaults (minus hidden) + custom
+        let trueHabitCount = DEFAULT_HABIT_COUNT;
+        if (customHabitsSnap.exists()) {
+          const customData = customHabitsSnap.data();
+          const customList = customData.habits || [];
+          const hiddenDefaults = customData.hiddenDefaults || [];
+          const visibleDefaults = DEFAULT_HABIT_KEYS.filter(k => !hiddenDefaults.includes(k)).length;
+          trueHabitCount = visibleDefaults + customList.length;
+        }
+        if (!isPremium) trueHabitCount = Math.min(trueHabitCount, FREE_HABIT_LIMIT);
+        setRealHabitCount(trueHabitCount);
+
         let todayCompleted = 0;
         if (!habitSnap.empty) {
           const habits = habitSnap.docs[0].data().habits || {};
-          todayCompleted = Math.min(Object.values(habits).filter(Boolean).length, habitCount);
+          todayCompleted = Object.values(habits).filter(Boolean).length;
         }
-        setHabitWeekPct(Math.round((todayCompleted / habitCount) * 100));
+        setHabitWeekPct(Math.round((todayCompleted / trueHabitCount) * 100));
         setTodayHabitsCount(todayCompleted);
 
         // 4. Nutrition targets
@@ -685,7 +701,7 @@ export default function CoreBuddyDashboard() {
       sessionStorage.setItem(`cbDash_${clientData.id}`, JSON.stringify({
         totalWorkouts, habitWeekPct,
         nutritionTotals, nutritionTargetData, todayHabitsCount,
-        weeklyWorkouts, weeklyWorkoutTarget, leaderboardTop3,
+        realHabitCount, weeklyWorkouts, weeklyWorkoutTarget, leaderboardTop3,
         streakWeeks
       }));
     } catch {}
