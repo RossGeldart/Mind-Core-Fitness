@@ -143,6 +143,7 @@
   cursor: pointer;
   transition: transform 0.15s;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-glow);
 }
 
 .bdy-card:active { transform: scale(0.98); }

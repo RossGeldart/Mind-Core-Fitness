@@ -26,6 +26,7 @@
   border: 1px solid var(--border-color);
   padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow-glow);
 }
 
 .settings-section-title {

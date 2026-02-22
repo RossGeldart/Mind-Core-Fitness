@@ -586,12 +586,11 @@
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .cb-feature-card {
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: none;
   background: var(--bg-card);
 }
 
@@ -708,7 +707,6 @@
 }
 
 [data-theme="dark"] .cb-feature-card:hover {
-  box-shadow: none;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -1192,13 +1190,12 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .journey-compose {
   background: var(--bg-card);
   border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: none;
 }
 
 .journey-compose-avatar {
@@ -1285,7 +1282,7 @@
 .journey-post {
   background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px; padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 [data-theme="dark"] .journey-post {
   background: rgba(30, 30, 30, 0.8);

@@ -628,7 +628,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-glow);
   transition: transform 0.2s ease;
   padding: 0;
 }
@@ -791,7 +791,7 @@
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   text-align: left;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-glow);
 }
 
 .mg-session-card:hover {
@@ -1175,7 +1175,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 .mg-ex-name {
