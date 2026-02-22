@@ -386,6 +386,22 @@
   animation: none !important;
 }
 
+/* Mono — nutrition calendar selected/today text contrast */
+[data-mono="true"][data-theme="dark"] .nut-week-day.selected .nut-week-day-num,
+[data-mono="true"][data-theme="dark"] .nut-cal-day.selected {
+  color: #0a0a0a !important;
+}
+[data-mono="true"][data-theme="dark"] .nut-week-day.selected .nut-week-day-letter {
+  color: rgba(10, 10, 10, 0.7) !important;
+}
+[data-mono="true"][data-theme="light"] .nut-week-day.selected .nut-week-day-num,
+[data-mono="true"][data-theme="light"] .nut-cal-day.selected {
+  color: #ffffff !important;
+}
+[data-mono="true"][data-theme="light"] .nut-week-day.selected .nut-week-day-letter {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 /* Smooth theme transition — scoped to theme toggle only */
 [data-theme-transitioning] * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
