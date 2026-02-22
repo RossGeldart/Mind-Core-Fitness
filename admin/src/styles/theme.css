@@ -160,6 +160,18 @@
   --color-primary-light: rgba(193, 255, 114, 0.15);
 }
 
+[data-accent="purple"] {
+  --color-primary: #CB6CE6;
+  --color-primary-dark: #A852C4;
+  --color-primary-light: rgba(203, 108, 230, 0.1);
+  --color-primary-rgb: 203, 108, 230;
+  --shadow-primary: 0 6px 20px rgba(203, 108, 230, 0.4);
+}
+
+[data-accent="purple"][data-theme="dark"] {
+  --color-primary-light: rgba(203, 108, 230, 0.15);
+}
+
 /* Smooth theme transition — scoped to theme toggle only */
 [data-theme-transitioning] * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;

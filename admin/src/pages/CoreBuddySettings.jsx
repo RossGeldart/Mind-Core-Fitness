@@ -178,6 +178,7 @@ export default function CoreBuddySettings() {
               { key: 'orange', color: '#FF8533', label: 'Orange' },
               { key: 'blue', color: '#1AADFF', label: 'Blue' },
               { key: 'green', color: '#C1FF72', label: 'Green' },
+              { key: 'purple', color: '#CB6CE6', label: 'Purple' },
             ].map((c) => (
               <button
                 key={c.key}
