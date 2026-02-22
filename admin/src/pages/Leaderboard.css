@@ -247,7 +247,7 @@
 .lb-tab-active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .lb-tab:active { transform: scale(0.97); }
@@ -292,7 +292,7 @@
 
 .lb-period-active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .lb-period-label {
@@ -330,7 +330,7 @@
 .lb-buddy-filter.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .lb-buddy-filter:active { transform: scale(0.95); }
@@ -502,7 +502,7 @@
 }
 
 .lb-rank-you {
-  border-color: rgba(161, 47, 58, 0.3);
+  border-color: rgba(var(--color-primary-rgb), 0.3);
   background: var(--color-primary-light);
 }
 

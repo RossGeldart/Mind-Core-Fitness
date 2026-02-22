@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog | Mind Core Fitness - Elgin</title>
+    <title>Fitness Blog | Training Tips & Advice | Mind Core Fitness</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Fitness tips, training advice, and mindset strategies from Mind Core Fitness in Elgin, Scotland. Read our latest blog posts on strength, nutrition, and personal development.">
+    <meta name="description" content="Fitness tips, training advice, and mindset strategies from Mind Core Fitness. Read our latest posts on core strength, nutrition, and workouts.">
     <meta name="keywords" content="fitness blog, training tips, mindset, strength training, nutrition advice, Mind Core Fitness, Elgin">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
@@ -177,21 +177,27 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 8px;
         }
 
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
-            transition: color 0.2s;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
-        .nav-links a:hover,
+        .nav-links a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         .nav-links a.active {
-            color: var(--accent-color);
+            color: #ffffff;
         }
 
         .nav-buttons {
@@ -203,7 +209,8 @@
         .nav-back {
             padding: 8px 16px;
             color: rgba(255, 255, 255, 0.7);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
             transition: color 0.2s;
@@ -217,7 +224,7 @@
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.8rem;
             text-decoration: none;
@@ -243,6 +250,10 @@
         .nav-back:focus:not(:focus-visible),
         .nav-cta:focus:not(:focus-visible) {
             outline: none;
+        }
+
+        .mobile-social-links {
+            display: none;
         }
 
         /* Mobile Menu */
@@ -527,7 +538,7 @@
                 -webkit-backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
-                gap: 16px;
+                gap: 0;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             }
@@ -537,8 +548,15 @@
             }
 
             .nav-links a {
-                padding: 12px 0;
+                padding: 14px 16px;
                 font-size: 1rem;
+                border-radius: 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.05);
             }
 
             .mobile-menu-toggle {
@@ -623,9 +641,105 @@
                 transition: none;
             }
         }
+
+        /* Contact Form Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none;
+            font-size: 28px; color: #666; cursor: pointer;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .modal-close:hover { background: rgba(0,0,0,0.1); color: #333; }
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1.8rem;
+            color: var(--text-color); margin-bottom: 8px; text-align: center;
+        }
+        .modal-subtitle {
+            font-size: 0.95rem; color: #666;
+            text-align: center; margin-bottom: 28px; line-height: 1.5;
+        }
+        .contact-form {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .form-group {
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .form-group label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500; font-size: 0.9rem; color: var(--text-color);
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 14px 16px;
+            border: 1.5px solid rgba(55,55,55,0.2);
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem; color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder,
+        .form-group select:invalid { color: #999; }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(153,49,60,0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .submit-btn {
+            padding: 16px 32px;
+            background: var(--accent-color); color: #ffffff;
+            border: none; border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 8px;
+        }
+        .submit-btn:hover {
+            background: #b33a47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(153,49,60,0.3);
+        }
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Montserrat,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
     <!-- Navigation -->
     <nav class="nav">
         <a href="/" class="nav-logo">
@@ -635,9 +749,9 @@
             </picture>
         </a>
         <div class="nav-links">
+            <a href="/">Home</a>
             <a href="personal-training.html">Personal Training</a>
             <a href="online-coaching.html">Online Coaching</a>
-            <a href="free-challenge.html">Free Challenge</a>
             <a href="blog.html" class="active">Blog</a>
             <div class="mobile-social-links">
                 <a href="https://www.instagram.com/mind_core_fitness/" target="_blank" class="social-instagram" aria-label="Instagram">
@@ -666,7 +780,7 @@
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero" id="main-content">
         <div class="hero-label">Blog</div>
         <h1>Insights & Advice</h1>
         <p class="hero-sub">Training tips, mindset strategies, and everything you need to level up your fitness journey.</p>
@@ -676,9 +790,30 @@
     <section class="blog-section">
         <div class="container">
             <div class="blog-grid" id="blogGrid">
+                <!-- Blog Post: What Is Core Buddy? -->
+                <article class="blog-card">
+                    <img loading="lazy" src="/core-buddy-assets/dashboard.PNG" alt="Core Buddy fitness app dashboard" class="blog-card-image" width="400" height="200">
+                    <div class="blog-card-content">
+                        <div class="blog-card-meta">
+                            <span class="blog-card-category">Core Buddy</span>
+                            <span class="blog-card-date">February 21, 2026</span>
+                        </div>
+                        <h2 class="blog-card-title">
+                            <a href="/blog/what-is-core-buddy.html">What Is Core Buddy? The Fitness App Built for Busy Professionals</a>
+                        </h2>
+                        <p class="blog-card-excerpt">Too busy to plan workouts? Too tired to count every calorie? Core Buddy gives you randomised workouts, quick nutrition logging, and daily habit tracking — all in one app.</p>
+                        <a href="/blog/what-is-core-buddy.html" class="blog-card-link">
+                            Read More
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
                 <!-- Blog Post: Why Most People Fail to Get Fit -->
                 <article class="blog-card">
-                    <img src="/blog/images/why-people-1.avif" alt="Why most people fail to get fit" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/why-people-1.avif" alt="Why most people fail to get fit" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Mindset</span>
@@ -699,7 +834,7 @@
 
                 <!-- Blog Post: Scott's 25kg Weight Loss Journey -->
                 <article class="blog-card">
-                    <img src="/blog/images/scotty-hero-image.avif" alt="Scott's 25kg weight loss transformation" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/scotty-hero-image.avif" alt="Scott's 25kg weight loss transformation" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Success Story</span>
@@ -720,7 +855,7 @@
 
                 <!-- Blog Post: Wall Sit HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/Z5lTajMembU/maxresdefault.jpg" alt="Wall Sit HIIT Workout - marching wall sit exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/Z5lTajMembU/maxresdefault.jpg" alt="Wall Sit HIIT Workout - marching wall sit exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -741,7 +876,7 @@
 
                 <!-- Blog Post: Core + Glute Stability HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/Q2KdDhe_W5A/maxresdefault.jpg" alt="Core + Glute Stability HIIT Workout - bird dog exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/Q2KdDhe_W5A/maxresdefault.jpg" alt="Core + Glute Stability HIIT Workout - bird dog exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -762,7 +897,7 @@
 
                 <!-- Blog Post: Bridge Power HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/QKjFY-uV7IE/maxresdefault.jpg" alt="Bridge Power HIIT Workout - glute bridge pulse exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/QKjFY-uV7IE/maxresdefault.jpg" alt="Bridge Power HIIT Workout - glute bridge pulse exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -783,7 +918,7 @@
 
                 <!-- Blog Post: Advanced Ab HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/ZPXlunlMc7w/maxresdefault.jpg" alt="Advanced Ab HIIT Workout - single leg V-up exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/ZPXlunlMc7w/maxresdefault.jpg" alt="Advanced Ab HIIT Workout - single leg V-up exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -804,7 +939,7 @@
 
                 <!-- Blog Post: Oblique HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/1Bn4s9-tsYk/maxresdefault.jpg" alt="Oblique HIIT Workout - Russian twist exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/1Bn4s9-tsYk/maxresdefault.jpg" alt="Oblique HIIT Workout - Russian twist exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -825,7 +960,7 @@
 
                 <!-- Blog Post: Crunch HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/T8Cymd8X71Q/maxresdefault.jpg" alt="Crunch HIIT Workout - crunch exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/T8Cymd8X71Q/maxresdefault.jpg" alt="Crunch HIIT Workout - crunch exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -846,7 +981,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout Part 3 -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/38YaCvWH0cQ/maxresdefault.jpg" alt="Plank HIIT Workout Part 3 - side plank hip drops exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/38YaCvWH0cQ/maxresdefault.jpg" alt="Plank HIIT Workout Part 3 - side plank hip drops exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -867,7 +1002,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout Part 2 -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/d2jFwB8Gor4/maxresdefault.jpg" alt="Plank HIIT Workout Part 2 - plank climb exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/d2jFwB8Gor4/maxresdefault.jpg" alt="Plank HIIT Workout Part 2 - plank climb exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -888,7 +1023,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/oLNtHe_c7-Q/maxresdefault.jpg" alt="Plank HIIT Workout - forearm plank exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/oLNtHe_c7-Q/maxresdefault.jpg" alt="Plank HIIT Workout - forearm plank exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -959,7 +1094,7 @@
 
                 <!-- Blog Post: Core Progression -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg" alt="Core progression - bear crawl exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg" alt="Core progression - bear crawl exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -980,7 +1115,7 @@
 
                 <!-- Blog Post: Beyond the Mat -->
                 <article class="blog-card">
-                    <img src="/blog/images/beyond-the-mat.avif" alt="Core strength for everyday life" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/beyond-the-mat.avif" alt="Core strength for everyday life" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1001,7 +1136,7 @@
 
                 <!-- Blog Post: The Core Connection -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/RtROKLrBnbE/maxresdefault.jpg" alt="Core engagement in every exercise - plank walkout" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/RtROKLrBnbE/maxresdefault.jpg" alt="Core engagement in every exercise - plank walkout" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1022,7 +1157,7 @@
 
                 <!-- Blog Post: Core Training Mistakes -->
                 <article class="blog-card">
-                    <img src="https://img.youtube.com/vi/VzFUd1JO-Z8/maxresdefault.jpg" alt="Core training mistakes - hollow hold exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/VzFUd1JO-Z8/maxresdefault.jpg" alt="Core training mistakes - hollow hold exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1043,7 +1178,7 @@
 
                 <!-- Blog Post: How to Engage Your Core -->
                 <article class="blog-card">
-                    <img src="/blog/images/forearm-plank.avif" alt="How to engage your core - forearm plank exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/forearm-plank.avif" alt="How to engage your core - forearm plank exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1064,7 +1199,7 @@
 
                 <!-- Blog Post: Understanding Core Strength -->
                 <article class="blog-card">
-                    <img src="/blog/images/high-knee-exercise.jpg.avif" alt="Understanding core strength - high knee exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/high-knee-exercise.jpg.avif" alt="Understanding core strength - high knee exercise" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1085,7 +1220,7 @@
 
                 <!-- Example Post Structure (copy this for each new post):
                 <article class="blog-card">
-                    <img src="blog/post-image.jpg" alt="Post title" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="blog/post-image.jpg" alt="Post title" class="blog-card-image" width="400" height="200">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1121,17 +1256,72 @@
     <footer>
         <picture>
             <source srcset="Logo.webp" type="image/webp">
-            <img src="Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
+            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
         </picture>
         <p class="footer-text">Strength. Mindset. Support.</p>
         <div class="footer-links">
             <a href="personal-training.html">Personal Training</a>
             <a href="online-coaching.html">Online Coaching</a>
-            <a href="free-challenge.html">Free Challenge</a>
             <a href="blog.html">Blog</a>
+            <a href="#" onclick="openContactModal(event)">Contact</a>
         </div>
         <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
     </footer>
+
+    <!-- Contact Form Modal -->
+    <div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeContactModal()" aria-label="Close contact form">&times;</button>
+            <h2 class="modal-title" id="modalTitle">Get In Touch</h2>
+            <p class="modal-subtitle">Have a question or ready to start your fitness journey? Send me a message!</p>
+            <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){var cat=this.querySelector('#interest').value;fbq('track','Lead',{content_name:'Contact Form',content_category:cat});}">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="interest">I'm interested in</label>
+                    <select id="interest" name="interest" required>
+                        <option value="" disabled selected>Select an option</option>
+                        <option value="Personal Training">Personal Training</option>
+                        <option value="Fitness App">Core Buddy App</option>
+                        <option value="Online Coaching">Online Coaching</option>
+                        <option value="General Enquiry">Other / General Enquiry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" required placeholder="How can I help you?"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Contact Modal Functions
+        function openContactModal(event) {
+            event.preventDefault();
+            document.getElementById('contactModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('contactModal').addEventListener('click', function(e) {
+            if (e.target === this) closeContactModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('contactModal').classList.contains('show')) {
+                closeContactModal();
+            }
+        });
+    </script>
 
     <script>
         // Hide empty state if blog posts exist

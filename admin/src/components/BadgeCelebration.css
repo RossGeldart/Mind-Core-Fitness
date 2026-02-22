@@ -1,0 +1,157 @@
+/* ====================================================
+   BadgeCelebration — Reusable badge-unlock overlay
+   ==================================================== */
+
+.bc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: bcFadeIn 0.4s ease-out;
+}
+
+@keyframes bcFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Confetti (falling from top) ─── */
+.bc-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bc-confetti-piece {
+  position: absolute;
+  top: -12px;
+  left: var(--x, 50%);
+  background: var(--color, #A12F3A);
+  animation: bcConfettiFall var(--duration, 2.5s) ease-in var(--delay, 0s) both;
+}
+
+.bc-shape-0 { border-radius: 2px; }
+.bc-shape-1 { border-radius: 50%; }
+.bc-shape-2 { border-radius: 1px; height: 2px !important; }
+
+@keyframes bcConfettiFall {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(100vh) translateX(var(--drift, 0px)) rotate(var(--spin, 360deg)); opacity: 0; }
+}
+
+/* ─── Content ─── */
+.bc-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  z-index: 1;
+}
+
+.bc-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.35) 0%, transparent 70%);
+  animation: bcGlow 1.8s ease-out 0.2s both;
+  pointer-events: none;
+}
+
+@keyframes bcGlow {
+  0%  { transform: translate(-50%, -60%) scale(0.5); opacity: 0; }
+  50% { opacity: 0.6; }
+  100%{ transform: translate(-50%, -60%) scale(1.8); opacity: 0; }
+}
+
+.bc-badge-img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(var(--color-primary-rgb), 0.4));
+  animation: bcBadgeBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
+}
+
+@keyframes bcBadgeBounce {
+  0%  { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100%{ transform: scale(1); opacity: 1; }
+}
+
+.bc-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 8px 0 0;
+  text-shadow: 0 0 20px rgba(var(--color-primary-rgb), 0.4);
+  animation: bcTextSlide 0.6s ease-out 0.6s both;
+}
+
+.bc-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  animation: bcTextSlide 0.6s ease-out 0.75s both;
+}
+
+.bc-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.4;
+  animation: bcTextSlide 0.6s ease-out 0.9s both;
+}
+
+.bc-dismiss {
+  background: none;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 12px 20px;
+  margin-top: 16px;
+  animation: bcTextSlide 0.6s ease-out 1.2s both;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes bcTextSlide {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .bc-confetti-piece { display: none; }
+  .bc-badge-img { animation: bcFadeOnly 0.3s ease-out 0.1s both; }
+  .bc-title,
+  .bc-name,
+  .bc-desc,
+  .bc-dismiss { animation: bcFadeOnly 0.3s ease-out 0.2s both; }
+}
+
+@keyframes bcFadeOnly {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

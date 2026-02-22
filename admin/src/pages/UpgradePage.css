@@ -133,8 +133,8 @@
   border: 2px solid var(--color-primary);
   box-shadow:
     0 0 0 1px var(--color-primary),
-    0 8px 32px rgba(161, 47, 58, 0.3),
-    0 0 60px rgba(161, 47, 58, 0.12);
+    0 8px 32px rgba(var(--color-primary-rgb), 0.3),
+    0 0 60px rgba(var(--color-primary-rgb), 0.12);
   z-index: 1;
 }
 
@@ -181,7 +181,7 @@
   border-radius: 20px;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(161, 47, 58, 0.4);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.4);
   z-index: 2;
 }
 
@@ -196,6 +196,12 @@
 }
 
 .plan-price {
+  margin-bottom: 4px;
+}
+
+.plan-price-sub {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
   margin-bottom: 16px;
 }
 
@@ -266,7 +272,7 @@
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #ffffff;
-  box-shadow: 0 6px 20px rgba(161, 47, 58, 0.45);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.45);
 }
 
 /* Manage subscription button */
@@ -284,7 +290,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(161, 47, 58, 0.45);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.45);
   transition: background 0.2s, transform 0.1s;
   letter-spacing: 0.02em;
 }
@@ -298,75 +304,6 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-/* ── Core Buddy AI divider ── */
-
-.plan-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0 0;
-}
-
-.plan-divider-line {
-  flex: 1;
-  height: 1px;
-  background: var(--border-color);
-}
-
-.plan-divider-text {
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-
-/* ── Coming Soon overlay ── */
-
-.plan-coming-soon {
-  position: relative;
-  pointer-events: none;
-  user-select: none;
-}
-
-.plan-coming-soon-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-[data-theme="light"] .plan-coming-soon-overlay {
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.plan-coming-soon-overlay span {
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 10px 28px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 30px;
-  backdrop-filter: blur(2px);
-}
-
-[data-theme="light"] .plan-coming-soon-overlay span {
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-
-.plan-card:nth-child(4) { animation-delay: 0.25s; }
-.plan-card:nth-child(5) { animation-delay: 0.35s; }
 
 /* Error message */
 .upgrade-error {

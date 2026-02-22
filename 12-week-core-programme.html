@@ -6,7 +6,7 @@
     <title>Unbreakable: 12-Week Core Rebuild | Mind Core Fitness</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Transform your core strength in 12 weeks. The Unbreakable programme combines three phases of structured training to rebuild stability, increase strength, and master power. Flash sale: £129 (was £149).">
+    <meta name="description" content="Transform your core strength in 12 weeks with the Unbreakable programme. Three phases of structured training to rebuild stability and power.">
     <meta name="keywords" content="12 week core programme, core strength, core rebuild, Everfit, online training, Mind Core Fitness, Elgin personal trainer">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
@@ -187,27 +187,30 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 8px;
         }
 
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
-            transition: color 0.2s;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
         .nav-links a:hover {
             color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .nav-cta {
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.8rem;
             text-decoration: none;
@@ -220,6 +223,10 @@
             background: #b33a47;
             transform: translateY(-1px);
             box-shadow: 0 4px 15px rgba(153, 49, 60, 0.3);
+        }
+
+        .mobile-social-links {
+            display: none;
         }
 
         /* Mobile Menu */
@@ -920,13 +927,25 @@
                 -webkit-backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
-                gap: 16px;
+                gap: 0;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             }
 
             .nav-links.show {
                 display: flex;
+            }
+
+            .nav-links a {
+                padding: 14px 16px;
+                font-size: 1rem;
+                border-radius: 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.05);
             }
 
             .mobile-menu-toggle {
@@ -1537,10 +1556,106 @@
                 font-size: 1rem;
             }
         }
+
+        /* Contact Form Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none;
+            font-size: 28px; color: #666; cursor: pointer;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .modal-close:hover { background: rgba(0,0,0,0.1); color: #333; }
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1.8rem;
+            color: var(--text-color); margin-bottom: 8px; text-align: center;
+        }
+        .modal-subtitle {
+            font-size: 0.95rem; color: #666;
+            text-align: center; margin-bottom: 28px; line-height: 1.5;
+        }
+        .modal-overlay .contact-form {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .modal-overlay .form-group {
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .modal-overlay .form-group label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500; font-size: 0.9rem; color: var(--text-color);
+        }
+        .modal-overlay .form-group input,
+        .modal-overlay .form-group textarea,
+        .modal-overlay .form-group select {
+            padding: 14px 16px;
+            border: 1.5px solid rgba(55,55,55,0.2);
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem; color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
+        }
+        .modal-overlay .form-group input::placeholder,
+        .modal-overlay .form-group textarea::placeholder,
+        .modal-overlay .form-group select:invalid { color: #999; }
+        .modal-overlay .form-group input:focus,
+        .modal-overlay .form-group textarea:focus,
+        .modal-overlay .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(153,49,60,0.1);
+        }
+        .modal-overlay .form-group textarea { resize: vertical; min-height: 100px; }
+        .modal-overlay .submit-btn {
+            padding: 16px 32px;
+            background: var(--accent-color); color: #ffffff;
+            border: none; border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600; font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 8px;
+        }
+        .modal-overlay .submit-btn:hover {
+            background: #b33a47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(153,49,60,0.3);
+        }
     </style>
     <link rel="stylesheet" href="social-share.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Montserrat,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
     <!-- Navigation -->
     <nav class="nav">
         <a href="/" class="nav-logo">
@@ -1550,9 +1665,9 @@
             </picture>
         </a>
         <div class="nav-links">
+            <a href="/">Home</a>
             <a href="personal-training.html">Personal Training</a>
             <a href="online-coaching.html">Online Coaching</a>
-            <a href="free-challenge.html">Free Challenge</a>
             <a href="blog.html">Blog</a>
             <div class="mobile-social-links">
                 <a href="https://www.instagram.com/mind_core_fitness/" target="_blank" class="social-instagram" aria-label="Instagram">
@@ -1578,12 +1693,12 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="main-content">
         <div class="container">
             <div class="hero-image">
                 <picture>
                     <source srcset="images/client-results/ross-geldart.webp" type="image/webp">
-                    <img src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness">
+                    <img loading="lazy" src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness">
                 </picture>
             </div>
             <div class="hero-content">
@@ -1800,7 +1915,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/lorna-gallagher.webp" type="image/webp">
-                            <img src="images/client-results/lorna-gallagher.jpeg" alt="Lorna Gallagher">
+                            <img loading="lazy" src="images/client-results/lorna-gallagher.jpeg" alt="Lorna Gallagher">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lorna Gallagher</strong>
@@ -1814,7 +1929,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/sharon-hughes.webp" type="image/webp">
-                            <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes">
+                            <img loading="lazy" src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Sharon Hughes</strong>
@@ -1828,7 +1943,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/paula-coutts.webp" type="image/webp">
-                            <img src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts">
+                            <img loading="lazy" src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Paula Coutts</strong>
@@ -1842,7 +1957,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/chloe-barker.webp" type="image/webp">
-                            <img src="images/client-results/chloe-barker.jpeg" alt="Chloe Barker">
+                            <img loading="lazy" src="images/client-results/chloe-barker.jpeg" alt="Chloe Barker">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Chloe Barker</strong>
@@ -1856,7 +1971,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/cheryl-mcinnes.webp" type="image/webp">
-                            <img src="images/client-results/cheryl-mcinnes.jpeg" alt="Cheryl McInnes">
+                            <img loading="lazy" src="images/client-results/cheryl-mcinnes.jpeg" alt="Cheryl McInnes">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Cheryl McInnes</strong>
@@ -1870,7 +1985,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/lee-bazzie-duncan.webp" type="image/webp">
-                            <img src="images/client-results/lee-bazzie-duncan.jpeg" alt="Lee Bazzie Duncan">
+                            <img loading="lazy" src="images/client-results/lee-bazzie-duncan.jpeg" alt="Lee Bazzie Duncan">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
@@ -1889,7 +2004,7 @@
                 <div class="who-image fade-in">
                     <picture>
                         <source srcset="Circuit 3.webp" type="image/webp">
-                        <img src="Circuit 3.jpg" alt="Core Training">
+                        <img loading="lazy" src="Circuit 3.jpg" alt="Core Training">
                     </picture>
                 </div>
                 <div class="who-content fade-in">
@@ -1942,7 +2057,7 @@
                 <div class="everfit-image fade-in">
                     <picture>
                         <source srcset="Everfit.webp" type="image/webp">
-                        <img src="Everfit.png" alt="Everfit App">
+                        <img loading="lazy" src="Everfit.png" alt="Everfit App">
                     </picture>
                 </div>
             </div>
@@ -2070,17 +2185,72 @@
     <footer>
         <picture>
             <source srcset="Logo.webp" type="image/webp">
-            <img src="Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
+            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
         </picture>
         <p class="footer-text">Strength. Mindset. Support.</p>
         <div class="footer-links">
             <a href="personal-training.html">Personal Training</a>
             <a href="online-coaching.html">Online Coaching</a>
-            <a href="free-challenge.html">Free Challenge</a>
             <a href="blog.html">Blog</a>
+            <a href="#" onclick="openContactModal(event)">Contact</a>
         </div>
         <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
     </footer>
+
+    <!-- Contact Form Modal -->
+    <div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeContactModal()" aria-label="Close contact form">&times;</button>
+            <h2 class="modal-title" id="modalTitle">Get In Touch</h2>
+            <p class="modal-subtitle">Have a question or ready to start your fitness journey? Send me a message!</p>
+            <form action="https://formspree.io/f/meeaprar" method="POST" class="contact-form" onsubmit="if(typeof fbq!=='undefined'){var cat=this.querySelector('#interest').value;fbq('track','Lead',{content_name:'Contact Form',content_category:cat});}">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="interest">I'm interested in</label>
+                    <select id="interest" name="interest" required>
+                        <option value="" disabled selected>Select an option</option>
+                        <option value="Personal Training">Personal Training</option>
+                        <option value="Fitness App">Core Buddy App</option>
+                        <option value="Online Coaching">Online Coaching</option>
+                        <option value="General Enquiry">Other / General Enquiry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" required placeholder="How can I help you?"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Contact Modal Functions
+        function openContactModal(event) {
+            event.preventDefault();
+            document.getElementById('contactModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('contactModal').addEventListener('click', function(e) {
+            if (e.target === this) closeContactModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('contactModal').classList.contains('show')) {
+                closeContactModal();
+            }
+        });
+    </script>
 
     <script>
         // Mobile menu toggle

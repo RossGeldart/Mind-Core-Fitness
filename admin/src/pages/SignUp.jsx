@@ -65,6 +65,13 @@ export default function SignUp() {
     try {
       const cred = await signup(name, email, password);
       await sendEmailVerification(cred.user);
+      if (typeof fbq === 'function') {
+        fbq('track', 'CompleteRegistration', {
+          content_name: 'Core Buddy Signup',
+          content_category: 'Fitness App',
+          status: true
+        });
+      }
       setVerificationSent(true);
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {

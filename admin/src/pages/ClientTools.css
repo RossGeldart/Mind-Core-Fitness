@@ -22,7 +22,6 @@
   width: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--color-primary);
 }
 
 .tools-main {
@@ -73,7 +72,7 @@
 .tool-select-card:hover {
   border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-card), 0 4px 12px rgba(161, 47, 58, 0.1);
+  box-shadow: var(--shadow-card), 0 4px 12px rgba(var(--color-primary-rgb), 0.1);
 }
 
 .tool-select-card:active {

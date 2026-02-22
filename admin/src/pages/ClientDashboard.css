@@ -288,7 +288,6 @@
   width: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #A12F3A;
 }
 
 .client-main {
@@ -521,12 +520,12 @@
 .block-header-row {
   margin: -24px -24px 20px -24px;
   padding: 16px 20px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   border-radius: 16px 16px 0 0;
 }
 
 [data-theme="light"] .block-header-row {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: radial-gradient(circle at center, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .block-info-card h3 {
@@ -676,7 +675,7 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 18px 16px;
@@ -685,7 +684,7 @@
 }
 
 [data-theme="light"] .daily-quote-card {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: radial-gradient(circle at center, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .daily-quote-icon {
@@ -754,7 +753,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 18px 16px;
@@ -766,7 +765,7 @@
 }
 
 [data-theme="light"] .daily-quote-cta {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: radial-gradient(circle at center, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .daily-quote-cta:hover {
@@ -822,7 +821,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 18px 16px;
@@ -834,7 +833,7 @@
 }
 
 [data-theme="light"] .core-buddy-cta {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: radial-gradient(circle at center, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .core-buddy-cta:hover {
@@ -910,12 +909,12 @@
   color: #fff;
   margin: 0;
   padding: 16px 20px;
-  background: radial-gradient(circle at center, rgba(220, 60, 70, 0.7) 0%, rgba(200, 50, 60, 0.25) 100%);
+  background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
 }
 
 [data-theme="light"] .sessions-section h3,
 [data-theme="light"] .completed-section h3 {
-  background: radial-gradient(circle at center, #b5343f 0%, #7a252e 100%);
+  background: radial-gradient(circle at center, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 .sessions-section .sessions-list,
@@ -1483,7 +1482,7 @@
   font-family: 'Orbitron', 'Courier New', monospace;
   font-size: 0.75rem;
   font-weight: 700;
-  background: rgba(161, 47, 58, 0.12);
+  background: rgba(var(--color-primary-rgb), 0.12);
   color: var(--color-primary);
   padding: 3px 10px;
   border-radius: 10px;
@@ -1510,7 +1509,7 @@
 }
 
 .session-note-item.expanded {
-  border-color: rgba(161, 47, 58, 0.3);
+  border-color: rgba(var(--color-primary-rgb), 0.3);
 }
 
 .session-note-top {
@@ -1524,7 +1523,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
   padding: 3px 10px;
   border-radius: 8px;
 }
@@ -1678,7 +1677,7 @@
 
 .forms-btn .ripple,
 .tools-btn .ripple {
-  background: rgba(161, 47, 58, 0.2);
+  background: rgba(var(--color-primary-rgb), 0.2);
 }
 
 /* Toast Notifications */

@@ -1,0 +1,269 @@
+/* ===== Badges Page ===== */
+
+.bdg-loading,
+.bdg-loading-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+.bdg-loading { min-height: 100vh; background: var(--bg-body); }
+
+.bdg-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: bdg-spin 0.8s linear infinite;
+}
+@keyframes bdg-spin { to { transform: rotate(360deg); } }
+
+.bdg-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  padding-bottom: 40px;
+}
+
+.bdg-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px 80px;
+}
+
+.bdg-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 20px 0 4px;
+  text-align: center;
+}
+
+.bdg-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+/* ── Category ── */
+.bdg-category {
+  margin-bottom: 28px;
+}
+
+.bdg-category-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ── Badge Grid ── */
+.bdg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.bdg-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-glow);
+}
+.bdg-item:active {
+  transform: scale(0.96);
+}
+
+.bdg-item.earned {
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.08);
+}
+.bdg-item.locked {
+  opacity: 0.5;
+}
+
+.bdg-img-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bdg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bdg-item.locked .bdg-img {
+  filter: grayscale(1) brightness(0.6);
+}
+
+.bdg-img-placeholder {
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bdg-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  border-radius: 50%;
+}
+
+.bdg-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ── Badge Detail Modal ── */
+.bdg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.bdg-modal {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+.bdg-modal-img-wrap {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-body);
+}
+.bdg-modal-img-wrap.earned {
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.15);
+}
+.bdg-modal-img-wrap.locked .bdg-modal-img {
+  filter: grayscale(1) brightness(0.5);
+}
+
+.bdg-modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bdg-modal-placeholder {
+  color: var(--text-tertiary);
+}
+
+.bdg-modal-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.bdg-modal-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.bdg-modal-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+.bdg-modal-status.earned {
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.2);
+}
+.bdg-modal-status.locked {
+  color: var(--text-tertiary);
+  background: rgba(150, 150, 150, 0.1);
+  border: 1px solid rgba(150, 150, 150, 0.15);
+}
+
+.bdg-modal-close {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-body);
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .bdg-item {
+  background: rgba(30, 30, 30, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+[data-theme="dark"] .bdg-item.earned {
+  border-color: rgba(255, 215, 0, 0.2);
+}
+[data-theme="dark"] .bdg-modal {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255, 255, 255, 0.08);
+}

@@ -19,6 +19,10 @@ export function ThemeProvider({ children }) {
     return localStorage.getItem('accent') || 'red';
   });
 
+  const [isMono, setIsMono] = useState(() => {
+    return localStorage.getItem('mono') === 'true';
+  });
+
   useEffect(() => {
     // Apply theme class to document
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
@@ -26,9 +30,15 @@ export function ThemeProvider({ children }) {
   }, [isDark]);
 
   useEffect(() => {
-    // Store accent preference (applied per-page by Core Buddy components)
+    // Apply accent globally and persist
+    document.documentElement.setAttribute('data-accent', accent);
     localStorage.setItem('accent', accent);
   }, [accent]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mono', isMono ? 'true' : 'false');
+    localStorage.setItem('mono', isMono ? 'true' : 'false');
+  }, [isMono]);
 
   const toggleTheme = () => {
     document.documentElement.setAttribute('data-theme-transitioning', '');
@@ -38,12 +48,21 @@ export function ThemeProvider({ children }) {
     }, 350);
   };
   const setAccent = (color) => setAccentState(color);
+  const toggleMono = () => {
+    document.documentElement.setAttribute('data-theme-transitioning', '');
+    setIsMono(!isMono);
+    setTimeout(() => {
+      document.documentElement.removeAttribute('data-theme-transitioning');
+    }, 350);
+  };
 
   const value = {
     isDark,
     toggleTheme,
     accent,
-    setAccent
+    setAccent,
+    isMono,
+    toggleMono
   };
 
   return (

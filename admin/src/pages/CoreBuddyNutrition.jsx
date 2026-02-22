@@ -2,11 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { awardBadge } from '../utils/awardBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import BadgeCelebration from '../components/BadgeCelebration';
 
 const searchCache = new Map();
 
@@ -54,7 +56,7 @@ function getDefaultMeal() {
 
 export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Views: 'loading' | 'setup' | 'dashboard'
@@ -62,6 +64,7 @@ export default function CoreBuddyNutrition() {
 
   // Macro targets (from Firestore)
   const [targets, setTargets] = useState(null);
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
 
   // Setup form (macro calculator)
   const [formData, setFormData] = useState({
@@ -74,10 +77,9 @@ export default function CoreBuddyNutrition() {
 
   // Daily log
   const [selectedDate, setSelectedDate] = useState(getTodayKey());
-  const [todayLog, setTodayLog] = useState({ entries: [], water: 0 });
+  const [todayLog, setTodayLog] = useState({ entries: [] });
   const [totals, setTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [waterPopupOpen, setWaterPopupOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() };
@@ -160,13 +162,13 @@ export default function CoreBuddyNutrition() {
         const logDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`));
         if (logDoc.exists()) {
           const data = logDoc.data();
-          setTodayLog({ entries: data.entries || [], water: data.water || 0 });
+          setTodayLog({ entries: data.entries || [] });
         } else {
-          setTodayLog({ entries: [], water: 0 });
+          setTodayLog({ entries: [] });
         }
       } catch (err) {
         console.error('Error loading log:', err);
-        setTodayLog({ entries: [], water: 0 });
+        setTodayLog({ entries: [] });
       }
     };
     loadLog();
@@ -190,9 +192,32 @@ export default function CoreBuddyNutrition() {
         clientId: clientData.id,
         date: selectedDate,
         entries: newLog.entries,
-        water: newLog.water,
         updatedAt: Timestamp.now()
       });
+
+      // Check nutrition_7 badge: 7 consecutive days hitting protein target
+      if (targets?.protein && selectedDate === getTodayKey()) {
+        const todayTotals = newLog.entries.reduce((acc, e) => acc + (e.protein || 0), 0);
+        if (todayTotals >= targets.protein) {
+          let streak = 1;
+          for (let i = 1; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().split('T')[0];
+            try {
+              const snap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${key}`));
+              if (snap.exists()) {
+                const dayProtein = (snap.data().entries || []).reduce((acc, e) => acc + (e.protein || 0), 0);
+                if (dayProtein >= targets.protein) { streak++; } else { break; }
+              } else { break; }
+            } catch { break; }
+          }
+          if (streak >= 7) {
+            const awarded = await awardBadge('nutrition_7', clientData);
+            if (awarded) setBadgeCelebration(awarded);
+          }
+        }
+      }
     } catch (err) {
       console.error('Error saving nutrition log:', err);
     }
@@ -283,7 +308,6 @@ export default function CoreBuddyNutrition() {
         protein: calcResults.protein,
         carbs: calcResults.carbs,
         fats: calcResults.fats,
-        waterGoal: 8,
         goal: formData.goal,
         updatedAt: Timestamp.now()
       };
@@ -717,20 +741,6 @@ export default function CoreBuddyNutrition() {
     return () => clearTimeout(debounceTimer.current);
   }, [searchQuery]);
 
-  // ==================== WATER TRACKER ====================
-  const addWater = () => {
-    const newLog = { ...todayLog, water: todayLog.water + 1 };
-    setTodayLog(newLog);
-    saveLog(newLog);
-  };
-
-  const removeWater = () => {
-    if (todayLog.water <= 0) return;
-    const newLog = { ...todayLog, water: todayLog.water - 1 };
-    setTodayLog(newLog);
-    saveLog(newLog);
-  };
-
   // ==================== RING HELPERS ====================
   const isDarkMode = isDark;
   const MACRO_COLORS = {
@@ -790,7 +800,7 @@ export default function CoreBuddyNutrition() {
 
   if (authLoading || view === 'loading') {
     return (
-      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="nut-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -807,7 +817,7 @@ export default function CoreBuddyNutrition() {
   // ==================== SETUP VIEW (Macro Calculator) ====================
   if (view === 'setup') {
     return (
-      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="nut-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -1008,7 +1018,7 @@ export default function CoreBuddyNutrition() {
 
   return (
     <PullToRefresh>
-    <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+    <div className="nut-page">
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
         <header className="client-header">
@@ -1125,15 +1135,6 @@ export default function CoreBuddyNutrition() {
           {/* Quick Actions Row (today only) */}
           {isToday && (
             <div className="nut-quick-row">
-              <button className="nut-water-quick" onClick={() => setWaterPopupOpen(true)}>
-                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="18" height="18">
-                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                </svg>
-                <span className="nut-water-quick-count">{todayLog.water} / {targets?.waterGoal || 8}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </button>
               <button className="nut-copy-day-btn" onClick={() => { setCopyFromOpen(true); setCopyFromMonth({ year: new Date().getFullYear(), month: new Date().getMonth() }); }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -1329,38 +1330,6 @@ export default function CoreBuddyNutrition() {
         </div>
       )}
 
-      {waterPopupOpen && (
-        <div className="nut-modal-overlay" onClick={() => setWaterPopupOpen(false)}>
-          <div className="nut-water-popup" onClick={e => e.stopPropagation()}>
-            <div className="nut-water-popup-header">
-              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="20" height="20" style={{ color: '#2196f3' }}>
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-              </svg>
-              <span>Water Intake</span>
-              <button className="nut-modal-close" onClick={() => setWaterPopupOpen(false)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-            <div className="nut-water-popup-body">
-              <div className="nut-water-glasses">
-                {[...Array(targets?.waterGoal || 8)].map((_, i) => (
-                  <div key={i} className={`nut-water-glass ${i < todayLog.water ? 'filled' : ''}`}>
-                    <svg viewBox="0 0 24 24" fill={i < todayLog.water ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-              <div className="nut-water-popup-count">{todayLog.water} / {targets?.waterGoal || 8} glasses</div>
-              <div className="nut-water-btns">
-                <button onClick={removeWater} disabled={todayLog.water <= 0}>-</button>
-                <button onClick={addWater}>+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ==================== ADD FOOD MODAL ==================== */}
       {addMode && (
         <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
@@ -1407,6 +1376,7 @@ export default function CoreBuddyNutrition() {
                     {barcodeLooking ? '...' : 'Look Up'}
                   </button>
                 </div>
+                <p className="nut-off-credit">Food data powered by <a href="https://openfoodfacts.org" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
               </div>
             )}
 
@@ -1522,6 +1492,7 @@ export default function CoreBuddyNutrition() {
                     <p className="nut-search-empty">No results found. Try a different search or use manual entry.</p>
                   )}
                 </div>
+                <p className="nut-off-credit">Food data powered by <a href="https://openfoodfacts.org" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
               </div>
             )}
 
@@ -1814,6 +1785,8 @@ export default function CoreBuddyNutrition() {
           {toast.message}
         </div>
       )}
+
+      <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
     </PullToRefresh>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTier } from '../contexts/TierContext';
@@ -12,6 +12,13 @@ export default function UpgradePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+
+  // Clear loading state when user navigates back from Stripe (bfcache restore)
+  useEffect(() => {
+    const onPageShow = (e) => { if (e.persisted) setLoading(null); };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   async function handleManageSubscription() {
     if (!clientData?.stripeCustomerId) return;
@@ -49,27 +56,53 @@ export default function UpgradePage() {
   async function handleSelectPlan(plan) {
     setLoading(plan);
     setError(null);
+
+    if (!currentUser?.uid || !currentUser?.email || !clientData?.id) {
+      setError('Please sign in again and retry');
+      setLoading(null);
+      return;
+    }
+
     try {
+      if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+          content_name: 'Core Buddy ' + (plan === 'annual' ? 'Annual' : 'Monthly'),
+          content_category: 'Fitness App',
+          value: plan === 'annual' ? 99.99 : 9.99,
+          currency: 'GBP'
+        });
+      }
+
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           priceId: STRIPE_PRICES[plan],
-          clientId: clientData?.id,
-          uid: currentUser?.uid,
-          email: currentUser?.email,
+          clientId: clientData.id,
+          uid: currentUser.uid,
+          email: currentUser.email,
         }),
       });
+
+      if (!res.ok) {
+        const text = await res.text();
+        let msg;
+        try { msg = JSON.parse(text).error; } catch { msg = text; }
+        setError(msg || `Server error (${res.status})`);
+        setLoading(null);
+        return;
+      }
+
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        setError(data.error || 'Something went wrong');
+        setError('No checkout URL returned — please try again');
+        setLoading(null);
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      setError('Unable to start checkout');
-    } finally {
+      setError('Unable to reach checkout — check your connection');
       setLoading(null);
     }
   }
@@ -125,84 +158,46 @@ export default function UpgradePage() {
       </div>
 
       <div className="upgrade-plans">
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
+        <div className="plan-card">
           <div className="plan-name">Monthly</div>
           <div className="plan-price">
-            <span className="plan-amount">£19.99</span>
+            <span className="plan-amount">£9.99</span>
             <span className="plan-period">/month</span>
           </div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>All premium features</li>
+            <li>Unlimited workout durations</li>
+            <li>Unlimited weekly workouts</li>
+            <li>Save & replay workouts</li>
+            <li>Nutrition tracking</li>
+            <li>Buddies & social</li>
             <li>Cancel anytime</li>
           </ul>
-          <div className="plan-cta">Coming Soon</div>
+          <button className="plan-cta" onClick={() => handleSelectPlan('monthly')} disabled={!!loading}>
+            {loading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
+          </button>
         </div>
 
-        <div className="plan-card plan-card-featured plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
+        <div className="plan-card plan-card-featured">
           <div className="plan-badge-save">Best Value — Save 17%</div>
           <div className="plan-name">Annual</div>
           <div className="plan-price">
-            <span className="plan-amount">£199.99</span>
+            <span className="plan-amount">£99.99</span>
             <span className="plan-period">/year</span>
           </div>
+          <div className="plan-price-sub">That's just £8.33/month</div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>All premium features</li>
+            <li>Unlimited workout durations</li>
+            <li>Unlimited weekly workouts</li>
+            <li>Save & replay workouts</li>
+            <li>Nutrition tracking</li>
+            <li>Buddies & social</li>
             <li>Best value</li>
           </ul>
-          <div className="plan-cta plan-cta-featured">Coming Soon</div>
-        </div>
-
-        {/* Core Buddy AI section header */}
-        <div className="plan-divider">
-          <span className="plan-divider-line" />
-          <span className="plan-divider-text">Core Buddy AI</span>
-          <span className="plan-divider-line" />
-        </div>
-
-        {/* Core Buddy AI Monthly */}
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
-          <div className="plan-badge-save">AI Coaching</div>
-          <div className="plan-name">AI Monthly</div>
-          <div className="plan-price">
-            <span className="plan-amount">£34.99</span>
-            <span className="plan-period">/month</span>
-          </div>
-          <ul className="plan-features">
-            <li>AI personal coaching</li>
-            <li>All Premium features</li>
-            <li>Cancel anytime</li>
-          </ul>
-          <div className="plan-cta">Coming Soon</div>
-        </div>
-
-        {/* Core Buddy AI Annual */}
-        <div className="plan-card plan-coming-soon">
-          <div className="plan-coming-soon-overlay">
-            <span>Coming Soon</span>
-          </div>
-          <div className="plan-badge-save">AI Coaching — Best Value</div>
-          <div className="plan-name">AI Annual</div>
-          <div className="plan-price">
-            <span className="plan-amount">£299.99</span>
-            <span className="plan-period">/year</span>
-          </div>
-          <ul className="plan-features">
-            <li>AI personal coaching</li>
-            <li>All Premium features</li>
-            <li>Best value</li>
-          </ul>
-          <div className="plan-cta">Coming Soon</div>
+          <button className="plan-cta plan-cta-featured" onClick={() => handleSelectPlan('annual')} disabled={!!loading}>
+            {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
+          </button>
         </div>
       </div>
 

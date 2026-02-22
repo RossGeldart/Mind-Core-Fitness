@@ -263,7 +263,6 @@
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--color-primary);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -569,6 +568,8 @@
 .cb-features > *:nth-child(5) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.4s; }
 .cb-features > *:nth-child(6) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.55s; }
 .cb-features > *:nth-child(7) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.7s; }
+.cb-features > *:nth-child(8) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.85s; }
+.cb-features > *:nth-child(9) { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 2.0s; }
 
 .cb-feature-card {
   position: relative;
@@ -585,12 +586,11 @@
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .cb-feature-card {
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: none;
   background: var(--bg-card);
 }
 
@@ -625,6 +625,8 @@
   position: absolute;
   top: 14px;
   right: 12px;
+  color: var(--color-primary);
+  opacity: 0.7;
 }
 
 .cb-grid-card .cb-habit-dots {
@@ -705,7 +707,6 @@
 }
 
 [data-theme="dark"] .cb-feature-card:hover {
-  box-shadow: none;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -724,6 +725,14 @@
   text-align: center;
   padding: 28px 18px 18px;
   min-height: 120px;
+}
+
+.cb-feature-card.cb-card-workouts-hero {
+  border: 3px solid var(--color-primary);
+}
+
+[data-theme="dark"] .cb-feature-card.cb-card-workouts-hero {
+  border: 3px solid var(--color-primary);
 }
 
 .cb-hero-title {
@@ -860,6 +869,31 @@
 
 .cb-lb-me .cb-lb-avatar {
   box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+/* Challenge Card */
+.cb-card-icon-wrap {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.cb-card-icon-challenge,
+.cb-card-icon-badges {
+  background: transparent;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.cb-card-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 /* Habit Dots Preview */
@@ -1134,170 +1168,6 @@
   }
 }
 
-/* Achievements Section */
-.cb-achievements-section {
-  padding: 8px 0 4px;
-}
-
-.cb-achievements-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 12px;
-}
-
-.cb-badges-scroll {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 4px 0 8px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.cb-badges-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.cb-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 68px;
-  padding: 8px;
-  border-radius: 14px;
-  border: 1.5px solid rgba(150, 150, 150, 0.2);
-  background: var(--bg-card);
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  font-family: inherit;
-}
-
-[data-theme="dark"] .cb-badge {
-  background: var(--bg-card);
-}
-
-.cb-badge:active {
-  transform: scale(0.95);
-}
-
-.cb-badge.unlocked {
-  border-color: rgba(var(--color-primary-rgb), 0.3);
-  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.1);
-}
-
-.cb-badge.locked {
-  opacity: 0.4;
-}
-
-.cb-badge .cb-badge-img {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-}
-
-.cb-badge-status {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.cb-badge-status.unlocked {
-  color: var(--color-primary);
-}
-
-.cb-badge-status.locked {
-  color: var(--text-tertiary);
-}
-
-.cb-badges-count {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.72rem;
-  color: var(--text-tertiary);
-  text-align: center;
-  margin: 8px 0 0;
-}
-
-/* Badge fullscreen overlay */
-.cb-badge-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-  animation: cbOverlayFadeIn 0.25s ease-out;
-}
-
-@keyframes cbOverlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.cb-badge-overlay-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  animation: cbBadgeZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes cbBadgeZoomIn {
-  from { transform: scale(0.3); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.cb-badge-overlay-img {
-  width: 260px;
-  height: 260px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.3));
-}
-
-.cb-badge-overlay-img-locked {
-  filter: blur(6px);
-  opacity: 0.7;
-}
-
-.cb-badge-overlay-desc {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
-  margin: 0;
-}
-
-.cb-badge-overlay .cb-badge-status {
-  font-size: 0.8rem;
-}
-
-.cb-badge-overlay .cb-badge-status.unlocked {
-  color: #f59e0b;
-}
-
-.cb-badge-overlay .cb-badge-status.locked {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.cb-badge-overlay-close {
-  background: none;
-  border: none;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  padding: 8px 16px;
-  margin-top: 8px;
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* ===== MY JOURNEY ===== */
 .cb-journey-section {
   margin-top: 24px;
@@ -1320,13 +1190,14 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
+  position: relative;
+  z-index: 10;
 }
 
 [data-theme="dark"] .journey-compose {
   background: var(--bg-card);
   border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: none;
 }
 
 .journey-compose-avatar {
@@ -1413,11 +1284,14 @@
 .journey-post {
   background: var(--bg-card); border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px; padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 [data-theme="dark"] .journey-post {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.06); box-shadow: none;
+  background: rgba(30, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .journey-post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -1453,34 +1327,38 @@
 /* ─── Share Cards (workout_summary / badge_earned) ─── */
 /* White card, red accent border, big hero logo, dark text */
 .journey-card {
-  border-radius: 16px;
-  padding: 22px 18px 14px;
+  border-radius: 14px;
+  padding: 20px 16px 14px;
   margin-bottom: 10px;
-  background: #ffffff;
-  border: 2px solid #A12F3A;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 [data-theme="dark"] .journey-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  background: rgba(30, 30, 30, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Hero logo (big, centered, pops) ── */
+/* ── Hero logo ── */
 .journey-card-logo-frame {
-  width: 120px; height: 120px;
+  width: 72px; height: 72px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #A12F3A;
-  margin-bottom: 14px;
+  border: 2px solid rgba(var(--color-primary-rgb), 0.25);
+  margin-bottom: 12px;
   flex-shrink: 0;
-  box-shadow: 0 0 24px rgba(161, 47, 58, 0.15);
+  background: #fff;
+}
+[data-theme="dark"] .journey-card-logo-frame {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
 }
 .journey-card-logo-badge {
-  border-color: #ffc107;
-  box-shadow: 0 0 24px rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.4);
 }
 .journey-card-logo-img {
   width: 100%; height: 100%;
@@ -1488,12 +1366,12 @@
   display: block;
 }
 
-/* ── Title (Orbitron, bold, punchy) ── */
+/* ── Title ── */
 .journey-card-title {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -1504,17 +1382,17 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.74rem;
   font-weight: 500;
-  color: #555555;
+  color: var(--text-secondary);
   margin: 0;
 }
 
-/* ── Bold CTA line ── */
+/* ── CTA line ── */
 .journey-card-cta {
   font-family: 'Roboto', sans-serif;
   font-size: 0.78rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 12px 0 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 10px 0 0;
   line-height: 1.35;
 }
 
@@ -1523,8 +1401,8 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
-  color: #A12F3A;
-  margin: 14px 0 0;
+  color: var(--color-primary);
+  margin: 10px 0 0;
   letter-spacing: 0.2px;
 }
 
@@ -1634,8 +1512,8 @@
 }
 .journey-comment-img-btn:hover { color: var(--color-primary); }
 .journey-comment-input input {
-  flex: 1; border: 1px solid rgba(150, 150, 150, 0.2); border-radius: 20px;
-  padding: 8px 14px; font-family: 'Roboto', sans-serif; font-size: 0.82rem;
+  flex: 1; border: 1px solid rgba(150, 150, 150, 0.2); border-radius: 22px;
+  padding: 10px 16px; font-family: 'Roboto', sans-serif; font-size: 0.88rem;
   color: var(--text-primary); background: transparent; outline: none; transition: border-color 0.2s;
 }
 .journey-comment-input input:focus { border-color: rgba(var(--color-primary-rgb, 161, 47, 58), 0.4); }
@@ -1654,11 +1532,38 @@
   .journey-post { padding: 18px; }
 }
 
+/* ==================== HEADER LEFT/RIGHT GROUPS ==================== */
+
+.header-left-group {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 100;
+}
+
+.header-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.header-icon-btn:hover {
+  color: var(--text-primary, #fff);
+}
+
 /* ==================== NOTIFICATION BELL & PANEL ==================== */
 
 .header-notif-wrap {
-  position: absolute;
-  left: 10px;
+  position: relative;
   z-index: 100;
 }
 
@@ -1768,7 +1673,7 @@
 }
 
 .notif-item.unread {
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
 }
 
 .notif-item-avatar {
@@ -1900,7 +1805,7 @@
 }
 
 [data-theme="light"] .notif-item.unread {
-  background: rgba(161, 47, 58, 0.06);
+  background: rgba(var(--color-primary-rgb), 0.06);
 }
 
 [data-theme="light"] .mention-dropdown {
@@ -2154,4 +2059,232 @@
   margin-top: 16px;
   animation: celebrationTextSlide 0.6s ease-out 1.2s both;
   -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ==================== DOPAMINE UX ENHANCEMENTS ==================== */
+
+/* 1. GOAL GRADIENT — stat rings escalate visually near completion */
+@keyframes statNearPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb), 0.5)); }
+}
+
+.cb-stat-near {
+  animation: statNearPulse 2s ease-in-out infinite;
+}
+
+.cb-fill-near {
+  stroke: var(--color-primary) !important;
+  filter: brightness(1.2);
+}
+
+@keyframes statCompleteGlow {
+  0% { filter: drop-shadow(0 0 0 transparent); }
+  40% { filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.6)); }
+  100% { filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb), 0.3)); }
+}
+
+.cb-stat-complete {
+  animation: statCompleteGlow 1s ease-out forwards;
+}
+
+.cb-fill-complete {
+  stroke: #4CAF50 !important;
+}
+
+.cb-val-complete {
+  color: #4CAF50 !important;
+}
+
+/* 2. PROGRESSIVE TENSION — habit dots warm up as more complete */
+@keyframes dotWarmPulse {
+  0%, 100% { box-shadow: 0 0 0 transparent; }
+  50% { box-shadow: 0 0 6px rgba(var(--color-primary-rgb), var(--glow-intensity, 0.3)); }
+}
+
+.cb-habit-dots .cb-habit-dot:not(.done) {
+  animation: dotWarmPulse 2.5s ease-in-out infinite;
+  animation-delay: calc(var(--glow-intensity, 0) * 0.5s);
+  border-color: rgba(var(--color-primary-rgb), calc(0.25 + var(--glow-intensity, 0) * 0.4));
+  background: rgba(var(--color-primary-rgb), calc(0.15 + var(--glow-intensity, 0) * 0.15));
+}
+
+.cb-habits-all-done .cb-habit-dot.done {
+  box-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.5);
+  animation: habitAllDonePop 0.4s ease-out;
+}
+
+@keyframes habitAllDonePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* 3. LEADERBOARD RANK MOVEMENT */
+.cb-lb-movement {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.5rem;
+  font-weight: 700;
+  margin-left: 2px;
+  display: inline-block;
+  animation: rankMoveFadeIn 0.5s ease-out;
+}
+
+.cb-lb-up {
+  color: #4CAF50;
+}
+
+.cb-lb-down {
+  color: #f44336;
+}
+
+@keyframes rankMoveFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. COMPLETION SIGNALING — feature cards show done state */
+.cb-card-done {
+  border-color: rgba(76, 175, 80, 0.25) !important;
+}
+
+.cb-card-done::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cardDoneCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2;
+  /* Checkmark via SVG background */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+
+.cb-card-done .cb-card-arrow {
+  display: none;
+}
+
+@keyframes cardDoneCheck {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+[data-theme="dark"] .cb-card-done {
+  background: linear-gradient(135deg, var(--bg-card), rgba(76, 175, 80, 0.04));
+  border-color: rgba(76, 175, 80, 0.15) !important;
+}
+
+[data-theme="light"] .cb-card-done {
+  background: linear-gradient(135deg, var(--bg-card), rgba(76, 175, 80, 0.04));
+}
+
+/* 7. WEEKLY TARGET CELEBRATION */
+.cb-weekly-celebration {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  animation: weeklyCelebSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 16px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.cb-weekly-celebration-card {
+  background: var(--bg-card-elevated, #1e1e30);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.cb-weekly-celebration-icon {
+  display: inline-block;
+  animation: weeklyStarSpin 0.6s ease-out;
+}
+
+@keyframes weeklyStarSpin {
+  from { transform: rotate(-180deg) scale(0); }
+  to { transform: rotate(0deg) scale(1); }
+}
+
+.cb-weekly-celebration-card h4 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 8px 0 4px;
+}
+
+.cb-weekly-celebration-card p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+@keyframes weeklyCelebSlideDown {
+  from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* 8. RETURN TRIGGERS — milestone hint */
+.cb-milestone-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin: 0 auto 16px;
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+  border-radius: 20px;
+  max-width: fit-content;
+  animation: fadeSlideUp 0.6s ease-out both;
+  animation-delay: 0.6s;
+}
+
+.cb-milestone-hint svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.cb-milestone-hint span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Streak flame icon */
+.cb-streak-flame {
+  vertical-align: middle;
+  margin-right: 1px;
+  animation: flameFlicker 1.5s ease-in-out infinite;
+}
+
+@keyframes flameFlicker {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.1); }
+}
+
+/* Toast success styling */
+.toast-notification.success {
+  border-left: 3px solid #4CAF50;
+}
+
+.toast-notification.success svg {
+  color: #4CAF50;
 }

@@ -9,6 +9,8 @@ import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import WorkoutCelebration from '../components/WorkoutCelebration';
+import { awardBadge } from '../utils/awardBadge';
+import BadgeCelebration from '../components/BadgeCelebration';
 
 
 const DEFAULT_HABITS = [
@@ -58,7 +60,7 @@ function getWeekDates(monday) {
 
 export default function CoreBuddyConsistency() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
 
@@ -70,6 +72,7 @@ export default function CoreBuddyConsistency() {
   const [toast, setToast] = useState(null);
   const [justChecked, setJustChecked] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
   const [celebrationDismissing, setCelebrationDismissing] = useState(false);
   const [celebrationShownToday, setCelebrationShownToday] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -224,7 +227,7 @@ export default function CoreBuddyConsistency() {
         confettiRef.current = [...Array(80)].map((_, i) => ({
           x: 5 + Math.random() * 90,
           delay: Math.random() * 3.5,
-          color: ['#A12F3A', '#4caf50', '#ff9800', '#2196f3', '#e91e63', '#ffeb3b', '#FFD700', '#ffffff', '#9c27b0'][i % 9],
+          color: ['#A12F3A', '#ffffff', '#000000'][i % 3],
           drift: (Math.random() - 0.5) * 120,
           spin: Math.random() * 720 - 360,
           duration: 1.8 + Math.random() * 2,
@@ -238,6 +241,24 @@ export default function CoreBuddyConsistency() {
           // Focus the continue button for a11y
           setTimeout(() => celebrationBtnRef.current?.focus(), 1100);
         }, 400);
+
+        // Check habits_7 badge: all habits completed for 7 consecutive days
+        let habitStreak = 1; // today counts
+        for (let i = 1; i < 7; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = formatDate(d);
+          const log = habitLogs[key];
+          if (log) {
+            const done = Object.values(log.habits || {}).filter(Boolean).length;
+            if (done >= allHabits.length) { habitStreak++; } else { break; }
+          } else { break; }
+        }
+        if (habitStreak >= 7) {
+          awardBadge('habits_7', clientData).then(awarded => {
+            if (awarded) setBadgeCelebration(awarded);
+          });
+        }
       }
     } catch (err) {
       console.error('Error saving habit:', err);
@@ -510,7 +531,7 @@ export default function CoreBuddyConsistency() {
 
   return (
     <PullToRefresh>
-    <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+    <div className="cbc-page">
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
@@ -859,6 +880,8 @@ export default function CoreBuddyConsistency() {
           {toast.message}
         </div>
       )}
+
+      <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
     </PullToRefresh>
   );

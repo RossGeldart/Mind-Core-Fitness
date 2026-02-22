@@ -31,6 +31,7 @@
 
 /* ===== HERO ===== */
 .prf-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,7 +42,7 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  border: 3px solid var(--color-primary);
+  border: none;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -53,6 +54,16 @@
   color: var(--text-secondary);
   margin-bottom: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.prf-avatar-lg.tappable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.prf-avatar-lg.tappable:active {
+  transform: scale(0.94);
 }
 
 .prf-avatar-lg img {
@@ -172,9 +183,9 @@
   color: var(--text-primary);
 }
 
-.prf-stats .prf-stat:nth-child(1) { border-top: 3px solid #00bcd4; }
-.prf-stats .prf-stat:nth-child(2) { border-top: 3px solid #2196f3; }
-.prf-stats .prf-stat:nth-child(3) { border-top: 3px solid #00bcd4; }
+.prf-stats .prf-stat:nth-child(1) { border-top: 3px solid var(--color-primary); }
+.prf-stats .prf-stat:nth-child(2) { border-top: 3px solid var(--color-primary); }
+.prf-stats .prf-stat:nth-child(3) { border-top: 3px solid var(--color-primary); }
 
 .prf-stat-unit {
   font-size: 0.7rem;
@@ -346,17 +357,17 @@
 }
 
 .prf-info-card.info-programme .prf-info-icon {
-  background: rgba(33, 150, 243, 0.1);
-  color: #2196f3;
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.1);
+  color: var(--color-primary);
 }
 
 .prf-info-card.info-programme .prf-info-progress-fill {
-  background: #2196f3;
+  background: var(--color-primary);
 }
 
 .prf-info-card.info-habit .prf-info-icon {
-  background: rgba(0, 188, 212, 0.1);
-  color: #00bcd4;
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.1);
+  color: var(--color-primary);
 }
 
 [data-theme="dark"] .prf-info-card {
@@ -533,6 +544,279 @@
   margin-top: 8px;
 }
 
+/* ===== PROFILE PHOTO OVERLAY ===== */
+.prf-photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: prf-overlay-in 0.2s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prf-photo-overlay-img {
+  width: 75vw;
+  height: 75vw;
+  max-width: 360px;
+  max-height: 360px;
+  border-radius: 50%;
+  object-fit: cover;
+  animation: prf-overlay-scale 0.25s ease;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== MANAGE BUDDY (three-dot) ===== */
+.prf-manage-wrap {
+  position: absolute;
+  top: 18px;
+  right: 4px;
+}
+
+.prf-manage-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prf-manage-btn:active {
+  background: rgba(150, 150, 150, 0.12);
+  color: var(--text-secondary);
+}
+
+/* ===== BUDDY LABEL (replaces red pill when buddy) ===== */
+.prf-buddy-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--color-success);
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(46, 125, 50, 0.08);
+  border: 1px solid rgba(46, 125, 50, 0.15);
+}
+
+[data-theme="dark"] .prf-buddy-label {
+  background: rgba(46, 125, 50, 0.12);
+  border-color: rgba(46, 125, 50, 0.2);
+}
+
+/* ===== BADGES CAROUSEL ===== */
+.prf-badges-section {
+  margin-bottom: 20px;
+}
+
+.prf-badges-tally {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-left: 6px;
+}
+
+.prf-badges-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.prf-badges-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.prf-carousel-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  border-radius: 14px;
+  padding: 10px 10px 8px;
+  width: 80px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.prf-carousel-badge:active {
+  transform: scale(0.94);
+}
+
+[data-theme="dark"] .prf-carousel-badge {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 193, 7, 0.2);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.prf-carousel-badge-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 193, 7, 0.3);
+}
+
+.prf-carousel-badge-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ===== BADGE OVERLAY NAME ===== */
+.prf-badge-overlay-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin: 0;
+  text-align: center;
+}
+
+/* ===== REMOVE BUDDY CONFIRMATION ===== */
+.prf-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: prf-overlay-in 0.2s ease;
+}
+
+.prf-confirm-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 28px 24px 20px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+  animation: prf-overlay-scale 0.25s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .prf-confirm-card {
+  background: var(--bg-card-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Mono mode: force solid backgrounds so card isn't transparent */
+[data-mono="true"][data-theme="light"] .prf-confirm-card {
+  background: #f5f5f5;
+}
+
+[data-mono="true"][data-theme="dark"] .prf-confirm-card {
+  background: #1a1a1f;
+}
+
+.prf-confirm-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  color: var(--text-tertiary);
+}
+
+.prf-confirm-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.prf-confirm-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0 0 20px;
+}
+
+.prf-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.prf-confirm-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prf-confirm-btn:active {
+  transform: scale(0.97);
+}
+
+.prf-confirm-cancel {
+  background: var(--bg-body);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.prf-confirm-remove {
+  background: rgba(150, 150, 150, 0.1);
+  color: var(--text-secondary);
+}
+
+.prf-confirm-remove:disabled {
+  opacity: 0.5;
+}
+
 /* ===== TOAST ===== */
 .prf-page .toast-notification {
   position: fixed;
@@ -615,7 +899,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .journey-compose {
@@ -818,7 +1102,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .journey-post {
@@ -1125,4 +1409,80 @@
   .journey-post {
     padding: 18px;
   }
+}
+
+/* ==================== JOURNEY SHARE CARDS ==================== */
+.journey-card {
+  border-radius: 14px;
+  padding: 20px 16px 14px;
+  margin-bottom: 10px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+[data-theme="dark"] .journey-card {
+  background: rgba(30, 30, 30, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.journey-card-logo-frame {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(var(--color-primary-rgb), 0.25);
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  background: #fff;
+}
+[data-theme="dark"] .journey-card-logo-frame {
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+}
+.journey-card-logo-badge {
+  border-color: rgba(255, 193, 7, 0.4);
+}
+.journey-card-logo-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.journey-card-title {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.journey-card-stats-line {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.journey-card-cta {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 10px 0 0;
+  line-height: 1.35;
+}
+
+.journey-card-slogan {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 10px 0 0;
+  letter-spacing: 0.2px;
 }

@@ -82,7 +82,6 @@
   width: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--color-primary);
 }
 
 .admin-badge {
@@ -543,7 +542,7 @@
 }
 
 .summary-card.active {
-  border-color: #A12F3A;
+  border-color: var(--color-primary);
   background: var(--bg-secondary);
 }
 
@@ -620,7 +619,7 @@
 .card-detail-panel {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-top: 3px solid #A12F3A;
+  border-top: 3px solid var(--color-primary);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;

@@ -10,40 +10,11 @@ import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import WorkoutCelebration from '../components/WorkoutCelebration';
-import generateShareImage from '../utils/generateShareImage';
-import BADGE_DEFS from '../utils/badgeConfig';
 import { TICKS_78_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
 
-// Exercise group mapping for badge categorization
-const EXERCISE_GROUPS = {
-  'Dumbbell Floor Press': 'push', 'Seated Dumbbell Shoulder Press': 'push',
-  'Seated Dumbbell Arnold Press': 'push', 'Dumbbell Overhead Tricep Extension': 'push',
-  'Skullcrushers': 'push', 'Dumbbell Lateral Raise': 'push', 'Dumbbell Front Raise': 'push',
-  'Dumbbell Bent Over Row': 'pull', 'Single Arm Bent Over Row': 'pull',
-  'Bicep Curl': 'pull', 'Hammer Curl': 'pull',
-  'Dumbbell Bent Over Rear Delt Fly': 'pull', 'Renegade Row': 'pull',
-  'Dumbbell Goblet Squats': 'lower', 'Romanian Deadlifts': 'lower',
-  'Forward Dumbbell Lunges': 'lower', 'Dumbbell Sumo Squats': 'lower',
-  'Weighted Calf Raises': 'lower', '1 Legged RDL': 'lower',
-  'Dumbbell Box Step Ups': 'lower', 'Dumbbell Squat Pulses': 'lower',
-  'Dumbbell Reverse Lunges': 'lower', 'Kettlebell Romanian Deadlift': 'lower',
-  'Russian Twists Dumbbell': 'core', 'Kettlebell Russian Twist': 'core',
-  'Kettlebell Side Bends': 'core', 'Kneeling Kettlebell Halo': 'core',
-};
 
-const VOLUME_MILESTONES = [
-  { threshold: 1000, label: '1 Tonne' },
-  { threshold: 5000, label: '5 Tonne' },
-  { threshold: 10000, label: '10 Tonne' },
-  { threshold: 25000, label: '25 Tonne' },
-  { threshold: 50000, label: '50 Tonne' },
-  { threshold: 100000, label: '100 Tonne' },
-  { threshold: 250000, label: '250 Tonne' },
-  { threshold: 500000, label: '500 Tonne' },
-  { threshold: 1000000, label: '1 Million kg' },
-];
 
 // ==================== PROGRAMME TEMPLATES ====================
 const TEMPLATES = [
@@ -363,7 +334,7 @@ const FOCUS_ICONS = {
 export default function CoreBuddyProgrammes() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isPremium } = useTier();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -397,9 +368,6 @@ export default function CoreBuddyProgrammes() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const sessionVideoRef = useRef(null);
 
-  // Badge celebration state
-  const [badgeCelebration, setBadgeCelebration] = useState(null); // { badges: [...] }
-  const [sessionBadges, setSessionBadges] = useState([]); // badges earned during this session
 
   // Scroll to top on view change
   useEffect(() => {
@@ -745,15 +713,6 @@ export default function CoreBuddyProgrammes() {
     const updated = { ...activeProgramme, completedSessions };
     await saveProgramme(updated);
 
-    // Calculate session volume (weight × reps for all weighted exercises)
-    const sessionVolume = logs.reduce((sum, l) =>
-      sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
-
-    // Update total volume and check milestones
-    if (sessionVolume > 0) {
-      await updateVolume(sessionVolume);
-    }
-
     // Also log to workoutLogs for the randomiser stats
     try {
       const template = getActiveTemplate();
@@ -766,65 +725,15 @@ export default function CoreBuddyProgrammes() {
         day: sessionDay + 1,
         exerciseCount: logs.length,
         duration: Math.round(logs.reduce((sum, l) => sum + l.sets.length * 1.5, 0)),
-        volume: Math.round(sessionVolume),
         completedAt: Timestamp.now(),
       });
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
 
-    // Show badge celebration if any badges earned during session
-    if (sessionBadges.length > 0) {
-      setBadgeCelebration({ badges: [...sessionBadges] });
-      setSessionBadges([]);
-    }
-
     setShowPgFinish(true);
   };
 
-  // Update cumulative volume and check milestone badges
-  const updateVolume = async (sessionVolume) => {
-    if (!clientData) return;
-    try {
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const oldVolume = achData.totalVolume || 0;
-      const newVolume = oldVolume + sessionVolume;
-
-      // Check for new volume milestone badges
-      const newMilestoneBadges = [];
-      VOLUME_MILESTONES.forEach(milestone => {
-        if (newVolume >= milestone.threshold && oldVolume < milestone.threshold) {
-          const alreadyEarned = achData.badges.some(
-            b => b.type === 'volume_milestone' && b.milestone === milestone.threshold
-          );
-          if (!alreadyEarned) {
-            newMilestoneBadges.push({
-              type: 'volume_milestone',
-              milestone: milestone.threshold,
-              label: milestone.label,
-              achievedAt: Timestamp.now(),
-            });
-          }
-        }
-      });
-
-      const allBadges = [...achData.badges, ...newMilestoneBadges];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        clientId: clientData.id,
-        badges: allBadges,
-        totalVolume: Math.round(newVolume),
-        updatedAt: Timestamp.now(),
-      });
-
-      // Add milestone badges to session celebration
-      if (newMilestoneBadges.length > 0) {
-        setSessionBadges(prev => [...prev, ...newMilestoneBadges]);
-      }
-    } catch (err) {
-      console.error('Error updating volume:', err);
-    }
-  };
 
   // Check and update PB (all-time bests stored by exercise name)
   // Also checks targets and awards badges
@@ -860,54 +769,12 @@ export default function CoreBuddyProgrammes() {
         });
         showToast(`New PB! ${weight}kg × ${reps} reps`, 'success');
         playBeep();
-
-        // Check if this PB hits a target → award badge
-        await checkTargetBadge(exerciseName, weight);
       }
     } catch (err) {
       console.error('Error checking PB:', err);
     }
   };
 
-  // Check if new PB weight meets/exceeds a target and award badge
-  const checkTargetBadge = async (exerciseName, newWeight) => {
-    if (!clientData) return;
-    try {
-      const targetDoc = await getDoc(doc(db, 'coreBuddyTargets', clientData.id));
-      if (!targetDoc.exists()) return;
-      const targets = targetDoc.data().targets || {};
-      const target = targets[exerciseName];
-      if (!target || newWeight < target.targetWeight) return;
-
-      // Check if badge already earned
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const alreadyEarned = achData.badges.some(
-        b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
-      );
-      if (alreadyEarned) return;
-
-      // Award the badge
-      const newBadge = {
-        type: 'pb_target',
-        exercise: exerciseName,
-        group: EXERCISE_GROUPS[exerciseName] || 'push',
-        targetWeight: target.targetWeight,
-        achievedAt: Timestamp.now(),
-      };
-      const updatedBadges = [...achData.badges, newBadge];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        ...achData,
-        badges: updatedBadges,
-        updatedAt: Timestamp.now(),
-      });
-
-      // Track for session celebration
-      setSessionBadges(prev => [...prev, newBadge]);
-    } catch (err) {
-      console.error('Error checking target badge:', err);
-    }
-  };
 
   // Toast element
   const toastEl = toast && (
@@ -953,7 +820,7 @@ export default function CoreBuddyProgrammes() {
     const t = selectedTemplate;
     return (
       <PullToRefresh>
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page">
         {renderHeader(t.name, () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
           <div className="pg-overview-hero">
@@ -1028,7 +895,7 @@ export default function CoreBuddyProgrammes() {
 
     return (
       <PullToRefresh>
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page">
         {renderHeader('Programme', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
           {/* Progress Ring */}
@@ -1174,7 +1041,7 @@ export default function CoreBuddyProgrammes() {
     };
 
     return (
-      <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page pg-page-session">
         {/* Progress bar */}
         <div className="pg-session-progress">
           <div className="pg-session-progress-fill" style={{ width: `${overallProgress * 100}%` }} />
@@ -1314,13 +1181,10 @@ export default function CoreBuddyProgrammes() {
           const template = getActiveTemplate();
           const day = template?.days[sessionDay];
           const totalSets = sessionLogs.reduce((sum, l) => sum + l.sets.length, 0);
-          const totalVolume = sessionLogs.reduce((sum, l) =>
-            sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
           const pgStats = [
             { value: sessionLogs.length, label: 'Exercises' },
             { value: totalSets, label: 'Sets' },
           ];
-          if (totalVolume > 0) pgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
 
           return (
             <WorkoutCelebration
@@ -1336,82 +1200,6 @@ export default function CoreBuddyProgrammes() {
             />
           );
         })()}
-
-        {/* Badge Celebration Overlay */}
-        {badgeCelebration && (
-          <div className="pg-badge-celebration" onClick={() => setBadgeCelebration(null)}>
-            <div className="pg-badge-celebration-card" onClick={e => e.stopPropagation()}>
-              <div className="pg-badge-celebration-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              </div>
-              <h3 className="pg-badge-celebration-title">
-                {badgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${badgeCelebration.badges.length} Badges Earned!`}
-              </h3>
-              <div className="pg-badge-celebration-list">
-                {badgeCelebration.badges.map((badge, i) => (
-                  <div key={i} className="pg-badge-celebration-item">
-                    {badge.type === 'pb_target'
-                      ? `${badge.exercise} — ${badge.targetWeight}kg`
-                      : badge.label}
-                  </div>
-                ))}
-              </div>
-              <div className="pg-badge-share-row">
-                <button className="pg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadgeJ = badgeCelebration.badges[0];
-                  const badgeLabelsJ = badgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDefJ = BADGE_DEFS.find(d => d.id === firstBadgeJ?.id) || BADGE_DEFS.find(d => d.name === firstBadgeJ?.label);
-                  await shareToJourney({
-                    type: 'badge_earned',
-                    title: badgeLabelsJ.length === 1 ? badgeLabelsJ[0] : `${badgeLabelsJ.length} Badges Earned!`,
-                    badges: badgeLabelsJ,
-                    badgeDesc: badgeDefJ?.desc,
-                  });
-                  showToast('Posted to Journey!', 'success');
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  Journey
-                </button>
-                <button className="pg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadge = badgeCelebration.badges[0];
-                  const badgeLabels = badgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDef = BADGE_DEFS.find(d => d.id === firstBadge?.id) || BADGE_DEFS.find(d => d.name === firstBadge?.label);
-                  const shareText = `Badge Earned! ${badgeLabels.join(', ')}\n#MindCoreFitness`;
-                  try {
-                    const blob = await generateShareImage({
-                      type: 'badge',
-                      title: badgeLabels.length === 1 ? badgeLabels[0] : 'Badges Earned!',
-                      badges: badgeLabels,
-                      badgeImage: badgeDef?.img,
-                      badgeDesc: badgeDef?.desc,
-                    });
-                    if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'badge.png', { type: 'image/png' })] })) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText, files: [new File([blob], 'badge.png', { type: 'image/png' })] });
-                    } else if (navigator.share) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText });
-                    } else {
-                      await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success');
-                    }
-                  } catch {
-                    try { await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success'); } catch {}
-                  }
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  Share
-                </button>
-              </div>
-              <button className="pg-badge-celebration-dismiss" onClick={() => setBadgeCelebration(null)}>
-                Tap to dismiss
-              </button>
-            </div>
-          </div>
-        )}
 
         {toastEl}
       </div>

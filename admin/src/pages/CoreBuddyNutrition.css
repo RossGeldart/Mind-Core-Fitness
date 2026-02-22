@@ -203,12 +203,13 @@
 
 .nut-week-day.selected .nut-week-day-num {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 700;
 }
 
 .nut-week-day.selected .nut-week-day-letter {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-on-primary);
+  opacity: 0.8;
 }
 
 .nut-week-day.today:not(.selected) .nut-week-day-num {
@@ -292,7 +293,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-calc-form {
@@ -524,7 +525,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-calc-results {
@@ -607,7 +608,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 20px 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-rings-grid {
@@ -752,7 +753,7 @@
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-meal-pill {
@@ -829,7 +830,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-meal-card {
@@ -1181,11 +1182,6 @@
   margin-bottom: 16px;
 }
 
-.nut-quick-row .nut-water-quick {
-  margin-bottom: 0;
-  flex: 1;
-}
-
 .nut-copy-day-btn {
   display: flex;
   align-items: center;
@@ -1215,56 +1211,6 @@
 
 .nut-copy-day-btn:active {
   transform: scale(0.98);
-}
-
-.nut-water-quick {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  font-family: 'Roboto', sans-serif;
-  color: #2196f3;
-}
-
-[data-theme="dark"] .nut-water-quick {
-  background: rgba(30, 30, 30, 0.8);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-
-.nut-water-quick:hover {
-  border-color: #2196f3;
-}
-
-.nut-water-quick:active {
-  transform: scale(0.98);
-}
-
-.nut-water-quick svg:first-child {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.nut-water-quick-count {
-  font-family: 'Orbitron', monospace;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-.nut-water-quick svg:last-child {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  opacity: 0.5;
 }
 
 /* Copy From Day Popup */
@@ -1323,111 +1269,6 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
-}
-
-/* Water Popup */
-.nut-water-popup {
-  width: 90%;
-  max-width: 340px;
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 24px;
-  margin: auto;
-}
-
-[data-theme="dark"] .nut-water-popup {
-  background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.nut-water-popup-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.nut-water-popup-header span {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-.nut-water-popup-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.nut-water-popup-count {
-  font-family: 'Orbitron', monospace;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.nut-water-glasses {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.nut-water-glass {
-  width: 28px;
-  height: 28px;
-  color: var(--border-color);
-  transition: color 0.3s ease;
-}
-
-.nut-water-glass.filled {
-  color: #2196f3;
-}
-
-.nut-water-glass.filled svg {
-  filter: drop-shadow(0 0 4px rgba(33, 150, 243, 0.4));
-}
-
-.nut-water-glass svg {
-  width: 100%;
-  height: 100%;
-}
-
-.nut-water-btns {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.nut-water-btns button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nut-water-btns button:hover:not(:disabled) {
-  border-color: #2196f3;
-  color: #2196f3;
-  background: rgba(33, 150, 243, 0.08);
-}
-
-.nut-water-btns button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 /* ==================== DATE NAVIGATION ==================== */
@@ -1496,7 +1337,7 @@
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-glow);
 }
 
 .nut-cal-header {
@@ -1585,7 +1426,7 @@
 
 .nut-cal-day.selected {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 700;
 }
 
@@ -1625,7 +1466,7 @@
   border-radius: 14px;
   padding: 30px 20px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-log-empty {
@@ -1966,6 +1807,21 @@
 .nut-barcode-manual button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Open Food Facts attribution */
+.nut-off-credit {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: 16px;
+  opacity: 0.7;
+}
+
+.nut-off-credit a {
+  color: var(--text-tertiary);
+  text-decoration: underline;
 }
 
 /* Product Result */

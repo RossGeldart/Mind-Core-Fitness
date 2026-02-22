@@ -18,7 +18,7 @@ export default function CoreBuddyNav({ active }) {
       </button>
       <button className={`block-nav-tab${active === 'workouts' ? ' active' : ''}`} onClick={() => navigate('/client/core-buddy/workouts')}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M1 9h2v6H1V9zm3-2h2v10H4V7zm3 4h10v2H7v-2zm10-4h2v10h-2V7zm3 2h2v6h-2V9z"/></svg>
-        <span>Workouts</span>
+        <span>Workout</span>
       </button>
       {isPremium && (
       <button className={`block-nav-tab${active === 'nutrition' ? ' active' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>

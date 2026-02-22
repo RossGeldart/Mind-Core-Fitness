@@ -10,8 +10,10 @@ import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
-import generateShareImage from '../utils/generateShareImage';
-import BADGE_DEFS from '../utils/badgeConfig';
+import { awardBadge } from '../utils/awardBadge';
+import BadgeCelebration from '../components/BadgeCelebration';
+
+
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import programmeCardImg from '../assets/programme-card-workout.webp';
 import progFullbody4wkImg from '../assets/images/cards/prog-fullbody-4wk.jpg';
@@ -44,18 +46,6 @@ import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 const TICK_COUNT = 60;
 const WEEKLY_TARGET = 5;
 
-// Volume milestones for badge tracking
-const VOLUME_MILESTONES = [
-  { threshold: 1000, label: '1 Tonne' },
-  { threshold: 5000, label: '5 Tonne' },
-  { threshold: 10000, label: '10 Tonne' },
-  { threshold: 25000, label: '25 Tonne' },
-  { threshold: 50000, label: '50 Tonne' },
-  { threshold: 100000, label: '100 Tonne' },
-  { threshold: 250000, label: '250 Tonne' },
-  { threshold: 500000, label: '500 Tonne' },
-  { threshold: 1000000, label: '1 Million kg' },
-];
 
 // Exercise group mapping for badge categorisation
 const EXERCISE_GROUPS = {
@@ -553,13 +543,12 @@ function shuffleArray(arr) {
 
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'menu' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'complete'
-  //        | 'muscle_sessions' | 'muscle_overview' | 'muscle_workout' | 'muscle_complete'
-  const [view, setView] = useState('menu');
+  // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout'
+  const [view, setView] = useState('randomiser_hub');
 
   // Setup
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
@@ -639,8 +628,6 @@ export default function CoreBuddyWorkouts() {
   const [mgVideoUrls, setMgVideoUrls] = useState({});
   const mgVideoRef = useRef(null);
   const mgTimerRef = useRef(null);
-  const [mgSessionBadges, setMgSessionBadges] = useState([]);
-  const [mgBadgeCelebration, setMgBadgeCelebration] = useState(null);
 
   // Workout stats
   const [weeklyCount, setWeeklyCount] = useState(0);
@@ -649,6 +636,7 @@ export default function CoreBuddyWorkouts() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
   // Free-tier gating: limit available durations and weekly usage
@@ -974,12 +962,10 @@ export default function CoreBuddyWorkouts() {
   // Quick Start: store last settings and generate instantly
   const quickStart = async () => {
     const last = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
-    if (last) {
-      setSelectedEquipment(last.equipment || ['bodyweight']);
-      setFocusArea(last.focus || 'core');
-      setLevel(last.level || 'intermediate');
-      setDuration(last.duration || 15);
-    }
+    setSelectedEquipment(last?.equipment || ['bodyweight']);
+    setFocusArea(last?.focus || 'core');
+    setLevel(last?.level || 'intermediate');
+    setDuration(last?.duration || 15);
     // Small delay to let state settle, then generate
     setTimeout(() => generateWorkout(), 50);
   };
@@ -1222,10 +1208,48 @@ export default function CoreBuddyWorkouts() {
         exercises: workout.map(e => e.name),
         completedAt: Timestamp.now(),
       });
+      if (typeof fbq === 'function') {
+        fbq('trackCustom', 'WorkoutCompleted', {
+          duration: duration,
+          level: level,
+          focus_area: focusArea,
+          exercise_count: workout.length
+        });
+      }
       setWeeklyCount(c => c + 1);
-      setTotalCount(c => c + 1);
+      const newTotal = totalCount + 1;
+      setTotalCount(newTotal);
       setTotalMinutes(m => m + duration);
       setLevelBreakdown(lb => ({ ...lb, [level]: (lb[level] || 0) + 1 }));
+
+      // Check workout count badges
+      const workoutThresholds = [
+        { count: 1, id: 'first_workout' },
+        { count: 10, id: 'workouts_10' },
+        { count: 25, id: 'workouts_25' },
+        { count: 50, id: 'workouts_50' },
+        { count: 100, id: 'workouts_100' },
+      ];
+      for (const t of workoutThresholds) {
+        if (newTotal >= t.count) {
+          const awarded = await awardBadge(t.id, clientData);
+          if (awarded) { setBadgeCelebration(awarded); break; }
+        }
+      }
+
+      // Check streak badges (streak is already calculated in state)
+      const newStreak = streak + (weeklyCount === 0 ? 1 : 0); // streak bumps if first workout of the week
+      const streakThresholds = [
+        { weeks: 2, id: 'streak_2' },
+        { weeks: 4, id: 'streak_4' },
+        { weeks: 8, id: 'streak_8' },
+      ];
+      for (const t of streakThresholds) {
+        if (newStreak >= t.weeks) {
+          const awarded = await awardBadge(t.id, clientData);
+          if (awarded && !badgeCelebration) setBadgeCelebration(awarded);
+        }
+      }
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
@@ -1265,88 +1289,12 @@ export default function CoreBuddyWorkouts() {
         });
         showToast(`New PB! ${weight}kg \u00D7 ${reps} reps`, 'success');
         playBeep();
-        await mgCheckTargetBadge(exerciseName, weight);
       }
     } catch (err) {
       console.error('Error checking PB:', err);
     }
   };
 
-  const mgCheckTargetBadge = async (exerciseName, newWeight) => {
-    if (!clientData) return;
-    try {
-      const targetDoc = await getDoc(doc(db, 'coreBuddyTargets', clientData.id));
-      if (!targetDoc.exists()) return;
-      const targets = targetDoc.data().targets || {};
-      const target = targets[exerciseName];
-      if (!target || newWeight < target.targetWeight) return;
-
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const alreadyEarned = achData.badges.some(
-        b => b.type === 'pb_target' && b.exercise === exerciseName && b.targetWeight === target.targetWeight
-      );
-      if (alreadyEarned) return;
-
-      const newBadge = {
-        type: 'pb_target',
-        exercise: exerciseName,
-        group: EXERCISE_GROUPS[exerciseName] || 'push',
-        targetWeight: target.targetWeight,
-        achievedAt: Timestamp.now(),
-      };
-      const updatedBadges = [...achData.badges, newBadge];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        ...achData,
-        badges: updatedBadges,
-        updatedAt: Timestamp.now(),
-      });
-      setMgSessionBadges(prev => [...prev, newBadge]);
-    } catch (err) {
-      console.error('Error checking target badge:', err);
-    }
-  };
-
-  const mgUpdateVolume = async (sessionVolume) => {
-    if (!clientData || sessionVolume <= 0) return;
-    try {
-      const achDoc = await getDoc(doc(db, 'coreBuddyAchievements', clientData.id));
-      const achData = achDoc.exists() ? achDoc.data() : { clientId: clientData.id, badges: [], totalVolume: 0 };
-      const oldVolume = achData.totalVolume || 0;
-      const newVolume = oldVolume + sessionVolume;
-
-      const newMilestoneBadges = [];
-      VOLUME_MILESTONES.forEach(milestone => {
-        if (newVolume >= milestone.threshold && oldVolume < milestone.threshold) {
-          const alreadyEarned = achData.badges.some(
-            b => b.type === 'volume_milestone' && b.milestone === milestone.threshold
-          );
-          if (!alreadyEarned) {
-            newMilestoneBadges.push({
-              type: 'volume_milestone',
-              milestone: milestone.threshold,
-              label: milestone.label,
-              achievedAt: Timestamp.now(),
-            });
-          }
-        }
-      });
-
-      const allBadges = [...achData.badges, ...newMilestoneBadges];
-      await setDoc(doc(db, 'coreBuddyAchievements', clientData.id), {
-        clientId: clientData.id,
-        badges: allBadges,
-        totalVolume: Math.round(newVolume),
-        updatedAt: Timestamp.now(),
-      });
-
-      if (newMilestoneBadges.length > 0) {
-        setMgSessionBadges(prev => [...prev, ...newMilestoneBadges]);
-      }
-    } catch (err) {
-      console.error('Error updating volume:', err);
-    }
-  };
 
   // ==================== MUSCLE GROUP WORKOUT FUNCTIONS ====================
 
@@ -1487,8 +1435,6 @@ export default function CoreBuddyWorkouts() {
   const saveMgWorkoutLog = async (logs) => {
     if (!currentUser || !clientData) return;
     try {
-      const volume = logs.reduce((sum, l) =>
-        sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
       const totalSets = logs.reduce((sum, l) => sum + l.sets.length, 0);
       await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
@@ -1499,20 +1445,9 @@ export default function CoreBuddyWorkouts() {
         exerciseCount: logs.length,
         totalSets,
         duration: Math.round(totalSets * 1.5),
-        volume: Math.round(volume),
         exercises: logs.map(l => ({ name: l.name, type: l.type, sets: l.sets })),
         completedAt: Timestamp.now(),
       });
-
-      // Update cumulative volume and check milestones
-      if (volume > 0) {
-        await mgUpdateVolume(volume);
-      }
-
-      // Trigger badge celebration if any badges earned during session
-      if (mgSessionBadges.length > 0) {
-        setMgBadgeCelebration({ badges: [...mgSessionBadges] });
-      }
     } catch (err) {
       console.error('Error saving muscle group workout log:', err);
     }
@@ -1604,7 +1539,7 @@ export default function CoreBuddyWorkouts() {
 
   if (authLoading) {
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -1622,7 +1557,7 @@ export default function CoreBuddyWorkouts() {
   if (view === 'menu') {
     return (
       <PullToRefresh>
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -1753,6 +1688,7 @@ export default function CoreBuddyWorkouts() {
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
       </div>
       </PullToRefresh>
     );
@@ -1760,15 +1696,15 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== RANDOMISER HUB VIEW ====================
   if (view === 'randomiser_hub') {
-    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
-    const lastFocusLabel = lastSettings ? (FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus) : null;
-    const lastLevelLabel = lastSettings ? (LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level) : null;
+    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null') || { equipment: ['bodyweight'], focus: 'core', level: 'intermediate', duration: 15 };
+    const lastFocusLabel = FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus;
+    const lastLevelLabel = LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level;
 
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -1784,88 +1720,78 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
-          <div className="wk-hub-heading">
-            <div className="wk-hub-icon-wrap">
-              <svg className="wk-hub-dice-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="3"/>
-                <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-                <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-              </svg>
+          <div className="wk-hub-heading wk-hub-heading-hero">
+            <div className="wk-hub-circle-frame">
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-hub-circle-logo" />
             </div>
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
           </div>
 
-          {/* Stats banner */}
-          {hubStats.total > 0 && (
-            <div className="wk-hub-stats">
-              <div className="wk-hub-stat">
-                <span className="wk-hub-stat-value">{hubStats.total}</span>
-                <span className="wk-hub-stat-label">Workouts</span>
+          {/* ===== Launch Zone ===== */}
+          <div className="wk-hub-launch-zone">
+            {/* Stats banner */}
+            {hubStats.total > 0 && (
+              <div className="wk-hub-stats">
+                <div className="wk-hub-stat">
+                  <span className="wk-hub-stat-value">{hubStats.total}</span>
+                  <span className="wk-hub-stat-label">Workouts</span>
+                </div>
+                {hubStats.streak > 0 && (
+                  <div className="wk-hub-stat">
+                    <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
+                    <span className="wk-hub-stat-label">Streak</span>
+                  </div>
+                )}
+                {hubStats.favouriteFocus && (
+                  <div className="wk-hub-stat">
+                    <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
+                      {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
+                    </span>
+                    <span className="wk-hub-stat-label">Top Focus</span>
+                  </div>
+                )}
               </div>
-              {hubStats.streak > 0 && (
-                <div className="wk-hub-stat">
-                  <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
-                  <span className="wk-hub-stat-label">Streak</span>
-                </div>
-              )}
-              {hubStats.favouriteFocus && (
-                <div className="wk-hub-stat">
-                  <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
-                    {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
-                  </span>
-                  <span className="wk-hub-stat-label">Top Focus</span>
-                </div>
-              )}
-            </div>
-          )}
+            )}
 
-          {/* Motivational tip */}
-          <div className="wk-hub-tip">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
-          </div>
-
-          {/* Action buttons */}
-          <div className="wk-hub-actions">
-            <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              New Workout
-            </button>
-            {lastSettings && (
+            {/* Action buttons */}
+            <div className="wk-hub-actions">
+              <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Workout
+              </button>
               <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 Quick Start
                 <span className="wk-hub-quick-meta">{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
               </button>
-            )}
-          </div>
+            </div>
 
-          {/* Smart Suggestion */}
-          {smartSuggestion && (
-            <div className="wk-hub-section">
-              <h3 className="wk-hub-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                Suggested For You
-              </h3>
+            {/* Smart Suggestion */}
+            {smartSuggestion && (
               <button className="wk-hub-suggestion" onClick={() => {
                 setFocusArea(smartSuggestion.focus);
                 setView('setup');
               }}>
+                <svg className="wk-hub-suggestion-bulb" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                 <div className="wk-hub-suggestion-info">
                   <span className="wk-hub-suggestion-label">{smartSuggestion.message}</span>
                   <span className="wk-hub-suggestion-cta">Tap to set up &rarr;</span>
                 </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
               </button>
-            </div>
-          )}
+            )}
 
-          {/* Saved Workouts */}
-          <div className="wk-hub-section">
+            {/* Motivational tip */}
+            <div className="wk-hub-tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
+            </div>
+          </div>
+
+          {/* Saved Workouts (premium only) */}
+          {isPremium && (
+          <div className="wk-hub-section wk-hub-section--saved">
             <h3 className="wk-hub-section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
               Saved Workouts
@@ -1929,14 +1855,21 @@ export default function CoreBuddyWorkouts() {
               </div>
             )}
           </div>
+          )}
 
           {/* Recent History */}
-          {recentWorkouts.length > 0 && (
-            <div className="wk-hub-section">
-              <h3 className="wk-hub-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Recent
-              </h3>
+          <div className="wk-hub-section wk-hub-section--recent">
+            <h3 className="wk-hub-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Recent
+            </h3>
+            {recentWorkouts.length === 0 ? (
+              <div className="wk-hub-empty wk-hub-empty-enhanced">
+                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p><strong>No workouts yet</strong></p>
+                <p className="wk-hub-empty-sub">Complete your first workout to see your history here.</p>
+              </div>
+            ) : (
               <div className="wk-hub-recent-list">
                 {recentWorkouts.map((rw, i) => {
                   const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
@@ -1949,22 +1882,38 @@ export default function CoreBuddyWorkouts() {
                     return `${Math.floor(diff / 86400)}d ago`;
                   })() : '';
                   return (
-                    <div key={i} className="wk-hub-recent-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                    <button
+                      key={i}
+                      className="wk-hub-recent-card"
+                      style={{ animationDelay: `${i * 0.05}s` }}
+                      onClick={() => {
+                        setFocusArea(rw.focus || 'core');
+                        setLevel(rw.level || 'intermediate');
+                        setDuration(rw.duration || 15);
+                        if (rw.equipment) setSelectedEquipment(rw.equipment);
+                        setView('setup');
+                      }}
+                    >
                       <div className="wk-hub-recent-info">
                         <span className="wk-hub-recent-tags">
                           <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
                           <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
                         </span>
                       </div>
-                      <span className="wk-hub-recent-time">{ago}</span>
-                    </div>
+                      <div className="wk-hub-recent-action">
+                        <span className="wk-hub-recent-time">{ago}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                      </div>
+                    </button>
                   );
                 })}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </main>
+        <CoreBuddyNav active="workouts" />
         {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
       </div>
     );
   }
@@ -1974,7 +1923,7 @@ export default function CoreBuddyWorkouts() {
     const focusLabel = FOCUS_AREAS.find(f => f.key === focusArea)?.label || focusArea;
     const levelLabel = LEVELS.find(l => l.key === level)?.label || level;
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView('randomiser_hub')} aria-label="Go back">
@@ -2030,7 +1979,7 @@ export default function CoreBuddyWorkouts() {
                 {FOCUS_AREAS.map(f => (
                   <button key={f.key}
                     className={`wk-equip-btn${focusArea === f.key ? ' active' : ''}${f.key === 'mix' ? ' wk-mix-btn' : ''}`}
-                    onClick={() => setFocusArea(f.key)}>
+                    onClick={() => { playBeep(); setFocusArea(f.key); }}>
                     <svg className="wk-equip-icon" viewBox="0 0 24 24" fill="currentColor"><path d={f.icon} /></svg>
                     <span>{f.label}</span>
                   </button>
@@ -2043,7 +1992,7 @@ export default function CoreBuddyWorkouts() {
               <h2>Level</h2>
               <div className="wk-level-cards">
                 {LEVELS.map(l => (
-                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => setLevel(l.key)}>
+                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
                     <span className="wk-level-desc">{l.desc}</span>
                   </button>
@@ -2058,7 +2007,7 @@ export default function CoreBuddyWorkouts() {
                 {TIME_OPTIONS.map(t => {
                   const locked = !availableTimeOptions.includes(t);
                   return (
-                    <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}${locked ? ' locked' : ''}`} onClick={() => !locked && setDuration(t)} disabled={locked}>
+                    <button key={t} className={`wk-time-btn${duration === t ? ' active' : ''}${locked ? ' locked' : ''}`} onClick={() => { if (!locked) { playBeep(); setDuration(t); } }} disabled={locked}>
                       <span className="wk-time-num">{t}</span>
                       <span className="wk-time-unit">{locked ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> : 'min'}</span>
                     </button>
@@ -2077,6 +2026,8 @@ export default function CoreBuddyWorkouts() {
                     <button key={eq.key}
                       className={`wk-equip-btn${isSelected ? ' active' : ''}`}
                       onClick={() => {
+                        if (isSelected && selectedEquipment.length === 1) return;
+                        playBeep();
                         setSelectedEquipment(prev => {
                           if (isSelected && prev.length === 1) return prev;
                           return isSelected ? prev.filter(k => k !== eq.key) : [...prev, eq.key];
@@ -2114,7 +2065,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== SPINNING VIEW ====================
   if (view === 'spinning') {
     return (
-      <div className="wk-page wk-page-center" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page wk-page-center">
         <div className="wk-spin-container">
           <div className="wk-spin-ring">
             <svg className="wk-spin-svg" viewBox="0 0 200 200">
@@ -2139,7 +2090,7 @@ export default function CoreBuddyWorkouts() {
     const previewConfig = selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level);
     const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView(selectedMuscleSession?.interval ? 'muscle_sessions' : 'setup')} aria-label="Go back">
@@ -2218,18 +2169,20 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-actions">
             {!selectedMuscleSession?.interval && (
-              <>
-                <button className="wk-btn-secondary" onClick={() => generateWorkout()}>
+              <div className="wk-preview-actions-row">
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => generateWorkout()}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
                   Reshuffle
                 </button>
-                <button className="wk-btn-save" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                {isPremium && (
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                   Save
                 </button>
-              </>
+                )}
+              </div>
             )}
-            <button className="wk-btn-primary" onClick={startWorkout}>
+            <button className="wk-btn-primary wk-btn-full" onClick={startWorkout}>
               Start Workout
             </button>
           </div>
@@ -2266,7 +2219,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== COUNTDOWN VIEW (3-2-1) ====================
   if (view === 'countdown') {
     return (
-      <div className="wk-page wk-page-center wk-page-dark" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page wk-page-center wk-page-dark">
         <div className="wk-countdown-big">
           <span className="wk-countdown-num">{startCountdown}</span>
           <span className="wk-countdown-label">GET READY</span>
@@ -2284,7 +2237,7 @@ export default function CoreBuddyWorkouts() {
       : null;
 
     return (
-      <div className="wk-page wk-page-workout" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page wk-page-workout">
         {/* Video */}
         <div className="wk-video-container">
           {phase === 'work' ? (
@@ -2303,7 +2256,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Back button */}
         <div className="wk-back-row">
-          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView('menu'); }}>
+          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView('randomiser_hub'); }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             Back
           </button>
@@ -2342,7 +2295,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Controls */}
         <div className="wk-controls">
-          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView('menu'); }}>
+          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView('randomiser_hub'); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
           </button>
           <button className="wk-ctrl-btn wk-ctrl-pause" onClick={() => setIsPaused(!isPaused)}>
@@ -2378,7 +2331,7 @@ export default function CoreBuddyWorkouts() {
               hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDismissStart={() => setView('menu')}
+              onDismissStart={() => setView('randomiser_hub')}
               onDone={() => { setShowFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
             {/* Save workout prompt on completion */}
@@ -2423,10 +2376,10 @@ export default function CoreBuddyWorkouts() {
     const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
     const sessions = MUSCLE_GROUP_SESSIONS[selectedMuscleGroup] || [];
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('menu')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => setView('randomiser_hub')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -2492,7 +2445,7 @@ export default function CoreBuddyWorkouts() {
     if (!session) return null;
     const groupData = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup);
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView('muscle_sessions')} aria-label="Go back">
@@ -2620,7 +2573,7 @@ export default function CoreBuddyWorkouts() {
         : 'Log Set \u2192 Complete';
 
     return (
-      <div className="wk-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="wk-page">
         {/* Progress bar */}
         <div className="mg-session-progress">
           <div className="mg-session-progress-fill" style={{ width: `${progressPct}%` }} />
@@ -2758,14 +2711,11 @@ export default function CoreBuddyWorkouts() {
         {/* Hold-to-finish overlay */}
         {showMgFinish && (() => {
           const totalSets = mgLogs.reduce((sum, l) => sum + l.sets.length, 0);
-          const totalVolume = mgLogs.reduce((sum, l) =>
-            sum + l.sets.reduce((s, set) => s + ((set.weight || 0) * (set.reps || 0)), 0), 0);
           const groupLabel = MUSCLE_GROUPS.find(g => g.key === selectedMuscleGroup)?.label || '';
           const mgStats = [
             { value: mgLogs.length, label: 'Exercises' },
             { value: totalSets, label: 'Sets' },
           ];
-          if (totalVolume > 0) mgStats.push({ value: Math.round(totalVolume).toLocaleString(), label: 'Volume (kg)' });
           return (
             <WorkoutCelebration
               title={`${groupLabel} Complete!`}
@@ -2774,88 +2724,15 @@ export default function CoreBuddyWorkouts() {
               hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDismissStart={() => setView('menu')}
-              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); setMgBadgeCelebration(null); }}
+              onDismissStart={() => setView('randomiser_hub')}
+              onDone={() => { setShowMgFinish(false); setSelectedMuscleSession(null); setSelectedMuscleGroup(null); }}
             />
           );
         })()}
 
-        {/* Badge celebration overlay */}
-        {mgBadgeCelebration && (
-          <div className="mg-badge-celebration" onClick={() => setMgBadgeCelebration(null)}>
-            <div className="mg-badge-celebration-card">
-              <div className="mg-badge-celebration-icon">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="#ffc107"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </div>
-              <h3 className="mg-badge-celebration-title">
-                {mgBadgeCelebration.badges.length === 1 ? 'Badge Earned!' : `${mgBadgeCelebration.badges.length} Badges Earned!`}
-              </h3>
-              <div className="mg-badge-celebration-list">
-                {mgBadgeCelebration.badges.map((badge, i) => (
-                  <div key={i} className="mg-badge-celebration-item">
-                    {badge.type === 'pb_target'
-                      ? `${badge.exercise} \u2014 ${badge.targetWeight}kg`
-                      : badge.label}
-                  </div>
-                ))}
-              </div>
-              <div className="mg-badge-share-row">
-                <button className="mg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadgeJ = mgBadgeCelebration.badges[0];
-                  const badgeLabelsJ = mgBadgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDefJ = BADGE_DEFS.find(d => d.id === firstBadgeJ?.id) || BADGE_DEFS.find(d => d.name === firstBadgeJ?.label);
-                  await shareToJourney({
-                    type: 'badge_earned',
-                    title: badgeLabelsJ.length === 1 ? badgeLabelsJ[0] : `${badgeLabelsJ.length} Badges Earned!`,
-                    badges: badgeLabelsJ,
-                    badgeDesc: badgeDefJ?.desc,
-                  });
-                  showToast('Posted to Journey!', 'success');
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  Journey
-                </button>
-                <button className="mg-badge-share-btn" onClick={async (e) => {
-                  e.stopPropagation();
-                  const firstBadge = mgBadgeCelebration.badges[0];
-                  const badgeLabels = mgBadgeCelebration.badges.map(b =>
-                    b.type === 'pb_target' ? `PB Target Hit: ${b.exercise} \u2014 ${b.targetWeight}kg` : b.label
-                  );
-                  const badgeDef = BADGE_DEFS.find(d => d.id === firstBadge?.id) || BADGE_DEFS.find(d => d.name === firstBadge?.label);
-                  const shareText = `Badge Earned! ${badgeLabels.join(', ')}\n#MindCoreFitness`;
-                  try {
-                    const blob = await generateShareImage({
-                      type: 'badge',
-                      title: badgeLabels.length === 1 ? badgeLabels[0] : 'Badges Earned!',
-                      badges: badgeLabels,
-                      badgeImage: badgeDef?.img,
-                      badgeDesc: badgeDef?.desc,
-                    });
-                    if (navigator.share && navigator.canShare?.({ files: [new File([blob], 'badge.png', { type: 'image/png' })] })) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText, files: [new File([blob], 'badge.png', { type: 'image/png' })] });
-                    } else if (navigator.share) {
-                      await navigator.share({ title: 'Mind Core Fitness', text: shareText });
-                    } else {
-                      await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success');
-                    }
-                  } catch {
-                    try { await navigator.clipboard.writeText(shareText); showToast('Copied!', 'success'); } catch {}
-                  }
-                }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  Share
-                </button>
-              </div>
-              <button className="mg-badge-celebration-dismiss">Tap to dismiss</button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
 
-  return null;
+  return <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />;
 }

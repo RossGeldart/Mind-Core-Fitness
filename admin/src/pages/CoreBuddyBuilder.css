@@ -279,6 +279,7 @@
   border: 1px solid var(--border-color);
   border-radius: 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-glow);
 }
 
 .bldr-widget-card.active {

@@ -7,61 +7,43 @@ import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import './Onboarding.css';
 
-import featureProfile from '../assets/feature_profile.PNG';
-import featureProfileTabs from '../assets/feature_profile_tabs.PNG';
-import featurePickAProgramme from '../assets/feature_pickaprogramme.PNG';
-import featureMuscleGroup from '../assets/feature_musclegroup.PNG';
-import featureRandomiseSelection from '../assets/feature_randomise_selection.PNG';
-import featureRandomiseGenerated from '../assets/feature_randomise_generated_workout.PNG';
-import featureWorkoutView from '../assets/feature_workout_view.PNG';
-import featureNutritionView from '../assets/feature_nutritionview.PNG';
-import featureJourneyPosts from '../assets/feature_journey_posts.PNG';
+import onboardSelectOptions from '../assets/onboard-select-options.PNG';
+import onboardGeneratedWorkout from '../assets/onboard-generated-workout.PNG';
+import onboardWorkoutView from '../assets/onboard-workout-view.PNG';
+import onboardTrackFoods from '../assets/onboard-track-foods.PNG';
+import onboardHabits from '../assets/onboard-habits.PNG';
+import onboardProfileView from '../assets/onboard-profile-view.PNG';
 
 const FEATURES = [
   {
-    title: 'Your Profile',
-    desc: 'Set up your personal profile to track your fitness journey, view your stats, and showcase your progress.',
-    image: featureProfile,
+    title: 'Build Your Workout',
+    desc: 'Choose your equipment, time, focus area and difficulty — then let Core Buddy generate a workout tailored to you.',
+    image: onboardSelectOptions,
   },
   {
-    title: 'Profile Tabs',
-    desc: 'Explore your achievements, personal bests, and activity history — all organised in one place.',
-    image: featureProfileTabs,
+    title: 'Your Workout, Ready to Go',
+    desc: 'Your personalised workout is generated instantly. Not feeling it? Hit reshuffle for a new one, or save it for later.',
+    image: onboardGeneratedWorkout,
   },
   {
-    title: 'Pick a Programme',
-    desc: 'Choose from structured 4, 8, or 12-week programmes designed by professionals to match your goals.',
-    image: featurePickAProgramme,
+    title: 'Follow Along with Video',
+    desc: 'Every exercise comes with a video demo so you can nail your form. Track sets, reps and weights as you go.',
+    image: onboardWorkoutView,
   },
   {
-    title: 'Target Muscle Groups',
-    desc: 'Select specific muscle groups to focus on and get workouts tailored to exactly what you want to train.',
-    image: featureMuscleGroup,
+    title: 'Track Your Nutrition',
+    desc: 'Log meals with our barcode scanner, save favourites for quick logging, and use copy day to repeat a good day of eating.',
+    image: onboardTrackFoods,
   },
   {
-    title: 'Randomise Your Workout',
-    desc: 'Pick your preferences — focus area, difficulty, and duration — and let Core Buddy generate a workout for you.',
-    image: featureRandomiseSelection,
+    title: 'Build Better Habits',
+    desc: 'Set daily habits and track your streaks. Small wins every day add up to big results.',
+    image: onboardHabits,
   },
   {
-    title: 'Generated Workout',
-    desc: 'Your personalised workout is ready to go. Follow along with exercises, sets, and reps all laid out for you.',
-    image: featureRandomiseGenerated,
-  },
-  {
-    title: 'Workout View',
-    desc: 'Track your progress in real time as you work through each exercise with a clear, easy-to-follow layout.',
-    image: featureWorkoutView,
-  },
-  {
-    title: 'Nutrition Tracking',
-    desc: 'Log meals, scan barcodes, and track your macros and water intake to stay on top of your daily targets.',
-    image: featureNutritionView,
-  },
-  {
-    title: 'Journey Posts',
-    desc: 'Share updates, celebrate wins, and connect with your Core Buddies through the community feed.',
-    image: featureJourneyPosts,
+    title: 'Your Profile & Community',
+    desc: 'Track your stats, climb the leaderboards, and connect with your Core Buddies — all from your profile dashboard.',
+    image: onboardProfileView,
   },
 ];
 
@@ -98,6 +80,13 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Block unverified self-signup users — send them back to the verification screen
+  useEffect(() => {
+    if (!authLoading && currentUser && !currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
+      navigate('/signup', { replace: true });
+    }
+  }, [authLoading, currentUser, clientData, navigate]);
+
   // If the user already has a paid subscription (set by Stripe webhook),
   // or is returning from a successful Stripe checkout, skip to the welcome form.
   const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
@@ -109,6 +98,13 @@ export default function Onboarding() {
   // Subscription
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [checkoutError, setCheckoutError] = useState(null);
+
+  // Clear loading state when user navigates back from Stripe (bfcache restore)
+  useEffect(() => {
+    const onPageShow = (e) => { if (e.persisted) setCheckoutLoading(null); };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   // Welcome form
   const [dob, setDob] = useState('');
@@ -302,6 +298,19 @@ export default function Onboarding() {
   // ── Step 1: Subscription Picker ──
   if (step === 1) {
     const handlePlanSelect = async (plan) => {
+      if (typeof window.fbq === 'function') {
+        if (plan === 'free') {
+          fbq('track', 'Lead', { content_name: 'Core Buddy Free', content_category: 'Fitness App' });
+        } else {
+          fbq('track', 'InitiateCheckout', {
+            content_name: `Core Buddy ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+            content_category: 'Fitness App',
+            value: plan === 'annual' ? 99.99 : 9.99,
+            currency: 'GBP',
+          });
+        }
+      }
+
       if (plan === 'free') {
         setStep(2);
         return;
@@ -321,23 +330,33 @@ export default function Onboarding() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             priceId: STRIPE_PRICES[plan],
-            clientId: clientData?.id,
-            uid: currentUser?.uid,
-            email: currentUser?.email,
+            clientId: clientData.id,
+            uid: currentUser.uid,
+            email: currentUser.email,
           }),
         });
+
+        if (!res.ok) {
+          const text = await res.text();
+          let msg;
+          try { msg = JSON.parse(text).error; } catch { msg = text; }
+          setCheckoutError(msg || `Server error (${res.status})`);
+          setCheckoutLoading(null);
+          return;
+        }
+
         const data = await res.json();
         if (data.url) {
           // Persist clientId so we can recover after Stripe redirect
           try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
           window.location.href = data.url;
         } else {
-          setCheckoutError(data.error || 'Something went wrong');
+          setCheckoutError('No checkout URL returned — please try again');
+          setCheckoutLoading(null);
         }
       } catch (err) {
         console.error('Checkout error:', err);
-        setCheckoutError('Unable to start checkout');
-      } finally {
+        setCheckoutError('Unable to reach checkout — check your connection');
         setCheckoutLoading(null);
       }
     };
@@ -367,23 +386,20 @@ export default function Onboarding() {
                 <span className="ob-plan-amount">0</span>
               </div>
               <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#9889;</span> Randomiser workouts (5 &amp; 10 min)</li>
-                <li><span className="ob-plan-feat-icon">&#127947;</span> 1 workout per week</li>
+                <li><span className="ob-plan-feat-icon">&#127947;</span> 2 workouts per week</li>
+                <li><span className="ob-plan-feat-icon">&#9889;</span> Limited time selection (5 &amp; 10 min)</li>
                 <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
               </ul>
               <div className="ob-plan-cta-outline">Continue Free</div>
             </button>
 
             {/* Monthly */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
+            <button className="ob-plan-card" onClick={() => handlePlanSelect('monthly')} disabled={!!checkoutLoading}>
               <div className="ob-plan-badge">Most Popular</div>
               <div className="ob-plan-name">Monthly</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">19.99</span>
+                <span className="ob-plan-amount">9.99</span>
                 <span className="ob-plan-period">/month</span>
               </div>
               <ul className="ob-plan-features">
@@ -391,75 +407,26 @@ export default function Onboarding() {
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
               </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
+              <div className="ob-plan-cta">{checkoutLoading === 'monthly' ? 'Loading...' : 'Start Free Trial'}</div>
+            </button>
 
             {/* Annual */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
+            <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
               <div className="ob-plan-badge">Best Value — Save 17%</div>
               <div className="ob-plan-name">Annual</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">199.99</span>
+                <span className="ob-plan-amount">99.99</span>
                 <span className="ob-plan-period">/year</span>
               </div>
+              <div className="ob-plan-price-sub">Just £8.33/month</div>
               <ul className="ob-plan-features">
                 <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>
                 <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
               </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
-
-            {/* Core Buddy AI section header */}
-            <div className="ob-plan-divider">
-              <span className="ob-plan-divider-line" />
-              <span className="ob-plan-divider-text">Core Buddy AI</span>
-              <span className="ob-plan-divider-line" />
-            </div>
-
-            {/* Core Buddy AI Monthly */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching</div>
-              <div className="ob-plan-name">AI Monthly</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">34.99</span>
-                <span className="ob-plan-period">/month</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#10060;</span> Cancel anytime</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
-
-            {/* Core Buddy AI Annual */}
-            <div className="ob-plan-card ob-plan-coming-soon">
-              <div className="ob-plan-coming-soon-overlay">
-                <span>Coming Soon</span>
-              </div>
-              <div className="ob-plan-badge">AI Coaching — Best Value</div>
-              <div className="ob-plan-name">AI Annual</div>
-              <div className="ob-plan-price">
-                <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">299.99</span>
-                <span className="ob-plan-period">/year</span>
-              </div>
-              <ul className="ob-plan-features">
-                <li><span className="ob-plan-feat-icon">&#129302;</span> AI personal coaching</li>
-                <li><span className="ob-plan-feat-icon">&#128275;</span> All Premium features</li>
-                <li><span className="ob-plan-feat-icon">&#11088;</span> Best value</li>
-              </ul>
-              <div className="ob-plan-cta">Coming Soon</div>
-            </div>
+              <div className="ob-plan-cta ob-plan-cta-featured">{checkoutLoading === 'annual' ? 'Loading...' : 'Start Free Trial'}</div>
+            </button>
           </div>
 
           {checkoutError && <p className="ob-error">{checkoutError}</p>}

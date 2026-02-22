@@ -6,7 +6,7 @@
     <title>1-2-1 Personal Training | Mind Core Fitness - Elgin</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Personal training in Elgin, Scotland. 1-2-1 coaching sessions focused on strength, mindset, and support. Train in a private, fully-equipped studio with Mind Core Fitness.">
+    <meta name="description" content="1-2-1 personal training in Elgin, Scotland. Strength-focused coaching in a private studio. Build confidence and real results with Mind Core Fitness.">
     <meta name="keywords" content="personal training Elgin, 1-2-1 coaching, personal trainer Scotland, strength training, fitness coaching, Mind Core Fitness">
     <meta name="author" content="Mind Core Fitness">
     <meta name="robots" content="index, follow">
@@ -101,6 +101,11 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    fbq('track', 'ViewContent', {
+        content_name: 'Personal Training',
+        content_category: 'Personal Training',
+        content_type: 'product'
+    });
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -185,16 +190,18 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 28px;
+            gap: 8px;
         }
 
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
-            transition: color 0.2s;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
         .nav-links a:hover {
@@ -210,7 +217,8 @@
         .nav-back {
             padding: 8px 16px;
             color: rgba(255, 255, 255, 0.7);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
             transition: color 0.2s;
@@ -224,7 +232,7 @@
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 500;
             font-size: 0.8rem;
             text-decoration: none;
@@ -250,6 +258,10 @@
         .nav-back:focus:not(:focus-visible),
         .nav-cta:focus:not(:focus-visible) {
             outline: none;
+        }
+
+        .mobile-social-links {
+            display: none;
         }
 
         /* Mobile Menu */
@@ -1691,7 +1703,7 @@
                 -webkit-backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 20px;
-                gap: 16px;
+                gap: 0;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             }
@@ -1701,8 +1713,15 @@
             }
 
             .nav-links a {
-                padding: 12px 0;
+                padding: 14px 16px;
                 font-size: 1rem;
+                border-radius: 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.05);
             }
 
             .mobile-menu-toggle {
@@ -2066,6 +2085,7 @@
     <link rel="stylesheet" href="social-share.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Montserrat,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
     <!-- Navigation -->
     <nav class="nav">
         <a href="/" class="nav-logo">
@@ -2073,9 +2093,9 @@
                     <source srcset="Logo.webp" type="image/webp">
                     <img src="Logo.PNG" alt="Mind Core Fitness">
                 </picture>
-            <span>MIND CORE FITNESS</span>
         </a>
         <div class="nav-links">
+            <a href="/">Home</a>
             <a href="#about">About</a>
             <a href="#pillars">Approach</a>
             <a href="#pricing">Pricing</a>
@@ -2108,7 +2128,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="main-content">
         <div class="container">
             <div class="hero-content">
                 <span class="hero-label">1-2-1 In-Person Coaching</span>
@@ -2136,7 +2156,7 @@
             <div class="hero-image">
                 <picture>
                     <source srcset="Circuit 3.webp" type="image/webp">
-                    <img src="Circuit 3.jpg" alt="Personal Training Session">
+                    <img loading="lazy" src="Circuit 3.jpg" alt="Personal Training Session">
                 </picture>
             </div>
         </div>
@@ -2221,7 +2241,7 @@
                 <div class="about-image fade-in">
                     <picture>
                         <source srcset="Client Bond.webp" type="image/webp">
-                        <img src="Client Bond.jpg" alt="Ross - Mind Core Fitness">
+                        <img loading="lazy" src="Client Bond.jpg" alt="Ross - Mind Core Fitness">
                     </picture>
                     <div class="about-image-badge">
                         <strong>200+</strong>
@@ -2275,37 +2295,37 @@
                 <div class="gallery-item large slide-up">
                     <picture>
                         <source srcset="Gym Studio 1.webp" type="image/webp">
-                        <img src="Gym Studio 1.jpg" alt="Training Studio">
+                        <img loading="lazy" src="Gym Studio 1.jpg" alt="Training Studio">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 2.webp" type="image/webp">
-                        <img src="Gym Studio 2.jpg" alt="Equipment">
+                        <img loading="lazy" src="Gym Studio 2.jpg" alt="Equipment">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 3.webp" type="image/webp">
-                        <img src="Gym Studio 3.jpg" alt="Training Area">
+                        <img loading="lazy" src="Gym Studio 3.jpg" alt="Training Area">
                     </picture>
                 </div>
                 <div class="gallery-item scale-in">
                     <picture>
                         <source srcset="Gym Studio 4.webp" type="image/webp">
-                        <img src="Gym Studio 4.jpg" alt="Weights">
+                        <img loading="lazy" src="Gym Studio 4.jpg" alt="Weights">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 5.webp" type="image/webp">
-                        <img src="Gym Studio 5.jpg" alt="Functional Area">
+                        <img loading="lazy" src="Gym Studio 5.jpg" alt="Functional Area">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 6.webp" type="image/webp">
-                        <img src="Gym Studio 6.jpg" alt="Studio Space">
+                        <img loading="lazy" src="Gym Studio 6.jpg" alt="Studio Space">
                     </picture>
                 </div>
             </div>
@@ -2357,7 +2377,7 @@
                 <div class="expect-image fade-in">
                     <picture>
                         <source srcset="Circuit 2.webp" type="image/webp">
-                        <img src="Circuit 2.jpg" alt="Training Session">
+                        <img loading="lazy" src="Circuit 2.jpg" alt="Training Session">
                     </picture>
                 </div>
             </div>
@@ -2378,7 +2398,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"So far I have lost 25 kilos and still going. I find that Ross is a good motivator and pushing me onwards to better and more physical work outs even at my tender age of 53. I can only praise on the way Ross trains me and the monthly weigh ins which for me is a very strong motivator to get to my target."</p>
                     <div class="testimonial-author">
-                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <img loading="lazy" src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
                         <div class="testimonial-author-info">
                             <strong>Scott Grant</strong>
                             <span>Lost 25 Kilos</span>
@@ -2391,7 +2411,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Emily Paterson.webp" type="image/webp">
-                            <img src="Emily Paterson.jpg" alt="Emily">
+                            <img loading="lazy" src="Emily Paterson.jpg" alt="Emily">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Emily Paterson</strong>
@@ -2405,7 +2425,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Baz Duncan.webp" type="image/webp">
-                            <img src="Baz Duncan.jpg" alt="Lee">
+                            <img loading="lazy" src="Baz Duncan.jpg" alt="Lee">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
@@ -2417,7 +2437,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"The sessions were intense and challenging at times, but Ross kept me going. He pushed me just enough to keep coming back each week. Even on the days when my mental health made things tough, Ross was always there to reassure me. This didn't just make me feel good physically — it made a huge difference mentally too."</p>
                     <div class="testimonial-author">
-                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
+                        <img loading="lazy" src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
                         <div class="testimonial-author-info">
                             <strong>Christopher Snedden Murdoch</strong>
                             <span>Mental & Physical Progress</span>
@@ -2519,7 +2539,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Circuit 3.webp" type="image/webp">
-                            <img src="Circuit 3.jpg" alt="4 Week Fit Starter">
+                            <img loading="lazy" src="Circuit 3.jpg" alt="4 Week Fit Starter">
                         </picture>
                     </div>
                     <h3 class="pricing-name">4 Week Fit Starter</h3>
@@ -2541,7 +2561,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Gym Studio 2.webp" type="image/webp">
-                            <img src="Gym Studio 2.jpg" alt="12 Week Strength Builder">
+                            <img loading="lazy" src="Gym Studio 2.jpg" alt="12 Week Strength Builder">
                         </picture>
                     </div>
                     <h3 class="pricing-name">12-Week Strength Builder</h3>
@@ -2564,7 +2584,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Gym Studio 4.webp" type="image/webp">
-                            <img src="Gym Studio 4.jpg" alt="24 Week Performance Phase">
+                            <img loading="lazy" src="Gym Studio 4.jpg" alt="24 Week Performance Phase">
                         </picture>
                     </div>
                     <h3 class="pricing-name">24-Week Performance Phase</h3>
@@ -2645,7 +2665,7 @@
                 <div class="location-image fade-in">
                     <picture>
                         <source srcset="Gym 2.webp" type="image/webp">
-                        <img src="Gym 2.jpg" alt="Training Location">
+                        <img loading="lazy" src="Gym 2.jpg" alt="Training Location">
                     </picture>
                 </div>
             </div>
@@ -2718,7 +2738,7 @@
                             <select id="interest" name="interest">
                                 <option value="1-2-1 Personal Training">1-2-1 Personal Training</option>
                                 <option value="Online Coaching">Online Coaching</option>
-                                <option value="Free Challenge">Free 30 Day Challenge</option>
+                                <option value="Core Buddy">Core Buddy</option>
                                 <option value="General Enquiry">General Enquiry</option>
                             </select>
                         </div>
@@ -2740,7 +2760,7 @@
         <div class="container">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo">
             </picture>
             <h2>Your Transformation Starts Here</h2>
             <p>Stop waiting for the perfect time. Get in touch today and take the first step towards building strength, discipline, and the body you deserve.</p>
