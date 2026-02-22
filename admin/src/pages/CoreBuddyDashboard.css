@@ -727,6 +727,7 @@
   text-align: center;
   padding: 28px 18px 18px;
   min-height: 120px;
+  border: 3px solid var(--color-primary);
 }
 
 .cb-hero-title {
