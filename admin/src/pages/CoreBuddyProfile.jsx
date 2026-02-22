@@ -65,8 +65,15 @@ export default function CoreBuddyProfile() {
   // Stats state
   const [statsLoading, setStatsLoading] = useState(true);
   const [totalWorkouts, setTotalWorkouts] = useState(0);
-const [streakWeeks, setStreakWeeks] = useState(0);
+  const [streakWeeks, setStreakWeeks] = useState(0);
   const [habitStreak, setHabitStreak] = useState(0);
+
+  // Badges state
+  const [earnedBadgeIds, setEarnedBadgeIds] = useState(new Set());
+  const [selectedBadge, setSelectedBadge] = useState(null);
+
+  // Remove buddy confirmation
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   // @ Mention state
   const [allClients, setAllClients] = useState([]);
@@ -196,6 +203,17 @@ const [streakWeeks, setStreakWeeks] = useState(0);
         }
         if (!cancelled) setHabitStreak(hStreak);
 
+        // Fetch badges
+        try {
+          const badgeSnap = await getDoc(doc(db, 'coreBuddyBadges', userId));
+          if (!cancelled && badgeSnap.exists()) {
+            const earned = badgeSnap.data().earned || [];
+            setEarnedBadgeIds(new Set(earned.map(b => b.id)));
+          }
+        } catch (err) {
+          console.error('Error loading buddy badges:', err);
+        }
+
       } catch (err) {
         console.error('Error loading buddy stats:', err);
       } finally {
@@ -319,6 +337,7 @@ const [streakWeeks, setStreakWeeks] = useState(0);
       const pid = pairId(clientData.id, userId);
       await deleteDoc(doc(db, 'buddies', pid));
       setBuddyStatus('none');
+      setShowRemoveConfirm(false);
       showToast('Buddy removed', 'info');
     } catch (err) {
       console.error(err);
@@ -553,6 +572,15 @@ const [streakWeeks, setStreakWeeks] = useState(0);
       <main className="prf-main">
         {/* Hero */}
         <div className="prf-hero">
+          {/* Subtle manage buddy menu (top-right) */}
+          {buddyStatus === 'buddy' && (
+            <div className="prf-manage-wrap">
+              <button className="prf-manage-btn" onClick={() => setShowRemoveConfirm(true)} aria-label="Manage buddy">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+              </button>
+            </div>
+          )}
+
           <div className="prf-avatar-lg">
             {profile.photoURL ? (
               <img src={profile.photoURL} alt={profile.name} />
@@ -562,7 +590,7 @@ const [streakWeeks, setStreakWeeks] = useState(0);
           </div>
           <h1 className="prf-name">{profile.name}</h1>
 
-          {/* Buddy action */}
+          {/* Buddy action — only for non-buddy states */}
           <div className="prf-buddy-action">
               {buddyStatus === 'none' && (
                 <button className="prf-btn prf-btn-primary" onClick={sendRequest} disabled={actionLoading}>
@@ -590,9 +618,10 @@ const [streakWeeks, setStreakWeeks] = useState(0);
                 </div>
               )}
               {buddyStatus === 'buddy' && (
-                <button className="prf-btn prf-btn-danger" onClick={removeBuddy} disabled={actionLoading}>
-                  {actionLoading ? <div className="prf-btn-spinner" /> : 'Remove Buddy'}
-                </button>
+                <span className="prf-buddy-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                  Buddies
+                </span>
               )}
           </div>
         </div>
@@ -628,6 +657,24 @@ const [streakWeeks, setStreakWeeks] = useState(0);
                 </div>
               </div>
             )}
+
+          {/* Badges Carousel */}
+          {(() => {
+            const earned = BADGE_DEFS.filter(b => earnedBadgeIds.has(b.id));
+            return earned.length > 0 ? (
+              <div className="prf-section prf-badges-section">
+                <h2 className="prf-section-title">{`${profile.name?.split(' ')[0]}'s Badges`} <span className="prf-badges-tally">{earned.length}/{BADGE_DEFS.length}</span></h2>
+                <div className="prf-badges-carousel">
+                  {earned.map(badge => (
+                    <button key={badge.id} className="prf-carousel-badge" onClick={() => setSelectedBadge(badge)}>
+                      <img src={badge.img} alt={badge.name} className="prf-carousel-badge-img" />
+                      <span className="prf-carousel-badge-name">{badge.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null;
+          })()}
 
           </>
         )}
@@ -816,6 +863,37 @@ const [streakWeeks, setStreakWeeks] = useState(0);
       </main>
 
       <CoreBuddyNav />
+
+      {/* Badge overlay */}
+      {selectedBadge && (
+        <div className="prf-badge-overlay" onClick={() => setSelectedBadge(null)}>
+          <div className="prf-badge-overlay-content" onClick={e => e.stopPropagation()}>
+            <img src={selectedBadge.img} alt={selectedBadge.name} className="prf-badge-overlay-img" />
+            <h3 className="prf-badge-overlay-name">{selectedBadge.name}</h3>
+            <p className="prf-badge-overlay-desc">{selectedBadge.desc}</p>
+            <button className="prf-badge-overlay-close" onClick={() => setSelectedBadge(null)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Remove buddy confirmation */}
+      {showRemoveConfirm && (
+        <div className="prf-confirm-overlay" onClick={() => setShowRemoveConfirm(false)}>
+          <div className="prf-confirm-card" onClick={e => e.stopPropagation()}>
+            <div className="prf-confirm-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="18" y1="11" x2="23" y2="11"/></svg>
+            </div>
+            <h3 className="prf-confirm-title">Remove Buddy</h3>
+            <p className="prf-confirm-text">Are you sure you want to remove {profile.name?.split(' ')[0]} as a buddy?</p>
+            <div className="prf-confirm-actions">
+              <button className="prf-confirm-btn prf-confirm-cancel" onClick={() => setShowRemoveConfirm(false)}>Cancel</button>
+              <button className="prf-confirm-btn prf-confirm-remove" onClick={removeBuddy} disabled={actionLoading}>
+                {actionLoading ? <div className="prf-btn-spinner dark" /> : 'Remove'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
