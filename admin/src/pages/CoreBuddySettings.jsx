@@ -140,7 +140,7 @@ export default function CoreBuddySettings() {
   }
 
   return (
-    <div className="cb-settings" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="cb-settings">
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
