@@ -1425,7 +1425,7 @@
 
 .nut-cal-day.selected {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 700;
 }
 
