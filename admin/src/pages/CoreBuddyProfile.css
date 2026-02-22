@@ -890,7 +890,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .journey-compose {
@@ -1093,7 +1093,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .journey-post {

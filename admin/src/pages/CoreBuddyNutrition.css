@@ -292,7 +292,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-calc-form {
@@ -524,7 +524,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 24px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-calc-results {
@@ -607,7 +607,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 20px 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-rings-grid {
@@ -752,7 +752,7 @@
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-meal-pill {
@@ -829,7 +829,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-meal-card {
@@ -1336,7 +1336,7 @@
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-glow);
 }
 
 .nut-cal-header {
@@ -1465,7 +1465,7 @@
   border-radius: 14px;
   padding: 30px 20px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-glow);
 }
 
 [data-theme="dark"] .nut-log-empty {

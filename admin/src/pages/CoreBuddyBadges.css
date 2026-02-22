@@ -84,6 +84,7 @@
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-glow);
 }
 .bdg-item:active {
   transform: scale(0.96);
