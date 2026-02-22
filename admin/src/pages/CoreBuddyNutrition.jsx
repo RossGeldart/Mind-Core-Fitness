@@ -1376,6 +1376,7 @@ export default function CoreBuddyNutrition() {
                     {barcodeLooking ? '...' : 'Look Up'}
                   </button>
                 </div>
+                <p className="nut-off-credit">Food data powered by <a href="https://openfoodfacts.org" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
               </div>
             )}
 
@@ -1491,6 +1492,7 @@ export default function CoreBuddyNutrition() {
                     <p className="nut-search-empty">No results found. Try a different search or use manual entry.</p>
                   )}
                 </div>
+                <p className="nut-off-credit">Food data powered by <a href="https://openfoodfacts.org" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
               </div>
             )}
 

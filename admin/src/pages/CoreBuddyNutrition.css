@@ -1809,6 +1809,21 @@
   cursor: not-allowed;
 }
 
+/* Open Food Facts attribution */
+.nut-off-credit {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: 16px;
+  opacity: 0.7;
+}
+
+.nut-off-credit a {
+  color: var(--text-tertiary);
+  text-decoration: underline;
+}
+
 /* Product Result */
 .nut-product-result {
   text-align: center;
