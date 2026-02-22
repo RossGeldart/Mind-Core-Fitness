@@ -26,7 +26,8 @@ export function ThemeProvider({ children }) {
   }, [isDark]);
 
   useEffect(() => {
-    // Store accent preference (applied per-page by Core Buddy components)
+    // Apply accent globally and persist
+    document.documentElement.setAttribute('data-accent', accent);
     localStorage.setItem('accent', accent);
   }, [accent]);
 
