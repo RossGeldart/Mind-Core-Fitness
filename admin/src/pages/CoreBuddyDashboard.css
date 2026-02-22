@@ -2043,3 +2043,231 @@
   animation: celebrationTextSlide 0.6s ease-out 1.2s both;
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* ==================== DOPAMINE UX ENHANCEMENTS ==================== */
+
+/* 1. GOAL GRADIENT — stat rings escalate visually near completion */
+@keyframes statNearPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb), 0.5)); }
+}
+
+.cb-stat-near {
+  animation: statNearPulse 2s ease-in-out infinite;
+}
+
+.cb-fill-near {
+  stroke: var(--color-primary) !important;
+  filter: brightness(1.2);
+}
+
+@keyframes statCompleteGlow {
+  0% { filter: drop-shadow(0 0 0 transparent); }
+  40% { filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.6)); }
+  100% { filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb), 0.3)); }
+}
+
+.cb-stat-complete {
+  animation: statCompleteGlow 1s ease-out forwards;
+}
+
+.cb-fill-complete {
+  stroke: #4CAF50 !important;
+}
+
+.cb-val-complete {
+  color: #4CAF50 !important;
+}
+
+/* 2. PROGRESSIVE TENSION — habit dots warm up as more complete */
+@keyframes dotWarmPulse {
+  0%, 100% { box-shadow: 0 0 0 transparent; }
+  50% { box-shadow: 0 0 6px rgba(var(--color-primary-rgb), var(--glow-intensity, 0.3)); }
+}
+
+.cb-habit-dots .cb-habit-dot:not(.done) {
+  animation: dotWarmPulse 2.5s ease-in-out infinite;
+  animation-delay: calc(var(--glow-intensity, 0) * 0.5s);
+  border-color: rgba(var(--color-primary-rgb), calc(0.25 + var(--glow-intensity, 0) * 0.4));
+  background: rgba(var(--color-primary-rgb), calc(0.15 + var(--glow-intensity, 0) * 0.15));
+}
+
+.cb-habits-all-done .cb-habit-dot.done {
+  box-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.5);
+  animation: habitAllDonePop 0.4s ease-out;
+}
+
+@keyframes habitAllDonePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* 3. LEADERBOARD RANK MOVEMENT */
+.cb-lb-movement {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.5rem;
+  font-weight: 700;
+  margin-left: 2px;
+  display: inline-block;
+  animation: rankMoveFadeIn 0.5s ease-out;
+}
+
+.cb-lb-up {
+  color: #4CAF50;
+}
+
+.cb-lb-down {
+  color: #f44336;
+}
+
+@keyframes rankMoveFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. COMPLETION SIGNALING — feature cards show done state */
+.cb-card-done {
+  border-color: rgba(76, 175, 80, 0.25) !important;
+}
+
+.cb-card-done::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cardDoneCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2;
+  /* Checkmark via SVG background */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+
+.cb-card-done .cb-card-arrow {
+  display: none;
+}
+
+@keyframes cardDoneCheck {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+[data-theme="dark"] .cb-card-done {
+  background: linear-gradient(135deg, var(--bg-card), rgba(76, 175, 80, 0.04));
+  border-color: rgba(76, 175, 80, 0.15) !important;
+}
+
+[data-theme="light"] .cb-card-done {
+  background: linear-gradient(135deg, var(--bg-card), rgba(76, 175, 80, 0.04));
+}
+
+/* 7. WEEKLY TARGET CELEBRATION */
+.cb-weekly-celebration {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  animation: weeklyCelebSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 16px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.cb-weekly-celebration-card {
+  background: var(--bg-card-elevated, #1e1e30);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.cb-weekly-celebration-icon {
+  display: inline-block;
+  animation: weeklyStarSpin 0.6s ease-out;
+}
+
+@keyframes weeklyStarSpin {
+  from { transform: rotate(-180deg) scale(0); }
+  to { transform: rotate(0deg) scale(1); }
+}
+
+.cb-weekly-celebration-card h4 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 8px 0 4px;
+}
+
+.cb-weekly-celebration-card p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+@keyframes weeklyCelebSlideDown {
+  from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* 8. RETURN TRIGGERS — milestone hint */
+.cb-milestone-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin: 0 auto 16px;
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.15);
+  border-radius: 20px;
+  max-width: fit-content;
+  animation: fadeSlideUp 0.6s ease-out both;
+  animation-delay: 0.6s;
+}
+
+.cb-milestone-hint svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.cb-milestone-hint span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Streak flame icon */
+.cb-streak-flame {
+  vertical-align: middle;
+  margin-right: 1px;
+  animation: flameFlicker 1.5s ease-in-out infinite;
+}
+
+@keyframes flameFlicker {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.1); }
+}
+
+/* Toast success styling */
+.toast-notification.success {
+  border-left: 3px solid #4CAF50;
+}
+
+.toast-notification.success svg {
+  color: #4CAF50;
+}
