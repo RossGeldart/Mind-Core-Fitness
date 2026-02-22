@@ -1406,7 +1406,7 @@
   padding: 20px 16px 14px;
   margin-bottom: 10px;
   background: var(--bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 3px solid var(--color-primary);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
@@ -1415,7 +1415,7 @@
 }
 [data-theme="dark"] .journey-card {
   background: rgba(30, 30, 30, 0.85);
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
