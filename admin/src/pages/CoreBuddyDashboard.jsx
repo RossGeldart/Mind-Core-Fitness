@@ -1480,7 +1480,7 @@ export default function CoreBuddyDashboard() {
               onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
             >
               <div className="cb-card-icon-wrap cb-card-icon-challenge">
-                <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" />
+                <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
               </div>
               <div className="cb-card-content">
                 <h3>Challenges</h3>
@@ -1493,7 +1493,7 @@ export default function CoreBuddyDashboard() {
               onClick={(e) => { createRipple(e); navigate('/client/core-buddy/badges'); }}
             >
               <div className="cb-card-icon-wrap cb-card-icon-badges">
-                <img src={BADGE_DEFS.find(b => b.id === 'first_workout')?.img} alt="" className="cb-card-badge-img" />
+                <img src={BADGE_DEFS.find(b => b.id === 'first_workout')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
               </div>
               <div className="cb-card-content">
                 <h3>Badges</h3>
@@ -1629,7 +1629,7 @@ export default function CoreBuddyDashboard() {
                     ) : post.type === 'badge_earned' && post.metadata ? (
                       <div className="journey-card">
                         <div className="journey-card-logo-frame journey-card-logo-badge">
-                          {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
+                          {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" loading="lazy" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
                         </div>
                         <h3 className="journey-card-title">{post.metadata.title}</h3>
                         {post.metadata.badgeDesc && (

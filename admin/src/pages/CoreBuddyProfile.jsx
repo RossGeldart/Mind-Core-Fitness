@@ -75,6 +75,9 @@ export default function CoreBuddyProfile() {
   // Remove buddy confirmation
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
+  // Photo overlay
+  const [showPhotoOverlay, setShowPhotoOverlay] = useState(false);
+
   // @ Mention state
   const [allClients, setAllClients] = useState([]);
   const [mentionActive, setMentionActive] = useState(false);
@@ -581,7 +584,7 @@ export default function CoreBuddyProfile() {
             </div>
           )}
 
-          <div className="prf-avatar-lg">
+          <div className={`prf-avatar-lg${profile.photoURL ? ' tappable' : ''}`} onClick={() => profile.photoURL && setShowPhotoOverlay(true)}>
             {profile.photoURL ? (
               <img src={profile.photoURL} alt={profile.name} />
             ) : (
@@ -667,7 +670,7 @@ export default function CoreBuddyProfile() {
                 <div className="prf-badges-carousel">
                   {earned.map(badge => (
                     <button key={badge.id} className="prf-carousel-badge" onClick={() => setSelectedBadge(badge)}>
-                      <img src={badge.img} alt={badge.name} className="prf-carousel-badge-img" />
+                      <img src={badge.img} alt={badge.name} className="prf-carousel-badge-img" loading="lazy" />
                       <span className="prf-carousel-badge-name">{badge.name}</span>
                     </button>
                   ))}
@@ -737,7 +740,7 @@ export default function CoreBuddyProfile() {
                   ) : post.type === 'badge_earned' && post.metadata ? (
                     <div className="journey-card">
                       <div className="journey-card-logo-frame journey-card-logo-badge">
-                        {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
+                        {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} className="journey-card-logo-img" loading="lazy" /> : <img src="/Logo.webp" alt={post.metadata.title} className="journey-card-logo-img" />; })()}
                       </div>
                       <h3 className="journey-card-title">{post.metadata.title}</h3>
                       {post.metadata.badgeDesc && (
@@ -863,6 +866,13 @@ export default function CoreBuddyProfile() {
       </main>
 
       <CoreBuddyNav />
+
+      {/* Profile photo overlay */}
+      {showPhotoOverlay && profile.photoURL && (
+        <div className="prf-photo-overlay" onClick={() => setShowPhotoOverlay(false)}>
+          <img src={profile.photoURL} alt={profile.name} className="prf-photo-overlay-img" />
+        </div>
+      )}
 
       {/* Badge overlay */}
       {selectedBadge && (
