@@ -107,7 +107,7 @@ export default function CoreBuddyBadges() {
                     >
                       <div className="bdg-img-wrap">
                         {badge.img ? (
-                          <img src={badge.img} alt={badge.name} className="bdg-img" />
+                          <img src={badge.img} alt={badge.name} className="bdg-img" loading="lazy" />
                         ) : (
                           <div className="bdg-img-placeholder">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="8" r="6"/><path d="M9 14l-4 8h14l-4-8"/></svg>
