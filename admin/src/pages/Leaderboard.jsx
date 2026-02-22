@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import BadgeCelebration from '../components/BadgeCelebration';
 
 function getWeekBounds() {
   const now = new Date();
@@ -152,9 +153,17 @@ export default function Leaderboard() {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
 
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
+
   useEffect(() => {
     if (clientData) {
       setOptedIn(clientData.leaderboardOptIn === true);
+      // Auto-award leaderboard badge if already opted in
+      if (clientData.leaderboardOptIn === true) {
+        awardBadge('leaderboard_join', clientData).then(badge => {
+          if (badge) setBadgeCelebration(badge);
+        });
+      }
     }
   }, [clientData]);
 
@@ -193,7 +202,7 @@ export default function Leaderboard() {
       showToast('You\'re on the leaderboard!', 'success');
       // Award leaderboard badge
       const badge = await awardBadge('leaderboard_join', clientData);
-      if (badge) showToast(`Badge earned: ${badge.name}!`, 'success');
+      if (badge) setBadgeCelebration(badge);
     } catch (err) {
       console.error('Error opting in:', err);
       showToast('Failed to join. Try again.', 'error');
@@ -688,6 +697,8 @@ export default function Leaderboard() {
           <span className="toast-message">{toast.message}</span>
         </div>
       )}
+
+      <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
     </PullToRefresh>
   );

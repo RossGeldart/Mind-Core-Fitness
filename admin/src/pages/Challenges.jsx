@@ -11,6 +11,7 @@ import { useTier } from '../contexts/TierContext';
 import { CHALLENGES } from '../config/challengeConfig';
 import BADGE_DEFS from '../utils/badgeConfig';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import BadgeCelebration from '../components/BadgeCelebration';
 import './Challenges.css';
 
 /* ── Icon map ── */
@@ -470,37 +471,7 @@ export default function Challenges() {
         </div>
       )}
 
-      {/* Badge celebration overlay */}
-      {celebration && (
-        <div className="cb-celebration-overlay" onClick={() => setCelebration(null)}>
-          <div className="cb-confetti-container">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <div
-                key={i}
-                className="cb-confetti-piece"
-                style={{
-                  '--angle': `${(i / 24) * 360}deg`,
-                  '--distance': `${80 + Math.random() * 60}px`,
-                  '--drift': `${(Math.random() - 0.5) * 40}px`,
-                  '--size': `${4 + Math.random() * 4}px`,
-                  '--color': ['#FFD700', '#FF6B6B', '#4ECDC4', '#A1C4FD', '#F093FB', '#FFECD2'][i % 6],
-                  '--delay': `${Math.random() * 0.3}s`,
-                }}
-              />
-            ))}
-          </div>
-          <div className="cb-celebration-content">
-            <div className="cb-celebration-glow" />
-            {celebration.img && (
-              <img src={celebration.img} alt={celebration.name} className="cb-celebration-badge-img" />
-            )}
-            <h2 className="cb-celebration-title">Badge Unlocked!</h2>
-            <p className="cb-celebration-name">{celebration.name}</p>
-            <p className="cb-celebration-desc">{celebration.desc}</p>
-            <button className="cb-celebration-dismiss">Tap to dismiss</button>
-          </div>
-        </div>
-      )}
+      <BadgeCelebration badge={celebration} onDismiss={() => setCelebration(null)} />
 
       {/* Toast */}
       {toast && <div className={`ch-toast ch-toast-${toast.type}`}>{toast.message}</div>}
