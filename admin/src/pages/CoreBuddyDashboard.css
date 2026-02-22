@@ -1341,13 +1341,13 @@
   width: 72px; height: 72px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid rgba(161, 47, 58, 0.25);
+  border: 2px solid rgba(var(--color-primary-rgb), 0.25);
   margin-bottom: 12px;
   flex-shrink: 0;
   background: #fff;
 }
 [data-theme="dark"] .journey-card-logo-frame {
-  border-color: rgba(161, 47, 58, 0.4);
+  border-color: rgba(var(--color-primary-rgb), 0.4);
 }
 .journey-card-logo-badge {
   border-color: rgba(255, 193, 7, 0.4);
@@ -1665,7 +1665,7 @@
 }
 
 .notif-item.unread {
-  background: rgba(161, 47, 58, 0.08);
+  background: rgba(var(--color-primary-rgb), 0.08);
 }
 
 .notif-item-avatar {
@@ -1797,7 +1797,7 @@
 }
 
 [data-theme="light"] .notif-item.unread {
-  background: rgba(161, 47, 58, 0.06);
+  background: rgba(var(--color-primary-rgb), 0.06);
 }
 
 [data-theme="light"] .mention-dropdown {

@@ -63,7 +63,7 @@
   width: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #A12F3A;
+  border: 2px solid var(--color-primary);
 }
 
 /* ====== Shared Bottom Tab Nav ====== */
