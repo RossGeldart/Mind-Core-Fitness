@@ -1191,6 +1191,8 @@
   border-radius: 16px;
   margin-bottom: 16px;
   box-shadow: var(--shadow-glow);
+  position: relative;
+  z-index: 10;
 }
 
 [data-theme="dark"] .journey-compose {
