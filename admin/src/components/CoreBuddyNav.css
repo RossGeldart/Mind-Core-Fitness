@@ -78,6 +78,17 @@
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+/* Mono mode: bg-card is translucent — give nav a solid backdrop */
+[data-mono="true"][data-theme="light"] .block-bottom-nav {
+  background: #f0f0f0;
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-mono="true"][data-theme="dark"] .block-bottom-nav {
+  background: #0a0a0a;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
 .block-nav-tab {
   flex: 1;
   display: flex;
