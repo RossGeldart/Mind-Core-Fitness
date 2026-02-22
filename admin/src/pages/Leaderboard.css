@@ -330,7 +330,7 @@
 .lb-buddy-filter.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .lb-buddy-filter:active { transform: scale(0.95); }
