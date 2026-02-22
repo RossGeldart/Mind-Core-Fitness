@@ -23,7 +23,7 @@ const NOTIF_PREFS = [
 
 export default function CoreBuddySettings() {
   const { currentUser, clientData, updateClientData, logout, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent, setAccent } = useTheme();
+  const { isDark, toggleTheme, accent, setAccent, isMono, toggleMono } = useTheme();
   const navigate = useNavigate();
 
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -190,6 +190,19 @@ export default function CoreBuddySettings() {
                 <span className="settings-accent-label">{c.label}</span>
               </button>
             ))}
+          </div>
+          <div className="settings-row settings-mono-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Mono</span>
+              <span className="settings-row-desc">Black & white with frosted glass</span>
+            </div>
+            <button
+              className={`settings-toggle${isMono ? ' on' : ''}`}
+              onClick={toggleMono}
+              aria-label="Toggle mono theme"
+            >
+              <span className="settings-toggle-knob" />
+            </button>
           </div>
         </section>
 

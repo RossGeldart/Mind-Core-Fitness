@@ -90,6 +90,15 @@
   color: var(--color-primary);
 }
 
+/* Mono toggle below colour picker */
+.settings-mono-row {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 /* Rows */
 .settings-row {
   display: flex;
