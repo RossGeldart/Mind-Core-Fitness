@@ -516,7 +516,7 @@
 }
 
 .client-type-badge.core-buddy {
-  background: rgba(161, 47, 58, 0.15);
+  background: rgba(var(--color-primary-rgb), 0.15);
   color: var(--color-primary);
 }
 
@@ -749,7 +749,7 @@
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(161, 47, 58, 0.1);
+  background: rgba(var(--color-primary-rgb), 0.1);
   padding: 3px 10px;
   border-radius: 8px;
 }

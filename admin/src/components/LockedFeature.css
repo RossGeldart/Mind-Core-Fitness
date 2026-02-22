@@ -75,7 +75,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(161, 47, 58, 0.45);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.45);
   transition: transform 0.15s ease, opacity 0.15s ease;
   letter-spacing: 0.02em;
 }

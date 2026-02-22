@@ -13,7 +13,7 @@
 
 /* Today's Summary */
 .today-summary {
-  background: #A12F3A;
+  background: var(--color-primary);
   color: white;
   padding: 20px;
   border-radius: 12px;
@@ -70,8 +70,8 @@
   align-items: center;
   gap: 12px;
   background: var(--bg-secondary);
-  border: 1px solid #A12F3A;
-  border-left: 4px solid #A12F3A;
+  border: 1px solid var(--color-primary);
+  border-left: 4px solid var(--color-primary);
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -83,7 +83,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #A12F3A;
+  color: var(--color-primary);
   white-space: nowrap;
 }
 
@@ -111,7 +111,7 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 1rem;
-  color: #A12F3A;
+  color: var(--color-primary);
   white-space: nowrap;
 }
 
@@ -169,7 +169,7 @@
 
 .client-filter-input:focus {
   outline: none;
-  border-color: #A12F3A;
+  border-color: var(--color-primary);
 }
 
 .date-jump-select {
@@ -189,7 +189,7 @@
 
 .date-jump-select:focus {
   outline: none;
-  border-color: #A12F3A;
+  border-color: var(--color-primary);
 }
 
 /* Week group collapsible sections */
@@ -218,7 +218,7 @@
 }
 
 .week-group-header:hover {
-  border-color: #A12F3A;
+  border-color: var(--color-primary);
   color: var(--text-primary);
 }
 
@@ -275,7 +275,7 @@
 }
 
 .date-group.today {
-  border-color: #A12F3A;
+  border-color: var(--color-primary);
   border-width: 2px;
 }
 
@@ -299,7 +299,7 @@
 }
 
 .date-group.today .date-label {
-  color: #A12F3A;
+  color: var(--color-primary);
 }
 
 .date-count {
@@ -329,7 +329,7 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 1rem;
-  color: #A12F3A;
+  color: var(--color-primary);
   min-width: 70px;
 }
 

@@ -1234,7 +1234,7 @@
 
 /* ==================== LIGHT MODE ==================== */
 [data-theme="light"] .pg-start-btn {
-  background: linear-gradient(135deg, #b5343f 0%, #7a252e 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 }
 
 /* ==================== RESPONSIVE ==================== */
