@@ -203,12 +203,13 @@
 
 .nut-week-day.selected .nut-week-day-num {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 700;
 }
 
 .nut-week-day.selected .nut-week-day-letter {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-on-primary);
+  opacity: 0.8;
 }
 
 .nut-week-day.today:not(.selected) .nut-week-day-num {
