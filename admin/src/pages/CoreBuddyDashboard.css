@@ -875,7 +875,8 @@
   border-radius: 12px;
 }
 
-.cb-card-icon-challenge {
+.cb-card-icon-challenge,
+.cb-card-icon-badges {
   background: transparent;
   border-radius: 50%;
   overflow: hidden;

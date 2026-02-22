@@ -1472,21 +1472,36 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 7. Challenges — premium only */}
+          {/* 7. Challenges & Badges — side-by-side */}
           {isPremium && (
-          <button
-            className="cb-feature-card cb-card-challenge ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
-          >
-            <div className="cb-card-icon-wrap cb-card-icon-challenge">
-              <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" />
-            </div>
-            <div className="cb-card-content">
-              <h3>Challenges</h3>
-              <p>Push yourself with timed fitness challenges</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
+          <div className="cb-grid-row">
+            <button
+              className="cb-feature-card cb-grid-card cb-card-challenge ripple-btn"
+              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
+            >
+              <div className="cb-card-icon-wrap cb-card-icon-challenge">
+                <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" />
+              </div>
+              <div className="cb-card-content">
+                <h3>Challenges</h3>
+                <p>Push yourself with timed fitness challenges</p>
+              </div>
+              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button
+              className="cb-feature-card cb-grid-card cb-card-badges ripple-btn"
+              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/badges'); }}
+            >
+              <div className="cb-card-icon-wrap cb-card-icon-badges">
+                <img src={BADGE_DEFS.find(b => b.id === 'first_workout')?.img} alt="" className="cb-card-badge-img" />
+              </div>
+              <div className="cb-card-content">
+                <h3>Badges</h3>
+                <p>Collect badges as you hit milestones</p>
+              </div>
+              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
           )}
 
           {/* 8. Buddies — hidden for free tier */}
