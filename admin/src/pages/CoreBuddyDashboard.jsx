@@ -36,6 +36,38 @@ const TAGLINES = [
   { text: 'The only bad workout...', bold: 'is the one you skipped' },
 ];
 
+// Variable coach messages — multiple per time slot for dopamine novelty
+const COACH_MESSAGES = {
+  morning: [
+    { main: 'Rise and grind,', sub: "let's get after it!" },
+    { main: 'New day, new gains,', sub: "let's build something!" },
+    { main: 'The early bird gets the gains,', sub: "let's go!" },
+    { main: 'Winners wake up ready,', sub: "you showed up!" },
+  ],
+  afternoon: [
+    { main: 'Oye', sub: 'crack on and make it count!' },
+    { main: 'Halfway through the day,', sub: "don't ease off now!" },
+    { main: 'Afternoon push,', sub: 'this is where champions are made!' },
+    { main: 'Still time to make today count,', sub: "let's go!" },
+  ],
+  evening: [
+    { main: 'Evening session?', sub: "Let's finish strong!" },
+    { main: 'End the day on a high,', sub: 'you earned it!' },
+    { main: 'Night owls lift heavier,', sub: "prove it!" },
+    { main: 'One more session today?', sub: "Close it out!" },
+  ],
+  night: [
+    { main: 'Burning the midnight oil,', sub: 'Respect the hustle!' },
+    { main: 'Late night dedication,', sub: 'that\'s what sets you apart!' },
+    { main: 'While they sleep,', sub: 'you grind!' },
+  ],
+  allDone: [
+    { main: 'Smashed it today,', sub: 'Rest up and go again tomorrow.' },
+    { main: 'All tasks crushed,', sub: 'Absolute machine!' },
+    { main: 'Nothing left undone,', sub: 'That\'s elite-level discipline.' },
+  ],
+};
+
 function timeAgo(date) {
   if (!date) return '';
   const d = date instanceof Date ? date : date.toDate ? date.toDate() : new Date(date);
@@ -146,6 +178,13 @@ export default function CoreBuddyDashboard() {
   const [mentionTarget, setMentionTarget] = useState(null); // 'compose' | postId
   const [mentionResults, setMentionResults] = useState([]);
   const [mentionAnchor, setMentionAnchor] = useState(null);
+
+  // Weekly target celebration
+  const [showWeeklyCelebration, setShowWeeklyCelebration] = useState(false);
+  const weeklyCelebrationShownRef = useRef(false);
+
+  // Leaderboard rank movement tracking
+  const [prevLeaderboardRank, setPrevLeaderboardRank] = useState(null);
 
   // Guided tour — only shown once for new users
   const [showTour, setShowTour] = useState(false);
@@ -581,13 +620,24 @@ export default function CoreBuddyDashboard() {
         console.error('Error loading dashboard stats:', err);
       }
 
-      // 6. Leaderboard top 3 preview (opted-in clients)
+      // 6. Leaderboard top 3 preview (opted-in clients) + rank tracking
       try {
         const clientsRef = collection(db, 'clients');
         const cq = query(clientsRef, where('leaderboardOptIn', '==', true));
         const clientsSnap = await getDocs(cq);
         const optedIn = clientsSnap.docs.map(d => ({ id: d.id, name: d.data().name, photoURL: d.data().photoURL || null }));
         setLeaderboardTop3(optedIn.slice(0, 3));
+        // Track rank movement
+        if (clientData?.id) {
+          const myIdx = optedIn.findIndex(e => e.id === clientData.id);
+          const myRank = myIdx >= 0 ? myIdx + 1 : null;
+          try {
+            const prevKey = `lbRank_${clientData.id}`;
+            const stored = sessionStorage.getItem(prevKey);
+            if (stored) setPrevLeaderboardRank(parseInt(stored, 10));
+            if (myRank) sessionStorage.setItem(prevKey, String(myRank));
+          } catch {}
+        }
       } catch (lbErr) {
         console.error('Leaderboard preview error:', lbErr);
       }
@@ -643,6 +693,21 @@ export default function CoreBuddyDashboard() {
      nutritionTotals, nutritionTargetData, todayHabitsCount,
      weeklyWorkouts, weeklyWorkoutTarget,
      leaderboardTop3, streakWeeks, clientData]);
+
+  // Weekly target celebration — triggers once per week when target met
+  useEffect(() => {
+    if (!statsLoaded || weeklyCelebrationShownRef.current) return;
+    if (weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
+      const celebKey = `weekCeleb_${clientData?.id}_${new Date().toISOString().slice(0, 10).replace(/-\d{2}$/, '')}`;
+      try {
+        if (sessionStorage.getItem(celebKey)) return;
+        sessionStorage.setItem(celebKey, '1');
+      } catch {}
+      weeklyCelebrationShownRef.current = true;
+      setShowWeeklyCelebration(true);
+      setTimeout(() => setShowWeeklyCelebration(false), 3500);
+    }
+  }, [statsLoaded, weeklyWorkouts, weeklyWorkoutTarget, clientData]);
 
   // Tour finish handler — persist to Firestore so it only shows once
   const handleTourFinish = useCallback(async () => {
@@ -707,21 +772,37 @@ export default function CoreBuddyDashboard() {
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
 
+  // Compute whether nutrition / workouts / habits are complete for card signaling
+  const nutritionDone = nutritionTotals.calories > 0 && nutritionTargetData?.calories && nutritionTotals.calories >= nutritionTargetData.calories * 0.8;
+  const workoutsDone = weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0;
+  const habitsDone = todayHabitsCount >= habitCount;
+
+  // Milestone approaching text for return trigger
+  const milestoneText = (() => {
+    if (!statsLoaded) return null;
+    const remaining = weeklyWorkoutTarget - weeklyWorkouts;
+    if (remaining === 1) return `1 more workout to hit your weekly goal`;
+    if (remaining === 2) return `2 more workouts to hit your weekly goal`;
+    if (habitCount - todayHabitsCount === 1) return `1 habit left to complete today`;
+    return null;
+  })();
+
   // Nutrition percentage helper
   const nutPct = (key) => {
     if (!nutritionTargetData || !nutritionTargetData[key]) return 0;
     return Math.min(Math.round((nutritionTotals[key] / nutritionTargetData[key]) * 100), 100);
   };
 
-  // Time-aware coach message
+  // Time-aware coach message — variable reward (random per session)
   const coachLine = (() => {
     const hour = new Date().getHours();
     const allDone = statsLoaded && todayHabitsCount >= habitCount && nutritionTotals.calories > 0;
-    if (allDone) return { main: `Smashed it today,`, sub: 'Rest up and go again tomorrow.' };
-    if (hour >= 5 && hour < 12) return { main: `Rise and grind,`, sub: "let's get after it!" };
-    if (hour >= 12 && hour < 17) return { main: `Oye`, sub: 'crack on and make it count!' };
-    if (hour >= 17 && hour < 21) return { main: `Evening session?`, sub: "Let's finish strong!" };
-    return { main: `Burning the midnight oil,`, sub: 'Respect the hustle!' };
+    const pick = (arr) => arr[Math.floor((Date.now() / 60000) % arr.length)]; // rotates every minute
+    if (allDone) return pick(COACH_MESSAGES.allDone);
+    if (hour >= 5 && hour < 12) return pick(COACH_MESSAGES.morning);
+    if (hour >= 12 && hour < 17) return pick(COACH_MESSAGES.afternoon);
+    if (hour >= 17 && hour < 21) return pick(COACH_MESSAGES.evening);
+    return pick(COACH_MESSAGES.night);
   })();
 
   // Priority-based smart nudge
@@ -858,7 +939,8 @@ export default function CoreBuddyDashboard() {
       clearJourneyImage();
       if (journeyTextRef.current) journeyTextRef.current.style.height = 'auto';
       await fetchJourney();
-      showToast('Posted!', 'success');
+      const buddyCount = allClients.length;
+      showToast(buddyCount > 0 ? `Shared with ${buddyCount} ${buddyCount === 1 ? 'buddy' : 'buddies'}` : 'Posted to your journey!', 'success');
     } catch (err) {
       console.error('Error posting:', err);
       showToast(err?.message || 'Failed to post', 'error');
@@ -1182,22 +1264,27 @@ export default function CoreBuddyDashboard() {
             const circ = 2 * Math.PI * r;
             const offset = circ - (ring.pct / 100) * circ;
             const isEditable = ring.editable;
+            // Goal gradient: visual escalation as ring approaches completion
+            const isNear = ring.pct >= 75 && ring.pct < 100;
+            const isComplete = ring.pct >= 100;
             return (
               <div key={ring.label} className={`cb-stat-item${ring.size === 'large' ? ' cb-stat-large' : ''}`}>
                 <div
-                  className={`cb-stat-ring${isEditable ? ' cb-stat-tappable' : ''}${isEditable && showTargetHint ? ' cb-stat-hint' : ''}`}
+                  className={`cb-stat-ring${isEditable ? ' cb-stat-tappable' : ''}${isEditable && showTargetHint ? ' cb-stat-hint' : ''}${isNear ? ' cb-stat-near' : ''}${isComplete ? ' cb-stat-complete' : ''}`}
                   onClick={isEditable ? () => { setShowTargetPicker(true); setShowTargetHint(false); } : undefined}
                 >
                   <svg viewBox="0 0 100 100">
                     <circle className="cb-stat-track" cx="50" cy="50" r={r} />
-                    <circle className="cb-stat-fill" cx="50" cy="50" r={r}
-                      style={{ stroke: ring.color }}
+                    <circle className={`cb-stat-fill${isNear ? ' cb-fill-near' : ''}${isComplete ? ' cb-fill-complete' : ''}`} cx="50" cy="50" r={r}
                       strokeDasharray={circ}
                       strokeDashoffset={offset} />
                   </svg>
-                  <span className="cb-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  <span className={`cb-stat-value${isComplete ? ' cb-val-complete' : ''}`}>{ring.value}</span>
                 </div>
-                <span className="cb-stat-label">{ring.label}</span>
+                <span className="cb-stat-label">
+                  {ring.label === 'Wk Streak' && streakWeeks > 0 && <svg className="cb-streak-flame" width="12" height="12" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg>}
+                  {ring.label}
+                </span>
               </div>
             );
           })}
@@ -1227,6 +1314,14 @@ export default function CoreBuddyDashboard() {
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
+        {/* Milestone approaching — return trigger */}
+        {milestoneText && (
+          <div className="cb-milestone-hint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>{milestoneText}</span>
+          </div>
+        )}
+
         {/* Smart Nudge Card */}
         {nudge && (
           <button className="cb-nudge-card" onClick={nudge.action || undefined}
@@ -1254,7 +1349,7 @@ export default function CoreBuddyDashboard() {
           {/* 1. Nutrition / Macros — hidden for free tier */}
           {isPremium && (
           <button
-            className="cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn"
+            className={`cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
           >
             <div className="cb-card-top-row">
@@ -1295,7 +1390,7 @@ export default function CoreBuddyDashboard() {
 
           {/* 2. Workouts */}
           <button
-            className="cb-feature-card cb-card-workouts-hero ripple-btn"
+            className={`cb-feature-card cb-card-workouts-hero ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
             <h3 className="cb-hero-title">Workout</h3>
@@ -1309,14 +1404,15 @@ export default function CoreBuddyDashboard() {
 
           {/* 3. Habits */}
           <button
-            className="cb-feature-card cb-card-consistency ripple-btn"
+            className={`cb-feature-card cb-card-consistency ripple-btn${habitsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
           >
             <div className="cb-card-content">
               <h3>Habits</h3>
-              <div className="cb-habit-dots">
+              <div className={`cb-habit-dots${todayHabitsCount >= habitCount ? ' cb-habits-all-done' : ''}`}>
                 {Array.from({ length: habitCount }, (_, i) => (
-                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}`} />
+                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}${!i && todayHabitsCount > 0 && i >= todayHabitsCount ? ' cb-dot-warming' : ''}`}
+                    style={i >= todayHabitsCount && todayHabitsCount > 0 ? { '--glow-intensity': Math.min(todayHabitsCount / habitCount, 0.9) } : undefined} />
                 ))}
               </div>
               <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
@@ -1337,12 +1433,18 @@ export default function CoreBuddyDashboard() {
                     const medal = ['#FFD700', '#A8B4C0', '#CD7F32'][idx];
                     const initials = entry.name ? entry.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
                     const isMe = entry.id === clientData?.id;
+                    const currentRank = idx + 1;
+                    const rankDelta = isMe && prevLeaderboardRank ? prevLeaderboardRank - currentRank : 0;
                     return (
                       <div key={entry.id} className={`cb-lb-entry${isMe ? ' cb-lb-me' : ''}`}>
                         <div className="cb-lb-avatar" style={{ borderColor: medal }}>
                           {entry.photoURL ? <img src={entry.photoURL} alt="" className="cb-lb-avatar-img" /> : <span>{initials}</span>}
                         </div>
-                        <span className="cb-lb-rank" style={{ color: medal }}>#{idx + 1}</span>
+                        <span className="cb-lb-rank" style={{ color: medal }}>
+                          #{currentRank}
+                          {isMe && rankDelta > 0 && <span className="cb-lb-movement cb-lb-up">+{rankDelta}</span>}
+                          {isMe && rankDelta < 0 && <span className="cb-lb-movement cb-lb-down">{rankDelta}</span>}
+                        </span>
                       </div>
                     );
                   })}
@@ -1667,11 +1769,27 @@ export default function CoreBuddyDashboard() {
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />
 
+      {/* Weekly target celebration */}
+      {showWeeklyCelebration && (
+        <div className="cb-weekly-celebration">
+          <div className="cb-weekly-celebration-card">
+            <span className="cb-weekly-celebration-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </span>
+            <h4>Weekly Goal Smashed!</h4>
+            <p>{weeklyWorkouts}/{weeklyWorkoutTarget} sessions complete</p>
+          </div>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
           {toast.type === 'info' && (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          )}
+          {toast.type === 'success' && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
           )}
           {toast.message}
         </div>
