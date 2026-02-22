@@ -298,6 +298,19 @@ export default function Onboarding() {
   // ── Step 1: Subscription Picker ──
   if (step === 1) {
     const handlePlanSelect = async (plan) => {
+      if (typeof window.fbq === 'function') {
+        if (plan === 'free') {
+          fbq('track', 'Lead', { content_name: 'Core Buddy Free', content_category: 'Fitness App' });
+        } else {
+          fbq('track', 'InitiateCheckout', {
+            content_name: `Core Buddy ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+            content_category: 'Fitness App',
+            value: plan === 'annual' ? 99.99 : 9.99,
+            currency: 'GBP',
+          });
+        }
+      }
+
       if (plan === 'free') {
         setStep(2);
         return;
