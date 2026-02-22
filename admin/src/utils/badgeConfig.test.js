@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import BADGE_DEFS from './badgeConfig';
 
-const VALID_CATEGORIES = ['workouts', 'streaks', 'pbs', 'nutrition', 'leaderboard', 'habits', 'challenges'];
+const VALID_CATEGORIES = ['workouts', 'streaks', 'nutrition', 'leaderboard', 'habits', 'challenges'];
 
 describe('BADGE_DEFS integrity', () => {
   it('exports a non-empty array', () => {
@@ -59,7 +59,6 @@ describe('BADGE_DEFS integrity', () => {
       const categoryPrefixMap = {
         workouts: ['first_workout', 'workouts_'],
         streaks: ['streak_'],
-        pbs: ['first_pb', 'pbs_'],
         nutrition: ['nutrition_'],
         leaderboard: ['leaderboard_'],
         habits: ['habits_'],

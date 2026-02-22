@@ -9,6 +9,7 @@ import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import WorkoutCelebration from '../components/WorkoutCelebration';
+import { awardBadge } from '../utils/awardBadge';
 
 
 const DEFAULT_HABITS = [
@@ -238,6 +239,20 @@ export default function CoreBuddyConsistency() {
           // Focus the continue button for a11y
           setTimeout(() => celebrationBtnRef.current?.focus(), 1100);
         }, 400);
+
+        // Check habits_7 badge: all habits completed for 7 consecutive days
+        let habitStreak = 1; // today counts
+        for (let i = 1; i < 7; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = formatDate(d);
+          const log = habitLogs[key];
+          if (log) {
+            const done = Object.values(log.habits || {}).filter(Boolean).length;
+            if (done >= allHabits.length) { habitStreak++; } else { break; }
+          } else { break; }
+        }
+        if (habitStreak >= 7) awardBadge('habits_7', clientData);
       }
     } catch (err) {
       console.error('Error saving habit:', err);
