@@ -501,7 +501,7 @@ export default function CoreBuddyBuddies() {
         )}
       </main>
 
-      <CoreBuddyNav />
+      <CoreBuddyNav active="buddies" />
 
       {toast && (
         <div className={`toast-notification ${toast.type}`}>

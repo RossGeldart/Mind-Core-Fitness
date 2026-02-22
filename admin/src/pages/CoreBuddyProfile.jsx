@@ -546,7 +546,7 @@ export default function CoreBuddyProfile() {
           </div>
         </header>
         <main className="prf-main"><p style={{ textAlign: 'center', color: 'var(--text-tertiary)', padding: '40px 0' }}>User not found</p></main>
-        <CoreBuddyNav />
+        <CoreBuddyNav active="buddies" />
       </div>
     );
   }
@@ -865,7 +865,7 @@ export default function CoreBuddyProfile() {
         </div>
       </main>
 
-      <CoreBuddyNav />
+      <CoreBuddyNav active="buddies" />
 
       {/* Profile photo overlay */}
       {showPhotoOverlay && profile.photoURL && (
