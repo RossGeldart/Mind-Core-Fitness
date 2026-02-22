@@ -1163,7 +1163,8 @@ body {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     padding: 14px 16px;
     border: 1.5px solid rgba(55, 55, 55, 0.2);
     border-radius: 8px;
@@ -1175,12 +1176,14 @@ body {
 }
 
 .form-group input::placeholder,
-.form-group textarea::placeholder {
+.form-group textarea::placeholder,
+.form-group select:invalid {
     color: #999;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(153, 49, 60, 0.1);
@@ -1578,7 +1581,8 @@ body {
     }
 
     .form-group input,
-    .form-group textarea {
+    .form-group textarea,
+    .form-group select {
         transition: none;
     }
 
