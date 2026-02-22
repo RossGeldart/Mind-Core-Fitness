@@ -306,11 +306,12 @@ export default function CoreBuddyBuddies() {
     if (!clientData || buddies.length === 0) { setFeedPosts([]); return; }
     setFeedLoading(true);
     try {
-      const buddyIds = buddies.map(b => b.id);
+      // Include own posts + all buddy posts
+      const feedIds = [clientData.id, ...buddies.map(b => b.id)];
       // Firestore 'in' supports max 30 values — batch if needed
       const batches = [];
-      for (let i = 0; i < buddyIds.length; i += 30) {
-        batches.push(buddyIds.slice(i, i + 30));
+      for (let i = 0; i < feedIds.length; i += 30) {
+        batches.push(feedIds.slice(i, i + 30));
       }
       let allPosts = [];
       for (const batch of batches) {
@@ -367,6 +368,18 @@ export default function CoreBuddyBuddies() {
     } catch (err) {
       console.error('Like error:', err);
       fetchFeed();
+    }
+  };
+
+  const deleteFeedPost = async (postId) => {
+    if (!window.confirm('Delete this post?')) return;
+    try {
+      await deleteDoc(doc(db, 'posts', postId));
+      setFeedPosts(prev => prev.filter(p => p.id !== postId));
+      showToast('Post deleted', 'info');
+    } catch (err) {
+      console.error('Delete error:', err);
+      showToast('Failed to delete', 'error');
     }
   };
 
@@ -569,6 +582,11 @@ export default function CoreBuddyBuddies() {
                             <span className="bdy-feed-name">{post.authorName}</span>
                             <span className="bdy-feed-time">{timeAgo(post.createdAt)}</span>
                           </div>
+                          {post.authorId === clientData?.id && (
+                            <button className="bdy-feed-delete-btn" onClick={() => deleteFeedPost(post.id)} aria-label="Delete post">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                          )}
                         </div>
 
                         {/* Post content — share cards or text/image */}
