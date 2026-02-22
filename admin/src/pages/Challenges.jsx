@@ -332,7 +332,7 @@ export default function Challenges() {
   const isCompleted = justCompleted || (activeChallenge && activeChallenge.status === 'completed');
 
   return (
-    <div className="ch-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="ch-page">
       {/* Header */}
       <header className="client-header">
         <div className="header-content">

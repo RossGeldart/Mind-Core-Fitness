@@ -530,12 +530,12 @@ export default function CoreBuddyProfile() {
   };
 
   if (authLoading || loading || !clientData) {
-    return <div className="prf-loading" data-theme={isDark ? 'dark' : 'light'}><div className="prf-spinner" /></div>;
+    return <div className="prf-loading"><div className="prf-spinner" /></div>;
   }
   if (!currentUser || !isClient) return null;
   if (!profile) {
     return (
-      <div className="prf-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="prf-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
@@ -553,7 +553,7 @@ export default function CoreBuddyProfile() {
 
   return (
     <PullToRefresh>
-    <div className="prf-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="prf-page">
       <header className="client-header">
         <div className="header-content">
           <button className="header-back-btn" onClick={() => navigate(-1)} aria-label="Go back">

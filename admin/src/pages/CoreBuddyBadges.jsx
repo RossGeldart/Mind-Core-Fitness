@@ -69,7 +69,7 @@ export default function CoreBuddyBadges() {
   }
 
   return (
-    <div className="bdg-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="bdg-page">
       <header className="client-header">
         <div className="header-content">
           <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Back">

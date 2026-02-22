@@ -387,7 +387,7 @@ export default function Leaderboard() {
   // Opt-in screen
   if (optedIn === false) {
     return (
-      <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
+      <div className="lb-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -456,7 +456,7 @@ export default function Leaderboard() {
 
   return (
     <PullToRefresh>
-    <div className="lb-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="lb-page">
       <header className="client-header">
         <div className="header-content">
           <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">

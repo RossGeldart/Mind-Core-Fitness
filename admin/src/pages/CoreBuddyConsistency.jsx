@@ -531,7 +531,7 @@ export default function CoreBuddyConsistency() {
 
   return (
     <PullToRefresh>
-    <div className="cbc-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="cbc-page">
       {/* Header */}
       <header className="client-header">
         <div className="header-content">

@@ -246,7 +246,7 @@ export default function CoreBuddyBuddies() {
 
   return (
     <PullToRefresh>
-    <div className="bdy-page" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="bdy-page">
       <header className="client-header">
         <div className="header-content">
           <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">

@@ -1124,7 +1124,7 @@ export default function CoreBuddyDashboard() {
 
   return (
     <PullToRefresh>
-    <div className="cb-dashboard" data-theme={isDark ? 'dark' : 'light'}>
+    <div className="cb-dashboard">
       {/* Header */}
       <header className="client-header">
         <div className="header-content">
