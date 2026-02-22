@@ -108,7 +108,7 @@ function compressImage(file, maxSize = 800) {
 
 export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent, setAccent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
   const [realHabitCount, setRealHabitCount] = useState(isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT);
@@ -1271,23 +1271,6 @@ export default function CoreBuddyDashboard() {
           </div>
           <span className="cb-ring-label">remaining today</span>
           <p className="cb-ring-tagline" key={taglineIdx}>{TAGLINES[taglineIdx].text} <strong>{TAGLINES[taglineIdx].bold}</strong></p>
-        </div>
-
-        {/* Accent Colour Picker */}
-        <div className="cb-accent-picker">
-          {[
-            { key: 'red', color: '#A12F3A' },
-            { key: 'orange', color: '#FF914D' },
-            { key: 'blue', color: '#38B6FF' },
-          ].map((c) => (
-            <button
-              key={c.key}
-              className={`cb-accent-dot${accent === c.key ? ' active' : ''}`}
-              style={{ '--dot-color': c.color }}
-              onClick={() => setAccent(c.key)}
-              aria-label={`${c.key} accent`}
-            />
-          ))}
         </div>
 
         {/* Stats Rings Row — always rendered to prevent layout shift */}

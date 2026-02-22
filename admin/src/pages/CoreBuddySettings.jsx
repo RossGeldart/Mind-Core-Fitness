@@ -23,7 +23,7 @@ const NOTIF_PREFS = [
 
 export default function CoreBuddySettings() {
   const { currentUser, clientData, updateClientData, logout, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, accent, setAccent } = useTheme();
   const navigate = useNavigate();
 
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -165,6 +165,31 @@ export default function CoreBuddySettings() {
 
       <main className="settings-main">
         <h1 className="settings-title">Settings</h1>
+
+        {/* ===== Accent Colour Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13.5" r="2.5"/><circle cx="8.5" cy="8.5" r="2.5"/><circle cx="5" cy="15.5" r="2.5"/><circle cx="11" cy="19.5" r="2.5"/><path d="M12 2a10 10 0 0 0 0 20 2 2 0 0 0 2-2v-1a2 2 0 0 1 2-2h1a2 2 0 0 0 2-2 10 10 0 0 0-7-13z"/></svg>
+            Accent Colour
+          </h2>
+          <div className="settings-accent-row">
+            {[
+              { key: 'red', color: '#A12F3A', label: 'Red' },
+              { key: 'orange', color: '#FF914D', label: 'Orange' },
+              { key: 'blue', color: '#38B6FF', label: 'Blue' },
+            ].map((c) => (
+              <button
+                key={c.key}
+                className={`settings-accent-option${accent === c.key ? ' active' : ''}`}
+                onClick={() => setAccent(c.key)}
+                aria-label={`${c.label} accent`}
+              >
+                <span className="settings-accent-dot" style={{ background: c.color }} />
+                <span className="settings-accent-label">{c.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {/* ===== Notifications Section ===== */}
         <section className="settings-section">
