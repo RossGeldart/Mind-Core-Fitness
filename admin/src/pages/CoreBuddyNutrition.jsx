@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import BadgeCelebration from '../components/BadgeCelebration';
 
 const searchCache = new Map();
 
@@ -63,6 +64,7 @@ export default function CoreBuddyNutrition() {
 
   // Macro targets (from Firestore)
   const [targets, setTargets] = useState(null);
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
 
   // Setup form (macro calculator)
   const [formData, setFormData] = useState({
@@ -210,7 +212,10 @@ export default function CoreBuddyNutrition() {
               } else { break; }
             } catch { break; }
           }
-          if (streak >= 7) awardBadge('nutrition_7', clientData);
+          if (streak >= 7) {
+            const awarded = await awardBadge('nutrition_7', clientData);
+            if (awarded) setBadgeCelebration(awarded);
+          }
         }
       }
     } catch (err) {
@@ -1778,6 +1783,8 @@ export default function CoreBuddyNutrition() {
           {toast.message}
         </div>
       )}
+
+      <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
     </PullToRefresh>
   );

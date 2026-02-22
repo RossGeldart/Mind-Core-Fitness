@@ -11,6 +11,7 @@ import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { awardBadge } from '../utils/awardBadge';
+import BadgeCelebration from '../components/BadgeCelebration';
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -635,6 +636,7 @@ export default function CoreBuddyWorkouts() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [badgeCelebration, setBadgeCelebration] = useState(null);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
   // Free-tier gating: limit available durations and weekly usage
@@ -1230,7 +1232,8 @@ export default function CoreBuddyWorkouts() {
       ];
       for (const t of workoutThresholds) {
         if (newTotal >= t.count) {
-          awardBadge(t.id, clientData);
+          const awarded = await awardBadge(t.id, clientData);
+          if (awarded) { setBadgeCelebration(awarded); break; }
         }
       }
 
@@ -1243,7 +1246,8 @@ export default function CoreBuddyWorkouts() {
       ];
       for (const t of streakThresholds) {
         if (newStreak >= t.weeks) {
-          awardBadge(t.id, clientData);
+          const awarded = await awardBadge(t.id, clientData);
+          if (awarded && !badgeCelebration) setBadgeCelebration(awarded);
         }
       }
     } catch (err) {
@@ -1684,6 +1688,7 @@ export default function CoreBuddyWorkouts() {
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
       </div>
       </PullToRefresh>
     );
@@ -1908,6 +1913,7 @@ export default function CoreBuddyWorkouts() {
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
       </div>
     );
   }
@@ -2728,5 +2734,5 @@ export default function CoreBuddyWorkouts() {
     );
   }
 
-  return null;
+  return <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />;
 }
