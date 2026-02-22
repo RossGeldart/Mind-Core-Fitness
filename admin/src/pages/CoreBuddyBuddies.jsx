@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
-  serverTimestamp, Timestamp
+  updateDoc, orderBy, limit, increment, serverTimestamp, Timestamp
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
+import BADGE_DEFS from '../utils/badgeConfig';
 import './CoreBuddyBuddies.css';
 
 function getInitials(name) {
@@ -22,12 +24,23 @@ function pairId(a, b) {
   return [a, b].sort().join('_');
 }
 
+function timeAgo(date) {
+  if (!date) return '';
+  const d = date instanceof Date ? date : date.toDate ? date.toDate() : new Date(date);
+  const diff = Math.floor((new Date() - d) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 export default function CoreBuddyBuddies() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
-  const [tab, setTab] = useState('buddies');       // buddies | requests | search
+  const [tab, setTab] = useState('feed');            // feed | buddies | requests | search
   const [buddies, setBuddies] = useState([]);       // confirmed buddy client objects
   const [incoming, setIncoming] = useState([]);      // pending incoming requests
   const [outgoing, setOutgoing] = useState([]);      // pending outgoing requests
@@ -38,10 +51,61 @@ export default function CoreBuddyBuddies() {
   const [actionLoading, setActionLoading] = useState(null);
   const [toast, setToast] = useState(null);
 
+  // Feed state
+  const [feedPosts, setFeedPosts] = useState([]);
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [likedPosts, setLikedPosts] = useState(new Set());
+  const [expandedComments, setExpandedComments] = useState(new Set());
+  const [comments, setComments] = useState({});
+  const [commentText, setCommentText] = useState({});
+  const [commentLoading, setCommentLoading] = useState({});
+  const [replyTo, setReplyTo] = useState({});
+  const [commentImage, setCommentImage] = useState({});
+  const [commentImagePreview, setCommentImagePreview] = useState({});
+  const commentFileRefs = useRef({});
+
+  // @ Mention state
+  const [mentionActive, setMentionActive] = useState(false);
+  const [mentionTarget, setMentionTarget] = useState(null);
+  const [mentionResults, setMentionResults] = useState([]);
+
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
   }, []);
+
+  // @ mention helpers
+  const handleMentionInput = (text, target) => {
+    const atMatch = text.match(/@(\w*)$/);
+    if (atMatch) {
+      setMentionActive(true);
+      setMentionTarget(target);
+      const filtered = buddies.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      setMentionResults(filtered);
+    } else {
+      setMentionActive(false);
+      setMentionResults([]);
+    }
+  };
+
+  const insertMention = (client, target) => {
+    const text = commentText[target] || '';
+    const replaced = text.replace(/@\w*$/, `@${client.name} `);
+    setCommentText(prev => ({ ...prev, [target]: replaced }));
+    setMentionActive(false);
+    setMentionResults([]);
+  };
+
+  const renderWithMentions = (text) => {
+    if (!text) return text;
+    const parts = text.split(/(@\w[\w\s]*?\s)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('@') && buddies.some(c => part.trim() === `@${c.name}`)) {
+        return <span key={i} className="mention-highlight">{part.trim()}</span>;
+      }
+      return part;
+    });
+  };
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
@@ -237,6 +301,178 @@ export default function CoreBuddyBuddies() {
     }
   };
 
+  // ── Feed functions ──
+  const fetchFeed = useCallback(async () => {
+    if (!clientData || buddies.length === 0) { setFeedPosts([]); return; }
+    setFeedLoading(true);
+    try {
+      const buddyIds = buddies.map(b => b.id);
+      // Firestore 'in' supports max 30 values — batch if needed
+      const batches = [];
+      for (let i = 0; i < buddyIds.length; i += 30) {
+        batches.push(buddyIds.slice(i, i + 30));
+      }
+      let allPosts = [];
+      for (const batch of batches) {
+        const snap = await getDocs(
+          query(collection(db, 'posts'), where('authorId', 'in', batch), orderBy('createdAt', 'desc'), limit(50))
+        );
+        allPosts.push(...snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }
+      // Sort combined results by date descending
+      allPosts.sort((a, b) => {
+        const ta = a.createdAt?.toDate?.() || new Date(0);
+        const tb = b.createdAt?.toDate?.() || new Date(0);
+        return tb - ta;
+      });
+      setFeedPosts(allPosts.slice(0, 50));
+
+      // Fetch my likes
+      const likesSnap = await getDocs(
+        query(collection(db, 'postLikes'), where('userId', '==', clientData.id))
+      );
+      setLikedPosts(new Set(likesSnap.docs.map(d => d.data().postId)));
+    } catch (err) {
+      console.error('Error loading feed:', err);
+    } finally {
+      setFeedLoading(false);
+    }
+  }, [clientData, buddies]);
+
+  useEffect(() => {
+    if (buddies.length > 0 && tab === 'feed') fetchFeed();
+  }, [buddies, tab, fetchFeed]);
+
+  const toggleFeedLike = async (postId) => {
+    if (!clientData) return;
+    const myId = clientData.id;
+    const likeId = `${postId}_${myId}`;
+    const isLiked = likedPosts.has(postId);
+    const newLiked = new Set(likedPosts);
+    if (isLiked) newLiked.delete(postId); else newLiked.add(postId);
+    setLikedPosts(newLiked);
+    setFeedPosts(prev => prev.map(p =>
+      p.id === postId ? { ...p, likeCount: Math.max(0, (p.likeCount || 0) + (isLiked ? -1 : 1)) } : p
+    ));
+    try {
+      if (isLiked) {
+        await deleteDoc(doc(db, 'postLikes', likeId));
+        await updateDoc(doc(db, 'posts', postId), { likeCount: increment(-1) });
+      } else {
+        await setDoc(doc(db, 'postLikes', likeId), { postId, userId: myId, createdAt: serverTimestamp() });
+        await updateDoc(doc(db, 'posts', postId), { likeCount: increment(1) });
+        const post = feedPosts.find(p => p.id === postId);
+        if (post) createNotification(post.authorId, 'like');
+      }
+    } catch (err) {
+      console.error('Like error:', err);
+      fetchFeed();
+    }
+  };
+
+  const loadFeedComments = async (postId) => {
+    try {
+      const snap = await getDocs(
+        query(collection(db, 'postComments'), where('postId', '==', postId), orderBy('createdAt', 'asc'), limit(50))
+      );
+      setComments(prev => ({ ...prev, [postId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+    } catch (err) { console.error('Error loading comments:', err); }
+  };
+
+  const toggleFeedComments = (postId) => {
+    const newExpanded = new Set(expandedComments);
+    if (newExpanded.has(postId)) { newExpanded.delete(postId); }
+    else { newExpanded.add(postId); if (!comments[postId]) loadFeedComments(postId); }
+    setExpandedComments(newExpanded);
+  };
+
+  const handleFeedComment = async (postId) => {
+    const text = (commentText[postId] || '').trim();
+    const imgFile = commentImage[postId];
+    if ((!text && !imgFile) || !clientData) return;
+    setCommentLoading(prev => ({ ...prev, [postId]: true }));
+    try {
+      let imageURL = null;
+      if (imgFile) {
+        const imgRef = ref(storage, `comment-images/${Date.now()}_${imgFile.name}`);
+        await uploadBytes(imgRef, imgFile);
+        imageURL = await getDownloadURL(imgRef);
+      }
+      const commentData = {
+        postId, authorId: clientData.id, authorName: clientData.name || 'Unknown',
+        authorPhotoURL: clientData.photoURL || null, content: text || '', createdAt: serverTimestamp()
+      };
+      if (imageURL) commentData.imageURL = imageURL;
+      const reply = replyTo[postId];
+      if (reply) {
+        commentData.replyToId = reply.id;
+        commentData.replyToName = reply.authorName;
+      }
+      await addDoc(collection(db, 'postComments'), commentData);
+      await updateDoc(doc(db, 'posts', postId), { commentCount: increment(1) });
+      // Notify post author
+      const post = feedPosts.find(p => p.id === postId);
+      if (post) createNotification(post.authorId, 'comment');
+      // Notify @mentioned users
+      const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
+      if (mentionMatches) {
+        const notified = new Set();
+        mentionMatches.forEach(m => {
+          const name = m.slice(1).trim();
+          const client = buddies.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+          if (client && !notified.has(client.id)) {
+            notified.add(client.id);
+            createNotification(client.id, 'mention');
+          }
+        });
+      }
+      setCommentText(prev => ({ ...prev, [postId]: '' }));
+      setCommentImage(prev => ({ ...prev, [postId]: null }));
+      setCommentImagePreview(prev => ({ ...prev, [postId]: null }));
+      setReplyTo(prev => ({ ...prev, [postId]: null }));
+      if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
+      setFeedPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
+      ));
+      await loadFeedComments(postId);
+    } catch (err) {
+      console.error('Comment error:', err);
+      showToast('Failed to comment', 'error');
+    } finally {
+      setCommentLoading(prev => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  const deleteFeedComment = async (postId, commentId) => {
+    try {
+      await deleteDoc(doc(db, 'postComments', commentId));
+      await updateDoc(doc(db, 'posts', postId), { commentCount: increment(-1) });
+      setComments(prev => ({ ...prev, [postId]: (prev[postId] || []).filter(c => c.id !== commentId) }));
+      setFeedPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, commentCount: Math.max((p.commentCount || 1) - 1, 0) } : p
+      ));
+    } catch (err) {
+      console.error('Delete comment error:', err);
+      showToast('Failed to delete comment', 'error');
+    }
+  };
+
+  const handleCommentImageSelect = (postId, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
+    setCommentImage(prev => ({ ...prev, [postId]: file }));
+    const reader = new FileReader();
+    reader.onload = ev => setCommentImagePreview(prev => ({ ...prev, [postId]: ev.target.result }));
+    reader.readAsDataURL(file);
+  };
+
+  const clearCommentImage = (postId) => {
+    setCommentImage(prev => ({ ...prev, [postId]: null }));
+    setCommentImagePreview(prev => ({ ...prev, [postId]: null }));
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
+  };
+
   const pendingCount = incoming.length;
 
   if (authLoading) {
@@ -276,9 +512,13 @@ export default function CoreBuddyBuddies() {
 
         {/* Tabs */}
         <div className="bdy-tabs">
+          <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+            <span>Feed</span>
+          </button>
           <button className={`bdy-tab${tab === 'buddies' ? ' active' : ''}`} onClick={() => setTab('buddies')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>My Buddies</span>
+            <span>Buddies</span>
           </button>
           <button className={`bdy-tab${tab === 'requests' ? ' active' : ''}`} onClick={() => setTab('requests')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
@@ -295,6 +535,201 @@ export default function CoreBuddyBuddies() {
           <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
         ) : (
           <>
+            {/* ── Feed ── */}
+            {tab === 'feed' && (
+              <div className="bdy-section">
+                {buddies.length === 0 ? (
+                  <div className="bdy-empty">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+                    <h3>No buddies yet</h3>
+                    <p>Add buddies to see their posts here!</p>
+                    <button className="bdy-empty-btn" onClick={() => setTab('search')}>Find Buddies</button>
+                  </div>
+                ) : feedLoading ? (
+                  <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
+                ) : feedPosts.length === 0 ? (
+                  <div className="bdy-empty">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    <h3>No posts yet</h3>
+                    <p>Your buddies haven't posted anything yet</p>
+                  </div>
+                ) : (
+                  <div className="bdy-feed-list">
+                    {feedPosts.map(post => (
+                      <div key={post.id} className="bdy-feed-post">
+                        <div className="bdy-feed-post-header">
+                          <div className="bdy-feed-avatar" onClick={() => navigate(`/client/core-buddy/profile/${post.authorId}`)}>
+                            {post.authorPhotoURL ? (
+                              <img src={post.authorPhotoURL} alt="" />
+                            ) : (
+                              <span>{getInitials(post.authorName)}</span>
+                            )}
+                          </div>
+                          <div className="bdy-feed-meta" onClick={() => navigate(`/client/core-buddy/profile/${post.authorId}`)}>
+                            <span className="bdy-feed-name">{post.authorName}</span>
+                            <span className="bdy-feed-time">{timeAgo(post.createdAt)}</span>
+                          </div>
+                        </div>
+
+                        {/* Post content — share cards or text/image */}
+                        {post.type === 'workout_summary' && post.metadata ? (
+                          <div className="bdy-feed-card">
+                            <div className="bdy-feed-card-logo"><img src="/Logo.webp" alt="MCF" /></div>
+                            <h3 className="bdy-feed-card-title">{post.metadata.title}</h3>
+                            {post.metadata.stats?.length > 0 && (
+                              <p className="bdy-feed-card-stats">{post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}</p>
+                            )}
+                            {!post.metadata.stats?.length && post.metadata.subtitle && (
+                              <p className="bdy-feed-card-stats">{post.metadata.subtitle}</p>
+                            )}
+                            <p className="bdy-feed-card-cta">Completed a workout using Core Buddy</p>
+                          </div>
+                        ) : post.type === 'badge_earned' && post.metadata ? (
+                          <div className="bdy-feed-card">
+                            <div className="bdy-feed-card-logo bdy-feed-card-badge">
+                              {(() => { const bd = BADGE_DEFS.find(b => b.id === post.metadata.badgeId); return bd?.img ? <img src={bd.img} alt={post.metadata.title} loading="lazy" /> : <img src="/Logo.webp" alt={post.metadata.title} />; })()}
+                            </div>
+                            <h3 className="bdy-feed-card-title">{post.metadata.title}</h3>
+                            {post.metadata.badgeDesc && <p className="bdy-feed-card-stats">{post.metadata.badgeDesc}</p>}
+                            <p className="bdy-feed-card-cta">Earned a badge on Core Buddy</p>
+                          </div>
+                        ) : post.type === 'habits_summary' && post.metadata ? (
+                          <div className="bdy-feed-card">
+                            <div className="bdy-feed-card-logo"><img src="/Logo.webp" alt="MCF" /></div>
+                            <h3 className="bdy-feed-card-title">{post.metadata.title}</h3>
+                            {post.metadata.stats?.length > 0 && (
+                              <p className="bdy-feed-card-stats">{post.metadata.stats.map(s => `${s.value} ${s.label}`).join('  \u00B7  ')}</p>
+                            )}
+                            {post.metadata.subtitle && <p className="bdy-feed-card-stats">{post.metadata.subtitle}</p>}
+                            <p className="bdy-feed-card-cta">Completed daily habits with Core Buddy</p>
+                          </div>
+                        ) : (
+                          <>
+                            {post.content && <p className="bdy-feed-content">{renderWithMentions(post.content)}</p>}
+                            {post.imageURL && (
+                              <div className="bdy-feed-image"><img src={post.imageURL} alt="Post" loading="lazy" /></div>
+                            )}
+                          </>
+                        )}
+
+                        {/* Like & Comment actions */}
+                        <div className="bdy-feed-actions">
+                          <button className={`bdy-feed-action-btn${likedPosts.has(post.id) ? ' liked' : ''}`} onClick={() => toggleFeedLike(post.id)}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            <span>{post.likeCount || 0}</span>
+                          </button>
+                          <button className={`bdy-feed-action-btn${expandedComments.has(post.id) ? ' active' : ''}`} onClick={() => toggleFeedComments(post.id)}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <span>{post.commentCount || 0}</span>
+                          </button>
+                        </div>
+
+                        {/* Comments section */}
+                        {expandedComments.has(post.id) && (
+                          <div className="bdy-feed-comments">
+                            {comments[post.id]?.length > 0 ? (
+                              comments[post.id].map(c => (
+                                <div key={c.id} className="bdy-feed-comment">
+                                  <div className="bdy-feed-comment-avatar">
+                                    {c.authorPhotoURL ? <img src={c.authorPhotoURL} alt="" /> : <span>{getInitials(c.authorName)}</span>}
+                                  </div>
+                                  <div className="bdy-feed-comment-body">
+                                    <div className="bdy-feed-comment-bubble">
+                                      <span className="bdy-feed-comment-name">{c.authorName}</span>
+                                      {c.replyToName && (
+                                        <span className="bdy-feed-comment-reply-tag">
+                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+                                          {c.replyToName}
+                                        </span>
+                                      )}
+                                      {c.content && <span className="bdy-feed-comment-text">{renderWithMentions(c.content)}</span>}
+                                      {c.imageURL && <img className="bdy-feed-comment-img" src={c.imageURL} alt="Comment" loading="lazy" />}
+                                    </div>
+                                    <div className="bdy-feed-comment-row">
+                                      <span className="bdy-feed-comment-time">{timeAgo(c.createdAt)}</span>
+                                      <button className="bdy-feed-comment-reply-btn" onClick={() => setReplyTo(prev => ({ ...prev, [post.id]: { id: c.id, authorName: c.authorName } }))}>Reply</button>
+                                      {c.authorId === clientData?.id && (
+                                        <button className="bdy-feed-comment-del-btn" onClick={() => deleteFeedComment(post.id, c.id)} aria-label="Delete comment">
+                                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="bdy-feed-no-comments">No comments yet</p>
+                            )}
+
+                            {replyTo[post.id] && (
+                              <div className="bdy-feed-replying">
+                                <span>Replying to <strong>{replyTo[post.id].authorName}</strong></span>
+                                <button onClick={() => setReplyTo(prev => ({ ...prev, [post.id]: null }))} aria-label="Cancel reply">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                                </button>
+                              </div>
+                            )}
+
+                            {commentImagePreview[post.id] && (
+                              <div className="bdy-feed-comment-img-preview">
+                                <img src={commentImagePreview[post.id]} alt="Preview" />
+                                <button onClick={() => clearCommentImage(post.id)} aria-label="Remove image">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                                </button>
+                              </div>
+                            )}
+
+                            <div className="bdy-feed-comment-input" style={{ position: 'relative' }}>
+                              <button className="bdy-feed-comment-img-btn" onClick={() => commentFileRefs.current[post.id]?.click()} aria-label="Add image">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                              </button>
+                              <input
+                                ref={el => { commentFileRefs.current[post.id] = el; }}
+                                type="file" accept="image/*"
+                                onChange={e => handleCommentImageSelect(post.id, e)}
+                                hidden
+                              />
+                              <input
+                                type="text"
+                                placeholder="Comment"
+                                value={commentText[post.id] || ''}
+                                onChange={e => { setCommentText(prev => ({ ...prev, [post.id]: e.target.value })); handleMentionInput(e.target.value, post.id); }}
+                                onKeyDown={e => { if (e.key === 'Enter') handleFeedComment(post.id); }}
+                                maxLength={300}
+                              />
+                              {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
+                                <div className="bdy-feed-mention-dropdown">
+                                  {mentionResults.map(c => (
+                                    <button key={c.id} className="bdy-feed-mention-option" onClick={() => insertMention(c, post.id)}>
+                                      <div className="bdy-feed-mention-avatar">
+                                        {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                      </div>
+                                      <span>{c.name}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                              <button onClick={() => handleFeedComment(post.id)} disabled={!(commentText[post.id] || '').trim() && !commentImage[post.id] || commentLoading[post.id]}>
+                                {commentLoading[post.id] ? (
+                                  <div className="bdy-btn-spinner" />
+                                ) : (
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── My Buddies ── */}
             {tab === 'buddies' && (
               <div className="bdy-section">
