@@ -300,11 +300,11 @@ export default function Onboarding() {
     const handlePlanSelect = async (plan) => {
       if (typeof window.fbq === 'function') {
         if (plan === 'free') {
-          fbq('track', 'Lead', { content_name: 'Core Buddy Free', content_category: 'Onboarding' });
+          fbq('track', 'Lead', { content_name: 'Core Buddy Free', content_category: 'Fitness App' });
         } else {
           fbq('track', 'InitiateCheckout', {
             content_name: `Core Buddy ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
-            content_category: 'Onboarding',
+            content_category: 'Fitness App',
             value: plan === 'annual' ? 99.99 : 9.99,
             currency: 'GBP',
           });

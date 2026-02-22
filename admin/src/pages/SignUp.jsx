@@ -68,6 +68,7 @@ export default function SignUp() {
       if (typeof fbq === 'function') {
         fbq('track', 'CompleteRegistration', {
           content_name: 'Core Buddy Signup',
+          content_category: 'Fitness App',
           status: true
         });
       }
