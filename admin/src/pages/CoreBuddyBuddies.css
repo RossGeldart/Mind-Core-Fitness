@@ -91,7 +91,7 @@
 .bdy-tab.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .bdy-tab:active { transform: scale(0.97); }
