@@ -334,7 +334,7 @@ const FOCUS_ICONS = {
 export default function CoreBuddyProgrammes() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isPremium } = useTier();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -820,7 +820,7 @@ export default function CoreBuddyProgrammes() {
     const t = selectedTemplate;
     return (
       <PullToRefresh>
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'}>
         {renderHeader(t.name, () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
           <div className="pg-overview-hero">
@@ -895,7 +895,7 @@ export default function CoreBuddyProgrammes() {
 
     return (
       <PullToRefresh>
-      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page" data-theme={isDark ? 'dark' : 'light'}>
         {renderHeader('Programme', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
           {/* Progress Ring */}
@@ -1041,7 +1041,7 @@ export default function CoreBuddyProgrammes() {
     };
 
     return (
-      <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="pg-page pg-page-session" data-theme={isDark ? 'dark' : 'light'}>
         {/* Progress bar */}
         <div className="pg-session-progress">
           <div className="pg-session-progress-fill" style={{ width: `${overallProgress * 100}%` }} />

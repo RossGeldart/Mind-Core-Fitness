@@ -56,7 +56,7 @@ function getDefaultMeal() {
 
 export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
-  const { isDark, toggleTheme, accent } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Views: 'loading' | 'setup' | 'dashboard'
@@ -800,7 +800,7 @@ export default function CoreBuddyNutrition() {
 
   if (authLoading || view === 'loading') {
     return (
-      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -817,7 +817,7 @@ export default function CoreBuddyNutrition() {
   // ==================== SETUP VIEW (Macro Calculator) ====================
   if (view === 'setup') {
     return (
-      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+      <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
@@ -1018,7 +1018,7 @@ export default function CoreBuddyNutrition() {
 
   return (
     <PullToRefresh>
-    <div className="nut-page" data-theme={isDark ? 'dark' : 'light'} data-accent={accent}>
+    <div className="nut-page" data-theme={isDark ? 'dark' : 'light'}>
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
         <header className="client-header">
