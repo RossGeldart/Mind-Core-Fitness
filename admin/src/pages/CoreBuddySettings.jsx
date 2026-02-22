@@ -174,9 +174,10 @@ export default function CoreBuddySettings() {
           </h2>
           <div className="settings-accent-row">
             {[
-              { key: 'red', color: '#A12F3A', label: 'Red' },
-              { key: 'orange', color: '#FF914D', label: 'Orange' },
-              { key: 'blue', color: '#38B6FF', label: 'Blue' },
+              { key: 'red', color: '#B8313D', label: 'Red' },
+              { key: 'orange', color: '#FF8533', label: 'Orange' },
+              { key: 'blue', color: '#1AADFF', label: 'Blue' },
+              { key: 'green', color: '#C1FF72', label: 'Green' },
             ].map((c) => (
               <button
                 key={c.key}
