@@ -563,10 +563,12 @@
 }
 
 .prf-photo-overlay-img {
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 16px;
-  object-fit: contain;
+  width: 75vw;
+  height: 75vw;
+  max-width: 360px;
+  max-height: 360px;
+  border-radius: 50%;
+  object-fit: cover;
   animation: prf-overlay-scale 0.25s ease;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
