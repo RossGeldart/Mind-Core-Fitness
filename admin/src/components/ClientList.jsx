@@ -390,6 +390,63 @@ export default function ClientList() {
     return 'Block';
   };
 
+  const exportToCSV = () => {
+    const toDate = (ts) => {
+      if (!ts) return '';
+      if (ts.toDate) return ts.toDate().toLocaleDateString('en-GB');
+      return '';
+    };
+
+    const exportClients = typeFilter === 'all' ? activeSearched : filtered;
+    const label = typeFilter === 'all' ? 'all-clients'
+      : typeFilter === 'block' ? 'block-members'
+      : typeFilter === 'circuit' ? 'circuit-members'
+      : typeFilter === 'core_buddy' ? 'core-buddy'
+      : 'archived';
+
+    const headers = [
+      'Name', 'Email', 'Type', 'Status',
+      'Total Sessions', 'Sessions Remaining', 'Session Duration (min)',
+      'Weeks in Block', 'Start Date', 'End Date',
+      'Portal Access', 'Circuit Access', 'Core Buddy Access',
+      'Core Buddy Plan', 'Is Junior', 'Created At'
+    ];
+
+    const rows = exportClients.map(c => [
+      c.name || '',
+      c.email || '',
+      getTypeLabel(c),
+      c.status || 'active',
+      c.totalSessions || '',
+      getSessionsRemaining(c) || '',
+      c.sessionDuration || '',
+      c.weeksInBlock || '',
+      toDate(c.startDate),
+      toDate(c.endDate),
+      c.uid ? 'Yes' : 'No',
+      c.circuitAccess ? 'Yes' : 'No',
+      c.coreBuddyAccess ? 'Yes' : 'No',
+      c.coreBuddyPlan || '',
+      c.isJunior ? 'Yes' : 'No',
+      toDate(c.createdAt),
+    ]);
+
+    const escape = (val) => {
+      const str = String(val);
+      return str.includes(',') || str.includes('"') || str.includes('\n')
+        ? `"${str.replace(/"/g, '""')}"` : str;
+    };
+
+    const csv = [headers, ...rows].map(row => row.map(escape).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `mind-core-${label}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const searched = clients.filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.email?.toLowerCase().includes(search.toLowerCase())
@@ -684,18 +741,28 @@ export default function ClientList() {
         )}
       </div>
 
-      {/* Type Filter Dropdown */}
-      <select
-        className="client-type-select"
-        value={typeFilter}
-        onChange={e => setTypeFilter(e.target.value)}
-      >
-        <option value="all">All Clients ({activeSearched.length})</option>
-        <option value="block">Block Members ({blockClients.length})</option>
-        <option value="circuit">Circuit Members ({circuitClients.length})</option>
-        <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
-        <option value="archived">Archived ({archivedClients.length})</option>
-      </select>
+      {/* Type Filter + Export Row */}
+      <div className="client-filter-row">
+        <select
+          className="client-type-select"
+          value={typeFilter}
+          onChange={e => setTypeFilter(e.target.value)}
+        >
+          <option value="all">All Clients ({activeSearched.length})</option>
+          <option value="block">Block Members ({blockClients.length})</option>
+          <option value="circuit">Circuit Members ({circuitClients.length})</option>
+          <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
+          <option value="archived">Archived ({archivedClients.length})</option>
+        </select>
+        <button className="export-csv-btn" onClick={exportToCSV} title="Export current view to CSV">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export CSV
+        </button>
+      </div>
 
       {/* Grouped or flat list */}
       {typeFilter === 'all' ? (
