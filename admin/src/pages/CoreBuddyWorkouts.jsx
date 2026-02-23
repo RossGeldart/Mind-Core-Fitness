@@ -541,6 +541,22 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Lazy-loading video thumbnail — only sets src once the element is in viewport
+function LazyVideo({ src, ...props }) {
+  const vidRef = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = vidRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setInView(true); io.disconnect(); }
+    }, { rootMargin: '200px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <video ref={vidRef} src={inView ? src : undefined} {...props} />;
+}
+
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -561,6 +577,7 @@ export default function CoreBuddyWorkouts() {
   const [loadingExercises, setLoadingExercises] = useState(false);
   const loadingRef = useRef(false);
   const exercisesRef = useRef([]);
+  const lastPathsKeyRef = useRef(''); // tracks equipment+focus to avoid needless refetch
 
   // Generated workout
   const [workout, setWorkout] = useState([]); // [{ name, videoUrl }]
@@ -1005,6 +1022,21 @@ export default function CoreBuddyWorkouts() {
     return paths;
   };
 
+  // ---- Cached URL helpers ----
+  // Firebase signed URLs stay valid for a long time; cache them in
+  // sessionStorage so regenerating a workout doesn't re-fetch every URL.
+  const URL_CACHE_KEY = 'mcf_exercise_urls';
+
+  const readUrlCache = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem(URL_CACHE_KEY) || '{}');
+    } catch { return {}; }
+  };
+
+  const writeUrlCache = (cache) => {
+    try { sessionStorage.setItem(URL_CACHE_KEY, JSON.stringify(cache)); } catch { /* quota */ }
+  };
+
   // Load exercises from Firebase Storage
   const loadExercises = async () => {
     if (loadingRef.current) {
@@ -1013,6 +1045,13 @@ export default function CoreBuddyWorkouts() {
       }
       return exercisesRef.current;
     }
+
+    // If settings haven't changed, reuse the in-memory pool
+    const pathsKey = getStoragePaths().sort().join('|');
+    if (exercisesRef.current.length > 0 && lastPathsKeyRef.current === pathsKey) {
+      return exercisesRef.current;
+    }
+
     loadingRef.current = true;
     setLoadingExercises(true);
     try {
@@ -1060,15 +1099,25 @@ export default function CoreBuddyWorkouts() {
         return true;
       });
 
+      // Resolve download URLs – use sessionStorage cache to skip repeat fetches
+      const urlCache = readUrlCache();
       const exercises = await Promise.all(
         uniqueItems.map(async (item) => {
-          const url = await getDownloadURL(item);
+          const cacheKey = item.fullPath;
+          let url = urlCache[cacheKey];
+          if (!url) {
+            url = await getDownloadURL(item);
+            urlCache[cacheKey] = url;
+          }
           const name = toTitleCase(item.name.replace(/\.(mp4|gif)$/i, ''));
           const isGif = /\.gif$/i.test(item.name);
           return { name, videoUrl: url, isGif };
         })
       );
+      writeUrlCache(urlCache);
+
       exercisesRef.current = exercises;
+      lastPathsKeyRef.current = pathsKey;
       setAllExercises(exercises);
       loadingRef.current = false;
       setLoadingExercises(false);
@@ -1090,8 +1139,6 @@ export default function CoreBuddyWorkouts() {
     if (freeRandomiserLimitReached) return;
     saveLastSettings();
     setView('spinning');
-    // Clear cache so new selections load fresh exercises
-    exercisesRef.current = [];
     const exercises = await loadExercises();
     if (exercises.length === 0) {
       setView('setup');
@@ -2139,7 +2186,7 @@ export default function CoreBuddyWorkouts() {
                   {ex.isGif ? (
                     <img src={ex.videoUrl} alt={ex.name} loading="lazy" />
                   ) : (
-                    <video src={`${ex.videoUrl}#t=0.1`} muted playsInline preload="auto" />
+                    <LazyVideo src={`${ex.videoUrl}#t=0.1`} muted playsInline preload="metadata" />
                   )}
                 </div>
                 <span className="wk-preview-name">{ex.name}</span>
