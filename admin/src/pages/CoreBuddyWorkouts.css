@@ -2370,14 +2370,36 @@
 }
 
 .wk-rest-screen {
+  position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* Dimmed next-exercise video playing behind the overlay */
+.wk-rest-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+  filter: blur(2px);
+}
+
+/* Frosted glass overlay on top of the preview video */
+.wk-rest-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  gap: 16px;
+  background: rgba(10, 10, 30, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .wk-rest-label {
@@ -2389,10 +2411,30 @@
   text-shadow: 0 0 30px rgba(66, 165, 245, 0.4);
 }
 
-.wk-next-label {
+/* "Up Next" badge + exercise name */
+.wk-rest-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.wk-rest-next-tag {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(66, 165, 245, 0.7);
+  text-transform: uppercase;
+}
+
+.wk-rest-next-name {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Rest screen always dark background, so keep white text */
