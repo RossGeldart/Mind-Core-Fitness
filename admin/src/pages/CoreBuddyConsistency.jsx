@@ -23,8 +23,18 @@ const DEFAULT_HABITS = [
 
 // Icon for custom habits (sparkle)
 const CUSTOM_ICON = 'M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z';
-const CUSTOM_COLOR = '#e91e63';
-const CUSTOM_DARK_COLOR = '#FF4D88';
+const CUSTOM_COLORS = [
+  { color: '#e91e63', darkColor: '#FF4D88' },   // pink
+  { color: '#00bcd4', darkColor: '#26D9EC' },   // cyan
+  { color: '#ff5722', darkColor: '#FF7A50' },   // deep orange
+  { color: '#009688', darkColor: '#26B8A8' },   // teal
+  { color: '#ffc107', darkColor: '#FFD54F' },   // amber
+  { color: '#673ab7', darkColor: '#9575CD' },   // deep purple
+  { color: '#8bc34a', darkColor: '#AED581' },   // light green
+  { color: '#f44336', darkColor: '#EF5350' },   // red
+  { color: '#3f51b5', darkColor: '#7986CB' },   // indigo
+  { color: '#795548', darkColor: '#A1887F' },   // brown
+];
 
 const HOLD_DURATION = 700; // ms
 const RING_RADIUS = 42;
@@ -106,7 +116,7 @@ export default function CoreBuddyConsistency() {
   const resolveColor = (light, dark) => isDark && dark ? dark : light;
   const allHabitsRaw = [
     ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)).map(h => ({ ...h, color: resolveColor(h.color, h.darkColor) })),
-    ...customHabits.map(h => ({ key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(CUSTOM_COLOR, CUSTOM_DARK_COLOR), isCustom: true, id: h.id })),
+    ...customHabits.map((h, i) => { const c = CUSTOM_COLORS[i % CUSTOM_COLORS.length]; return { key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(c.color, c.darkColor), isCustom: true, id: h.id }; }),
   ];
   const allHabits = isPremium ? allHabitsRaw : allHabitsRaw.slice(0, FREE_HABIT_LIMIT);
 
