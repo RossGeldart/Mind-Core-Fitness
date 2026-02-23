@@ -297,6 +297,10 @@ export default function CoreBuddyNutrition() {
       exerciseAdd: exerciseAddOns[formData.trainingFrequency],
       tdee: Math.round(tdee)
     });
+    // Scroll results into view after React renders
+    setTimeout(() => {
+      document.querySelector('.nut-calc-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const saveTargets = async () => {
