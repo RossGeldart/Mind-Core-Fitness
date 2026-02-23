@@ -14,6 +14,8 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import './CoreBuddySettings.css';
 
 const NOTIF_PREFS = [
+  { key: 'daily_morning', label: 'Morning motivation', desc: 'Daily 6 AM motivational nudge to start your day' },
+  { key: 'daily_evening', label: 'Evening check-in', desc: 'Daily 6 PM reminder to log your habits' },
   { key: 'buddy_request', label: 'Buddy requests', desc: 'When someone sends you a buddy request' },
   { key: 'buddy_accept', label: 'Buddy accepted', desc: 'When your buddy request is accepted' },
   { key: 'like', label: 'Likes', desc: 'When someone likes your post' },
@@ -31,6 +33,8 @@ export default function CoreBuddySettings() {
   const [pushLoading, setPushLoading] = useState(false);
   const [permissionState, setPermissionState] = useState('default');
   const [notifPrefs, setNotifPrefs] = useState({
+    daily_morning: true,
+    daily_evening: true,
     buddy_request: true,
     buddy_accept: true,
     like: true,
