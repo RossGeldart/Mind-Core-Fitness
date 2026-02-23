@@ -338,7 +338,7 @@
 
 .nut-toggle-group button.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .nut-input-unit {
@@ -374,7 +374,7 @@
 
 .nut-unit-toggle button.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .nut-height-imperial {
@@ -466,7 +466,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
   font-family: 'Montserrat', sans-serif;
@@ -544,7 +544,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
   font-family: 'Montserrat', sans-serif;
@@ -866,7 +866,7 @@
 
 .nut-meal-add-btn:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .nut-meal-add-btn:active {
@@ -1695,7 +1695,7 @@
   width: 100%;
   padding: 16px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
   font-family: 'Montserrat', sans-serif;
@@ -1762,7 +1762,7 @@
 .nut-barcode-manual button {
   padding: 12px 18px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
@@ -1896,7 +1896,7 @@
 .nut-quick-btn.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .nut-mode-toggle {
@@ -1923,7 +1923,7 @@
 
 .nut-mode-toggle button.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 600;
 }
 
@@ -1955,7 +1955,7 @@
 
 .nut-stepper-btn:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .nut-stepper-btn:active {
@@ -2013,7 +2013,7 @@
   flex: 1;
   padding: 12px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
@@ -2077,7 +2077,7 @@
 .nut-search-bar button {
   padding: 12px 18px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
