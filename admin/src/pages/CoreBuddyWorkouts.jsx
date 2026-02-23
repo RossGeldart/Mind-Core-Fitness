@@ -509,6 +509,27 @@ const LEVELS = [
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
+// Advanced core exercises excluded from beginner-level randomiser.
+// Matched case-insensitively against exercise names loaded from Firebase Storage.
+const ADVANCED_CORE_EXERCISES = new Set([
+  'single leg v-up',
+  'hollow hold to v-sit',
+  'reverse crunch to leg raise',
+  'side plank rotation',
+  'hip dips plank',
+  'alternating cross body v-up',
+  'alternating cross body v up',
+  'bent hollow hold',
+  'heels elevated glute bridge',
+  'hollow body hold',
+  'hollow body rock',
+  'star side plank',
+  'straddle leg lift',
+  'leg raise to hip lift',
+  'scorpion kicks',
+  'seated v hold',
+]);
+
 const FOCUS_COLORS = {
   core: '#e85d04',
   upper: '#2196f3',
@@ -1165,7 +1186,12 @@ export default function CoreBuddyWorkouts() {
     }
     numRounds = Math.max(2, numRounds);
 
-    const shuffled = shuffleArray(exercises);
+    // Exclude advanced core moves for beginner level
+    const pool = level === 'beginner'
+      ? exercises.filter(e => !ADVANCED_CORE_EXERCISES.has(e.name.toLowerCase()))
+      : exercises;
+
+    const shuffled = shuffleArray(pool);
     const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
 
     setWorkout(selected);
