@@ -2321,8 +2321,21 @@ export default function CoreBuddyWorkouts() {
             )
           ) : (
             <div className="wk-rest-screen">
-              <span className="wk-rest-label">REST</span>
-              {nextEx && <span className="wk-next-label">Next: {nextEx.name}</span>}
+              {/* Dimmed preview of next exercise behind overlay */}
+              {nextEx && (
+                nextEx.isGif
+                  ? <img className="wk-rest-preview" src={nextEx.videoUrl} alt={nextEx.name} />
+                  : <video className="wk-rest-preview" src={nextEx.videoUrl} autoPlay loop muted playsInline />
+              )}
+              <div className="wk-rest-overlay">
+                <span className="wk-rest-label">REST</span>
+                {nextEx && (
+                  <div className="wk-rest-next">
+                    <span className="wk-rest-next-tag">UP NEXT</span>
+                    <span className="wk-rest-next-name">{nextEx.name}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
