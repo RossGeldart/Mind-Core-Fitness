@@ -2377,64 +2377,67 @@
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
-/* Dimmed next-exercise video playing behind the overlay */
+/* Next-exercise video playing behind the overlay — clearly visible */
 .wk-rest-preview {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.25;
-  filter: blur(2px);
+  opacity: 0.7;
 }
 
-/* Frosted glass overlay on top of the preview video */
+/* Light scrim so text stays readable without hiding the video */
 .wk-rest-overlay {
   position: absolute;
   inset: 0;
+  background: rgba(10, 10, 30, 0.2);
+}
+
+/* Text block pinned to bottom-left */
+.wk-rest-text {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background: rgba(10, 10, 30, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .wk-rest-label {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 2.5rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: #42a5f5;
-  letter-spacing: 8px;
-  text-shadow: 0 0 30px rgba(66, 165, 245, 0.4);
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(66, 165, 245, 0.5), 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* "Up Next" badge + exercise name */
 .wk-rest-next {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .wk-rest-next-tag {
   font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 3px;
-  color: rgba(66, 165, 245, 0.7);
+  color: rgba(66, 165, 245, 0.85);
   text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 .wk-rest-next-name {
   font-family: 'Roboto', sans-serif;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* Rest screen always dark background, so keep white text */

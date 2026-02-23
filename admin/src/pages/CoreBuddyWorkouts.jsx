@@ -2327,7 +2327,8 @@ export default function CoreBuddyWorkouts() {
                   ? <img className="wk-rest-preview" src={nextEx.videoUrl} alt={nextEx.name} />
                   : <video className="wk-rest-preview" src={nextEx.videoUrl} autoPlay loop muted playsInline />
               )}
-              <div className="wk-rest-overlay">
+              <div className="wk-rest-overlay" />
+              <div className="wk-rest-text">
                 <span className="wk-rest-label">REST</span>
                 {nextEx && (
                   <div className="wk-rest-next">
