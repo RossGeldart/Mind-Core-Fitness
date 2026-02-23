@@ -222,37 +222,6 @@
   cursor: not-allowed;
 }
 
-/* Calendar dropdown in top zone */
-.nut-calendar-dark {
-  background: rgba(30, 35, 50, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 16px;
-}
-
-.nut-calendar-dark .nut-cal-header span {
-  color: #fff;
-}
-
-.nut-calendar-dark .nut-cal-header button {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.nut-calendar-dark .nut-cal-days-header span {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.nut-calendar-dark .nut-cal-day {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.nut-calendar-dark .nut-cal-day:hover:not(:disabled):not(.selected) {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.nut-calendar-dark .nut-cal-day.today {
-  border-color: var(--color-primary);
-}
 
 .nut-settings-btn {
   background: none;

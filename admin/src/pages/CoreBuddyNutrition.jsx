@@ -1076,7 +1076,7 @@ export default function CoreBuddyNutrition() {
 
           {/* Calendar Dropdown */}
           {calendarOpen && (
-            <div className="nut-calendar nut-calendar-dark">
+            <div className="nut-calendar">
               <div className="nut-cal-header">
                 <button onClick={() => setCalendarMonth(p => {
                   let m = p.month - 1, y = p.year;
