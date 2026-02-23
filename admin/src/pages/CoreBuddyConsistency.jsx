@@ -89,6 +89,7 @@ export default function CoreBuddyConsistency() {
   const [newHabitName, setNewHabitName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [hiddenDefaults, setHiddenDefaults] = useState([]);
+  const [savedHabits, setSavedHabits] = useState([]);
   const [holdingHabit, setHoldingHabit] = useState(null);
   const holdTimerRef = useRef(null);
   const holdStartRef = useRef(null);
@@ -146,6 +147,7 @@ export default function CoreBuddyConsistency() {
           const data = customDoc.data();
           setCustomHabits(data.habits || []);
           setHiddenDefaults(data.hiddenDefaults || []);
+          setSavedHabits(data.savedHabits || []);
         }
 
         // Calculate streak
@@ -419,6 +421,7 @@ export default function CoreBuddyConsistency() {
         clientId: clientData.id,
         habits: updated,
         hiddenDefaults,
+        savedHabits,
       }, { merge: true });
       setCustomHabits(updated);
       setNewHabitName('');
@@ -432,22 +435,68 @@ export default function CoreBuddyConsistency() {
     }
   };
 
-  // Delete custom habit
+  // Delete custom habit (save label for quick re-add later)
   const deleteCustomHabit = async (habitId) => {
     if (!clientData?.id) return;
+    const removed = customHabits.find(h => h.id === habitId);
     const updated = customHabits.filter(h => h.id !== habitId);
+    const updatedSaved = removed && !savedHabits.includes(removed.label)
+      ? [...savedHabits, removed.label]
+      : savedHabits;
     try {
       await setDoc(doc(db, 'customHabits', clientData.id), {
         clientId: clientData.id,
         habits: updated,
         hiddenDefaults,
+        savedHabits: updatedSaved,
       }, { merge: true });
       setCustomHabits(updated);
+      setSavedHabits(updatedSaved);
       setDeleteConfirm(null);
-      showToast('Habit removed', 'success');
+      showToast('Habit saved for later', 'success');
     } catch (err) {
       console.error('Error deleting habit:', err);
       showToast('Failed to remove', 'error');
+    }
+  };
+
+  // Re-add a saved habit
+  const reAddSavedHabit = async (label) => {
+    if (!clientData?.id) return;
+    const id = Date.now().toString(36);
+    const updatedHabits = [...customHabits, { id, label }];
+    const updatedSaved = savedHabits.filter(s => s !== label);
+    try {
+      await setDoc(doc(db, 'customHabits', clientData.id), {
+        clientId: clientData.id,
+        habits: updatedHabits,
+        hiddenDefaults,
+        savedHabits: updatedSaved,
+      }, { merge: true });
+      setCustomHabits(updatedHabits);
+      setSavedHabits(updatedSaved);
+      setShowAddModal(false);
+      showToast(`Added "${label}"`, 'success');
+    } catch (err) {
+      console.error('Error re-adding habit:', err);
+      showToast('Failed to add', 'error');
+    }
+  };
+
+  // Remove a saved habit permanently
+  const removeSavedHabit = async (label) => {
+    if (!clientData?.id) return;
+    const updatedSaved = savedHabits.filter(s => s !== label);
+    try {
+      await setDoc(doc(db, 'customHabits', clientData.id), {
+        clientId: clientData.id,
+        habits: customHabits,
+        hiddenDefaults,
+        savedHabits: updatedSaved,
+      }, { merge: true });
+      setSavedHabits(updatedSaved);
+    } catch (err) {
+      console.error('Error removing saved habit:', err);
     }
   };
 
@@ -460,6 +509,7 @@ export default function CoreBuddyConsistency() {
         clientId: clientData.id,
         habits: customHabits,
         hiddenDefaults: updated,
+        savedHabits,
       }, { merge: true });
       setHiddenDefaults(updated);
       setDeleteConfirm(null);
@@ -830,6 +880,19 @@ export default function CoreBuddyConsistency() {
           <div className="cbc-modal" onClick={e => e.stopPropagation()}>
             <h3 className="cbc-modal-title">Add Habit</h3>
             <p className="cbc-modal-desc">Track something personal to your routine.</p>
+            {savedHabits.length > 0 && (
+              <div className="cbc-saved-habits">
+                <span className="cbc-saved-label">Quick add</span>
+                <div className="cbc-saved-chips">
+                  {savedHabits.map(label => (
+                    <div key={label} className="cbc-saved-chip">
+                      <button className="cbc-saved-chip-add" onClick={() => reAddSavedHabit(label)}>{label}</button>
+                      <button className="cbc-saved-chip-remove" onClick={() => removeSavedHabit(label)} aria-label={`Remove ${label}`}>&times;</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <input
               className="cbc-modal-input"
               type="text"

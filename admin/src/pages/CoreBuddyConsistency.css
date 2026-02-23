@@ -563,6 +563,73 @@
   margin: 0 0 16px 0;
 }
 
+.cbc-saved-habits {
+  margin-bottom: 16px;
+}
+
+.cbc-saved-label {
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.cbc-saved-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cbc-saved-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  background: rgba(153, 49, 60, 0.1);
+  border: 1px solid rgba(153, 49, 60, 0.25);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+[data-theme="dark"] .cbc-saved-chip {
+  background: rgba(232, 71, 90, 0.12);
+  border-color: rgba(232, 71, 90, 0.25);
+}
+
+.cbc-saved-chip-add {
+  padding: 7px 4px 7px 14px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.cbc-saved-chip-remove {
+  padding: 7px 10px 7px 4px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.cbc-saved-chip-remove:hover {
+  opacity: 1;
+  color: #d32f2f;
+}
+
 .cbc-modal-input {
   width: 100%;
   padding: 14px;
