@@ -1527,12 +1527,18 @@ export default function CoreBuddyWorkouts() {
   };
 
   // Audio helpers (Web Audio API for beeps)
+  // The AudioContext can become 'suspended' on mobile browsers when the page
+  // stops producing audio (e.g. navigating back from the workout).  We must
+  // resume it on every play attempt so beeps keep working after returning to
+  // the randomiser screen.
   const audioCtxRef = useRef(null);
   const getAudioCtx = () => {
-    if (!audioCtxRef.current) {
+    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
       audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
     }
-    return audioCtxRef.current;
+    const ctx = audioCtxRef.current;
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
   };
 
   const playBeep = () => {
