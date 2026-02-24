@@ -158,12 +158,6 @@ export default function Leaderboard() {
   useEffect(() => {
     if (clientData) {
       setOptedIn(clientData.leaderboardOptIn === true);
-      // Auto-award leaderboard badge if already opted in
-      if (clientData.leaderboardOptIn === true) {
-        awardBadge('leaderboard_join', clientData).then(badge => {
-          if (badge) setBadgeCelebration(badge);
-        });
-      }
     }
   }, [clientData]);
 
