@@ -736,6 +736,39 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(153,49,60,0.3);
         }
+
+        /* ---- Blog category filter ---- */
+        .blog-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+        .blog-filter-btn {
+            padding: 9px 22px;
+            border-radius: 30px;
+            border: 2px solid var(--card-border);
+            background: #ffffff;
+            color: var(--text-muted);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .blog-filter-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+        .blog-filter-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #ffffff;
+        }
+        .blog-card.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
