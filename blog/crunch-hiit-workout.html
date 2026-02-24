@@ -338,6 +338,16 @@
             font-weight: 500;
         }
 
+        .article-views {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .article-views::before {
+            content: "·";
+            margin-right: 16px;
+        }
+
         .article-date {
             font-size: 0.9rem;
             color: #aaa;
@@ -1243,6 +1253,7 @@
                 <span class="article-category">Training</span>
                 <span class="article-series">Core HIIT Series - Part 1</span>
                 <span class="article-date">January 28, 2026</span>
+                <span class="article-views"><span id="blog-view-count"></span></span>
             </div>
             <h1 class="article-title">Crunch HIIT Workout | Crunch & Twist (Part 1)</h1>
             <p class="article-excerpt">Combine three crunch-based moves into a fast-paced 10-minute circuit that hits your abs from multiple angles.</p>
@@ -1495,5 +1506,6 @@
         </div>
         <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
     </footer>
+    <script defer src="blog-views.js"></script>
 </body>
 </html>
