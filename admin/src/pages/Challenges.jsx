@@ -56,24 +56,32 @@ const DIFF_COLOURS = { easy: '#34C759', medium: '#FF9500', hard: '#FF3B30' };
 /* ── Progress computation ── */
 async function computeProgress(challenge, clientId, startDate) {
   const start = startDate instanceof Timestamp ? startDate : Timestamp.fromDate(new Date(startDate));
-  const now = Timestamp.now();
+  const startMs = start.toDate().getTime();
+  const nowMs = Date.now();
+
+  // Fetch all workout logs for this client, then filter by date in JS.
+  // This avoids a composite-index requirement (clientId + completedAt range)
+  // that would cause the query to fail silently without the index deployed.
+  const fetchWorkoutLogs = async () => {
+    const q = query(collection(db, 'workoutLogs'),
+      where('clientId', '==', clientId));
+    const snap = await getDocs(q);
+    return snap.docs.filter(d => {
+      const ts = d.data().completedAt;
+      if (!ts) return false;
+      const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+      return ms >= startMs && ms <= nowMs;
+    });
+  };
 
   switch (challenge.type) {
     case 'workouts': {
-      const q = query(collection(db, 'workoutLogs'),
-        where('clientId', '==', clientId),
-        where('completedAt', '>=', start),
-        where('completedAt', '<=', now));
-      const snap = await getDocs(q);
-      return snap.size;
+      const docs = await fetchWorkoutLogs();
+      return docs.length;
     }
     case 'minutes': {
-      const q = query(collection(db, 'workoutLogs'),
-        where('clientId', '==', clientId),
-        where('completedAt', '>=', start),
-        where('completedAt', '<=', now));
-      const snap = await getDocs(q);
-      return snap.docs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
+      const docs = await fetchWorkoutLogs();
+      return docs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
     }
     case 'habits_perfect': {
       const startStr = start.toDate().toISOString().slice(0, 10);
@@ -89,12 +97,8 @@ async function computeProgress(challenge, clientId, startDate) {
       }).length;
     }
     case 'streak': {
-      const q = query(collection(db, 'workoutLogs'),
-        where('clientId', '==', clientId),
-        where('completedAt', '>=', start),
-        where('completedAt', '<=', now));
-      const snap = await getDocs(q);
-      const dates = new Set(snap.docs.map(d =>
+      const docs = await fetchWorkoutLogs();
+      const dates = new Set(docs.map(d =>
         d.data().completedAt.toDate().toISOString().slice(0, 10)));
       let streak = 0;
       const day = new Date(start.toDate());
