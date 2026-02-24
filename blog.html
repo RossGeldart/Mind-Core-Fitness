@@ -789,6 +789,15 @@
     <!-- Blog Posts -->
     <section class="blog-section">
         <div class="container">
+            <!-- Category Filter -->
+            <div class="blog-filter-bar" id="blogFilterBar" role="group" aria-label="Filter posts by category">
+                <button class="blog-filter-btn active" data-filter="all">All Posts</button>
+                <button class="blog-filter-btn" data-filter="Training">Training</button>
+                <button class="blog-filter-btn" data-filter="Mindset">Mindset</button>
+                <button class="blog-filter-btn" data-filter="Nutrition">Nutrition</button>
+                <button class="blog-filter-btn" data-filter="Success Story">Success Story</button>
+                <button class="blog-filter-btn" data-filter="Core Buddy">Core Buddy</button>
+            </div>
             <div class="blog-grid" id="blogGrid">
                 <!-- Blog Post: What Is Core Buddy? -->
                 <article class="blog-card">
@@ -1353,6 +1362,30 @@
                 });
             });
         }
+
+        // Blog category filter
+        (function() {
+            // Tag each card with category from its existing span
+            document.querySelectorAll('.blog-card').forEach(function(card) {
+                var cat = card.querySelector('.blog-card-category');
+                if (cat) card.dataset.category = cat.textContent.trim();
+            });
+
+            document.querySelectorAll('.blog-filter-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.blog-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    var filter = this.dataset.filter;
+                    document.querySelectorAll('.blog-card').forEach(function(card) {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        })();
     </script>
 </body>
 </html>
