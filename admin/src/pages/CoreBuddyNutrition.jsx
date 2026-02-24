@@ -639,8 +639,16 @@ export default function CoreBuddyNutrition() {
   const fetchProductByBarcode = async (barcode) => {
     setBarcodeLooking(true);
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}?fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (res.status === 404) {
+        showToast('Product not found. Try search or manual entry.', 'error');
+        setBarcodeLooking(false);
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.status === 'success' || data.status === 1 || data.product) {
@@ -665,7 +673,11 @@ export default function CoreBuddyNutrition() {
       }
     } catch (err) {
       console.error('Barcode lookup error:', err);
-      showToast('Failed to look up product. Check your connection.', 'error');
+      if (err.name === 'AbortError') {
+        showToast('Lookup timed out. Check your connection and try again.', 'error');
+      } else {
+        showToast('Failed to look up product. Check your connection.', 'error');
+      }
     }
     setBarcodeLooking(false);
   };
