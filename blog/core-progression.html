@@ -332,6 +332,16 @@
             color: var(--accent-color);
         }
 
+        .article-views {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .article-views::before {
+            content: "·";
+            margin-right: 16px;
+        }
+
         .article-date {
             font-size: 0.9rem;
             color: #aaa;
@@ -1367,6 +1377,7 @@
                 <span class="article-category">Training</span>
                 <span class="article-series">Core Strength Series - Part 6</span>
                 <span class="article-date">January 27, 2026</span>
+                <span class="article-views"><span id="blog-view-count"></span></span>
             </div>
             <h1 class="article-title">Core Progression: How to Level Up Your Core Training Safely</h1>
             <p class="article-excerpt">Core training isn't about repeating the same plank every week. If you want your strength to keep improving, you need a smart, progressive approach.</p>
@@ -1809,5 +1820,6 @@
         </div>
         <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
     </footer>
+    <script defer src="blog-views.js"></script>
 </body>
 </html>
