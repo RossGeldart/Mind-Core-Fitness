@@ -27,7 +27,7 @@ const BADGE_DEFS = [
   // Streak badges
   { id: 'streak_2', img: streak2Badge, name: '2 Week Streak', desc: 'Work out for 2 weeks in a row', category: 'streaks', threshold: 2 },
   { id: 'streak_4', img: streak4Badge, name: 'Month Strong', desc: 'Work out for 4 weeks in a row', category: 'streaks', threshold: 4 },
-  { id: 'streak_8', img: streak8Badge, name: 'Iron Will', desc: 'Work out for 8 weeks in a row', category: 'streaks', threshold: 8 },
+  { id: 'streak_8', img: streak8Badge, name: '8 Week Warrior', desc: 'Work out for 8 weeks in a row', category: 'streaks', threshold: 8 },
   // Nutrition badges
   { id: 'nutrition_7', img: nutrition7Badge, name: 'Macro Master', desc: 'Hit your macro targets 7 days in a row', category: 'nutrition', threshold: 7 },
   // Leaderboard badges

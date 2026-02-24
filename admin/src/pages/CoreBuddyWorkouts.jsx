@@ -1300,6 +1300,7 @@ export default function CoreBuddyWorkouts() {
       setLevelBreakdown(lb => ({ ...lb, [level]: (lb[level] || 0) + 1 }));
 
       // Check workout count badges
+      let celebrationBadge = null;
       const workoutThresholds = [
         { count: 1, id: 'first_workout' },
         { count: 10, id: 'workouts_10' },
@@ -1310,23 +1311,28 @@ export default function CoreBuddyWorkouts() {
       for (const t of workoutThresholds) {
         if (newTotal >= t.count) {
           const awarded = await awardBadge(t.id, clientData);
-          if (awarded) { setBadgeCelebration(awarded); break; }
+          if (awarded) { celebrationBadge = awarded; break; }
         }
       }
 
-      // Check streak badges (streak is already calculated in state)
-      const newStreak = streak + (weeklyCount === 0 ? 1 : 0); // streak bumps if first workout of the week
-      const streakThresholds = [
-        { weeks: 2, id: 'streak_2' },
-        { weeks: 4, id: 'streak_4' },
-        { weeks: 8, id: 'streak_8' },
-      ];
-      for (const t of streakThresholds) {
-        if (newStreak >= t.weeks) {
-          const awarded = await awardBadge(t.id, clientData);
-          if (awarded && !badgeCelebration) setBadgeCelebration(awarded);
+      // Check streak badges — only if no workout badge was just awarded
+      // (streak is calculated on page load; offset by 1 if this is the first workout of the week)
+      if (!celebrationBadge) {
+        const newStreak = streak + (weeklyCount === 0 ? 1 : 0);
+        const streakThresholds = [
+          { weeks: 8, id: 'streak_8' },
+          { weeks: 4, id: 'streak_4' },
+          { weeks: 2, id: 'streak_2' },
+        ];
+        for (const t of streakThresholds) {
+          if (newStreak >= t.weeks) {
+            const awarded = await awardBadge(t.id, clientData);
+            if (awarded) { celebrationBadge = awarded; break; }
+          }
         }
       }
+
+      if (celebrationBadge) setBadgeCelebration(celebrationBadge);
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
