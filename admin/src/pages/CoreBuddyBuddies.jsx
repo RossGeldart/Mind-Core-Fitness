@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
-  updateDoc, orderBy, limit, increment, serverTimestamp, Timestamp
+  updateDoc, increment, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -319,7 +319,7 @@ export default function CoreBuddyBuddies() {
       let allPosts = [];
       for (const batch of batches) {
         const snap = await getDocs(
-          query(collection(db, 'posts'), where('authorId', 'in', batch), orderBy('createdAt', 'desc'), limit(50))
+          query(collection(db, 'posts'), where('authorId', 'in', batch))
         );
         allPosts.push(...snap.docs.map(d => ({ id: d.id, ...d.data() })));
       }
@@ -389,9 +389,17 @@ export default function CoreBuddyBuddies() {
   const loadFeedComments = async (postId) => {
     try {
       const snap = await getDocs(
-        query(collection(db, 'postComments'), where('postId', '==', postId), orderBy('createdAt', 'asc'), limit(50))
+        query(collection(db, 'postComments'), where('postId', '==', postId))
       );
-      setComments(prev => ({ ...prev, [postId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+      const sorted = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || new Date(0);
+          const tb = b.createdAt?.toDate?.() || new Date(0);
+          return ta - tb;
+        })
+        .slice(0, 50);
+      setComments(prev => ({ ...prev, [postId]: sorted }));
     } catch (err) { console.error('Error loading comments:', err); }
   };
 

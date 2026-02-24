@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc,
-  addDoc, deleteDoc, orderBy, limit, increment, serverTimestamp, onSnapshot,
+  addDoc, deleteDoc, increment, serverTimestamp, onSnapshot,
   writeBatch
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -876,12 +876,18 @@ export default function CoreBuddyDashboard() {
       const postsSnap = await getDocs(
         query(
           collection(db, 'posts'),
-          where('authorId', '==', clientData.id),
-          orderBy('createdAt', 'desc'),
-          limit(30)
+          where('authorId', '==', clientData.id)
         )
       );
-      setJourneyPosts(postsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const sortedPosts = postsSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || new Date(0);
+          const tb = b.createdAt?.toDate?.() || new Date(0);
+          return tb - ta;
+        })
+        .slice(0, 30);
+      setJourneyPosts(sortedPosts);
 
       const likesSnap = await getDocs(
         query(collection(db, 'postLikes'), where('userId', '==', clientData.id))
@@ -1008,9 +1014,17 @@ export default function CoreBuddyDashboard() {
   const loadJourneyComments = async (postId) => {
     try {
       const snap = await getDocs(
-        query(collection(db, 'postComments'), where('postId', '==', postId), orderBy('createdAt', 'asc'), limit(50))
+        query(collection(db, 'postComments'), where('postId', '==', postId))
       );
-      setComments(prev => ({ ...prev, [postId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+      const sorted = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || new Date(0);
+          const tb = b.createdAt?.toDate?.() || new Date(0);
+          return ta - tb;
+        })
+        .slice(0, 50);
+      setComments(prev => ({ ...prev, [postId]: sorted }));
     } catch (err) { console.error('Error loading comments:', err); }
   };
 

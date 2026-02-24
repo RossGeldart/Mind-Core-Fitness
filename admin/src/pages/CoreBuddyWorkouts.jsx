@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, serverTimestamp, orderBy, limit as firestoreLimit } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -869,12 +869,16 @@ export default function CoreBuddyWorkouts() {
       try {
         const q = query(
           collection(db, 'workoutLogs'),
-          where('clientId', '==', clientData.id),
-          orderBy('completedAt', 'desc'),
-          firestoreLimit(20)
+          where('clientId', '==', clientData.id)
         );
         const snap = await getDocs(q);
-        const all = snap.docs.map(d => d.data());
+        const all = snap.docs.map(d => d.data())
+          .sort((a, b) => {
+            const ta = a.completedAt?.toDate?.() || new Date(0);
+            const tb = b.completedAt?.toDate?.() || new Date(0);
+            return tb - ta;
+          })
+          .slice(0, 20);
         // Recent randomiser-only for hub display
         const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
         setRecentWorkouts(randomiser.slice(0, 3));

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   collection, query, where, getDocs, getDoc, doc, setDoc, deleteDoc,
-  addDoc, updateDoc, orderBy, limit, increment, serverTimestamp, Timestamp
+  addDoc, updateDoc, increment, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -358,12 +358,18 @@ export default function CoreBuddyProfile() {
       const postsSnap = await getDocs(
         query(
           collection(db, 'posts'),
-          where('authorId', '==', userId),
-          orderBy('createdAt', 'desc'),
-          limit(30)
+          where('authorId', '==', userId)
         )
       );
-      setJourneyPosts(postsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const sortedPosts = postsSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || new Date(0);
+          const tb = b.createdAt?.toDate?.() || new Date(0);
+          return tb - ta;
+        })
+        .slice(0, 30);
+      setJourneyPosts(sortedPosts);
 
       // Check which posts current user liked
       if (clientData) {
@@ -437,12 +443,18 @@ export default function CoreBuddyProfile() {
       const snap = await getDocs(
         query(
           collection(db, 'postComments'),
-          where('postId', '==', postId),
-          orderBy('createdAt', 'asc'),
-          limit(50)
+          where('postId', '==', postId)
         )
       );
-      setComments(prev => ({ ...prev, [postId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+      const sorted = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || new Date(0);
+          const tb = b.createdAt?.toDate?.() || new Date(0);
+          return ta - tb;
+        })
+        .slice(0, 50);
+      setComments(prev => ({ ...prev, [postId]: sorted }));
     } catch (err) {
       console.error('Error loading comments:', err);
     }
