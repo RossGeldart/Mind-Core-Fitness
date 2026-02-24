@@ -230,12 +230,12 @@
 
 .bdy-add-btn {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .bdy-accept-btn {
   background: var(--color-success);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .bdy-decline-btn {
@@ -307,10 +307,11 @@
 .bdy-btn-spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+  opacity: 0.7;
 }
 
 /* ===== SEARCH BAR ===== */
@@ -386,7 +387,7 @@
   border: none;
   border-radius: 12px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
