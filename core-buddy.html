@@ -907,6 +907,43 @@
             line-height: 1.7;
         }
 
+        /* ===== White Section Overrides (features, install, faq) ===== */
+        /* These sections alternate to white to match the site-wide black/white pattern.   */
+        /* Dark sections: Hero → Stats → Pricing → Final CTA                              */
+        /* White sections: Features → Install → FAQ                                       */
+        .features,
+        .install,
+        .faq {
+            background: #ffffff;
+        }
+        .features .section-title,
+        .install .section-title,
+        .faq .section-title {
+            color: #1a1a1a;
+        }
+        .features .section-subtitle,
+        .install .section-subtitle,
+        .faq .section-subtitle {
+            color: #555555;
+        }
+        /* Features adjustments */
+        .features .feature-row { border-bottom-color: rgba(0,0,0,0.08); }
+        .features .feature-text h3 { color: #1a1a1a; }
+        .features .feature-text p { color: #555555; }
+        .features .feature-card { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
+        .features .feature-card h4 { color: #1a1a1a; }
+        .features .feature-card p { color: #555555; }
+        /* Install adjustments */
+        .install .install-platform { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
+        .install .install-platform-title { color: #1a1a1a; }
+        .install .install-platform-steps { color: #555555; }
+        .install .install-platform-steps strong { color: #1a1a1a; }
+        .install .install-badge { color: #888888; }
+        /* FAQ adjustments */
+        .faq .faq-item { background: #f5f5f5; border-color: rgba(0,0,0,0.1); }
+        .faq .faq-item summary { color: #1a1a1a; }
+        .faq .faq-answer { color: #555555; }
+
         /* ===== Final CTA ===== */
         .final-cta {
             text-align: center;
