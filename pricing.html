@@ -478,6 +478,20 @@
             .pricing-light { padding: 70px 20px; }
         }
     
+        
+        /* ===== Section Alternation Override ===== */
+        /* products(D)→cta-band must be LIGHT for proper alternation */
+        .cta-band {
+            background: var(--bg-color);
+        }
+        .cta-band h2 { color: var(--text-color); }
+        .cta-band p { color: var(--text-muted); }
+        .cta-band-btn {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+        .cta-band-btn:hover { background: #b03545; }
+
         /* ===== UNIVERSAL SITE FOOTER ===== */
         .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
@@ -533,7 +547,7 @@
     <!-- ========================================================
          SECTION 1: PERSONAL TRAINING
          ======================================================== -->
-    <section class="pricing" id="personal-training">
+    <section class="pricing pricing-light" id="personal-training">
         <div class="container">
             <div class="text-center">
                 <span class="section-label">In-Person — Elgin Studio</span>

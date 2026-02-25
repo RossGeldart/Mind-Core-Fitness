@@ -993,12 +993,14 @@ body {
 /* Social Links Section */
 .social-section {
     padding: 80px 20px;
-    background: var(--background);
+    background: #1a1a1a;
     text-align: center;
 }
 
+.social-section .section-title { color: #ffffff; }
+
 .social-subtitle {
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.55);
     font-size: 1.05rem;
     max-width: 500px;
     margin: -30px auto 40px;
@@ -1056,8 +1058,8 @@ body {
 
 /* Inline Contact Form Section */
 .contact-form-section {
-    background: var(--text-color);
-    color: #ffffff;
+    background: var(--background);
+    color: var(--text-color);
     padding: 100px 20px;
 }
 
@@ -1066,11 +1068,11 @@ body {
 }
 
 .contact-form-section .section-title {
-    color: #ffffff;
+    color: var(--text-color);
 }
 
 .contact-form-section .section-subtitle {
-    color: #aaa;
+    color: var(--text-muted);
     font-size: 1.05rem;
     max-width: 520px;
     margin: 0 auto 40px;
@@ -1086,27 +1088,27 @@ body {
 .contact-form-section .form-group input,
 .contact-form-section .form-group textarea,
 .contact-form-section .form-group select {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.15);
-    color: #ffffff;
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.15);
+    color: var(--text-color);
 }
 
 .contact-form-section .form-group input::placeholder,
 .contact-form-section .form-group textarea::placeholder,
 .contact-form-section .form-group select:invalid {
-    color: #888;
+    color: #aaa;
 }
 
 .contact-form-section .form-group input:focus,
 .contact-form-section .form-group textarea:focus,
 .contact-form-section .form-group select:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(153,49,60,0.2);
-    background: rgba(255,255,255,0.08);
+    box-shadow: 0 0 0 3px rgba(153,49,60,0.15);
+    background: #ffffff;
 }
 
 .contact-form-section .form-group label {
-    color: #ddd;
+    color: var(--text-color);
 }
 
 /* Contact Form Modal */
