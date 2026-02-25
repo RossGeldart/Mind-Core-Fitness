@@ -172,6 +172,9 @@ export default function PersonalBests() {
   const [celebration, setCelebration] = useState(null);
   const [toast, setToast] = useState(null);
 
+  // Metrics unit toggle: 'cm' or 'in'
+  const [metricsUnit, setMetricsUnit] = useState('cm');
+
   // History compare state
   const [compareMode, setCompareMode] = useState(false);
   const [compareA, setCompareA] = useState('');
@@ -1254,13 +1257,46 @@ export default function PersonalBests() {
                         </div>
                       ) : (
                         <div className="pb-edit-row">
-                          <div className="pb-edit-field full">
-                            <label>Time (seconds)</label>
+                          <div className="pb-edit-field">
+                            <label>Minutes</label>
                             <input
                               type="number"
-                              step="0.01"
-                              value={benchmarkForm[ex.key]?.time ?? ''}
-                              onChange={(e) => handleBenchmarkChange(ex.key, 'time', e.target.value)}
+                              min="0"
+                              step="1"
+                              value={(() => {
+                                const t = benchmarkForm[ex.key]?.time;
+                                return (t !== undefined && t !== '') ? Math.floor(Number(t) / 60) : '';
+                              })()}
+                              onChange={(e) => {
+                                const mins = e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0);
+                                const curSecs = (() => {
+                                  const t = benchmarkForm[ex.key]?.time;
+                                  return (t !== undefined && t !== '') ? Number(t) % 60 : 0;
+                                })();
+                                handleBenchmarkChange(ex.key, 'time', mins * 60 + curSecs);
+                              }}
+                              placeholder="0"
+                            />
+                          </div>
+                          <div className="pb-edit-field">
+                            <label>Seconds</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="59"
+                              step="1"
+                              value={(() => {
+                                const t = benchmarkForm[ex.key]?.time;
+                                return (t !== undefined && t !== '') ? Number(t) % 60 : '';
+                              })()}
+                              onChange={(e) => {
+                                const secs = e.target.value === '' ? 0 : Math.min(59, Math.max(0, parseInt(e.target.value, 10) || 0));
+                                const curMins = (() => {
+                                  const t = benchmarkForm[ex.key]?.time;
+                                  return (t !== undefined && t !== '') ? Math.floor(Number(t) / 60) : 0;
+                                })();
+                                handleBenchmarkChange(ex.key, 'time', curMins * 60 + secs);
+                              }}
                               placeholder="0"
                             />
                           </div>
@@ -1331,13 +1367,46 @@ export default function PersonalBests() {
                           </div>
                         ) : (
                           <div className="pb-edit-row">
-                            <div className="pb-edit-field full">
-                              <label>Target (seconds)</label>
+                            <div className="pb-edit-field">
+                              <label>Target Minutes</label>
                               <input
                                 type="number"
+                                min="0"
                                 step="1"
-                                value={targetsForm[ex.key]?.targetValue ?? ''}
-                                onChange={(e) => handleTargetChange(ex.key, 'targetValue', e.target.value)}
+                                value={(() => {
+                                  const t = targetsForm[ex.key]?.targetValue;
+                                  return (t !== undefined && t !== '') ? Math.floor(Number(t) / 60) : '';
+                                })()}
+                                onChange={(e) => {
+                                  const mins = e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0);
+                                  const curSecs = (() => {
+                                    const t = targetsForm[ex.key]?.targetValue;
+                                    return (t !== undefined && t !== '') ? Number(t) % 60 : 0;
+                                  })();
+                                  handleTargetChange(ex.key, 'targetValue', mins * 60 + curSecs);
+                                }}
+                                placeholder="0"
+                              />
+                            </div>
+                            <div className="pb-edit-field">
+                              <label>Target Seconds</label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="59"
+                                step="1"
+                                value={(() => {
+                                  const t = targetsForm[ex.key]?.targetValue;
+                                  return (t !== undefined && t !== '') ? Number(t) % 60 : '';
+                                })()}
+                                onChange={(e) => {
+                                  const secs = e.target.value === '' ? 0 : Math.min(59, Math.max(0, parseInt(e.target.value, 10) || 0));
+                                  const curMins = (() => {
+                                    const t = targetsForm[ex.key]?.targetValue;
+                                    return (t !== undefined && t !== '') ? Math.floor(Number(t) / 60) : 0;
+                                  })();
+                                  handleTargetChange(ex.key, 'targetValue', curMins * 60 + secs);
+                                }}
                                 placeholder="0"
                               />
                             </div>
@@ -1448,20 +1517,57 @@ export default function PersonalBests() {
                   }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
-                  {BODY_METRICS.map(metric => (
+                  {/* Unit toggle — only affects cm measurements, not weight */}
+                  <div className="pb-unit-toggle">
+                    <span className="pb-unit-toggle-label">Measurement unit:</span>
+                    <div className="pb-unit-toggle-btns">
+                      <button
+                        className={`pb-unit-btn${metricsUnit === 'cm' ? ' active' : ''}`}
+                        onClick={() => setMetricsUnit('cm')}
+                        type="button"
+                      >cm</button>
+                      <button
+                        className={`pb-unit-btn${metricsUnit === 'in' ? ' active' : ''}`}
+                        onClick={() => setMetricsUnit('in')}
+                        type="button"
+                      >in</button>
+                    </div>
+                  </div>
+                  {BODY_METRICS.map(metric => {
+                    const isCm = metric.suffix === 'cm';
+                    const displayUnit = isCm ? metricsUnit : metric.suffix;
+                    const storedVal = metricsForm[metric.key];
+                    // Convert stored cm → inches for display when toggled
+                    const displayVal = (() => {
+                      if (!isCm || metricsUnit === 'cm') return storedVal ?? '';
+                      if (storedVal === undefined || storedVal === '') return '';
+                      return parseFloat((Number(storedVal) / 2.54).toFixed(1));
+                    })();
+                    return (
                     <div key={metric.key} className="pb-edit-metric">
                       <div className="pb-edit-field full">
-                        <label>{metric.name} ({metric.suffix})</label>
+                        <label>{metric.name} ({displayUnit})</label>
                         <input
                           type="number"
                           step="0.1"
-                          value={metricsForm[metric.key] ?? ''}
-                          onChange={(e) => handleMetricChange(metric.key, e.target.value)}
+                          min="0"
+                          value={displayVal}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            if (!isCm || metricsUnit === 'cm') {
+                              handleMetricChange(metric.key, raw);
+                            } else {
+                              // Convert inches → cm for storage
+                              const cmVal = raw === '' ? '' : (parseFloat(raw) * 2.54).toFixed(1);
+                              handleMetricChange(metric.key, cmVal);
+                            }
+                          }}
                           placeholder="0"
                         />
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="pb-edit-actions">
                   <button className="pb-cancel-btn" onClick={() => {

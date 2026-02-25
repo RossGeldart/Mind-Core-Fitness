@@ -539,6 +539,46 @@
   margin-bottom: 0;
 }
 
+/* cm / inches unit toggle */
+.pb-unit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pb-unit-toggle-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.pb-unit-toggle-btns {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pb-unit-btn {
+  padding: 5px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.pb-unit-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 .pb-edit-row {
   display: flex;
   gap: 12px;
