@@ -1857,3 +1857,19 @@ body {
 .blog-card.hidden {
     display: none;
 }
+
+/* ===== UNIVERSAL SITE FOOTER ===== */
+.site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+.site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+.site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+.site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
+.site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+.site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+.site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+.site-footer__col li { margin-bottom: 10px; }
+.site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+.site-footer__col a:hover { color: #99313c; }
+.site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+@media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
