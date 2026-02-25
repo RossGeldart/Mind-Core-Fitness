@@ -1940,6 +1940,50 @@
             }
         }
     
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(D)→video(L)→benefits(D)→how-it-works(L)→programmes(D)→everfit(L)
+           →testimonials(D)→client-results(L)→faq(D)→contact(L)
+           →contact-form(D)→final-cta(L)                               */
+
+        /* benefits → dark */
+        .benefits { background: var(--dark-bg); }
+        .benefits .section-label { color: var(--accent-color); }
+        .benefits .section-title { color: #ffffff; }
+        .benefits .section-subtitle { color: rgba(255,255,255,0.65); }
+        .benefits .benefit-card,
+        .benefits .benefit-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .benefits h3,
+        .benefits .benefit-title { color: #ffffff; }
+        .benefits p,
+        .benefits .benefit-text { color: rgba(255,255,255,0.65); }
+
+        /* testimonials → dark */
+        .testimonials { background: var(--dark-bg); }
+        .testimonials .section-label { color: var(--accent-color); }
+        .testimonials .section-title { color: #ffffff; }
+        .testimonials .section-subtitle { color: rgba(255,255,255,0.65); }
+        .testimonials .testimonial-card { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .testimonials .testimonial-card p { color: rgba(255,255,255,0.8); }
+        .testimonials .testimonial-author-name { color: #ffffff; }
+        .testimonials .testimonial-author-detail { color: rgba(255,255,255,0.45); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* final-cta → light */
+        .final-cta { background: var(--bg-color); color: var(--text-color); }
+        .final-cta h2 { color: var(--text-color); }
+        .final-cta p { color: var(--text-muted); }
+        .final-cta .section-label { color: var(--accent-color); }
+
+
         /* ===== UNIVERSAL SITE FOOTER ===== */
         .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }

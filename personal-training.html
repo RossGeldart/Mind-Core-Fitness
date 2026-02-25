@@ -2140,6 +2140,54 @@
             }
         }
     
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(D)→pillars(L)→about(D)→video(L)→gallery(D)→expect(L)
+           →testimonials(D)→client-results(L)→pricing(D)→location(L)
+           →faq(D)→contact-form(L)→final-cta(D)                       */
+
+        /* about → dark */
+        .about { background: var(--dark-bg); }
+        .about-content h2 { color: #ffffff; }
+        .about-content p { color: rgba(255,255,255,0.65); }
+        .about .section-label { color: var(--accent-color); }
+        .about-image img { box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+        /* testimonials → dark */
+        .testimonials { background: var(--dark-bg); }
+        .testimonials .section-label { color: var(--accent-color); }
+        .testimonials .section-title { color: #ffffff; }
+        .testimonials .section-subtitle { color: rgba(255,255,255,0.65); }
+        .testimonials .testimonial-card { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .testimonials .testimonial-card p { color: rgba(255,255,255,0.8); }
+        .testimonials .testimonial-author-name { color: #ffffff; }
+        .testimonials .testimonial-author-detail { color: rgba(255,255,255,0.45); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* contact-form-section → light */
+        .contact-form-section { background: var(--bg-color); color: var(--text-color); }
+        .contact-form-section .section-label { color: var(--accent-color); }
+        .contact-form-section .section-title { color: var(--text-color); }
+        .contact-form-section .section-subtitle { color: var(--text-muted); }
+        .contact-form-section .form-group label { color: var(--text-color); }
+        .contact-form-section .form-group input,
+        .contact-form-section .form-group textarea,
+        .contact-form-section .form-group select { background: #ffffff; border: 1px solid rgba(0,0,0,0.15); color: var(--text-color); }
+        .contact-form-section .form-group input::placeholder,
+        .contact-form-section .form-group textarea::placeholder { color: #aaa; }
+        .contact-form-section .form-group input:focus,
+        .contact-form-section .form-group textarea:focus,
+        .contact-form-section .form-group select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(153,49,60,0.15); background: #ffffff; }
+
+
         /* ===== UNIVERSAL SITE FOOTER ===== */
         .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }

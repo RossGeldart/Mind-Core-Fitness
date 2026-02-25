@@ -1710,6 +1710,48 @@
             box-shadow: 0 4px 15px rgba(153,49,60,0.3);
         }
     
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(L)→phases(D)→what-you-get(L)→testimonials(D)→who-for(L)
+           →everfit(D)→client-results(L)→faq(D)→final-cta(L)          */
+
+        /* phases → dark */
+        .phases { background: var(--dark-bg); }
+        .phases .section-label { color: var(--accent-color); }
+        .phases .section-title { color: #ffffff; }
+        .phases .section-subtitle { color: rgba(255,255,255,0.65); }
+        .phases .phase-card,
+        .phases .phase-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .phases h3,
+        .phases .phase-title { color: #ffffff; }
+        .phases p { color: rgba(255,255,255,0.65); }
+
+        /* everfit → dark */
+        .everfit { background: var(--dark-bg); }
+        .everfit .section-label { color: var(--accent-color); }
+        .everfit .section-title { color: #ffffff; }
+        .everfit .section-subtitle { color: rgba(255,255,255,0.65); }
+        .everfit h3 { color: #ffffff; }
+        .everfit p { color: rgba(255,255,255,0.65); }
+        .everfit .everfit-feature,
+        .everfit .everfit-item { color: rgba(255,255,255,0.8); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* final-cta → light */
+        .final-cta { background: var(--bg-color); color: var(--text-color); }
+        .final-cta h2 { color: var(--text-color); }
+        .final-cta p { color: var(--text-muted); }
+        .final-cta .section-label { color: var(--accent-color); }
+
+
         /* ===== UNIVERSAL SITE FOOTER ===== */
         .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
