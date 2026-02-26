@@ -50,8 +50,8 @@ export default function ClientList() {
     setLoading(false);
   };
 
-  // Calculate completed sessions (sessions that have passed)
-  const getCompletedSessionsCount = (clientId) => {
+  // Calculate completed sessions (sessions that have passed) — scoped to client's current block dates
+  const getCompletedSessionsCount = (client) => {
     const now = new Date();
     // Use local date to avoid timezone issues
     const year = now.getFullYear();
@@ -60,8 +60,16 @@ export default function ClientList() {
     const today = `${year}-${month}-${day}`;
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+    // Derive block date boundaries so sessions from previous blocks aren't counted
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : (client.startDate ? new Date(client.startDate) : null);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : (client.endDate ? new Date(client.endDate) : null);
+    const blockStartKey = blockStart ? `${blockStart.getFullYear()}-${(blockStart.getMonth() + 1).toString().padStart(2, '0')}-${blockStart.getDate().toString().padStart(2, '0')}` : null;
+    const blockEndKey = blockEnd ? `${blockEnd.getFullYear()}-${(blockEnd.getMonth() + 1).toString().padStart(2, '0')}-${blockEnd.getDate().toString().padStart(2, '0')}` : null;
+
     return sessions.filter(s => {
-      if (s.clientId !== clientId) return false;
+      if (s.clientId !== client.id) return false;
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
       if (s.date < today) return true;
       if (s.date === today && s.time < currentTime) return true;
       return false;
@@ -70,12 +78,12 @@ export default function ClientList() {
 
   // Calculate remaining sessions for a client
   const getSessionsRemaining = (client) => {
-    const completed = getCompletedSessionsCount(client.id);
+    const completed = getCompletedSessionsCount(client);
     return (client.totalSessions || 0) - completed;
   };
 
-  // Get booked sessions count (upcoming only, not completed)
-  const getBookedCount = (clientId) => {
+  // Get booked sessions count (upcoming only, scoped to current block)
+  const getBookedCount = (client) => {
     const now = new Date();
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -83,8 +91,15 @@ export default function ClientList() {
     const today = `${year}-${month}-${day}`;
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+    const blockStart = client.startDate?.toDate ? client.startDate.toDate() : (client.startDate ? new Date(client.startDate) : null);
+    const blockEnd = client.endDate?.toDate ? client.endDate.toDate() : (client.endDate ? new Date(client.endDate) : null);
+    const blockStartKey = blockStart ? `${blockStart.getFullYear()}-${(blockStart.getMonth() + 1).toString().padStart(2, '0')}-${blockStart.getDate().toString().padStart(2, '0')}` : null;
+    const blockEndKey = blockEnd ? `${blockEnd.getFullYear()}-${(blockEnd.getMonth() + 1).toString().padStart(2, '0')}-${blockEnd.getDate().toString().padStart(2, '0')}` : null;
+
     return sessions.filter(s => {
-      if (s.clientId !== clientId) return false;
+      if (s.clientId !== client.id) return false;
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
       // Only count future sessions
       if (s.date > today) return true;
       if (s.date === today && s.time >= currentTime) return true;
@@ -652,7 +667,7 @@ export default function ClientList() {
                         </div>
                         <div className="detail-item">
                           <span className="detail-label">Booked</span>
-                          <span className="detail-value">{getBookedCount(client.id)} sessions</span>
+                          <span className="detail-value">{getBookedCount(client)} sessions</span>
                         </div>
                         <div className="detail-item">
                           <span className="detail-label">Duration</span>
