@@ -182,7 +182,8 @@ export default function CoreBuddyBuddies() {
       if (!c.name) return false;
       if (!c.coreBuddyAccess && c.clientType !== 'core_buddy') return false;
       // Exclude free-tier users — buddies is a premium feature
-      const isClientPremium = c.tier === 'premium' || (c.signupSource !== 'self_signup');
+      const selfSignupSources = ['self_signup', 'google', 'apple'];
+      const isClientPremium = c.tier === 'premium' || !selfSignupSources.includes(c.signupSource);
       if (!isClientPremium) return false;
       return c.name.toLowerCase().includes(q);
     }).map(c => ({

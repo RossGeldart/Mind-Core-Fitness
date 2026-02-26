@@ -24,8 +24,9 @@ export function TierProvider({ children }) {
   const value = useMemo(() => {
     const tier = clientData?.tier || 'free';
     const subscriptionStatus = clientData?.subscriptionStatus || null;
-    // Admin-added clients (not self-signup) are treated as premium
-    const isAdminGranted = clientData && clientData.signupSource !== 'self_signup';
+    // Admin-added clients (not self-initiated signup) are treated as premium
+    const selfSignupSources = ['self_signup', 'google', 'apple'];
+    const isAdminGranted = clientData && !selfSignupSources.includes(clientData.signupSource);
     const isPremium = tier === 'premium' || !!isAdminGranted;
 
     function canAccess(feature) {
