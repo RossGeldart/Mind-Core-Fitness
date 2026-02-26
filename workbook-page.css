@@ -754,3 +754,23 @@
         transform: none;
     }
 }
+
+/* ===== Section Alternation Overrides ===== */
+/* workbook-hero(L)→whats-inside(D)→who-its-for(L)→preview(D)→digital(L)→final-cta(D) */
+
+/* whats-inside → dark */
+.whats-inside { background: #1a1a1a; }
+.whats-inside .section-label { color: var(--accent-color); }
+.whats-inside .section-title { color: #ffffff; }
+.whats-inside .feature-card { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+.whats-inside .feature-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+.whats-inside .feature-card h3 { color: #ffffff; }
+.whats-inside .feature-card p { color: rgba(255,255,255,0.65); }
+.whats-inside .feature-icon { background: rgba(153,49,60,0.15); }
+
+/* preview-section → dark */
+.preview-section { background: #1a1a1a; }
+.preview-section .section-label { color: var(--accent-color); }
+.preview-section .section-title { color: #ffffff; }
+.preview-section .preview-subtitle { color: rgba(255,255,255,0.65); }
+.preview-section .preview-item { box-shadow: 0 8px 30px rgba(0,0,0,0.4); }

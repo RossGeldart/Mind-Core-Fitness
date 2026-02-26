@@ -61,6 +61,72 @@
     }
     </script>
 
+    <!-- Structured Data - FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Do I need equipment to use Core Buddy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nope. Core Buddy works with whatever you have — bodyweight, dumbbells, kettlebells, or a full gym. The randomiser adapts to your available equipment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long are Core Buddy workouts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You choose. Workouts range from 5 to 30 minutes. Perfect for busy schedules — even a 5-minute session counts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Core Buddy really free to start?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The free plan gives you 2 workouts per week with 5 and 10 minute options. No credit card required. Upgrade whenever you want."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I cancel my Core Buddy subscription anytime?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely. Cancel from your account settings at any time. No penalties, no hassle. Your free trial won't be charged if you cancel before it ends."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Core Buddy work offline?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Core Buddy is a Progressive Web App that works offline. Complete workouts without an internet connection — your data syncs when you're back online."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to download Core Buddy from the App Store?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Core Buddy is a web app — just visit the site in your browser and add it to your home screen. No app store, no downloads, no storage space wasted."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does Core Buddy cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Core Buddy is free to start. Premium plans are £9.99/month or £99.99/year (saving 17%). Both paid plans include a 7-day free trial."
+          }
+        }
+      ]
+    }
+    </script>
+
     <!-- Vercel Web Analytics -->
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -101,7 +167,7 @@
     <link rel="preload" as="image" href="core-buddy-assets/dashboard.PNG">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&family=Orbitron:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         /* ===== Reset ===== */
@@ -110,12 +176,12 @@
 
         /* ===== Variables ===== */
         :root {
-            --bg: #0a0a0c;
-            --bg-elevated: #111116;
-            --bg-card: #1a1a1f;
-            --accent: #A12F3A;
-            --accent-hover: #c83846;
-            --accent-glow: rgba(161, 47, 58, 0.25);
+            --bg: #1a1a1a;
+            --bg-elevated: #212a2a;
+            --bg-card: #2d3d3d;
+            --accent: #99313c;
+            --accent-hover: #b33a47;
+            --accent-glow: rgba(153, 49, 60, 0.25);
             --text: #f0f0f2;
             --text-secondary: #a0a0a8;
             --text-tertiary: #606068;
@@ -139,10 +205,10 @@
 
         .section-label {
             display: inline-block;
-            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.65rem;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--accent);
             margin-bottom: 16px;
@@ -205,12 +271,12 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 14px 32px;
+            padding: 14px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(10, 10, 12, 0.92);
+            background: rgba(26, 26, 26, 0.95);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--border);
@@ -231,7 +297,7 @@
         }
 
         .nav-logo span {
-            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.7rem;
             letter-spacing: 1.5px;
@@ -286,7 +352,7 @@
             font-weight: 600;
             font-size: 0.8rem;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.2s ease;
             letter-spacing: 0.3px;
         }
@@ -346,7 +412,7 @@
         }
 
         .hero-tagline {
-            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.75rem;
             letter-spacing: 4px;
@@ -401,7 +467,7 @@
             font-weight: 600;
             font-size: 1rem;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 4px 25px var(--accent-glow);
         }
@@ -421,7 +487,7 @@
             font-weight: 500;
             font-size: 1rem;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: all 0.2s ease;
         }
 
@@ -557,7 +623,7 @@
         }
 
         .stat-number {
-            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 2.2rem;
             color: var(--accent);
@@ -688,7 +754,7 @@
         }
 
         .pricing-amount {
-            font-family: 'Orbitron', 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 2.8rem;
             line-height: 1;
@@ -738,7 +804,7 @@
             display: block;
             width: 100%;
             padding: 14px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
@@ -841,6 +907,43 @@
             line-height: 1.7;
         }
 
+        /* ===== White Section Overrides (features, install, faq) ===== */
+        /* These sections alternate to white to match the site-wide black/white pattern.   */
+        /* Dark sections: Hero → Stats → Pricing → Final CTA                              */
+        /* White sections: Features → Install → FAQ                                       */
+        .features,
+        .install,
+        .faq {
+            background: #ffffff;
+        }
+        .features .section-title,
+        .install .section-title,
+        .faq .section-title {
+            color: #1a1a1a;
+        }
+        .features .section-subtitle,
+        .install .section-subtitle,
+        .faq .section-subtitle {
+            color: #555555;
+        }
+        /* Features adjustments */
+        .features .feature-row { border-bottom-color: rgba(0,0,0,0.08); }
+        .features .feature-text h3 { color: #1a1a1a; }
+        .features .feature-text p { color: #555555; }
+        .features .feature-card { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
+        .features .feature-card h4 { color: #1a1a1a; }
+        .features .feature-card p { color: #555555; }
+        /* Install adjustments */
+        .install .install-platform { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
+        .install .install-platform-title { color: #1a1a1a; }
+        .install .install-platform-steps { color: #555555; }
+        .install .install-platform-steps strong { color: #1a1a1a; }
+        .install .install-badge { color: #888888; }
+        /* FAQ adjustments */
+        .faq .faq-item { background: #f5f5f5; border-color: rgba(0,0,0,0.1); }
+        .faq .faq-item summary { color: #1a1a1a; }
+        .faq .faq-answer { color: #555555; }
+
         /* ===== Final CTA ===== */
         .final-cta {
             text-align: center;
@@ -930,7 +1033,7 @@
         }
 
         .footer-tagline {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 0.65rem;
             letter-spacing: 2px;
             color: var(--text-tertiary);
@@ -1291,6 +1394,23 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(153,49,60,0.3);
         }
+    
+        /* ===== UNIVERSAL SITE FOOTER ===== */
+        .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
+        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+        .site-footer__col li { margin-bottom: 10px; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a:hover { color: #99313c; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
+
     </style>
 </head>
 <body>
@@ -1625,52 +1745,51 @@
     </section>
 
     <!-- ===== Footer ===== -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
+        <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__grid">
+                <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
                         <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
                     </picture>
-                    <p>The all-in-one fitness app for busy people. Randomised workouts, quick nutrition logging, and daily habit tracking.</p>
-                    <div class="footer-tagline">Food &bull; Habits &bull; Move</div>
+                    <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
+                    <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
                 </div>
-                <div class="footer-links">
-                    <h4>Product</h4>
+                <div class="site-footer__col">
+                    <h4>Services</h4>
                     <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#install">Web App</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="personal-training.html">Personal Training</a></li>
+                        <li><a href="online-coaching.html">Online Coaching</a></li>
+                        <li><a href="core-buddy.html">Core Buddy App</a></li>
+                        <li><a href="12-week-core-programme.html">12-Week Programme</a></li>
                     </ul>
                 </div>
-                <div class="footer-links">
-                    <h4>Company</h4>
+                <div class="site-footer__col">
+                    <h4>Explore</h4>
                     <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                        <li><a href="/online-coaching">Online Coaching</a></li>
-                        <li><a href="/personal-training">Personal Training</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="workbook.html">Workbook</a></li>
                     </ul>
                 </div>
-                <div class="footer-links">
+                <div class="site-footer__col">
                     <h4>Legal</h4>
                     <ul>
                         <li><a href="privacy-policy.html">Privacy Policy</a></li>
                         <li><a href="terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
                     </ul>
                 </div>
-                <div class="footer-links">
+                <div class="site-footer__col">
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="#" onclick="openContactModal(event)">Contact Us</a></li>
                         <li><a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Bug%20Report">Report a Bug</a></li>
                         <li><a href="mailto:ross@mindcorefitness.com?subject=Core%20Buddy%20Feedback">Feedback</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
+            <div class="site-footer__bottom">
                 <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
             </div>
         </div>

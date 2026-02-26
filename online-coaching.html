@@ -74,6 +74,64 @@
     }
     </script>
 
+    <!-- Structured Data - FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What equipment do I need for online coaching?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most programmes can be done with minimal equipment. Specific requirements are listed with each programme, but bodyweight options are always included."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I access my programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Download the Everfit app (free on iOS and Android), and your programme will be delivered directly to you after purchase."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I message Ross for help?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! All programmes include direct messaging through the Everfit app. Ask questions, send form check videos, and get real support."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What level should I start at?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If you're new to core training, start with Core Foundation. If you've been training consistently, Intermediate or the full 12-Week programme is ideal."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long do I have access to my programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You get lifetime access to any programme you purchase. Train at your own pace and revisit whenever you want."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does online coaching cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Individual 4-week programmes start from £59. The full 12-Week Core Rebuild (Unbreakable) is £149 as a one-time payment with lifetime access."
+          }
+        }
+      ]
+    }
+    </script>
+
 <!-- Vercel Web Analytics -->
 <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -346,7 +404,7 @@
             right: 0;
             bottom: 0;
             background: url('Core 1.jpg') center/cover no-repeat;
-            opacity: 0.25;
+            opacity: 0.3;
         }
 
         .hero::after {
@@ -1895,6 +1953,67 @@
                 transition: none;
             }
         }
+    
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(D)→video(L)→benefits(D)→how-it-works(L)→programmes(D)→everfit(L)
+           →testimonials(D)→client-results(L)→faq(D)→contact(L)
+           →contact-form(D)→final-cta(L)                               */
+
+        /* benefits → dark */
+        .benefits { background: var(--dark-bg); }
+        .benefits .section-label { color: var(--accent-color); }
+        .benefits .section-title { color: #ffffff; }
+        .benefits .section-subtitle { color: rgba(255,255,255,0.65); }
+        .benefits .benefit-card,
+        .benefits .benefit-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .benefits h3,
+        .benefits .benefit-title { color: #ffffff; }
+        .benefits p,
+        .benefits .benefit-text { color: rgba(255,255,255,0.65); }
+
+        /* testimonials → dark */
+        .testimonials { background: var(--dark-bg); }
+        .testimonials .section-label { color: var(--accent-color); }
+        .testimonials .section-title { color: #ffffff; }
+        .testimonials .section-subtitle { color: rgba(255,255,255,0.65); }
+        .testimonials .testimonial-card { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .testimonials .testimonial-card p { color: rgba(255,255,255,0.8); }
+        .testimonials .testimonial-author-name { color: #ffffff; }
+        .testimonials .testimonial-author-detail { color: rgba(255,255,255,0.45); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* final-cta → light */
+        .final-cta { background: var(--bg-color); color: var(--text-color); }
+        .final-cta h2 { color: var(--text-color); }
+        .final-cta p { color: var(--text-muted); }
+        .final-cta .section-label { color: var(--accent-color); }
+
+
+        /* ===== UNIVERSAL SITE FOOTER ===== */
+        .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
+        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+        .site-footer__col li { margin-bottom: 10px; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a:hover { color: #99313c; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
+
     </style>
     <link rel="stylesheet" href="social-share.css">
 </head>
@@ -2494,8 +2613,47 @@
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>© 2026 Mind Core Fitness. All rights reserved. | <a href="/">Home</a> | <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms.html">Terms & Conditions</a></p>
+        <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__grid">
+                <div class="site-footer__brand">
+                    <picture>
+                        <source srcset="Logo.webp" type="image/webp">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                    </picture>
+                    <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
+                    <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="personal-training.html">Personal Training</a></li>
+                        <li><a href="online-coaching.html">Online Coaching</a></li>
+                        <li><a href="core-buddy.html">Core Buddy App</a></li>
+                        <li><a href="12-week-core-programme.html">12-Week Programme</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="workbook.html">Workbook</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="site-footer__bottom">
+                <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Scroll Animation -->

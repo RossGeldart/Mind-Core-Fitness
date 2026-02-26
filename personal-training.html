@@ -74,6 +74,64 @@
     }
     </script>
 
+    <!-- Structured Data - FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I sign up for 1-2-1 coaching?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sign up by filling out the contact form or getting in touch directly. Sessions are tailored to your individual fitness needs and goals."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to be fit to start?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely not! I work with all fitness levels, from complete beginners to experienced athletes. Everyone starts somewhere."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's included in each programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "All programmes include 2 × 45-minute sessions per week, Circuit Group Access, and access to the Mind Core Community. Higher tiers include additional support and tracking."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What should I wear or bring?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Just comfortable workout clothes and trainers. Water and towels are provided at the studio."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's the cancellation policy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "24 hours notice required for cancellations. Life happens — just let me know as soon as you can."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is the studio located?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The studio is based in Elgin, Moray, Scotland. Get in touch for the exact address and directions."
+          }
+        }
+      ]
+    }
+    </script>
+
 <!-- Vercel Web Analytics -->
 <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -2096,6 +2154,71 @@
                 transition: none;
             }
         }
+    
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(D)→pillars(L)→about(D)→video(L)→gallery(D)→expect(L)
+           →testimonials(D)→client-results(L)→pricing(D)→location(L)
+           →faq(D)→contact-form(L)→final-cta(D)                       */
+
+        /* about → dark */
+        .about { background: var(--dark-bg); }
+        .about-content h2 { color: #ffffff; }
+        .about-content p { color: rgba(255,255,255,0.65); }
+        .about .section-label { color: var(--accent-color); }
+        .about-image img { box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+        /* testimonials → dark */
+        .testimonials { background: var(--dark-bg); }
+        .testimonials .section-label { color: var(--accent-color); }
+        .testimonials .section-title { color: #ffffff; }
+        .testimonials .section-subtitle { color: rgba(255,255,255,0.65); }
+        .testimonials .testimonial-card { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .testimonials .testimonial-card p { color: rgba(255,255,255,0.8); }
+        .testimonials .testimonial-author-name { color: #ffffff; }
+        .testimonials .testimonial-author-detail { color: rgba(255,255,255,0.45); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* contact-form-section → light */
+        .contact-form-section { background: var(--bg-color); color: var(--text-color); }
+        .contact-form-section .section-label { color: var(--accent-color); }
+        .contact-form-section .section-title { color: var(--text-color); }
+        .contact-form-section .section-subtitle { color: var(--text-muted); }
+        .contact-form-section .form-group label { color: var(--text-color); }
+        .contact-form-section .form-group input,
+        .contact-form-section .form-group textarea,
+        .contact-form-section .form-group select { background: #ffffff; border: 1px solid rgba(0,0,0,0.15); color: var(--text-color); }
+        .contact-form-section .form-group input::placeholder,
+        .contact-form-section .form-group textarea::placeholder { color: #aaa; }
+        .contact-form-section .form-group input:focus,
+        .contact-form-section .form-group textarea:focus,
+        .contact-form-section .form-group select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(153,49,60,0.15); background: #ffffff; }
+
+
+        /* ===== UNIVERSAL SITE FOOTER ===== */
+        .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
+        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+        .site-footer__col li { margin-bottom: 10px; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a:hover { color: #99313c; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
+
     </style>
     <link rel="stylesheet" href="social-share.css">
 </head>
@@ -2784,8 +2907,47 @@
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>© 2026 Mind Core Fitness. All rights reserved. | <a href="/">Home</a> | <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms.html">Terms & Conditions</a></p>
+        <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__grid">
+                <div class="site-footer__brand">
+                    <picture>
+                        <source srcset="Logo.webp" type="image/webp">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                    </picture>
+                    <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
+                    <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="personal-training.html">Personal Training</a></li>
+                        <li><a href="online-coaching.html">Online Coaching</a></li>
+                        <li><a href="core-buddy.html">Core Buddy App</a></li>
+                        <li><a href="12-week-core-programme.html">12-Week Programme</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="workbook.html">Workbook</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="site-footer__bottom">
+                <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Scroll Animation -->

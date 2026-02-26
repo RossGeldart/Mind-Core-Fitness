@@ -71,6 +71,64 @@
     }
     </script>
 
+    <!-- Structured Data - FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What equipment do I need for the 12-Week Core Programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "90% of the programme is bodyweight. Some weights like a dumbbell and kettlebell are introduced later in the programme."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long are the workouts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Workouts range from 12–20 minutes. Short, focused sessions that fit into any schedule."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I'm a complete beginner?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Phase 1 starts from the ground up. If you can hold a basic plank, you're ready to begin."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I message Ross for help during the programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Direct messaging through the Everfit app is included. Ask questions, send form check videos, and get real support."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I access the programme?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "After purchase, you'll receive an invite to the Everfit app where all your workouts and tracking are managed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does the 12-Week Core Programme cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The programme is £149 as a one-time payment with lifetime access. No subscriptions or recurring fees."
+          }
+        }
+      ]
+    }
+    </script>
+
     <!-- Vercel Web Analytics -->
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -1663,6 +1721,65 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(153,49,60,0.3);
         }
+    
+        
+        /* ===== Section Alternation Overrides ===== */
+        /* hero(L)→phases(D)→what-you-get(L)→testimonials(D)→who-for(L)
+           →everfit(D)→client-results(L)→faq(D)→final-cta(L)          */
+
+        /* phases → dark */
+        .phases { background: var(--dark-bg); }
+        .phases .section-label { color: var(--accent-color); }
+        .phases .section-title { color: #ffffff; }
+        .phases .section-subtitle { color: rgba(255,255,255,0.65); }
+        .phases .phase-card,
+        .phases .phase-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .phases h3,
+        .phases .phase-title { color: #ffffff; }
+        .phases p { color: rgba(255,255,255,0.65); }
+
+        /* everfit → dark */
+        .everfit { background: var(--dark-bg); }
+        .everfit .section-label { color: var(--accent-color); }
+        .everfit .section-title { color: #ffffff; }
+        .everfit .section-subtitle { color: rgba(255,255,255,0.65); }
+        .everfit h3 { color: #ffffff; }
+        .everfit p { color: rgba(255,255,255,0.65); }
+        .everfit .everfit-feature,
+        .everfit .everfit-item { color: rgba(255,255,255,0.8); }
+
+        /* faq → dark */
+        .faq { background: var(--dark-bg); }
+        .faq .section-label { color: var(--accent-color); }
+        .faq .section-title { color: #ffffff; }
+        .faq .section-subtitle { color: rgba(255,255,255,0.65); }
+        .faq .faq-item { background: #2a2a2a; border-color: rgba(255,255,255,0.08); }
+        .faq .faq-item h4 { color: #ffffff; }
+        .faq .faq-item p { color: rgba(255,255,255,0.65); }
+
+        /* final-cta → light */
+        .final-cta { background: var(--bg-color); color: var(--text-color); }
+        .final-cta h2 { color: var(--text-color); }
+        .final-cta p { color: var(--text-muted); }
+        .final-cta .section-label { color: var(--accent-color); }
+
+
+        /* ===== UNIVERSAL SITE FOOTER ===== */
+        .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
+        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+        .site-footer__col li { margin-bottom: 10px; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a:hover { color: #99313c; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
+
     </style>
     <link rel="stylesheet" href="social-share.css">
 </head>
@@ -2194,19 +2311,47 @@
     </section>
 
     <!-- Footer -->
-    <footer>
-        <picture>
-            <source srcset="Logo.webp" type="image/webp">
-            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
-        </picture>
-        <p class="footer-text">Strength. Mindset. Support.</p>
-        <div class="footer-links">
-            <a href="personal-training.html">Personal Training</a>
-            <a href="online-coaching.html">Online Coaching</a>
-            <a href="blog.html">Blog</a>
-            <a href="#" onclick="openContactModal(event)">Contact</a>
+        <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__grid">
+                <div class="site-footer__brand">
+                    <picture>
+                        <source srcset="Logo.webp" type="image/webp">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                    </picture>
+                    <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
+                    <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="personal-training.html">Personal Training</a></li>
+                        <li><a href="online-coaching.html">Online Coaching</a></li>
+                        <li><a href="core-buddy.html">Core Buddy App</a></li>
+                        <li><a href="12-week-core-programme.html">12-Week Programme</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="workbook.html">Workbook</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="site-footer__bottom">
+                <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
+            </div>
         </div>
-        <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms.html">Terms & Conditions</a></p>
     </footer>
 
     <!-- Contact Form Modal -->
