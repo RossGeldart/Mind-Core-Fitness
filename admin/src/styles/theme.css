@@ -294,7 +294,8 @@
 [data-mono="true"] .session-card,
 [data-mono="true"] .modal-content,
 [data-mono="true"] .onboarding-card,
-[data-mono="true"] .notif-panel {
+[data-mono="true"] .notif-panel,
+[data-mono="true"] .login-card {
   -webkit-backdrop-filter: blur(20px) saturate(100%);
   backdrop-filter: blur(20px) saturate(100%);
 }
@@ -305,6 +306,14 @@
 }
 [data-mono="true"][data-theme="light"] .notif-panel {
   background: rgba(255, 255, 255, 0.85);
+}
+
+/* Login card needs an opaque bg in mono so text is readable */
+[data-mono="true"][data-theme="light"] .login-card {
+  background: rgba(255, 255, 255, 0.88);
+}
+[data-mono="true"][data-theme="dark"] .login-card {
+  background: rgba(30, 30, 30, 0.88);
 }
 
 /* Keep 24hr countdown ring red in mono mode */
