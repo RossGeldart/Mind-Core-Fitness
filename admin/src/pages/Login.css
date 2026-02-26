@@ -32,7 +32,7 @@
 
 .login-card {
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 400px;
@@ -374,7 +374,7 @@
 
 .portal-card {
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 480px;
@@ -391,57 +391,68 @@
 .portal-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
 .portal-option {
-  background: var(--bg-body);
-  border: 1.5px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px 16px;
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px 16px 20px;
   cursor: pointer;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
 .portal-option:hover {
   border-color: var(--color-primary);
-  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .portal-option:active {
   transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Centre the 3rd card (Core Buddy) below the two training options */
 .portal-option:last-child:nth-child(odd) {
   grid-column: 1 / -1;
-  max-width: calc(50% - 6px);
+  max-width: calc(50% - 8px);
   margin: 0 auto;
   width: 100%;
 }
 
 .portal-option-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
   color: var(--color-primary);
-  width: 32px;
-  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .portal-option-icon svg {
-  width: 100%;
-  height: 100%;
+  width: 24px;
+  height: 24px;
 }
 
 .portal-option-label {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 0.88rem;
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
   color: var(--text-primary);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
 }
 
 .portal-option-desc {
