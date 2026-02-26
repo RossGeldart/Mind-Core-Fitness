@@ -801,10 +801,11 @@
                 rootMargin: '0px 0px -50px 0px'
             };
 
-            const observer = new IntersectionObserver(function(entries) {
+            const observer = new IntersectionObserver(function(entries, obs) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
