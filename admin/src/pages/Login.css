@@ -400,6 +400,7 @@
 .portal-option {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
+  border-top: 3px solid var(--color-primary);
   border-radius: 16px;
   padding: 24px 16px 20px;
   cursor: pointer;
@@ -408,8 +409,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  /* inset shadow draws a red accent bar at the top of each card */
-  box-shadow: var(--shadow-sm), inset 0 3px 0 var(--color-primary);
+  box-shadow: var(--shadow-sm);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
@@ -420,13 +420,14 @@
 
 .portal-option:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md), inset 0 3px 0 var(--color-primary);
+  border-top-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
 .portal-option:active {
   transform: scale(0.97);
-  box-shadow: var(--shadow-sm), inset 0 3px 0 var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Centre the 3rd card (Core Buddy) below the two training options */
@@ -441,9 +442,8 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  /* Use a stronger tint (0.2) so the colour reads clearly in both themes */
-  background: rgba(var(--color-primary-rgb), 0.2);
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--text-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
