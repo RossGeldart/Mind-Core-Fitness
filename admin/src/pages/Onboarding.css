@@ -140,7 +140,7 @@
 
 .ob-showcase-img-wrap {
   position: relative;
-  width: 240px;
+  max-width: 240px;
   border-radius: 36px;
   overflow: hidden;
   padding: 8px;
@@ -168,10 +168,11 @@
 }
 
 .ob-showcase-img {
-  width: 100%;
-  max-height: calc(100dvh - 300px);
-  object-fit: contain;
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 224px;
+  max-height: calc(100dvh - 300px);
   border-radius: 28px;
 }
 
