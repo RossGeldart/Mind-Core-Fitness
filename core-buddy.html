@@ -907,42 +907,12 @@
             line-height: 1.7;
         }
 
-        /* ===== White Section Overrides (features, install, faq) ===== */
-        /* These sections alternate to white to match the site-wide black/white pattern.   */
-        /* Dark sections: Hero → Stats → Pricing → Final CTA                              */
-        /* White sections: Features → Install → FAQ                                       */
+        /* ===== Elevated Section Overrides (features, install, faq) ===== */
         .features,
         .install,
         .faq {
-            background: #ffffff;
+            background: var(--bg-elevated);
         }
-        .features .section-title,
-        .install .section-title,
-        .faq .section-title {
-            color: #1a1a1a;
-        }
-        .features .section-subtitle,
-        .install .section-subtitle,
-        .faq .section-subtitle {
-            color: #555555;
-        }
-        /* Features adjustments */
-        .features .feature-row { border-bottom-color: rgba(0,0,0,0.08); }
-        .features .feature-text h3 { color: #1a1a1a; }
-        .features .feature-text p { color: #555555; }
-        .features .feature-card { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
-        .features .feature-card h4 { color: #1a1a1a; }
-        .features .feature-card p { color: #555555; }
-        /* Install adjustments */
-        .install .install-platform { background: #f5f5f5; border-color: rgba(0,0,0,0.08); }
-        .install .install-platform-title { color: #1a1a1a; }
-        .install .install-platform-steps { color: #555555; }
-        .install .install-platform-steps strong { color: #1a1a1a; }
-        .install .install-badge { color: #888888; }
-        /* FAQ adjustments */
-        .faq .faq-item { background: #f5f5f5; border-color: rgba(0,0,0,0.1); }
-        .faq .faq-item summary { color: #1a1a1a; }
-        .faq .faq-answer { color: #555555; }
 
         /* ===== Final CTA ===== */
         .final-cta {
@@ -1151,7 +1121,8 @@
         .fade-in {
             opacity: 0;
             transform: translateY(24px);
-            transition: all 0.6s ease-out;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
         }
 
         .fade-in.visible {
@@ -1316,7 +1287,8 @@
         }
         .modal-overlay.show { opacity: 1; visibility: visible; }
         .modal-content {
-            background: #ffffff;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 40px;
             max-width: 480px;
@@ -1331,20 +1303,20 @@
         .modal-close {
             position: absolute; top: 16px; right: 16px;
             background: none; border: none;
-            font-size: 28px; color: #666; cursor: pointer;
+            font-size: 28px; color: var(--text-secondary); cursor: pointer;
             width: 40px; height: 40px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
             transition: background 0.2s ease, color 0.2s ease;
         }
-        .modal-close:hover { background: rgba(0,0,0,0.1); color: #333; }
+        .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
         .modal-title {
             font-family: 'Montserrat', sans-serif;
             font-weight: 600; font-size: 1.8rem;
-            color: #373737; margin-bottom: 8px; text-align: center;
+            color: var(--text); margin-bottom: 8px; text-align: center;
         }
         .modal-subtitle {
-            font-size: 0.95rem; color: #666;
+            font-size: 0.95rem; color: var(--text-secondary);
             text-align: center; margin-bottom: 28px; line-height: 1.5;
         }
         .modal-overlay .contact-form {
@@ -1355,33 +1327,33 @@
         }
         .modal-overlay .form-group label {
             font-family: 'Montserrat', sans-serif;
-            font-weight: 500; font-size: 0.9rem; color: #373737;
+            font-weight: 500; font-size: 0.9rem; color: var(--text);
         }
         .modal-overlay .form-group input,
         .modal-overlay .form-group textarea,
         .modal-overlay .form-group select {
             padding: 14px 16px;
-            border: 1.5px solid rgba(55,55,55,0.2);
+            border: 1.5px solid var(--border-light);
             border-radius: 8px;
             font-family: 'Roboto', sans-serif;
-            font-size: 1rem; color: #373737;
+            font-size: 1rem; color: var(--text);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            background: #fff;
+            background: var(--bg-elevated);
         }
         .modal-overlay .form-group input::placeholder,
         .modal-overlay .form-group textarea::placeholder,
-        .modal-overlay .form-group select:invalid { color: #999; }
+        .modal-overlay .form-group select:invalid { color: var(--text-tertiary); }
         .modal-overlay .form-group input:focus,
         .modal-overlay .form-group textarea:focus,
         .modal-overlay .form-group select:focus {
             outline: none;
-            border-color: #99313c;
-            box-shadow: 0 0 0 3px rgba(153,49,60,0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
         .modal-overlay .form-group textarea { resize: vertical; min-height: 100px; }
         .modal-overlay .submit-btn {
             padding: 16px 32px;
-            background: #99313c; color: #ffffff;
+            background: var(--accent); color: #ffffff;
             border: none; border-radius: 8px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 600; font-size: 1rem;
@@ -1390,9 +1362,9 @@
             margin-top: 8px;
         }
         .modal-overlay .submit-btn:hover {
-            background: #b33a47;
+            background: var(--accent-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(153,49,60,0.3);
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
     
         /* ===== UNIVERSAL SITE FOOTER ===== */
@@ -1887,9 +1859,14 @@
 
         // Scroll reveal
         const fadeEls = document.querySelectorAll('.fade-in');
-        const obs = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        const obs = new IntersectionObserver((entries, observer) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
         fadeEls.forEach(el => obs.observe(el));
 
         // Cookie consent
