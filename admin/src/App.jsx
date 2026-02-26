@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { TierProvider } from './contexts/TierContext';
 import Login from './pages/Login';
+import LoginPortal from './pages/LoginPortal';
 import LockedFeature from './components/LockedFeature';
 import './styles/theme.css';
 
@@ -80,7 +81,8 @@ function App() {
           <ScrollToTop>
           <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}><div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} /></div>}>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<LoginPortal />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/add-client" element={<AddClient />} />
             <Route path="/client" element={<ClientDashboard />} />
