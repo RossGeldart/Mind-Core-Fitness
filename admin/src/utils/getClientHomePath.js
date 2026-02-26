@@ -3,7 +3,7 @@
  * Used by Login and SignUp to avoid duplicating redirect logic.
  */
 export default function getClientHomePath(clientData) {
-  if (clientData?.signupSource === 'self_signup' && !clientData?.onboardingComplete) {
+  if (['self_signup', 'google', 'apple'].includes(clientData?.signupSource) && !clientData?.onboardingComplete) {
     return '/onboarding';
   }
   const type = clientData?.clientType;
