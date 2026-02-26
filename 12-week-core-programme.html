@@ -190,6 +190,18 @@
             --dark-bg: #1a1a1a;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --text-muted: #cccccc;
+                --text-light: #aaaaaa;
+                --card-bg: #242424;
+                --card-border: #333333;
+                --dark-bg: #111111;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -906,7 +918,7 @@
         }
 
         .footer-copyright {
-            color: #666;
+            color: var(--text-muted);
             font-size: 0.8rem;
         }
 
@@ -1631,7 +1643,7 @@
         }
         .modal-overlay.show { opacity: 1; visibility: visible; }
         .modal-content {
-            background: #ffffff;
+            background: var(--bg-color);
             border-radius: 16px;
             padding: 40px;
             max-width: 480px;
@@ -1646,7 +1658,7 @@
         .modal-close {
             position: absolute; top: 16px; right: 16px;
             background: none; border: none;
-            font-size: 28px; color: #666; cursor: pointer;
+            font-size: 28px; color: var(--text-muted); cursor: pointer;
             width: 40px; height: 40px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
@@ -1659,7 +1671,7 @@
             color: var(--text-color); margin-bottom: 8px; text-align: center;
         }
         .modal-subtitle {
-            font-size: 0.95rem; color: #666;
+            font-size: 0.95rem; color: var(--text-muted);
             text-align: center; margin-bottom: 28px; line-height: 1.5;
         }
         .modal-overlay .contact-form {
@@ -1681,7 +1693,7 @@
             font-family: 'Roboto', sans-serif;
             font-size: 1rem; color: var(--text-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            background: #fff;
+            background: var(--bg-color);
         }
         .modal-overlay .form-group input::placeholder,
         .modal-overlay .form-group textarea::placeholder,

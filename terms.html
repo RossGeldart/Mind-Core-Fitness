@@ -56,6 +56,15 @@
             --dark-bg: #1a1a1a;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --text-muted: #cccccc;
+                --dark-bg: #111111;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -186,7 +195,7 @@
         }
 
         footer p {
-            color: #666;
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
 

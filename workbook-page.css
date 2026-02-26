@@ -6,11 +6,18 @@
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(26, 26, 26, 0.95);
     backdrop-filter: blur(10px);
     z-index: 1000;
     padding: 16px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+    .workbook-nav {
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
 }
 
 .back-link {
@@ -40,7 +47,7 @@
 /* Hero Section */
 .workbook-hero {
     padding: 140px 20px 100px;
-    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    background: var(--card-bg);
 }
 
 .workbook-hero-content {
@@ -75,7 +82,7 @@
 .book-card-square {
     width: 380px;
     height: 380px;
-    background: #ffffff;
+    background: var(--bg-color);
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -107,7 +114,7 @@
     height: 220px;
     border-radius: 12px;
     box-shadow: none;
-    background: #ffffff;
+    background: var(--bg-color);
 }
 
 .book-card-square.small:hover {
@@ -187,16 +194,16 @@
 }
 
 .cta-button.secondary:hover {
-    background: var(--text-color);
+    background: var(--accent-color);
     color: #ffffff;
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(55, 55, 55, 0.2);
+    box-shadow: 0 10px 30px rgba(153, 49, 60, 0.2);
 }
 
 /* What's Inside Section */
 .whats-inside {
     padding: 100px 20px;
-    background: #ffffff;
+    background: var(--bg-color);
     text-align: center;
 }
 
@@ -209,7 +216,7 @@
 }
 
 .feature-card {
-    background: #f9f9f9;
+    background: var(--card-bg);
     padding: 35px 28px;
     border-radius: 16px;
     text-align: center;
@@ -258,7 +265,7 @@
 /* Who It's For Section */
 .who-its-for {
     padding: 100px 20px;
-    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    background: var(--card-bg);
     text-align: center;
 }
 
@@ -317,7 +324,7 @@
 /* Preview Section */
 .preview-section {
     padding: 100px 20px;
-    background: #ffffff;
+    background: var(--bg-color);
     text-align: center;
 }
 
@@ -371,7 +378,7 @@
 /* Digital/Format Section */
 .digital-section {
     padding: 100px 20px;
-    background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+    background: var(--card-bg);
     text-align: center;
 }
 
@@ -384,7 +391,7 @@
 }
 
 .format-card {
-    background: #ffffff;
+    background: var(--bg-color);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
@@ -406,7 +413,7 @@
 
 .format-image {
     padding: 30px;
-    background: #f5f5f5;
+    background: var(--card-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -414,7 +421,7 @@
 }
 
 .format-card.paperback .format-image {
-    background: #f5f5f5;
+    background: var(--card-bg);
 }
 
 .format-image img {
@@ -515,12 +522,12 @@
 }
 
 .format-card.paperback .format-btn:not(.coming-soon) {
-    background: var(--text-color);
+    background: var(--accent-color);
     color: #ffffff;
 }
 
 .format-card.paperback .format-btn:not(.coming-soon):hover {
-    background: #2a2a2a;
+    background: #7a2530;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(55, 55, 55, 0.3);
 }
@@ -528,7 +535,7 @@
 /* Final CTA Section */
 .final-cta {
     padding: 100px 20px;
-    background: var(--text-color);
+    background: #1a1a1a;
     text-align: center;
 }
 
@@ -552,12 +559,12 @@
 }
 
 .final-cta .cta-button.primary {
-    background: #ffffff;
-    color: var(--text-color);
+    background: var(--accent-color);
+    color: #ffffff;
 }
 
 .final-cta .cta-button.primary:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: #b33a47;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 

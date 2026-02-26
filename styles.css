@@ -35,6 +35,21 @@
     --glow-color-strong: rgba(55, 55, 55, 0.4);
     --text-muted: #666666;
     --card-border: #e8e8e8;
+    --card-bg: #f9f9f9;
+    --bg-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #ffffff;
+        --background: #1a1a1a;
+        --glow-color: rgba(153, 49, 60, 0.25);
+        --glow-color-strong: rgba(153, 49, 60, 0.4);
+        --text-muted: #cccccc;
+        --card-border: #333333;
+        --card-bg: #242424;
+        --bg-color: #1a1a1a;
+    }
 }
 
 /* Site Header */
@@ -368,7 +383,7 @@ body {
 /* Value Proposition Section */
 .value-prop {
     padding: 100px 20px;
-    background: #f9f9f9;
+    background: var(--card-bg);
 }
 
 .section-label {
@@ -399,7 +414,7 @@ body {
 }
 
 .value-card {
-    background: #ffffff;
+    background: var(--bg-color);
     padding: 40px 30px;
     border-radius: 16px;
     text-align: center;
@@ -498,7 +513,7 @@ body {
     overflow: hidden;
     border-radius: 16px;
     border: 1px solid var(--card-border);
-    background: #ffffff;
+    background: var(--bg-color);
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
     user-select: none;
@@ -915,7 +930,7 @@ body {
 /* Testimonials Section */
 .testimonials {
     padding: 100px 20px;
-    background: #f9f9f9;
+    background: var(--card-bg);
     text-align: center;
 }
 
@@ -927,7 +942,7 @@ body {
 }
 
 .testimonial-card {
-    background: #ffffff;
+    background: var(--bg-color);
     padding: 32px;
     border-radius: 16px;
     text-align: left;
@@ -1135,7 +1150,7 @@ body {
 }
 
 .modal-content {
-    background: #ffffff;
+    background: var(--bg-color);
     border-radius: 16px;
     padding: 40px;
     max-width: 480px;
@@ -1158,7 +1173,7 @@ body {
     background: none;
     border: none;
     font-size: 28px;
-    color: #666;
+    color: var(--text-muted);
     cursor: pointer;
     width: 40px;
     height: 40px;
@@ -1194,7 +1209,7 @@ body {
 
 .modal-subtitle {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--text-muted);
     text-align: center;
     margin-bottom: 28px;
     line-height: 1.5;
@@ -1229,7 +1244,7 @@ body {
     font-size: 1rem;
     color: var(--text-color);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background: #fff;
+    background: var(--bg-color);
 }
 
 .form-group input::placeholder,

@@ -122,6 +122,19 @@
             --background: #ffffff;
             --text-muted: #666666;
             --card-border: #e8e8e8;
+            --bg-color: #ffffff;
+            --card-bg: #f9f9f9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #ffffff;
+                --background: #1a1a1a;
+                --text-muted: #cccccc;
+                --card-border: #333333;
+                --bg-color: #1a1a1a;
+                --card-bg: #242424;
+            }
         }
 
         html {
@@ -147,7 +160,7 @@
         }
 
         .calculator-card {
-            background: #ffffff;
+            background: var(--bg-color);
             border-radius: 20px;
             padding: 48px 40px;
             border: 1px solid var(--card-border);
@@ -199,7 +212,7 @@
             font-size: 1rem;
             color: var(--text-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            background: #fff;
+            background: var(--bg-color);
             -webkit-appearance: none;
             appearance: none;
         }
@@ -304,7 +317,7 @@
         }
 
         .results-breakdown {
-            background: #f9f9f9;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 24px;

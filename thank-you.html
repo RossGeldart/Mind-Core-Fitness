@@ -100,6 +100,18 @@
             --success-color: #28a745;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --text-muted: #cccccc;
+                --text-light: #aaaaaa;
+                --card-bg: #242424;
+                --card-border: #333333;
+                --dark-bg: #111111;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -359,7 +371,7 @@
         }
 
         .footer-copyright {
-            color: #666;
+            color: var(--text-muted);
             font-size: 0.8rem;
         }
 
@@ -549,7 +561,7 @@
             <a href="online-coaching.html">Online Coaching</a>
             <a href="blog.html">Blog</a>
         </div>
-        <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="/privacy-policy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
+        <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms.html">Terms & Conditions</a></p>
     </footer>
 
     <script>
