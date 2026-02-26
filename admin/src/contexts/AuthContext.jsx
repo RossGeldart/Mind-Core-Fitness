@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
@@ -10,7 +11,7 @@ import {
   setPersistence
 } from 'firebase/auth';
 import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, Timestamp } from 'firebase/firestore';
-import { auth, db, ADMIN_UID } from '../config/firebase';
+import { auth, db, ADMIN_UID, googleProvider } from '../config/firebase';
 
 const AuthContext = createContext();
 
@@ -149,6 +150,39 @@ export function AuthProvider({ children }) {
     return userCredential;
   };
 
+  const loginWithGoogle = async () => {
+    await setPersistence(auth, browserLocalPersistence);
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+
+    // Check if a client doc already exists for this user
+    const q = query(collection(db, 'clients'), where('uid', '==', user.uid));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      // First-time Google sign-in — create a client doc
+      const clientRef = doc(collection(db, 'clients'));
+      const clientDoc = {
+        uid: user.uid,
+        name: user.displayName || '',
+        email: user.email.toLowerCase(),
+        clientType: 'core_buddy',
+        coreBuddyAccess: true,
+        status: 'active',
+        tier: 'free',
+        subscriptionStatus: null,
+        signupSource: 'google',
+        createdAt: Timestamp.now(),
+      };
+      await setDoc(clientRef, clientDoc);
+      setIsClient(true);
+      setClientData({ id: clientRef.id, ...clientDoc });
+      try { localStorage.setItem('mcf_clientId', clientRef.id); } catch {};
+    }
+
+    return result;
+  };
+
   const updateClientData = (fields) => {
     setClientData(prev => prev ? { ...prev, ...fields } : fields);
   };
@@ -196,6 +230,7 @@ export function AuthProvider({ children }) {
     updateClientData,
     resolveClient,
     login,
+    loginWithGoogle,
     signup,
     logout,
     resetPassword,

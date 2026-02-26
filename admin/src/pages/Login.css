@@ -225,6 +225,62 @@
   color: var(--color-primary);
 }
 
+/* ── Google Sign-In button ── */
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.login-divider span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  text-transform: lowercase;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.google-btn:hover:not(:disabled) {
+  background: var(--bg-body);
+  border-color: var(--text-tertiary);
+}
+
+.google-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.google-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* ── Sign-up button with Coming Soon overlay ── */
 
 .login-signup-wrapper {
