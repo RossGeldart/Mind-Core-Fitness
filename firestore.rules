@@ -22,7 +22,7 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       // Self-signup: allow new users to create their own client document
       allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid
-        && request.resource.data.signupSource == 'self_signup';
+        && request.resource.data.signupSource in ['self_signup', 'google', 'apple'];
       // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'dashboardWidgets', 'tourComplete', 'fcmTokens', 'notificationPrefs', 'weeklyWorkoutTarget']);
