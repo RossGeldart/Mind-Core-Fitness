@@ -8,10 +8,15 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "cap:sync": "vite build && npx cap sync",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
+    "@capacitor/ios": "^8.1.0",
     "@ericblade/quagga2": "^1.12.1",
     "firebase": "^12.8.0",
     "react": "^19.2.0",

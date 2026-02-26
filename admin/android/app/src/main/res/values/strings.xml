@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mind Core Fitness</string>
+    <string name="title_activity_main">Mind Core Fitness</string>
+    <string name="package_name">com.mindcorefitness.app</string>
+    <string name="custom_url_scheme">com.mindcorefitness.app</string>
+</resources>
