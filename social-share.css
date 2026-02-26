@@ -43,7 +43,7 @@
     height: 42px;
     border-radius: 50%;
     background: var(--card-bg, #fff);
-    color: #666666;
+    color: var(--text-muted, #666666);
     text-decoration: none;
     transition: all 0.2s ease;
     border: 1px solid var(--card-border, #e0e0e0);

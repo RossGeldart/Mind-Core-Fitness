@@ -146,6 +146,18 @@
             --dark-bg: #1a1a1a;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --text-muted: #cccccc;
+                --text-light: #aaaaaa;
+                --card-bg: #242424;
+                --card-border: #333333;
+                --dark-bg: #111111;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -908,7 +920,7 @@
         }
 
         .footer-copyright {
-            color: #666;
+            color: var(--text-muted);
             font-size: 0.8rem;
         }
 
