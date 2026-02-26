@@ -788,11 +788,15 @@
 /* ── Wizard Layout (Step 2) ── */
 .ob-page--wizard {
   padding-top: 0;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
 }
 
 .ob-content--wizard {
   padding-top: 0;
   max-width: 440px;
+  justify-content: center;
 }
 
 /* ── Progress Bar ── */
@@ -805,7 +809,7 @@
   background: var(--border-color);
   z-index: 5;
   flex-shrink: 0;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .ob-wizard-progress-bar {
@@ -824,7 +828,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px;
+  margin: 0 auto 16px;
   flex-shrink: 0;
 }
 

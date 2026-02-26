@@ -590,15 +590,6 @@ export default function Onboarding() {
                   </button>
                 ))}
               </div>
-              {gender && (
-                <button
-                  className="ob-primary-btn"
-                  onClick={() => setWizardStep(2)}
-                  style={{ marginTop: 24 }}
-                >
-                  Continue
-                </button>
-              )}
             </>
           )}
 
@@ -618,15 +609,6 @@ export default function Onboarding() {
                   </button>
                 ))}
               </div>
-              {goal && (
-                <button
-                  className="ob-primary-btn"
-                  onClick={() => setWizardStep(3)}
-                  style={{ marginTop: 24 }}
-                >
-                  Continue
-                </button>
-              )}
             </>
           )}
 
@@ -647,15 +629,6 @@ export default function Onboarding() {
                   </button>
                 ))}
               </div>
-              {experience && (
-                <button
-                  className="ob-primary-btn"
-                  onClick={() => setWizardStep(4)}
-                  style={{ marginTop: 24 }}
-                >
-                  Continue
-                </button>
-              )}
             </>
           )}
 
