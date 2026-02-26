@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
 import './Login.css';
 
@@ -37,6 +40,27 @@ const PORTAL_OPTIONS = [
 
 export default function LoginPortal() {
   const navigate = useNavigate();
+  const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
+
+  // If already logged in, skip the portal and go straight to the dashboard
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      if (isAdmin) {
+        navigate('/dashboard', { replace: true });
+      } else if (isClient) {
+        navigate(getClientHomePath(clientData), { replace: true });
+      }
+    }
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
+
+  // Show spinner while checking auth state or mid-redirect
+  if (authLoading || currentUser) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
+        <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">
