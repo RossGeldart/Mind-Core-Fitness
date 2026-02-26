@@ -74,6 +74,8 @@ const EXPERIENCE_LEVELS = [
   { key: 'advanced', label: 'Advanced', desc: 'Training consistently for 2+ years' },
 ];
 
+const TOTAL_WIZARD_STEPS = 6;
+
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -91,7 +93,7 @@ export default function Onboarding() {
   // or is returning from a successful Stripe checkout, skip to the welcome form.
   const alreadySubscribed = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
   const fromCheckout = searchParams.get('checkout') === 'success';
-  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=welcome, 3=parq
+  const [step, setStep] = useState(alreadySubscribed || fromCheckout ? 2 : 0); // 0=features, 1=subscription, 2=wizard
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
 
@@ -123,6 +125,17 @@ export default function Onboarding() {
   const sigDrawingRef = useRef(false);
   const [sigHasContent, setSigHasContent] = useState(false);
 
+  // Wizard sub-step (within step 2)
+  const [wizardStep, setWizardStep] = useState(0);
+  const autoAdvanceRef = useRef(null);
+
+  // Cleanup auto-advance timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+    };
+  }, []);
+
   // Keep the canvas internal resolution in sync with its CSS display size
   useEffect(() => {
     const canvas = sigCanvasRef.current;
@@ -137,7 +150,7 @@ export default function Onboarding() {
     resize();
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
-  }, [step]);
+  }, [step, wizardStep]);
 
   const getSigPos = (e) => {
     const canvas = sigCanvasRef.current;
@@ -227,6 +240,17 @@ export default function Onboarding() {
     const slideWidth = el.firstChild?.offsetWidth || 1;
     el.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
   };
+
+  // ── Theme toggle button (reused across steps) ──
+  const themeToggleBtn = (
+    <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+      {isDark ? (
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+      )}
+    </button>
+  );
 
   // ── Step 0: Feature Showcase ──
   if (step === 0) {
@@ -363,13 +387,7 @@ export default function Onboarding() {
 
     return (
       <div className="ob-page">
-        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-          {isDark ? (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-          )}
-        </button>
+        {themeToggleBtn}
         <div className="ob-content">
           <div className="ob-step-indicator">
             <span className="ob-step-num">1 of 3</span>
@@ -435,100 +453,17 @@ export default function Onboarding() {
     );
   }
 
-  // ── Step 2: Welcome Form ──
-  if (step === 2) {
-    const welcomeValid = dob && gender && goal && experience;
+  // ── Step 2: Onboarding Wizard ──
+  const wizardProgress = ((wizardStep + 1) / TOTAL_WIZARD_STEPS) * 100;
 
-    return (
-      <div className="ob-page">
-        <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-          {isDark ? (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-          )}
-        </button>
-        <div className="ob-content">
-          <div className="ob-step-indicator">
-            <span className="ob-step-num">2 of 3</span>
-          </div>
-          <h1 className="ob-title">Let's Get To Know You</h1>
-          <p className="ob-subtitle">Tell us a bit about yourself and where you're at with your fitness — we're in this together</p>
+  const selectAndAdvance = (setter, value) => {
+    setter(value);
+    if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+    autoAdvanceRef.current = setTimeout(() => {
+      setWizardStep((prev) => Math.min(prev + 1, TOTAL_WIZARD_STEPS - 1));
+    }, 500);
+  };
 
-          <div className="ob-form">
-            <label className="ob-label">Date of Birth</label>
-            <input
-              type="date"
-              className="ob-input"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              max={new Date().toISOString().split('T')[0]}
-            />
-
-            <label className="ob-label">Sex</label>
-            <div className="ob-chip-group">
-              {['Male', 'Female', 'Other', 'Prefer not to say'].map((g) => (
-                <button
-                  key={g}
-                  className={`ob-chip${gender === g ? ' active' : ''}`}
-                  onClick={() => setGender(g)}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
-
-            <label className="ob-label">What's Your Main Fitness Goal?</label>
-            <div className="ob-chip-group">
-              {FITNESS_GOALS.map((g) => (
-                <button
-                  key={g}
-                  className={`ob-chip${goal === g ? ' active' : ''}`}
-                  onClick={() => setGoal(g)}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
-
-            <label className="ob-label">Where Are You At Right Now?</label>
-            <div className="ob-level-group">
-              {EXPERIENCE_LEVELS.map((lvl) => (
-                <button
-                  key={lvl.key}
-                  className={`ob-level-card${experience === lvl.key ? ' active' : ''}`}
-                  onClick={() => setExperience(lvl.key)}
-                >
-                  <strong>{lvl.label}</strong>
-                  <span>{lvl.desc}</span>
-                </button>
-              ))}
-            </div>
-
-            <label className="ob-label">Any Injuries or Conditions We Should Know About? <span className="ob-optional">(optional)</span></label>
-            <textarea
-              className="ob-textarea"
-              placeholder="E.g. bad knee, lower back pain, asthma..."
-              value={injuries}
-              onChange={(e) => setInjuries(e.target.value)}
-              rows={3}
-              maxLength={500}
-            />
-          </div>
-
-          <button
-            className="ob-primary-btn"
-            disabled={!welcomeValid}
-            onClick={() => setStep(3)}
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step 3: PARQ Form ──
   const allParqAnswered = parqAnswers.every((a) => a !== null);
   const canSubmitParq = allParqAnswered && parqDeclare && sigHasContent;
 
@@ -600,92 +535,243 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="ob-page">
-      <button className="ob-theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-        {isDark ? (
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-        ) : (
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-        )}
-      </button>
-      <div className="ob-content">
-        <div className="ob-step-indicator">
-          <span className="ob-step-num">3 of 3</span>
+    <div className="ob-page ob-page--wizard">
+      {themeToggleBtn}
+      <div className="ob-content ob-content--wizard">
+        {/* Progress bar */}
+        <div className="ob-wizard-progress">
+          <div className="ob-wizard-progress-bar" style={{ width: `${wizardProgress}%` }} />
         </div>
-        <h1 className="ob-title">Health Questionnaire</h1>
-        <p className="ob-subtitle">PAR-Q — please answer honestly for your safety</p>
 
-        <div className="ob-parq">
-          {PARQ_QUESTIONS.map((q, i) => (
-            <div key={i} className="ob-parq-item">
-              <p className="ob-parq-question">{q}</p>
-              <div className="ob-parq-btns">
-                <button
-                  className={`ob-parq-btn${parqAnswers[i] === true ? ' yes' : ''}`}
-                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? true : a)))}
-                >
-                  Yes
-                </button>
-                <button
-                  className={`ob-parq-btn${parqAnswers[i] === false ? ' no' : ''}`}
-                  onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? false : a)))}
-                >
-                  No
-                </button>
+        {/* Glowing Logo Orb */}
+        <div className="ob-wizard-orb">
+          <img src="/Logo.webp" alt="Mind Core Fitness" width="72" height="72" />
+        </div>
+
+        {/* Wizard body — key forces remount for entrance animation */}
+        <div className="ob-wizard-body" key={wizardStep}>
+
+          {/* ── Sub-step 0: Date of Birth ── */}
+          {wizardStep === 0 && (
+            <>
+              <h2 className="ob-wizard-question">When were you born?</h2>
+              <p className="ob-wizard-hint">This helps us tailor your experience</p>
+              <input
+                type="date"
+                className="ob-input"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
+              <button
+                className="ob-primary-btn"
+                disabled={!dob}
+                onClick={() => setWizardStep(1)}
+                style={{ marginTop: 24 }}
+              >
+                Continue
+              </button>
+            </>
+          )}
+
+          {/* ── Sub-step 1: Sex ── */}
+          {wizardStep === 1 && (
+            <>
+              <h2 className="ob-wizard-question">How do you identify?</h2>
+              <p className="ob-wizard-hint">Used for personalised recommendations</p>
+              <div className="ob-chip-group ob-chip-group--centered">
+                {['Male', 'Female', 'Other', 'Prefer not to say'].map((g) => (
+                  <button
+                    key={g}
+                    className={`ob-chip${gender === g ? ' active' : ''}`}
+                    onClick={() => selectAndAdvance(setGender, g)}
+                  >
+                    {g}
+                  </button>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+              {gender && (
+                <button
+                  className="ob-primary-btn"
+                  onClick={() => setWizardStep(2)}
+                  style={{ marginTop: 24 }}
+                >
+                  Continue
+                </button>
+              )}
+            </>
+          )}
 
-        {parqAnswers.includes(true) && (
-          <div className="ob-parq-warning">
-            You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
-          </div>
-        )}
+          {/* ── Sub-step 2: Fitness Goal ── */}
+          {wizardStep === 2 && (
+            <>
+              <h2 className="ob-wizard-question">What's your main goal?</h2>
+              <p className="ob-wizard-hint">We'll focus your workouts around this</p>
+              <div className="ob-chip-group ob-chip-group--centered">
+                {FITNESS_GOALS.map((g) => (
+                  <button
+                    key={g}
+                    className={`ob-chip${goal === g ? ' active' : ''}`}
+                    onClick={() => selectAndAdvance(setGoal, g)}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+              {goal && (
+                <button
+                  className="ob-primary-btn"
+                  onClick={() => setWizardStep(3)}
+                  style={{ marginTop: 24 }}
+                >
+                  Continue
+                </button>
+              )}
+            </>
+          )}
 
-        {/* Declaration */}
-        <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
-          <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
-            {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
-          </span>
-          <span className="ob-declare-text">
-            I confirm that I have read and answered each question honestly.
-            I understand that if my health changes I should inform my trainer.
-            I take full responsibility for my participation in physical activity.
-          </span>
-        </label>
+          {/* ── Sub-step 3: Experience Level ── */}
+          {wizardStep === 3 && (
+            <>
+              <h2 className="ob-wizard-question">Where are you at?</h2>
+              <p className="ob-wizard-hint">No judgement — just helps us set the right level</p>
+              <div className="ob-level-group">
+                {EXPERIENCE_LEVELS.map((lvl) => (
+                  <button
+                    key={lvl.key}
+                    className={`ob-level-card${experience === lvl.key ? ' active' : ''}`}
+                    onClick={() => selectAndAdvance(setExperience, lvl.key)}
+                  >
+                    <strong>{lvl.label}</strong>
+                    <span>{lvl.desc}</span>
+                  </button>
+                ))}
+              </div>
+              {experience && (
+                <button
+                  className="ob-primary-btn"
+                  onClick={() => setWizardStep(4)}
+                  style={{ marginTop: 24 }}
+                >
+                  Continue
+                </button>
+              )}
+            </>
+          )}
 
-        {/* Signature pad */}
-        <div className="ob-sig-section">
-          <div className="ob-sig-header">
-            <label className="ob-label" style={{ margin: 0 }}>Signature</label>
-            {sigHasContent && (
-              <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
-            )}
-          </div>
-          <canvas
-            ref={sigCanvasRef}
-            className="ob-sig-canvas"
-            onMouseDown={sigStart}
-            onMouseMove={sigMove}
-            onMouseUp={sigEnd}
-            onMouseLeave={sigEnd}
-            onTouchStart={sigStart}
-            onTouchMove={sigMove}
-            onTouchEnd={sigEnd}
-          />
-          {!sigHasContent && (
-            <p className="ob-sig-hint">Draw your signature above</p>
+          {/* ── Sub-step 4: Injuries ── */}
+          {wizardStep === 4 && (
+            <>
+              <h2 className="ob-wizard-question">Anything we should know?</h2>
+              <p className="ob-wizard-hint">Injuries, conditions, limitations — totally optional</p>
+              <textarea
+                className="ob-textarea"
+                placeholder="E.g. bad knee, lower back pain, asthma..."
+                value={injuries}
+                onChange={(e) => setInjuries(e.target.value)}
+                rows={3}
+                maxLength={500}
+              />
+              <button
+                className="ob-primary-btn"
+                onClick={() => setWizardStep(5)}
+                style={{ marginTop: 24 }}
+              >
+                {injuries.trim() ? 'Continue' : 'Skip'}
+              </button>
+            </>
+          )}
+
+          {/* ── Sub-step 5: PARQ ── */}
+          {wizardStep === 5 && (
+            <>
+              <h2 className="ob-wizard-question">Health Questionnaire</h2>
+              <p className="ob-wizard-hint">PAR-Q — please answer honestly for your safety</p>
+
+              <div className="ob-parq">
+                {PARQ_QUESTIONS.map((q, i) => (
+                  <div key={i} className="ob-parq-item">
+                    <p className="ob-parq-question">{q}</p>
+                    <div className="ob-parq-btns">
+                      <button
+                        className={`ob-parq-btn${parqAnswers[i] === true ? ' yes' : ''}`}
+                        onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? true : a)))}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        className={`ob-parq-btn${parqAnswers[i] === false ? ' no' : ''}`}
+                        onClick={() => setParqAnswers((prev) => prev.map((a, j) => (j === i ? false : a)))}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {parqAnswers.includes(true) && (
+                <div className="ob-parq-warning">
+                  You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
+                </div>
+              )}
+
+              {/* Declaration */}
+              <label className="ob-declare-label" onClick={() => setParqDeclare(!parqDeclare)}>
+                <span className={`ob-declare-box${parqDeclare ? ' checked' : ''}`}>
+                  {parqDeclare && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+                </span>
+                <span className="ob-declare-text">
+                  I confirm that I have read and answered each question honestly.
+                  I understand that if my health changes I should inform my trainer.
+                  I take full responsibility for my participation in physical activity.
+                </span>
+              </label>
+
+              {/* Signature pad */}
+              <div className="ob-sig-section">
+                <div className="ob-sig-header">
+                  <label className="ob-label" style={{ margin: 0 }}>Signature</label>
+                  {sigHasContent && (
+                    <button type="button" className="ob-sig-clear" onClick={sigClear}>Clear</button>
+                  )}
+                </div>
+                <canvas
+                  ref={sigCanvasRef}
+                  className="ob-sig-canvas"
+                  onMouseDown={sigStart}
+                  onMouseMove={sigMove}
+                  onMouseUp={sigEnd}
+                  onMouseLeave={sigEnd}
+                  onTouchStart={sigStart}
+                  onTouchMove={sigMove}
+                  onTouchEnd={sigEnd}
+                />
+                {!sigHasContent && (
+                  <p className="ob-sig-hint">Draw your signature above</p>
+                )}
+              </div>
+
+              <button
+                className="ob-primary-btn"
+                disabled={!canSubmitParq || parqSubmitting}
+                onClick={handleParqSubmit}
+              >
+                {parqSubmitting ? 'Saving...' : 'Complete Setup'}
+              </button>
+            </>
           )}
         </div>
 
-        <button
-          className="ob-primary-btn"
-          disabled={!canSubmitParq || parqSubmitting}
-          onClick={handleParqSubmit}
-        >
-          {parqSubmitting ? 'Saving...' : 'Complete Setup'}
-        </button>
+        {/* Back button */}
+        {wizardStep > 0 && (
+          <button className="ob-wizard-back" onClick={() => setWizardStep((prev) => prev - 1)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+          </button>
+        )}
       </div>
     </div>
   );
