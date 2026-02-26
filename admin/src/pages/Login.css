@@ -418,6 +418,14 @@
   transform: scale(0.97);
 }
 
+/* Centre the 3rd card (Core Buddy) below the two training options */
+.portal-option:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  max-width: calc(50% - 6px);
+  margin: 0 auto;
+  width: 100%;
+}
+
 .portal-option-icon {
   color: var(--color-primary);
   width: 32px;
