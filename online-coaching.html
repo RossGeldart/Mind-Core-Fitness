@@ -193,6 +193,18 @@
             --dark-teal: #2d3d3d;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --text-muted: #cccccc;
+                --text-light: #aaaaaa;
+                --card-bg: #242424;
+                --card-border: #333333;
+                --dark-bg: #111111;
+            }
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -1034,7 +1046,7 @@
             line-height: 1.7;
             margin-bottom: 20px;
             font-style: italic;
-            color: #2a2a2a;
+            color: var(--text-color);
         }
 
         .testimonial-author {
@@ -1055,12 +1067,12 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1rem;
-            color: #1a1a1a;
+            color: var(--text-color);
         }
 
         .testimonial-author-info span {
             font-size: 0.85rem;
-            color: #555555;
+            color: var(--text-muted);
         }
 
         /* FAQ */
