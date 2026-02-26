@@ -7,43 +7,43 @@ import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import './Onboarding.css';
 
-import onboardSelectOptions from '../assets/onboard-select-options.PNG';
-import onboardGeneratedWorkout from '../assets/onboard-generated-workout.PNG';
-import onboardWorkoutView from '../assets/onboard-workout-view.PNG';
-import onboardTrackFoods from '../assets/onboard-track-foods.PNG';
-import onboardHabits from '../assets/onboard-habits.PNG';
-import onboardProfileView from '../assets/onboard-profile-view.PNG';
+import cbSelectWorkout from '../assets/cb-select-workout.PNG';
+import cbGeneratedWorkout from '../assets/cb-generated-workout.PNG';
+import cbWorkoutVideo from '../assets/cb-workout-video.PNG';
+import cbNutrition from '../assets/cb-nutrition.PNG';
+import cbHabits from '../assets/cb-habits.PNG';
+import cbDashboard from '../assets/cb-dashboard.PNG';
 
 const FEATURES = [
   {
     title: 'Build Your Workout',
     desc: 'Choose your equipment, time, focus area and difficulty — then let Core Buddy generate a workout tailored to you.',
-    image: onboardSelectOptions,
+    image: cbSelectWorkout,
   },
   {
     title: 'Your Workout, Ready to Go',
     desc: 'Your personalised workout is generated instantly. Not feeling it? Hit reshuffle for a new one, or save it for later.',
-    image: onboardGeneratedWorkout,
+    image: cbGeneratedWorkout,
   },
   {
     title: 'Follow Along with Video',
     desc: 'Every exercise comes with a video demo so you can nail your form. Track sets, reps and weights as you go.',
-    image: onboardWorkoutView,
+    image: cbWorkoutVideo,
   },
   {
     title: 'Track Your Nutrition',
     desc: 'Log meals with our barcode scanner, save favourites for quick logging, and use copy day to repeat a good day of eating.',
-    image: onboardTrackFoods,
+    image: cbNutrition,
   },
   {
     title: 'Build Better Habits',
     desc: 'Set daily habits and track your streaks. Small wins every day add up to big results.',
-    image: onboardHabits,
+    image: cbHabits,
   },
   {
     title: 'Your Profile & Community',
     desc: 'Track your stats, climb the leaderboards, and connect with your Core Buddies — all from your profile dashboard.',
-    image: onboardProfileView,
+    image: cbDashboard,
   },
 ];
 
