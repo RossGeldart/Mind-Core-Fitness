@@ -370,6 +370,113 @@
   border-color: var(--border-color);
 }
 
+/* ── Login portal ── */
+
+.portal-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+}
+
+.portal-subtitle {
+  color: var(--text-tertiary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  margin: 4px 0 0 0;
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.portal-option {
+  background: var(--bg-body);
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px 16px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+}
+
+.portal-option:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-card);
+}
+
+.portal-option:active {
+  transform: scale(0.97);
+}
+
+.portal-option-icon {
+  color: var(--color-primary);
+  width: 32px;
+  height: 32px;
+}
+
+.portal-option-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.portal-option-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.portal-option-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Back-to-portal button on the login form */
+.login-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.login-back-btn:hover {
+  color: var(--color-primary);
+}
+
+/* ── Login type subtitle ── */
+.login-type-label {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 /* Loading screen */
 .login-loading {
   display: flex;
