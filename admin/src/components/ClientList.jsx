@@ -287,6 +287,27 @@ export default function ClientList() {
     }
   };
 
+  const handleEndBlock = async (client) => {
+    const completed = getCompletedSessionsCount(client);
+    if (!window.confirm(`End ${client.name}'s block? This will set their sessions to 0 remaining so you can archive them cleanly.`)) return;
+    try {
+      const today = new Date();
+      const todayTimestamp = Timestamp.fromDate(today);
+      await updateDoc(doc(db, 'clients', client.id), {
+        totalSessions: completed,
+        endDate: todayTimestamp,
+      });
+      setClients(clients.map(c =>
+        c.id === client.id
+          ? { ...c, totalSessions: completed, endDate: todayTimestamp }
+          : c
+      ));
+    } catch (error) {
+      console.error('Error ending block:', error);
+      alert('Failed to end block');
+    }
+  };
+
   const handleArchive = async (clientId) => {
     try {
       const newStatus = clients.find(c => c.id === clientId)?.status === 'archived'
@@ -722,6 +743,9 @@ export default function ClientList() {
                         </button>
                       )}
                       <button className="action-btn edit" onClick={(e) => { e.stopPropagation(); handleEdit(client); }}>Edit</button>
+                      {isBlock && client.status !== 'archived' && (
+                        <button className="action-btn end-block" onClick={(e) => { e.stopPropagation(); handleEndBlock(client); }}>End Block</button>
+                      )}
                       <button className="action-btn archive" onClick={(e) => { e.stopPropagation(); handleArchive(client.id); }}>
                         {client.status === 'archived' ? 'Reactivate' : 'Archive'}
                       </button>
