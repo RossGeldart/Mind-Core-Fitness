@@ -5,10 +5,10 @@ import './Availability.css';
 
 // Working hours configuration
 const SCHEDULE = {
-  monday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  tuesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  wednesday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
-  thursday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '15:00', end: '20:00' } },
+  monday: { morning: { start: '06:15', end: '12:30' }, afternoon: { start: '14:30', end: '20:00' } },
+  tuesday: { morning: { start: '06:15', end: '12:30' }, afternoon: { start: '14:30', end: '20:00' } },
+  wednesday: { morning: { start: '06:15', end: '12:30' }, afternoon: { start: '14:30', end: '20:00' } },
+  thursday: { morning: { start: '06:15', end: '12:30' }, afternoon: { start: '14:30', end: '20:00' } },
   friday: { morning: { start: '06:15', end: '12:00' }, afternoon: { start: '12:00', end: '17:00' }, defaultBlocked: true }
 };
 

@@ -128,14 +128,14 @@ describe('generateTimeSlotsForDay', () => {
   it('all morning slots have period "morning"', () => {
     const slots = generateTimeSlotsForDay('tuesday');
     const morningSlots = slots.filter(s => s.period === 'morning');
-    expect(morningSlots.every(s => s.time >= '06:15' && s.time < '12:00')).toBe(true);
+    expect(morningSlots.every(s => s.time >= '06:15' && s.time < '12:30')).toBe(true);
   });
 
   it('all afternoon slots have period "afternoon"', () => {
     const slots = generateTimeSlotsForDay('wednesday');
     const afternoonSlots = slots.filter(s => s.period === 'afternoon');
     expect(afternoonSlots.length).toBeGreaterThan(0);
-    expect(afternoonSlots.every(s => s.time >= '15:00' && s.time < '20:00')).toBe(true);
+    expect(afternoonSlots.every(s => s.time >= '14:30' && s.time < '20:00')).toBe(true);
   });
 
   it('consecutive slots are exactly 15 minutes apart', () => {
