@@ -1,6 +1,20 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 const ThemeContext = createContext();
+
+// Sync native status bar appearance with current theme
+async function syncStatusBar(isDark) {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    const { StatusBar, Style } = await import('@capacitor/status-bar');
+    await StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light });
+    await StatusBar.setOverlaysWebView({ overlay: true });
+    await StatusBar.setBackgroundColor({ color: '#00000000' });
+  } catch (_) {
+    // StatusBar plugin not available
+  }
+}
 
 export function useTheme() {
   return useContext(ThemeContext);
@@ -27,6 +41,11 @@ export function ThemeProvider({ children }) {
     // Apply theme class to document
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Update native status bar to match theme
+    syncStatusBar(isDark);
+    // Update PWA theme-color meta tag to match
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', isDark ? '#111114' : '#333331');
   }, [isDark]);
 
   useEffect(() => {

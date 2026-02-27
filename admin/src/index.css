@@ -15,6 +15,25 @@ body {
   min-height: 100vh;
 }
 
+/* ====== Status Bar Safe-Area (native apps with overlaysWebView) ====== */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .client-header {
+    padding-top: calc(16px + env(safe-area-inset-top));
+  }
+  .dashboard-header {
+    padding-top: calc(16px + env(safe-area-inset-top));
+  }
+  .login-container {
+    padding-top: env(safe-area-inset-top);
+  }
+  .ob-page {
+    padding-top: env(safe-area-inset-top);
+  }
+  .upgrade-page {
+    padding-top: calc(20px + env(safe-area-inset-top));
+  }
+}
+
 /* ====== Shared Entrance Animation ====== */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(30px); }

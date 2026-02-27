@@ -1,5 +1,12 @@
 {
-  "appId": "com.mindcorefitness.app",
+  "appId": "com.corebuddy.app",
   "appName": "Mind Core Fitness",
-  "webDir": "../login"
+  "webDir": "../login",
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK",
+      "backgroundColor": "#00000000"
+    }
+  }
 }
