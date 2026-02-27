@@ -276,7 +276,7 @@ export default function Login() {
                 className="login-btn login-btn-outline"
                 onClick={() => navigate('/signup')}
               >
-                Don't have an account? Create one free
+                Create Free Account
               </button>
             )}
 
