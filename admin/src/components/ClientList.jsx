@@ -52,6 +52,7 @@ export default function ClientList() {
 
   // Calculate completed sessions (sessions that have passed) — scoped to client's current block dates
   const getCompletedSessionsCount = (client) => {
+    if (!client.totalSessions) return 0;
     const now = new Date();
     // Use local date to avoid timezone issues
     const year = now.getFullYear();
@@ -288,18 +289,18 @@ export default function ClientList() {
   };
 
   const handleEndBlock = async (client) => {
-    const completed = getCompletedSessionsCount(client);
-    if (!window.confirm(`End ${client.name}'s block? This will set their sessions to 0 remaining so you can archive them cleanly.`)) return;
+    if (!window.confirm(`End ${client.name}'s block? This will reset their sessions to 0/0 so you can archive them cleanly.`)) return;
     try {
       const today = new Date();
       const todayTimestamp = Timestamp.fromDate(today);
       await updateDoc(doc(db, 'clients', client.id), {
-        totalSessions: completed,
+        totalSessions: 0,
+        weeksInBlock: 0,
         endDate: todayTimestamp,
       });
       setClients(clients.map(c =>
         c.id === client.id
-          ? { ...c, totalSessions: completed, endDate: todayTimestamp }
+          ? { ...c, totalSessions: 0, weeksInBlock: 0, endDate: todayTimestamp }
           : c
       ));
     } catch (error) {

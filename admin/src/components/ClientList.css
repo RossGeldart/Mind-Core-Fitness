@@ -361,7 +361,8 @@
 
 /* ====== Actions ====== */
 .client-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 12px;
 }
@@ -373,7 +374,6 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
-  flex: 1;
 }
 
 .action-btn.edit {
