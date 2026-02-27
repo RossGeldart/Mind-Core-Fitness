@@ -217,6 +217,14 @@ export default function Login() {
                   {appleLoading ? 'Signing in...' : 'Continue with Apple'}
                 </button>
 
+                <button
+                  type="button"
+                  className="login-btn login-btn-outline"
+                  onClick={() => navigate('/signup')}
+                >
+                  Create Free Account
+                </button>
+
                 <div className="login-divider">
                   <span>or</span>
                 </div>
@@ -269,16 +277,6 @@ export default function Login() {
             >
               Forgot password?
             </button>
-
-            {showSocial && (
-              <button
-                type="button"
-                className="login-btn login-btn-outline"
-                onClick={() => navigate('/signup')}
-              >
-                Create Free Account
-              </button>
-            )}
 
           </>
         )}
