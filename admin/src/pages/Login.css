@@ -231,7 +231,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 20px 0;
+  margin: 16px 0 20px;
 }
 
 .login-divider::before,
@@ -251,14 +251,14 @@
 
 .google-btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -285,26 +285,25 @@
 
 .apple-btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  border: none;
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s;
 }
 
 .apple-btn:hover:not(:disabled) {
-  background: var(--bg-body);
-  border-color: var(--text-tertiary);
+  background: #1a1a1a;
 }
 
 .apple-btn:active:not(:disabled) {
