@@ -32,7 +32,7 @@
 
 .login-card {
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 400px;
@@ -167,7 +167,7 @@
   background: none;
   border: none;
   text-align: center;
-  margin-top: 16px;
+  margin: 16px 0;
   color: var(--text-secondary);
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
@@ -231,7 +231,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 20px 0;
+  margin: 16px 0 20px;
 }
 
 .login-divider::before,
@@ -251,14 +251,14 @@
 
 .google-btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--bg-input);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -285,26 +285,25 @@
 
 .apple-btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
+  border: none;
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s;
 }
 
 .apple-btn:hover:not(:disabled) {
-  background: var(--bg-body);
-  border-color: var(--text-tertiary);
+  background: #1a1a1a;
 }
 
 .apple-btn:active:not(:disabled) {
@@ -325,10 +324,10 @@
 
 .login-btn-outline {
   background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
   box-shadow: none;
-  font-size: 0.85rem;
+  margin-top: 10px;
 }
 
 .login-coming-soon {
@@ -368,6 +367,141 @@
 [data-theme="light"] .login-coming-soon-overlay span {
   color: var(--text-primary);
   border-color: var(--border-color);
+}
+
+/* ── Login portal ── */
+
+.portal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+}
+
+.portal-subtitle {
+  color: var(--text-tertiary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  margin: 4px 0 0 0;
+}
+
+.portal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Light mode: use off-white so cards pop against the white outer card */
+.portal-option {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 16px;
+  padding: 24px 16px 20px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+/* Dark mode: elevated card surface is lighter than the outer card */
+[data-theme="dark"] .portal-option {
+  background: var(--bg-card-elevated);
+}
+
+.portal-option:hover {
+  border-color: var(--color-primary);
+  border-top-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.portal-option:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Centre the 3rd card (Core Buddy) below the two training options */
+.portal-option:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  max-width: calc(50% - 8px);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.portal-option-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.portal-option-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.portal-option-label {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.portal-option-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Back-to-portal button on the login form */
+.login-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.login-back-btn:hover {
+  color: var(--color-primary);
+}
+
+/* ── Login type subtitle ── */
+.login-type-label {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 /* Loading screen */
