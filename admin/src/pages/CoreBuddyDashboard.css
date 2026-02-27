@@ -431,6 +431,7 @@
 
 .cb-stat-fill {
   fill: none;
+  stroke: var(--color-primary);
   stroke-width: 12;
   stroke-linecap: round;
   animation: ringFillIn 1.6s ease-out;
