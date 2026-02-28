@@ -1839,9 +1839,19 @@
                 });
             }
 
+            function stopAllVideos() {
+                document.querySelectorAll('.video-container').forEach(function(vc) {
+                    var v = vc.querySelector('video');
+                    v.pause();
+                    v.removeAttribute('controls');
+                    vc.classList.remove('playing');
+                });
+            }
+
             function goToSlide(index) {
                 var maxIndex = getTotalPages() - 1;
                 currentIndex = Math.max(0, Math.min(index, maxIndex));
+                stopAllVideos();
                 updateCarousel();
             }
 
