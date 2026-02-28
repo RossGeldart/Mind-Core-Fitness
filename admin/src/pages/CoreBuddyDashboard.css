@@ -2198,6 +2198,7 @@
   z-index: 2000;
   animation: weeklyCelebSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   padding: 16px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
   width: 100%;
   max-width: 360px;
 }
