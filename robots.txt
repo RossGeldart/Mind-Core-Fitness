@@ -1,12 +1,28 @@
 # Mind Core Fitness - robots.txt
-# https://www.mindcorefitness.com
+# Welcome all crawlers including AI search engines
 
 User-agent: *
 Allow: /
 
-# Disallow admin/login areas from indexing
-Disallow: /login/
-Disallow: /admin/
+User-agent: GPTBot
+Allow: /
 
-# Sitemap location
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 Sitemap: https://www.mindcorefitness.com/sitemap.xml
