@@ -683,33 +683,67 @@
         .carousel-track {
             display: flex;
             transition: transform 0.4s ease;
-            gap: 24px;
+            gap: 20px;
         }
 
         .carousel-slide {
-            min-width: calc(50% - 12px);
+            min-width: calc(33.333% - 14px);
             flex-shrink: 0;
         }
 
-        .carousel-slide .video-placeholder {
+        .video-container {
+            position: relative;
             width: 100%;
-            aspect-ratio: 16/9;
-            background: #e0e0e0;
-            border-radius: 12px;
+            aspect-ratio: 9/16;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(153, 49, 60, 0.9);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #888;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 2;
         }
 
-        .carousel-slide video {
-            width: 100%;
-            border-radius: 12px;
+        .video-play-btn::after {
+            content: '';
             display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 12px 0 12px 22px;
+            border-color: transparent transparent transparent #ffffff;
+            margin-left: 4px;
+        }
+
+        .video-container:hover .video-play-btn {
+            background: rgba(153, 49, 60, 1);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-container.playing .video-play-btn {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .carousel-slide .video-caption {
@@ -718,7 +752,7 @@
             font-size: 0.9rem;
             color: var(--text-color);
             text-align: center;
-            padding: 8px 0;
+            padding: 12px 0 0;
         }
 
         .carousel-controls {
@@ -1101,7 +1135,7 @@
             }
 
             .carousel-slide {
-                min-width: calc(100% - 0px);
+                min-width: calc(50% - 10px);
             }
         }
 
@@ -1218,6 +1252,15 @@
                 max-width: 300px;
                 text-align: center;
                 justify-content: center;
+            }
+
+            .carousel-slide {
+                min-width: 100%;
+            }
+
+            .video-container {
+                max-width: 300px;
+                margin: 0 auto;
             }
 
             .quals-grid {
@@ -1502,38 +1545,48 @@
             <div class="carousel-wrapper">
                 <div class="carousel-track" id="videoCarouselTrack">
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" aria-label="A message from Ross">
-                            <source src="images/testimonials/ross-intro.MP4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <p class="video-caption">A message from Ross</p>
+                        <div class="video-container" onclick="playVideo(this)">
+                            <video preload="metadata" playsinline aria-label="A message from Ross">
+                                <source src="images/testimonials/ross-intro.MP4" type="video/mp4">
+                            </video>
+                            <div class="video-play-btn"></div>
+                        </div>
+                        <p class="video-caption">A Message from Ross</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 1">
-                            <source src="images/testimonials/client-testimonial-1.MP4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <div class="video-container" onclick="playVideo(this)">
+                            <video preload="metadata" playsinline aria-label="Client testimonial 1">
+                                <source src="images/testimonials/client-testimonial-1.MP4" type="video/mp4">
+                            </video>
+                            <div class="video-play-btn"></div>
+                        </div>
                         <p class="video-caption">Client Testimonial</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 2">
-                            <source src="images/testimonials/client-testimonial-2.MP4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <div class="video-container" onclick="playVideo(this)">
+                            <video preload="metadata" playsinline aria-label="Client testimonial 2">
+                                <source src="images/testimonials/client-testimonial-2.MP4" type="video/mp4">
+                            </video>
+                            <div class="video-play-btn"></div>
+                        </div>
                         <p class="video-caption">Client Testimonial</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 3">
-                            <source src="images/testimonials/client-testimonial-3.MP4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <div class="video-container" onclick="playVideo(this)">
+                            <video preload="metadata" playsinline aria-label="Client testimonial 3">
+                                <source src="images/testimonials/client-testimonial-3.MP4" type="video/mp4">
+                            </video>
+                            <div class="video-play-btn"></div>
+                        </div>
                         <p class="video-caption">Client Testimonial</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 4">
-                            <source src="images/testimonials/client-testimonial-4.MP4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <div class="video-container" onclick="playVideo(this)">
+                            <video preload="metadata" playsinline aria-label="Client testimonial 4">
+                                <source src="images/testimonials/client-testimonial-4.MP4" type="video/mp4">
+                            </video>
+                            <div class="video-play-btn"></div>
+                        </div>
                         <p class="video-caption">Client Testimonial</p>
                     </div>
                 </div>
@@ -1718,6 +1771,36 @@
         </div>
     </footer>
 
+    <!-- Video Play Handler -->
+    <script>
+        function playVideo(container) {
+            var video = container.querySelector('video');
+            // Pause all other videos first
+            document.querySelectorAll('.video-container').forEach(function(vc) {
+                if (vc !== container) {
+                    var v = vc.querySelector('video');
+                    v.pause();
+                    v.removeAttribute('controls');
+                    vc.classList.remove('playing');
+                }
+            });
+            if (video.paused) {
+                video.setAttribute('controls', '');
+                video.play();
+                container.classList.add('playing');
+            } else {
+                video.pause();
+                video.removeAttribute('controls');
+                container.classList.remove('playing');
+            }
+            // Show play button again when video ends
+            video.onended = function() {
+                container.classList.remove('playing');
+                video.removeAttribute('controls');
+            };
+        }
+    </script>
+
     <!-- Video Carousel Script -->
     <script>
         (function() {
@@ -1731,12 +1814,13 @@
             var isDragging = false;
 
             function getSlidesPerView() {
-                if (window.innerWidth <= 768) return 1;
-                return 2;
+                if (window.innerWidth <= 600) return 1;
+                if (window.innerWidth <= 1000) return 2;
+                return 3;
             }
 
             function getTotalPages() {
-                return Math.ceil(slides.length / getSlidesPerView());
+                return Math.max(1, slides.length - getSlidesPerView() + 1);
             }
 
             function createDots() {
@@ -1745,7 +1829,7 @@
                 for (var i = 0; i < total; i++) {
                     var dot = document.createElement('button');
                     dot.className = 'carousel-dot' + (i === currentIndex ? ' active' : '');
-                    dot.setAttribute('aria-label', 'Go to slide group ' + (i + 1));
+                    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
                     dot.dataset.index = i;
                     dot.addEventListener('click', function() {
                         goToSlide(parseInt(this.dataset.index));
@@ -1756,7 +1840,7 @@
 
             function updateCarousel() {
                 var perView = getSlidesPerView();
-                var gap = 24;
+                var gap = 20;
                 var slideWidth = (track.parentElement.offsetWidth - gap * (perView - 1)) / perView;
                 var offset = currentIndex * (slideWidth + gap);
                 track.style.transform = 'translateX(-' + offset + 'px)';
