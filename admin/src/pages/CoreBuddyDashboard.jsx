@@ -716,8 +716,8 @@ export default function CoreBuddyDashboard() {
     if (weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
       const celebKey = `weekCeleb_${clientData?.id}_${new Date().toISOString().slice(0, 10).replace(/-\d{2}$/, '')}`;
       try {
-        if (sessionStorage.getItem(celebKey)) return;
-        sessionStorage.setItem(celebKey, '1');
+        if (localStorage.getItem(celebKey)) return;
+        localStorage.setItem(celebKey, '1');
       } catch {}
       weeklyCelebrationShownRef.current = true;
       setShowWeeklyCelebration(true);
@@ -797,8 +797,8 @@ export default function CoreBuddyDashboard() {
   const milestoneText = (() => {
     if (!statsLoaded) return null;
     const remaining = weeklyWorkoutTarget - weeklyWorkouts;
-    if (remaining === 1) return `1 more workout to hit your weekly goal`;
-    if (remaining === 2) return `2 more workouts to hit your weekly goal`;
+    if (remaining === 1) return `1 more workout to hit your weekly target`;
+    if (remaining === 2) return `2 more workouts to hit your weekly target`;
     if (habitCount - todayHabitsCount === 1) return `1 habit left to complete today`;
     return null;
   })();
@@ -1324,7 +1324,7 @@ export default function CoreBuddyDashboard() {
         {showTargetPicker && (
           <div className="cb-target-overlay" onClick={() => setShowTargetPicker(false)}>
             <div className="cb-target-picker" onClick={(e) => e.stopPropagation()}>
-              <h4>Weekly workout goal</h4>
+              <h4>Weekly workout target</h4>
               <p>How many sessions per week?</p>
               <div className="cb-target-options">
                 {[1, 2, 3, 4, 5, 6, 7].map((n) => (
@@ -1821,7 +1821,7 @@ export default function CoreBuddyDashboard() {
             <span className="cb-weekly-celebration-icon">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </span>
-            <h4>Weekly Goal Smashed!</h4>
+            <h4>Weekly Target Smashed!</h4>
             <p>{weeklyWorkouts}/{weeklyWorkoutTarget} sessions complete</p>
           </div>
         </div>
