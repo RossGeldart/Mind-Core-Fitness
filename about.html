@@ -477,20 +477,11 @@
             color: #888;
         }
 
-        .hero-image-placeholder {
+        .hero-image {
             width: 100%;
             max-width: 400px;
-            height: 500px;
-            background: #2a2a2a;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 20px;
+            object-fit: cover;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
 
@@ -1098,9 +1089,8 @@
                 display: none;
             }
 
-            .hero-image-placeholder {
+            .hero-image {
                 max-width: 300px;
-                height: 380px;
                 margin: 0 auto;
                 order: -1;
             }
@@ -1419,9 +1409,7 @@
                     </div>
                 </div>
             </div>
-            <div class="hero-image-placeholder" role="img" aria-label="Ross Geldart — Personal Trainer at Mind Core Fitness, Elgin">
-                Photo coming soon
-            </div>
+            <img src="images/testimonials/ross-hero.PNG" alt="Ross Geldart — Personal Trainer at Mind Core Fitness, Elgin" class="hero-image" width="400" height="500" loading="eager">
         </div>
     </section>
 
@@ -1546,17 +1534,17 @@
                 <div class="carousel-track" id="videoCarouselTrack">
                     <div class="carousel-slide">
                         <div class="video-container" onclick="playVideo(this)">
-                            <video preload="metadata" playsinline aria-label="A message from Ross">
-                                <source src="images/testimonials/ross-intro.MP4" type="video/mp4">
+                            <video preload="metadata" playsinline aria-label="What If">
+                                <source src="images/testimonials/ross-intro.MP4#t=0.5" type="video/mp4">
                             </video>
                             <div class="video-play-btn"></div>
                         </div>
-                        <p class="video-caption">A Message from Ross</p>
+                        <p class="video-caption">What If</p>
                     </div>
                     <div class="carousel-slide">
                         <div class="video-container" onclick="playVideo(this)">
                             <video preload="metadata" playsinline aria-label="Client testimonial 1">
-                                <source src="images/testimonials/client-testimonial-1.MP4" type="video/mp4">
+                                <source src="images/testimonials/client-testimonial-1.MP4#t=0.5" type="video/mp4">
                             </video>
                             <div class="video-play-btn"></div>
                         </div>
@@ -1565,7 +1553,7 @@
                     <div class="carousel-slide">
                         <div class="video-container" onclick="playVideo(this)">
                             <video preload="metadata" playsinline aria-label="Client testimonial 2">
-                                <source src="images/testimonials/client-testimonial-2.MP4" type="video/mp4">
+                                <source src="images/testimonials/client-testimonial-2.MP4#t=0.5" type="video/mp4">
                             </video>
                             <div class="video-play-btn"></div>
                         </div>
@@ -1574,7 +1562,7 @@
                     <div class="carousel-slide">
                         <div class="video-container" onclick="playVideo(this)">
                             <video preload="metadata" playsinline aria-label="Client testimonial 3">
-                                <source src="images/testimonials/client-testimonial-3.MP4" type="video/mp4">
+                                <source src="images/testimonials/client-testimonial-3.MP4#t=0.5" type="video/mp4">
                             </video>
                             <div class="video-play-btn"></div>
                         </div>
@@ -1583,7 +1571,7 @@
                     <div class="carousel-slide">
                         <div class="video-container" onclick="playVideo(this)">
                             <video preload="metadata" playsinline aria-label="Client testimonial 4">
-                                <source src="images/testimonials/client-testimonial-4.MP4" type="video/mp4">
+                                <source src="images/testimonials/client-testimonial-4.MP4#t=0.5" type="video/mp4">
                             </video>
                             <div class="video-play-btn"></div>
                         </div>
