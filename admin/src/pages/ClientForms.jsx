@@ -26,18 +26,19 @@ export default function ClientForms() {
     additionalInfo: ''
   });
 
-  // PAR-Q Form State
-  const [parqForm, setParqForm] = useState({
-    q1HeartCondition: false,
-    q2ChestPain: false,
-    q3ChestPainLastMonth: false,
-    q4Balance: false,
-    q5BoneJoint: false,
-    q6BloodPressure: false,
-    q7OtherReason: false,
-    additionalDetails: '',
-    declaration: false
-  });
+  const PARQ_QUESTIONS = [
+    'Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?',
+    'Do you feel pain in your chest when you do physical activity?',
+    'In the past month, have you had chest pain when you were not doing physical activity?',
+    'Do you lose your balance because of dizziness or do you ever lose consciousness?',
+    'Do you have a bone or joint problem (e.g. back, knee, or hip) that could be made worse by a change in your physical activity?',
+    'Is your doctor currently prescribing drugs (e.g. water pills) for your blood pressure or heart condition?',
+    'Do you know of any other reason why you should not do physical activity?',
+  ];
+
+  // PAR-Q Form State — null = unanswered, true = Yes, false = No
+  const [parqAnswers, setParqAnswers] = useState(PARQ_QUESTIONS.map(() => null));
+  const [parqDeclaration, setParqDeclaration] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) {
@@ -50,8 +51,9 @@ export default function ClientForms() {
     if (clientData?.welcomeForm) {
       setWelcomeForm(clientData.welcomeForm);
     }
-    if (clientData?.parqForm) {
-      setParqForm(clientData.parqForm);
+    if (clientData?.parqForm?.answers) {
+      setParqAnswers(clientData.parqForm.answers);
+      setParqDeclaration(!!clientData.parqForm.declaration);
     }
   }, [clientData]);
 
@@ -87,7 +89,11 @@ export default function ClientForms() {
   };
 
   const handleSaveParq = async () => {
-    if (!parqForm.declaration) {
+    if (parqAnswers.some(a => a === null)) {
+      alert('Please answer all questions before submitting.');
+      return;
+    }
+    if (!parqDeclaration) {
       alert('Please confirm the declaration to submit the form.');
       return;
     }
@@ -95,7 +101,10 @@ export default function ClientForms() {
     try {
       await updateDoc(doc(db, 'clients', clientData.id), {
         parqForm: {
-          ...parqForm,
+          questions: PARQ_QUESTIONS,
+          answers: parqAnswers,
+          hasYes: parqAnswers.includes(true),
+          declaration: true,
           completedAt: Timestamp.now()
         }
       });
@@ -320,114 +329,48 @@ export default function ClientForms() {
 
             <div className="form-body">
               <div className="parq-intro">
-                <p>The Physical Activity Readiness Questionnaire (PAR-Q) is designed to identify those who should check with a doctor before starting an exercise program.</p>
+                <p>Please answer each question honestly. This helps us keep you safe during exercise.</p>
               </div>
 
               <div className="parq-questions">
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q1HeartCondition"
-                      checked={parqForm.q1HeartCondition}
-                      onChange={handleParqChange}
-                    />
-                    <span>Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q2ChestPain"
-                      checked={parqForm.q2ChestPain}
-                      onChange={handleParqChange}
-                    />
-                    <span>Do you feel pain in your chest when you do physical activity?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q3ChestPainLastMonth"
-                      checked={parqForm.q3ChestPainLastMonth}
-                      onChange={handleParqChange}
-                    />
-                    <span>In the past month, have you had chest pain when you were not doing physical activity?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q4Balance"
-                      checked={parqForm.q4Balance}
-                      onChange={handleParqChange}
-                    />
-                    <span>Do you lose your balance because of dizziness or do you ever lose consciousness?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q5BoneJoint"
-                      checked={parqForm.q5BoneJoint}
-                      onChange={handleParqChange}
-                    />
-                    <span>Do you have a bone or joint problem that could be made worse by a change in your physical activity?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q6BloodPressure"
-                      checked={parqForm.q6BloodPressure}
-                      onChange={handleParqChange}
-                    />
-                    <span>Is your doctor currently prescribing drugs for your blood pressure or heart condition?</span>
-                  </label>
-                </div>
-
-                <div className="parq-question">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="q7OtherReason"
-                      checked={parqForm.q7OtherReason}
-                      onChange={handleParqChange}
-                    />
-                    <span>Do you know of any other reason why you should not do physical activity?</span>
-                  </label>
-                </div>
+                {PARQ_QUESTIONS.map((question, i) => (
+                  <div key={i} className="parq-question">
+                    <p className="parq-question-text">{question}</p>
+                    <div className="parq-yn-btns">
+                      <button
+                        type="button"
+                        className={`parq-yn-btn${parqAnswers[i] === true ? ' yes' : ''}`}
+                        onClick={() => setParqAnswers(prev => prev.map((a, j) => j === i ? true : a))}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        className={`parq-yn-btn${parqAnswers[i] === false ? ' no' : ''}`}
+                        onClick={() => setParqAnswers(prev => prev.map((a, j) => j === i ? false : a))}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className="form-group">
-                <label>If you answered YES to any questions, please provide details:</label>
-                <textarea
-                  name="additionalDetails"
-                  value={parqForm.additionalDetails}
-                  onChange={handleParqChange}
-                  placeholder="Please explain any conditions or concerns..."
-                  rows="4"
-                />
-              </div>
+              {parqAnswers.includes(true) && (
+                <div className="parq-yes-warning">
+                  You answered YES to one or more questions. We recommend consulting your doctor before starting an exercise programme.
+                </div>
+              )}
 
               <div className="parq-declaration">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="declaration"
-                    checked={parqForm.declaration}
-                    onChange={handleParqChange}
-                  />
+                <label className="parq-declare-label" onClick={() => setParqDeclaration(prev => !prev)}>
+                  <span className={`parq-declare-box${parqDeclaration ? ' checked' : ''}`}>
+                    {parqDeclaration && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                    )}
+                  </span>
                   <span>I have read, understood and completed this questionnaire. Any questions I had were answered to my full satisfaction. I confirm that the information provided is accurate to the best of my knowledge.</span>
                 </label>
               </div>
