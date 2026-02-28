@@ -648,6 +648,27 @@
             font-size: 0.85rem;
             line-height: 1.5;
         }
+
+        .quals-certificates {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .quals-certificates img {
+            max-width: 340px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .quals-certificates img:hover {
+            transform: scale(1.03);
+        }
+
         /* Video Carousel */
         .video-carousel {
             background: var(--bg-color);
@@ -1203,6 +1224,15 @@
                 grid-template-columns: 1fr;
             }
 
+            .quals-certificates {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .quals-certificates img {
+                max-width: 280px;
+            }
+
             .services-grid {
                 grid-template-columns: 1fr;
             }
@@ -1457,6 +1487,10 @@
                     <p>9 High Street, Elgin, Moray IV30 1EQ</p>
                 </div>
             </div>
+            <div class="quals-certificates">
+                <img src="images/testimonials/level-2-3-diploma-1.JPG" alt="Level 2 & 3 Diploma in Gym Instructing and Personal Training" loading="lazy">
+                <img src="images/testimonials/level-3-diploma-2.JPG" alt="Level 3 Diploma in Personal Training" loading="lazy">
+            </div>
         </div>
     </section>
 
@@ -1468,36 +1502,39 @@
             <div class="carousel-wrapper">
                 <div class="carousel-track" id="videoCarouselTrack">
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" poster="" aria-label="A message from Ross">
-                            <source src="" type="video/mp4">
+                        <video controls preload="none" loading="lazy" aria-label="A message from Ross">
+                            <source src="images/testimonials/ross-intro.MP4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="video-placeholder">Video 1</div>
                         <p class="video-caption">A message from Ross</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" poster="" aria-label="Client testimonial video 2">
-                            <source src="" type="video/mp4">
+                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 1">
+                            <source src="images/testimonials/client-testimonial-1.MP4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="video-placeholder">Video 2</div>
-                        <p class="video-caption">Client Name &mdash; Their Result</p>
+                        <p class="video-caption">Client Testimonial</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" poster="" aria-label="Client testimonial video 3">
-                            <source src="" type="video/mp4">
+                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 2">
+                            <source src="images/testimonials/client-testimonial-2.MP4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="video-placeholder">Video 3</div>
-                        <p class="video-caption">Client Name &mdash; Their Result</p>
+                        <p class="video-caption">Client Testimonial</p>
                     </div>
                     <div class="carousel-slide">
-                        <video controls preload="none" loading="lazy" poster="" aria-label="Client testimonial video 4">
-                            <source src="" type="video/mp4">
+                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 3">
+                            <source src="images/testimonials/client-testimonial-3.MP4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="video-placeholder">Video 4</div>
-                        <p class="video-caption">Client Name &mdash; Their Result</p>
+                        <p class="video-caption">Client Testimonial</p>
+                    </div>
+                    <div class="carousel-slide">
+                        <video controls preload="none" loading="lazy" aria-label="Client testimonial 4">
+                            <source src="images/testimonials/client-testimonial-4.MP4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p class="video-caption">Client Testimonial</p>
                     </div>
                 </div>
             </div>
