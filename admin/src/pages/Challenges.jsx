@@ -362,16 +362,28 @@ export default function Challenges() {
           <div className="ch-loading"><div className="ch-spinner" /></div>
         ) : isCompleted ? (
           /* ── State C: Just completed ── */
-          <div className="ch-completed-section">
-            <ProgressRing progress={activeDef?.goal || 1} goal={activeDef?.goal || 1} label="Complete" />
-            <div className="ch-completed-pulse" />
-            <h2 className="ch-completed-heading">Challenge Complete!</h2>
-            <p className="ch-completed-name">{activeDef?.name}</p>
-            <p className="ch-completed-count">{completedCount + (justCompleted ? 1 : 0)} challenge{completedCount !== 0 ? 's' : ''} completed</p>
-            <button className="ch-btn ch-btn-primary" onClick={() => { setJustCompleted(false); setActiveChallenge(null); setActiveDef(null); loadData(); }}>
-              Choose Next Challenge
-            </button>
-          </div>
+          (() => {
+            const completedBadge = BADGE_DEFS.find(b => b.id === activeDef?.id);
+            return (
+              <div className="ch-completed-section">
+                <div className="ch-completed-badge-wrap">
+                  <div className="ch-completed-glow" />
+                  {completedBadge?.img ? (
+                    <img src={completedBadge.img} alt={completedBadge.name} className="ch-completed-badge-img" />
+                  ) : (
+                    <ProgressRing progress={activeDef?.goal || 1} goal={activeDef?.goal || 1} label="Complete" />
+                  )}
+                </div>
+                <h2 className="ch-completed-heading">Challenge Complete!</h2>
+                <p className="ch-completed-name">{activeDef?.name}</p>
+                {completedBadge?.desc && <p className="ch-completed-desc">{completedBadge.desc}</p>}
+                <p className="ch-completed-count">{completedCount + (justCompleted ? 1 : 0)} challenge{completedCount !== 0 ? 's' : ''} completed</p>
+                <button className="ch-btn ch-btn-primary" onClick={() => { setJustCompleted(false); setActiveChallenge(null); setActiveDef(null); loadData(); }}>
+                  Start New Challenge
+                </button>
+              </div>
+            );
+          })()
         ) : isActive ? (
           /* ── State B: Active challenge ── */
           <div className="ch-active-section">

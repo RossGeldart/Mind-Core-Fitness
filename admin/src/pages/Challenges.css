@@ -334,21 +334,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 20px 0;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0 20px;
+  min-height: calc(100dvh - 240px);
 }
 
-.ch-completed-pulse {
-  width: 12px;
-  height: 12px;
+.ch-completed-badge-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.ch-completed-glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
-  background: var(--color-primary);
-  animation: ch-pulse 1.5s ease-in-out 3;
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.3) 0%, transparent 70%);
+  animation: ch-glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
 }
 
-@keyframes ch-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(2.5); opacity: 0; }
+@keyframes ch-glow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 0.2; }
+}
+
+.ch-completed-badge-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(var(--color-primary-rgb), 0.35));
+  animation: ch-badge-appear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ch-badge-appear {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.1); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .ch-completed-heading {
@@ -369,11 +398,31 @@
   margin: 0;
 }
 
+.ch-completed-desc {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
 .ch-completed-count {
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ch-completed-badge-img { animation: ch-fade-only 0.3s ease-out both; }
+  .ch-completed-glow { animation: none; opacity: 0.3; }
+}
+
+@keyframes ch-fade-only {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ── Buttons ── */
