@@ -226,7 +226,7 @@
 
 .client-header {
   background: transparent;
-  padding: 16px 20px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 16px;
 }
 
 .header-content {
