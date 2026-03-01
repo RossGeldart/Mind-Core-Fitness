@@ -406,7 +406,7 @@ export default function Onboarding() {
               <ul className="ob-plan-features">
                 <li><span className="ob-plan-feat-icon">&#127947;</span> 2 workouts per week</li>
                 <li><span className="ob-plan-feat-icon">&#9889;</span> Limited time selection (5 &amp; 10 min)</li>
-                <li><span className="ob-plan-feat-icon">&#128202;</span> Basic dashboard</li>
+                <li><span className="ob-plan-feat-icon">&#128202;</span> 1 daily habit</li>
               </ul>
               <div className="ob-plan-cta-outline">Continue Free</div>
             </button>
