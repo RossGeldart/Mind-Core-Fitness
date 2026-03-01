@@ -683,8 +683,9 @@ export default function CoreBuddyBuddies() {
                                       <span className="bdy-feed-comment-time">{timeAgo(c.createdAt)}</span>
                                       <button className="bdy-feed-comment-reply-btn" onClick={() => setReplyTo(prev => ({ ...prev, [post.id]: { id: c.id, authorName: c.authorName } }))}>Reply</button>
                                       {c.authorId === clientData?.id && (
-                                        <button className="bdy-feed-comment-del-btn" onClick={() => deleteFeedComment(post.id, c.id)} aria-label="Delete comment">
+                                        <button className="bdy-feed-comment-del-btn" onClick={() => { if (window.confirm('Delete this comment?')) deleteFeedComment(post.id, c.id); }} aria-label="Delete comment">
                                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                          <span>Delete</span>
                                         </button>
                                       )}
                                     </div>
