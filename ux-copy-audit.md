@@ -242,12 +242,17 @@ All pages include a "← Back" nav button that links to `/` (home). This is help
 | `index.html` contact modal | "Personal Training", "Fitness App", "Online Coaching", "Other / General Enquiry" |
 | `about.html` | "1-2-1 Personal Training", "Online Coaching", "Core Buddy", "General Enquiry" |
 | `faq.html` | "1-2-1 Personal Training", "Online Coaching", "Core Buddy", "General Enquiry" |
-| `core-buddy.html` | "Personal Training", "Fitness App", "Online Coaching", "Other / General Enquiry" |
+| `core-buddy.html` | "Personal Training", "Core Buddy App", "Online Coaching", "Other / General Enquiry" |
+| `personal-training.html` | "1-2-1 Personal Training", "Online Coaching", "Core Buddy", "General Enquiry" |
+| `online-coaching.html` | "Online Coaching" (default), "1-2-1 Personal Training", "Core Buddy", "General Enquiry" |
+| `12-week-core-programme.html` | "Personal Training", "Core Buddy App", "Online Coaching", "Other / General Enquiry" |
+| `workbook.html` (waitlist) | No dropdown — only Name, Email, Message |
 
 **Issues:**
 - Different names for the same services across pages: "Core Buddy" vs "Fitness App" vs "Core Buddy App", and "1-2-1 Personal Training" vs "Personal Training"
 - `index.html` has two forms with different dropdown options on the same page
 - Some lists include "Other / General Enquiry", others use just "General Enquiry"
+- Default selected option varies by page (e.g. "General Enquiry" on FAQ, "Online Coaching" on online-coaching page)
 
 ---
 
@@ -417,6 +422,22 @@ The bottom navigation in `CoreBuddyNav.jsx` includes a tab labelled "Block" whic
 
 The `SpotlightTour` in `CoreBuddyDashboard.jsx` uses 9 guided tour steps to introduce new users. The final step says "Let's Go!" which matches the casual tone. However, step text references "5 simple habits each day — train, hit protein, 10k steps, sleep, and hydrate" — verify this matches the actual habits shown in the app (earlier mentions list only 4: Trained, Hit Protein, 10k Steps, 2L Water).
 
+### 10.11 Blog Placeholder Post
+
+`blog.html` includes a visible blog card with the title "Your Blog Post Title Here" and excerpt "A brief excerpt or summary of the blog post that gives readers an idea of what the article is about..." This is clearly a template/placeholder that was not removed before publishing.
+
+### 10.12 Workbook Page — Waitlist vs Live Product
+
+`workbook.html` has a contact modal titled "Join the Waitlist" with subtitle "Be the first to know when The Mind Core Mindset Workbook is available!" — but the page itself shows "Available Now" with a live "Buy on Amazon" link and pricing. The waitlist modal appears to be left over from a pre-launch state.
+
+### 10.13 Online Coaching Page — Duplicate Nav Links
+
+`online-coaching.html` has the same nav issues as other pages: "FAQ" appears twice (once as an anchor `#faq`, once as `faq.html`) and "About" also appears twice. Additionally, the pricing on this page shows the 12-week programme at £149 (no flash sale), which is the original price — further highlighting the pricing inconsistency with `12-week-core-programme.html`.
+
+### 10.14 Protein Calculator — Email Gate
+
+`protein-calculator.html` requires an email address before showing the calculator, with the note "By continuing, you'll join the Mind Core newsletter for weekly fitness tips." This is a lead-gen tactic that may reduce calculator usage. Consider making the calculator free and offering the email signup as optional, or moving it to the results page.
+
 ---
 
 ## 11. Page-by-Page Summary
@@ -430,32 +451,38 @@ The `SpotlightTour` in `CoreBuddyDashboard.jsx` uses 9 guided tour steps to intr
 | **12-week-core-programme.html** | Urgency copy conflicts with brand voice. Flash sale price doesn't match pricing page. |
 | **faq.html** | Excellent content. Strong SEO value. Good internal linking. Minor form label inconsistencies. |
 | **about.html** | Strong personal narrative. Duplicate "12-Week Core Programme" card in services section. Good credentials. |
-| **blog.html** | Standard blog listing. No copy issues. |
+| **online-coaching.html** | Duplicate nav "FAQ" link (anchor + page). Has "About" link twice. Pricing shows £149 (no flash sale). |
+| **blog.html** | Placeholder post visible: "Your Blog Post Title Here" with generic excerpt. Remove or replace. |
+| **workbook.html** | Clean copy. Contact modal says "Join the Waitlist" but product appears to be live on Amazon. |
+| **protein-calculator.html** | Good micro-copy. Email gate before calculator may reduce engagement. |
 | **thank-you.html** | Post-conversion confirmation. Standard. |
-| **privacy-policy.html** | Legal boilerplate. No voice issues expected. |
-| **terms.html** | Legal boilerplate. No voice issues expected. |
+| **privacy-policy.html** | Legal boilerplate. Thorough and up to date (Feb 2026). |
+| **terms.html** | Legal boilerplate. Prices match Core Buddy plans (£9.99/month, £99.99/year). |
 
 ---
 
 ## Priority Actions
 
 ### High Priority
-1. **Fix pricing discrepancy** between `pricing.html` (£149) and `12-week-core-programme.html` (£129) — decide on the actual price
-2. **Standardise "1-2-1" vs "1-to-1"** across the entire site and app
-3. **Align Core Buddy free tier features** across pricing page, Core Buddy page, FAQ, and onboarding
-4. **Remove duplicate "12-Week Core Programme" card** in `about.html` services section
-5. **Remove duplicate "About" link** in `personal-training.html` nav
+1. **Remove blog placeholder post** — "Your Blog Post Title Here" is visible on the live blog page
+2. **Fix pricing discrepancy** between `pricing.html` (£149), `online-coaching.html` (£149), and `12-week-core-programme.html` (£129) — decide on the actual price
+3. **Standardise "1-2-1" vs "1-to-1"** across the entire site and app
+4. **Align Core Buddy free tier features** across pricing page, Core Buddy page, FAQ, and onboarding
+5. **Remove duplicate "12-Week Core Programme" card** in `about.html` services section
+6. **Remove duplicate "About" link** in `personal-training.html` and `online-coaching.html` navs
+7. **Fix workbook waitlist modal** — page says "Available Now" but modal still says "Join the Waitlist"
 
 ### Medium Priority
-6. **Rename "FAQ Hub"** to just "FAQ" in `core-buddy.html` nav, or remove the duplicate anchor link
-7. **Standardise contact form labels** and dropdown options across all pages (5 forms with different options)
-8. **Review 12-week programme urgency copy** against brand voice guidelines
-9. **Standardise CTA button text** per action type across the site
-10. **Verify habits count** — tour says 5 habits, but UI elsewhere mentions 4
+8. **Rename "FAQ Hub"** to just "FAQ" in `core-buddy.html` nav, or remove the duplicate anchor link
+9. **Standardise contact form labels** and dropdown options across all pages (7+ forms with different options)
+10. **Review 12-week programme urgency copy** against brand voice guidelines
+11. **Standardise CTA button text** per action type across the site
+12. **Verify habits count** — tour says 5 habits, but UI elsewhere mentions 4
 
 ### Low Priority
-11. **Standardise cookie banner text** across all pages
-12. **Consider changing "Consistency King"** to a gender-neutral alternative in the challenge config
-13. **Rename "Block" nav tab** in Core Buddy app to something more descriptive
-14. **Improve generic alt text** on gallery images for accessibility
-15. **Standardise SEO title format** to consistent separator style
+13. **Standardise cookie banner text** across all pages
+14. **Consider changing "Consistency King"** to a gender-neutral alternative in the challenge config
+15. **Rename "Block" nav tab** in Core Buddy app to something more descriptive
+16. **Improve generic alt text** on gallery images for accessibility
+17. **Standardise SEO title format** to consistent separator style
+18. **Review protein calculator email gate** — may reduce engagement vs optional signup
