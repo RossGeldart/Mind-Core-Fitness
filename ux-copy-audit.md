@@ -238,10 +238,16 @@ All pages include a "← Back" nav button that links to `/` (home). This is help
 
 | Page | Dropdown Options |
 |------|-----------------|
+| `index.html` inline form | "Personal Training", "12-Week Programme", "Core Buddy App", "Other / General Enquiry" |
+| `index.html` contact modal | "Personal Training", "Fitness App", "Online Coaching", "Other / General Enquiry" |
+| `about.html` | "1-2-1 Personal Training", "Online Coaching", "Core Buddy", "General Enquiry" |
 | `faq.html` | "1-2-1 Personal Training", "Online Coaching", "Core Buddy", "General Enquiry" |
-| `core-buddy.html` | "Personal Training", "Fitness App", "Online Coaching", "General Enquiry" |
+| `core-buddy.html` | "Personal Training", "Fitness App", "Online Coaching", "Other / General Enquiry" |
 
-**Issue:** Different names for the same services. "Core Buddy" vs "Fitness App" and "1-2-1 Personal Training" vs "Personal Training".
+**Issues:**
+- Different names for the same services across pages: "Core Buddy" vs "Fitness App" vs "Core Buddy App", and "1-2-1 Personal Training" vs "Personal Training"
+- `index.html` has two forms with different dropdown options on the same page
+- Some lists include "Other / General Enquiry", others use just "General Enquiry"
 
 ---
 
@@ -287,13 +293,31 @@ Badge names include: "First Rep", "On Fire", "Dedicated", "Unstoppable", "Centur
 
 **Assessment:** Clear, motivating names. No issues.
 
-### 8.3 Login/Signup Copy
+### 8.3 Login Portal & Signup Copy
 
-- Login CTA: "Log In", "Create Free Account", "Continue with Google", "Continue with Apple"
+**Login portal (`LoginPortal.jsx`):**
+- Heading: "Welcome back" / "Select how you're logging in"
+- Options: "1-2-1 Training" / "Circuit Training" / "Core Buddy"
+
+**Login form (`Login.jsx`):**
+- Type labels: "Admin Login", "1-2-1 Client Login", "Circuit Login", "Core Buddy Login"
+- CTAs: "Log In", "Create Free Account", "Continue with Google", "Continue with Apple"
 - Password reset: "Forgot password?", "Send Reset Link", "Back to Log In"
 - Error: "No account found. Please sign up or contact your trainer."
 
-**Assessment:** Standard, clear. The error message mentioning "your trainer" is a nice brand touch.
+**Signup form (`SignUp.jsx`):**
+- Heading: "Create Your Free Account"
+- Email verification: "We've sent a verification link to [email]. Please check your inbox and click the link to continue."
+- Error messages: "Password must be at least 6 characters", "Passwords do not match", "An account with this email already exists"
+
+**Onboarding wizard (`Onboarding.jsx`):**
+- Feature showcase with 6 slides introducing Core Buddy features
+- Subscription picker with same plan structure as the marketing pages
+- Health questionnaire (PAR-Q) with 7 medical screening questions
+- Onboarding steps: birth date, gender, goal, fitness level, injuries, PAR-Q
+- Goal options: "Lose weight", "Build muscle", "Improve fitness", "Get stronger", "Tone up", "Sport performance", "Stress relief", "Stay active"
+
+**Assessment:** Standard, clear. The error message mentioning "your trainer" is a nice brand touch. The onboarding flow is comprehensive and well-structured.
 
 ### 8.4 Challenge Config (`challengeConfig.js`)
 
@@ -372,6 +396,27 @@ These contrast with the brand's stated philosophy of "no pressure, just progress
 
 The `online-coaching.html` page exists but was not heavily cross-linked from the main site. The nav on most pages doesn't include it directly. Ensure this page is either properly integrated or redirected to the 12-week programme page if it's been replaced.
 
+### 10.7 Duplicate Service Card on About Page
+
+`about.html` "Choose Your Path" section lists four cards, but the "12-Week Core Programme" card appears twice (cards 2 and 4 are identical). Remove the duplicate.
+
+### 10.8 Onboarding Free Tier Mismatch
+
+The onboarding subscription picker in `Onboarding.jsx` lists Free tier features as:
+- "2 workouts per week"
+- "Limited time selection (5 & 10 min)"
+- "Basic dashboard"
+
+This matches `pricing.html` but not `core-buddy.html` (which says "Habit & nutrition tracking" instead of "Basic dashboard"). Align these across all surfaces.
+
+### 10.9 Core Buddy Nav Label ("Block")
+
+The bottom navigation in `CoreBuddyNav.jsx` includes a tab labelled "Block" which is unclear to new users. Consider renaming to something more descriptive like "Schedule" or "Plan" depending on its function.
+
+### 10.10 Dashboard Guided Tour
+
+The `SpotlightTour` in `CoreBuddyDashboard.jsx` uses 9 guided tour steps to introduce new users. The final step says "Let's Go!" which matches the casual tone. However, step text references "5 simple habits each day — train, hit protein, 10k steps, sleep, and hydrate" — verify this matches the actual habits shown in the app (earlier mentions list only 4: Trained, Hit Protein, 10k Steps, 2L Water).
+
 ---
 
 ## 11. Page-by-Page Summary
@@ -384,7 +429,7 @@ The `online-coaching.html` page exists but was not heavily cross-linked from the
 | **pricing.html** | Clean layout. Price mismatch with 12-week programme page. Feature lists differ from service pages. |
 | **12-week-core-programme.html** | Urgency copy conflicts with brand voice. Flash sale price doesn't match pricing page. |
 | **faq.html** | Excellent content. Strong SEO value. Good internal linking. Minor form label inconsistencies. |
-| **about.html** | Strong personal narrative. Good use of credentials and stats. |
+| **about.html** | Strong personal narrative. Duplicate "12-Week Core Programme" card in services section. Good credentials. |
 | **blog.html** | Standard blog listing. No copy issues. |
 | **thank-you.html** | Post-conversion confirmation. Standard. |
 | **privacy-policy.html** | Legal boilerplate. No voice issues expected. |
@@ -394,13 +439,23 @@ The `online-coaching.html` page exists but was not heavily cross-linked from the
 
 ## Priority Actions
 
+### High Priority
 1. **Fix pricing discrepancy** between `pricing.html` (£149) and `12-week-core-programme.html` (£129) — decide on the actual price
-2. **Standardise "1-2-1" vs "1-to-1"** across the entire site
-3. **Align Core Buddy free tier features** across pricing page, Core Buddy page, and FAQ
-4. **Remove duplicate "About" link** in `personal-training.html` nav
-5. **Rename "FAQ Hub"** to just "FAQ" in `core-buddy.html` nav, or remove the duplicate anchor link
-6. **Standardise contact form labels** and dropdown options across all pages
-7. **Review 12-week programme urgency copy** against brand voice guidelines
-8. **Standardise CTA button text** per action type across the site
-9. **Standardise cookie banner text** across all pages
-10. **Consider changing "Consistency King"** to a gender-neutral alternative in the challenge config
+2. **Standardise "1-2-1" vs "1-to-1"** across the entire site and app
+3. **Align Core Buddy free tier features** across pricing page, Core Buddy page, FAQ, and onboarding
+4. **Remove duplicate "12-Week Core Programme" card** in `about.html` services section
+5. **Remove duplicate "About" link** in `personal-training.html` nav
+
+### Medium Priority
+6. **Rename "FAQ Hub"** to just "FAQ" in `core-buddy.html` nav, or remove the duplicate anchor link
+7. **Standardise contact form labels** and dropdown options across all pages (5 forms with different options)
+8. **Review 12-week programme urgency copy** against brand voice guidelines
+9. **Standardise CTA button text** per action type across the site
+10. **Verify habits count** — tour says 5 habits, but UI elsewhere mentions 4
+
+### Low Priority
+11. **Standardise cookie banner text** across all pages
+12. **Consider changing "Consistency King"** to a gender-neutral alternative in the challenge config
+13. **Rename "Block" nav tab** in Core Buddy app to something more descriptive
+14. **Improve generic alt text** on gallery images for accessibility
+15. **Standardise SEO title format** to consistent separator style
