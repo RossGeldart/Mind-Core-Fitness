@@ -317,11 +317,11 @@ export default function FormSubmissions() {
                 <div className="forms-client-row" onClick={() => handleClientClick(client.id)}>
                   <div className="forms-client-left">
                     <div className="forms-client-initial">
-                      {(client.name || '?')[0].toUpperCase()}
+                      {(client.name || client.email || '?')[0].toUpperCase()}
                     </div>
                     <div className="forms-client-info">
                       <h3>
-                        {client.name || 'Unknown'}
+                        {client.name || client.email || 'Unknown'}
                         {isCB && <span className="forms-type-badge core-buddy">Core Buddy</span>}
                       </h3>
                       <div className="forms-badges">
