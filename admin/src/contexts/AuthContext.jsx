@@ -3,6 +3,8 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
@@ -11,8 +13,12 @@ import {
   setPersistence,
   getAdditionalUserInfo
 } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
 import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/firebase';
+
+const isNative = Capacitor.isNativePlatform();
+const signInWithProvider = isNative ? signInWithRedirect : signInWithPopup;
 
 const AuthContext = createContext();
 
@@ -26,6 +32,42 @@ export function AuthProvider({ children }) {
   const [isClient, setIsClient] = useState(false);
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Handle redirect result for native platforms (signInWithRedirect flow)
+  useEffect(() => {
+    if (!isNative) return;
+    getRedirectResult(auth).then(async (result) => {
+      if (!result) return;
+      const user = result.user;
+      // Check if client doc exists, create if first-time social login
+      const q = query(collection(db, 'clients'), where('uid', '==', user.uid));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        const additionalInfo = getAdditionalUserInfo(result);
+        const name = user.displayName || additionalInfo?.profile?.name || '';
+        const source = result.providerId === 'apple.com' ? 'apple' : 'google';
+        const clientRef = doc(collection(db, 'clients'));
+        const clientDoc = {
+          uid: user.uid,
+          name,
+          email: (user.email || '').toLowerCase(),
+          clientType: 'core_buddy',
+          coreBuddyAccess: true,
+          status: 'active',
+          tier: 'free',
+          subscriptionStatus: null,
+          signupSource: source,
+          createdAt: Timestamp.now(),
+        };
+        await setDoc(clientRef, clientDoc);
+        setIsClient(true);
+        setClientData({ id: clientRef.id, ...clientDoc });
+        try { localStorage.setItem('mcf_clientId', clientRef.id); } catch {};
+      }
+    }).catch((err) => {
+      console.error('Redirect sign-in failed:', err);
+    });
+  }, []);
 
   useEffect(() => {
     let unsubClient = null;
@@ -153,7 +195,8 @@ export function AuthProvider({ children }) {
 
   const loginWithGoogle = async () => {
     await setPersistence(auth, browserLocalPersistence);
-    const result = await signInWithPopup(auth, googleProvider);
+    const result = await signInWithProvider(auth, googleProvider);
+    if (!result) return; // redirect flow — result comes via getRedirectResult
     const user = result.user;
 
     // Extract name from multiple sources — displayName or Google profile data
@@ -197,7 +240,8 @@ export function AuthProvider({ children }) {
 
   const loginWithApple = async () => {
     await setPersistence(auth, browserLocalPersistence);
-    const result = await signInWithPopup(auth, appleProvider);
+    const result = await signInWithProvider(auth, appleProvider);
+    if (!result) return; // redirect flow — result comes via getRedirectResult
     const user = result.user;
 
     // Apple only provides firstName/lastName on the FIRST authorization.
