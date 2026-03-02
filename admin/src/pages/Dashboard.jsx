@@ -9,6 +9,7 @@ import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
 import FormSubmissions from '../components/FormSubmissions';
 import CircuitManagement from '../components/CircuitManagement';
+import AdminClientPBs from '../components/AdminClientPBs';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -410,6 +411,12 @@ export default function Dashboard() {
           >
             Circuits
           </button>
+          <button
+            className={`nav-btn ${activeView === 'pbs' ? 'active' : ''}`}
+            onClick={() => setActiveView('pbs')}
+          >
+            PBs
+          </button>
         </nav>
         <div className="header-actions">
           <button
@@ -734,6 +741,15 @@ export default function Dashboard() {
               <h2>Circuit Management</h2>
             </div>
             <CircuitManagement />
+          </div>
+        )}
+
+        {activeView === 'pbs' && (
+          <div className="pbs-view">
+            <div className="view-header">
+              <h2>Client PB History</h2>
+            </div>
+            <AdminClientPBs />
           </div>
         )}
       </main>
