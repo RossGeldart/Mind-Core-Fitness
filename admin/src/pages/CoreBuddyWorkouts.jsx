@@ -640,7 +640,7 @@ export default function CoreBuddyWorkouts() {
     const isStructured = data && typeof data === 'object' && data.type;
     await addDoc(collection(db, 'posts'), {
       authorId: clientData.id,
-      authorName: clientData.name || 'Unknown',
+      authorName: clientData.name || clientData.email || 'Unknown',
       authorPhotoURL: clientData.photoURL || null,
       content: isStructured ? '' : data,
       type: isStructured ? data.type : 'text',

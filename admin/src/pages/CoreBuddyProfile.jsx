@@ -506,7 +506,7 @@ export default function CoreBuddyProfile() {
       await addDoc(collection(db, 'postComments'), {
         postId,
         authorId: clientData.id,
-        authorName: clientData.name || 'Unknown',
+        authorName: clientData.name || clientData.email || 'Unknown',
         authorPhotoURL: clientData.photoURL || null,
         content: text,
         createdAt: serverTimestamp()
