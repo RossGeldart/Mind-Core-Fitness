@@ -1,0 +1,243 @@
+.apb-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Client picker */
+.apb-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apb-picker-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.apb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.apb-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.apb-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.apb-chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Placeholder / loading / empty */
+.apb-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+}
+
+.apb-placeholder svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.35;
+}
+
+.apb-placeholder p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.apb-loading {
+  padding: 32px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.apb-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.apb-empty-state p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.apb-empty-state span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* History */
+.apb-history {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.apb-history-meta {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Month card */
+.apb-month-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.apb-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.apb-month-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.apb-month-counts {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Section within a month */
+.apb-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.apb-section:last-child {
+  border-bottom: none;
+}
+
+.apb-section-label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+
+/* Data rows */
+.apb-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.apb-row:last-child {
+  border-bottom: none;
+}
+
+.apb-row-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.apb-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.apb-row-val {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.apb-row-change {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 46px;
+  text-align: center;
+}
+
+.apb-row-change.up {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.apb-row-change.down {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+.apb-row-change.flat {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.apb-no-data {
+  padding: 12px 16px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
