@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "669343392406",
+    "project_id": "mind-core-fitness-client",
+    "storage_bucket": "mind-core-fitness-client.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669343392406:android:497c3e6bd8690ba26f58b7",
+        "android_client_info": {
+          "package_name": "com.corebuddy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669343392406-8qe906b1aiu4eq1495a8k0tsulf521o4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAg0BFV7N8qbmR32lIOhXf-dRCikklQhUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "669343392406-8qe906b1aiu4eq1495a8k0tsulf521o4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
