@@ -35,8 +35,20 @@ const PARQ_QUESTIONS = [
   { key: 'q7OtherReason', text: 'Do you know of any other reason why you should not do physical activity?' }
 ];
 
+// PAR-Q questions used in Core Buddy onboarding (stored as array of strings)
+const ONBOARDING_PARQ_QUESTIONS = [
+  'Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?',
+  'Do you feel pain in your chest when you do physical activity?',
+  'In the past month, have you had chest pain when you were not doing physical activity?',
+  'Do you lose your balance because of dizziness or do you ever lose consciousness?',
+  'Do you have a bone or joint problem (e.g. back, knee, or hip) that could be made worse by a change in your physical activity?',
+  'Is your doctor currently prescribing drugs (e.g. water pills) for your blood pressure or heart condition?',
+  'Do you know of any other reason why you should not do physical activity?',
+];
+
 export default function FormSubmissions() {
   const [clients, setClients] = useState([]);
+  const [onboardingMap, setOnboardingMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedClient, setExpandedClient] = useState(null);
   const [activeForm, setActiveForm] = useState(null);
@@ -44,25 +56,43 @@ export default function FormSubmissions() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetchClients();
+    fetchData();
   }, []);
 
-  const fetchClients = async () => {
+  const fetchData = async () => {
     try {
-      const snapshot = await getDocs(collection(db, 'clients'));
-      const clientsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const [clientsSnapshot, onboardingSnapshot] = await Promise.all([
+        getDocs(collection(db, 'clients')),
+        getDocs(collection(db, 'onboardingSubmissions'))
+      ]);
+
+      const clientsData = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       clientsData.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       setClients(clientsData);
+
+      // Build a map of clientId -> onboarding submission
+      const obMap = {};
+      onboardingSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        // Doc ID is the clientId
+        obMap[doc.id] = data;
+      });
+      setOnboardingMap(obMap);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      console.error('Error fetching form data:', error);
     }
     setLoading(false);
   };
 
+  const isCoreBuddy = (client) => client.clientType === 'core_buddy';
   const hasWelcome = (client) => !!client.welcomeForm?.completedAt;
   const hasParq = (client) => !!client.parqForm?.completedAt;
-  const hasAnyForm = (client) => hasWelcome(client) || hasParq(client);
-  const hasBothForms = (client) => hasWelcome(client) && hasParq(client);
+  const hasOnboarding = (client) => !!onboardingMap[client.id];
+  const hasAnyForm = (client) => hasWelcome(client) || hasParq(client) || hasOnboarding(client);
+  const hasBothForms = (client) => {
+    if (isCoreBuddy(client)) return hasOnboarding(client); // Onboarding includes both welcome + PAR-Q
+    return hasWelcome(client) && hasParq(client);
+  };
 
   const formatDate = (timestamp) => {
     if (!timestamp) return '';
@@ -99,6 +129,103 @@ export default function FormSubmissions() {
       setExpandedClient(clientId);
       setActiveForm(null);
     }
+  };
+
+  const renderOnboardingWelcome = (onboarding) => (
+    <div className="form-data">
+      <div className="form-data-header">
+        <span className="form-data-title">Onboarding Questionnaire</span>
+        <span className="form-data-date">Submitted {formatDate(onboarding.submittedAt)}</span>
+      </div>
+
+      {onboarding.welcome?.goal && (
+        <div className="form-data-field">
+          <label>Fitness Goal</label>
+          <p>{onboarding.welcome.goal}</p>
+        </div>
+      )}
+
+      {onboarding.welcome?.experience && (
+        <div className="form-data-field">
+          <label>Experience Level</label>
+          <p style={{ textTransform: 'capitalize' }}>{onboarding.welcome.experience}</p>
+        </div>
+      )}
+
+      {onboarding.welcome?.dob && (
+        <div className="form-data-field">
+          <label>Date of Birth</label>
+          <p>{onboarding.welcome.dob}</p>
+        </div>
+      )}
+
+      {onboarding.welcome?.gender && (
+        <div className="form-data-field">
+          <label>Gender</label>
+          <p style={{ textTransform: 'capitalize' }}>{onboarding.welcome.gender}</p>
+        </div>
+      )}
+
+      {onboarding.welcome?.injuries && (
+        <div className="form-data-field">
+          <label>Injuries / Conditions</label>
+          <p>{onboarding.welcome.injuries}</p>
+        </div>
+      )}
+
+      {onboarding.selectedPlan && (
+        <div className="form-data-field">
+          <label>Selected Plan</label>
+          <p style={{ textTransform: 'capitalize' }}>{onboarding.selectedPlan}</p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderOnboardingParq = (onboarding) => {
+    const parq = onboarding.parq;
+    if (!parq) return null;
+
+    const questions = parq.questions || ONBOARDING_PARQ_QUESTIONS;
+    const answers = parq.answers || [];
+
+    return (
+      <div className="form-data">
+        <div className="form-data-header">
+          <span className="form-data-title">PAR-Q Health Screening</span>
+          <span className="form-data-date">Submitted {formatDate(onboarding.submittedAt)}</span>
+        </div>
+
+        <div className="parq-results">
+          {questions.map((question, idx) => {
+            const answered = answers[idx] === true;
+            return (
+              <div key={idx} className={`parq-result-item ${answered ? 'flagged' : ''}`}>
+                <span className={`parq-answer ${answered ? 'yes' : 'no'}`}>
+                  {answered ? 'YES' : 'NO'}
+                </span>
+                <span className="parq-question-text">{question}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="parq-declaration-status">
+          <span className={parq.declaration ? 'declared' : 'not-declared'}>
+            {parq.declaration ? '✓ Declaration signed' : '✗ Declaration not signed'}
+          </span>
+        </div>
+
+        {parq.signature && (
+          <div className="form-data-field">
+            <label>Signature</label>
+            <div className="parq-signature">
+              <img src={parq.signature} alt="Client signature" />
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (loading) {
@@ -181,6 +308,8 @@ export default function FormSubmissions() {
             const isExpanded = expandedClient === client.id;
             const welcome = hasWelcome(client);
             const parq = hasParq(client);
+            const onboarding = onboardingMap[client.id];
+            const isCB = isCoreBuddy(client);
 
             return (
               <div key={client.id} className={`forms-client-card ${isExpanded ? 'expanded' : ''}`}>
@@ -191,14 +320,25 @@ export default function FormSubmissions() {
                       {(client.name || '?')[0].toUpperCase()}
                     </div>
                     <div className="forms-client-info">
-                      <h3>{client.name || 'Unknown'}</h3>
+                      <h3>
+                        {client.name || 'Unknown'}
+                        {isCB && <span className="forms-type-badge core-buddy">Core Buddy</span>}
+                      </h3>
                       <div className="forms-badges">
-                        <span className={`form-badge ${welcome ? 'done' : 'not-done'}`}>
-                          {welcome ? '✓' : '○'} Welcome
-                        </span>
-                        <span className={`form-badge ${parq ? 'done' : 'not-done'}`}>
-                          {parq ? '✓' : '○'} PAR-Q
-                        </span>
+                        {isCB ? (
+                          <span className={`form-badge ${onboarding ? 'done' : 'not-done'}`}>
+                            {onboarding ? '✓' : '○'} Onboarding
+                          </span>
+                        ) : (
+                          <>
+                            <span className={`form-badge ${welcome ? 'done' : 'not-done'}`}>
+                              {welcome ? '✓' : '○'} Welcome
+                            </span>
+                            <span className={`form-badge ${parq ? 'done' : 'not-done'}`}>
+                              {parq ? '✓' : '○'} PAR-Q
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -210,150 +350,183 @@ export default function FormSubmissions() {
                 {/* Expanded Panel */}
                 {isExpanded && (
                   <div className="forms-expand-panel">
-                    {!welcome && !parq ? (
-                      <div className="forms-no-data">
-                        <p>No forms submitted yet</p>
-                        <span>This client hasn't completed any forms</span>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Form Toggle */}
-                        <div className="forms-toggle">
-                          {welcome && (
+                    {/* Core Buddy onboarding data */}
+                    {isCB ? (
+                      !onboarding ? (
+                        <div className="forms-no-data">
+                          <p>No forms submitted yet</p>
+                          <span>This member hasn't completed onboarding</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="forms-toggle">
                             <button
-                              className={`forms-toggle-btn ${activeForm === 'welcome' || (!activeForm && welcome) ? 'active' : ''}`}
+                              className={`forms-toggle-btn ${activeForm === 'welcome' || !activeForm ? 'active' : ''}`}
                               onClick={() => setActiveForm('welcome')}
                             >
-                              Welcome Questionnaire
+                              Onboarding Questionnaire
                             </button>
-                          )}
-                          {parq && (
-                            <button
-                              className={`forms-toggle-btn ${activeForm === 'parq' || (!activeForm && !welcome && parq) ? 'active' : ''}`}
-                              onClick={() => setActiveForm('parq')}
-                            >
-                              PAR-Q Health Screening
-                            </button>
-                          )}
+                            {onboarding.parq && (
+                              <button
+                                className={`forms-toggle-btn ${activeForm === 'parq' ? 'active' : ''}`}
+                                onClick={() => setActiveForm('parq')}
+                              >
+                                PAR-Q Health Screening
+                              </button>
+                            )}
+                          </div>
+
+                          {(activeForm === 'welcome' || !activeForm) && renderOnboardingWelcome(onboarding)}
+                          {activeForm === 'parq' && renderOnboardingParq(onboarding)}
+                        </>
+                      )
+                    ) : (
+                      /* Block / Circuit form data (existing logic) */
+                      !welcome && !parq ? (
+                        <div className="forms-no-data">
+                          <p>No forms submitted yet</p>
+                          <span>This client hasn't completed any forms</span>
                         </div>
-
-                        {/* Welcome Form Data */}
-                        {(activeForm === 'welcome' || (!activeForm && welcome)) && welcome && (
-                          <div className="form-data">
-                            <div className="form-data-header">
-                              <span className="form-data-title">Welcome Questionnaire</span>
-                              <span className="form-data-date">Submitted {formatDate(client.welcomeForm.completedAt)}</span>
-                            </div>
-
-                            {client.welcomeForm.fitnessGoals && (
-                              <div className="form-data-field">
-                                <label>Fitness Goals</label>
-                                <p>{client.welcomeForm.fitnessGoals}</p>
-                              </div>
+                      ) : (
+                        <>
+                          {/* Form Toggle */}
+                          <div className="forms-toggle">
+                            {welcome && (
+                              <button
+                                className={`forms-toggle-btn ${activeForm === 'welcome' || (!activeForm && welcome) ? 'active' : ''}`}
+                                onClick={() => setActiveForm('welcome')}
+                              >
+                                Welcome Questionnaire
+                              </button>
                             )}
-
-                            {client.welcomeForm.currentActivityLevel && (
-                              <div className="form-data-field">
-                                <label>Activity Level</label>
-                                <p>{ACTIVITY_LABELS[client.welcomeForm.currentActivityLevel] || client.welcomeForm.currentActivityLevel}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.exerciseHistory && (
-                              <div className="form-data-field">
-                                <label>Exercise History</label>
-                                <p>{client.welcomeForm.exerciseHistory}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.injuries && (
-                              <div className="form-data-field">
-                                <label>Injuries</label>
-                                <p>{client.welcomeForm.injuries}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.medicalConditions && (
-                              <div className="form-data-field">
-                                <label>Medical Conditions</label>
-                                <p>{client.welcomeForm.medicalConditions}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.sleepHours && (
-                              <div className="form-data-field">
-                                <label>Sleep</label>
-                                <p>{SLEEP_LABELS[client.welcomeForm.sleepHours] || client.welcomeForm.sleepHours}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.stressLevel && (
-                              <div className="form-data-field">
-                                <label>Stress Level</label>
-                                <p>{STRESS_LABELS[client.welcomeForm.stressLevel] || client.welcomeForm.stressLevel}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.dietaryInfo && (
-                              <div className="form-data-field">
-                                <label>Diet / Nutrition</label>
-                                <p>{client.welcomeForm.dietaryInfo}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.availability && (
-                              <div className="form-data-field">
-                                <label>Availability</label>
-                                <p>{client.welcomeForm.availability}</p>
-                              </div>
-                            )}
-
-                            {client.welcomeForm.additionalInfo && (
-                              <div className="form-data-field">
-                                <label>Additional Info</label>
-                                <p>{client.welcomeForm.additionalInfo}</p>
-                              </div>
+                            {parq && (
+                              <button
+                                className={`forms-toggle-btn ${activeForm === 'parq' || (!activeForm && !welcome && parq) ? 'active' : ''}`}
+                                onClick={() => setActiveForm('parq')}
+                              >
+                                PAR-Q Health Screening
+                              </button>
                             )}
                           </div>
-                        )}
 
-                        {/* PAR-Q Form Data */}
-                        {activeForm === 'parq' && parq && (
-                          <div className="form-data">
-                            <div className="form-data-header">
-                              <span className="form-data-title">PAR-Q Health Screening</span>
-                              <span className="form-data-date">Submitted {formatDate(client.parqForm.completedAt)}</span>
-                            </div>
-
-                            <div className="parq-results">
-                              {PARQ_QUESTIONS.map(q => {
-                                const answered = client.parqForm[q.key];
-                                return (
-                                  <div key={q.key} className={`parq-result-item ${answered ? 'flagged' : ''}`}>
-                                    <span className={`parq-answer ${answered ? 'yes' : 'no'}`}>
-                                      {answered ? 'YES' : 'NO'}
-                                    </span>
-                                    <span className="parq-question-text">{q.text}</span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-
-                            {client.parqForm.additionalDetails && (
-                              <div className="form-data-field">
-                                <label>Additional Details</label>
-                                <p>{client.parqForm.additionalDetails}</p>
+                          {/* Welcome Form Data */}
+                          {(activeForm === 'welcome' || (!activeForm && welcome)) && welcome && (
+                            <div className="form-data">
+                              <div className="form-data-header">
+                                <span className="form-data-title">Welcome Questionnaire</span>
+                                <span className="form-data-date">Submitted {formatDate(client.welcomeForm.completedAt)}</span>
                               </div>
-                            )}
 
-                            <div className="parq-declaration-status">
-                              <span className={client.parqForm.declaration ? 'declared' : 'not-declared'}>
-                                {client.parqForm.declaration ? '✓ Declaration signed' : '✗ Declaration not signed'}
-                              </span>
+                              {client.welcomeForm.fitnessGoals && (
+                                <div className="form-data-field">
+                                  <label>Fitness Goals</label>
+                                  <p>{client.welcomeForm.fitnessGoals}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.currentActivityLevel && (
+                                <div className="form-data-field">
+                                  <label>Activity Level</label>
+                                  <p>{ACTIVITY_LABELS[client.welcomeForm.currentActivityLevel] || client.welcomeForm.currentActivityLevel}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.exerciseHistory && (
+                                <div className="form-data-field">
+                                  <label>Exercise History</label>
+                                  <p>{client.welcomeForm.exerciseHistory}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.injuries && (
+                                <div className="form-data-field">
+                                  <label>Injuries</label>
+                                  <p>{client.welcomeForm.injuries}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.medicalConditions && (
+                                <div className="form-data-field">
+                                  <label>Medical Conditions</label>
+                                  <p>{client.welcomeForm.medicalConditions}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.sleepHours && (
+                                <div className="form-data-field">
+                                  <label>Sleep</label>
+                                  <p>{SLEEP_LABELS[client.welcomeForm.sleepHours] || client.welcomeForm.sleepHours}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.stressLevel && (
+                                <div className="form-data-field">
+                                  <label>Stress Level</label>
+                                  <p>{STRESS_LABELS[client.welcomeForm.stressLevel] || client.welcomeForm.stressLevel}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.dietaryInfo && (
+                                <div className="form-data-field">
+                                  <label>Diet / Nutrition</label>
+                                  <p>{client.welcomeForm.dietaryInfo}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.availability && (
+                                <div className="form-data-field">
+                                  <label>Availability</label>
+                                  <p>{client.welcomeForm.availability}</p>
+                                </div>
+                              )}
+
+                              {client.welcomeForm.additionalInfo && (
+                                <div className="form-data-field">
+                                  <label>Additional Info</label>
+                                  <p>{client.welcomeForm.additionalInfo}</p>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        )}
-                      </>
+                          )}
+
+                          {/* PAR-Q Form Data */}
+                          {activeForm === 'parq' && parq && (
+                            <div className="form-data">
+                              <div className="form-data-header">
+                                <span className="form-data-title">PAR-Q Health Screening</span>
+                                <span className="form-data-date">Submitted {formatDate(client.parqForm.completedAt)}</span>
+                              </div>
+
+                              <div className="parq-results">
+                                {PARQ_QUESTIONS.map(q => {
+                                  const answered = client.parqForm[q.key];
+                                  return (
+                                    <div key={q.key} className={`parq-result-item ${answered ? 'flagged' : ''}`}>
+                                      <span className={`parq-answer ${answered ? 'yes' : 'no'}`}>
+                                        {answered ? 'YES' : 'NO'}
+                                      </span>
+                                      <span className="parq-question-text">{q.text}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {client.parqForm.additionalDetails && (
+                                <div className="form-data-field">
+                                  <label>Additional Details</label>
+                                  <p>{client.parqForm.additionalDetails}</p>
+                                </div>
+                              )}
+
+                              <div className="parq-declaration-status">
+                                <span className={client.parqForm.declaration ? 'declared' : 'not-declared'}>
+                                  {client.parqForm.declaration ? '✓ Declaration signed' : '✗ Declaration not signed'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )
                     )}
                   </div>
                 )}

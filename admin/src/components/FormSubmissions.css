@@ -467,6 +467,39 @@
   color: var(--color-error);
 }
 
+/* ====== Type Badge ====== */
+.forms-type-badge {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.forms-type-badge.core-buddy {
+  background: rgba(156, 39, 176, 0.15);
+  color: #9c27b0;
+}
+
+/* ====== Signature ====== */
+.parq-signature {
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  display: inline-block;
+  border: 1px solid var(--border-color);
+}
+
+.parq-signature img {
+  max-width: 280px;
+  height: auto;
+  display: block;
+}
+
 /* ====== Responsive ====== */
 @media (max-width: 768px) {
   .forms-stats {
