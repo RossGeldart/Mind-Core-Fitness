@@ -529,12 +529,14 @@ export default function PersonalBests() {
       const targetsToSave = {};
       EXERCISES.forEach(ex => {
         const bench = latestBenchmarks[ex.key];
+        const existingTarget = targets[ex.key];
         if (ex.unit === 'time') {
           if (targetsForm[ex.key]?.targetValue) {
             targetsToSave[ex.key] = {
               targetType: 'time',
               targetValue: targetsForm[ex.key].targetValue,
-              startValue: bench?.time || 0,
+              // Only capture start value when first creating the target; preserve it on re-save
+              startValue: existingTarget?.startValue != null ? existingTarget.startValue : (bench?.time || 0),
             };
           }
         } else {
@@ -542,8 +544,9 @@ export default function PersonalBests() {
             targetsToSave[ex.key] = {
               targetWeight: targetsForm[ex.key].targetWeight || 0,
               targetReps: targetsForm[ex.key].targetReps || 0,
-              startWeight: bench?.weight || 0,
-              startReps: bench?.reps || 0,
+              // Only capture start values when first creating the target; preserve them on re-save
+              startWeight: existingTarget?.startWeight != null ? existingTarget.startWeight : (bench?.weight || 0),
+              startReps: existingTarget?.startReps != null ? existingTarget.startReps : (bench?.reps || 0),
             };
           }
         }
@@ -582,10 +585,12 @@ export default function PersonalBests() {
       const metricTargetsToSave = {};
       BODY_METRICS.forEach(m => {
         if (metricTargetsForm[m.key]?.targetValue) {
+          const existingMetricTarget = metricTargets[m.key];
           const currentVal = currentRecord?.bodyMetrics?.[m.key] || 0;
           metricTargetsToSave[m.key] = {
             targetValue: metricTargetsForm[m.key].targetValue,
-            startValue: currentVal,
+            // Only capture start value when first creating the target; preserve it on re-save
+            startValue: existingMetricTarget?.startValue != null ? existingMetricTarget.startValue : currentVal,
           };
         }
       });
