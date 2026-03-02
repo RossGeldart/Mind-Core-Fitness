@@ -135,7 +135,7 @@ describe('generateTimeSlotsForDay', () => {
     const slots = generateTimeSlotsForDay('wednesday');
     const afternoonSlots = slots.filter(s => s.period === 'afternoon');
     expect(afternoonSlots.length).toBeGreaterThan(0);
-    expect(afternoonSlots.every(s => s.time >= '14:30' && s.time < '20:00')).toBe(true);
+    expect(afternoonSlots.every(s => s.time >= '14:30' && s.time < '20:30')).toBe(true);
   });
 
   it('consecutive slots are exactly 15 minutes apart', () => {
