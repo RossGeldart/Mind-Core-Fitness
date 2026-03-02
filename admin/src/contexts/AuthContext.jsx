@@ -201,10 +201,16 @@ export function AuthProvider({ children }) {
     const user = result.user;
 
     // Apple only provides firstName/lastName on the FIRST authorization.
-    // Firebase doesn't always set user.displayName from it, so we also
-    // check the raw token response where Apple puts the name fields.
+    // Firebase doesn't always set user.displayName from it, so we check
+    // every available source: displayName, the internal token response,
+    // getAdditionalUserInfo profile, and providerData.
+    const additionalInfo = getAdditionalUserInfo(result);
     const tokenResponse = result._tokenResponse || {};
-    const appleName = [tokenResponse.firstName, tokenResponse.lastName].filter(Boolean).join(' ');
+    const appleName = [tokenResponse.firstName, tokenResponse.lastName].filter(Boolean).join(' ')
+      || additionalInfo?.profile?.name
+      || [additionalInfo?.profile?.given_name, additionalInfo?.profile?.family_name].filter(Boolean).join(' ')
+      || user.providerData?.[0]?.displayName
+      || '';
     const name = user.displayName || appleName || '';
 
     // Check if a client doc already exists for this user

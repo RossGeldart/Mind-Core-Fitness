@@ -547,9 +547,9 @@ export default function ClientList() {
             {/* Compact Name Row — always visible */}
             <div className="client-name-row" onClick={() => toggleExpand(client.id)}>
               <div className="client-name-row-left">
-                <span className="client-name-initial">{client.name?.charAt(0)?.toUpperCase()}</span>
+                <span className="client-name-initial">{(client.name || client.email || '?').charAt(0).toUpperCase()}</span>
                 <div className="client-name-text">
-                  <h3>{client.name}</h3>
+                  <h3>{client.name || client.email || 'Unknown'}</h3>
                   <span className="client-name-sub">
                     {isBlock ? `${getSessionsRemaining(client)}/${client.totalSessions || 0} sessions` : getTypeLabel(client)}
                   </span>

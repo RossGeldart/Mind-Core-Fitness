@@ -74,7 +74,9 @@ const EXPERIENCE_LEVELS = [
   { key: 'advanced', label: 'Advanced', desc: 'Training consistently for 2+ years' },
 ];
 
-const TOTAL_WIZARD_STEPS = 6;
+// If the user's name is missing (common with Apple Sign-In) we inject
+// an extra wizard step at position 0 so they can provide it.
+const BASE_WIZARD_STEPS = 6;
 
 export default function Onboarding() {
   const { currentUser, clientData, updateClientData, resolveClient, loading: authLoading } = useAuth();
@@ -107,6 +109,11 @@ export default function Onboarding() {
     window.addEventListener('pageshow', onPageShow);
     return () => window.removeEventListener('pageshow', onPageShow);
   }, []);
+
+  // Name step — shown when the client doc has no name (e.g. Apple Sign-In)
+  const needsName = !clientData?.name;
+  const TOTAL_WIZARD_STEPS = BASE_WIZARD_STEPS + (needsName ? 1 : 0);
+  const [displayName, setDisplayName] = useState('');
 
   // Welcome form
   const [dob, setDob] = useState('');
@@ -551,8 +558,46 @@ export default function Onboarding() {
         {/* Wizard body — key forces remount for entrance animation */}
         <div className="ob-wizard-body" key={wizardStep}>
 
-          {/* ── Sub-step 0: Date of Birth ── */}
-          {wizardStep === 0 && (
+          {/* ── Sub-step 0 (conditional): Name ── */}
+          {needsName && wizardStep === 0 && (
+            <>
+              <h2 className="ob-wizard-question">What's your name?</h2>
+              <p className="ob-wizard-hint">This is how you'll appear to your buddies</p>
+              <input
+                type="text"
+                className="ob-input"
+                placeholder="Your full name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                autoFocus
+                maxLength={100}
+              />
+              <button
+                className="ob-primary-btn"
+                disabled={!displayName.trim()}
+                onClick={async () => {
+                  const trimmed = displayName.trim();
+                  if (!trimmed) return;
+                  try {
+                    const client = await resolveClient();
+                    if (client) {
+                      await updateDoc(doc(db, 'clients', client.id), { name: trimmed });
+                      updateClientData({ name: trimmed });
+                    }
+                  } catch (err) {
+                    console.error('Failed to save name:', err);
+                  }
+                  setWizardStep(1);
+                }}
+                style={{ marginTop: 24 }}
+              >
+                Continue
+              </button>
+            </>
+          )}
+
+          {/* ── Date of Birth ── */}
+          {wizardStep === (needsName ? 1 : 0) && (
             <>
               <h2 className="ob-wizard-question">When were you born?</h2>
               <p className="ob-wizard-hint">This helps us tailor your experience</p>
@@ -566,7 +611,7 @@ export default function Onboarding() {
               <button
                 className="ob-primary-btn"
                 disabled={!dob}
-                onClick={() => setWizardStep(1)}
+                onClick={() => setWizardStep((needsName ? 1 : 0) + 1)}
                 style={{ marginTop: 24 }}
               >
                 Continue
@@ -574,8 +619,8 @@ export default function Onboarding() {
             </>
           )}
 
-          {/* ── Sub-step 1: Sex ── */}
-          {wizardStep === 1 && (
+          {/* ── Sex ── */}
+          {wizardStep === (needsName ? 2 : 1) && (
             <>
               <h2 className="ob-wizard-question">How do you identify?</h2>
               <p className="ob-wizard-hint">Used for personalised recommendations</p>
@@ -593,8 +638,8 @@ export default function Onboarding() {
             </>
           )}
 
-          {/* ── Sub-step 2: Fitness Goal ── */}
-          {wizardStep === 2 && (
+          {/* ── Fitness Goal ── */}
+          {wizardStep === (needsName ? 3 : 2) && (
             <>
               <h2 className="ob-wizard-question">What's your main goal?</h2>
               <p className="ob-wizard-hint">We'll focus your workouts around this</p>
@@ -612,8 +657,8 @@ export default function Onboarding() {
             </>
           )}
 
-          {/* ── Sub-step 3: Experience Level ── */}
-          {wizardStep === 3 && (
+          {/* ── Experience Level ── */}
+          {wizardStep === (needsName ? 4 : 3) && (
             <>
               <h2 className="ob-wizard-question">Where are you at?</h2>
               <p className="ob-wizard-hint">No judgement — just helps us set the right level</p>
@@ -632,8 +677,8 @@ export default function Onboarding() {
             </>
           )}
 
-          {/* ── Sub-step 4: Injuries ── */}
-          {wizardStep === 4 && (
+          {/* ── Injuries ── */}
+          {wizardStep === (needsName ? 5 : 4) && (
             <>
               <h2 className="ob-wizard-question">Anything we should know?</h2>
               <p className="ob-wizard-hint">Injuries, conditions, limitations — totally optional</p>
@@ -647,7 +692,7 @@ export default function Onboarding() {
               />
               <button
                 className="ob-primary-btn"
-                onClick={() => setWizardStep(5)}
+                onClick={() => setWizardStep((needsName ? 5 : 4) + 1)}
                 style={{ marginTop: 24 }}
               >
                 {injuries.trim() ? 'Continue' : 'Skip'}
@@ -655,8 +700,8 @@ export default function Onboarding() {
             </>
           )}
 
-          {/* ── Sub-step 5: PARQ ── */}
-          {wizardStep === 5 && (
+          {/* ── PARQ ── */}
+          {wizardStep === (needsName ? 6 : 5) && (
             <>
               <h2 className="ob-wizard-question">Health Questionnaire</h2>
               <p className="ob-wizard-hint">PAR-Q — please answer honestly for your safety</p>
