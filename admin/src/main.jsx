@@ -9,8 +9,9 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Register service worker for offline caching
-if ('serviceWorker' in navigator) {
+// Register service worker for offline caching (web only, not native apps)
+import { Capacitor } from '@capacitor/core';
+if (!Capacitor.isNativePlatform() && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/login/sw.js')
       .then((reg) => {

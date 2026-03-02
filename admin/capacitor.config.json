@@ -1,7 +1,7 @@
 {
   "appId": "com.corebuddy.app",
   "appName": "Mind Core Fitness",
-  "webDir": "../login",
+  "webDir": "dist",
   "plugins": {
     "StatusBar": {
       "overlaysWebView": true,
