@@ -119,9 +119,14 @@ export default function ClientList() {
   };
 
   const handleDelete = async (clientId, clientName) => {
-    if (window.confirm(`Are you sure you want to delete ${clientName}? This will also delete all their booked sessions.`)) {
+    const client = clients.find(c => c.id === clientId);
+    const isCoreBuddyUser = client?.clientType === 'core_buddy';
+    const confirmMsg = isCoreBuddyUser
+      ? `Are you sure you want to delete ${clientName}? This will remove their account and all associated data.`
+      : `Are you sure you want to delete ${clientName}? This will also delete all their booked sessions.`;
+    if (window.confirm(confirmMsg)) {
       try {
-        // First, delete all sessions for this client
+        // First, delete all sessions for this client (block/circuit clients)
         const clientSessions = sessions.filter(s => s.clientId === clientId);
         const deletePromises = clientSessions.map(session =>
           deleteDoc(doc(db, 'sessions', session.id))
@@ -168,7 +173,7 @@ export default function ClientList() {
       hasPortalAccess: !!client.uid,
       circuitAccess: !!client.circuitAccess,
       coreBuddyAccess: !!client.coreBuddyAccess,
-      coreBuddyPlan: client.coreBuddyPlan || 'free',
+      coreBuddyPlan: client.tier === 'premium' ? 'premium' : (client.coreBuddyPlan || 'free'),
       isJunior: !!client.isJunior
     });
   };
@@ -248,6 +253,7 @@ export default function ClientList() {
         if (editForm.endDate) updateData.endDate = Timestamp.fromDate(new Date(editForm.endDate));
       } else if (editForm.clientType === 'core_buddy') {
         updateData.coreBuddyPlan = editForm.coreBuddyPlan || 'free';
+        updateData.tier = editForm.coreBuddyPlan || 'free';
         updateData.coreBuddyAccess = true;
       } else {
         // Switching to circuit — ensure circuit fields exist
@@ -463,7 +469,7 @@ export default function ClientList() {
       c.uid ? 'Yes' : 'No',
       c.circuitAccess ? 'Yes' : 'No',
       c.coreBuddyAccess ? 'Yes' : 'No',
-      c.coreBuddyPlan || '',
+      (c.tier === 'premium' || c.coreBuddyPlan === 'premium') ? 'premium' : (c.coreBuddyPlan || c.tier || ''),
       c.isJunior ? 'Yes' : 'No',
       toDate(c.createdAt),
     ]);
@@ -708,7 +714,7 @@ export default function ClientList() {
                       <div className="client-details circuit-details">
                         <div className="detail-item">
                           <span className="detail-label">Plan</span>
-                          <span className="detail-value">{client.coreBuddyPlan === 'premium' ? 'Premium' : 'Free'}</span>
+                          <span className="detail-value">{(client.tier === 'premium' || client.coreBuddyPlan === 'premium') ? 'Premium' : 'Free'}</span>
                         </div>
                         <div className="detail-item">
                           <span className="detail-label">Joined</span>
