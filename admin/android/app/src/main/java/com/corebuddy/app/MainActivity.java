@@ -1,4 +1,4 @@
-package com.mindcorefitness.app;
+package com.corebuddy.app;
 
 import com.getcapacitor.BridgeActivity;
 
