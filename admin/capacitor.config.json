@@ -7,6 +7,14 @@
       "overlaysWebView": true,
       "style": "DARK",
       "backgroundColor": "#00000000"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["apple.com", "google.com"]
     }
+  },
+  "server": {
+    "iosScheme": "https",
+    "hostname": "localhost"
   }
 }
