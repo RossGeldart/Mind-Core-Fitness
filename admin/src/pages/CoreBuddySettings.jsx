@@ -4,6 +4,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTier } from '../contexts/TierContext';
 import {
   isPushSupported,
   getPermissionState,
@@ -26,6 +27,7 @@ const NOTIF_PREFS = [
 export default function CoreBuddySettings() {
   const { currentUser, clientData, updateClientData, logout, loading: authLoading } = useAuth();
   const { isDark, toggleTheme, accent, setAccent, isMono, toggleMono } = useTheme();
+  const { isPremium, subscriptionStatus } = useTier();
   const navigate = useNavigate();
 
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -42,11 +44,44 @@ export default function CoreBuddySettings() {
     mention: true,
   });
   const [toast, setToast] = useState(null);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   }, []);
+
+  // Open Stripe billing portal for subscription management / cancellation
+  const handleManageSubscription = async () => {
+    if (!clientData?.stripeCustomerId) return;
+    setPortalLoading(true);
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          stripeCustomerId: clientData.stripeCustomerId,
+          clientId: clientData.id,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        showToast(data.error || 'Something went wrong', 'error');
+      }
+    } catch (err) {
+      console.error('Portal error:', err);
+      showToast('Unable to open subscription portal', 'error');
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   // Auth guard
   useEffect(() => {
@@ -294,6 +329,63 @@ export default function CoreBuddySettings() {
               <span className="settings-row-desc" style={{ textTransform: 'capitalize' }}>{clientData?.tier || 'free'}</span>
             </div>
           </div>
+        </section>
+
+        {/* ===== Subscription Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Subscription
+          </h2>
+
+          <div className="settings-row">
+            <div className="settings-row-text">
+              <span className="settings-row-label">Status</span>
+              <span className="settings-row-desc">
+                <span className={`settings-sub-badge ${isPremium ? (subscriptionStatus === 'cancelled' ? 'cancelled' : 'active') : 'free'}`}>
+                  {isPremium
+                    ? subscriptionStatus === 'trialing'
+                      ? 'Trial'
+                      : subscriptionStatus === 'cancelled'
+                        ? 'Cancelled'
+                        : subscriptionStatus === 'expired'
+                          ? 'Expired'
+                          : 'Active'
+                    : 'Free'}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          {/* Self-signup premium users with Stripe — show manage/cancel */}
+          {clientData?.stripeCustomerId ? (
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <span className="settings-row-label">Manage Subscription</span>
+                <span className="settings-row-desc">Update payment method, change plan, or cancel</span>
+              </div>
+              <button
+                className="settings-portal-btn"
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+              >
+                {portalLoading ? 'Opening...' : 'Manage'}
+              </button>
+            </div>
+          ) : isPremium ? (
+            /* Admin-granted premium — no self-service */
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <span className="settings-row-label">Managed by Coach</span>
+                <span className="settings-row-desc">Your subscription is managed by your coach. Contact them for any changes.</span>
+              </div>
+            </div>
+          ) : (
+            /* Free tier — prompt to upgrade */
+            <button className="settings-upgrade-btn" onClick={() => navigate('/upgrade')}>
+              Upgrade to Premium
+            </button>
+          )}
         </section>
 
         {/* ===== Support & Feedback Section ===== */}
