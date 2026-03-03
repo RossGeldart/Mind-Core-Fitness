@@ -501,7 +501,9 @@ export default function CoreBuddyBuddies() {
 
   const handleCommentImageSelect = (postId, e) => {
     const file = e.target.files?.[0];
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
     if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image', 'error'); return; }
     if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
     setCommentImage(prev => ({ ...prev, [postId]: file }));
     const reader = new FileReader();
