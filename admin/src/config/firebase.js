@@ -1,7 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  initializeAuth,
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
+  GoogleAuthProvider,
+  OAuthProvider
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { Capacitor } from "@capacitor/core";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBCIgMJd3By7qkWH27YiW9VooIBGE3bFLs",
@@ -13,7 +21,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// On native (capacitor:// origin) IndexedDB is unreliable, so use
+// localStorage-based persistence. On web keep the default IndexedDB → localStorage
+// fallback chain for best performance.
+export const auth = Capacitor.isNativePlatform()
+  ? initializeAuth(app, { persistence: browserLocalPersistence })
+  : getAuth(app);
+
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
@@ -23,7 +38,9 @@ appleProvider.addScope('name');
 
 // Secondary app for creating user accounts without logging out admin
 const secondaryApp = initializeApp(firebaseConfig, "secondary");
-export const secondaryAuth = getAuth(secondaryApp);
+export const secondaryAuth = Capacitor.isNativePlatform()
+  ? initializeAuth(secondaryApp, { persistence: browserLocalPersistence })
+  : getAuth(secondaryApp);
 
 // Admin UID - only this user can access the dashboard
 export const ADMIN_UID = "EYdciKDOi3UYBLk1u8hHams5tmO2";
