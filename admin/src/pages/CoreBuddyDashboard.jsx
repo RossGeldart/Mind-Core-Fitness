@@ -672,6 +672,8 @@ export default function CoreBuddyDashboard() {
       }
 
       // 7. Compute workout streak (consecutive weeks with at least 1 workout)
+      // If the current week has no workouts yet, skip to last week without
+      // breaking the streak (the new week may have only just started).
       try {
         let wkStreak = 0;
         if (logsSnap) {
@@ -679,6 +681,7 @@ export default function CoreBuddyDashboard() {
           if (allDates.length > 0) {
             const now2 = new Date();
             let checkWeek = new Date(now2);
+            let skippedCurrent = false;
             outer: for (let w = 0; w < 52; w++) {
               const weekStart = new Date(checkWeek);
               const dow = weekStart.getDay();
@@ -691,8 +694,8 @@ export default function CoreBuddyDashboard() {
               const weStr = formatDate(weekEnd);
               const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
               if (hasWorkout) { wkStreak++; }
-              else if (w > 0) break outer;
-              else break;
+              else if (w === 0) { skippedCurrent = true; }
+              else break outer;
               checkWeek.setDate(checkWeek.getDate() - 7);
             }
           }
@@ -1004,18 +1007,18 @@ export default function CoreBuddyDashboard() {
       });
       // Notify @mentioned users in the post
       const postText = journeyText.trim();
+      const notified = new Set();
+      const hasEveryone = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(postText) || postText === '@everyone';
+      if (hasEveryone) {
+        allClients.forEach(c => {
+          if (c.id && !notified.has(c.id)) {
+            notified.add(c.id);
+            createNotification(c.id, 'mention', {});
+          }
+        });
+      }
       const mentionMatches = postText.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
-        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
-        if (hasEveryone) {
-          allClients.forEach(c => {
-            if (c.id && !notified.has(c.id)) {
-              notified.add(c.id);
-              createNotification(c.id, 'mention', {});
-            }
-          });
-        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
           if (name.toLowerCase() === 'everyone') return;
@@ -1134,24 +1137,24 @@ export default function CoreBuddyDashboard() {
       const post = journeyPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment', { postId });
       // Notify @mentioned users
+      const notifiedComment = new Set();
+      const hasEveryoneComment = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(text) || text === '@everyone';
+      if (hasEveryoneComment) {
+        allClients.forEach(c => {
+          if (c.id && !notifiedComment.has(c.id)) {
+            notifiedComment.add(c.id);
+            createNotification(c.id, 'mention', { postId });
+          }
+        });
+      }
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
-        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
-        if (hasEveryone) {
-          allClients.forEach(c => {
-            if (c.id && !notified.has(c.id)) {
-              notified.add(c.id);
-              createNotification(c.id, 'mention', { postId });
-            }
-          });
-        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
           if (name.toLowerCase() === 'everyone') return;
           const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
-          if (client && !notified.has(client.id)) {
-            notified.add(client.id);
+          if (client && !notifiedComment.has(client.id)) {
+            notifiedComment.add(client.id);
             createNotification(client.id, 'mention', { postId });
           }
         });

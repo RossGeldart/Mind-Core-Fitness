@@ -446,24 +446,24 @@ export default function CoreBuddyBuddies() {
       const post = feedPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment');
       // Notify @mentioned users
+      const notifiedComment = new Set();
+      const hasEveryoneComment = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(text) || text === '@everyone';
+      if (hasEveryoneComment) {
+        buddies.forEach(c => {
+          if (c.id && !notifiedComment.has(c.id)) {
+            notifiedComment.add(c.id);
+            createNotification(c.id, 'mention');
+          }
+        });
+      }
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
-        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
-        if (hasEveryone) {
-          buddies.forEach(c => {
-            if (c.id && !notified.has(c.id)) {
-              notified.add(c.id);
-              createNotification(c.id, 'mention');
-            }
-          });
-        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
           if (name.toLowerCase() === 'everyone') return;
           const client = buddies.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
-          if (client && !notified.has(client.id)) {
-            notified.add(client.id);
+          if (client && !notifiedComment.has(client.id)) {
+            notifiedComment.add(client.id);
             createNotification(client.id, 'mention');
           }
         });
