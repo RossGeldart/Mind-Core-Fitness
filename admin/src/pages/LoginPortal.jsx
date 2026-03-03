@@ -56,8 +56,9 @@ export default function LoginPortal() {
   // Show spinner while checking auth state, or while navigating a resolved user
   if (authLoading || (currentUser && (isAdmin || isClient))) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
         <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
+        <p style={{ marginTop: 16, fontFamily: 'sans-serif', fontSize: 14, color: '#888' }}>Checking login...</p>
       </div>
     );
   }
