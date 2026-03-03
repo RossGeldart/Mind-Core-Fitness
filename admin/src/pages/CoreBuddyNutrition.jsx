@@ -242,7 +242,6 @@ export default function CoreBuddyNutrition() {
     const d = new Date(selectedDate + 'T12:00:00');
     d.setDate(d.getDate() + days);
     const key = d.toISOString().split('T')[0];
-    if (key > getTodayKey()) return;
     setSelectedDate(key);
   };
 
@@ -1069,7 +1068,7 @@ export default function CoreBuddyNutrition() {
               <button className="nut-week-month-label" onClick={() => { setCalendarOpen(!calendarOpen); setCalendarMonth({ year: selDateObj.getFullYear(), month: selDateObj.getMonth() }); }}>
                 {weekMonthLabel}
               </button>
-              <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() + 7); const key = d.toISOString().split('T')[0]; if (key <= getTodayKey()) setSelectedDate(key); }} aria-label="Next week" disabled={weekDays[6] >= getTodayKey()}>
+              <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() + 7); const key = d.toISOString().split('T')[0]; setSelectedDate(key); }} aria-label="Next week">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
             </div>
@@ -1077,11 +1076,10 @@ export default function CoreBuddyNutrition() {
               {weekDays.map((dayKey, i) => {
                 const dayNum = new Date(dayKey + 'T12:00:00').getDate();
                 const isSel = dayKey === selectedDate;
-                const isFutureDay = dayKey > getTodayKey();
                 const isTodayDay = dayKey === getTodayKey();
                 return (
-                  <button key={dayKey} className={`nut-week-day${isSel ? ' selected' : ''}${isTodayDay ? ' today' : ''}${isFutureDay ? ' future' : ''}`}
-                    disabled={isFutureDay} onClick={() => setSelectedDate(dayKey)}>
+                  <button key={dayKey} className={`nut-week-day${isSel ? ' selected' : ''}${isTodayDay ? ' today' : ''}`}
+                    onClick={() => setSelectedDate(dayKey)}>
                     <span className="nut-week-day-letter">{WEEK_LABELS[i]}</span>
                     <span className="nut-week-day-num">{dayNum}</span>
                   </button>
@@ -1106,7 +1104,7 @@ export default function CoreBuddyNutrition() {
                   let m = p.month + 1, y = p.year;
                   if (m > 11) { m = 0; y++; }
                   return { year: y, month: m };
-                })} disabled={calendarMonth.year === new Date().getFullYear() && calendarMonth.month >= new Date().getMonth()}>
+                })}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               </div>
@@ -1120,12 +1118,11 @@ export default function CoreBuddyNutrition() {
                 {[...Array(getDaysInMonth(calendarMonth.year, calendarMonth.month))].map((_, i) => {
                   const day = i + 1;
                   const dateKey = `${calendarMonth.year}-${String(calendarMonth.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                  const isFuture = dateKey > getTodayKey();
                   const isSelected = dateKey === selectedDate;
                   const isTodayDate = dateKey === getTodayKey();
                   return (
-                    <button key={day} className={`nut-cal-day${isSelected ? ' selected' : ''}${isTodayDate ? ' today' : ''}${isFuture ? ' future' : ''}`}
-                      disabled={isFuture} onClick={() => { setSelectedDate(dateKey); setCalendarOpen(false); }}>
+                    <button key={day} className={`nut-cal-day${isSelected ? ' selected' : ''}${isTodayDate ? ' today' : ''}`}
+                      onClick={() => { setSelectedDate(dateKey); setCalendarOpen(false); }}>
                       {day}
                     </button>
                   );
