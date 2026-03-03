@@ -90,6 +90,7 @@ export default function CoreBuddyConsistency() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [hiddenDefaults, setHiddenDefaults] = useState([]);
   const [savedHabits, setSavedHabits] = useState([]);
+  const [calMonth, setCalMonth] = useState({ year: new Date().getFullYear(), month: new Date().getMonth() });
   const [holdingHabit, setHoldingHabit] = useState(null);
   const holdTimerRef = useRef(null);
   const holdStartRef = useRef(null);
@@ -562,13 +563,16 @@ export default function CoreBuddyConsistency() {
     return Math.max(best, streak);
   })();
 
-  // Monthly calendar data
-  const calendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const calendarMonthName = calendarMonth.toLocaleString('default', { month: 'long' });
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const firstDayOffset = (calendarMonth.getDay() + 6) % 7; // Monday = 0
+  // Monthly calendar data (uses calMonth state for navigation)
+  const calendarMonthDate = new Date(calMonth.year, calMonth.month, 1);
+  const calendarMonthName = calendarMonthDate.toLocaleString('default', { month: 'long' });
+  const calendarYear = calMonth.year;
+  const isCurrentMonth = calMonth.year === today.getFullYear() && calMonth.month === today.getMonth();
+  const isFutureMonth = calMonth.year > today.getFullYear() || (calMonth.year === today.getFullYear() && calMonth.month > today.getMonth());
+  const daysInMonth = new Date(calMonth.year, calMonth.month + 1, 0).getDate();
+  const firstDayOffset = (calendarMonthDate.getDay() + 6) % 7; // Monday = 0
   const calendarDays = Array.from({ length: daysInMonth }, (_, i) => {
-    const d = new Date(today.getFullYear(), today.getMonth(), i + 1);
+    const d = new Date(calMonth.year, calMonth.month, i + 1);
     const dateStr = formatDate(d);
     const log = habitLogs[dateStr];
     const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
@@ -829,7 +833,23 @@ export default function CoreBuddyConsistency() {
 
         {/* ===== Monthly Calendar Heat-Map ===== */}
         <div className="cbc-section anim-fade-up-d4">
-          <h2 className="cbc-section-title">{calendarMonthName}</h2>
+          <div className="cbc-cal-nav">
+            <button className="cbc-cal-nav-btn" onClick={() => setCalMonth(p => {
+              let m = p.month - 1, y = p.year;
+              if (m < 0) { m = 11; y--; }
+              return { year: y, month: m };
+            })}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h2 className="cbc-section-title" style={{ marginBottom: 0 }}>{calendarMonthName}{!isCurrentMonth || calendarYear !== today.getFullYear() ? ` ${calendarYear}` : ''}</h2>
+            <button className="cbc-cal-nav-btn" disabled={isFutureMonth || isCurrentMonth} onClick={() => setCalMonth(p => {
+              let m = p.month + 1, y = p.year;
+              if (m > 11) { m = 0; y++; }
+              return { year: y, month: m };
+            })} style={(isFutureMonth || isCurrentMonth) ? { opacity: 0.25, pointerEvents: 'none' } : {}}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
           <div className="cbc-calendar-card">
             {/* Weekday headers */}
             <div className="cbc-cal-header">
