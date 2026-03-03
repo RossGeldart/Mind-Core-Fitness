@@ -72,6 +72,27 @@
     <div id="root">
       <div id="app-loader"><div class="app-loader-spinner"></div></div>
     </div>
+    <!-- Temporary iOS debug overlay — shows logs on screen -->
+    <script>
+      (function(){
+        var el = document.createElement('pre');
+        el.id = 'mcf-debug';
+        el.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow:auto;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.4 monospace;padding:8px;z-index:99999;pointer-events:auto;';
+        document.body.appendChild(el);
+        function log(msg) {
+          el.textContent += msg + '\n';
+          el.scrollTop = el.scrollHeight;
+        }
+        var _log = console.log.bind(console);
+        console.log = function() {
+          _log.apply(console, arguments);
+          log(Array.prototype.map.call(arguments, function(a){ return typeof a === 'object' ? JSON.stringify(a) : String(a); }).join(' '));
+        };
+        window.onerror = function(m, s, l, c, e) { log('ERROR: ' + m + ' at ' + s + ':' + l + ':' + c); };
+        window.addEventListener('unhandledrejection', function(ev) { log('UNHANDLED: ' + (ev.reason && ev.reason.stack || ev.reason)); });
+        log('debug overlay ready — ' + new Date().toISOString());
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
