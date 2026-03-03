@@ -207,6 +207,23 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
     }
+    // Core Buddy Metric Targets - admin full, clients read/write own (doc ID = clientId)
+    match /coreBuddyMetricTargets/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
+    // Core Buddy Metrics - admin full, clients read/write own (doc ID = {clientId}_{date})
+    match /coreBuddyMetrics/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
+    // Core Buddy Metric Photos - admin full, clients read/write/delete own (doc ID = {clientId}_{period})
+    match /coreBuddyMetricPhotos/{docId} {
+      allow read, write: if isAdmin();
+      allow read, delete: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
     // ── CHALLENGES ──
     // User Challenges - one doc per challenge attempt
     // Doc ID = auto-generated
