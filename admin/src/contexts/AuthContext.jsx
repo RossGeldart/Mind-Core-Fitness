@@ -69,6 +69,18 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
+  // Safety timeout: if onAuthStateChanged never fires (e.g. network issue on
+  // native), stop showing the spinner so the login screen is reachable.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) console.warn('Auth state timeout — showing login screen');
+        return false;
+      });
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     let unsubClient = null;
 
