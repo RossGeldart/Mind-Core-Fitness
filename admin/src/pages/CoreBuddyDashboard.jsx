@@ -1704,7 +1704,7 @@ export default function CoreBuddyDashboard() {
                   value={journeyText}
                   onChange={handleJourneyTextInput}
                   rows={1}
-                  maxLength={500}
+                  maxLength={2000}
                 />
                 {mentionActive && mentionTarget === 'compose' && mentionResults.length > 0 && (
                   <div className="mention-dropdown">
@@ -1731,11 +1731,9 @@ export default function CoreBuddyDashboard() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                   </button>
                   <input ref={journeyFileRef} type="file" accept="image/*" onChange={handleJourneyImageSelect} hidden />
-                  {(journeyText.trim() || journeyImage) && (
-                    <button className="journey-post-btn" onClick={handleJourneyPost} disabled={journeyPosting}>
-                      {journeyPosting ? <div className="journey-btn-spinner" /> : 'Post'}
-                    </button>
-                  )}
+                  <button className="journey-post-btn" onClick={handleJourneyPost} disabled={journeyPosting || (!journeyText.trim() && !journeyImage)}>
+                    {journeyPosting ? <div className="journey-btn-spinner" /> : 'Post'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1916,7 +1914,7 @@ export default function CoreBuddyDashboard() {
                             value={commentText[post.id] || ''}
                             onChange={e => handleCommentInputChange(post.id, e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') handleJourneyComment(post.id); }}
-                            maxLength={300}
+                            maxLength={1000}
                           />
                           {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
                             <div className="mention-dropdown mention-dropdown-up">
