@@ -520,7 +520,7 @@
   border-radius: 14px;
   border: none;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
@@ -542,7 +542,7 @@
   border-radius: 14px;
   border: 1px solid var(--border-color);
   background: var(--bg-card);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
@@ -559,8 +559,8 @@
 .cbm-btn-spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border: 2px solid rgba(var(--color-primary-rgb), 0.3);
+  border-top-color: var(--text-on-primary, #fff);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
