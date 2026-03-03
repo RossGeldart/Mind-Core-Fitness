@@ -75,12 +75,15 @@ export default function CoreBuddyBuddies() {
   }, []);
 
   // @ mention helpers
+  const everyoneOption = { id: '__everyone__', name: 'everyone', photoURL: null };
   const handleMentionInput = (text, target) => {
     const atMatch = text.match(/@(\w*)$/);
     if (atMatch) {
       setMentionActive(true);
       setMentionTarget(target);
-      const filtered = buddies.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      const q = atMatch[1].toLowerCase();
+      const filtered = buddies.filter(c => c.name && c.name.toLowerCase().includes(q)).slice(0, 5);
+      if ('everyone'.startsWith(q)) filtered.unshift(everyoneOption);
       setMentionResults(filtered);
     } else {
       setMentionActive(false);
@@ -100,8 +103,12 @@ export default function CoreBuddyBuddies() {
     if (!text) return text;
     const parts = text.split(/(@\w[\w\s]*?\s)/g);
     return parts.map((part, i) => {
-      if (part.startsWith('@') && buddies.some(c => part.trim() === `@${c.name}`)) {
-        return <span key={i} className="mention-highlight">{part.trim()}</span>;
+      const trimmed = part.trim();
+      if (trimmed === '@everyone') {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
+      }
+      if (part.startsWith('@') && buddies.some(c => trimmed === `@${c.name}`)) {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
       }
       return part;
     });
@@ -442,8 +449,18 @@ export default function CoreBuddyBuddies() {
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
         const notified = new Set();
+        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
+        if (hasEveryone) {
+          buddies.forEach(c => {
+            if (c.id && !notified.has(c.id)) {
+              notified.add(c.id);
+              createNotification(c.id, 'mention');
+            }
+          });
+        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
+          if (name.toLowerCase() === 'everyone') return;
           const client = buddies.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
           if (client && !notified.has(client.id)) {
             notified.add(client.id);
@@ -737,9 +754,9 @@ export default function CoreBuddyBuddies() {
                                   {mentionResults.map(c => (
                                     <button key={c.id} className="bdy-feed-mention-option" onClick={() => insertMention(c, post.id)}>
                                       <div className="bdy-feed-mention-avatar">
-                                        {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                        {c.id === '__everyone__' ? <span>@</span> : c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
                                       </div>
-                                      <span>{c.name}</span>
+                                      <span>{c.id === '__everyone__' ? 'everyone — notify all buddies' : c.name}</span>
                                     </button>
                                   ))}
                                 </div>
