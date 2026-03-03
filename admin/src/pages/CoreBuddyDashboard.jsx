@@ -139,6 +139,12 @@ export default function CoreBuddyDashboard() {
   // Streak data
   const [streakWeeks, setStreakWeeks] = useState(0);
 
+  // Body metrics state
+  const [metricsNeedsRemeasure, setMetricsNeedsRemeasure] = useState(false);
+  const [metricsSetupDone, setMetricsSetupDone] = useState(false);
+  const [metricsOverallPct, setMetricsOverallPct] = useState(0);
+  const [metricsPctMap, setMetricsPctMap] = useState({});
+
   // Rotating tagline
   const [taglineIdx, setTaglineIdx] = useState(0);
 
@@ -709,6 +715,52 @@ export default function CoreBuddyDashboard() {
      nutritionTotals, nutritionTargetData, todayHabitsCount,
      weeklyWorkouts, weeklyWorkoutTarget,
      leaderboardTop3, streakWeeks, clientData]);
+
+  // Body metrics status — check if setup done and if remeasure needed
+  useEffect(() => {
+    if (!clientData || !isPremium) return;
+    (async () => {
+      try {
+        const targetsSnap = await getDoc(doc(db, 'coreBuddyMetricTargets', clientData.id));
+        if (!targetsSnap.exists()) { setMetricsSetupDone(false); return; }
+        const data = targetsSnap.data();
+        setMetricsSetupDone(!!data.setupComplete);
+
+        // Check if 4 weeks since last measured
+        if (data.lastMeasured) {
+          const last = data.lastMeasured.toDate ? data.lastMeasured.toDate() : new Date(data.lastMeasured);
+          setMetricsNeedsRemeasure((Date.now() - last.getTime()) >= 28 * 24 * 60 * 60 * 1000);
+        }
+
+        // Calculate overall progress
+        if (data.setupComplete && data.baseline && data.targets) {
+          const metricsSnap = await getDocs(
+            query(collection(db, 'coreBuddyMetrics'), where('clientId', '==', clientData.id))
+          );
+          const records = metricsSnap.docs.map(d => d.data()).sort((a, b) => (b.period || '').localeCompare(a.period || ''));
+          if (records.length > 0) {
+            const latest = records[0].measurements || {};
+            let total = 0; let count = 0;
+            const pctMap = {};
+            Object.keys(data.targets).forEach(key => {
+              const b = data.baseline[key]; const t = data.targets[key]; const c = latest[key];
+              if (b != null && t != null && c != null) {
+                const diff = t - b;
+                const pct = diff !== 0 ? Math.max(0, Math.min(Math.round(((c - b) / diff) * 100), 100)) : 100;
+                pctMap[key] = pct;
+                total += pct;
+                count++;
+              }
+            });
+            setMetricsPctMap(pctMap);
+            setMetricsOverallPct(count > 0 ? Math.round(total / count) : 0);
+          }
+        }
+      } catch (err) {
+        console.error('Metrics status load error:', err);
+      }
+    })();
+  }, [clientData, isPremium]);
 
   // Weekly target celebration — triggers once per week when target met
   useEffect(() => {
@@ -1341,6 +1393,45 @@ export default function CoreBuddyDashboard() {
           </div>
         )}
 
+        {/* Body Metrics Rings — premium only, only if setup done */}
+        {isPremium && metricsSetupDone && (
+          <button className="cb-metric-rings-wrap" onClick={() => navigate('/client/core-buddy/metrics')}>
+            <span className="cb-metric-rings-title">Body Metrics</span>
+            <div className="cb-metric-rings-row">
+              {[
+                { key: 'chest', label: 'Chest' },
+                { key: 'waist', label: 'Waist' },
+                { key: 'hips', label: 'Hips' },
+                { key: 'leftArm', label: 'L.Arm' },
+                { key: 'rightArm', label: 'R.Arm' },
+                { key: 'leftThigh', label: 'L.Thigh' },
+                { key: 'rightThigh', label: 'R.Thigh' },
+                { key: 'leftCalf', label: 'L.Calf' },
+                { key: 'rightCalf', label: 'R.Calf' },
+              ].map((m) => {
+                const pct = metricsPctMap[m.key] || 0;
+                const r = 38;
+                const circ = 2 * Math.PI * r;
+                const off = circ - (pct / 100) * circ;
+                return (
+                  <div key={m.key} className="cb-metric-mini">
+                    <div className="cb-metric-mini-ring">
+                      <svg viewBox="0 0 100 100">
+                        <circle className="cb-metric-mini-track" cx="50" cy="50" r={r} />
+                        <circle className="cb-metric-mini-fill" cx="50" cy="50" r={r}
+                          strokeDasharray={circ}
+                          strokeDashoffset={off} />
+                      </svg>
+                    </div>
+                    <span className="cb-metric-mini-label">{m.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <span className="cb-metric-rings-cta">View details &rarr;</span>
+          </button>
+        )}
+
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
@@ -1532,6 +1623,37 @@ export default function CoreBuddyDashboard() {
           </button>
           )}
 
+          {/* 9. Body Metrics — premium only */}
+          {isPremium && (
+          <button
+            className="cb-feature-card cb-card-metrics ripple-btn"
+            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/metrics'); }}
+          >
+            <div className="cb-card-metrics-ring">
+              {(() => {
+                const r = 38;
+                const circ = 2 * Math.PI * r;
+                const off = circ - (metricsOverallPct / 100) * circ;
+                return (
+                  <svg viewBox="0 0 100 100">
+                    <circle className="cb-metrics-ring-track" cx="50" cy="50" r={r} />
+                    <circle className="cb-metrics-ring-fill" cx="50" cy="50" r={r}
+                      strokeDasharray={circ}
+                      strokeDashoffset={off} />
+                  </svg>
+                );
+              })()}
+              <span className="cb-metrics-ring-val">{metricsSetupDone ? `${metricsOverallPct}%` : '?'}</span>
+            </div>
+            <div className="cb-card-content">
+              <h3>Body Metrics</h3>
+              <p>{metricsSetupDone
+                ? (metricsNeedsRemeasure ? "It's time to measure up!" : 'Track your body transformation')
+                : 'Set up your measurements & targets'}</p>
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          )}
 
           {/* My Journey — hidden for free tier */}
           {isPremium && (
