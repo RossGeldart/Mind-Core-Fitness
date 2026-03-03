@@ -44,6 +44,49 @@ const EXERCISES = [
   { key: 'plank', name: 'Plank', category: 'Core', unit: 'time' },
 ];
 
+// Full pool of exercises a client can pick from for their custom PB list
+const AVAILABLE_PB_EXERCISES = [
+  // ─── defaults (always available to re-add) ───
+  { key: 'chestPress',    name: 'Chest Press',      category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'shoulderPress', name: 'Shoulder Press',   category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'seatedRow',     name: 'Seated Row',       category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'latPulldown',   name: 'Lat Pulldown',     category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'squat',         name: 'Squat',            category: 'Lower Body',        unit: 'weight' },
+  { key: 'deadlift',      name: 'Deadlift',         category: 'Lower Body',        unit: 'weight' },
+  { key: 'plank',         name: 'Plank',            category: 'Core',              unit: 'time'   },
+  // ─── push ───
+  { key: 'dumbbellFloorPress',  name: 'Dumbbell Floor Press',  category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'inclineDumbbellPress',name: 'Incline Dumbbell Press',category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'arnoldPress',         name: 'Arnold Press',          category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'lateralRaise',        name: 'Lateral Raise',         category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'frontRaise',          name: 'Front Raise',           category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'skullcrushers',       name: 'Skullcrushers',         category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'tricepExtension',     name: 'Tricep Extension',      category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'tricepKickback',      name: 'Tricep Kickback',       category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'dumbbellShrug',       name: 'Dumbbell Shrug',        category: 'Upper Body - Push', unit: 'weight' },
+  { key: 'reversePlank',        name: 'Reverse Plank',         category: 'Core',              unit: 'time'   },
+  // ─── pull ───
+  { key: 'bentOverRow',   name: 'Bent Over Row',    category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'singleArmRow',  name: 'Single Arm Row',   category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'bicepCurl',     name: 'Bicep Curl',       category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'hammerCurl',    name: 'Hammer Curl',       category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'rearDeltFly',   name: 'Rear Delt Fly',    category: 'Upper Body - Pull', unit: 'weight' },
+  { key: 'renegadeRow',   name: 'Renegade Row',     category: 'Upper Body - Pull', unit: 'weight' },
+  // ─── lower ───
+  { key: 'gobletSquat',      name: 'Goblet Squat',      category: 'Lower Body', unit: 'weight' },
+  { key: 'romanianDeadlift', name: 'Romanian Deadlift', category: 'Lower Body', unit: 'weight' },
+  { key: 'lunges',           name: 'Lunges',            category: 'Lower Body', unit: 'weight' },
+  { key: 'reverseLunge',     name: 'Reverse Lunge',     category: 'Lower Body', unit: 'weight' },
+  { key: 'sumoSquat',        name: 'Sumo Squat',        category: 'Lower Body', unit: 'weight' },
+  { key: 'calfRaise',        name: 'Calf Raise',        category: 'Lower Body', unit: 'weight' },
+  { key: 'stepUps',          name: 'Step Ups',          category: 'Lower Body', unit: 'weight' },
+  { key: 'singleLegRdl',     name: '1 Leg RDL',         category: 'Lower Body', unit: 'weight' },
+  { key: 'hipThrust',        name: 'Hip Thrust',        category: 'Lower Body', unit: 'weight' },
+  // ─── core ───
+  { key: 'sidePlank',  name: 'Side Plank',   category: 'Core', unit: 'time' },
+  { key: 'deadBugHold',name: 'Dead Bug Hold',category: 'Core', unit: 'time' },
+];
+
 const BODY_METRICS = [
   { key: 'weight', name: 'Weight', suffix: 'kg' },
   { key: 'chest', name: 'Chest', suffix: 'cm' },
@@ -187,6 +230,14 @@ export default function PersonalBests() {
   const [cbTargetInput, setCbTargetInput] = useState('');
   const [expandedGroups, setExpandedGroups] = useState({});
 
+  // Custom exercise list state (null = not yet loaded, use defaults)
+  const [customExercises, setCustomExercises] = useState(null);
+  const [showExerciseManager, setShowExerciseManager] = useState(false);
+  const [exercisePickKey, setExercisePickKey] = useState('');
+
+  // Active list: client's custom selection, or the built-in defaults
+  const activeExercises = customExercises ?? EXERCISES;
+
   // Touch/swipe state for carousel
   const carouselRef = useRef(null);
   const touchStartX = useRef(0);
@@ -195,12 +246,12 @@ export default function PersonalBests() {
 
   const goToSlide = useCallback((newIndex) => {
     setCurrentSlide(prev => {
-      const clamped = Math.max(0, Math.min(EXERCISES.length - 1, newIndex));
+      const clamped = Math.max(0, Math.min(activeExercises.length - 1, newIndex));
       if (clamped === prev) return prev;
       slideDirection.current = clamped > prev ? 'right' : 'left';
       return clamped;
     });
-  }, []);
+  }, [activeExercises.length]);
 
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark } = useTheme();
@@ -253,6 +304,12 @@ export default function PersonalBests() {
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       data.sort((a, b) => a.month.localeCompare(b.month));
       setRecords(data);
+
+      // Load custom exercise list (if the client has customised it)
+      const customExSnap = await getDoc(doc(db, 'personalBestExercises', clientData.id));
+      if (customExSnap.exists()) {
+        setCustomExercises(customExSnap.data().exercises || null);
+      }
 
       // Fetch targets
       const targetsQ = query(
@@ -352,7 +409,7 @@ export default function PersonalBests() {
     const newBadges = [];
 
     if (type === 'strength') {
-      EXERCISES.forEach(ex => {
+      activeExercises.forEach(ex => {
         const target = targets[ex.key];
         if (!target) return;
         const bench = dataMap[ex.key];
@@ -527,7 +584,7 @@ export default function PersonalBests() {
       const docId = `targets_${clientData.id}`;
       const latestBenchmarks = currentRecord?.benchmarks || {};
       const targetsToSave = {};
-      EXERCISES.forEach(ex => {
+      activeExercises.forEach(ex => {
         const bench = latestBenchmarks[ex.key];
         const existingTarget = targets[ex.key];
         if (ex.unit === 'time') {
@@ -630,6 +687,66 @@ export default function PersonalBests() {
     setSaving(false);
   };
 
+  // Clamp carousel slide when the exercise list shrinks
+  useEffect(() => {
+    if (currentSlide >= activeExercises.length) {
+      setCurrentSlide(Math.max(0, activeExercises.length - 1));
+    }
+  }, [activeExercises.length, currentSlide]);
+
+  const handleAddExercise = async (key) => {
+    const ex = AVAILABLE_PB_EXERCISES.find(e => e.key === key);
+    if (!ex) return;
+    const newList = [...activeExercises, ex];
+    setCustomExercises(newList);
+    try {
+      await setDoc(doc(db, 'personalBestExercises', clientData.id), {
+        clientId: clientData.id,
+        exercises: newList,
+        updatedAt: Timestamp.now(),
+      });
+    } catch (err) {
+      console.error('Error saving custom exercises:', err);
+      showToast('Failed to save exercise list', 'error');
+      setCustomExercises(activeExercises);
+    }
+  };
+
+  const handleRemoveExercise = async (key) => {
+    if (activeExercises.length <= 1) {
+      showToast('You must keep at least one exercise', 'error');
+      return;
+    }
+    const newList = activeExercises.filter(e => e.key !== key);
+    setCustomExercises(newList);
+    try {
+      await setDoc(doc(db, 'personalBestExercises', clientData.id), {
+        clientId: clientData.id,
+        exercises: newList,
+        updatedAt: Timestamp.now(),
+      });
+    } catch (err) {
+      console.error('Error saving custom exercises:', err);
+      showToast('Failed to save exercise list', 'error');
+      setCustomExercises(activeExercises);
+    }
+  };
+
+  const handleResetExercises = async () => {
+    setCustomExercises(null);
+    setShowExerciseManager(false);
+    try {
+      await setDoc(doc(db, 'personalBestExercises', clientData.id), {
+        clientId: clientData.id,
+        exercises: null,
+        updatedAt: Timestamp.now(),
+      });
+    } catch (err) {
+      console.error('Error resetting exercises:', err);
+      showToast('Failed to reset exercise list', 'error');
+    }
+  };
+
   // Get progress toward target (0 to 1) based on range from start to target
   const getTargetProgress = (exerciseKey, benchData) => {
     const target = targets[exerciseKey];
@@ -725,7 +842,7 @@ export default function PersonalBests() {
     return <PersonalBestsJunior />;
   }
 
-  const currentExercise = EXERCISES[currentSlide];
+  const currentExercise = activeExercises[Math.min(currentSlide, activeExercises.length - 1)];
   const currentBench = currentRecord?.benchmarks?.[currentExercise.key];
   const previousBench = previousRecord?.benchmarks?.[currentExercise.key];
   const currentVal = getComparableValue(currentExercise, currentBench);
@@ -1174,7 +1291,7 @@ export default function PersonalBests() {
 
                   {/* Carousel dots */}
                   <div className="pb-carousel-dots">
-                    {EXERCISES.map((_, i) => (
+                    {activeExercises.map((_, i) => (
                       <button
                         key={i}
                         className={`pb-dot ${i === currentSlide ? 'active' : ''}`}
@@ -1194,7 +1311,7 @@ export default function PersonalBests() {
                   <button
                     className="pb-carousel-arrow right"
                     onClick={() => goToSlide(currentSlide + 1)}
-                    disabled={currentSlide === EXERCISES.length - 1}
+                    disabled={currentSlide === activeExercises.length - 1}
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
                   </button>
@@ -1222,6 +1339,81 @@ export default function PersonalBests() {
                     Reset All Goals
                   </button>
                 )}
+                <button
+                  className={`pb-edit-btn pb-customise-btn ${showExerciseManager ? 'active' : ''}`}
+                  onClick={() => setShowExerciseManager(prev => !prev)}
+                >
+                  {showExerciseManager ? 'Close Exercise List' : 'Customise Exercises'}
+                </button>
+              </div>
+            )}
+
+            {/* Exercise Manager */}
+            {!editingBenchmarks && !editingTargets && showExerciseManager && (
+              <div className="pb-exercise-manager">
+                <div className="pb-exercise-manager-header">
+                  <h4>Your Exercises</h4>
+                  <span className="pb-exercise-manager-hint">Add or remove exercises from your strength tracking</span>
+                </div>
+
+                <div className="pb-exercise-manager-list">
+                  {activeExercises.map(ex => (
+                    <div key={ex.key} className="pb-exercise-manager-item">
+                      <div className="pb-exercise-manager-item-info">
+                        <span className="pb-exercise-manager-name">{ex.name}</span>
+                        <span className="pb-exercise-manager-cat">{ex.category}</span>
+                      </div>
+                      <button
+                        className="pb-exercise-remove-btn"
+                        onClick={() => handleRemoveExercise(ex.key)}
+                        aria-label={`Remove ${ex.name}`}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pb-exercise-manager-add">
+                  <select
+                    value={exercisePickKey}
+                    onChange={e => setExercisePickKey(e.target.value)}
+                    className="pb-exercise-select"
+                  >
+                    <option value="">Select exercise to add…</option>
+                    {(() => {
+                      const available = AVAILABLE_PB_EXERCISES.filter(
+                        ex => !activeExercises.some(a => a.key === ex.key)
+                      );
+                      const categories = [...new Set(available.map(e => e.category))];
+                      return categories.map(cat => (
+                        <optgroup key={cat} label={cat}>
+                          {available.filter(e => e.category === cat).map(e => (
+                            <option key={e.key} value={e.key}>{e.name}</option>
+                          ))}
+                        </optgroup>
+                      ));
+                    })()}
+                  </select>
+                  <button
+                    className="pb-exercise-add-btn"
+                    disabled={!exercisePickKey}
+                    onClick={() => {
+                      if (exercisePickKey) {
+                        handleAddExercise(exercisePickKey);
+                        setExercisePickKey('');
+                      }
+                    }}
+                  >
+                    + Add
+                  </button>
+                </div>
+
+                {customExercises !== null && (
+                  <button className="pb-exercise-reset-btn" onClick={handleResetExercises}>
+                    Reset to defaults
+                  </button>
+                )}
               </div>
             )}
 
@@ -1235,7 +1427,7 @@ export default function PersonalBests() {
                   }}>&times;</button>
                 </div>
                 <div className="pb-edit-body">
-                  {EXERCISES.map(ex => (
+                  {activeExercises.map(ex => (
                     <div key={ex.key} className="pb-edit-exercise">
                       <div className="pb-edit-exercise-name">{ex.name}</div>
                       {ex.unit === 'weight' ? (
@@ -1335,7 +1527,7 @@ export default function PersonalBests() {
                 <div className="pb-edit-body">
                   <p className="pb-target-hint">Set a target for each exercise. Your current best is captured automatically from your latest benchmarks.</p>
 
-                  {EXERCISES.map(ex => {
+                  {activeExercises.map(ex => {
                     const bench = currentRecord?.benchmarks?.[ex.key];
                     let currentBestDisplay = '-';
                     if (bench) {
@@ -1704,7 +1896,7 @@ export default function PersonalBests() {
                             {record.benchmarks && Object.keys(record.benchmarks).length > 0 && (
                               <div className="pb-timeline-group">
                                 <h5>Strength Benchmarks</h5>
-                                {EXERCISES.map(ex => {
+                                {activeExercises.map(ex => {
                                   const bench = record.benchmarks[ex.key];
                                   if (!bench) return null;
                                   const prevBench = prevRecord?.benchmarks?.[ex.key];
@@ -1795,7 +1987,7 @@ export default function PersonalBests() {
                               <span>{formatMonthLabel(compareB).split(' ')[0]}</span>
                               <span>Change</span>
                             </div>
-                            {EXERCISES.map(ex => {
+                            {activeExercises.map(ex => {
                               const benchA = recordA.benchmarks?.[ex.key];
                               const benchB = recordB.benchmarks?.[ex.key];
                               const valA = getComparableValue(ex, benchA);
