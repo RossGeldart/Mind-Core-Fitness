@@ -11,6 +11,7 @@ export function useTier() {
 const PREMIUM_FEATURES = [
   'nutrition',
   'buddies',
+  'metrics',
 ];
 
 // Free users: only 5 & 10 min, 2 per week, 1 habit
