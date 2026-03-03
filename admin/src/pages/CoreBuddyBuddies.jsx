@@ -747,7 +747,7 @@ export default function CoreBuddyBuddies() {
                                 value={commentText[post.id] || ''}
                                 onChange={e => { setCommentText(prev => ({ ...prev, [post.id]: e.target.value })); handleMentionInput(e.target.value, post.id); }}
                                 onKeyDown={e => { if (e.key === 'Enter') handleFeedComment(post.id); }}
-                                maxLength={300}
+                                maxLength={1000}
                               />
                               {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
                                 <div className="bdy-feed-mention-dropdown">
