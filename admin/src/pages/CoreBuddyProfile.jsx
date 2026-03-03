@@ -165,6 +165,8 @@ export default function CoreBuddyProfile() {
         setTotalWorkouts(totalAll);
 
         // Workout streak (consecutive weeks)
+        // If the current week has no workouts yet, skip to last week without
+        // breaking the streak (the new week may have only just started).
         let wkStreak = 0;
         const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
         if (allDates.length > 0) {
@@ -182,7 +184,7 @@ export default function CoreBuddyProfile() {
             const weStr = formatDate(weekEnd);
             const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
             if (hasWorkout) { wkStreak++; }
-            else if (w > 0) break;
+            else if (w === 0) { /* skip current week gracefully */ }
             else break;
             checkWeek.setDate(checkWeek.getDate() - 7);
           }

@@ -672,6 +672,8 @@ export default function CoreBuddyDashboard() {
       }
 
       // 7. Compute workout streak (consecutive weeks with at least 1 workout)
+      // If the current week has no workouts yet, skip to last week without
+      // breaking the streak (the new week may have only just started).
       try {
         let wkStreak = 0;
         if (logsSnap) {
@@ -679,6 +681,7 @@ export default function CoreBuddyDashboard() {
           if (allDates.length > 0) {
             const now2 = new Date();
             let checkWeek = new Date(now2);
+            let skippedCurrent = false;
             outer: for (let w = 0; w < 52; w++) {
               const weekStart = new Date(checkWeek);
               const dow = weekStart.getDay();
@@ -691,8 +694,8 @@ export default function CoreBuddyDashboard() {
               const weStr = formatDate(weekEnd);
               const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
               if (hasWorkout) { wkStreak++; }
-              else if (w > 0) break outer;
-              else break;
+              else if (w === 0) { skippedCurrent = true; }
+              else break outer;
               checkWeek.setDate(checkWeek.getDate() - 7);
             }
           }
