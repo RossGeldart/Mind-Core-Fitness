@@ -84,7 +84,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let unsubClient = null;
 
+    console.log('[MCF] subscribing to onAuthStateChanged');
     const unsubAuth = onAuthStateChanged(auth, (user) => {
+      console.log('[MCF] onAuthStateChanged fired — user:', user?.uid || 'null');
       setCurrentUser(user);
 
       // Clean up previous client listener

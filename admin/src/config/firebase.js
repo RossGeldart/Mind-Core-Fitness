@@ -25,9 +25,12 @@ const app = initializeApp(firebaseConfig);
 // On native (capacitor:// origin) IndexedDB is unreliable, so use
 // localStorage-based persistence. On web keep the default IndexedDB → localStorage
 // fallback chain for best performance.
-export const auth = Capacitor.isNativePlatform()
+const _isNative = Capacitor.isNativePlatform();
+console.log('[MCF] firebase.js init — isNative:', _isNative, 'platform:', Capacitor.getPlatform());
+export const auth = _isNative
   ? initializeAuth(app, { persistence: browserLocalPersistence })
   : getAuth(app);
+console.log('[MCF] auth created OK');
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
