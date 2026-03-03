@@ -290,13 +290,18 @@ export default function CoreBuddyMetrics() {
   // Photo upload
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
+    // Always reset input so the same file can be re-selected
+    if (photoInputRef.current) photoInputRef.current.value = '';
     if (!file || !photoUploadPeriod || !clientData) return;
     if (!file.type.startsWith('image/')) { showToast('Please select an image', 'error'); return; }
-    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
 
     setUploadingPhoto(true);
     try {
+      // Compress first — this resizes large camera photos to 800px JPEG,
+      // so a 10MB raw photo becomes well under 1MB after compression.
       const compressed = await compressImage(file);
+      if (compressed.size > 5 * 1024 * 1024) { showToast('Image still too large after compression', 'error'); setUploadingPhoto(false); return; }
+
       const imgId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const storageRef = ref(storage, `progressPhotos/${clientData.id}/${photoUploadPeriod}/${imgId}.jpg`);
       await uploadBytes(storageRef, compressed);
@@ -319,7 +324,6 @@ export default function CoreBuddyMetrics() {
       showToast('Upload failed — try again', 'error');
     } finally {
       setUploadingPhoto(false);
-      if (photoInputRef.current) photoInputRef.current.value = '';
     }
   };
 

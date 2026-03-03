@@ -489,21 +489,19 @@ export default function CoreBuddyDashboard() {
   // Profile photo upload handler
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
+    // Always reset input so the same file can be re-selected
+    if (photoInputRef.current) photoInputRef.current.value = '';
     if (!file || !clientData) return;
 
-    // Validate file
+    // Validate file type
     if (!file.type.startsWith('image/')) {
       showToast('Please select an image file', 'error');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Image must be under 5MB', 'error');
       return;
     }
 
     setUploadingPhoto(true);
     try {
-      // Compress image via canvas
+      // Compress first — resizes to 400px JPEG so large camera photos work fine
       const compressed = await new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
@@ -535,8 +533,6 @@ export default function CoreBuddyDashboard() {
       showToast('Failed to upload photo', 'error');
     }
     setUploadingPhoto(false);
-    // Reset input so same file can be re-selected
-    if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
   // 24hr countdown - time remaining in the day
@@ -968,9 +964,9 @@ export default function CoreBuddyDashboard() {
 
   const handleJourneyImageSelect = (e) => {
     const file = e.target.files?.[0];
+    if (journeyFileRef.current) journeyFileRef.current.value = '';
     if (!file) return;
     if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
-    if (file.size > 10 * 1024 * 1024) { showToast('Image must be under 10MB', 'error'); return; }
     setJourneyImage(file);
     setJourneyImagePreview(URL.createObjectURL(file));
   };
@@ -1192,7 +1188,9 @@ export default function CoreBuddyDashboard() {
 
   const handleCommentImageSelect = (postId, e) => {
     const file = e.target.files?.[0];
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
     if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image', 'error'); return; }
     if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
     setCommentImage(prev => ({ ...prev, [postId]: file }));
     const reader = new FileReader();
