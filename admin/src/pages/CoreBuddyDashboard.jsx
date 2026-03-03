@@ -1004,18 +1004,18 @@ export default function CoreBuddyDashboard() {
       });
       // Notify @mentioned users in the post
       const postText = journeyText.trim();
+      const notified = new Set();
+      const hasEveryone = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(postText) || postText === '@everyone';
+      if (hasEveryone) {
+        allClients.forEach(c => {
+          if (c.id && !notified.has(c.id)) {
+            notified.add(c.id);
+            createNotification(c.id, 'mention', {});
+          }
+        });
+      }
       const mentionMatches = postText.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
-        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
-        if (hasEveryone) {
-          allClients.forEach(c => {
-            if (c.id && !notified.has(c.id)) {
-              notified.add(c.id);
-              createNotification(c.id, 'mention', {});
-            }
-          });
-        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
           if (name.toLowerCase() === 'everyone') return;
@@ -1134,24 +1134,24 @@ export default function CoreBuddyDashboard() {
       const post = journeyPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment', { postId });
       // Notify @mentioned users
+      const notifiedComment = new Set();
+      const hasEveryoneComment = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(text) || text === '@everyone';
+      if (hasEveryoneComment) {
+        allClients.forEach(c => {
+          if (c.id && !notifiedComment.has(c.id)) {
+            notifiedComment.add(c.id);
+            createNotification(c.id, 'mention', { postId });
+          }
+        });
+      }
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
-        const hasEveryone = mentionMatches.some(m => m.slice(1).trim().toLowerCase() === 'everyone');
-        if (hasEveryone) {
-          allClients.forEach(c => {
-            if (c.id && !notified.has(c.id)) {
-              notified.add(c.id);
-              createNotification(c.id, 'mention', { postId });
-            }
-          });
-        }
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
           if (name.toLowerCase() === 'everyone') return;
           const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
-          if (client && !notified.has(client.id)) {
-            notified.add(client.id);
+          if (client && !notifiedComment.has(client.id)) {
+            notifiedComment.add(client.id);
             createNotification(client.id, 'mention', { postId });
           }
         });
