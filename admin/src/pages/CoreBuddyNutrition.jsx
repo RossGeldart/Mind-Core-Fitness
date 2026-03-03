@@ -223,8 +223,6 @@ export default function CoreBuddyNutrition() {
     }
   };
 
-  const isToday = selectedDate === getTodayKey();
-
   // ==================== CALENDAR HELPERS ====================
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
@@ -1145,8 +1143,8 @@ export default function CoreBuddyNutrition() {
       <div className="nut-light-zone anim-fade-up-d4">
         <div className="nut-light-content">
 
-          {/* Quick Actions Row (today only) */}
-          {isToday && (
+          {/* Quick Actions Row */}
+          {(
             <div className="nut-quick-row">
               <button className="nut-copy-day-btn" onClick={() => { setCopyFromOpen(true); setCopyFromMonth({ year: new Date().getFullYear(), month: new Date().getMonth() }); }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" strokeLinecap="round" strokeLinejoin="round">
@@ -1174,11 +1172,9 @@ export default function CoreBuddyNutrition() {
                       <span className={`nut-meal-card-icon nut-meal-icon-${m.key}`}>{MEAL_ICONS[m.key]}</span>
                       <span className="nut-meal-card-title">{m.label}</span>
                       {items.length > 0 && <span className="nut-meal-card-cal">{mealTotals.calories} cal</span>}
-                      {isToday && (
-                        <button className="nut-meal-add-btn" onClick={() => setAddPickerMeal(addPickerMeal === m.key ? null : m.key)} aria-label={`Add to ${m.label}`}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
-                      )}
+                      <button className="nut-meal-add-btn" onClick={() => setAddPickerMeal(addPickerMeal === m.key ? null : m.key)} aria-label={`Add to ${m.label}`}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      </button>
                     </div>
                     {/* Mini macro progress bars */}
                     {items.length > 0 && (
@@ -1228,18 +1224,16 @@ export default function CoreBuddyNutrition() {
                               <span className="nut-macro-f">{entry.fats}f</span>
                               <span className="nut-macro-cal">{entry.calories}</span>
                             </div>
-                            {isToday && (
                               <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                               </button>
-                            )}
                           </div>
                         ))}
                       </div>
                     )}
                     {items.length === 0 && (
                       <div className="nut-meal-empty">
-                        <p>{isToday ? 'Tap + to add food' : 'No entries'}</p>
+                        <p>Tap + to add food</p>
                       </div>
                     )}
                   </div>
