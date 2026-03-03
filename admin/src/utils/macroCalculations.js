@@ -91,8 +91,8 @@ export function calculateMacros(formData) {
   const proteinCalories = proteinGrams * 4;
   const fatCalories = targetCalories * fatPct;
   const fatGrams = Math.round(fatCalories / 9);
-  const carbCalories = targetCalories - proteinCalories - fatCalories;
-  const carbGrams = Math.max(0, Math.round(carbCalories / 4));
+  const carbCalories = Math.max(0, targetCalories - proteinCalories - fatCalories);
+  const carbGrams = Math.round(carbCalories / 4);
 
   return {
     bmr: Math.round(bmr),

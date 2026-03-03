@@ -123,6 +123,23 @@ describe('calculateMacros — macro split', () => {
     expect(result.carbs).toBeGreaterThanOrEqual(0);
   });
 
+  it('carbCalories are never negative even when protein + fat exceed target', () => {
+    // A very heavy user on a harsh deficit: protein needs (2.2g/kg) may exceed
+    // calorie target minus fat allocation, which used to make carbCalories negative
+    const result = calculateMacros({
+      ...BASE_FEMALE,
+      weight: '200',
+      height: '155',
+      age: '80',
+      dailyActivity: 'sedentary',
+      trainingFrequency: 'low',
+      goal: 'lose',
+      deficitLevel: 'harsh',
+    });
+    expect(result.carbCalories).toBeGreaterThanOrEqual(0);
+    expect(result.carbs).toBeGreaterThanOrEqual(0);
+  });
+
   it('protein is higher for weight loss (2.2g/kg) than maintenance (1.8g/kg)', () => {
     const lose = calculateMacros({ ...BASE_MALE, goal: 'lose', deficitLevel: 'moderate' });
     const maintain = calculateMacros(BASE_MALE);
