@@ -61,8 +61,8 @@
   gap: 16px;
   width: 100%;
   padding: 16px 18px;
-  background: rgba(76, 175, 80, 0.08);
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
   border-radius: 16px;
   cursor: pointer;
   margin-bottom: 24px;
@@ -98,14 +98,14 @@
 
 .cbm-banner-ring-track {
   fill: none;
-  stroke: rgba(76, 175, 80, 0.2);
+  stroke: rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
   stroke-width: 10;
   stroke-linecap: round;
 }
 
 .cbm-banner-ring-fill {
   fill: none;
-  stroke: #4CAF50;
+  stroke: var(--color-primary);
   stroke-width: 10;
   stroke-linecap: round;
   animation: ringFillIn 1.6s ease-out;
@@ -146,7 +146,7 @@
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #4CAF50;
+  color: var(--color-primary);
 }
 
 /* ===== SETUP CARD ===== */
@@ -269,9 +269,9 @@
 }
 
 .cbm-dir-gain {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
 }
 
 .cbm-dir-lose {
@@ -336,22 +336,22 @@
 
 .cbm-ring-track {
   fill: none;
-  stroke: rgba(76, 175, 80, 0.12);
+  stroke: rgba(var(--color-primary-rgb, 161, 47, 58), 0.12);
   stroke-width: 10;
   stroke-linecap: round;
 }
 
 .cbm-ring-fill {
   fill: none;
-  stroke: #4CAF50;
+  stroke: var(--color-primary);
   stroke-width: 10;
   stroke-linecap: round;
   animation: ringFillIn 1.6s ease-out;
 }
 
 .cbm-ring-fill.complete {
-  stroke: #4CAF50;
-  filter: drop-shadow(0 0 4px rgba(76, 175, 80, 0.4));
+  stroke: var(--color-primary);
+  filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb, 161, 47, 58), 0.4));
 }
 
 .cbm-ring-val {
@@ -385,8 +385,8 @@
 
 @keyframes metricCompleteGlow {
   0% { filter: drop-shadow(0 0 0 transparent); }
-  40% { filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.5)); }
-  100% { filter: drop-shadow(0 0 4px rgba(76, 175, 80, 0.3)); }
+  40% { filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb, 161, 47, 58), 0.5)); }
+  100% { filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb, 161, 47, 58), 0.3)); }
 }
 
 .cbm-ring-complete {
@@ -478,14 +478,14 @@
 .cbm-detail-bar {
   flex: 1;
   height: 6px;
-  background: rgba(76, 175, 80, 0.12);
+  background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.12);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .cbm-detail-bar-fill {
   height: 100%;
-  background: #4CAF50;
+  background: var(--color-primary);
   border-radius: 3px;
   transition: width 1s ease-out;
 }
