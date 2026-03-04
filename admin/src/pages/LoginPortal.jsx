@@ -44,11 +44,12 @@ export default function LoginPortal() {
   const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
 
   // On native (App Store), skip the portal — only Core Buddy is available
+  const isNative = Capacitor.isNativePlatform();
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
+    if (isNative) {
       navigate('/login?type=core_buddy', { replace: true });
     }
-  }, [navigate]);
+  }, [isNative, navigate]);
 
   // If already logged in, skip the portal and go straight to the dashboard
   useEffect(() => {
@@ -61,8 +62,8 @@ export default function LoginPortal() {
     }
   }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
 
-  // Show spinner while checking auth state, or while navigating a resolved user
-  if (authLoading || (currentUser && (isAdmin || isClient))) {
+  // Show spinner while checking auth state, native redirect, or while navigating a resolved user
+  if (isNative || authLoading || (currentUser && (isAdmin || isClient))) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
         <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
