@@ -1,6 +1,7 @@
 .client-forms-page {
   min-height: 100vh;
   background: var(--bg-secondary);
+  padding-bottom: 80px;
 }
 
 .client-header {
