@@ -259,7 +259,13 @@ export default function Leaderboard() {
         where('completedAt', '>=', startTs),
         where('completedAt', '<=', endTs)
       );
-      const wlSnap = await getDocs(wlQ);
+      // Query activityLogs (walks, runs, cycling, etc.)
+      const alQ = query(
+        collection(db, 'activityLogs'),
+        where('completedAt', '>=', startTs),
+        where('completedAt', '<=', endTs)
+      );
+      const [wlSnap, alSnap] = await Promise.all([getDocs(wlQ), getDocs(alQ)]);
 
       // Build stats map
       const clientIds = new Set(clients.map(c => c.id));
@@ -290,6 +296,19 @@ export default function Leaderboard() {
         }
 
         // Streak dates: all workout types count
+        if (data.completedAt) {
+          const date = data.completedAt.toDate();
+          s.workoutDates.add(formatDateKey(date));
+        }
+      });
+
+      // Process activityLogs — activities count toward workouts, minutes, and streaks
+      alSnap.docs.forEach(d => {
+        const data = d.data();
+        if (!clientIds.has(data.clientId)) return;
+        const s = stats[data.clientId];
+        s.workouts++;
+        s.minutes += data.duration || 0;
         if (data.completedAt) {
           const date = data.completedAt.toDate();
           s.workoutDates.add(formatDateKey(date));

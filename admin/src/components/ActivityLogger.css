@@ -1,0 +1,247 @@
+/* Activity Logger Modal */
+.al-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: al-fadeIn 0.2s ease;
+}
+
+@keyframes al-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes al-slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.al-modal {
+  background: var(--bg-card);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px 20px 32px;
+  animation: al-slideUp 0.3s ease;
+}
+
+.al-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.al-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.al-close,
+.al-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.al-close:hover,
+.al-back:hover {
+  background: var(--bg-hover);
+}
+
+/* Invisible spacer to keep title centered when back button absent */
+.al-header .al-close:first-child ~ h3 {
+  margin-left: -32px;
+}
+
+.al-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 4px 0 16px;
+}
+
+/* Activity type grid */
+.al-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.al-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.al-type-btn:hover,
+.al-type-btn:active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg, rgba(184, 49, 61, 0.06));
+}
+
+.al-type-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary-bg, rgba(184, 49, 61, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+/* Details step */
+.al-details {
+  margin-top: 16px;
+}
+
+.al-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+
+.al-label:first-child {
+  margin-top: 0;
+}
+
+.al-duration-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.al-duration-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 48px;
+}
+
+.al-duration-btn.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.al-duration-btn:hover:not(.active) {
+  border-color: var(--color-primary);
+}
+
+.al-duration-custom {
+  width: 80px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.al-duration-custom:focus,
+.al-duration-custom.active {
+  border-color: var(--color-primary);
+}
+
+.al-duration-custom::placeholder {
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.al-notes {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.al-notes:focus {
+  border-color: var(--color-primary);
+}
+
+.al-notes::placeholder {
+  color: var(--text-tertiary);
+}
+
+.al-save-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.al-save-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.al-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (min-width: 481px) {
+  .al-overlay {
+    align-items: center;
+  }
+  .al-modal {
+    border-radius: 20px;
+    max-height: 80vh;
+  }
+}
