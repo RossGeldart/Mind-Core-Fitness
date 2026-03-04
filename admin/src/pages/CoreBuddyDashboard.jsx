@@ -1267,6 +1267,8 @@ export default function CoreBuddyDashboard() {
                             document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
                           } else if (n.type === 'mention') {
                             navigate(`/client/core-buddy/profile/${n.fromId}`);
+                          } else if (n.type === 'announcement') {
+                            navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
                           }
                         }}>
                           <div className="notif-item-avatar">
@@ -1280,6 +1282,9 @@ export default function CoreBuddyDashboard() {
                               {n.type === 'like' && 'liked your post'}
                               {n.type === 'comment' && 'commented on your post'}
                               {n.type === 'mention' && 'mentioned you'}
+                              {n.type === 'announcement' && `posted: ${n.body || 'a new announcement'}`}
+                              {n.type === 'daily_morning' && (n.body || 'sent a morning motivation')}
+                              {n.type === 'daily_evening' && (n.body || 'sent an evening check-in')}
                             </p>
                             <span className="notif-item-time">{timeAgo(n.createdAt)}</span>
                           </div>

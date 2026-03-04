@@ -14,6 +14,7 @@ const NOTIF_MESSAGES = {
   like: (name) => ({ title: 'Post Liked', body: `${name} liked your post` }),
   comment: (name) => ({ title: 'New Comment', body: `${name} commented on your post` }),
   mention: (name) => ({ title: 'You Were Mentioned', body: `${name} mentioned you in a comment` }),
+  announcement: () => null, // handled by title/body on the notification doc
   daily_morning: () => null, // handled by rotating messages below
   daily_evening: () => null,
 };
@@ -87,7 +88,7 @@ exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', asyn
 
     // Build notification payload
     let title, body;
-    if (type === 'daily_morning' || type === 'daily_evening') {
+    if (type === 'daily_morning' || type === 'daily_evening' || type === 'announcement') {
       // Use the pre-set title/body from the notification document
       title = notif.title;
       body = notif.body;
