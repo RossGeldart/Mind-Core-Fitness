@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTier } from '../contexts/TierContext';
 import { STRIPE_PRICES } from '../config/stripe';
+import { Capacitor } from '@capacitor/core';
 import ThemeToggle from '../components/ThemeToggle';
 import './UpgradePage.css';
+
+const isNative = Capacitor.isNativePlatform();
 
 export default function UpgradePage() {
   const { currentUser, clientData } = useAuth();
@@ -125,7 +128,11 @@ export default function UpgradePage() {
           <p className="upgrade-status">Status: <strong>{subscriptionStatus || 'active'}</strong></p>
         </div>
 
-        {clientData?.stripeCustomerId && (
+        {isNative ? (
+          <p style={{ textAlign: 'center', opacity: 0.7, marginTop: 16 }}>
+            Manage your subscription in your device's Settings &gt; Subscriptions.
+          </p>
+        ) : clientData?.stripeCustomerId ? (
           <button
             className="upgrade-manage-btn"
             onClick={handleManageSubscription}
@@ -133,7 +140,7 @@ export default function UpgradePage() {
           >
             {loading === 'manage' ? 'Opening...' : 'Manage Subscription'}
           </button>
-        )}
+        ) : null}
 
         {error && <p className="upgrade-error">{error}</p>}
       </div>
@@ -141,6 +148,27 @@ export default function UpgradePage() {
   }
 
   // Free tier — show plan selection
+  // On native, in-app purchases will replace Stripe (coming soon).
+  if (isNative) {
+    return (
+      <div className="upgrade-page">
+        <ThemeToggle className="upgrade-theme-toggle" />
+        <button className="upgrade-back-btn" onClick={() => navigate(-1)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+
+        <div className="upgrade-header">
+          <div className="upgrade-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+          </div>
+          <h1>Upgrade to Premium</h1>
+          <p>In-app purchases coming soon! You can upgrade via the web at mindcorefitness.co.uk in the meantime.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="upgrade-page">
       <ThemeToggle className="upgrade-theme-toggle" />

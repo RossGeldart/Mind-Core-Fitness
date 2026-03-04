@@ -5,7 +5,10 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
+import { Capacitor } from '@capacitor/core';
 import './Onboarding.css';
+
+const isNative = Capacitor.isNativePlatform();
 
 import cbSelectWorkout from '../assets/cb-select-workout.PNG';
 import cbGeneratedWorkout from '../assets/cb-generated-workout.PNG';
@@ -207,7 +210,9 @@ export default function Onboarding() {
 
   // If the Stripe webhook fires while the user is still on the feature
   // showcase or subscription picker, auto-advance to the welcome form.
+  // Only relevant on web — native skips the subscription picker entirely.
   useEffect(() => {
+    if (isNative) return;
     const paid = clientData?.tier === 'premium' || !!clientData?.stripeSubscriptionId;
     if (paid && step < 2) {
       setStep(2);
@@ -307,7 +312,7 @@ export default function Onboarding() {
 
           <div className="ob-showcase-actions">
             {isLastSlide ? (
-              <button className="ob-primary-btn" onClick={() => setStep(1)}>
+              <button className="ob-primary-btn" onClick={() => setStep(isNative ? 2 : 1)}>
                 Get Started
               </button>
             ) : (
@@ -315,7 +320,7 @@ export default function Onboarding() {
                 <button className="ob-primary-btn" onClick={() => scrollToSlide(activeSlide + 1)}>
                   Next
                 </button>
-                <button className="ob-skip-btn" onClick={() => setStep(1)}>
+                <button className="ob-skip-btn" onClick={() => setStep(isNative ? 2 : 1)}>
                   Skip
                 </button>
               </>
@@ -527,7 +532,7 @@ export default function Onboarding() {
       // immediately. The Stripe webhook writes the real value to Firestore;
       // the onSnapshot listener in AuthContext will reconcile on next load.
       const localUpdates = { onboardingComplete: true, fitnessGoal: goal, experienceLevel: experience, dob };
-      if (fromCheckout) {
+      if (!isNative && fromCheckout) {
         localUpdates.tier = 'premium';
         localUpdates.subscriptionStatus = 'trialing';
       }
