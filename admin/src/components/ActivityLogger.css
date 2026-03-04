@@ -141,6 +141,30 @@
   margin-top: 0;
 }
 
+.al-custom-name {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.al-custom-name:focus {
+  border-color: var(--color-primary);
+}
+
+.al-custom-name::placeholder {
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
 .al-duration-presets {
   display: flex;
   gap: 8px;
