@@ -156,19 +156,25 @@ export default function CoreBuddyProfile() {
       setStatsLoading(true);
       try {
         // Parallel fetches
-        const logsSnap = await getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId)));
+        const [logsSnap, actSnap] = await Promise.all([
+          getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId))),
+          getDocs(query(collection(db, 'activityLogs'), where('clientId', '==', userId))),
+        ]);
 
         if (cancelled) return;
 
-        // Total workouts
-        const totalAll = logsSnap.docs.length;
+        // Total workouts + activities
+        const totalAll = logsSnap.docs.length + actSnap.docs.length;
         setTotalWorkouts(totalAll);
 
         // Workout streak (consecutive weeks)
         // If the current week has no workouts yet, skip to last week without
         // breaking the streak (the new week may have only just started).
         let wkStreak = 0;
-        const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+        const allDates = [
+          ...logsSnap.docs.map(d => d.data().date),
+          ...actSnap.docs.map(d => d.data().date),
+        ].filter(Boolean).sort().reverse();
         if (allDates.length > 0) {
           const now2 = new Date();
           let checkWeek = new Date(now2);

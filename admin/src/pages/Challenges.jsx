@@ -74,14 +74,29 @@ async function computeProgress(challenge, clientId, startDate) {
     });
   };
 
+  // Fetch activity logs (walks, runs, cycling, etc.) — also count toward challenges
+  const fetchActivityLogs = async () => {
+    const q = query(collection(db, 'activityLogs'),
+      where('clientId', '==', clientId));
+    const snap = await getDocs(q);
+    return snap.docs.filter(d => {
+      const ts = d.data().completedAt;
+      if (!ts) return false;
+      const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+      return ms >= startMs && ms <= nowMs;
+    });
+  };
+
   switch (challenge.type) {
     case 'workouts': {
-      const docs = await fetchWorkoutLogs();
-      return docs.length;
+      const [workoutDocs, activityDocs] = await Promise.all([fetchWorkoutLogs(), fetchActivityLogs()]);
+      return workoutDocs.length + activityDocs.length;
     }
     case 'minutes': {
-      const docs = await fetchWorkoutLogs();
-      return docs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
+      const [workoutDocs, activityDocs] = await Promise.all([fetchWorkoutLogs(), fetchActivityLogs()]);
+      const workoutMins = workoutDocs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
+      const activityMins = activityDocs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
+      return workoutMins + activityMins;
     }
     case 'habits_perfect': {
       const startStr = start.toDate().toISOString().slice(0, 10);
@@ -97,9 +112,11 @@ async function computeProgress(challenge, clientId, startDate) {
       }).length;
     }
     case 'streak': {
-      const docs = await fetchWorkoutLogs();
-      const dates = new Set(docs.map(d =>
-        d.data().completedAt.toDate().toISOString().slice(0, 10)));
+      const [workoutDocs, activityDocs] = await Promise.all([fetchWorkoutLogs(), fetchActivityLogs()]);
+      const dates = new Set([
+        ...workoutDocs.map(d => d.data().completedAt.toDate().toISOString().slice(0, 10)),
+        ...activityDocs.map(d => d.data().completedAt.toDate().toISOString().slice(0, 10)),
+      ]);
       let streak = 0;
       const day = new Date(start.toDate());
       const today = new Date();
