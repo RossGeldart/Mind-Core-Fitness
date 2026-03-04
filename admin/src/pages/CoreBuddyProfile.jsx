@@ -147,9 +147,9 @@ export default function CoreBuddyProfile() {
     return () => { cancelled = true; };
   }, [clientData, userId]);
 
-  // Fetch buddy stats
+  // Fetch buddy stats (only when confirmed buddies)
   useEffect(() => {
-    if (!userId || !profile) return;
+    if (!userId || !profile || buddyStatus !== 'buddy') return;
     let cancelled = false;
 
     (async () => {
@@ -227,7 +227,7 @@ export default function CoreBuddyProfile() {
     })();
 
     return () => { cancelled = true; };
-  }, [userId, profile]);
+  }, [userId, profile, buddyStatus]);
 
   // Fetch accepted buddies for @ mentions
   useEffect(() => {
@@ -388,8 +388,8 @@ export default function CoreBuddyProfile() {
   }, [userId, clientData]);
 
   useEffect(() => {
-    if (!loading && profile) fetchJourney();
-  }, [loading, profile, fetchJourney]);
+    if (!loading && profile && buddyStatus === 'buddy') fetchJourney();
+  }, [loading, profile, buddyStatus, fetchJourney]);
 
   // Delete post
   const deleteJourneyPost = async (postId) => {
@@ -643,6 +643,19 @@ export default function CoreBuddyProfile() {
           </div>
         </div>
 
+        {/* Private profile gate — only buddies see full content */}
+        {buddyStatus !== 'buddy' ? (
+          <div className="prf-private">
+            <div className="prf-private-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h3 className="prf-private-title">Private Profile</h3>
+            <p className="prf-private-text">Add {profile.name?.split(' ')[0]} as a buddy to see their stats, badges and journey.</p>
+          </div>
+        ) : (
+          <>
         {/* Stats */}
         {statsLoading ? (
           <div className="prf-stats-loading"><div className="prf-spinner" /></div>
@@ -877,6 +890,8 @@ export default function CoreBuddyProfile() {
             </div>
           )}
         </div>
+          </>
+        )}
       </main>
 
       <CoreBuddyNav active="buddies" />
