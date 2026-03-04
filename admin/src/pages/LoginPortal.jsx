@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../contexts/AuthContext';
 import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
@@ -41,6 +42,13 @@ const PORTAL_OPTIONS = [
 export default function LoginPortal() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
+
+  // On native (App Store), skip the portal — only Core Buddy is available
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      navigate('/login?type=core_buddy', { replace: true });
+    }
+  }, [navigate]);
 
   // If already logged in, skip the portal and go straight to the dashboard
   useEffect(() => {
