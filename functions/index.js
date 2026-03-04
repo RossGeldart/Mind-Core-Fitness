@@ -66,7 +66,7 @@ function getDayOfYear() {
  * "notifications" collection. Looks up the recipient's FCM tokens
  * and notification preferences, then sends a push notification.
  */
-exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', async (event) => {
+exports.sendPushNotification = onDocumentCreated({ document: 'notifications/{notifId}', region: 'europe-west2' }, async (event) => {
   const notif = event.data?.data();
   if (!notif) return;
 
@@ -155,7 +155,7 @@ exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', asyn
  * Creates a notification for every client that has FCM tokens registered.
  */
 exports.dailyMorningNotification = onSchedule(
-  { schedule: '0 6 * * *', timeZone: 'Europe/London' },
+  { schedule: '0 6 * * *', timeZone: 'Europe/London', region: 'europe-west2' },
   async () => {
     const dayIndex = getDayOfYear();
     const msg = MORNING_MESSAGES[dayIndex % MORNING_MESSAGES.length];
@@ -195,7 +195,7 @@ exports.dailyMorningNotification = onSchedule(
  * Creates a notification for every client that has FCM tokens registered.
  */
 exports.dailyEveningNotification = onSchedule(
-  { schedule: '0 18 * * *', timeZone: 'Europe/London' },
+  { schedule: '0 18 * * *', timeZone: 'Europe/London', region: 'europe-west2' },
   async () => {
     const dayIndex = getDayOfYear();
     const msg = EVENING_MESSAGES[dayIndex % EVENING_MESSAGES.length];
