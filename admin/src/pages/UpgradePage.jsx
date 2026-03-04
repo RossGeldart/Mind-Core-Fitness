@@ -11,10 +11,30 @@ const isNative = Capacitor.isNativePlatform();
 
 export default function UpgradePage() {
   const { currentUser, clientData } = useAuth();
-  const { isPremium, subscriptionStatus } = useTier();
+  const { isPremium, subscriptionStatus, refreshEntitlement } = useTier();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [offerings, setOfferings] = useState(null);
+  const [rcLoading, setRcLoading] = useState(isNative);
+
+  // Load RevenueCat offerings on native
+  useEffect(() => {
+    if (!isNative) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { getOfferings } = await import('../services/revenueCatService');
+        const pkgs = await getOfferings();
+        if (!cancelled) setOfferings(pkgs);
+      } catch (err) {
+        console.error('Failed to load offerings:', err);
+      } finally {
+        if (!cancelled) setRcLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // Clear loading state when user navigates back from Stripe (bfcache restore)
   useEffect(() => {
@@ -147,9 +167,70 @@ export default function UpgradePage() {
     );
   }
 
-  // Free tier — show plan selection
-  // On native, in-app purchases will replace Stripe (coming soon).
+  // Native in-app purchase handler
+  async function handleNativePurchase(plan) {
+    if (!offerings) return;
+    const pkg = plan === 'annual' ? offerings.annual : offerings.monthly;
+    if (!pkg) {
+      setError('Package not available');
+      return;
+    }
+
+    setLoading(plan);
+    setError(null);
+
+    try {
+      const { purchasePackage } = await import('../services/revenueCatService');
+      const { isPremium: nowPremium } = await purchasePackage(pkg);
+      if (nowPremium && refreshEntitlement) {
+        await refreshEntitlement();
+      }
+    } catch (err) {
+      if (err.code === 'PURCHASE_CANCELLED' || err.message?.includes('cancelled')) {
+        // User cancelled — not an error
+      } else {
+        console.error('Purchase error:', err);
+        setError('Purchase failed — please try again');
+      }
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleRestore() {
+    setLoading('restore');
+    setError(null);
+    try {
+      const { restorePurchases } = await import('../services/revenueCatService');
+      const { isPremium: nowPremium } = await restorePurchases();
+      if (nowPremium && refreshEntitlement) {
+        await refreshEntitlement();
+      } else {
+        setError('No previous purchases found');
+      }
+    } catch (err) {
+      console.error('Restore error:', err);
+      setError('Unable to restore purchases');
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  // Free tier — native in-app purchase UI
   if (isNative) {
+    if (rcLoading) {
+      return (
+        <div className="upgrade-page">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+            <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
+          </div>
+        </div>
+      );
+    }
+
+    const monthlyPrice = offerings?.monthly?.product?.priceString || '£9.99/mo';
+    const annualPrice = offerings?.annual?.product?.priceString || '£99.99/yr';
+
     return (
       <div className="upgrade-page">
         <ThemeToggle className="upgrade-theme-toggle" />
@@ -163,8 +244,60 @@ export default function UpgradePage() {
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
           </div>
           <h1>Upgrade to Premium</h1>
-          <p>In-app purchases coming soon! You can upgrade via the web at mindcorefitness.co.uk in the meantime.</p>
+          <p>Unlock all Core Buddy features with a 7-day free trial</p>
         </div>
+
+        <div className="upgrade-plans">
+          <div className="plan-card">
+            <div className="plan-name">Monthly</div>
+            <div className="plan-price">
+              <span className="plan-amount">{monthlyPrice}</span>
+            </div>
+            <ul className="plan-features">
+              <li>7-day free trial</li>
+              <li>Unlimited workout durations</li>
+              <li>Unlimited weekly workouts</li>
+              <li>Save & replay workouts</li>
+              <li>Nutrition tracking</li>
+              <li>Buddies & social</li>
+              <li>Cancel anytime</li>
+            </ul>
+            <button className="plan-cta" onClick={() => handleNativePurchase('monthly')} disabled={!!loading}>
+              {loading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
+            </button>
+          </div>
+
+          <div className="plan-card plan-card-featured">
+            <div className="plan-badge-save">Best Value</div>
+            <div className="plan-name">Annual</div>
+            <div className="plan-price">
+              <span className="plan-amount">{annualPrice}</span>
+            </div>
+            <ul className="plan-features">
+              <li>7-day free trial</li>
+              <li>Unlimited workout durations</li>
+              <li>Unlimited weekly workouts</li>
+              <li>Save & replay workouts</li>
+              <li>Nutrition tracking</li>
+              <li>Buddies & social</li>
+              <li>Best value</li>
+            </ul>
+            <button className="plan-cta plan-cta-featured" onClick={() => handleNativePurchase('annual')} disabled={!!loading}>
+              {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
+            </button>
+          </div>
+        </div>
+
+        <button
+          className="upgrade-manage-btn"
+          style={{ marginTop: 16, opacity: 0.7 }}
+          onClick={handleRestore}
+          disabled={!!loading}
+        >
+          {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
+        </button>
+
+        {error && <p className="upgrade-error">{error}</p>}
       </div>
     );
   }
