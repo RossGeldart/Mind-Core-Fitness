@@ -62,6 +62,105 @@ function compressImage(file, maxSize = 800) {
   });
 }
 
+function ZoomablePhoto({ src, alt, zoom, setZoom, touchStateRef, id }) {
+  const containerRef = useRef(null);
+
+  const getDistance = (t1, t2) => Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+  const getMidpoint = (t1, t2) => ({ x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 });
+
+  const handleTouchStart = (e) => {
+    const ts = touchStateRef.current;
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      ts[id] = {
+        startDist: getDistance(e.touches[0], e.touches[1]),
+        startScale: zoom.scale,
+        startMid: getMidpoint(e.touches[0], e.touches[1]),
+        startX: zoom.x,
+        startY: zoom.y,
+        mode: 'pinch',
+      };
+    } else if (e.touches.length === 1 && zoom.scale > 1) {
+      e.preventDefault();
+      ts[id] = {
+        startTouch: { x: e.touches[0].clientX, y: e.touches[0].clientY },
+        startX: zoom.x,
+        startY: zoom.y,
+        mode: 'pan',
+      };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    const ts = touchStateRef.current[id];
+    if (!ts) return;
+
+    if (ts.mode === 'pinch' && e.touches.length === 2) {
+      e.preventDefault();
+      const dist = getDistance(e.touches[0], e.touches[1]);
+      const newScale = Math.max(1, Math.min(5, ts.startScale * (dist / ts.startDist)));
+      const mid = getMidpoint(e.touches[0], e.touches[1]);
+      const dx = mid.x - ts.startMid.x;
+      const dy = mid.y - ts.startMid.y;
+      setZoom({ scale: newScale, x: ts.startX + dx, y: ts.startY + dy });
+    } else if (ts.mode === 'pan' && e.touches.length === 1) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - ts.startTouch.x;
+      const dy = e.touches[0].clientY - ts.startTouch.y;
+      setZoom(prev => ({ ...prev, x: ts.startX + dx, y: ts.startY + dy }));
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (e.touches.length < 2) {
+      const ts = touchStateRef.current[id];
+      // Switch from pinch to pan if one finger remains
+      if (ts?.mode === 'pinch' && e.touches.length === 1) {
+        touchStateRef.current[id] = {
+          startTouch: { x: e.touches[0].clientX, y: e.touches[0].clientY },
+          startX: zoom.x,
+          startY: zoom.y,
+          mode: 'pan',
+        };
+      } else if (e.touches.length === 0) {
+        delete touchStateRef.current[id];
+      }
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="cbm-compare-photo-zoomable"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="cbm-compare-photo-img"
+        style={{
+          transform: `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.scale})`,
+          transformOrigin: 'center center',
+        }}
+        draggable={false}
+      />
+      {zoom.scale > 1 && (
+        <button
+          className="cbm-zoom-reset-btn"
+          onClick={(e) => { e.stopPropagation(); setZoom({ scale: 1, x: 0, y: 0 }); }}
+          aria-label="Reset zoom"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function CoreBuddyMetrics() {
   const { currentUser, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -100,6 +199,11 @@ export default function CoreBuddyMetrics() {
 
   const photoInputRef = useRef(null);
   const [photoUploadPeriod, setPhotoUploadPeriod] = useState(null);
+
+  // Compare photo zoom/pan state
+  const [zoomA, setZoomA] = useState({ scale: 1, x: 0, y: 0 });
+  const [zoomB, setZoomB] = useState({ scale: 1, x: 0, y: 0 });
+  const touchStateRef = useRef({});
 
   // Auth guard
   useEffect(() => {
@@ -666,6 +770,8 @@ export default function CoreBuddyMetrics() {
                     setCompareB(history[1]?.period || history[0]?.period || '');
                     setComparePhotoA(0);
                     setComparePhotoB(0);
+                    setZoomA({ scale: 1, x: 0, y: 0 });
+                    setZoomB({ scale: 1, x: 0, y: 0 });
                     setShowCompare(true);
                   }}>Compare</button>
                 )}
@@ -834,14 +940,14 @@ export default function CoreBuddyMetrics() {
                   <span className="cbm-compare-photo-label">{formatPeriod(compareA)}</span>
                   {photos[compareA]?.length > 0 ? (
                     <div className="cbm-compare-photo-wrap">
-                      <img src={photos[compareA][comparePhotoA]?.url} alt="Before" className="cbm-compare-photo-img" />
+                      <ZoomablePhoto src={photos[compareA][comparePhotoA]?.url} alt="Before" zoom={zoomA} setZoom={setZoomA} touchStateRef={touchStateRef} id="a" />
                       {photos[compareA].length > 1 && (
                         <div className="cbm-compare-photo-nav">
-                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA === 0} onClick={() => setComparePhotoA(i => i - 1)}>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA === 0} onClick={() => { setComparePhotoA(i => i - 1); setZoomA({ scale: 1, x: 0, y: 0 }); }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                           </button>
                           <span className="cbm-compare-photo-count">{comparePhotoA + 1} / {photos[compareA].length}</span>
-                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA >= photos[compareA].length - 1} onClick={() => setComparePhotoA(i => i + 1)}>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA >= photos[compareA].length - 1} onClick={() => { setComparePhotoA(i => i + 1); setZoomA({ scale: 1, x: 0, y: 0 }); }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                           </button>
                         </div>
@@ -855,14 +961,14 @@ export default function CoreBuddyMetrics() {
                   <span className="cbm-compare-photo-label">{formatPeriod(compareB)}</span>
                   {photos[compareB]?.length > 0 ? (
                     <div className="cbm-compare-photo-wrap">
-                      <img src={photos[compareB][comparePhotoB]?.url} alt="After" className="cbm-compare-photo-img" />
+                      <ZoomablePhoto src={photos[compareB][comparePhotoB]?.url} alt="After" zoom={zoomB} setZoom={setZoomB} touchStateRef={touchStateRef} id="b" />
                       {photos[compareB].length > 1 && (
                         <div className="cbm-compare-photo-nav">
-                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB === 0} onClick={() => setComparePhotoB(i => i - 1)}>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB === 0} onClick={() => { setComparePhotoB(i => i - 1); setZoomB({ scale: 1, x: 0, y: 0 }); }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                           </button>
                           <span className="cbm-compare-photo-count">{comparePhotoB + 1} / {photos[compareB].length}</span>
-                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB >= photos[compareB].length - 1} onClick={() => setComparePhotoB(i => i + 1)}>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB >= photos[compareB].length - 1} onClick={() => { setComparePhotoB(i => i + 1); setZoomB({ scale: 1, x: 0, y: 0 }); }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                           </button>
                         </div>
