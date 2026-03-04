@@ -3,8 +3,6 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
@@ -14,11 +12,11 @@ import {
   getAdditionalUserInfo
 } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/firebase';
 
 const isNative = Capacitor.isNativePlatform();
-const signInWithProvider = isNative ? signInWithRedirect : signInWithPopup;
 
 const AuthContext = createContext();
 
@@ -32,42 +30,6 @@ export function AuthProvider({ children }) {
   const [isClient, setIsClient] = useState(false);
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Handle redirect result for native platforms (signInWithRedirect flow)
-  useEffect(() => {
-    if (!isNative) return;
-    getRedirectResult(auth).then(async (result) => {
-      if (!result) return;
-      const user = result.user;
-      // Check if client doc exists, create if first-time social login
-      const q = query(collection(db, 'clients'), where('uid', '==', user.uid));
-      const snap = await getDocs(q);
-      if (snap.empty) {
-        const additionalInfo = getAdditionalUserInfo(result);
-        const name = user.displayName || additionalInfo?.profile?.name || '';
-        const source = result.providerId === 'apple.com' ? 'apple' : 'google';
-        const clientRef = doc(collection(db, 'clients'));
-        const clientDoc = {
-          uid: user.uid,
-          name,
-          email: (user.email || '').toLowerCase(),
-          clientType: 'core_buddy',
-          coreBuddyAccess: true,
-          status: 'active',
-          tier: 'free',
-          subscriptionStatus: null,
-          signupSource: source,
-          createdAt: Timestamp.now(),
-        };
-        await setDoc(clientRef, clientDoc);
-        setIsClient(true);
-        setClientData({ id: clientRef.id, ...clientDoc });
-        try { localStorage.setItem('mcf_clientId', clientRef.id); } catch {};
-      }
-    }).catch((err) => {
-      console.error('Redirect sign-in failed:', err);
-    });
-  }, []);
 
   // Safety timeout: if onAuthStateChanged never fires (e.g. network issue on
   // native), stop showing the spinner so the login screen is reachable.
@@ -211,16 +173,27 @@ export function AuthProvider({ children }) {
 
   const loginWithGoogle = async () => {
     await setPersistence(auth, browserLocalPersistence);
-    const result = await signInWithProvider(auth, googleProvider);
-    if (!result) return; // redirect flow — result comes via getRedirectResult
-    const user = result.user;
 
-    // Extract name from multiple sources — displayName or Google profile data
-    const additionalInfo = getAdditionalUserInfo(result);
-    const name = user.displayName
-      || additionalInfo?.profile?.name
-      || [additionalInfo?.profile?.given_name, additionalInfo?.profile?.family_name].filter(Boolean).join(' ')
-      || '';
+    let user, name;
+
+    if (isNative) {
+      // Use Capacitor Firebase plugin for native Google sign-in.
+      // With skipNativeAuth: false the plugin automatically signs into
+      // Firebase Auth, so onAuthStateChanged will fire.
+      const nativeResult = await FirebaseAuthentication.signInWithGoogle();
+      user = auth.currentUser;
+      name = nativeResult.user?.displayName || '';
+    } else {
+      const result = await signInWithPopup(auth, googleProvider);
+      user = result.user;
+      const additionalInfo = getAdditionalUserInfo(result);
+      name = user.displayName
+        || additionalInfo?.profile?.name
+        || [additionalInfo?.profile?.given_name, additionalInfo?.profile?.family_name].filter(Boolean).join(' ')
+        || '';
+    }
+
+    if (!user) return;
 
     // Check if a client doc already exists for this user
     const q = query(collection(db, 'clients'), where('uid', '==', user.uid));
@@ -232,7 +205,7 @@ export function AuthProvider({ children }) {
       const clientDoc = {
         uid: user.uid,
         name,
-        email: user.email.toLowerCase(),
+        email: (user.email || '').toLowerCase(),
         clientType: 'core_buddy',
         coreBuddyAccess: true,
         status: 'active',
@@ -250,28 +223,35 @@ export function AuthProvider({ children }) {
       const existingDoc = snap.docs[0];
       await updateDoc(doc(db, 'clients', existingDoc.id), { name });
     }
-
-    return result;
   };
 
   const loginWithApple = async () => {
     await setPersistence(auth, browserLocalPersistence);
-    const result = await signInWithProvider(auth, appleProvider);
-    if (!result) return; // redirect flow — result comes via getRedirectResult
-    const user = result.user;
 
-    // Apple only provides firstName/lastName on the FIRST authorization.
-    // Firebase doesn't always set user.displayName from it, so we check
-    // every available source: displayName, the internal token response,
-    // getAdditionalUserInfo profile, and providerData.
-    const additionalInfo = getAdditionalUserInfo(result);
-    const tokenResponse = result._tokenResponse || {};
-    const appleName = [tokenResponse.firstName, tokenResponse.lastName].filter(Boolean).join(' ')
-      || additionalInfo?.profile?.name
-      || [additionalInfo?.profile?.given_name, additionalInfo?.profile?.family_name].filter(Boolean).join(' ')
-      || user.providerData?.[0]?.displayName
-      || '';
-    const name = user.displayName || appleName || '';
+    let user, name;
+
+    if (isNative) {
+      // Use Capacitor Firebase plugin for native Apple sign-in.
+      // With skipNativeAuth: false the plugin automatically signs into
+      // Firebase Auth, so onAuthStateChanged will fire.
+      const nativeResult = await FirebaseAuthentication.signInWithApple();
+      user = auth.currentUser;
+      // Apple only provides name on first authorization
+      name = nativeResult.user?.displayName || '';
+    } else {
+      const result = await signInWithPopup(auth, appleProvider);
+      user = result.user;
+      const additionalInfo = getAdditionalUserInfo(result);
+      const tokenResponse = result._tokenResponse || {};
+      const appleName = [tokenResponse.firstName, tokenResponse.lastName].filter(Boolean).join(' ')
+        || additionalInfo?.profile?.name
+        || [additionalInfo?.profile?.given_name, additionalInfo?.profile?.family_name].filter(Boolean).join(' ')
+        || user.providerData?.[0]?.displayName
+        || '';
+      name = user.displayName || appleName || '';
+    }
+
+    if (!user) return;
 
     // Check if a client doc already exists for this user
     const q = query(collection(db, 'clients'), where('uid', '==', user.uid));
@@ -301,8 +281,6 @@ export function AuthProvider({ children }) {
       const existingDoc = snap.docs[0];
       await updateDoc(doc(db, 'clients', existingDoc.id), { name });
     }
-
-    return result;
   };
 
   const updateClientData = (fields) => {
