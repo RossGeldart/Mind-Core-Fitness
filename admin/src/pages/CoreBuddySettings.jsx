@@ -131,7 +131,9 @@ export default function CoreBuddySettings() {
         // Notification.permission can stay 'denied' even after the user
         // re-enables notifications in iOS Settings.  Calling
         // requestPermission() again will pick up the updated state.
-        const token = await requestPushPermission(clientData.id);
+        const result = await requestPushPermission(clientData.id);
+        const token = result?.token ?? result; // backwards compat
+        const pushError = result?.error ?? null;
         const state = getPermissionState();
         setPermissionState(state);
         if (token) {
@@ -150,10 +152,19 @@ export default function CoreBuddySettings() {
             notificationPrefs: prefsToWrite,
           });
           showToast('Push notifications enabled!', 'success');
+        } else if (pushError === 'sw-not-ready') {
+          showToast('Service worker not ready — close the app fully, reopen from home screen and try again', 'error');
+        } else if (pushError === 'messaging-init') {
+          showToast('Could not start notification service — close and reopen the app', 'error');
+        } else if (pushError?.startsWith('token-failed:')) {
+          const detail = pushError.replace('token-failed:', '');
+          if (state === 'denied') {
+            showToast('Notifications blocked — enable in Settings > Notifications, then remove and re-add the app', 'error');
+          } else {
+            showToast(`Permission OK but registration failed (${detail}) — close app fully, reopen and try again`, 'error');
+          }
         } else if (state === 'denied') {
           showToast('Notifications blocked — enable them in your device settings, remove the app from your home screen and re-add it', 'error');
-        } else if (state === 'granted') {
-          showToast('Permission granted but setup failed — try closing and reopening the app, then toggle again', 'error');
         } else {
           showToast('Could not enable notifications — please try again', 'error');
         }
