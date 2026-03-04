@@ -195,7 +195,7 @@ export default function ActivityHistory() {
 
       {/* FAB */}
       <button className="ah-fab" onClick={() => setShowLogger(true)} aria-label="Log activity">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
       </button>
 
       {/* Toast */}
