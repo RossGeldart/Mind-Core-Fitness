@@ -244,6 +244,14 @@ service cloud.firestore {
       allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
         && request.resource.data.count == resource.data.count + 1;
     }
+    // ── ANNOUNCEMENTS ──
+    // Announcements - admin posts visible to all authenticated users
+    // Doc ID = auto-generated
+    // Fields: title, content, imageURL, authorId, authorName, createdAt
+    match /announcements/{announcementId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+    }
     // ── NOTIFICATIONS (Phase 4) ──
     // Notifications - in-app notifications for each user
     // Doc ID = auto-generated
