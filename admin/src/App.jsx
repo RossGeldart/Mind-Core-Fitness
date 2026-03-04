@@ -26,6 +26,7 @@ import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AdminCoreBuddy = lazy(() => import('./pages/AdminCoreBuddy'));
 const AddClient = lazy(() => import('./pages/AddClient'));
 const ClientDashboard = lazy(() => import('./pages/ClientDashboard'));
 const ClientForms = lazy(() => import('./pages/ClientForms'));
@@ -88,6 +89,7 @@ function App() {
             <Route path="/" element={<LoginPortal />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin/core-buddy" element={<AdminCoreBuddy />} />
             <Route path="/add-client" element={<AddClient />} />
             <Route path="/client" element={<ClientDashboard />} />
             <Route path="/client/forms" element={<ClientForms />} />
