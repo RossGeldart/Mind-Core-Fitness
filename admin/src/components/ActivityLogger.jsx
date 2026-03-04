@@ -88,6 +88,7 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
   const [activityType, setActivityType] = useState(null);
   const [duration, setDuration] = useState(30);
   const [customDuration, setCustomDuration] = useState('');
+  const [customName, setCustomName] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -96,6 +97,7 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
     setActivityType(null);
     setDuration(30);
     setCustomDuration('');
+    setCustomName('');
     setNotes('');
     setSaving(false);
   };
@@ -122,10 +124,13 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
     setSaving(true);
     try {
       const today = new Date().toISOString().split('T')[0];
+      const label = activityType.id === 'other' && customName.trim()
+        ? customName.trim()
+        : activityType.label;
       await addDoc(collection(db, 'activityLogs'), {
         clientId: clientData.id,
         activityType: activityType.id,
-        activityLabel: activityType.label,
+        activityLabel: label,
         duration: finalDuration,
         notes: notes.trim() || null,
         date: today,
@@ -183,6 +188,20 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
             </div>
 
             <div className="al-details">
+              {activityType.id === 'other' && (
+                <>
+                  <label className="al-label">Activity name</label>
+                  <input
+                    type="text"
+                    className="al-custom-name"
+                    placeholder="e.g. Tennis, Pilates, Skateboarding..."
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    maxLength={40}
+                    autoFocus
+                  />
+                </>
+              )}
               <label className="al-label">Duration (minutes)</label>
               <div className="al-duration-presets">
                 {DURATION_PRESETS.map((d) => (
