@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { awardBadge } from '../utils/awardBadge';
+import { parseProduct } from '../utils/productParser';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import useBarcodeScanner from '../hooks/useBarcodeScanner';
+import useFoodSearch from '../hooks/useFoodSearch';
+import ScannerView from '../components/ScannerView';
+import ProductResult from '../components/ProductResult';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import PullToRefresh from '../components/PullToRefresh';
 import BadgeCelebration from '../components/BadgeCelebration';
-
-const searchCache = new Map();
 
 function getTodayKey() {
   return new Date().toISOString().split('T')[0];
@@ -101,13 +104,8 @@ export default function CoreBuddyNutrition() {
 
   // Add food modal
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
-  const [scannerActive, setScannerActive] = useState(false);
-  const [scanDetected, setScanDetected] = useState(null); // barcode string or null
   const [manualBarcode, setManualBarcode] = useState('');
   const [barcodeLooking, setBarcodeLooking] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [manualForm, setManualForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
   const [scannedProduct, setScannedProduct] = useState(null);
   const [servingInput, setServingInput] = useState('100');
@@ -118,16 +116,37 @@ export default function CoreBuddyNutrition() {
   // Toast
   const [toast, setToast] = useState(null);
 
-  const scannerRef = useRef(null);
-  const quaggaRunning = useRef(false);
-  const searchAbort = useRef(null);
-  const debounceTimer = useRef(null);
-  const searchInputRef = useRef(null);
-
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // Barcode scanner hook
+  const {
+    scannerActive,
+    scanDetected,
+    setScanDetected,
+    scannerTargetRef,
+    startScanner,
+    stopScanner,
+  } = useBarcodeScanner({
+    onDetected: null,
+    onError: (msg) => showToast(msg, 'error'),
+  });
+
+  // Food search hook
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    setSearchResults,
+    searchLoading,
+    searchFood,
+    startDebounceSearch,
+    searchInputRef,
+  } = useFoodSearch({
+    onError: (msg, type) => showToast(msg, type || 'error'),
+  });
 
   // Auth guard
   useEffect(() => {
@@ -446,193 +465,6 @@ export default function CoreBuddyNutrition() {
     }
   };
 
-  // ==================== BARCODE SCANNER (Quagga2 — loaded on demand) ====================
-  const quaggaRef = useRef(null);
-  const scanBuffer = useRef([]);       // rolling buffer of recent barcode reads
-  const SCAN_CONSENSUS = 3;            // require same code N times before accepting
-  const SCAN_BUFFER_SIZE = 5;          // keep last N reads
-
-  const startScanner = async () => {
-    setScannerActive(true);
-    const target = document.querySelector('#barcode-reader');
-    if (!target) {
-      setScannerActive(false);
-      showToast('Scanner container not found.', 'error');
-      return;
-    }
-
-    // Dynamic import — only loads when user taps scan
-    if (!quaggaRef.current) {
-      try {
-        const mod = await import('@ericblade/quagga2');
-        quaggaRef.current = mod.default;
-      } catch (e) {
-        console.error('Failed to load barcode scanner:', e);
-        setScannerActive(false);
-        showToast('Could not load scanner.', 'error');
-        return;
-      }
-    }
-    const Quagga = quaggaRef.current;
-
-    Quagga.init({
-      inputStream: {
-        type: 'LiveStream',
-        target,
-        constraints: {
-          facingMode: 'environment',
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-        },
-      },
-      locator: {
-        patchSize: 'medium',
-        halfSample: true,
-      },
-      numOfWorkers: navigator.hardwareConcurrency || 2,
-      decoder: {
-        readers: [
-          'ean_reader',
-          'ean_8_reader',
-          'upc_reader',
-          'upc_e_reader',
-          'code_128_reader',
-          'code_39_reader',
-        ],
-      },
-      locate: true,
-    }, (err) => {
-      if (err) {
-        console.error('Quagga init error:', err);
-        setScannerActive(false);
-        showToast('Could not access camera. Check permissions.', 'error');
-        return;
-      }
-      Quagga.start();
-      quaggaRunning.current = true;
-    });
-
-    scanBuffer.current = []; // reset buffer on each scan session
-
-    Quagga.onDetected((result) => {
-      // Confidence check - only accept high-confidence reads
-      const errors = result.codeResult.decodedCodes
-        ?.filter(d => d.error !== undefined)
-        ?.map(d => d.error) || [];
-      const avgError = errors.length > 0
-        ? errors.reduce((a, b) => a + b, 0) / errors.length
-        : 1;
-
-      if (avgError < 0.15) {
-        const code = result.codeResult.code;
-        const buf = scanBuffer.current;
-        buf.push(code);
-        if (buf.length > SCAN_BUFFER_SIZE) buf.shift();
-
-        // Only accept when the same code appears SCAN_CONSENSUS times in buffer
-        const count = buf.filter(c => c === code).length;
-        if (count >= SCAN_CONSENSUS) {
-          Quagga.offDetected();
-          scanBuffer.current = [];
-          setScanDetected(code);
-        }
-      }
-    });
-  };
-
-  const stopScanner = () => {
-    const Quagga = quaggaRef.current;
-    if (quaggaRunning.current && Quagga) {
-      Quagga.stop();
-      Quagga.offDetected();
-      quaggaRunning.current = false;
-    }
-    setScannerActive(false);
-  };
-
-  const LIQUID_KEYWORDS = /\b(milk|semi.skimmed|skimmed|whole milk|oat milk|almond milk|soy milk|juice|smoothie|water|squash|cordial|cola|pepsi|fanta|lemonade|soda|beer|wine|cider|lager|spirit|whisky|vodka|rum|gin|brandy|cream|yoghurt drink|milkshake|coffee|tea|broth|stock|soup|sauce|ketchup|vinegar|oil|syrup|honey|custard|coconut water|kombucha|energy drink|protein shake)\b/i;
-
-  const hasLiquidSignal = (str) => /ml|cl|\dl(?!b)|litre|liter|fl\s?oz/i.test((str || '').replace(/\s/g, ''));
-
-  const parseServingValue = (raw) => {
-    if (!raw) return { value: 100, unit: 'g' };
-    const str = raw.toLowerCase().replace(/\s/g, '');
-    const numMatch = str.match(/([\d.]+)/);
-    const value = numMatch ? parseFloat(numMatch[1]) : 100;
-    if (hasLiquidSignal(raw)) {
-      if (/cl/.test(str)) return { value: value * 10, unit: 'ml' };
-      if (/(?:^|\d)l(?!i)/.test(str) && !/ml/.test(str)) return { value: value * 1000, unit: 'ml' };
-      return { value, unit: 'ml' };
-    }
-    return { value, unit: 'g' };
-  };
-
-  const detectUnit = (p) => {
-    if (hasLiquidSignal(p.serving_size)) return 'ml';
-    if (hasLiquidSignal(p.quantity)) return 'ml';
-    const name = (p.product_name || p.product_name_en || '');
-    if (LIQUID_KEYWORDS.test(name)) return 'ml';
-    return 'g';
-  };
-
-  const COMMON_PORTIONS = [
-    { pattern: /\b(toast|bread|loaf|brioche|bagel|pitta|wrap|tortilla|crumpet|muffin|waffle|pancake)\b/i, label: 'slice', weight: 36 },
-    { pattern: /\begg\b/i, label: 'egg', weight: 60 },
-    { pattern: /\b(biscuit|cookie|digestive|hobnob|rich tea|oreo)\b/i, label: 'biscuit', weight: 13 },
-    { pattern: /\b(sausage|banger)\b/i, label: 'sausage', weight: 57 },
-    { pattern: /\b(rasher|bacon)\b/i, label: 'rasher', weight: 25 },
-    { pattern: /\b(rice cake)\b/i, label: 'cake', weight: 9 },
-    { pattern: /\b(cracker|ryvita)\b/i, label: 'cracker', weight: 10 },
-  ];
-
-  const parsePortion = (servingSize, productName) => {
-    const raw = servingSize || '';
-    // Try parsing serving_size like "1 slice (38g)" or "38g (1 slice)" or "per slice (36g)"
-    const parenMatch = raw.match(/\((\d+\.?\d*)\s*g\)/i);
-    const labelMatch = raw.match(/(?:^|per\s+)(\d*\s*[a-z][a-z\s]*?)(?:\s*\(|\s*-\s*|\s*$)/i);
-    if (parenMatch && labelMatch) {
-      const weight = parseFloat(parenMatch[1]);
-      let label = labelMatch[1].replace(/^\d+\s*/, '').trim();
-      if (label && weight > 0) return { label, weight };
-    }
-    // Try "38g / 1 slice" or "1 slice = 38g" formats
-    const altMatch = raw.match(/(\d+\.?\d*)\s*g\s*[\/=]\s*(\d*\s*[a-z][a-z\s]*)/i);
-    if (altMatch) {
-      const weight = parseFloat(altMatch[1]);
-      let label = altMatch[2].replace(/^\d+\s*/, '').trim();
-      if (label && weight > 0) return { label, weight };
-    }
-    // Fallback: match product name against common portions
-    const name = productName || '';
-    for (const { pattern, label, weight } of COMMON_PORTIONS) {
-      if (pattern.test(name)) return { label, weight };
-    }
-    return null;
-  };
-
-  const parseProduct = (p) => {
-    const n = p.nutriments || {};
-    const unit = detectUnit(p);
-    const serving = parseServingValue(p.serving_size);
-    const servingValue = unit === 'ml' ? (serving.unit === 'ml' ? serving.value : 100) : serving.value;
-    const name = p.product_name || p.product_name_en || 'Unknown Product';
-    const portion = parsePortion(p.serving_size, name);
-    return {
-      name,
-      brand: p.brands || '',
-      image: p.image_small_url || p.image_url || null,
-      servingSize: p.serving_size || '100g',
-      servingValue,
-      servingUnit: unit,
-      portion,
-      protein: Math.round(n.proteins_100g || n.proteins || 0),
-      carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
-      fats: Math.round(n.fat_100g || n.fat || 0),
-      calories: Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || (n['energy_100g'] ? n['energy_100g'] / 4.184 : 0)),
-      per100g: true
-    };
-  };
-
   const fetchProductByBarcode = async (barcode) => {
     setBarcodeLooking(true);
     try {
@@ -679,80 +511,10 @@ export default function CoreBuddyNutrition() {
     setBarcodeLooking(false);
   };
 
-  // ==================== FOOD SEARCH ====================
-  const scoreRelevance = (name, brand, term) => {
-    const n = name.toLowerCase().trim();
-    const b = brand.toLowerCase().trim();
-    const t = term.toLowerCase().trim();
-    let score = 0;
-    // Exact match e.g. "Egg" or "Eggs"
-    if (n === t || n === t + 's' || n + 's' === t) score += 100;
-    // Name ends with term — product IS the thing (e.g. "Free Range Eggs")
-    if (n.endsWith(' ' + t) || n.endsWith(' ' + t + 's')) score += 40;
-    // Name starts with term — term modifies something else (e.g. "Egg Noodles")
-    if (n.startsWith(t + ' ') || n.startsWith(t + 's ')) score += 15;
-    // Brand matches a search word — boost branded matches (e.g. "Warburtons")
-    const words = t.split(/\s+/);
-    if (words.some(w => b === w || b.startsWith(w))) score += 30;
-    // Shorter names are more specific/relevant
-    score += Math.max(0, 30 - n.length);
-    return score;
-  };
-
-  const searchFood = async () => {
-    if (!searchQuery.trim()) return;
-    // Cancel any in-flight request
-    if (searchAbort.current) searchAbort.current.abort();
-    const controller = new AbortController();
-    searchAbort.current = controller;
-
-    const term = searchQuery.trim().toLowerCase();
-    const searchWords = term.split(/\s+/).filter(Boolean);
-
-    // Return cached results instantly if available
-    if (searchCache.has(term)) {
-      setSearchResults(searchCache.get(term));
-      return;
-    }
-
-    setSearchLoading(true);
-    try {
-      const q = encodeURIComponent(searchQuery.trim());
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${q}&search_simple=1&action=process&json=1&page_size=10&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments`;
-      const res = await fetch(url, { signal: controller.signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const results = (data.products || [])
-        .map(p => parseProduct(p))
-        .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
-        .filter(p => {
-          const combined = (p.name + ' ' + p.brand).toLowerCase();
-          return searchWords.every(w => combined.includes(w));
-        })
-        .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term))
-        .slice(0, 10);
-      searchCache.set(term, results);
-      setSearchResults(results);
-      if (results.length === 0) {
-        showToast('No results found. Try a different search.', 'info');
-      }
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-      console.error('Search error:', err);
-      showToast('Search failed. Check your connection.', 'error');
-    }
-    setSearchLoading(false);
-  };
-
   // Debounced search-as-you-type
   useEffect(() => {
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    if (!searchQuery.trim() || addMode !== 'search' || scannedProduct) return;
-    debounceTimer.current = setTimeout(() => {
-      searchFood();
-    }, 700);
-    return () => clearTimeout(debounceTimer.current);
-  }, [searchQuery]);
+    startDebounceSearch(searchQuery, addMode === 'search' && !scannedProduct);
+  }, [searchQuery, addMode, scannedProduct, startDebounceSearch]);
 
   // ==================== RING HELPERS ====================
   const isDarkMode = isDark;
@@ -788,28 +550,16 @@ export default function CoreBuddyNutrition() {
     );
   };
 
-  // Brief delay after barcode detected, then fetch
+  // Brief delay after barcode detected, then fetch (reduced from 1500ms to 800ms)
   useEffect(() => {
     if (!scanDetected) return;
     const timer = setTimeout(() => {
       const code = scanDetected;
       stopScanner();
-      setScanDetected(null);
       fetchProductByBarcode(code);
-    }, 1500);
+    }, 800);
     return () => clearTimeout(timer);
   }, [scanDetected]);
-
-  // Cleanup scanner on unmount
-  useEffect(() => {
-    return () => {
-      const Quagga = quaggaRef.current;
-      if (quaggaRunning.current && Quagga) {
-        try { Quagga.stop(); Quagga.offDetected(); } catch (e) {}
-        quaggaRunning.current = false;
-      }
-    };
-  }, []);
 
   if (authLoading || view === 'loading') {
     return (
@@ -1350,137 +1100,45 @@ export default function CoreBuddyNutrition() {
 
             {/* SCAN MODE */}
             {addMode === 'scan' && !scannedProduct && (
-              <div className="nut-scan-area">
-                <div className="nut-scanner-wrapper">
-                  <div id="barcode-reader" className="nut-scanner-view" />
-                  {scannerActive && !scanDetected && <div className="nut-scan-line" />}
-                  {scanDetected && (
-                    <div className="nut-scan-detected-overlay">
-                      <svg className="nut-scan-detected-tick" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                      <p className="nut-scan-detected-label">Barcode found!</p>
-                      <p className="nut-scan-detected-code">{scanDetected}</p>
-                    </div>
-                  )}
-                </div>
-                {!scannerActive && (
-                  <button className="nut-scan-start-btn" onClick={startScanner}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-                    Open Camera
-                  </button>
-                )}
-                {scannerActive && !scanDetected && <p className="nut-scan-hint">Align barcode within the frame</p>}
-
-                <div className="nut-barcode-divider">
-                  <span>or enter barcode manually</span>
-                </div>
-                <div className="nut-barcode-manual">
-                  <input type="text" inputMode="numeric" value={manualBarcode}
-                    onChange={e => setManualBarcode(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && manualBarcode.trim() && fetchProductByBarcode(manualBarcode.trim())}
-                    placeholder="Enter barcode number" />
-                  <button onClick={() => manualBarcode.trim() && fetchProductByBarcode(manualBarcode.trim())}
-                    disabled={!manualBarcode.trim() || barcodeLooking}>
-                    {barcodeLooking ? '...' : 'Look Up'}
-                  </button>
-                </div>
-                <p className="nut-off-credit">Food data powered by <a href="https://openfoodfacts.org" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
-              </div>
+              <ScannerView
+                scannerTargetRef={scannerTargetRef}
+                scannerActive={scannerActive}
+                scanDetected={scanDetected}
+                startScanner={startScanner}
+                manualBarcode={manualBarcode}
+                setManualBarcode={setManualBarcode}
+                onManualLookup={(code) => fetchProductByBarcode(code)}
+                barcodeLooking={barcodeLooking}
+              />
             )}
 
             {/* SCANNED PRODUCT RESULT */}
-            {addMode === 'scan' && scannedProduct && (() => {
-              const u = scannedProduct.servingUnit || 'g';
-              const por = scannedProduct.portion;
-              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
-              const mult = effectiveWeight / 100;
-              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
-              const servingLabel = servingMode === 'portion' && por
-                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
-                : `${Math.round(effectiveWeight)}${u}`;
-              return (
-              <div className="nut-product-result">
-                {scannedProduct.image && <img src={scannedProduct.image} alt={scannedProduct.name || 'Product'} className="nut-product-img" loading="lazy" />}
-                <div className="nut-product-name-row">
-                  <h4>{scannedProduct.name}</h4>
-                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
-                    onClick={() => toggleFavourite({
-                      name: scannedProduct.name,
-                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
-                      fats: scannedProduct.fats, calories: scannedProduct.calories,
-                      serving: scannedProduct.servingSize,
-                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
-                      servingUnit: scannedProduct.servingUnit || 'g',
-                      portion: scannedProduct.portion || null,
-                    })}>
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  </button>
-                </div>
-                {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
-                <p className="nut-product-per">Per 100{u}:</p>
-                <div className="nut-product-macros">
-                  <span className="nut-macro-p">{scannedProduct.protein}g P</span>
-                  <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
-                  <span className="nut-macro-f">{scannedProduct.fats}g F</span>
-                  <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
-                </div>
-                {por && (
-                  <div className="nut-mode-toggle">
-                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
-                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
-                  </div>
-                )}
-                {servingMode === 'portion' && por ? (
-                  <div className="nut-portion-stepper">
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
-                    <div className="nut-stepper-display">
-                      <span className="nut-stepper-count">{portionCount}</span>
-                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
-                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
-                    </div>
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="nut-serving-adjust">
-                      <label>Serving ({u})</label>
-                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
-                    </div>
-                    <div className="nut-quick-amounts">
-                      {quickAmounts.map(amt => (
-                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
-                      ))}
-                    </div>
-                  </>
-                )}
-                <div className="nut-product-total">
-                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
-                </div>
-                <div className="nut-product-actions">
-                  <button className="nut-btn-secondary" onClick={() => { setScannedProduct(null); setAddMode('scan'); }}>Scan Again</button>
-                  <button className="nut-btn-primary" onClick={() => addFoodEntry({
-                    name: scannedProduct.name,
-                    protein: Math.round(scannedProduct.protein * mult),
-                    carbs: Math.round(scannedProduct.carbs * mult),
-                    fats: Math.round(scannedProduct.fats * mult),
-                    calories: Math.round(scannedProduct.calories * mult),
-                    serving: servingLabel
-                  })}>Add</button>
-                </div>
-              </div>
-              );
-            })()}
+            {addMode === 'scan' && scannedProduct && (
+              <ProductResult
+                product={scannedProduct}
+                servingMode={servingMode}
+                setServingMode={setServingMode}
+                servingInput={servingInput}
+                setServingInput={setServingInput}
+                portionCount={portionCount}
+                setPortionCount={setPortionCount}
+                isFavourite={isFavourite(scannedProduct.name)}
+                onToggleFavourite={toggleFavourite}
+                onAdd={addFoodEntry}
+                onBack={() => { setScannedProduct(null); setAddMode('scan'); }}
+                backLabel="Scan Again"
+              />
+            )}
 
             {/* SEARCH MODE */}
             {addMode === 'search' && !scannedProduct && (
               <div className="nut-search-area">
                 <div className="nut-search-bar">
                   <input type="text" ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { clearTimeout(debounceTimer.current); searchFood(); } }}
+                    onKeyDown={e => { if (e.key === 'Enter') { searchFood(searchQuery); } }}
                     onFocus={() => setTimeout(() => searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)}
                     placeholder="Search food or product..." autoFocus />
-                  <button onClick={searchFood} disabled={searchLoading}>
+                  <button onClick={() => searchFood(searchQuery)} disabled={searchLoading}>
                     {searchLoading ? '...' : 'Search'}
                   </button>
                 </div>
@@ -1504,89 +1162,22 @@ export default function CoreBuddyNutrition() {
             )}
 
             {/* SEARCH - SELECTED PRODUCT */}
-            {addMode === 'search' && scannedProduct && (() => {
-              const u = scannedProduct.servingUnit || 'g';
-              const por = scannedProduct.portion;
-              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
-              const mult = effectiveWeight / 100;
-              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
-              const servingLabel = servingMode === 'portion' && por
-                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
-                : `${Math.round(effectiveWeight)}${u}`;
-              return (
-              <div className="nut-product-result">
-                {scannedProduct.image && <img src={scannedProduct.image} alt={scannedProduct.name || 'Product'} className="nut-product-img" loading="lazy" />}
-                <div className="nut-product-name-row">
-                  <h4>{scannedProduct.name}</h4>
-                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
-                    onClick={() => toggleFavourite({
-                      name: scannedProduct.name,
-                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
-                      fats: scannedProduct.fats, calories: scannedProduct.calories,
-                      serving: scannedProduct.servingSize,
-                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
-                      servingUnit: scannedProduct.servingUnit || 'g',
-                      portion: scannedProduct.portion || null,
-                    })}>
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  </button>
-                </div>
-                {scannedProduct.brand && <p className="nut-product-brand">{scannedProduct.brand}</p>}
-                <p className="nut-product-per">Per 100{u}:</p>
-                <div className="nut-product-macros">
-                  <span className="nut-macro-p">{scannedProduct.protein}g P</span>
-                  <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
-                  <span className="nut-macro-f">{scannedProduct.fats}g F</span>
-                  <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
-                </div>
-                {por && (
-                  <div className="nut-mode-toggle">
-                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
-                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
-                  </div>
-                )}
-                {servingMode === 'portion' && por ? (
-                  <div className="nut-portion-stepper">
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
-                    <div className="nut-stepper-display">
-                      <span className="nut-stepper-count">{portionCount}</span>
-                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
-                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
-                    </div>
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="nut-serving-adjust">
-                      <label>Serving ({u})</label>
-                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
-                    </div>
-                    <div className="nut-quick-amounts">
-                      {quickAmounts.map(amt => (
-                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
-                      ))}
-                    </div>
-                  </>
-                )}
-                <div className="nut-product-total">
-                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
-                </div>
-                <div className="nut-product-actions">
-                  <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Search</button>
-                  <button className="nut-btn-primary" onClick={() => addFoodEntry({
-                    name: scannedProduct.name,
-                    protein: Math.round(scannedProduct.protein * mult),
-                    carbs: Math.round(scannedProduct.carbs * mult),
-                    fats: Math.round(scannedProduct.fats * mult),
-                    calories: Math.round(scannedProduct.calories * mult),
-                    serving: servingLabel
-                  })}>Add</button>
-                </div>
-              </div>
-              );
-            })()}
+            {addMode === 'search' && scannedProduct && (
+              <ProductResult
+                product={scannedProduct}
+                servingMode={servingMode}
+                setServingMode={setServingMode}
+                servingInput={servingInput}
+                setServingInput={setServingInput}
+                portionCount={portionCount}
+                setPortionCount={setPortionCount}
+                isFavourite={isFavourite(scannedProduct.name)}
+                onToggleFavourite={toggleFavourite}
+                onAdd={addFoodEntry}
+                onBack={() => setScannedProduct(null)}
+                backLabel="Back to Search"
+              />
+            )}
 
             {/* MANUAL MODE */}
             {addMode === 'manual' && (
@@ -1698,87 +1289,22 @@ export default function CoreBuddyNutrition() {
             })()}
 
             {/* RECENT - SELECTED PRODUCT (for adjustable re-add) */}
-            {addMode === 'favourites' && scannedProduct && (() => {
-              const u = scannedProduct.servingUnit || 'g';
-              const por = scannedProduct.portion;
-              const effectiveWeight = servingMode === 'portion' && por ? portionCount * por.weight : (parseFloat(servingInput) || 0);
-              const mult = effectiveWeight / 100;
-              const quickAmounts = u === 'ml' ? [100, 200, 250, 500] : [50, 100, 150, 200];
-              const servingLabel = servingMode === 'portion' && por
-                ? `${portionCount} ${por.label}${portionCount !== 1 ? 's' : ''} (${Math.round(effectiveWeight)}${u})`
-                : `${Math.round(effectiveWeight)}${u}`;
-              return (
-              <div className="nut-product-result">
-                <div className="nut-product-name-row">
-                  <h4>{scannedProduct.name}</h4>
-                  <button className={`nut-fav-star confirm${isFavourite(scannedProduct.name) ? ' active' : ''}`}
-                    onClick={() => toggleFavourite({
-                      name: scannedProduct.name,
-                      protein: scannedProduct.protein, carbs: scannedProduct.carbs,
-                      fats: scannedProduct.fats, calories: scannedProduct.calories,
-                      serving: scannedProduct.servingSize,
-                      per100g: { protein: scannedProduct.protein, carbs: scannedProduct.carbs, fats: scannedProduct.fats, calories: scannedProduct.calories },
-                      servingUnit: scannedProduct.servingUnit || 'g',
-                      portion: scannedProduct.portion || null,
-                    })}>
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill={isFavourite(scannedProduct.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  </button>
-                </div>
-                <p className="nut-product-per">Per 100{u}:</p>
-                <div className="nut-product-macros">
-                  <span className="nut-macro-p">{scannedProduct.protein}g P</span>
-                  <span className="nut-macro-c">{scannedProduct.carbs}g C</span>
-                  <span className="nut-macro-f">{scannedProduct.fats}g F</span>
-                  <span className="nut-macro-cal">{scannedProduct.calories} cal</span>
-                </div>
-                {por && (
-                  <div className="nut-mode-toggle">
-                    <button className={servingMode === 'portion' ? 'active' : ''} onClick={() => { setServingMode('portion'); if (portionCount < 1) setPortionCount(1); }}>Portions</button>
-                    <button className={servingMode === 'weight' ? 'active' : ''} onClick={() => { setServingMode('weight'); setServingInput(String(Math.round(effectiveWeight) || 100)); }}>Custom ({u})</button>
-                  </div>
-                )}
-                {servingMode === 'portion' && por ? (
-                  <div className="nut-portion-stepper">
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(Math.max(1, portionCount - 1))}>-</button>
-                    <div className="nut-stepper-display">
-                      <span className="nut-stepper-count">{portionCount}</span>
-                      <span className="nut-stepper-label">{por.label}{portionCount !== 1 ? 's' : ''}</span>
-                      <span className="nut-stepper-weight">{Math.round(effectiveWeight)}{u}</span>
-                    </div>
-                    <button className="nut-stepper-btn" onClick={() => setPortionCount(portionCount + 1)}>+</button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="nut-serving-adjust">
-                      <label>Serving ({u})</label>
-                      <input type="number" inputMode="numeric" value={servingInput} onChange={e => setServingInput(e.target.value)} onFocus={e => e.target.select()} min="0" />
-                    </div>
-                    <div className="nut-quick-amounts">
-                      {quickAmounts.map(amt => (
-                        <button key={amt} className={`nut-quick-btn${servingInput === String(amt) ? ' active' : ''}`} onClick={() => setServingInput(String(amt))}>{amt}{u}</button>
-                      ))}
-                    </div>
-                  </>
-                )}
-                <div className="nut-product-total">
-                  <span>Total: {Math.round(scannedProduct.protein * mult)}p / {Math.round(scannedProduct.carbs * mult)}c / {Math.round(scannedProduct.fats * mult)}f / {Math.round(scannedProduct.calories * mult)} cal</span>
-                </div>
-                <div className="nut-product-actions">
-                  <button className="nut-btn-secondary" onClick={() => setScannedProduct(null)}>Back to Favourites</button>
-                  <button className="nut-btn-primary" onClick={() => addFoodEntry({
-                    name: scannedProduct.name,
-                    protein: Math.round(scannedProduct.protein * mult),
-                    carbs: Math.round(scannedProduct.carbs * mult),
-                    fats: Math.round(scannedProduct.fats * mult),
-                    calories: Math.round(scannedProduct.calories * mult),
-                    serving: servingLabel
-                  })}>Add</button>
-                </div>
-              </div>
-              );
-            })()}
+            {addMode === 'favourites' && scannedProduct && (
+              <ProductResult
+                product={scannedProduct}
+                servingMode={servingMode}
+                setServingMode={setServingMode}
+                servingInput={servingInput}
+                setServingInput={setServingInput}
+                portionCount={portionCount}
+                setPortionCount={setPortionCount}
+                isFavourite={isFavourite(scannedProduct.name)}
+                onToggleFavourite={toggleFavourite}
+                onAdd={addFoodEntry}
+                onBack={() => setScannedProduct(null)}
+                backLabel="Back to Favourites"
+              />
+            )}
           </div>
         </div>
       )}
