@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy
+  collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy, writeBatch
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -78,14 +78,42 @@ export default function AdminCoreBuddy() {
         await uploadBytes(imgRef, imageFile);
         imageURL = await getDownloadURL(imgRef);
       }
+      const announcementTitle = title.trim();
+      const announcementContent = content.trim();
       await addDoc(collection(db, 'announcements'), {
-        title: title.trim(),
-        content: content.trim(),
+        title: announcementTitle,
+        content: announcementContent,
         imageURL,
         authorId: currentUser.uid,
         authorName: 'Mind Core Fitness',
         createdAt: serverTimestamp()
       });
+
+      // Notify all clients about the new announcement
+      try {
+        const clientsSnap = await getDocs(collection(db, 'clients'));
+        const clients = clientsSnap.docs.filter(d => d.data().uid !== currentUser.uid);
+        for (let i = 0; i < clients.length; i += 499) {
+          const batch = writeBatch(db);
+          clients.slice(i, i + 499).forEach(clientDoc => {
+            const notifRef = doc(collection(db, 'notifications'));
+            batch.set(notifRef, {
+              toId: clientDoc.id,
+              fromId: 'system',
+              fromName: 'Mind Core Fitness',
+              type: 'announcement',
+              title: 'New Announcement',
+              body: announcementTitle,
+              read: false,
+              createdAt: serverTimestamp()
+            });
+          });
+          await batch.commit();
+        }
+      } catch (notifErr) {
+        console.error('Failed to send announcement notifications:', notifErr);
+      }
+
       setTitle('');
       setContent('');
       clearImage();

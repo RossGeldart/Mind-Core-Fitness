@@ -22,6 +22,7 @@ const NOTIF_PREFS = [
   { key: 'like', label: 'Likes', desc: 'When someone likes your post' },
   { key: 'comment', label: 'Comments', desc: 'When someone comments on your post' },
   { key: 'mention', label: 'Mentions', desc: 'When someone @mentions you' },
+  { key: 'announcement', label: 'Announcements', desc: 'When Mind Core Fitness posts a new announcement' },
 ];
 
 export default function CoreBuddySettings() {
@@ -42,6 +43,7 @@ export default function CoreBuddySettings() {
     like: true,
     comment: true,
     mention: true,
+    announcement: true,
   });
   const [toast, setToast] = useState(null);
   const [portalLoading, setPortalLoading] = useState(false);
