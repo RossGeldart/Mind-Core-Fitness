@@ -18,6 +18,18 @@ import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/fi
 
 const isNative = Capacitor.isNativePlatform();
 
+// After a native social sign-in the Capacitor plugin signs into Firebase
+// natively, but the JS SDK's auth.currentUser may not be synced yet.
+// This helper waits (up to 10 s) for onAuthStateChanged to deliver a user.
+const waitForCurrentUser = () =>
+  new Promise((resolve, reject) => {
+    if (auth.currentUser) return resolve(auth.currentUser);
+    const timeout = setTimeout(() => { unsub(); reject(new Error('Timed out waiting for Firebase user')); }, 10000);
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) { clearTimeout(timeout); unsub(); resolve(user); }
+    });
+  });
+
 const AuthContext = createContext();
 
 export function useAuth() {
@@ -181,7 +193,7 @@ export function AuthProvider({ children }) {
       // With skipNativeAuth: false the plugin automatically signs into
       // Firebase Auth, so onAuthStateChanged will fire.
       const nativeResult = await FirebaseAuthentication.signInWithGoogle();
-      user = auth.currentUser;
+      user = auth.currentUser || await waitForCurrentUser();
       name = nativeResult.user?.displayName || '';
     } else {
       const result = await signInWithPopup(auth, googleProvider);
@@ -235,7 +247,7 @@ export function AuthProvider({ children }) {
       // With skipNativeAuth: false the plugin automatically signs into
       // Firebase Auth, so onAuthStateChanged will fire.
       const nativeResult = await FirebaseAuthentication.signInWithApple();
-      user = auth.currentUser;
+      user = auth.currentUser || await waitForCurrentUser();
       // Apple only provides name on first authorization
       name = nativeResult.user?.displayName || '';
     } else {
