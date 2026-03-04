@@ -2,7 +2,7 @@
   "name": "mind-core-fitness-functions",
   "description": "Firebase Cloud Functions for Mind Core Fitness push notifications",
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "main": "index.js",
   "dependencies": {

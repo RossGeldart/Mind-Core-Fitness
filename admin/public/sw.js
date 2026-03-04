@@ -15,18 +15,33 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Handle background push messages (when app is not in foreground)
-messaging.onBackgroundMessage((payload) => {
-  const { title, body, icon } = payload.notification || {};
-  const notifTitle = title || 'Core Buddy';
+// Handle background push messages using raw push event.
+// This is more reliable than onBackgroundMessage on iOS Safari PWAs
+// because we can use e.waitUntil() to prevent iOS from killing
+// the service worker before the notification is shown.
+self.addEventListener('push', (e) => {
+  if (!e.data) return;
+
+  let payload;
+  try {
+    payload = e.data.json();
+  } catch {
+    return;
+  }
+
+  // If Firebase already showed a notification (via the notification payload),
+  // the data will be under fcmOptions. We still show our own to ensure iOS works.
+  const notif = payload.notification || {};
+  const notifTitle = notif.title || 'Core Buddy';
   const notifOptions = {
-    body: body || 'You have a new notification',
-    icon: icon || '/login/Logo.webp',
+    body: notif.body || 'You have a new notification',
+    icon: notif.icon || '/login/Logo.webp',
     badge: '/login/Logo.webp',
     data: payload.data || {},
-    tag: payload.data?.type || 'general',
+    tag: (payload.data && payload.data.type) || 'general',
   };
-  self.registration.showNotification(notifTitle, notifOptions);
+
+  e.waitUntil(self.registration.showNotification(notifTitle, notifOptions));
 });
 
 // Handle notification click — open the app
@@ -49,7 +64,7 @@ self.addEventListener('notificationclick', (e) => {
 
 /* ==================== CACHING ==================== */
 
-const CACHE_NAME = 'mcf-v3';
+const CACHE_NAME = 'mcf-v4';
 
 // App-shell assets cached on install
 const APP_SHELL = [

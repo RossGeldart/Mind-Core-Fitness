@@ -137,7 +137,18 @@ export default function CoreBuddySettings() {
         if (token) {
           setPushEnabled(true);
           setPushToken(token);
-          updateClientData({ fcmTokens: [...(clientData.fcmTokens || []), token] });
+          // Write default notificationPrefs if not already stored
+          const existingPrefs = clientData.notificationPrefs;
+          const prefsToWrite = existingPrefs && Object.keys(existingPrefs).length > 0
+            ? existingPrefs
+            : notifPrefs;
+          await updateDoc(doc(db, 'clients', clientData.id), {
+            notificationPrefs: prefsToWrite,
+          });
+          updateClientData({
+            fcmTokens: [...(clientData.fcmTokens || []), token],
+            notificationPrefs: prefsToWrite,
+          });
           showToast('Push notifications enabled!', 'success');
         } else if (state === 'denied') {
           showToast('Notifications blocked — enable them in your device settings, remove the app from your home screen and re-add it', 'error');
