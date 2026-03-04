@@ -81,6 +81,8 @@ export default function CoreBuddyMetrics() {
   const [showCompare, setShowCompare] = useState(false);
   const [compareA, setCompareA] = useState('');
   const [compareB, setCompareB] = useState('');
+  const [comparePhotoA, setComparePhotoA] = useState(0);
+  const [comparePhotoB, setComparePhotoB] = useState(0);
   const [expandedPeriod, setExpandedPeriod] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -811,13 +813,13 @@ export default function CoreBuddyMetrics() {
             <div className="cbm-compare-selectors">
               <div className="cbm-compare-select-wrap">
                 <label className="cbm-compare-label">From</label>
-                <select className="cbm-compare-select" value={compareA} onChange={(e) => setCompareA(e.target.value)}>
+                <select className="cbm-compare-select" value={compareA} onChange={(e) => { setCompareA(e.target.value); setComparePhotoA(0); }}>
                   {history.map(r => <option key={r.period} value={r.period}>{formatPeriod(r.period)}</option>)}
                 </select>
               </div>
               <div className="cbm-compare-select-wrap">
                 <label className="cbm-compare-label">To</label>
-                <select className="cbm-compare-select" value={compareB} onChange={(e) => setCompareB(e.target.value)}>
+                <select className="cbm-compare-select" value={compareB} onChange={(e) => { setCompareB(e.target.value); setComparePhotoB(0); }}>
                   {history.map(r => <option key={r.period} value={r.period}>{formatPeriod(r.period)}</option>)}
                 </select>
               </div>
@@ -829,7 +831,20 @@ export default function CoreBuddyMetrics() {
                 <div className="cbm-compare-photo-col">
                   <span className="cbm-compare-photo-label">{formatPeriod(compareA)}</span>
                   {photos[compareA]?.length > 0 ? (
-                    <img src={photos[compareA][0].url} alt="Before" className="cbm-compare-photo-img" />
+                    <div className="cbm-compare-photo-wrap">
+                      <img src={photos[compareA][comparePhotoA]?.url} alt="Before" className="cbm-compare-photo-img" />
+                      {photos[compareA].length > 1 && (
+                        <div className="cbm-compare-photo-nav">
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA === 0} onClick={() => setComparePhotoA(i => i - 1)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                          </button>
+                          <span className="cbm-compare-photo-count">{comparePhotoA + 1} / {photos[compareA].length}</span>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoA >= photos[compareA].length - 1} onClick={() => setComparePhotoA(i => i + 1)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <div className="cbm-compare-photo-empty">No photo</div>
                   )}
@@ -837,7 +852,20 @@ export default function CoreBuddyMetrics() {
                 <div className="cbm-compare-photo-col">
                   <span className="cbm-compare-photo-label">{formatPeriod(compareB)}</span>
                   {photos[compareB]?.length > 0 ? (
-                    <img src={photos[compareB][0].url} alt="After" className="cbm-compare-photo-img" />
+                    <div className="cbm-compare-photo-wrap">
+                      <img src={photos[compareB][comparePhotoB]?.url} alt="After" className="cbm-compare-photo-img" />
+                      {photos[compareB].length > 1 && (
+                        <div className="cbm-compare-photo-nav">
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB === 0} onClick={() => setComparePhotoB(i => i - 1)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                          </button>
+                          <span className="cbm-compare-photo-count">{comparePhotoB + 1} / {photos[compareB].length}</span>
+                          <button className="cbm-compare-nav-btn" disabled={comparePhotoB >= photos[compareB].length - 1} onClick={() => setComparePhotoB(i => i + 1)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <div className="cbm-compare-photo-empty">No photo</div>
                   )}
