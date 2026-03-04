@@ -660,10 +660,12 @@ export default function CoreBuddyMetrics() {
             <div className="cbm-section">
               <div className="cbm-section-header">
                 <h2 className="cbm-section-title">Progress Photos</h2>
-                {history.length >= 2 && (
+                {history.length >= 1 && (
                   <button className="cbm-compare-btn" onClick={() => {
                     setCompareA(history[0]?.period || '');
-                    setCompareB(history[1]?.period || '');
+                    setCompareB(history[1]?.period || history[0]?.period || '');
+                    setComparePhotoA(0);
+                    setComparePhotoB(0);
                     setShowCompare(true);
                   }}>Compare</button>
                 )}
