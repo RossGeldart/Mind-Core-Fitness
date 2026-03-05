@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { parseProduct } from '../utils/productParser';
+import { getCountryFilterParams } from '../utils/countryDetect';
 
 // ==================== LRU CACHE ====================
 const MAX_CACHE_SIZE = 50;
@@ -39,6 +40,18 @@ const scoreRelevance = (name, brand, term) => {
   return score;
 };
 
+// ==================== FILTER & SCORE PRODUCTS ====================
+const filterAndScore = (products, searchWords, term) => {
+  return products
+    .map(p => parseProduct(p))
+    .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
+    .filter(p => {
+      const combined = (p.name + ' ' + p.brand).toLowerCase();
+      return searchWords.every(w => combined.includes(w));
+    })
+    .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term));
+};
+
 // ==================== HOOK ====================
 export default function useFoodSearch({ onError }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,19 +82,39 @@ export default function useFoodSearch({ onError }) {
     setSearchLoading(true);
     try {
       const encoded = encodeURIComponent(q);
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=10&lc=en&sort_by=unique_scans_n&fields=product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments`;
-      const res = await fetch(url, { signal: controller.signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const results = (data.products || [])
-        .map(p => parseProduct(p))
-        .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
-        .filter(p => {
-          const combined = (p.name + ' ' + p.brand).toLowerCase();
-          return searchWords.every(w => combined.includes(w));
-        })
-        .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term))
-        .slice(0, 10);
+      const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments';
+      const countryFilter = getCountryFilterParams();
+      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=15&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
+
+      // First try: search with country filter (local products)
+      let results = [];
+      if (countryFilter) {
+        const res = await fetch(baseUrl + countryFilter, { signal: controller.signal });
+        if (res.ok) {
+          const data = await res.json();
+          results = filterAndScore(data.products || [], searchWords, term);
+        }
+      }
+
+      // Fallback: if country-filtered search returned fewer than 3 results, also search globally
+      if (results.length < 3) {
+        const res = await fetch(baseUrl, { signal: controller.signal });
+        if (res.ok) {
+          const data = await res.json();
+          const globalResults = filterAndScore(data.products || [], searchWords, term);
+          // Merge: local results first, then global (deduplicated by name+brand)
+          const seen = new Set(results.map(r => (r.name + '|' + r.brand).toLowerCase()));
+          for (const item of globalResults) {
+            const key = (item.name + '|' + item.brand).toLowerCase();
+            if (!seen.has(key)) {
+              results.push(item);
+              seen.add(key);
+            }
+          }
+        }
+      }
+
+      results = results.slice(0, 10);
       cacheSet(term, results);
       setSearchResults(results);
       if (results.length === 0) {

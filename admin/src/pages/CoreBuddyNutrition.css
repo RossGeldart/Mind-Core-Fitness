@@ -2090,6 +2090,12 @@
   opacity: 0.5;
 }
 
+.nut-search-country-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin: -10px 0 10px 2px;
+}
+
 .nut-search-results {
   display: flex;
   flex-direction: column;
