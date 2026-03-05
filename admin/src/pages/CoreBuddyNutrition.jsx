@@ -114,6 +114,10 @@ export default function CoreBuddyNutrition() {
   const [servingMode, setServingMode] = useState('weight');
   const [favTick, setFavTick] = useState(0);
 
+  // Edit food entry
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editForm, setEditForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
+
   // Toast
   const [toast, setToast] = useState(null);
 
@@ -435,6 +439,37 @@ export default function CoreBuddyNutrition() {
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
+  };
+
+  const openEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setEditForm({
+      name: entry.name || '',
+      protein: String(entry.protein || 0),
+      carbs: String(entry.carbs || 0),
+      fats: String(entry.fats || 0),
+      calories: String(entry.calories || 0),
+      serving: entry.serving || '',
+    });
+  };
+
+  const saveEditEntry = () => {
+    if (!editingEntry) return;
+    const updated = {
+      ...editingEntry,
+      name: editForm.name,
+      protein: parseFloat(editForm.protein) || 0,
+      carbs: parseFloat(editForm.carbs) || 0,
+      fats: parseFloat(editForm.fats) || 0,
+      calories: parseFloat(editForm.calories) || 0,
+      serving: editForm.serving,
+    };
+    const newEntries = todayLog.entries.map(e => e.id === editingEntry.id ? updated : e);
+    const newLog = { ...todayLog, entries: newEntries };
+    setTodayLog(newLog);
+    saveLog(newLog);
+    setEditingEntry(null);
+    showToast('Food updated!', 'success');
   };
 
   // ==================== COPY FROM DAY ====================
@@ -955,10 +990,10 @@ export default function CoreBuddyNutrition() {
                     {items.length > 0 && (
                       <div className="nut-log-list">
                         {items.map(entry => (
-                          <div key={entry.id} className="nut-log-item">
+                          <div key={entry.id} className="nut-log-item" onClick={() => openEditEntry(entry)} role="button" tabIndex={0}>
                             <button
                               className={`nut-fav-star log${isFavourite(entry.name) ? ' active' : ''}`}
-                              onClick={() => toggleFavourite(entry)}
+                              onClick={(e) => { e.stopPropagation(); toggleFavourite(entry); }}
                               aria-label={isFavourite(entry.name) ? 'Remove from favourites' : 'Add to favourites'}
                             >
                               <svg viewBox="0 0 24 24" width="16" height="16" fill={isFavourite(entry.name) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
@@ -975,7 +1010,7 @@ export default function CoreBuddyNutrition() {
                               <span className="nut-macro-f">{entry.fats}f</span>
                               <span className="nut-macro-cal">{entry.calories}</span>
                             </div>
-                              <button className="nut-log-delete" onClick={() => removeEntry(entry.id)} aria-label="Remove">
+                              <button className="nut-log-delete" onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }} aria-label="Remove">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                               </button>
                           </div>
@@ -1309,6 +1344,52 @@ export default function CoreBuddyNutrition() {
                 backLabel="Back to Favourites"
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ==================== EDIT FOOD MODAL ==================== */}
+      {editingEntry && (
+        <div className="nut-modal-overlay" onClick={() => setEditingEntry(null)}>
+          <div className="nut-modal nut-edit-modal" onClick={e => e.stopPropagation()}>
+            <div className="nut-modal-header">
+              <h3>Edit Food</h3>
+              <button className="nut-modal-close" onClick={() => setEditingEntry(null)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="nut-manual-form">
+              <div className="nut-form-group">
+                <label>Food Name</label>
+                <input type="text" value={editForm.name} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div className="nut-form-group">
+                <label>Serving Size</label>
+                <input type="text" value={editForm.serving} onChange={e => setEditForm(p => ({ ...p, serving: e.target.value }))} placeholder="e.g. 150g, 1 cup" />
+              </div>
+              <div className="nut-manual-macros">
+                <div className="nut-form-group">
+                  <label>Protein (g)</label>
+                  <input type="number" inputMode="numeric" value={editForm.protein} onChange={e => setEditForm(p => ({ ...p, protein: e.target.value }))} min="0" />
+                </div>
+                <div className="nut-form-group">
+                  <label>Carbs (g)</label>
+                  <input type="number" inputMode="numeric" value={editForm.carbs} onChange={e => setEditForm(p => ({ ...p, carbs: e.target.value }))} min="0" />
+                </div>
+                <div className="nut-form-group">
+                  <label>Fats (g)</label>
+                  <input type="number" inputMode="numeric" value={editForm.fats} onChange={e => setEditForm(p => ({ ...p, fats: e.target.value }))} min="0" />
+                </div>
+                <div className="nut-form-group">
+                  <label>Calories</label>
+                  <input type="number" inputMode="numeric" value={editForm.calories} onChange={e => setEditForm(p => ({ ...p, calories: e.target.value }))} min="0" />
+                </div>
+              </div>
+              <div className="nut-edit-actions">
+                <button className="nut-btn-danger" onClick={() => { removeEntry(editingEntry.id); setEditingEntry(null); }}>Delete</button>
+                <button className="nut-btn-primary" disabled={!editForm.name.trim()} onClick={saveEditEntry}>Save Changes</button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1459,6 +1459,13 @@
   background: var(--bg-card);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.nut-log-item:active {
+  background: var(--bg-secondary);
 }
 
 .nut-log-item-info {
@@ -2048,6 +2055,34 @@
 .nut-btn-secondary:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+.nut-btn-danger {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  background: none;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-btn-danger:active {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.nut-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.nut-edit-modal .nut-manual-form {
+  margin-top: 0;
 }
 
 /* Search */
