@@ -1487,6 +1487,40 @@ export default function CoreBuddyDashboard() {
           </button>
         )}
 
+        {/* Nutrition Rings — premium only, matches body metrics style */}
+        {isPremium && (
+          <button className={`cb-metric-rings-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
+            <span className="cb-metric-rings-title">Today's Nutrition</span>
+            <div className="cb-metric-rings-row">
+              {[
+                { key: 'protein', label: 'Protein' },
+                { key: 'carbs', label: 'Carbs' },
+                { key: 'fats', label: 'Fats' },
+                { key: 'calories', label: 'Calories' },
+              ].map((m) => {
+                const pct = nutPct(m.key);
+                const r = 38;
+                const circ = 2 * Math.PI * r;
+                const off = circ - (pct / 100) * circ;
+                return (
+                  <div key={m.key} className="cb-metric-mini cb-nutrition-mini">
+                    <div className="cb-metric-mini-ring cb-nutrition-ring">
+                      <svg viewBox="0 0 100 100">
+                        <circle className="cb-metric-mini-track cb-nutrition-track" cx="50" cy="50" r={r} />
+                        <circle className="cb-metric-mini-fill cb-nutrition-fill" cx="50" cy="50" r={r}
+                          strokeDasharray={circ}
+                          strokeDashoffset={off} />
+                      </svg>
+                    </div>
+                    <span className="cb-metric-mini-label">{m.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <span className="cb-metric-rings-cta">Log meal &rarr;</span>
+          </button>
+        )}
+
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
@@ -1522,44 +1556,7 @@ export default function CoreBuddyDashboard() {
         {/* Feature Cards */}
         <div className="cb-features">
 
-          {/* 1. Nutrition / Macros — hidden for free tier */}
-          {isPremium && (
-          <button
-            className={`cb-feature-card cb-card-unified ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
-          >
-            <div className="cb-card-content">
-              <h3>Today's Nutrition</h3>
-              <div className="cb-mini-rings">
-                {[
-                  { label: 'P', pct: nutPct('protein'), color: 'var(--color-primary)' },
-                  { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
-                  { label: 'F', pct: nutPct('fats'), color: 'var(--color-primary)' },
-                  { label: 'Cal', pct: nutPct('calories'), color: 'var(--color-primary)' },
-                ].map((ring) => {
-                  const r = 38;
-                  const circ = 2 * Math.PI * r;
-                  const off = circ - (ring.pct / 100) * circ;
-                  return (
-                    <div key={ring.label} className="cb-mini-ring">
-                      <svg viewBox="0 0 100 100">
-                        <circle className="cb-mini-track" cx="50" cy="50" r={r} />
-                        <circle className="cb-mini-fill" cx="50" cy="50" r={r}
-                          style={{ stroke: ring.color }}
-                          strokeDasharray={circ}
-                          strokeDashoffset={off} />
-                      </svg>
-                      <span style={{ color: ring.color }}>{ring.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          )}
-
-          {/* 2. Workouts */}
+          {/* Workouts */}
           <button
             className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
