@@ -2450,8 +2450,9 @@
 /* ── FAB Button ── */
 .cb-fab {
   position: fixed;
-  bottom: 80px;
-  right: 18px;
+  /* 50px nav height + safe-area for home bar + 14px gap */
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
   width: 54px;
   height: 54px;
   border-radius: 50%;
@@ -2503,6 +2504,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   max-width: 340px;
   width: 100%;
   animation: cbFabMenuIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
