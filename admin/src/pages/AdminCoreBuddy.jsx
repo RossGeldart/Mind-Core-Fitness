@@ -22,15 +22,20 @@ export default function AdminCoreBuddy() {
   const [toast, setToast] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const fileRef = useRef(null);
+  const authChecked = useRef(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   }, []);
 
+  // Only redirect once after the initial auth check — not on every re-render
   useEffect(() => {
-    if (!authLoading && (!currentUser || !isAdmin)) {
-      navigate('/');
+    if (authLoading || authChecked.current) return;
+    if (!currentUser || !isAdmin) {
+      navigate('/', { replace: true });
+    } else {
+      authChecked.current = true;
     }
   }, [currentUser, isAdmin, authLoading, navigate]);
 
@@ -89,36 +94,38 @@ export default function AdminCoreBuddy() {
         createdAt: serverTimestamp()
       });
 
-      // Notify all clients about the new announcement
-      try {
-        const clientsSnap = await getDocs(collection(db, 'clients'));
-        const clients = clientsSnap.docs.filter(d => d.data().uid !== currentUser.uid);
-        for (let i = 0; i < clients.length; i += 499) {
-          const batch = writeBatch(db);
-          clients.slice(i, i + 499).forEach(clientDoc => {
-            const notifRef = doc(collection(db, 'notifications'));
-            batch.set(notifRef, {
-              toId: clientDoc.id,
-              fromId: 'system',
-              fromName: 'Mind Core Fitness',
-              type: 'announcement',
-              title: 'New Announcement',
-              body: announcementTitle,
-              read: false,
-              createdAt: serverTimestamp()
-            });
-          });
-          await batch.commit();
-        }
-      } catch (notifErr) {
-        console.error('Failed to send announcement notifications:', notifErr);
-      }
-
       setTitle('');
       setContent('');
       clearImage();
       showToast('Announcement posted', 'success');
       await fetchAnnouncements();
+
+      // Notify all clients in the background (fire-and-forget)
+      (async () => {
+        try {
+          const clientsSnap = await getDocs(collection(db, 'clients'));
+          const clients = clientsSnap.docs.filter(d => d.data().uid !== currentUser.uid);
+          for (let i = 0; i < clients.length; i += 499) {
+            const batch = writeBatch(db);
+            clients.slice(i, i + 499).forEach(clientDoc => {
+              const notifRef = doc(collection(db, 'notifications'));
+              batch.set(notifRef, {
+                toId: clientDoc.id,
+                fromId: 'system',
+                fromName: 'Mind Core Fitness',
+                type: 'announcement',
+                title: 'New Announcement',
+                body: announcementTitle,
+                read: false,
+                createdAt: serverTimestamp()
+              });
+            });
+            await batch.commit();
+          }
+        } catch (notifErr) {
+          console.error('Failed to send announcement notifications:', notifErr);
+        }
+      })();
     } catch (err) {
       console.error('Error posting announcement:', err);
       showToast('Failed to post announcement', 'error');
