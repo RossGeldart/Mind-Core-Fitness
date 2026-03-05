@@ -26,12 +26,14 @@ async function getPurchases() {
  * Call once after authentication.
  */
 export async function initRevenueCat(uid) {
+  console.log('[RC] initRevenueCat called for', uid);
   const RC = await getPurchases();
+  console.log('[RC] getPurchases returned in initRevenueCat:', RC ? 'ok' : 'null');
   if (!RC) return;
 
   try {
-    console.log('[RC] calling configure for user', uid);
-    await Promise.race([
+    console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
+    const configResult = await Promise.race([
       RC.configure({
         apiKey: REVENUECAT_API_KEY,
         appUserID: uid,
@@ -39,21 +41,25 @@ export async function initRevenueCat(uid) {
       new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 5000)),
     ]);
     configured = true;
-    console.log('[RC] configured for user', uid);
+    console.log('[RC] configured OK for user', uid, 'result:', JSON.stringify(configResult));
   } catch (err) {
-    console.error('[RC] configure error:', err?.message || err);
+    console.error('[RC] configure FAILED:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
   }
 }
 
 /** Ensure RC is configured before making SDK calls */
 async function ensureConfigured() {
+  console.log('[RC] ensureConfigured — configured:', configured);
   if (configured) return;
   // Wait up to 5s for TierContext to finish initRevenueCat
   for (let i = 0; i < 10; i++) {
     await new Promise(r => setTimeout(r, 500));
-    if (configured) return;
+    if (configured) {
+      console.log('[RC] ensureConfigured — now configured after', (i + 1) * 500, 'ms');
+      return;
+    }
   }
-  console.warn('[RC] timed out waiting for configure');
+  console.warn('[RC] ensureConfigured — timed out after 5s, configured still:', configured);
 }
 
 /**
@@ -100,8 +106,10 @@ export async function getOfferings() {
   console.log('[RC] configured:', configured);
 
   try {
-    console.log('[RC] calling getOfferings…');
-    const { offerings } = await RC.getOfferings();
+    console.log('[RC] calling getOfferings… configured:', configured);
+    const result = await RC.getOfferings();
+    console.log('[RC] getOfferings raw result:', JSON.stringify(result).substring(0, 500));
+    const { offerings } = result;
     console.log('[RC] offerings response:', JSON.stringify(offerings?.current?.availablePackages?.length ?? 'no current'));
     const current = offerings.current;
     if (!current) return null;
