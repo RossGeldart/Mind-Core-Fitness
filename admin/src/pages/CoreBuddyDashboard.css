@@ -2394,7 +2394,24 @@
   margin-top: 2px;
 }
 
-/* ── FAB Button ── */
+/* ===== NUTRITION RINGS (matches body metrics card style) ===== */
+.cb-nutrition-mini {
+  width: 64px;
+}
+
+.cb-nutrition-ring {
+  width: 48px;
+  height: 48px;
+}
+
+.cb-nutrition-track {
+  stroke: rgba(var(--color-primary-rgb), 0.12);
+}
+
+.cb-nutrition-fill {
+  stroke: var(--color-primary);
+}
+
 /* ── FAB Button ── */
 .cb-fab {
   position: fixed;
