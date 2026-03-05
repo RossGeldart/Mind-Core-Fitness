@@ -1,5 +1,11 @@
 # Project: Mind Core Fitness
 
+## Workflow
+
+- **Single-branch workflow**: All development (web + iOS) happens on `main`. There is NO separate iOS branch.
+- iOS-specific code is guarded with `Capacitor.isNativePlatform()` checks, so it's safe on `main`.
+- Every session that makes source changes should run both builds before committing (see Build section).
+
 ## Build
 
 - After ANY source changes in `admin/`, always run BOTH builds from `admin/`:
