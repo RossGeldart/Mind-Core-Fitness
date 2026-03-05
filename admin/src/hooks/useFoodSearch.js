@@ -149,30 +149,28 @@ export default function useFoodSearch({ onError }) {
       const countryFilter = getCountryFilterParams();
       const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=15&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
-      // First try: search with country filter (local products)
+      // Fire both country-filtered and global searches in parallel
+      const localFetch = countryFilter
+        ? fetch(baseUrl + countryFilter, { signal: controller.signal }).then(r => r.ok ? r.json() : null)
+        : Promise.resolve(null);
+      const globalFetch = fetch(baseUrl, { signal: controller.signal }).then(r => r.ok ? r.json() : null);
+
+      const [localData, globalData] = await Promise.all([localFetch, globalFetch]);
+
       let results = [];
-      if (countryFilter) {
-        const res = await fetch(baseUrl + countryFilter, { signal: controller.signal });
-        if (res.ok) {
-          const data = await res.json();
-          results = filterAndScore(data.products || [], searchWords, term);
-        }
+      if (localData) {
+        results = filterAndScore(localData.products || [], searchWords, term);
       }
 
-      // Fallback: if country-filtered search returned fewer than 3 results, also search globally
-      if (results.length < 3) {
-        const res = await fetch(baseUrl, { signal: controller.signal });
-        if (res.ok) {
-          const data = await res.json();
-          const globalResults = filterAndScore(data.products || [], searchWords, term);
-          // Merge: local results first, then global (deduplicated by name+brand)
-          const seen = new Set(results.map(r => (r.name + '|' + r.brand).toLowerCase()));
-          for (const item of globalResults) {
-            const key = (item.name + '|' + item.brand).toLowerCase();
-            if (!seen.has(key)) {
-              results.push(item);
-              seen.add(key);
-            }
+      // Merge global results if local didn't return enough
+      if (results.length < 3 && globalData) {
+        const globalResults = filterAndScore(globalData.products || [], searchWords, term);
+        const seen = new Set(results.map(r => (r.name + '|' + r.brand).toLowerCase()));
+        for (const item of globalResults) {
+          const key = (item.name + '|' + item.brand).toLowerCase();
+          if (!seen.has(key)) {
+            results.push(item);
+            seen.add(key);
           }
         }
       }
@@ -197,7 +195,7 @@ export default function useFoodSearch({ onError }) {
     if (!query?.trim() || !enabled) return;
     debounceTimer.current = setTimeout(() => {
       searchFood(query);
-    }, 700);
+    }, 350);
   }, [searchFood]);
 
   // Cleanup on unmount
