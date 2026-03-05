@@ -1895,7 +1895,14 @@ export default function CoreBuddyDashboard() {
 
       {fabOpen && (
         <div className="cb-fab-overlay" onClick={() => setFabOpen(false)}>
-          <div className="cb-fab-menu" onClick={e => e.stopPropagation()}>
+          <div className="cb-fab-sheet" onClick={e => e.stopPropagation()}>
+            <div className="cb-fab-header">
+              <h3>Quick Access</h3>
+              <button className="cb-fab-close" onClick={() => setFabOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="cb-fab-grid">
             <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/consistency'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -1932,6 +1939,7 @@ export default function CoreBuddyDashboard() {
               </span>
               <span className="cb-fab-item-label">Body Metrics</span>
             </button>
+            </div>
           </div>
         </div>
       )}
