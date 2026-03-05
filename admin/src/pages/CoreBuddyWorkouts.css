@@ -3540,11 +3540,6 @@
   }
 }
 
-/* Light mode solid bg */
-[data-theme="light"] .wk-fab-sheet {
-  background: #ffffff;
-}
-
 /* ==================== SAVE WORKOUT BUTTON & MODAL ==================== */
 
 .wk-btn-save {
