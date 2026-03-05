@@ -2944,10 +2944,6 @@
   cursor: not-allowed;
 }
 
-.wk-hub-card--tip {
-  cursor: default;
-}
-
 .wk-hub-card-icon {
   flex-shrink: 0;
   width: 44px;
@@ -2995,6 +2991,30 @@
   flex-shrink: 0;
   color: var(--text-tertiary);
   opacity: 0.25;
+}
+
+/* Motivational tip – multi-line readable card */
+.wk-hub-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(var(--color-primary-rgb), 0.06);
+  border-left: 3px solid rgba(var(--color-primary-rgb), 0.35);
+  border-radius: 0 12px 12px 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-tertiary, var(--text-secondary));
+  line-height: 1.5;
+  animation: hubCardIn 0.4s ease 0.15s both;
+}
+
+.wk-hub-tip svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-primary);
+  opacity: 0.7;
 }
 
 /* Glow pulse on New Workout card – runs twice on entry then stops */
@@ -3432,6 +3452,15 @@
   padding: 20px 20px 32px;
   animation: wkFabSheetIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .wk-fab-sheet {
+  background: #1a1a1a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .wk-fab-sheet {
+  background: #ffffff;
 }
 
 @keyframes wkFabSheetIn {

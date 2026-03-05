@@ -1884,14 +1884,9 @@ export default function CoreBuddyWorkouts() {
               </button>
             )}
 
-            <div className="wk-hub-card wk-hub-card--tip">
-              <div className="wk-hub-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-              </div>
-              <div className="wk-hub-card-body">
-                <h3>Tip</h3>
-                <p>{HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}</p>
-              </div>
+            <div className="wk-hub-tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
             </div>
           </div>
 
@@ -1903,7 +1898,7 @@ export default function CoreBuddyWorkouts() {
           onClick={() => setFabOpen(prev => !prev)}
           aria-label={fabOpen ? 'Close menu' : 'Saved & Recent'}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         </button>
 
         {/* FAB Bottom Sheet – Saved & Recent Workouts */}
