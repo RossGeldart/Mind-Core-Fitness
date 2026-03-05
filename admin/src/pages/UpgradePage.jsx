@@ -18,17 +18,22 @@ export default function UpgradePage() {
   const [offerings, setOfferings] = useState(null);
   const [rcLoading, setRcLoading] = useState(isNative);
 
-  // Load RevenueCat offerings on native
+  // Load RevenueCat offerings on native (with 8s timeout)
   useEffect(() => {
     if (!isNative) return;
     let cancelled = false;
     (async () => {
       try {
+        console.log('[UpgradePage] loading RC offerings…');
         const { getOfferings } = await import('../services/revenueCatService');
-        const pkgs = await getOfferings();
-        if (!cancelled) setOfferings(pkgs);
+        const result = await Promise.race([
+          getOfferings(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 8000)),
+        ]);
+        console.log('[UpgradePage] offerings loaded:', result);
+        if (!cancelled) setOfferings(result);
       } catch (err) {
-        console.error('Failed to load offerings:', err);
+        console.error('[UpgradePage] Failed to load offerings:', err);
       } finally {
         if (!cancelled) setRcLoading(false);
       }

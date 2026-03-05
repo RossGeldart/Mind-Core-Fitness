@@ -67,10 +67,13 @@ export async function checkEntitlement() {
  */
 export async function getOfferings() {
   const RC = await getPurchases();
+  console.log('[RC] getPurchases returned:', RC ? 'ok' : 'null');
   if (!RC) return null;
 
   try {
+    console.log('[RC] calling getOfferings…');
     const { offerings } = await RC.getOfferings();
+    console.log('[RC] offerings response:', JSON.stringify(offerings?.current?.availablePackages?.length ?? 'no current'));
     const current = offerings.current;
     if (!current) return null;
 
