@@ -3394,7 +3394,7 @@
   height: 54px;
   border-radius: 50%;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary, white);
   border: none;
   padding: 0;
   display: flex;
