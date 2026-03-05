@@ -220,32 +220,28 @@
   100% { background-position: -200% 0; }
 }
 
-/* FAB */
+/* FAB — matches Profile page .cb-fab */
 .ah-fab {
   position: fixed;
-  bottom: 88px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
   background: var(--color-primary);
   color: #fff;
-  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px var(--color-primary-light, rgba(184, 49, 61, 0.35));
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 50;
-}
-
-.ah-fab:hover {
-  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  z-index: 1000;
 }
 
 .ah-fab:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 /* Toast */
@@ -279,12 +275,3 @@
   border: 1px solid var(--border-color);
 }
 
-/* Mono mode: ensure FAB has proper contrast */
-[data-mono="true"][data-theme="dark"] .ah-fab {
-  color: #111;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
-}
-
-[data-mono="true"][data-theme="light"] .ah-fab {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-}
