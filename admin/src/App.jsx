@@ -25,9 +25,11 @@ import CoreBuddySettings from './pages/CoreBuddySettings';
 import Challenges from './pages/Challenges';
 import CoreBuddyBadges from './pages/CoreBuddyBadges';
 import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
+import ActivityHistory from './pages/ActivityHistory';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AdminCoreBuddy = lazy(() => import('./pages/AdminCoreBuddy'));
 const AddClient = lazy(() => import('./pages/AddClient'));
 const ClientDashboard = lazy(() => import('./pages/ClientDashboard'));
 const ClientForms = lazy(() => import('./pages/ClientForms'));
@@ -90,6 +92,7 @@ function App() {
             <Route path="/" element={isNative ? <NativeLogin /> : <LoginPortal />} />
             <Route path="/login" element={isNative ? <NativeLogin /> : <Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin/core-buddy" element={<AdminCoreBuddy />} />
             <Route path="/add-client" element={<AddClient />} />
             <Route path="/client" element={<ClientDashboard />} />
             <Route path="/client/forms" element={<ClientForms />} />
@@ -111,6 +114,7 @@ function App() {
             <Route path="/client/core-buddy/challenges" element={<Challenges />} />
             <Route path="/client/core-buddy/badges" element={<CoreBuddyBadges />} />
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
+            <Route path="/client/core-buddy/activity" element={<ActivityHistory />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />

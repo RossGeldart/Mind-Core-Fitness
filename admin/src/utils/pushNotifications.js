@@ -86,10 +86,10 @@ function withPermissionOverride(fn) {
  * @returns {Promise<string|null>} The FCM token or null
  */
 export async function requestPushPermission(clientId) {
-  if (!isPushSupported()) return null;
+  if (!isPushSupported()) return { token: null, error: 'not-supported' };
   if (!VAPID_KEY) {
     console.warn('Push notifications: VAPID_KEY not configured');
-    return null;
+    return { token: null, error: 'no-vapid' };
   }
 
   try {
@@ -99,10 +99,19 @@ export async function requestPushPermission(clientId) {
     const msg = getMessagingInstance();
     if (!msg) {
       console.error('Push: could not initialise Firebase Messaging');
-      return null;
+      return { token: null, error: 'messaging-init' };
     }
 
-    const swReg = await navigator.serviceWorker.ready;
+    // Wait for service worker with a timeout so it doesn't hang forever
+    const swReg = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('sw-timeout')), 10000)),
+    ]).catch(() => null);
+
+    if (!swReg) {
+      console.error('Push: service worker not ready within 10s');
+      return { token: null, error: 'sw-not-ready' };
+    }
 
     // 2. Determine whether we need to override the stale permission value.
     //    If the browser said 'granted' we can go straight through.
@@ -113,6 +122,7 @@ export async function requestPushPermission(clientId) {
     // 3. Retry getToken up to 3 times — on iOS Safari PWAs the first
     //    attempt frequently fails even though permission was just granted.
     let token = null;
+    let lastError = null;
     const MAX_RETRIES = 3;
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
@@ -128,6 +138,7 @@ export async function requestPushPermission(clientId) {
 
         if (token) break;
       } catch (tokenErr) {
+        lastError = tokenErr;
         console.warn(`Push getToken attempt ${attempt}/${MAX_RETRIES} failed:`, tokenErr);
       }
       // Small delay before retry to let the SW settle
@@ -143,10 +154,15 @@ export async function requestPushPermission(clientId) {
       });
     }
 
-    return token;
+    if (!token) {
+      const errorCode = lastError?.code || lastError?.message || 'unknown';
+      return { token: null, error: `token-failed:${errorCode}`, permission };
+    }
+
+    return { token, error: null };
   } catch (err) {
     console.error('Push permission request failed:', err);
-    return null;
+    return { token: null, error: `exception:${err.message}` };
   }
 }
 

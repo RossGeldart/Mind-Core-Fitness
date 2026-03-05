@@ -33,7 +33,7 @@
 .cbc-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 40px;
+  padding-bottom: 80px;
 }
 
 /* Main */
@@ -862,6 +862,38 @@
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-align: center;
+}
+
+/* ====== Calendar Month Navigation ====== */
+.cbc-cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cbc-cal-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.cbc-cal-nav-btn:active {
+  background: rgba(var(--color-primary-rgb), 0.12);
+}
+
+[data-theme="dark"] .cbc-cal-nav-btn {
+  background: rgba(30, 30, 30, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* ====== Monthly Calendar Heat-Map ====== */

@@ -147,26 +147,34 @@ export default function CoreBuddyProfile() {
     return () => { cancelled = true; };
   }, [clientData, userId]);
 
-  // Fetch buddy stats
+  // Fetch buddy stats (only when confirmed buddies)
   useEffect(() => {
-    if (!userId || !profile) return;
+    if (!userId || !profile || buddyStatus !== 'buddy') return;
     let cancelled = false;
 
     (async () => {
       setStatsLoading(true);
       try {
         // Parallel fetches
-        const logsSnap = await getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId)));
+        const [logsSnap, actSnap] = await Promise.all([
+          getDocs(query(collection(db, 'workoutLogs'), where('clientId', '==', userId))),
+          getDocs(query(collection(db, 'activityLogs'), where('clientId', '==', userId))),
+        ]);
 
         if (cancelled) return;
 
-        // Total workouts
-        const totalAll = logsSnap.docs.length;
+        // Total workouts + activities
+        const totalAll = logsSnap.docs.length + actSnap.docs.length;
         setTotalWorkouts(totalAll);
 
         // Workout streak (consecutive weeks)
+        // If the current week has no workouts yet, skip to last week without
+        // breaking the streak (the new week may have only just started).
         let wkStreak = 0;
-        const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+        const allDates = [
+          ...logsSnap.docs.map(d => d.data().date),
+          ...actSnap.docs.map(d => d.data().date),
+        ].filter(Boolean).sort().reverse();
         if (allDates.length > 0) {
           const now2 = new Date();
           let checkWeek = new Date(now2);
@@ -182,7 +190,7 @@ export default function CoreBuddyProfile() {
             const weStr = formatDate(weekEnd);
             const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
             if (hasWorkout) { wkStreak++; }
-            else if (w > 0) break;
+            else if (w === 0) { /* skip current week gracefully */ }
             else break;
             checkWeek.setDate(checkWeek.getDate() - 7);
           }
@@ -225,7 +233,7 @@ export default function CoreBuddyProfile() {
     })();
 
     return () => { cancelled = true; };
-  }, [userId, profile]);
+  }, [userId, profile, buddyStatus]);
 
   // Fetch accepted buddies for @ mentions
   useEffect(() => {
@@ -386,8 +394,8 @@ export default function CoreBuddyProfile() {
   }, [userId, clientData]);
 
   useEffect(() => {
-    if (!loading && profile) fetchJourney();
-  }, [loading, profile, fetchJourney]);
+    if (!loading && profile && buddyStatus === 'buddy') fetchJourney();
+  }, [loading, profile, buddyStatus, fetchJourney]);
 
   // Delete post
   const deleteJourneyPost = async (postId) => {
@@ -641,6 +649,19 @@ export default function CoreBuddyProfile() {
           </div>
         </div>
 
+        {/* Private profile gate — only buddies see full content */}
+        {buddyStatus !== 'buddy' ? (
+          <div className="prf-private">
+            <div className="prf-private-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h3 className="prf-private-title">Private Profile</h3>
+            <p className="prf-private-text">Add {profile.name?.split(' ')[0]} as a buddy to see their stats, badges and journey.</p>
+          </div>
+        ) : (
+          <>
         {/* Stats */}
         {statsLoading ? (
           <div className="prf-stats-loading"><div className="prf-spinner" /></div>
@@ -875,6 +896,8 @@ export default function CoreBuddyProfile() {
             </div>
           )}
         </div>
+          </>
+        )}
       </main>
 
       <CoreBuddyNav active="buddies" />

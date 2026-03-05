@@ -25,7 +25,7 @@
 .nut-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 0;
+  padding-bottom: 80px;
   display: flex;
   flex-direction: column;
 }
@@ -217,10 +217,6 @@
   color: #fff;
 }
 
-.nut-week-day.future {
-  opacity: 0.2;
-  cursor: not-allowed;
-}
 
 
 .nut-settings-btn {
@@ -1399,10 +1395,6 @@
   font-weight: 700;
 }
 
-.nut-cal-day.future {
-  opacity: 0.2;
-  cursor: not-allowed;
-}
 
 /* ==================== LOG SUMMARY (past days) ==================== */
 .nut-log-summary {
@@ -1467,6 +1459,13 @@
   background: var(--bg-card);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.nut-log-item:active {
+  background: var(--bg-secondary);
 }
 
 .nut-log-item-info {
@@ -1566,6 +1565,7 @@
   background: var(--bg-card);
   border-radius: 0 0 20px 20px;
   padding: 24px 20px;
+  padding-top: max(24px, env(safe-area-inset-top, 24px));
   padding-bottom: 24px;
   flex-shrink: 0;
 }
@@ -1590,7 +1590,13 @@
   border: none;
   color: var(--text-tertiary);
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
+  margin: -8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Scanner */
@@ -2051,6 +2057,34 @@
   color: var(--color-primary);
 }
 
+.nut-btn-danger {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  background: none;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nut-btn-danger:active {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.nut-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.nut-edit-modal .nut-manual-form {
+  margin-top: 0;
+}
+
 /* Search */
 .nut-search-bar {
   display: flex;
@@ -2089,6 +2123,12 @@
 
 .nut-search-bar button:disabled {
   opacity: 0.5;
+}
+
+.nut-search-country-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin: -10px 0 10px 2px;
 }
 
 .nut-search-results {

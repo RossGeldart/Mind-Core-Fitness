@@ -14,6 +14,7 @@ const NOTIF_MESSAGES = {
   like: (name) => ({ title: 'Post Liked', body: `${name} liked your post` }),
   comment: (name) => ({ title: 'New Comment', body: `${name} commented on your post` }),
   mention: (name) => ({ title: 'You Were Mentioned', body: `${name} mentioned you in a comment` }),
+  announcement: () => null, // handled by title/body on the notification doc
   daily_morning: () => null, // handled by rotating messages below
   daily_evening: () => null,
 };
@@ -65,7 +66,7 @@ function getDayOfYear() {
  * "notifications" collection. Looks up the recipient's FCM tokens
  * and notification preferences, then sends a push notification.
  */
-exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', async (event) => {
+exports.sendPushNotification = onDocumentCreated({ document: 'notifications/{notifId}', region: 'europe-west2' }, async (event) => {
   const notif = event.data?.data();
   if (!notif) return;
 
@@ -87,7 +88,7 @@ exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', asyn
 
     // Build notification payload
     let title, body;
-    if (type === 'daily_morning' || type === 'daily_evening') {
+    if (type === 'daily_morning' || type === 'daily_evening' || type === 'announcement') {
       // Use the pre-set title/body from the notification document
       title = notif.title;
       body = notif.body;
@@ -154,7 +155,7 @@ exports.sendPushNotification = onDocumentCreated('notifications/{notifId}', asyn
  * Creates a notification for every client that has FCM tokens registered.
  */
 exports.dailyMorningNotification = onSchedule(
-  { schedule: '0 6 * * *', timeZone: 'Europe/London' },
+  { schedule: '0 6 * * *', timeZone: 'Europe/London', region: 'europe-west2' },
   async () => {
     const dayIndex = getDayOfYear();
     const msg = MORNING_MESSAGES[dayIndex % MORNING_MESSAGES.length];
@@ -194,7 +195,7 @@ exports.dailyMorningNotification = onSchedule(
  * Creates a notification for every client that has FCM tokens registered.
  */
 exports.dailyEveningNotification = onSchedule(
-  { schedule: '0 18 * * *', timeZone: 'Europe/London' },
+  { schedule: '0 18 * * *', timeZone: 'Europe/London', region: 'europe-west2' },
   async () => {
     const dayIndex = getDayOfYear();
     const msg = EVENING_MESSAGES[dayIndex % EVENING_MESSAGES.length];

@@ -12,11 +12,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import LockBadge from '../components/LockBadge';
 import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
 import BADGE_DEFS from '../utils/badgeConfig';
+import ActivityLogger from '../components/ActivityLogger';
 
 const TICK_COUNT = 60;
 const DEFAULT_WEEKLY_TARGET = 3;
@@ -112,6 +112,7 @@ export default function CoreBuddyDashboard() {
   const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
+  const [fabOpen, setFabOpen] = useState(false);
   const [realHabitCount, setRealHabitCount] = useState(isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT);
   const habitCount = realHabitCount;
 
@@ -131,6 +132,11 @@ export default function CoreBuddyDashboard() {
   const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [showTargetHint, setShowTargetHint] = useState(false);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
+
+  // Activity logger
+  const [showActivityLogger, setShowActivityLogger] = useState(false);
+  const [weeklyActivities, setWeeklyActivities] = useState(0);
+  const [totalActivities, setTotalActivities] = useState(0);
 
   // Profile photo
   const [photoURL, setPhotoURL] = useState(null);
@@ -234,14 +240,9 @@ export default function CoreBuddyDashboard() {
           body: 'Set your macro targets, scan barcodes, and log meals to hit your daily goals.',
         },
         {
-          selector: '.cb-card-consistency',
-          title: 'Daily Habits',
-          body: '5 simple habits each day — train, hit protein, 10k steps, sleep, and hydrate. Build your streak.',
-        },
-        {
-          selector: '.cb-card-buddies',
-          title: 'Buddies & Social',
-          body: 'Connect with other members, share your journey, and keep each other accountable.',
+          selector: '.cb-fab',
+          title: 'Quick Menu',
+          body: 'Tap the menu button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
         },
         {
           selector: '.cb-journey-section',
@@ -268,9 +269,9 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, currentUser, navigate]);
 
-  // Onboarding guard — redirect users who haven't completed onboarding
+  // Onboarding guard — only for self-signup users who haven't completed it
   useEffect(() => {
-    if (!authLoading && clientData && ['self_signup', 'google', 'apple'].includes(clientData.signupSource) && !clientData.onboardingComplete) {
+    if (!authLoading && clientData && clientData.signupSource === 'self_signup' && !clientData.onboardingComplete) {
       navigate('/onboarding');
     }
   }, [authLoading, clientData, navigate]);
@@ -318,6 +319,8 @@ export default function CoreBuddyDashboard() {
         setWeeklyWorkoutTarget(c.weeklyWorkoutTarget ?? DEFAULT_WEEKLY_TARGET);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
         setStreakWeeks(c.streakWeeks ?? 0);
+        setWeeklyActivities(c.weeklyActivities ?? 0);
+        setTotalActivities(c.totalActivities ?? 0);
         setStatsLoaded(true);
       }
     } catch {}
@@ -432,6 +435,7 @@ export default function CoreBuddyDashboard() {
   };
 
   // @ mention helpers
+  const everyoneOption = { id: '__everyone__', name: 'everyone', photoURL: null };
   const handleMentionInput = (text, target) => {
     const cursorPos = target === 'compose' ? journeyTextRef.current?.selectionStart : null;
     const relevantText = cursorPos != null ? text.slice(0, cursorPos) : text;
@@ -440,7 +444,9 @@ export default function CoreBuddyDashboard() {
       setMentionActive(true);
       setMentionTarget(target);
       setMentionQuery(atMatch[1].toLowerCase());
-      const filtered = allClients.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      const q = atMatch[1].toLowerCase();
+      const filtered = allClients.filter(c => c.name && c.name.toLowerCase().includes(q)).slice(0, 5);
+      if ('everyone'.startsWith(q)) filtered.unshift(everyoneOption);
       setMentionResults(filtered);
     } else {
       setMentionActive(false);
@@ -473,8 +479,12 @@ export default function CoreBuddyDashboard() {
     if (!text) return text;
     const parts = text.split(/(@\w[\w\s]*?\s)/g);
     return parts.map((part, i) => {
-      if (part.startsWith('@') && allClients.some(c => part.trim() === `@${c.name}`)) {
-        return <span key={i} className="mention-highlight">{part.trim()}</span>;
+      const trimmed = part.trim();
+      if (trimmed === '@everyone') {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
+      }
+      if (part.startsWith('@') && allClients.some(c => trimmed === `@${c.name}`)) {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
       }
       return part;
     });
@@ -483,21 +493,19 @@ export default function CoreBuddyDashboard() {
   // Profile photo upload handler
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
+    // Always reset input so the same file can be re-selected
+    if (photoInputRef.current) photoInputRef.current.value = '';
     if (!file || !clientData) return;
 
-    // Validate file
+    // Validate file type
     if (!file.type.startsWith('image/')) {
       showToast('Please select an image file', 'error');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Image must be under 5MB', 'error');
       return;
     }
 
     setUploadingPhoto(true);
     try {
-      // Compress image via canvas
+      // Compress first — resizes to 400px JPEG so large camera photos work fine
       const compressed = await new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
@@ -529,8 +537,6 @@ export default function CoreBuddyDashboard() {
       showToast('Failed to upload photo', 'error');
     }
     setUploadingPhoto(false);
-    // Reset input so same file can be re-selected
-    if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
   // 24hr countdown - time remaining in the day
@@ -594,6 +600,19 @@ export default function CoreBuddyDashboard() {
           return ms >= mondayMs;
         }).length;
         setWeeklyWorkouts(weekCount);
+
+        // 2. Activity logs — count toward weekly target
+        const actLogsRef = collection(db, 'activityLogs');
+        const actQ = query(actLogsRef, where('clientId', '==', clientData.id));
+        const actSnap = await getDocs(actQ);
+        setTotalActivities(actSnap.docs.length);
+        const weekActCount = actSnap.docs.filter(d => {
+          const ts = d.data().completedAt;
+          if (!ts) return false;
+          const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+          return ms >= mondayMs;
+        }).length;
+        setWeeklyActivities(weekActCount);
 
         // 3. Habit completion today — fetch custom habits to get real total
         const [habitSnap, customHabitsSnap] = await Promise.all([
@@ -665,14 +684,20 @@ export default function CoreBuddyDashboard() {
         console.error('Leaderboard preview error:', lbErr);
       }
 
-      // 7. Compute workout streak (consecutive weeks with at least 1 workout)
+      // 7. Compute workout streak (consecutive weeks with at least 1 workout or activity)
+      // If the current week has no workouts yet, skip to last week without
+      // breaking the streak (the new week may have only just started).
       try {
         let wkStreak = 0;
         if (logsSnap) {
-          const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+          const allDates = [
+            ...logsSnap.docs.map(d => d.data().date),
+            ...actSnap.docs.map(d => d.data().date),
+          ].filter(Boolean).sort().reverse();
           if (allDates.length > 0) {
             const now2 = new Date();
             let checkWeek = new Date(now2);
+            let skippedCurrent = false;
             outer: for (let w = 0; w < 52; w++) {
               const weekStart = new Date(checkWeek);
               const dow = weekStart.getDay();
@@ -685,8 +710,8 @@ export default function CoreBuddyDashboard() {
               const weStr = formatDate(weekEnd);
               const hasWorkout = allDates.some(d => d >= wsStr && d < weStr);
               if (hasWorkout) { wkStreak++; }
-              else if (w > 0) break outer;
-              else break;
+              else if (w === 0) { skippedCurrent = true; }
+              else break outer;
               checkWeek.setDate(checkWeek.getDate() - 7);
             }
           }
@@ -709,13 +734,13 @@ export default function CoreBuddyDashboard() {
         totalWorkouts, habitWeekPct,
         nutritionTotals, nutritionTargetData, todayHabitsCount,
         realHabitCount, weeklyWorkouts, weeklyWorkoutTarget, leaderboardTop3,
-        streakWeeks
+        streakWeeks, weeklyActivities, totalActivities
       }));
     } catch {}
   }, [statsLoaded, totalWorkouts, habitWeekPct,
      nutritionTotals, nutritionTargetData, todayHabitsCount,
      weeklyWorkouts, weeklyWorkoutTarget,
-     leaderboardTop3, streakWeeks, clientData]);
+     leaderboardTop3, streakWeeks, weeklyActivities, totalActivities, clientData]);
 
   // Body metrics status — check if setup done and if remeasure needed
   useEffect(() => {
@@ -766,7 +791,7 @@ export default function CoreBuddyDashboard() {
   // Weekly target celebration — triggers once per week when target met
   useEffect(() => {
     if (!statsLoaded || weeklyCelebrationShownRef.current) return;
-    if (weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
+    if ((weeklyWorkouts + weeklyActivities) >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
       const celebKey = `weekCeleb_${clientData?.id}_${new Date().toISOString().slice(0, 10).replace(/-\d{2}$/, '')}`;
       try {
         if (localStorage.getItem(celebKey)) return;
@@ -776,7 +801,7 @@ export default function CoreBuddyDashboard() {
       setShowWeeklyCelebration(true);
       setTimeout(() => setShowWeeklyCelebration(false), 3500);
     }
-  }, [statsLoaded, weeklyWorkouts, weeklyWorkoutTarget, clientData]);
+  }, [statsLoaded, weeklyWorkouts, weeklyActivities, weeklyWorkoutTarget, clientData]);
 
   // Tour finish handler — persist to Firestore so it only shows once
   const handleTourFinish = useCallback(async () => {
@@ -831,27 +856,29 @@ export default function CoreBuddyDashboard() {
   const firstName = clientData?.name?.split(' ')[0] || 'there';
 
   // Calculate percentages for 3 stat rings (solid arc style)
-  const workoutPct = Math.min(Math.round((weeklyWorkouts / weeklyWorkoutTarget) * 100), 100);
+  // Activities count toward the weekly workout target
+  const combinedWeekly = weeklyWorkouts + weeklyActivities;
+  const workoutPct = Math.min(Math.round((combinedWeekly / weeklyWorkoutTarget) * 100), 100);
 
   const streakPct = streakWeeks > 0 ? Math.min(Math.round((streakWeeks / 12) * 100), 100) : 0;
 
   const statRings = [
     { label: 'Wk Streak', value: `${streakWeeks}`, pct: streakPct, color: 'var(--color-primary)', size: 'normal' },
-    { label: 'Workouts', value: `${weeklyWorkouts}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
+    { label: 'Sessions', value: `${combinedWeekly}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
 
   // Compute whether nutrition / workouts / habits are complete for card signaling
   const nutritionDone = nutritionTotals.calories > 0 && nutritionTargetData?.calories && nutritionTotals.calories >= nutritionTargetData.calories * 0.8;
-  const workoutsDone = weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0;
+  const workoutsDone = combinedWeekly >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0;
   const habitsDone = todayHabitsCount >= habitCount;
 
   // Milestone approaching text for return trigger
   const milestoneText = (() => {
     if (!statsLoaded) return null;
-    const remaining = weeklyWorkoutTarget - weeklyWorkouts;
-    if (remaining === 1) return `1 more workout to hit your weekly target`;
-    if (remaining === 2) return `2 more workouts to hit your weekly target`;
+    const remaining = weeklyWorkoutTarget - combinedWeekly;
+    if (remaining === 1) return `1 more session to hit your weekly target`;
+    if (remaining === 2) return `2 more sessions to hit your weekly target`;
     if (habitCount - todayHabitsCount === 1) return `1 habit left to complete today`;
     return null;
   })();
@@ -877,11 +904,11 @@ export default function CoreBuddyDashboard() {
   // Priority-based smart nudge
   const nudge = (() => {
     if (!statsLoaded) return null;
-    // 1. No workouts this week — suggest a session
-    if (weeklyWorkouts === 0) {
+    // 1. No workouts or activities this week — suggest a session
+    if (combinedWeekly === 0) {
       return {
         label: 'WORKOUT',
-        message: 'No workouts this week yet',
+        message: 'No sessions this week yet',
         cta: 'Start One',
         action: () => navigate('/client/core-buddy/workouts'),
         pct: 0,
@@ -959,9 +986,9 @@ export default function CoreBuddyDashboard() {
 
   const handleJourneyImageSelect = (e) => {
     const file = e.target.files?.[0];
+    if (journeyFileRef.current) journeyFileRef.current.value = '';
     if (!file) return;
     if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
-    if (file.size > 10 * 1024 * 1024) { showToast('Image must be under 10MB', 'error'); return; }
     setJourneyImage(file);
     setJourneyImagePreview(URL.createObjectURL(file));
   };
@@ -998,11 +1025,21 @@ export default function CoreBuddyDashboard() {
       });
       // Notify @mentioned users in the post
       const postText = journeyText.trim();
+      const notified = new Set();
+      const hasEveryone = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(postText) || postText === '@everyone';
+      if (hasEveryone) {
+        allClients.forEach(c => {
+          if (c.id && !notified.has(c.id)) {
+            notified.add(c.id);
+            createNotification(c.id, 'mention', {});
+          }
+        });
+      }
       const mentionMatches = postText.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
+          if (name.toLowerCase() === 'everyone') return;
           const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
           if (client && !notified.has(client.id)) {
             notified.add(client.id);
@@ -1118,14 +1155,24 @@ export default function CoreBuddyDashboard() {
       const post = journeyPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment', { postId });
       // Notify @mentioned users
+      const notifiedComment = new Set();
+      const hasEveryoneComment = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(text) || text === '@everyone';
+      if (hasEveryoneComment) {
+        allClients.forEach(c => {
+          if (c.id && !notifiedComment.has(c.id)) {
+            notifiedComment.add(c.id);
+            createNotification(c.id, 'mention', { postId });
+          }
+        });
+      }
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
+          if (name.toLowerCase() === 'everyone') return;
           const client = allClients.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
-          if (client && !notified.has(client.id)) {
-            notified.add(client.id);
+          if (client && !notifiedComment.has(client.id)) {
+            notifiedComment.add(client.id);
             createNotification(client.id, 'mention', { postId });
           }
         });
@@ -1163,7 +1210,9 @@ export default function CoreBuddyDashboard() {
 
   const handleCommentImageSelect = (postId, e) => {
     const file = e.target.files?.[0];
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
     if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image', 'error'); return; }
     if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
     setCommentImage(prev => ({ ...prev, [postId]: file }));
     const reader = new FileReader();
@@ -1222,7 +1271,7 @@ export default function CoreBuddyDashboard() {
                         <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
                           setNotifOpen(false);
                           if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
-                            if (isPremium) navigate('/client/core-buddy/buddies');
+                            navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
                           } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
                             // Expand comments and load them if needed
                             if (!expandedComments.has(n.postId)) {
@@ -1240,6 +1289,8 @@ export default function CoreBuddyDashboard() {
                             document.querySelector('.cb-journey-section')?.scrollIntoView({ behavior: 'smooth' });
                           } else if (n.type === 'mention') {
                             navigate(`/client/core-buddy/profile/${n.fromId}`);
+                          } else if (n.type === 'announcement') {
+                            navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
                           }
                         }}>
                           <div className="notif-item-avatar">
@@ -1253,6 +1304,9 @@ export default function CoreBuddyDashboard() {
                               {n.type === 'like' && 'liked your post'}
                               {n.type === 'comment' && 'commented on your post'}
                               {n.type === 'mention' && 'mentioned you'}
+                              {n.type === 'announcement' && `posted: ${n.body || 'a new announcement'}`}
+                              {n.type === 'daily_morning' && (n.body || 'sent a morning motivation')}
+                              {n.type === 'daily_evening' && (n.body || 'sent an evening check-in')}
                             </p>
                             <span className="notif-item-time">{timeAgo(n.createdAt)}</span>
                           </div>
@@ -1395,10 +1449,8 @@ export default function CoreBuddyDashboard() {
         )}
 
         {/* Body Metrics Rings — premium only, only if setup done */}
-        {(isPremium ? metricsSetupDone : true) && (
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
-          <button className="cb-metric-rings-wrap" onClick={isPremium ? () => navigate('/client/core-buddy/metrics') : undefined}>
+        {isPremium && metricsSetupDone && (
+          <button className="cb-metric-rings-wrap" onClick={() => navigate('/client/core-buddy/metrics')}>
             <span className="cb-metric-rings-title">Body Metrics</span>
             <div className="cb-metric-rings-row">
               {[
@@ -1433,7 +1485,40 @@ export default function CoreBuddyDashboard() {
             </div>
             <span className="cb-metric-rings-cta">View details &rarr;</span>
           </button>
-          </div>
+        )}
+
+        {/* Nutrition Rings — premium only, matches body metrics style */}
+        {isPremium && (
+          <button className={`cb-metric-rings-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
+            <span className="cb-metric-rings-title">Today's Nutrition</span>
+            <div className="cb-metric-rings-row">
+              {[
+                { key: 'protein', label: 'Protein' },
+                { key: 'carbs', label: 'Carbs' },
+                { key: 'fats', label: 'Fats' },
+                { key: 'calories', label: 'Calories' },
+              ].map((m) => {
+                const pct = nutPct(m.key);
+                const r = 38;
+                const circ = 2 * Math.PI * r;
+                const off = circ - (pct / 100) * circ;
+                return (
+                  <div key={m.key} className="cb-metric-mini cb-nutrition-mini">
+                    <div className="cb-metric-mini-ring cb-nutrition-ring">
+                      <svg viewBox="0 0 100 100">
+                        <circle className="cb-metric-mini-track cb-nutrition-track" cx="50" cy="50" r={r} />
+                        <circle className="cb-metric-mini-fill cb-nutrition-fill" cx="50" cy="50" r={r}
+                          strokeDasharray={circ}
+                          strokeDashoffset={off} />
+                      </svg>
+                    </div>
+                    <span className="cb-metric-mini-label">{m.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <span className="cb-metric-rings-cta">Log meal &rarr;</span>
+          </button>
         )}
 
         {/* Coach Message */}
@@ -1447,225 +1532,75 @@ export default function CoreBuddyDashboard() {
           </div>
         )}
 
-        {/* Smart Nudge Card */}
-        {nudge && (
-          <button className="cb-nudge-card" onClick={nudge.action || undefined}
-            style={nudge.action ? undefined : { cursor: 'default' }}>
-            <div className="cb-nudge-ring">
-              <svg viewBox="0 0 100 100">
-                <circle className="cb-nudge-ring-track" cx="50" cy="50" r="38" />
-                <circle className="cb-nudge-ring-fill" cx="50" cy="50" r="38"
-                  strokeDasharray={2 * Math.PI * 38}
-                  strokeDashoffset={2 * Math.PI * 38 - (nudge.pct / 100) * 2 * Math.PI * 38} />
-              </svg>
-              <span className="cb-nudge-ring-val">{nudge.ringLabel}</span>
-            </div>
-            <div className="cb-nudge-info">
-              <span className="cb-nudge-label">{nudge.label}</span>
-              <span className="cb-nudge-title">{nudge.message}</span>
-              {nudge.cta && <span className="cb-nudge-cta">{nudge.cta} &rarr;</span>}
-            </div>
-          </button>
-        )}
-
         {/* Feature Cards */}
         <div className="cb-features">
 
-          {/* 1. Nutrition / Macros — locked for free tier */}
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
-          <button
-            className={`cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
-            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); } : undefined}
-          >
-            <div className="cb-card-top-row">
+          {/* Smart Nudge Card */}
+          {nudge && (
+            <button className="cb-feature-card cb-card-unified cb-card-nudge ripple-btn" onClick={nudge.action || undefined}
+              style={nudge.action ? undefined : { cursor: 'default' }}>
+              <div className="cb-nudge-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle className="cb-nudge-ring-track" cx="50" cy="50" r="38" />
+                  <circle className="cb-nudge-ring-fill" cx="50" cy="50" r="38"
+                    strokeDasharray={2 * Math.PI * 38}
+                    strokeDashoffset={2 * Math.PI * 38 - (nudge.pct / 100) * 2 * Math.PI * 38} />
+                </svg>
+                <span className="cb-nudge-ring-val">{nudge.ringLabel}</span>
+              </div>
               <div className="cb-card-content">
-                <h3>Today's Nutrition</h3>
+                <span className="cb-nudge-label">{nudge.label}</span>
+                <h3 className="cb-nudge-title-text">{nudge.message}</h3>
+                {nudge.cta && <span className="cb-nudge-cta">{nudge.cta} &rarr;</span>}
               </div>
-              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-            <div className="cb-card-preview-row">
-              <div className="cb-mini-rings">
-                {[
-                  { label: 'P', pct: nutPct('protein'), color: 'var(--color-primary)' },
-                  { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
-                  { label: 'F', pct: nutPct('fats'), color: 'var(--color-primary)' },
-                  { label: 'Cal', pct: nutPct('calories'), color: 'var(--color-primary)' },
-                ].map((ring) => {
-                  const r = 38;
-                  const circ = 2 * Math.PI * r;
-                  const off = circ - (ring.pct / 100) * circ;
-                  return (
-                    <div key={ring.label} className="cb-mini-ring">
-                      <svg viewBox="0 0 100 100">
-                        <circle className="cb-mini-track" cx="50" cy="50" r={r} />
-                        <circle className="cb-mini-fill" cx="50" cy="50" r={r}
-                          style={{ stroke: ring.color }}
-                          strokeDasharray={circ}
-                          strokeDashoffset={off} />
-                      </svg>
-                      <span style={{ color: ring.color }}>{ring.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
-          </button>
-          </div>
+            </button>
+          )}
 
-          {/* 2. Workouts */}
+          {/* Workouts */}
           <button
-            className={`cb-feature-card cb-card-workouts-hero ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
+            className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <h3 className="cb-hero-title">Workout</h3>
-            <div className="cb-hero-stats">
-              <span>{weeklyWorkouts} this week</span>
-              <span className="cb-hero-dot">&middot;</span>
-              <span>{totalWorkouts} total</span>
+            <div className="cb-card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5m-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0"/><path d="M2 21v-2a4 4 0 0 1 4-4h.5"/><path d="M17 3l4 4"/><path d="M21 3l-4 4"/><path d="M13.5 11.5l-3 3"/><path d="M17 17l-4-4"/><path d="M21 21l-4-4"/></svg>
             </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-
-          {/* 3. Habits */}
-          <button
-            className={`cb-feature-card cb-card-consistency ripple-btn${habitsDone ? ' cb-card-done' : ''}`}
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
-          >
             <div className="cb-card-content">
-              <h3>Habits</h3>
-              <div className={`cb-habit-dots${todayHabitsCount >= habitCount ? ' cb-habits-all-done' : ''}`}>
-                {Array.from({ length: habitCount }, (_, i) => (
-                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}${!i && todayHabitsCount > 0 && i >= todayHabitsCount ? ' cb-dot-warming' : ''}`}
-                    style={i >= todayHabitsCount && todayHabitsCount > 0 ? { '--glow-intensity': Math.min(todayHabitsCount / habitCount, 0.9) } : undefined} />
-                ))}
-              </div>
-              <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
+              <h3>Workout</h3>
+              <p>{weeklyWorkouts} this week &middot; {totalWorkouts} total</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 6. Leaderboard */}
+          {/* Activity Log */}
           <button
-            className="cb-feature-card cb-card-leaderboard ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
+            className="cb-feature-card cb-card-unified ripple-btn"
+            onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
           >
-            <div className="cb-card-content">
-              <h3>Leaderboard</h3>
-              {leaderboardTop3.length > 0 ? (
-                <div className="cb-lb-preview">
-                  {leaderboardTop3.map((entry, idx) => {
-                    const medal = ['#FFD700', '#A8B4C0', '#CD7F32'][idx];
-                    const initials = entry.name ? entry.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
-                    const isMe = entry.id === clientData?.id;
-                    const currentRank = idx + 1;
-                    const rankDelta = isMe && prevLeaderboardRank ? prevLeaderboardRank - currentRank : 0;
-                    return (
-                      <div key={entry.id} className={`cb-lb-entry${isMe ? ' cb-lb-me' : ''}`}>
-                        <div className="cb-lb-avatar" style={{ borderColor: medal }}>
-                          {entry.photoURL ? <img src={entry.photoURL} alt="" className="cb-lb-avatar-img" /> : <span>{initials}</span>}
-                        </div>
-                        <span className="cb-lb-rank" style={{ color: medal }}>
-                          #{currentRank}
-                          {isMe && rankDelta > 0 && <span className="cb-lb-movement cb-lb-up">+{rankDelta}</span>}
-                          {isMe && rankDelta < 0 && <span className="cb-lb-movement cb-lb-down">{rankDelta}</span>}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p>Opt in to compete with your Core Buddies</p>
-              )}
+            <div className="cb-card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
+            <div className="cb-card-content">
+              <h3>Log Activity</h3>
+              <p>Walk, run, cycle, swim &mdash; log any activity</p>
+            </div>
+            {weeklyActivities > 0 && <span className="cb-unified-stat">{weeklyActivities} this week</span>}
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
-          {/* 7. Challenges & Badges — side-by-side */}
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
-          <div className="cb-grid-row">
+          {/* View activity history link */}
+          {totalActivities > 0 && (
             <button
-              className="cb-feature-card cb-grid-card cb-card-challenge ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
+              className="cb-activity-history-link"
+              onClick={() => navigate('/client/core-buddy/activity')}
             >
-              <div className="cb-card-icon-wrap cb-card-icon-challenge">
-                <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
-              </div>
-              <div className="cb-card-content">
-                <h3>Challenges</h3>
-                <p>Push yourself with timed fitness challenges</p>
-              </div>
-              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              View activity history ({totalActivities} logged) &rarr;
             </button>
-            <button
-              className="cb-feature-card cb-grid-card cb-card-badges ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/badges'); }}
-            >
-              <div className="cb-card-icon-wrap cb-card-icon-badges">
-                <img src={BADGE_DEFS.find(b => b.id === 'first_workout')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
-              </div>
-              <div className="cb-card-content">
-                <h3>Badges</h3>
-                <p>Collect badges as you hit milestones</p>
-              </div>
-              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
-          </div>
+          )}
 
-          {/* 8. Buddies — locked for free tier */}
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
-          <button
-            className="cb-feature-card cb-card-buddies ripple-btn"
-            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/buddies'); } : undefined}
-          >
-            <div className="cb-card-content">
-              <h3>Buddies</h3>
-              <p>Connect with other members and track each other's progress</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          </div>
+          {/* Cards moved to FAB menu: Habits, Leaderboard, Challenges, Badges, Buddies, Body Metrics */}
 
-          {/* 9. Body Metrics — locked for free tier */}
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
-          <button
-            className="cb-feature-card cb-card-metrics ripple-btn"
-            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/metrics'); } : undefined}
-          >
-            <div className="cb-card-metrics-ring">
-              {(() => {
-                const r = 38;
-                const circ = 2 * Math.PI * r;
-                const off = circ - (metricsOverallPct / 100) * circ;
-                return (
-                  <svg viewBox="0 0 100 100">
-                    <circle className="cb-metrics-ring-track" cx="50" cy="50" r={r} />
-                    <circle className="cb-metrics-ring-fill" cx="50" cy="50" r={r}
-                      strokeDasharray={circ}
-                      strokeDashoffset={off} />
-                  </svg>
-                );
-              })()}
-              <span className="cb-metrics-ring-val">{metricsSetupDone ? `${metricsOverallPct}%` : '?'}</span>
-            </div>
-            <div className="cb-card-content">
-              <h3>Body Metrics</h3>
-              <p>{metricsSetupDone
-                ? (metricsNeedsRemeasure ? "It's time to measure up!" : 'Track your body transformation')
-                : 'Set up your measurements & targets'}</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          </div>
-
-          {/* My Journey — locked for free tier */}
-          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
-          {!isPremium && <LockBadge />}
+          {/* My Journey — hidden for free tier */}
+          {isPremium && (
           <div className="cb-journey-section">
             <h3 className="cb-journey-title">My Journey</h3>
 
@@ -1686,16 +1621,16 @@ export default function CoreBuddyDashboard() {
                   value={journeyText}
                   onChange={handleJourneyTextInput}
                   rows={1}
-                  maxLength={500}
+                  maxLength={2000}
                 />
                 {mentionActive && mentionTarget === 'compose' && mentionResults.length > 0 && (
                   <div className="mention-dropdown">
                     {mentionResults.map(c => (
                       <button key={c.id} className="mention-option" onClick={() => insertMention(c, 'compose')}>
                         <div className="mention-option-avatar">
-                          {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                          {c.id === '__everyone__' ? <span>@</span> : c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
                         </div>
-                        <span>{c.name}</span>
+                        <span>{c.id === '__everyone__' ? 'everyone — notify all buddies' : c.name}</span>
                       </button>
                     ))}
                   </div>
@@ -1713,11 +1648,9 @@ export default function CoreBuddyDashboard() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                   </button>
                   <input ref={journeyFileRef} type="file" accept="image/*" onChange={handleJourneyImageSelect} hidden />
-                  {(journeyText.trim() || journeyImage) && (
-                    <button className="journey-post-btn" onClick={handleJourneyPost} disabled={journeyPosting}>
-                      {journeyPosting ? <div className="journey-btn-spinner" /> : 'Post'}
-                    </button>
-                  )}
+                  <button className="journey-post-btn" onClick={handleJourneyPost} disabled={journeyPosting || (!journeyText.trim() && !journeyImage)}>
+                    {journeyPosting ? <div className="journey-btn-spinner" /> : 'Post'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1898,16 +1831,16 @@ export default function CoreBuddyDashboard() {
                             value={commentText[post.id] || ''}
                             onChange={e => handleCommentInputChange(post.id, e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') handleJourneyComment(post.id); }}
-                            maxLength={300}
+                            maxLength={1000}
                           />
                           {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
                             <div className="mention-dropdown mention-dropdown-up">
                               {mentionResults.map(c => (
                                 <button key={c.id} className="mention-option" onClick={() => insertMention(c, post.id)}>
                                   <div className="mention-option-avatar">
-                                    {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                    {c.id === '__everyone__' ? <span>@</span> : c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
                                   </div>
-                                  <span>{c.name}</span>
+                                  <span>{c.id === '__everyone__' ? 'everyone — notify all buddies' : c.name}</span>
                                 </button>
                               ))}
                             </div>
@@ -1928,11 +1861,96 @@ export default function CoreBuddyDashboard() {
             )}
             </>
           </div>
-          </div>
+          )}
+
+          {/* Single upgrade CTA for free tier */}
+          {!isPremium && (
+            <button className="cb-upgrade-cta" onClick={() => navigate('/upgrade')}>
+              <span className="cb-upgrade-cta-text">Unlock the full experience</span>
+              <span className="cb-upgrade-cta-sub">Unlimited workout times, nutrition, buddies & more</span>
+              <svg className="cb-upgrade-cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </button>
           )}
 
         </div>
       </main>
+
+      {/* FAB + Overlay Menu */}
+      <button
+        className={`cb-fab${fabOpen ? ' cb-fab-open cb-fab-hidden' : ''}${showActivityLogger ? ' cb-fab-hidden' : ''}`}
+        onClick={() => setFabOpen(prev => !prev)}
+        aria-label={fabOpen ? 'Close menu' : 'Open menu'}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <rect x="3" y="3" width="8" height="8" rx="2" />
+          <rect x="13" y="3" width="8" height="8" rx="2" />
+          <rect x="3" y="13" width="8" height="8" rx="2" />
+          <rect x="13" y="13" width="8" height="8" rx="2" />
+        </svg>
+      </button>
+
+      {fabOpen && (
+        <div className="cb-fab-overlay" onClick={() => setFabOpen(false)}>
+          <div className="cb-fab-sheet" onClick={e => e.stopPropagation()}>
+            <div className="cb-fab-header">
+              <h3>Quick Access</h3>
+              <button className="cb-fab-close" onClick={() => setFabOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="cb-fab-grid">
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/consistency'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Habits</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/leaderboard'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Leaderboard</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/badges'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Badges</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/challenges'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Challenges</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/buddies'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Buddies</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/metrics'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Body Metrics</span>
+            </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Activity Logger Modal */}
+      <ActivityLogger
+        open={showActivityLogger}
+        onClose={() => setShowActivityLogger(false)}
+        clientData={clientData}
+        onLogged={() => {
+          setWeeklyActivities(c => c + 1);
+          setTotalActivities(c => c + 1);
+          showToast('Activity logged!', 'success');
+        }}
+      />
 
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />

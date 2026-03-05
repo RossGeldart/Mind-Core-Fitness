@@ -30,7 +30,7 @@
 .wk-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 40px;
+  padding-bottom: 80px;
 }
 
 .wk-page-center {
@@ -2900,119 +2900,124 @@
   margin: 4px 0 0;
 }
 
-/* Hero heading with circle-framed logo */
-.wk-hub-heading-hero {
-  padding: 8px 0 20px;
-}
-
-.wk-hub-circle-frame {
-  display: inline-block;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 14px;
-  border-radius: 50%;
-  border: 3px solid var(--color-primary);
-  box-shadow:
-    0 0 0 6px rgba(var(--color-primary-rgb), 0.12),
-    0 8px 24px rgba(0, 0, 0, 0.2);
-  animation: hubLogoEntry 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  overflow: hidden;
-}
-
-.wk-hub-circle-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-@keyframes hubLogoEntry {
-  from { opacity: 0; transform: scale(0.6) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
 
 /* ===== Launch Zone ===== */
 .wk-hub-launch-zone {
-  background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 100%);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
-  border-radius: 16px;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
-/* Stats banner */
-.wk-hub-stats {
+/* ===== Unified hub card (matches dashboard cb-feature-card) ===== */
+.wk-hub-card {
+  position: relative;
   display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.wk-hub-stat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 10px 6px;
+  gap: 14px;
+  padding: 18px 16px;
+  min-height: 88px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  box-shadow: var(--shadow-glow);
   animation: hubCardIn 0.4s ease both;
 }
 
-.wk-hub-stat-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--color-primary);
-  line-height: 1.2;
+[data-theme="dark"] .wk-hub-card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.wk-hub-stat-value small {
-  font-size: 0.65rem;
-  font-weight: 600;
-  opacity: 0.7;
+.wk-hub-card:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
 }
 
-.wk-hub-stat-focus {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
+.wk-hub-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.wk-hub-stat-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
-}
-
-/* Motivational tip */
-.wk-hub-tip {
+.wk-hub-card-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  margin-top: 14px;
-  margin-bottom: 0;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.wk-hub-card-icon--primary {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+
+.wk-hub-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wk-hub-card-body h3 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-hub-card-body p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-hub-card-arrow {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  opacity: 0.25;
+}
+
+/* Motivational tip – multi-line readable card */
+.wk-hub-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
   background: rgba(var(--color-primary-rgb), 0.06);
   border-left: 3px solid rgba(var(--color-primary-rgb), 0.35);
-  border-radius: 0 10px 10px 0;
-  font-size: 0.75rem;
+  border-radius: 0 12px 12px 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
   font-style: italic;
   color: var(--text-tertiary, var(--text-secondary));
-  line-height: 1.45;
+  line-height: 1.5;
   animation: hubCardIn 0.4s ease 0.15s both;
 }
 
 .wk-hub-tip svg {
   flex-shrink: 0;
+  margin-top: 2px;
   color: var(--color-primary);
   opacity: 0.7;
 }
 
-/* Glow pulse on New Workout button – runs twice on entry then stops */
+/* Glow pulse on New Workout card – runs twice on entry then stops */
 .wk-hub-new-glow {
   position: relative;
   overflow: visible;
@@ -3085,64 +3090,7 @@
   opacity: 0.8;
 }
 
-/* Action buttons */
-.wk-hub-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 0;
-}
-
-.wk-hub-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 14px 16px;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s, opacity 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.wk-hub-action-btn:active {
-  transform: scale(0.97);
-}
-
-.wk-hub-action-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.wk-hub-new {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-}
-
-.wk-hub-quick {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  flex-wrap: wrap;
-}
-
-.wk-hub-quick svg {
-  color: var(--color-primary);
-}
-
-.wk-hub-quick-meta {
-  display: block;
-  width: 100%;
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-  margin-top: -2px;
-  padding-left: 32px;
-}
+/* (Old action-btn / quick styles removed – replaced by .wk-hub-card) */
 
 /* Hub sections */
 .wk-hub-section {
@@ -3192,57 +3140,7 @@
   margin-left: 4px;
 }
 
-/* Smart Suggestion */
-.wk-hub-suggestion {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 10px;
-  background: rgba(var(--color-primary-rgb), 0.06);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  font-family: inherit;
-}
-
-.wk-hub-suggestion:active {
-  transform: scale(0.97);
-}
-
-.wk-hub-suggestion-bulb {
-  color: var(--color-primary);
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.wk-hub-suggestion-info {
-  flex: 1;
-  text-align: left;
-}
-
-.wk-hub-suggestion-label {
-  display: block;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.wk-hub-suggestion-cta {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--color-primary);
-  margin-top: 2px;
-}
-
-.wk-hub-suggestion svg:last-child {
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
+/* (Old suggestion styles removed – replaced by .wk-hub-card) */
 
 /* Saved workouts list */
 .wk-hub-empty {
@@ -3263,51 +3161,62 @@
   line-height: 1.5;
 }
 
+/* Saved / Recent dropdown cards – activity-logger style */
 .wk-hub-saved-categories {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .wk-hub-saved-cat {
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  background: var(--bg-card);
 }
 
 .wk-hub-saved-cat-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   width: 100%;
-  padding: 10px 14px;
-  background: none;
-  border: none;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+  text-align: left;
 }
 
+.wk-hub-saved-cat-header:hover,
 .wk-hub-saved-cat-header:active {
-  background: rgba(var(--color-primary-rgb), 0.04);
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
 }
 
-.wk-hub-saved-cat-label {
+.wk-hub-saved-cat--open .wk-hub-saved-cat-header {
+  border-radius: 14px 14px 0 0;
+  border-color: rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
+}
+
+.wk-hub-saved-cat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
-.wk-hub-saved-cat-count {
-  font-size: 0.72rem;
+.wk-hub-saved-cat-name {
+  flex: 1;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-secondary, rgba(0,0,0,0.06));
-  border-radius: 10px;
-  padding: 1px 7px;
-  min-width: 18px;
-  text-align: center;
+  color: var(--text-primary);
 }
 
 .wk-hub-saved-cat-chevron {
@@ -3320,11 +3229,18 @@
   transform: rotate(180deg);
 }
 
-.wk-hub-saved-cat .wk-hub-saved-list {
-  padding: 0 8px 8px;
+.wk-hub-saved-cat-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.03);
 }
 
-.wk-hub-saved-cat .wk-hub-saved-card {
+.wk-hub-saved-cat-dropdown .wk-hub-saved-card {
   border-radius: 10px;
 }
 
@@ -3485,6 +3401,152 @@
   flex-shrink: 0;
 }
 
+/* ==================== FAB BUTTON & BOTTOM SHEET ==================== */
+
+/* FAB Button */
+.wk-fab {
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--text-on-primary, white);
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, opacity 0.3s ease;
+}
+.wk-fab:active {
+  transform: scale(0.92);
+}
+.wk-fab.wk-fab-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.5);
+}
+.wk-fab svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wk-fab.wk-fab-open {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* FAB Overlay */
+.wk-fab-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: wkFabOverlayIn 0.2s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@keyframes wkFabOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* FAB Bottom Sheet – matches Activity Logger modal style */
+.wk-fab-sheet {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 32px;
+  animation: wkFabSheetIn 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes wkFabSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* FAB Header */
+.wk-fab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.wk-fab-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+.wk-fab-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.wk-fab-close:hover {
+  background: var(--bg-hover);
+}
+/* Invisible spacer to keep title centered */
+.wk-fab-header::before {
+  content: '';
+  width: 32px;
+}
+
+/* FAB Body – scrollable content area */
+.wk-fab-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Sections inside sheet need less bottom margin */
+.wk-fab-body .wk-hub-section {
+  margin-bottom: 16px;
+}
+
+/* Desktop: center the sheet */
+@media (min-width: 481px) {
+  .wk-fab-overlay {
+    align-items: center;
+  }
+  .wk-fab-sheet {
+    border-radius: 20px;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 80vh;
+  }
+}
+
+/* Dark mode: translucent dark glass */
+[data-theme="dark"] .wk-fab-sheet {
+  background: rgba(30, 30, 30, 0.85);
+}
+
 /* ==================== SAVE WORKOUT BUTTON & MODAL ==================== */
 
 .wk-btn-save {
@@ -3615,4 +3677,9 @@
 
 .wk-complete-save-btn svg {
   color: #fff;
+}
+
+/* Mono dark: ensure primary-bg badges have readable text */
+[data-mono="true"][data-theme="dark"] .wk-hub-count {
+  color: #111;
 }

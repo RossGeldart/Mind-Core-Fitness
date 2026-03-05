@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
-  updateDoc, increment, serverTimestamp, Timestamp
+  updateDoc, increment, serverTimestamp, Timestamp, orderBy
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -50,8 +50,12 @@ export default function CoreBuddyBuddies() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [toast, setToast] = useState(null);
+  const [fabOpen, setFabOpen] = useState(false);
 
   // Feed state
+  const [feedMode, setFeedMode] = useState('buddyFeed'); // 'buddyFeed' | 'announcements'
+  const [announcements, setAnnouncements] = useState([]);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(false);
   const [feedPosts, setFeedPosts] = useState([]);
   const [feedLoading, setFeedLoading] = useState(false);
   const [likedPosts, setLikedPosts] = useState(new Set());
@@ -75,12 +79,15 @@ export default function CoreBuddyBuddies() {
   }, []);
 
   // @ mention helpers
+  const everyoneOption = { id: '__everyone__', name: 'everyone', photoURL: null };
   const handleMentionInput = (text, target) => {
     const atMatch = text.match(/@(\w*)$/);
     if (atMatch) {
       setMentionActive(true);
       setMentionTarget(target);
-      const filtered = buddies.filter(c => c.name && c.name.toLowerCase().includes(atMatch[1].toLowerCase())).slice(0, 5);
+      const q = atMatch[1].toLowerCase();
+      const filtered = buddies.filter(c => c.name && c.name.toLowerCase().includes(q)).slice(0, 5);
+      if ('everyone'.startsWith(q)) filtered.unshift(everyoneOption);
       setMentionResults(filtered);
     } else {
       setMentionActive(false);
@@ -100,8 +107,12 @@ export default function CoreBuddyBuddies() {
     if (!text) return text;
     const parts = text.split(/(@\w[\w\s]*?\s)/g);
     return parts.map((part, i) => {
-      if (part.startsWith('@') && buddies.some(c => part.trim() === `@${c.name}`)) {
-        return <span key={i} className="mention-highlight">{part.trim()}</span>;
+      const trimmed = part.trim();
+      if (trimmed === '@everyone') {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
+      }
+      if (part.startsWith('@') && buddies.some(c => trimmed === `@${c.name}`)) {
+        return <span key={i} className="mention-highlight">{trimmed}</span>;
       }
       return part;
     });
@@ -345,8 +356,27 @@ export default function CoreBuddyBuddies() {
   }, [clientData, buddies]);
 
   useEffect(() => {
-    if (buddies.length > 0 && tab === 'feed') fetchFeed();
-  }, [buddies, tab, fetchFeed]);
+    if (buddies.length > 0 && tab === 'feed' && feedMode === 'buddyFeed') fetchFeed();
+  }, [buddies, tab, feedMode, fetchFeed]);
+
+  // ── Announcements fetch ──
+  const fetchAnnouncements = useCallback(async () => {
+    setAnnouncementsLoading(true);
+    try {
+      const snap = await getDocs(
+        query(collection(db, 'announcements'), orderBy('createdAt', 'desc'))
+      );
+      setAnnouncements(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) {
+      console.error('Error loading announcements:', err);
+    } finally {
+      setAnnouncementsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'feed' && feedMode === 'announcements') fetchAnnouncements();
+  }, [tab, feedMode, fetchAnnouncements]);
 
   const toggleFeedLike = async (postId) => {
     if (!clientData) return;
@@ -439,14 +469,24 @@ export default function CoreBuddyBuddies() {
       const post = feedPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment');
       // Notify @mentioned users
+      const notifiedComment = new Set();
+      const hasEveryoneComment = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(text) || text === '@everyone';
+      if (hasEveryoneComment) {
+        buddies.forEach(c => {
+          if (c.id && !notifiedComment.has(c.id)) {
+            notifiedComment.add(c.id);
+            createNotification(c.id, 'mention');
+          }
+        });
+      }
       const mentionMatches = text.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
       if (mentionMatches) {
-        const notified = new Set();
         mentionMatches.forEach(m => {
           const name = m.slice(1).trim();
+          if (name.toLowerCase() === 'everyone') return;
           const client = buddies.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
-          if (client && !notified.has(client.id)) {
-            notified.add(client.id);
+          if (client && !notifiedComment.has(client.id)) {
+            notifiedComment.add(client.id);
             createNotification(client.id, 'mention');
           }
         });
@@ -484,7 +524,9 @@ export default function CoreBuddyBuddies() {
 
   const handleCommentImageSelect = (postId, e) => {
     const file = e.target.files?.[0];
+    if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
     if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image', 'error'); return; }
     if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB', 'error'); return; }
     setCommentImage(prev => ({ ...prev, [postId]: file }));
     const reader = new FileReader();
@@ -529,12 +571,6 @@ export default function CoreBuddyBuddies() {
       <main className="bdy-main">
         <h1 className="bdy-title">Buddies</h1>
 
-        <button className="bdy-leaderboard-link" onClick={() => navigate('/client/leaderboard')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><rect x="6" y="9" width="12" height="13" rx="2"/><path d="M12 9v13"/><path d="M2 22h20"/></svg>
-          <span>Leaderboard</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-
         {/* Tabs */}
         <div className="bdy-tabs">
           <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
@@ -550,10 +586,6 @@ export default function CoreBuddyBuddies() {
             <span>Requests</span>
             {pendingCount > 0 && <span className="bdy-tab-badge">{pendingCount}</span>}
           </button>
-          <button className={`bdy-tab${tab === 'search' ? ' active' : ''}`} onClick={() => setTab('search')}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <span>Find</span>
-          </button>
         </div>
 
         {loading ? (
@@ -563,7 +595,55 @@ export default function CoreBuddyBuddies() {
             {/* ── Feed ── */}
             {tab === 'feed' && (
               <div className="bdy-section">
-                {buddies.length === 0 ? (
+                {/* Feed mode toggle */}
+                <div className="bdy-feed-toggle">
+                  <button
+                    className={`bdy-feed-toggle-btn${feedMode === 'buddyFeed' ? ' active' : ''}`}
+                    onClick={() => setFeedMode('buddyFeed')}
+                  >
+                    Buddy Feed
+                  </button>
+                  <button
+                    className={`bdy-feed-toggle-btn${feedMode === 'announcements' ? ' active' : ''}`}
+                    onClick={() => setFeedMode('announcements')}
+                  >
+                    Announcements
+                  </button>
+                </div>
+
+                {feedMode === 'announcements' ? (
+                  announcementsLoading ? (
+                    <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
+                  ) : announcements.length === 0 ? (
+                    <div className="bdy-empty">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+                      <h3>No announcements</h3>
+                      <p>Check back later for updates!</p>
+                    </div>
+                  ) : (
+                    <div className="bdy-feed-list">
+                      {announcements.map(a => (
+                        <div key={a.id} className="bdy-feed-post bdy-announcement-post">
+                          <div className="bdy-feed-post-header">
+                            <div className="bdy-feed-avatar bdy-announcement-avatar">
+                              <img src="/Logo.webp" alt="MCF" />
+                            </div>
+                            <div className="bdy-feed-meta">
+                              <span className="bdy-feed-name">{a.authorName || 'Mind Core Fitness'}</span>
+                              <span className="bdy-feed-time">{timeAgo(a.createdAt)}</span>
+                            </div>
+                            <span className="bdy-announcement-badge">Announcement</span>
+                          </div>
+                          <h3 className="bdy-announcement-title">{a.title}</h3>
+                          <p className="bdy-feed-content">{a.content}</p>
+                          {a.imageURL && (
+                            <div className="bdy-feed-image"><img src={a.imageURL} alt="" loading="lazy" /></div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                ) : buddies.length === 0 ? (
                   <div className="bdy-empty">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
                     <h3>No buddies yet</h3>
@@ -730,16 +810,16 @@ export default function CoreBuddyBuddies() {
                                 value={commentText[post.id] || ''}
                                 onChange={e => { setCommentText(prev => ({ ...prev, [post.id]: e.target.value })); handleMentionInput(e.target.value, post.id); }}
                                 onKeyDown={e => { if (e.key === 'Enter') handleFeedComment(post.id); }}
-                                maxLength={300}
+                                maxLength={1000}
                               />
                               {mentionActive && mentionTarget === post.id && mentionResults.length > 0 && (
                                 <div className="bdy-feed-mention-dropdown">
                                   {mentionResults.map(c => (
                                     <button key={c.id} className="bdy-feed-mention-option" onClick={() => insertMention(c, post.id)}>
                                       <div className="bdy-feed-mention-avatar">
-                                        {c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                                        {c.id === '__everyone__' ? <span>@</span> : c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
                                       </div>
-                                      <span>{c.name}</span>
+                                      <span>{c.id === '__everyone__' ? 'everyone — notify all buddies' : c.name}</span>
                                     </button>
                                   ))}
                                 </div>
@@ -963,6 +1043,48 @@ export default function CoreBuddyBuddies() {
       </main>
 
       <CoreBuddyNav active="buddies" />
+
+      {/* FAB Button */}
+      <button
+        className={`bdy-fab${fabOpen ? ' bdy-fab-open bdy-fab-hidden' : ''}`}
+        onClick={() => setFabOpen(prev => !prev)}
+        aria-label={fabOpen ? 'Close menu' : 'Open menu'}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <rect x="3" y="3" width="8" height="8" rx="2" />
+          <rect x="13" y="3" width="8" height="8" rx="2" />
+          <rect x="3" y="13" width="8" height="8" rx="2" />
+          <rect x="13" y="13" width="8" height="8" rx="2" />
+        </svg>
+      </button>
+
+      {/* FAB Bottom Sheet */}
+      {fabOpen && (
+        <div className="bdy-fab-overlay" onClick={() => setFabOpen(false)}>
+          <div className="bdy-fab-sheet" onClick={e => e.stopPropagation()}>
+            <div className="bdy-fab-header">
+              <h3>Quick Access</h3>
+              <button className="bdy-fab-close" onClick={() => setFabOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="bdy-fab-grid">
+              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); setTab('search'); }}>
+                <span className="bdy-fab-item-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <span className="bdy-fab-item-label">Find</span>
+              </button>
+              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); navigate('/client/leaderboard'); }}>
+                <span className="bdy-fab-item-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                </span>
+                <span className="bdy-fab-item-label">Leaderboard</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
