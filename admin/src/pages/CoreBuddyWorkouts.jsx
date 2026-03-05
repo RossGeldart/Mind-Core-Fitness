@@ -686,6 +686,7 @@ export default function CoreBuddyWorkouts() {
   const [savedWorkouts, setSavedWorkouts] = useState([]);
   const [savedWorkoutsLoaded, setSavedWorkoutsLoaded] = useState(false);
   const [expandedSavedCats, setExpandedSavedCats] = useState({});
+  const [recentOpen, setRecentOpen] = useState(false);
   const [savingWorkout, setSavingWorkout] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveWorkoutName, setSaveWorkoutName] = useState('');
@@ -1913,47 +1914,37 @@ export default function CoreBuddyWorkouts() {
               </div>
 
               <div className="wk-fab-body">
-                {/* Saved Workouts */}
-                {isPremium && (
-                <div className="wk-hub-section wk-hub-section--saved">
-                  <h3 className="wk-hub-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                    Saved Workouts
-                    {savedWorkouts.length > 0 && <span className="wk-hub-count">{savedWorkouts.length}</span>}
-                  </h3>
-                  {!savedWorkoutsLoaded ? (
-                    <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
-                  ) : savedWorkouts.length === 0 ? (
-                    <div className="wk-hub-empty wk-hub-empty-enhanced">
-                      <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                      <p><strong>No saved workouts yet</strong></p>
-                      <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
-                    </div>
-                  ) : (
-                    <div className="wk-hub-saved-categories">
-                      {FOCUS_AREAS.map(fa => {
+                <div className="wk-hub-saved-categories">
+
+                  {/* Saved workout category cards */}
+                  {isPremium && (
+                    !savedWorkoutsLoaded ? (
+                      <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
+                    ) : savedWorkouts.length === 0 ? (
+                      <div className="wk-hub-empty wk-hub-empty-enhanced">
+                        <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        <p><strong>No saved workouts yet</strong></p>
+                        <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
+                      </div>
+                    ) : (
+                      FOCUS_AREAS.map(fa => {
                         const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
                         if (catWorkouts.length === 0) return null;
                         const isOpen = expandedSavedCats[fa.key] || false;
-                        const catColor = FOCUS_COLORS[fa.key] || 'var(--color-primary)';
                         return (
-                          <div key={fa.key} className="wk-hub-saved-cat">
+                          <div key={fa.key} className={`wk-hub-saved-cat${isOpen ? ' wk-hub-saved-cat--open' : ''}`}>
                             <button
-                              className={`wk-hub-saved-cat-header${isOpen ? ' wk-hub-saved-cat-open' : ''}`}
-                              style={{ '--cat-color': catColor }}
+                              className="wk-hub-saved-cat-header"
                               onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
                             >
-                              <span className="wk-hub-saved-cat-icon" style={{ background: `${catColor}15`, color: catColor }}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                              <span className="wk-hub-saved-cat-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
                               </span>
-                              <span className="wk-hub-saved-cat-info">
-                                <span className="wk-hub-saved-cat-name">{fa.label}</span>
-                                <span className="wk-hub-saved-cat-sub">{catWorkouts.length} workout{catWorkouts.length !== 1 ? 's' : ''}</span>
-                              </span>
+                              <span className="wk-hub-saved-cat-name">{fa.label}</span>
                               <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                             </button>
                             {isOpen && (
-                              <div className="wk-hub-saved-list">
+                              <div className="wk-hub-saved-cat-dropdown">
                                 {catWorkouts.map((sw, i) => {
                                   const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
                                   const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
@@ -1979,65 +1970,73 @@ export default function CoreBuddyWorkouts() {
                             )}
                           </div>
                         );
-                      })}
-                    </div>
+                      })
+                    )
                   )}
-                </div>
-                )}
 
-                {/* Recent History */}
-                <div className="wk-hub-section wk-hub-section--recent">
-                  <h3 className="wk-hub-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Recent
-                  </h3>
-                  {recentWorkouts.length === 0 ? (
-                    <div className="wk-hub-empty wk-hub-empty-enhanced">
-                      <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      <p><strong>No workouts yet</strong></p>
-                      <p className="wk-hub-empty-sub">Complete your first workout to see your history here.</p>
-                    </div>
-                  ) : (
-                    <div className="wk-hub-recent-list">
-                      {recentWorkouts.map((rw, i) => {
-                        const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
-                        const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
-                        const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
-                        const ago = ts ? (() => {
-                          const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
-                          if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-                          if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-                          return `${Math.floor(diff / 86400)}d ago`;
-                        })() : '';
-                        return (
-                          <button
-                            key={i}
-                            className="wk-hub-recent-card"
-                            style={{ animationDelay: `${i * 0.05}s` }}
-                            onClick={() => {
-                              setFocusArea(rw.focus || 'core');
-                              setLevel(rw.level || 'intermediate');
-                              setDuration(rw.duration || 15);
-                              if (rw.equipment) setSelectedEquipment(rw.equipment);
-                              setFabOpen(false);
-                              setView('setup');
-                            }}
-                          >
-                            <div className="wk-hub-recent-info">
-                              <span className="wk-hub-recent-tags">
-                                <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
-                                <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
-                              </span>
-                            </div>
-                            <div className="wk-hub-recent-action">
-                              <span className="wk-hub-recent-time">{ago}</span>
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
+                  {/* Recent – same dropdown card */}
+                  <div className={`wk-hub-saved-cat${recentOpen ? ' wk-hub-saved-cat--open' : ''}`}>
+                    <button className="wk-hub-saved-cat-header" onClick={() => setRecentOpen(o => !o)}>
+                      <span className="wk-hub-saved-cat-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      </span>
+                      <span className="wk-hub-saved-cat-name">Recent</span>
+                      <svg className={`wk-hub-saved-cat-chevron${recentOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    {recentOpen && (
+                      recentWorkouts.length === 0 ? (
+                        <div className="wk-hub-saved-cat-dropdown">
+                          <div className="wk-hub-empty wk-hub-empty-enhanced">
+                            <p><strong>No workouts yet</strong></p>
+                            <p className="wk-hub-empty-sub">Complete your first workout to see history here.</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="wk-hub-saved-cat-dropdown">
+                          <div className="wk-hub-recent-list">
+                            {recentWorkouts.map((rw, i) => {
+                              const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
+                              const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
+                              const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
+                              const ago = ts ? (() => {
+                                const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
+                                if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                                if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                                return `${Math.floor(diff / 86400)}d ago`;
+                              })() : '';
+                              return (
+                                <button
+                                  key={i}
+                                  className="wk-hub-recent-card"
+                                  style={{ animationDelay: `${i * 0.05}s` }}
+                                  onClick={() => {
+                                    setFocusArea(rw.focus || 'core');
+                                    setLevel(rw.level || 'intermediate');
+                                    setDuration(rw.duration || 15);
+                                    if (rw.equipment) setSelectedEquipment(rw.equipment);
+                                    setFabOpen(false);
+                                    setView('setup');
+                                  }}
+                                >
+                                  <div className="wk-hub-recent-info">
+                                    <span className="wk-hub-recent-tags">
+                                      <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
+                                      <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
+                                    </span>
+                                  </div>
+                                  <div className="wk-hub-recent-action">
+                                    <span className="wk-hub-recent-time">{ago}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+
                 </div>
               </div>
             </div>
