@@ -1840,35 +1840,53 @@ export default function CoreBuddyWorkouts() {
               </div>
             )}
 
-            {/* Action buttons */}
-            <div className="wk-hub-actions">
-              <button className="wk-hub-action-btn wk-hub-new wk-hub-new-glow" onClick={() => setView('setup')}>
+            {/* Action cards – styled like dashboard feature cards */}
+            <button className="wk-hub-card wk-hub-new-glow" onClick={() => setView('setup')}>
+              <div className="wk-hub-card-icon wk-hub-card-icon--primary">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                New Workout
-              </button>
-              <button className="wk-hub-action-btn wk-hub-quick" onClick={quickStart} disabled={freeRandomiserLimitReached}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                Quick Start
-                <span className="wk-hub-quick-meta">&middot; {lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</span>
-              </button>
-            </div>
+              </div>
+              <div className="wk-hub-card-body">
+                <h3>New Workout</h3>
+                <p>Choose focus, level &amp; duration</p>
+              </div>
+              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
 
-            {/* Smart Suggestion */}
+            <button className="wk-hub-card" onClick={quickStart} disabled={freeRandomiserLimitReached}>
+              <div className="wk-hub-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <div className="wk-hub-card-body">
+                <h3>Quick Start</h3>
+                <p>{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</p>
+              </div>
+              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
             {smartSuggestion && (
-              <button className="wk-hub-suggestion" onClick={() => {
+              <button className="wk-hub-card" onClick={() => {
                 setFocusArea(smartSuggestion.focus);
                 setView('setup');
               }}>
-                <svg className="wk-hub-suggestion-bulb" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                <span className="wk-hub-suggestion-label">{smartSuggestion.message}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                <div className="wk-hub-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                </div>
+                <div className="wk-hub-card-body">
+                  <h3>{smartSuggestion.message}</h3>
+                  <p>Tap to set up</p>
+                </div>
+                <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
               </button>
             )}
 
-            {/* Motivational tip */}
-            <div className="wk-hub-tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-              {HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}
+            <div className="wk-hub-card wk-hub-card--tip">
+              <div className="wk-hub-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              </div>
+              <div className="wk-hub-card-body">
+                <h3>Tip</h3>
+                <p>{HUB_TIPS[Math.floor(Date.now() / 86400000) % HUB_TIPS.length]}</p>
+              </div>
             </div>
           </div>
 
