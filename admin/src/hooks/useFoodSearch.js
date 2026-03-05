@@ -84,8 +84,9 @@ const scoreRelevance = (name, brand, term) => {
   const extraWords = Math.max(0, nameWords.length - termWords.length);
   score -= extraWords * 15;
 
-  // Brand matches a search word — boost (e.g. searching "Tesco banana")
-  if (termWords.some(w => b === w || b.startsWith(w))) score += 25;
+  // Brand matches a search word — strong boost (e.g. searching "Tesco banana")
+  const brandWords = coreWords(brand);
+  if (termWords.some(tw => brandWords.some(bw => wordMatches(tw, bw)) || b.startsWith(tw))) score += 100;
 
   // Shorter names are more specific/relevant
   score += Math.max(0, 20 - n.length);
@@ -102,17 +103,26 @@ const filterAndScore = (products, searchWords, term) => {
     .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
     .filter(p => {
       const nameWords = coreWords(p.name);
+      const brandWords = coreWords(p.brand);
 
-      // All search words must appear as whole words in the product name
+      // Each search word must match in the name OR brand
+      // e.g. "Asda banana" → "Asda" matches brand, "banana" matches name
       const allMatch = termWords.every(tw =>
-        nameWords.some(nw => wordMatches(tw, nw))
+        nameWords.some(nw => wordMatches(tw, nw)) ||
+        brandWords.some(bw => wordMatches(tw, bw))
       );
       if (!allMatch) return false;
 
+      // At least one search word must match the product name itself
+      // (prevents matching random products that just happen to be by a searched brand)
+      const anyNameMatch = termWords.some(tw =>
+        nameWords.some(nw => wordMatches(tw, nw))
+      );
+      if (!anyNameMatch) return false;
+
       // Strict filtering: every extra word in the name (beyond what was searched)
       // must be a harmless descriptor like "organic", "fairtrade", "loose" etc.
-      // This means "banana" matches "Organic Fairtrade Bananas" but NOT
-      // "Banana chips", "Strawberry Banana", or "dried bananas"
+      // "Banana chips", "Strawberry Banana", "dried bananas" all get rejected
       const extraNameWords = nameWords.filter(nw =>
         !termWords.some(tw => wordMatches(tw, nw))
       );
