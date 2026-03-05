@@ -2401,7 +2401,7 @@
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.35);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2415,9 +2415,6 @@
 }
 .cb-fab svg {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.cb-fab.cb-fab-open svg {
-  transform: rotate(45deg);
 }
 .cb-fab.cb-fab-open {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);

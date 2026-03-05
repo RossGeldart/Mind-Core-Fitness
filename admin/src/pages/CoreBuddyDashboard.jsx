@@ -242,7 +242,7 @@ export default function CoreBuddyDashboard() {
         {
           selector: '.cb-fab',
           title: 'Quick Menu',
-          body: 'Tap the + button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
+          body: 'Tap the menu button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
         },
         {
           selector: '.cb-journey-section',
@@ -1881,9 +1881,11 @@ export default function CoreBuddyDashboard() {
         onClick={() => setFabOpen(prev => !prev)}
         aria-label={fabOpen ? 'Close menu' : 'Open menu'}
       >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="12" y1="5" x2="12" y2="19" className="cb-fab-v" />
-          <line x1="5" y1="12" x2="19" y2="12" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <rect x="3" y="3" width="8" height="8" rx="2" />
+          <rect x="13" y="3" width="8" height="8" rx="2" />
+          <rect x="3" y="13" width="8" height="8" rx="2" />
+          <rect x="13" y="13" width="8" height="8" rx="2" />
         </svg>
       </button>
 
