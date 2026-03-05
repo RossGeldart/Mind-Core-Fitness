@@ -2493,21 +2493,21 @@
 }
 
 /* ── FAB Button ── */
+/* ── FAB Button ── */
 .cb-fab {
   position: fixed;
-  /* 50px nav height + safe-area for home bar + 14px gap */
   bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   right: max(18px, env(safe-area-inset-right, 0px));
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.35);
   background: var(--color-primary);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
   cursor: pointer;
   z-index: 1000;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
@@ -2525,86 +2525,150 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* ── FAB Overlay ── */
+/* ── FAB Overlay (bottom-sheet style, matches Activity Logger) ── */
 .cb-fab-overlay {
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  animation: cbFabOverlayIn 0.25s ease-out;
+  animation: cbFabOverlayIn 0.2s ease;
 }
 @keyframes cbFabOverlayIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* ── FAB Menu Grid ── */
-.cb-fab-menu {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  padding: 24px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  max-width: 340px;
+/* ── FAB Bottom Sheet ── */
+.cb-fab-sheet {
+  background: var(--bg-card-elevated, var(--bg-card));
+  border-radius: 20px 20px 0 0;
   width: 100%;
-  animation: cbFabMenuIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 480px;
+  padding: 20px 20px 32px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  animation: cbFabSheetIn 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
 }
-@keyframes cbFabMenuIn {
-  from { opacity: 0; transform: scale(0.85) translateY(30px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes cbFabSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
 }
 
-/* ── FAB Menu Items ── */
+/* ── FAB Header ── */
+.cb-fab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cb-fab-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+.cb-fab-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.cb-fab-close:hover {
+  background: var(--bg-hover);
+}
+/* Invisible spacer to keep title centered */
+.cb-fab-header::before {
+  content: '';
+  width: 32px;
+}
+
+/* ── FAB Menu Grid (matches al-type-grid) ── */
+.cb-fab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* ── FAB Menu Items (matches al-type-btn) ── */
 .cb-fab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 18px 8px;
-  border: none;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s;
+}
+.cb-fab-item:hover,
+.cb-fab-item:active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
 }
 .cb-fab-item:active {
-  transform: scale(0.93);
-  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
 }
+
+/* Icon circle (matches al-type-icon) */
 .cb-fab-item-icon {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: var(--color-primary-bg, rgba(184, 49, 61, 0.08));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  color: var(--color-primary);
 }
+
+/* Label */
 .cb-fab-item-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
   text-align: center;
   line-height: 1.2;
 }
 
 /* Stagger animation for each item */
-.cb-fab-item:nth-child(1) { animation: cbFabItemIn 0.3s 0.05s both; }
-.cb-fab-item:nth-child(2) { animation: cbFabItemIn 0.3s 0.1s both; }
-.cb-fab-item:nth-child(3) { animation: cbFabItemIn 0.3s 0.15s both; }
-.cb-fab-item:nth-child(4) { animation: cbFabItemIn 0.3s 0.2s both; }
-.cb-fab-item:nth-child(5) { animation: cbFabItemIn 0.3s 0.25s both; }
-.cb-fab-item:nth-child(6) { animation: cbFabItemIn 0.3s 0.3s both; }
+.cb-fab-item:nth-child(1) { animation: cbFabItemIn 0.3s 0.03s both; }
+.cb-fab-item:nth-child(2) { animation: cbFabItemIn 0.3s 0.06s both; }
+.cb-fab-item:nth-child(3) { animation: cbFabItemIn 0.3s 0.09s both; }
+.cb-fab-item:nth-child(4) { animation: cbFabItemIn 0.3s 0.12s both; }
+.cb-fab-item:nth-child(5) { animation: cbFabItemIn 0.3s 0.15s both; }
+.cb-fab-item:nth-child(6) { animation: cbFabItemIn 0.3s 0.18s both; }
 
 @keyframes cbFabItemIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.9); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Desktop: center the sheet */
+@media (min-width: 481px) {
+  .cb-fab-overlay {
+    align-items: center;
+  }
+  .cb-fab-sheet {
+    border-radius: 20px;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 80vh;
+  }
 }
