@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { awardBadge } from '../utils/awardBadge';
 import { parseProduct } from '../utils/productParser';
+import { getCountryLabel } from '../utils/countryDetect';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import useBarcodeScanner from '../hooks/useBarcodeScanner';
@@ -1142,6 +1143,9 @@ export default function CoreBuddyNutrition() {
                     {searchLoading ? '...' : 'Search'}
                   </button>
                 </div>
+                {getCountryLabel() && (
+                  <p className="nut-search-country-hint">Showing {getCountryLabel()} products first</p>
+                )}
                 <div className="nut-search-results">
                   {searchResults.map((item, i) => (
                     <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); if (item.portion) { setPortionCount(1); setServingInput(String(item.portion.weight)); setServingMode('portion'); } else { setPortionCount(0); setServingInput(String(item.servingValue || 100)); setServingMode('weight'); } }}>
