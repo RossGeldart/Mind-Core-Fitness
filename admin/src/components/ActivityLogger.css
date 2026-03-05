@@ -23,7 +23,9 @@
 }
 
 .al-modal {
-  background: var(--bg-card-elevated, var(--bg-card));
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -262,6 +264,11 @@
 .al-save-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Dark mode: translucent dark glass */
+[data-theme="dark"] .al-modal {
+  background: rgba(30, 30, 30, 0.85);
 }
 
 /* Responsive */
