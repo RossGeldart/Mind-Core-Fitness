@@ -1809,10 +1809,7 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
-          <div className="wk-hub-heading wk-hub-heading-hero">
-            <div className="wk-hub-circle-frame">
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-hub-circle-logo" />
-            </div>
+          <div className="wk-hub-heading">
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
           </div>
