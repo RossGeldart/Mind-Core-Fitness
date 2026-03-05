@@ -3428,11 +3428,10 @@
   background: rgba(0, 0, 0, 0.7);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  animation: wkFabOverlayIn 0.3s ease;
+  animation: wkFabOverlayIn 0.2s ease;
   display: flex;
-  flex-direction: column;
   align-items: flex-end;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 @keyframes wkFabOverlayIn {
@@ -3440,27 +3439,21 @@
   to   { opacity: 1; }
 }
 
-/* FAB Bottom Sheet */
+/* FAB Bottom Sheet – matches Activity Logger modal style */
 .wk-fab-sheet {
   background: var(--bg-card-elevated, var(--bg-card));
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
-  max-height: 80vh;
+  max-height: 85vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   padding: 20px 20px 32px;
-  animation: wkFabSheetIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] .wk-fab-sheet {
-  background: #1a1a1a;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="light"] .wk-fab-sheet {
-  background: #ffffff;
+  animation: wkFabSheetIn 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes wkFabSheetIn {
@@ -3527,6 +3520,11 @@
     border-bottom: 1px solid var(--border-color);
     max-height: 80vh;
   }
+}
+
+/* Light mode solid bg */
+[data-theme="light"] .wk-fab-sheet {
+  background: #ffffff;
 }
 
 /* ==================== SAVE WORKOUT BUTTON & MODAL ==================== */
