@@ -8,3 +8,11 @@
 - The `VITE_CAPACITOR=true` flag sets `base: '/'` and `outDir: 'dist'` (see `admin/vite.config.js`). Without it, assets use `/login/` paths which break on native.
 - Always run the web build LAST so `login/` has the correct output for commit
 - Always commit the `login/` build output alongside source changes
+
+## Auth / Native iOS
+
+- The app runs as a web app AND as a Capacitor iOS app. All auth changes MUST preserve both flows.
+- **Web**: Uses `signInWithPopup` (Google/Apple providers) — do NOT change this path.
+- **iOS native**: Uses `@capacitor-firebase/authentication` with `skipNativeAuth: true`. The plugin handles the OAuth UI natively, then returns a credential which is bridged to the JS Firebase SDK via `signInWithCredential`. This keeps the JS SDK's `onAuthStateChanged` in sync.
+- Apple/Google sign-in users do NOT need email verification — that gate only applies to `signupSource: 'self_signup'`.
+- Always guard native-only code with `Capacitor.isNativePlatform()` checks to avoid breaking the web flow.

@@ -3,13 +3,16 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithCredential,
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
   browserLocalPersistence,
   browserSessionPersistence,
   setPersistence,
-  getAdditionalUserInfo
+  getAdditionalUserInfo,
+  OAuthProvider,
+  GoogleAuthProvider
 } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
@@ -18,17 +21,6 @@ import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/fi
 
 const isNative = Capacitor.isNativePlatform();
 
-// After a native social sign-in the Capacitor plugin signs into Firebase
-// natively, but the JS SDK's auth.currentUser may not be synced yet.
-// This helper waits (up to 10 s) for onAuthStateChanged to deliver a user.
-const waitForCurrentUser = () =>
-  new Promise((resolve, reject) => {
-    if (auth.currentUser) return resolve(auth.currentUser);
-    const timeout = setTimeout(() => { unsub(); reject(new Error('Timed out waiting for Firebase user')); }, 10000);
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) { clearTimeout(timeout); unsub(); resolve(user); }
-    });
-  });
 
 const AuthContext = createContext();
 
@@ -190,10 +182,13 @@ export function AuthProvider({ children }) {
 
     if (isNative) {
       // Use Capacitor Firebase plugin for native Google sign-in.
-      // With skipNativeAuth: false the plugin automatically signs into
-      // Firebase Auth, so onAuthStateChanged will fire.
+      // skipNativeAuth: true — plugin handles OAuth UI only, we bridge
+      // the credential to the JS SDK so onAuthStateChanged fires.
       const nativeResult = await FirebaseAuthentication.signInWithGoogle();
-      user = auth.currentUser || await waitForCurrentUser();
+      const idToken = nativeResult.credential?.idToken;
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+      user = result.user;
       name = nativeResult.user?.displayName || '';
     } else {
       const result = await signInWithPopup(auth, googleProvider);
@@ -244,10 +239,15 @@ export function AuthProvider({ children }) {
 
     if (isNative) {
       // Use Capacitor Firebase plugin for native Apple sign-in.
-      // With skipNativeAuth: false the plugin automatically signs into
-      // Firebase Auth, so onAuthStateChanged will fire.
+      // skipNativeAuth: true — plugin handles OAuth UI only, we bridge
+      // the credential to the JS SDK so onAuthStateChanged fires.
       const nativeResult = await FirebaseAuthentication.signInWithApple();
-      user = auth.currentUser || await waitForCurrentUser();
+      const idToken = nativeResult.credential?.idToken;
+      const rawNonce = nativeResult.credential?.nonce;
+      const provider = new OAuthProvider('apple.com');
+      const credential = provider.credential({ idToken, rawNonce });
+      const result = await signInWithCredential(auth, credential);
+      user = result.user;
       // Apple only provides name on first authorization
       name = nativeResult.user?.displayName || '';
     } else {
