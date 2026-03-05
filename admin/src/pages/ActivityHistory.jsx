@@ -101,7 +101,7 @@ export default function ActivityHistory() {
     if (!window.confirm('Delete this activity?')) return;
     try {
       await deleteDoc(doc(db, 'activityLogs', activityId));
-      setActivities(prev => prev.filter(a => a.id !== activityId));
+      await fetchActivities();
       showToast('Activity deleted', 'info');
     } catch (err) {
       console.error('Delete error:', err);
