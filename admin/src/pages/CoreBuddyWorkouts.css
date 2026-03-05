@@ -2963,16 +2963,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
-  margin-top: 14px;
+  height: 52px;
+  padding: 0 16px;
+  margin-top: 10px;
   margin-bottom: 0;
   background: rgba(var(--color-primary-rgb), 0.06);
   border-left: 3px solid rgba(var(--color-primary-rgb), 0.35);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 12px 12px 0;
   font-size: 0.75rem;
   font-style: italic;
   color: var(--text-tertiary, var(--text-secondary));
-  line-height: 1.45;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   animation: hubCardIn 0.4s ease 0.15s both;
 }
 
@@ -3068,7 +3072,8 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 14px 16px;
+  height: 52px;
+  padding: 0 16px;
   border: none;
   border-radius: 12px;
   font-family: 'Roboto', sans-serif;
@@ -3097,7 +3102,6 @@
   background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
-  flex-wrap: wrap;
 }
 
 .wk-hub-quick svg {
@@ -3105,13 +3109,9 @@
 }
 
 .wk-hub-quick-meta {
-  display: block;
-  width: 100%;
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--text-secondary);
-  margin-top: -2px;
-  padding-left: 32px;
 }
 
 /* Hub sections */
@@ -3168,11 +3168,12 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 12px 14px;
+  height: 52px;
+  padding: 0 16px;
   margin-top: 10px;
   background: rgba(var(--color-primary-rgb), 0.06);
   border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: transform 0.15s, border-color 0.2s;
   -webkit-tap-highlight-color: transparent;
@@ -3189,24 +3190,16 @@
   opacity: 0.7;
 }
 
-.wk-hub-suggestion-info {
-  flex: 1;
-  text-align: left;
-}
-
 .wk-hub-suggestion-label {
-  display: block;
+  flex: 1;
   font-family: 'Roboto', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
-}
-
-.wk-hub-suggestion-cta {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--color-primary);
-  margin-top: 2px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wk-hub-suggestion svg:last-child {
