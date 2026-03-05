@@ -1561,6 +1561,9 @@ export default function CoreBuddyDashboard() {
             className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
+            <div className="cb-card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5m-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0"/><path d="M2 21v-2a4 4 0 0 1 4-4h.5"/><path d="M17 3l4 4"/><path d="M21 3l-4 4"/><path d="M13.5 11.5l-3 3"/><path d="M17 17l-4-4"/><path d="M21 21l-4-4"/></svg>
+            </div>
             <div className="cb-card-content">
               <h3>Workout</h3>
               <p>{weeklyWorkouts} this week &middot; {totalWorkouts} total</p>
@@ -1573,6 +1576,9 @@ export default function CoreBuddyDashboard() {
             className="cb-feature-card cb-card-unified ripple-btn"
             onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
           >
+            <div className="cb-card-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
             <div className="cb-card-content">
               <h3>Log Activity</h3>
               <p>Walk, run, cycle, swim &mdash; log any activity</p>
