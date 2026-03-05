@@ -117,6 +117,11 @@ export default function CoreBuddyNutrition() {
   // Edit food entry
   const [editingEntry, setEditingEntry] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
+  // Edit via amount picker (for entries with per100g data)
+  const [editProduct, setEditProduct] = useState(null);
+  const [editServingInput, setEditServingInput] = useState('100');
+  const [editPortionCount, setEditPortionCount] = useState(0);
+  const [editServingMode, setEditServingMode] = useState('weight');
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -442,15 +447,50 @@ export default function CoreBuddyNutrition() {
   };
 
   const openEditEntry = (entry) => {
-    setEditingEntry(entry);
-    setEditForm({
-      name: entry.name || '',
-      protein: String(entry.protein || 0),
-      carbs: String(entry.carbs || 0),
-      fats: String(entry.fats || 0),
-      calories: String(entry.calories || 0),
-      serving: entry.serving || '',
-    });
+    if (entry.per100g) {
+      // Has per-100g data — open the amount picker (same screen as when first adding)
+      const p100 = entry.per100g;
+      setEditProduct({
+        name: entry.name,
+        brand: entry.brand || '',
+        image: entry.image || null,
+        protein: p100.protein,
+        carbs: p100.carbs,
+        fats: p100.fats,
+        calories: p100.calories,
+        servingSize: entry.serving || '100g',
+        servingUnit: entry.servingUnit || 'g',
+        portion: entry.portion || null,
+        _editEntryId: entry.id,
+      });
+      if (entry.portion) {
+        // Try to figure out the portion count from the serving string
+        const portMatch = (entry.serving || '').match(/^(\d+)\s/);
+        const count = portMatch ? parseInt(portMatch[1], 10) : 1;
+        setEditPortionCount(count);
+        setEditServingMode('portion');
+        setEditServingInput(String(Math.round(count * entry.portion.weight)));
+      } else {
+        // Extract weight from serving string e.g. "150g"
+        const weightMatch = (entry.serving || '').match(/([\d.]+)/);
+        const weight = weightMatch ? parseFloat(weightMatch[1]) : 100;
+        setEditServingInput(String(Math.round(weight)));
+        setEditPortionCount(0);
+        setEditServingMode('weight');
+      }
+      setEditingEntry(entry);
+    } else {
+      // No per-100g data (manual entry / old entry) — use form modal
+      setEditingEntry(entry);
+      setEditForm({
+        name: entry.name || '',
+        protein: String(entry.protein || 0),
+        carbs: String(entry.carbs || 0),
+        fats: String(entry.fats || 0),
+        calories: String(entry.calories || 0),
+        serving: entry.serving || '',
+      });
+    }
   };
 
   const saveEditEntry = () => {
@@ -469,6 +509,21 @@ export default function CoreBuddyNutrition() {
     setTodayLog(newLog);
     saveLog(newLog);
     setEditingEntry(null);
+    showToast('Food updated!', 'success');
+  };
+
+  const saveEditFromPicker = (pickerData) => {
+    if (!editingEntry) return;
+    const updated = {
+      ...editingEntry,
+      ...pickerData,
+    };
+    const newEntries = todayLog.entries.map(e => e.id === editingEntry.id ? updated : e);
+    const newLog = { ...todayLog, entries: newEntries };
+    setTodayLog(newLog);
+    saveLog(newLog);
+    setEditingEntry(null);
+    setEditProduct(null);
     showToast('Food updated!', 'success');
   };
 
@@ -1348,8 +1403,39 @@ export default function CoreBuddyNutrition() {
         </div>
       )}
 
-      {/* ==================== EDIT FOOD MODAL ==================== */}
-      {editingEntry && (
+      {/* ==================== EDIT FOOD — AMOUNT PICKER ==================== */}
+      {editingEntry && editProduct && (
+        <div className="nut-modal-overlay">
+          <div className="nut-search-panel" onClick={e => e.stopPropagation()}>
+            <div className="nut-search-header">
+              <h2>Edit Food</h2>
+              <button className="nut-search-close" onClick={() => { setEditingEntry(null); setEditProduct(null); }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <ProductResult
+              product={editProduct}
+              servingMode={editServingMode}
+              setServingMode={setEditServingMode}
+              servingInput={editServingInput}
+              setServingInput={setEditServingInput}
+              portionCount={editPortionCount}
+              setPortionCount={setEditPortionCount}
+              isFavourite={isFavourite(editProduct.name)}
+              onToggleFavourite={toggleFavourite}
+              onAdd={saveEditFromPicker}
+              onBack={() => { setEditingEntry(null); setEditProduct(null); }}
+              backLabel="Cancel"
+            />
+            <div style={{ padding: '0 16px 16px' }}>
+              <button className="nut-btn-danger" style={{ width: '100%' }} onClick={() => { removeEntry(editingEntry.id); setEditingEntry(null); setEditProduct(null); }}>Delete Entry</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== EDIT FOOD — FORM FALLBACK (manual/old entries) ==================== */}
+      {editingEntry && !editProduct && (
         <div className="nut-modal-overlay" onClick={() => setEditingEntry(null)}>
           <div className="nut-modal nut-edit-modal" onClick={e => e.stopPropagation()}>
             <div className="nut-modal-header">
