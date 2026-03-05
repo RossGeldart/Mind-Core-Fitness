@@ -1877,7 +1877,7 @@ export default function CoreBuddyDashboard() {
 
       {/* FAB + Overlay Menu */}
       <button
-        className={`cb-fab${fabOpen ? ' cb-fab-open' : ''}${showActivityLogger ? ' cb-fab-hidden' : ''}`}
+        className={`cb-fab${fabOpen ? ' cb-fab-open cb-fab-hidden' : ''}${showActivityLogger ? ' cb-fab-hidden' : ''}`}
         onClick={() => setFabOpen(prev => !prev)}
         aria-label={fabOpen ? 'Close menu' : 'Open menu'}
       >
