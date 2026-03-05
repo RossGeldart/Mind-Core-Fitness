@@ -3616,3 +3616,8 @@
 .wk-complete-save-btn svg {
   color: #fff;
 }
+
+/* Mono dark: ensure primary-bg badges have readable text */
+[data-mono="true"][data-theme="dark"] .wk-hub-count {
+  color: #111;
+}
