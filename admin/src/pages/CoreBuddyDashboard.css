@@ -662,43 +662,24 @@
   font-size: 0.72rem;
 }
 
-/* Cards with preview rows stack vertically */
-.cb-card-has-preview {
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  text-align: center;
-}
-
-.cb-card-top-row {
-  position: relative;
+/* Unified feature card — consistent horizontal layout */
+.cb-card-unified {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  gap: 14px;
 }
 
-.cb-card-top-row .cb-card-content {
-  text-align: center;
+.cb-card-unified .cb-mini-rings {
+  margin-top: 8px;
 }
 
-.cb-card-top-row .cb-card-arrow {
-  position: absolute;
-  right: 0;
-}
-
-.cb-card-preview-row {
-  padding: 14px 0 6px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.cb-card-desc {
+.cb-unified-stat {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
-  margin: 0;
-  padding-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cb-feature-card:hover {
@@ -718,81 +699,6 @@
 
 /* Card colour accents — unified, no rainbow borders */
 
-/* Workouts Hero Card */
-.cb-card-workouts-hero {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 28px 18px 18px;
-  min-height: 120px;
-}
-
-.cb-feature-card.cb-card-workouts-hero {
-  border: 3px solid var(--color-primary);
-}
-
-[data-theme="dark"] .cb-feature-card.cb-card-workouts-hero {
-  border: 3px solid var(--color-primary);
-}
-
-.cb-hero-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin: 0;
-  line-height: 1;
-}
-
-.cb-card-workouts-hero .cb-card-arrow {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
-.cb-hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
-}
-
-.cb-hero-dot {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-/* Activity Card */
-.cb-card-activity {
-  position: relative;
-  border-left: 3px solid var(--color-primary);
-}
-
-.cb-card-activity .cb-card-content h3 {
-  margin: 0 0 2px;
-}
-
-.cb-card-activity .cb-card-content p {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.cb-activity-stats {
-  margin-top: 4px;
-}
-
-.cb-activity-count {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--color-primary);
-}
 
 .cb-activity-history-link {
   display: block;

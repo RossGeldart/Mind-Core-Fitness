@@ -1525,16 +1525,11 @@ export default function CoreBuddyDashboard() {
           {/* 1. Nutrition / Macros — hidden for free tier */}
           {isPremium && (
           <button
-            className={`cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
+            className={`cb-feature-card cb-card-unified ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
           >
-            <div className="cb-card-top-row">
-              <div className="cb-card-content">
-                <h3>Today's Nutrition</h3>
-              </div>
-              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-            <div className="cb-card-preview-row">
+            <div className="cb-card-content">
+              <h3>Today's Nutrition</h3>
               <div className="cb-mini-rings">
                 {[
                   { label: 'P', pct: nutPct('protein'), color: 'var(--color-primary)' },
@@ -1560,36 +1555,32 @@ export default function CoreBuddyDashboard() {
                 })}
               </div>
             </div>
-            <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
           )}
 
           {/* 2. Workouts */}
           <button
-            className={`cb-feature-card cb-card-workouts-hero ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
+            className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
-            <h3 className="cb-hero-title">Workout</h3>
-            <div className="cb-hero-stats">
-              <span>{weeklyWorkouts} this week</span>
-              <span className="cb-hero-dot">&middot;</span>
-              <span>{totalWorkouts} total</span>
+            <div className="cb-card-content">
+              <h3>Workout</h3>
+              <p>{weeklyWorkouts} this week &middot; {totalWorkouts} total</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
           {/* Activity Log */}
           <button
-            className="cb-feature-card cb-card-activity ripple-btn"
+            className="cb-feature-card cb-card-unified ripple-btn"
             onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
           >
             <div className="cb-card-content">
               <h3>Log Activity</h3>
               <p>Walk, run, cycle, swim &mdash; log any activity</p>
             </div>
-            <div className="cb-activity-stats">
-              {weeklyActivities > 0 && <span className="cb-activity-count">{weeklyActivities} this week</span>}
-            </div>
+            {weeklyActivities > 0 && <span className="cb-unified-stat">{weeklyActivities} this week</span>}
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
