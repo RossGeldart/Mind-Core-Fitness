@@ -149,46 +149,75 @@ export default function useFoodSearch({ onError }) {
       const countryFilter = getCountryFilterParams();
       const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=15&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
-      // First try: search with country filter (local products)
-      let results = [];
-      if (countryFilter) {
-        const res = await fetch(baseUrl + countryFilter, { signal: controller.signal });
-        if (res.ok) {
-          const data = await res.json();
-          results = filterAndScore(data.products || [], searchWords, term);
-        }
-      }
-
-      // Fallback: if country-filtered search returned fewer than 3 results, also search globally
-      if (results.length < 3) {
-        const res = await fetch(baseUrl, { signal: controller.signal });
-        if (res.ok) {
-          const data = await res.json();
-          const globalResults = filterAndScore(data.products || [], searchWords, term);
-          // Merge: local results first, then global (deduplicated by name+brand)
-          const seen = new Set(results.map(r => (r.name + '|' + r.brand).toLowerCase()));
-          for (const item of globalResults) {
-            const key = (item.name + '|' + item.brand).toLowerCase();
-            if (!seen.has(key)) {
-              results.push(item);
-              seen.add(key);
-            }
+      // Helper to merge global results into existing results
+      const mergeResults = (existing, globalData) => {
+        const globalResults = filterAndScore(globalData.products || [], searchWords, term);
+        const seen = new Set(existing.map(r => (r.name + '|' + r.brand).toLowerCase()));
+        for (const item of globalResults) {
+          const key = (item.name + '|' + item.brand).toLowerCase();
+          if (!seen.has(key)) {
+            existing.push(item);
+            seen.add(key);
           }
         }
-      }
+        return existing;
+      };
 
-      results = results.slice(0, 10);
-      cacheSet(term, results);
-      setSearchResults(results);
-      if (results.length === 0) {
-        onError?.('No results found. Try a different search.', 'info');
+      // Fire both searches in parallel, but show results as soon as EITHER returns
+      let results = [];
+      let gotFirst = false;
+
+      const localPromise = countryFilter
+        ? fetch(baseUrl + countryFilter, { signal: controller.signal })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+              if (data && !controller.signal.aborted) {
+                results = filterAndScore(data.products || [], searchWords, term);
+                if (results.length > 0) {
+                  gotFirst = true;
+                  setSearchResults(results.slice(0, 10));
+                  setSearchLoading(false);
+                }
+              }
+            })
+            .catch(() => {})
+        : Promise.resolve();
+
+      const globalPromise = fetch(baseUrl, { signal: controller.signal })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && !controller.signal.aborted) {
+            if (results.length < 3) {
+              results = mergeResults(results, data);
+            }
+            // If local hasn't responded yet, show global results immediately
+            if (!gotFirst && results.length > 0) {
+              gotFirst = true;
+              setSearchResults(results.slice(0, 10));
+              setSearchLoading(false);
+            }
+          }
+        })
+        .catch(() => {});
+
+      // Wait for both to finish, then do final merge and cache
+      await Promise.all([localPromise, globalPromise]);
+
+      if (!controller.signal.aborted) {
+        results = results.slice(0, 10);
+        cacheSet(term, results);
+        setSearchResults(results);
+        if (results.length === 0) {
+          onError?.('No results found. Try a different search.', 'info');
+        }
+        setSearchLoading(false);
       }
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error('Search error:', err);
       onError?.('Search failed. Check your connection.', 'error');
+      setSearchLoading(false);
     }
-    setSearchLoading(false);
   }, [onError]);
 
   // Debounced search-as-you-type
@@ -197,7 +226,7 @@ export default function useFoodSearch({ onError }) {
     if (!query?.trim() || !enabled) return;
     debounceTimer.current = setTimeout(() => {
       searchFood(query);
-    }, 700);
+    }, 350);
   }, [searchFood]);
 
   // Cleanup on unmount
