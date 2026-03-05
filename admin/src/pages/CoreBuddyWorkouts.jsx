@@ -1935,16 +1935,20 @@ export default function CoreBuddyWorkouts() {
                         const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
                         if (catWorkouts.length === 0) return null;
                         const isOpen = expandedSavedCats[fa.key] || false;
+                        const catColor = FOCUS_COLORS[fa.key] || 'var(--color-primary)';
                         return (
                           <div key={fa.key} className="wk-hub-saved-cat">
                             <button
                               className={`wk-hub-saved-cat-header${isOpen ? ' wk-hub-saved-cat-open' : ''}`}
-                              style={{ '--cat-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}
+                              style={{ '--cat-color': catColor }}
                               onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
                             >
-                              <span className="wk-hub-saved-cat-label">
-                                <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}>{fa.label}</span>
-                                <span className="wk-hub-saved-cat-count">{catWorkouts.length}</span>
+                              <span className="wk-hub-saved-cat-icon" style={{ background: `${catColor}15`, color: catColor }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                              </span>
+                              <span className="wk-hub-saved-cat-info">
+                                <span className="wk-hub-saved-cat-name">{fa.label}</span>
+                                <span className="wk-hub-saved-cat-sub">{catWorkouts.length} workout{catWorkouts.length !== 1 ? 's' : ''}</span>
                               </span>
                               <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                             </button>

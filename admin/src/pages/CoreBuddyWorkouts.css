@@ -3161,51 +3161,72 @@
   line-height: 1.5;
 }
 
+/* Saved workout category cards – activity-logger card style */
 .wk-hub-saved-categories {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .wk-hub-saved-cat {
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  background: var(--bg-card);
 }
 
 .wk-hub-saved-cat-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 14px;
   width: 100%;
-  padding: 10px 14px;
-  background: none;
-  border: none;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
+  transition: all 0.2s;
 }
 
+.wk-hub-saved-cat-header:hover,
 .wk-hub-saved-cat-header:active {
-  background: rgba(var(--color-primary-rgb), 0.04);
+  border-color: var(--cat-color, var(--color-primary));
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
 }
 
-.wk-hub-saved-cat-label {
+.wk-hub-saved-cat-open {
+  border-color: var(--cat-color, var(--color-primary));
+  border-radius: 14px 14px 0 0;
+}
+
+.wk-hub-saved-cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.wk-hub-saved-cat-count {
-  font-size: 0.72rem;
+.wk-hub-saved-cat-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.wk-hub-saved-cat-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-secondary);
-  background: var(--bg-secondary, rgba(0,0,0,0.06));
-  border-radius: 10px;
-  padding: 1px 7px;
-  min-width: 18px;
-  text-align: center;
+  color: var(--text-primary);
+}
+
+.wk-hub-saved-cat-sub {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
 }
 
 .wk-hub-saved-cat-chevron {
@@ -3219,7 +3240,11 @@
 }
 
 .wk-hub-saved-cat .wk-hub-saved-list {
-  padding: 0 8px 8px;
+  padding: 6px 8px 10px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.03);
 }
 
 .wk-hub-saved-cat .wk-hub-saved-card {
