@@ -9,6 +9,33 @@ import './UpgradePage.css';
 
 const isNative = Capacitor.isNativePlatform();
 
+const FREE_FEATURES = [
+  { text: '2 workouts per week', included: true },
+  { text: '5 & 10 min durations only', included: true },
+  { text: '1 habit tracker', included: true },
+  { text: 'Basic workout library', included: true },
+  { text: 'Unlimited workouts', included: false },
+  { text: 'All workout durations', included: false },
+  { text: 'Unlimited habits', included: false },
+  { text: 'Activity logging', included: false },
+  { text: 'Nutrition tracking', included: false },
+  { text: 'Save & replay workouts', included: false },
+  { text: 'Buddies & social', included: false },
+  { text: 'Advanced metrics', included: false },
+];
+
+const PREMIUM_FEATURES_LIST = [
+  { text: 'Unlimited workouts per week', included: true },
+  { text: 'All workout durations', included: true },
+  { text: 'Unlimited habit tracking', included: true },
+  { text: 'Activity logging', included: true },
+  { text: 'Nutrition tracking', included: true },
+  { text: 'Save & replay workouts', included: true },
+  { text: 'Buddies & social', included: true },
+  { text: 'Advanced metrics', included: true },
+  { text: 'Cancel anytime', included: true },
+];
+
 export default function UpgradePage() {
   const { currentUser, clientData } = useAuth();
   const { isPremium, subscriptionStatus, refreshEntitlement } = useTier();
@@ -17,6 +44,8 @@ export default function UpgradePage() {
   const [error, setError] = useState(null);
   const [offerings, setOfferings] = useState(null);
   const [rcLoading, setRcLoading] = useState(isNative);
+  const [tierTab, setTierTab] = useState('premium');
+  const [selectedPlan, setSelectedPlan] = useState('annual');
 
   // Load RevenueCat offerings on native (with 8s timeout)
   useEffect(() => {
@@ -235,74 +264,107 @@ export default function UpgradePage() {
       );
     }
 
-    const monthlyPrice = offerings?.monthly?.product?.priceString || '£9.99/mo';
-    const annualPrice = offerings?.annual?.product?.priceString || '£99.99/yr';
+    const monthlyPrice = offerings?.monthly?.product?.priceString || '\u00a314.99';
+    const annualPrice = offerings?.annual?.product?.priceString || '\u00a3119.99';
+    const features = tierTab === 'premium' ? PREMIUM_FEATURES_LIST : FREE_FEATURES;
 
     return (
-      <div className="upgrade-page">
-        <ThemeToggle className="upgrade-theme-toggle" />
+      <div className="upgrade-page upgrade-page-native">
         <button className="upgrade-back-btn" onClick={() => navigate(-1)}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
           Back
         </button>
 
+        <div className="upgrade-native-logo">
+          <img src="/Logo.webp" alt="Mind Core Fitness" />
+        </div>
+
         <div className="upgrade-header">
-          <div className="upgrade-icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-          </div>
-          <h1>Upgrade to Premium</h1>
-          <p>Unlock all Core Buddy features with a 7-day free trial</p>
+          <h1>Unlock Your Full Potential</h1>
+          <p>Train smarter with Premium</p>
         </div>
 
-        <div className="upgrade-plans">
-          <div className="plan-card">
-            <div className="plan-name">Monthly</div>
-            <div className="plan-price">
-              <span className="plan-amount">{monthlyPrice}</span>
-            </div>
-            <ul className="plan-features">
-              <li>7-day free trial</li>
-              <li>Unlimited workout durations</li>
-              <li>Unlimited weekly workouts</li>
-              <li>Save & replay workouts</li>
-              <li>Nutrition tracking</li>
-              <li>Buddies & social</li>
-              <li>Cancel anytime</li>
-            </ul>
-            <button className="plan-cta" onClick={() => handleNativePurchase('monthly')} disabled={!!loading}>
-              {loading === 'monthly' ? 'Loading...' : 'Start Free Trial'}
-            </button>
-          </div>
-
-          <div className="plan-card plan-card-featured">
-            <div className="plan-badge-save">Best Value</div>
-            <div className="plan-name">Annual</div>
-            <div className="plan-price">
-              <span className="plan-amount">{annualPrice}</span>
-            </div>
-            <ul className="plan-features">
-              <li>7-day free trial</li>
-              <li>Unlimited workout durations</li>
-              <li>Unlimited weekly workouts</li>
-              <li>Save & replay workouts</li>
-              <li>Nutrition tracking</li>
-              <li>Buddies & social</li>
-              <li>Best value</li>
-            </ul>
-            <button className="plan-cta plan-cta-featured" onClick={() => handleNativePurchase('annual')} disabled={!!loading}>
-              {loading === 'annual' ? 'Loading...' : 'Start Free Trial'}
-            </button>
-          </div>
+        <div className="upgrade-tier-toggle">
+          <button
+            className={`tier-toggle-btn ${tierTab === 'free' ? 'tier-toggle-active' : ''}`}
+            onClick={() => setTierTab('free')}
+          >
+            Free
+          </button>
+          <button
+            className={`tier-toggle-btn ${tierTab === 'premium' ? 'tier-toggle-active' : ''}`}
+            onClick={() => setTierTab('premium')}
+          >
+            Premium
+          </button>
         </div>
 
-        <button
-          className="upgrade-manage-btn"
-          style={{ marginTop: 16, opacity: 0.7 }}
-          onClick={handleRestore}
-          disabled={!!loading}
-        >
-          {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
-        </button>
+        <ul className="upgrade-feature-list">
+          {features.map((f, i) => (
+            <li key={i} className={f.included ? 'feature-included' : 'feature-excluded'}>
+              <span className="feature-icon">
+                {f.included ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--color-primary)"/><path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--text-tertiary)" opacity="0.3"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round"/></svg>
+                )}
+              </span>
+              <span className={f.included ? '' : 'feature-text-muted'}>{f.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        {tierTab === 'premium' && (
+          <>
+            <div className="upgrade-pricing-cards">
+              <button
+                className={`pricing-card ${selectedPlan === 'annual' ? 'pricing-card-selected' : ''}`}
+                onClick={() => setSelectedPlan('annual')}
+              >
+                <div className="pricing-card-badge">SAVE 33%</div>
+                <div className="pricing-card-label">Yearly</div>
+                <div className="pricing-card-price">{annualPrice}<span>/yr</span></div>
+                <div className="pricing-card-sub">Only ~{'\u00a3'}9.99/mo</div>
+                <div className={`pricing-card-radio ${selectedPlan === 'annual' ? 'radio-selected' : ''}`} />
+              </button>
+
+              <button
+                className={`pricing-card ${selectedPlan === 'monthly' ? 'pricing-card-selected' : ''}`}
+                onClick={() => setSelectedPlan('monthly')}
+              >
+                <div className="pricing-card-label">Monthly</div>
+                <div className="pricing-card-price">{monthlyPrice}<span>/mo</span></div>
+                <div className="pricing-card-sub">Billed monthly</div>
+                <div className={`pricing-card-radio ${selectedPlan === 'monthly' ? 'radio-selected' : ''}`} />
+              </button>
+            </div>
+
+            <button
+              className="upgrade-continue-btn"
+              onClick={() => handleNativePurchase(selectedPlan)}
+              disabled={!!loading}
+            >
+              {loading ? 'Loading...' : 'Continue'}
+            </button>
+          </>
+        )}
+
+        {tierTab === 'free' && (
+          <div className="upgrade-free-cta">
+            <p>Want more from your training?</p>
+            <button className="upgrade-continue-btn" onClick={() => setTierTab('premium')}>
+              See Premium
+            </button>
+          </div>
+        )}
+
+        <div className="upgrade-footer-links">
+          <button onClick={handleRestore} disabled={!!loading}>
+            {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
+          </button>
+          <a href="https://mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms</a>
+          <a href="https://mindcorefitness.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+        </div>
 
         {error && <p className="upgrade-error">{error}</p>}
       </div>
