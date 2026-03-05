@@ -30,14 +30,18 @@ export async function initRevenueCat(uid) {
   if (!RC) return;
 
   try {
-    await RC.configure({
-      apiKey: REVENUECAT_API_KEY,
-      appUserID: uid,
-    });
+    console.log('[RC] calling configure for user', uid);
+    await Promise.race([
+      RC.configure({
+        apiKey: REVENUECAT_API_KEY,
+        appUserID: uid,
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 5000)),
+    ]);
     configured = true;
     console.log('[RC] configured for user', uid);
   } catch (err) {
-    console.error('[RC] configure error:', err);
+    console.error('[RC] configure error:', err?.message || err);
   }
 }
 
