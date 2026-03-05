@@ -2903,10 +2903,9 @@
 
 /* ===== Launch Zone ===== */
 .wk-hub-launch-zone {
-  background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 100%);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.12);
-  border-radius: 16px;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
@@ -2914,7 +2913,6 @@
 .wk-hub-stats {
   display: flex;
   gap: 8px;
-  margin-bottom: 14px;
 }
 
 .wk-hub-stat {
@@ -2958,35 +2956,95 @@
   margin-top: 2px;
 }
 
-/* Motivational tip */
-.wk-hub-tip {
+/* ===== Unified hub card (matches dashboard cb-feature-card) ===== */
+.wk-hub-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 52px;
-  padding: 0 16px;
-  margin-top: 10px;
-  margin-bottom: 0;
-  background: rgba(var(--color-primary-rgb), 0.06);
-  border-left: 3px solid rgba(var(--color-primary-rgb), 0.35);
-  border-radius: 0 12px 12px 0;
-  font-size: 0.75rem;
-  font-style: italic;
-  color: var(--text-tertiary, var(--text-secondary));
-  line-height: 1.35;
+  gap: 14px;
+  padding: 18px 16px;
+  min-height: 88px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  box-shadow: var(--shadow-glow);
+  animation: hubCardIn 0.4s ease both;
+}
+
+[data-theme="dark"] .wk-hub-card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.wk-hub-card:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+.wk-hub-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wk-hub-card--tip {
+  cursor: default;
+}
+
+.wk-hub-card-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.wk-hub-card-icon--primary {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+
+.wk-hub-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.wk-hub-card-body h3 {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: hubCardIn 0.4s ease 0.15s both;
 }
 
-.wk-hub-tip svg {
+.wk-hub-card-body p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-hub-card-arrow {
   flex-shrink: 0;
-  color: var(--color-primary);
-  opacity: 0.7;
+  color: var(--text-tertiary);
+  opacity: 0.25;
 }
 
-/* Glow pulse on New Workout button – runs twice on entry then stops */
+/* Glow pulse on New Workout card – runs twice on entry then stops */
 .wk-hub-new-glow {
   position: relative;
   overflow: visible;
@@ -3059,60 +3117,7 @@
   opacity: 0.8;
 }
 
-/* Action buttons */
-.wk-hub-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 0;
-}
-
-.wk-hub-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s, opacity 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.wk-hub-action-btn:active {
-  transform: scale(0.97);
-}
-
-.wk-hub-action-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.wk-hub-new {
-  background: var(--color-primary);
-  color: var(--text-on-primary);
-}
-
-.wk-hub-quick {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.wk-hub-quick svg {
-  color: var(--color-primary);
-}
-
-.wk-hub-quick-meta {
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
+/* (Old action-btn / quick styles removed – replaced by .wk-hub-card) */
 
 /* Hub sections */
 .wk-hub-section {
@@ -3162,50 +3167,7 @@
   margin-left: 4px;
 }
 
-/* Smart Suggestion */
-.wk-hub-suggestion {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  margin-top: 10px;
-  background: rgba(var(--color-primary-rgb), 0.06);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  font-family: inherit;
-}
-
-.wk-hub-suggestion:active {
-  transform: scale(0.97);
-}
-
-.wk-hub-suggestion-bulb {
-  color: var(--color-primary);
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.wk-hub-suggestion-label {
-  flex: 1;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wk-hub-suggestion svg:last-child {
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
+/* (Old suggestion styles removed – replaced by .wk-hub-card) */
 
 /* Saved workouts list */
 .wk-hub-empty {
