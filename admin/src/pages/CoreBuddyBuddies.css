@@ -1001,3 +1001,188 @@
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
+
+/* ==================== FAB BUTTON & SHEET ==================== */
+
+.bdy-fab {
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: var(--color-primary);
+  color: var(--text-on-primary, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, opacity 0.3s ease;
+}
+.bdy-fab:active {
+  transform: scale(0.92);
+}
+.bdy-fab.bdy-fab-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.5);
+}
+.bdy-fab svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bdy-fab.bdy-fab-open {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Overlay */
+.bdy-fab-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: bdyFabOverlayIn 0.2s ease;
+}
+@keyframes bdyFabOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Bottom Sheet */
+.bdy-fab-sheet {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 20px 32px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  animation: bdyFabSheetIn 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+}
+@keyframes bdyFabSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* Header */
+.bdy-fab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.bdy-fab-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+.bdy-fab-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.bdy-fab-close:hover {
+  background: var(--bg-hover);
+}
+.bdy-fab-header::before {
+  content: '';
+  width: 32px;
+}
+
+/* Grid */
+.bdy-fab-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* Items */
+.bdy-fab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.bdy-fab-item:hover,
+.bdy-fab-item:active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+}
+.bdy-fab-item:active {
+  transform: scale(0.95);
+}
+
+/* Icon circle */
+.bdy-fab-item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+/* Label */
+.bdy-fab-item-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Stagger animation */
+.bdy-fab-item:nth-child(1) { animation: bdyFabItemIn 0.3s 0.03s both; }
+.bdy-fab-item:nth-child(2) { animation: bdyFabItemIn 0.3s 0.06s both; }
+
+@keyframes bdyFabItemIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Desktop: center the sheet */
+@media (min-width: 481px) {
+  .bdy-fab-overlay {
+    align-items: center;
+  }
+  .bdy-fab-sheet {
+    border-radius: 20px;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 80vh;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .bdy-fab-sheet {
+  background: rgba(30, 30, 30, 0.85);
+}

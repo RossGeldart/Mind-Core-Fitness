@@ -50,6 +50,7 @@ export default function CoreBuddyBuddies() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [toast, setToast] = useState(null);
+  const [fabOpen, setFabOpen] = useState(false);
 
   // Feed state
   const [feedMode, setFeedMode] = useState('buddyFeed'); // 'buddyFeed' | 'announcements'
@@ -570,12 +571,6 @@ export default function CoreBuddyBuddies() {
       <main className="bdy-main">
         <h1 className="bdy-title">Buddies</h1>
 
-        <button className="bdy-leaderboard-link" onClick={() => navigate('/client/leaderboard')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><rect x="6" y="9" width="12" height="13" rx="2"/><path d="M12 9v13"/><path d="M2 22h20"/></svg>
-          <span>Leaderboard</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-
         {/* Tabs */}
         <div className="bdy-tabs">
           <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
@@ -590,10 +585,6 @@ export default function CoreBuddyBuddies() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
             <span>Requests</span>
             {pendingCount > 0 && <span className="bdy-tab-badge">{pendingCount}</span>}
-          </button>
-          <button className={`bdy-tab${tab === 'search' ? ' active' : ''}`} onClick={() => setTab('search')}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <span>Find</span>
           </button>
         </div>
 
@@ -1052,6 +1043,48 @@ export default function CoreBuddyBuddies() {
       </main>
 
       <CoreBuddyNav active="buddies" />
+
+      {/* FAB Button */}
+      <button
+        className={`bdy-fab${fabOpen ? ' bdy-fab-open bdy-fab-hidden' : ''}`}
+        onClick={() => setFabOpen(prev => !prev)}
+        aria-label={fabOpen ? 'Close menu' : 'Open menu'}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <rect x="3" y="3" width="8" height="8" rx="2" />
+          <rect x="13" y="3" width="8" height="8" rx="2" />
+          <rect x="3" y="13" width="8" height="8" rx="2" />
+          <rect x="13" y="13" width="8" height="8" rx="2" />
+        </svg>
+      </button>
+
+      {/* FAB Bottom Sheet */}
+      {fabOpen && (
+        <div className="bdy-fab-overlay" onClick={() => setFabOpen(false)}>
+          <div className="bdy-fab-sheet" onClick={e => e.stopPropagation()}>
+            <div className="bdy-fab-header">
+              <h3>Quick Access</h3>
+              <button className="bdy-fab-close" onClick={() => setFabOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="bdy-fab-grid">
+              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); setTab('search'); }}>
+                <span className="bdy-fab-item-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <span className="bdy-fab-item-label">Find</span>
+              </button>
+              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); navigate('/client/leaderboard'); }}>
+                <span className="bdy-fab-item-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                </span>
+                <span className="bdy-fab-item-label">Leaderboard</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && (
         <div className={`toast-notification ${toast.type}`}>
