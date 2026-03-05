@@ -25,15 +25,17 @@ export default function UpgradePage() {
     (async () => {
       try {
         console.log('[UpgradePage] loading RC offerings…');
-        const { getOfferings } = await import('../services/revenueCatService');
+        console.log('[UpgradePage] importing revenueCatService…');
+        const mod = await import('../services/revenueCatService');
+        console.log('[UpgradePage] import ok, calling getOfferings…');
         const result = await Promise.race([
-          getOfferings(),
+          mod.getOfferings(),
           new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 8000)),
         ]);
         console.log('[UpgradePage] offerings loaded:', result);
         if (!cancelled) setOfferings(result);
       } catch (err) {
-        console.error('[UpgradePage] Failed to load offerings:', err);
+        console.error('[UpgradePage] Failed to load offerings:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
       } finally {
         if (!cancelled) setRcLoading(false);
       }
