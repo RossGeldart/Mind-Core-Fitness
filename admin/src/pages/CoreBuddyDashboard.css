@@ -104,32 +104,23 @@
 }
 
 /* Smart Nudge Card */
-.cb-nudge-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 16px 18px;
-  background: rgba(var(--color-primary-rgb), 0.08);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-  border-radius: 16px;
-  cursor: pointer;
-  margin-bottom: 24px;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: none;
-  font-family: inherit;
-  text-align: left;
-  animation: fadeSlideUp 0.8s ease-out both;
-  animation-delay: 0.7s;
-}
-
-.cb-nudge-card:active {
-  transform: scale(0.98);
-}
-
-[data-theme="light"] .cb-nudge-card {
+/* Nudge card — now a feature card variant */
+.cb-card-nudge {
   background: rgba(var(--color-primary-rgb), 0.06);
   border-color: rgba(var(--color-primary-rgb), 0.15);
+}
+
+[data-theme="dark"] .cb-card-nudge {
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border-color: rgba(var(--color-primary-rgb), 0.2);
+}
+
+.cb-nudge-title-text {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .cb-nudge-ring {
@@ -174,12 +165,6 @@
   color: var(--color-primary);
 }
 
-.cb-nudge-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .cb-nudge-label {
   font-family: 'Roboto', sans-serif;
   font-size: 0.55rem;
@@ -187,13 +172,6 @@
   color: var(--text-tertiary);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-}
-
-.cb-nudge-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
 }
 
 .cb-nudge-cta {
@@ -662,11 +640,12 @@
   font-size: 0.72rem;
 }
 
-/* Unified feature card — consistent horizontal layout */
+/* Unified feature card — consistent horizontal layout and height */
 .cb-card-unified {
   display: flex;
   align-items: center;
   gap: 14px;
+  min-height: 88px;
 }
 
 .cb-unified-stat {
@@ -1111,7 +1090,7 @@
     padding: 0 24px;
   }
 
-  .cb-nudge-title {
+  .cb-nudge-title-text {
     font-size: 1rem;
   }
 }

@@ -1532,29 +1532,29 @@ export default function CoreBuddyDashboard() {
           </div>
         )}
 
-        {/* Smart Nudge Card */}
-        {nudge && (
-          <button className="cb-nudge-card" onClick={nudge.action || undefined}
-            style={nudge.action ? undefined : { cursor: 'default' }}>
-            <div className="cb-nudge-ring">
-              <svg viewBox="0 0 100 100">
-                <circle className="cb-nudge-ring-track" cx="50" cy="50" r="38" />
-                <circle className="cb-nudge-ring-fill" cx="50" cy="50" r="38"
-                  strokeDasharray={2 * Math.PI * 38}
-                  strokeDashoffset={2 * Math.PI * 38 - (nudge.pct / 100) * 2 * Math.PI * 38} />
-              </svg>
-              <span className="cb-nudge-ring-val">{nudge.ringLabel}</span>
-            </div>
-            <div className="cb-nudge-info">
-              <span className="cb-nudge-label">{nudge.label}</span>
-              <span className="cb-nudge-title">{nudge.message}</span>
-              {nudge.cta && <span className="cb-nudge-cta">{nudge.cta} &rarr;</span>}
-            </div>
-          </button>
-        )}
-
         {/* Feature Cards */}
         <div className="cb-features">
+
+          {/* Smart Nudge Card */}
+          {nudge && (
+            <button className="cb-feature-card cb-card-unified cb-card-nudge ripple-btn" onClick={nudge.action || undefined}
+              style={nudge.action ? undefined : { cursor: 'default' }}>
+              <div className="cb-nudge-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle className="cb-nudge-ring-track" cx="50" cy="50" r="38" />
+                  <circle className="cb-nudge-ring-fill" cx="50" cy="50" r="38"
+                    strokeDasharray={2 * Math.PI * 38}
+                    strokeDashoffset={2 * Math.PI * 38 - (nudge.pct / 100) * 2 * Math.PI * 38} />
+                </svg>
+                <span className="cb-nudge-ring-val">{nudge.ringLabel}</span>
+              </div>
+              <div className="cb-card-content">
+                <span className="cb-nudge-label">{nudge.label}</span>
+                <h3 className="cb-nudge-title-text">{nudge.message}</h3>
+                {nudge.cta && <span className="cb-nudge-cta">{nudge.cta} &rarr;</span>}
+              </div>
+            </button>
+          )}
 
           {/* Workouts */}
           <button
