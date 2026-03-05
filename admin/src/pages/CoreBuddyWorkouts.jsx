@@ -586,6 +586,7 @@ export default function CoreBuddyWorkouts() {
 
   // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout'
   const [view, setView] = useState('randomiser_hub');
+  const [fabOpen, setFabOpen] = useState(false);
 
   // Setup
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
@@ -1894,128 +1895,156 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
-          {/* Saved Workouts (premium only) */}
-          {isPremium && (
-          <div className="wk-hub-section wk-hub-section--saved">
-            <h3 className="wk-hub-section-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-              Saved Workouts
-              {savedWorkouts.length > 0 && <span className="wk-hub-count">{savedWorkouts.length}</span>}
-            </h3>
-            {!savedWorkoutsLoaded ? (
-              <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
-            ) : savedWorkouts.length === 0 ? (
-              <div className="wk-hub-empty wk-hub-empty-enhanced">
-                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                <p><strong>No saved workouts yet</strong></p>
-                <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
-              </div>
-            ) : (
-              <div className="wk-hub-saved-categories">
-                {FOCUS_AREAS.map(fa => {
-                  const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
-                  if (catWorkouts.length === 0) return null;
-                  const isOpen = expandedSavedCats[fa.key] || false;
-                  return (
-                    <div key={fa.key} className="wk-hub-saved-cat">
-                      <button
-                        className={`wk-hub-saved-cat-header${isOpen ? ' wk-hub-saved-cat-open' : ''}`}
-                        style={{ '--cat-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}
-                        onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
-                      >
-                        <span className="wk-hub-saved-cat-label">
-                          <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}>{fa.label}</span>
-                          <span className="wk-hub-saved-cat-count">{catWorkouts.length}</span>
-                        </span>
-                        <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                      {isOpen && (
-                        <div className="wk-hub-saved-list">
-                          {catWorkouts.map((sw, i) => {
-                            const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
-                            const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
-                            return (
-                              <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                                <button className="wk-hub-saved-main" onClick={() => replaySavedWorkout(sw)}>
-                                  <div className="wk-hub-saved-info">
-                                    <span className="wk-hub-saved-name">{sw.name}</span>
-                                    <span className="wk-hub-saved-tags">
-                                      <span className="wk-hub-saved-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
-                                    </span>
-                                    {eqLabels && <span className="wk-hub-saved-equip">{eqLabels}</span>}
-                                  </div>
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                </button>
-                                <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          )}
-
-          {/* Recent History */}
-          <div className="wk-hub-section wk-hub-section--recent">
-            <h3 className="wk-hub-section-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Recent
-            </h3>
-            {recentWorkouts.length === 0 ? (
-              <div className="wk-hub-empty wk-hub-empty-enhanced">
-                <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <p><strong>No workouts yet</strong></p>
-                <p className="wk-hub-empty-sub">Complete your first workout to see your history here.</p>
-              </div>
-            ) : (
-              <div className="wk-hub-recent-list">
-                {recentWorkouts.map((rw, i) => {
-                  const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
-                  const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
-                  const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
-                  const ago = ts ? (() => {
-                    const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
-                    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-                    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-                    return `${Math.floor(diff / 86400)}d ago`;
-                  })() : '';
-                  return (
-                    <button
-                      key={i}
-                      className="wk-hub-recent-card"
-                      style={{ animationDelay: `${i * 0.05}s` }}
-                      onClick={() => {
-                        setFocusArea(rw.focus || 'core');
-                        setLevel(rw.level || 'intermediate');
-                        setDuration(rw.duration || 15);
-                        if (rw.equipment) setSelectedEquipment(rw.equipment);
-                        setView('setup');
-                      }}
-                    >
-                      <div className="wk-hub-recent-info">
-                        <span className="wk-hub-recent-tags">
-                          <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
-                          <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
-                        </span>
-                      </div>
-                      <div className="wk-hub-recent-action">
-                        <span className="wk-hub-recent-time">{ago}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         </main>
+
+        {/* FAB Button */}
+        <button
+          className={`wk-fab${fabOpen ? ' wk-fab-open wk-fab-hidden' : ''}`}
+          onClick={() => setFabOpen(prev => !prev)}
+          aria-label={fabOpen ? 'Close menu' : 'Saved & Recent'}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+
+        {/* FAB Bottom Sheet – Saved & Recent Workouts */}
+        {fabOpen && (
+          <div className="wk-fab-overlay" onClick={() => setFabOpen(false)}>
+            <div className="wk-fab-sheet" onClick={e => e.stopPropagation()}>
+              <div className="wk-fab-header">
+                <h3>Saved &amp; Recent</h3>
+                <button className="wk-fab-close" onClick={() => setFabOpen(false)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+
+              <div className="wk-fab-body">
+                {/* Saved Workouts */}
+                {isPremium && (
+                <div className="wk-hub-section wk-hub-section--saved">
+                  <h3 className="wk-hub-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    Saved Workouts
+                    {savedWorkouts.length > 0 && <span className="wk-hub-count">{savedWorkouts.length}</span>}
+                  </h3>
+                  {!savedWorkoutsLoaded ? (
+                    <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
+                  ) : savedWorkouts.length === 0 ? (
+                    <div className="wk-hub-empty wk-hub-empty-enhanced">
+                      <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                      <p><strong>No saved workouts yet</strong></p>
+                      <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
+                    </div>
+                  ) : (
+                    <div className="wk-hub-saved-categories">
+                      {FOCUS_AREAS.map(fa => {
+                        const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
+                        if (catWorkouts.length === 0) return null;
+                        const isOpen = expandedSavedCats[fa.key] || false;
+                        return (
+                          <div key={fa.key} className="wk-hub-saved-cat">
+                            <button
+                              className={`wk-hub-saved-cat-header${isOpen ? ' wk-hub-saved-cat-open' : ''}`}
+                              style={{ '--cat-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}
+                              onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
+                            >
+                              <span className="wk-hub-saved-cat-label">
+                                <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[fa.key] || 'var(--color-primary)' }}>{fa.label}</span>
+                                <span className="wk-hub-saved-cat-count">{catWorkouts.length}</span>
+                              </span>
+                              <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            {isOpen && (
+                              <div className="wk-hub-saved-list">
+                                {catWorkouts.map((sw, i) => {
+                                  const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
+                                  const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
+                                  return (
+                                    <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                                      <button className="wk-hub-saved-main" onClick={() => { replaySavedWorkout(sw); setFabOpen(false); }}>
+                                        <div className="wk-hub-saved-info">
+                                          <span className="wk-hub-saved-name">{sw.name}</span>
+                                          <span className="wk-hub-saved-tags">
+                                            <span className="wk-hub-saved-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
+                                          </span>
+                                          {eqLabels && <span className="wk-hub-saved-equip">{eqLabels}</span>}
+                                        </div>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                      </button>
+                                      <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                )}
+
+                {/* Recent History */}
+                <div className="wk-hub-section wk-hub-section--recent">
+                  <h3 className="wk-hub-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Recent
+                  </h3>
+                  {recentWorkouts.length === 0 ? (
+                    <div className="wk-hub-empty wk-hub-empty-enhanced">
+                      <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <p><strong>No workouts yet</strong></p>
+                      <p className="wk-hub-empty-sub">Complete your first workout to see your history here.</p>
+                    </div>
+                  ) : (
+                    <div className="wk-hub-recent-list">
+                      {recentWorkouts.map((rw, i) => {
+                        const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
+                        const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
+                        const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
+                        const ago = ts ? (() => {
+                          const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
+                          if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                          if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                          return `${Math.floor(diff / 86400)}d ago`;
+                        })() : '';
+                        return (
+                          <button
+                            key={i}
+                            className="wk-hub-recent-card"
+                            style={{ animationDelay: `${i * 0.05}s` }}
+                            onClick={() => {
+                              setFocusArea(rw.focus || 'core');
+                              setLevel(rw.level || 'intermediate');
+                              setDuration(rw.duration || 15);
+                              if (rw.equipment) setSelectedEquipment(rw.equipment);
+                              setFabOpen(false);
+                              setView('setup');
+                            }}
+                          >
+                            <div className="wk-hub-recent-info">
+                              <span className="wk-hub-recent-tags">
+                                <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
+                                <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
+                              </span>
+                            </div>
+                            <div className="wk-hub-recent-action">
+                              <span className="wk-hub-recent-time">{ago}</span>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <CoreBuddyNav active="workouts" />
         {toastEl}
         <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
