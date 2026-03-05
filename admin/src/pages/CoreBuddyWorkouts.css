@@ -3161,7 +3161,7 @@
   line-height: 1.5;
 }
 
-/* Saved workout category cards – activity-logger card style */
+/* Saved / Recent dropdown cards – activity-logger style */
 .wk-hub-saved-categories {
   display: flex;
   flex-direction: column;
@@ -3176,57 +3176,46 @@
 .wk-hub-saved-cat-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.2s;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+  text-align: left;
 }
 
 .wk-hub-saved-cat-header:hover,
 .wk-hub-saved-cat-header:active {
-  border-color: var(--cat-color, var(--color-primary));
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  border-color: var(--text-secondary);
 }
 
-.wk-hub-saved-cat-open {
-  border-color: var(--cat-color, var(--color-primary));
+.wk-hub-saved-cat--open .wk-hub-saved-cat-header {
   border-radius: 14px 14px 0 0;
+  border-color: var(--text-secondary);
 }
 
 .wk-hub-saved-cat-icon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.06));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.wk-hub-saved-cat-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  color: var(--text-secondary);
 }
 
 .wk-hub-saved-cat-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
-  font-size: 0.9rem;
+  flex: 1;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-primary);
-}
-
-.wk-hub-saved-cat-sub {
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.78rem;
-  color: var(--text-tertiary);
 }
 
 .wk-hub-saved-cat-chevron {
@@ -3239,15 +3228,18 @@
   transform: rotate(180deg);
 }
 
-.wk-hub-saved-cat .wk-hub-saved-list {
-  padding: 6px 8px 10px;
-  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+.wk-hub-saved-cat-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border: 1.5px solid var(--border-color);
   border-top: none;
   border-radius: 0 0 14px 14px;
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.03);
+  background: var(--bg-card);
 }
 
-.wk-hub-saved-cat .wk-hub-saved-card {
+.wk-hub-saved-cat-dropdown .wk-hub-saved-card {
   border-radius: 10px;
 }
 
