@@ -119,7 +119,8 @@ export default function CoreBuddyConsistency() {
     ...DEFAULT_HABITS.filter(h => !hiddenDefaults.includes(h.key)).map(h => ({ ...h, color: resolveColor(h.color, h.darkColor) })),
     ...customHabits.map((h, i) => { const c = CUSTOM_COLORS[i % CUSTOM_COLORS.length]; return { key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(c.color, c.darkColor), isCustom: true, id: h.id }; }),
   ];
-  const allHabits = isPremium ? allHabitsRaw : allHabitsRaw.slice(0, FREE_HABIT_LIMIT);
+  const allHabits = allHabitsRaw;
+  const freeHabitLimit = isPremium ? Infinity : FREE_HABIT_LIMIT;
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
@@ -653,15 +654,16 @@ export default function CoreBuddyConsistency() {
         <div className="cbc-section anim-fade-up-d2">
           <h2 className="cbc-section-title">Today's Habits</h2>
           <div className="cbc-habits-grid">
-            {allHabits.map((habit) => {
-              const checked = todayLog.habits?.[habit.key] || false;
+            {allHabits.map((habit, habitIdx) => {
+              const isLocked = habitIdx >= freeHabitLimit;
+              const checked = !isLocked && (todayLog.habits?.[habit.key] || false);
               const isJustChecked = justChecked === habit.key;
               const isHolding = holdingHabit === habit.key;
 
               return (
                 <div
                   key={habit.key}
-                  className={`cbc-habit-tile ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}`}
+                  className={`cbc-habit-tile ${checked ? 'cbc-habit-done' : ''} ${isJustChecked ? 'cbc-habit-just-checked' : ''}${isLocked ? ' cbc-habit-locked' : ''}`}
                   style={{ '--habit-color': habit.color }}
                 >
                   {/* Delete / hide corner button (premium only) */}
@@ -771,14 +773,13 @@ export default function CoreBuddyConsistency() {
                 <span className="cbc-habit-hold-hint">Your own</span>
               </div>
             ) : (
-              <div className="cbc-habit-tile cbc-unlock-tile" onClick={() => navigate('/upgrade')} role="button" tabIndex={0}>
-                <div className="cbc-unlock-ring">
+              <div className="cbc-habit-tile cbc-add-tile cbc-habit-locked" role="button" tabIndex={-1}>
+                <div className="cbc-add-ring">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                 </div>
-                <span className="cbc-habit-label">More Habits</span>
-                <span className="cbc-habit-hold-hint">Custom &amp; editable</span>
+                <span className="cbc-habit-label">Add Habit</span>
               </div>
             )}
           </div>

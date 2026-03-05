@@ -9,6 +9,7 @@ import { useTier } from '../contexts/TierContext';
 import PullToRefresh from '../components/PullToRefresh';
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import LockBadge from '../components/LockBadge';
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { awardBadge } from '../utils/awardBadge';
 import BadgeCelebration from '../components/BadgeCelebration';
@@ -1677,20 +1678,9 @@ export default function CoreBuddyWorkouts() {
             <img src={randomiserCardImg} alt="Randomise Workout" className="wk-hero-bg" />
           </button>
 
-          {/* Premium bait card (free users only) */}
-          {!isPremium && (
-            <button className="wk-hero-card wk-free-card-premium" onClick={() => navigate('/upgrade')}>
-              <img src={programmeCardImg} alt="Programmes" className="wk-hero-bg" />
-              <div className="wk-free-card-overlay" />
-              <div className="wk-free-card-content">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span className="wk-free-card-label">Unlock Full Access</span>
-              </div>
-            </button>
-          )}
-
-          {/* Programmes Section (premium only) */}
-          {isPremium && (
+          {/* Programmes Section (locked for free tier) */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <>
           <div className="wk-section-header">
             <h2>Programmes</h2>
@@ -1737,10 +1727,11 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
           </>
-          )}
+          </div>
 
-          {/* Muscle Groups Section (premium only) */}
-          {isPremium && (
+          {/* Muscle Groups Section (locked for free tier) */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <>
           <div className="wk-section-header">
             <h2>Muscle Groups</h2>
@@ -1773,7 +1764,7 @@ export default function CoreBuddyWorkouts() {
             ))}
           </div>
           </>
-          )}
+          </div>
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
@@ -1878,8 +1869,9 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
-          {/* Saved Workouts (premium only) */}
-          {isPremium && (
+          {/* Saved Workouts (locked for free tier) */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <div className="wk-hub-section wk-hub-section--saved">
             <h3 className="wk-hub-section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -1944,7 +1936,7 @@ export default function CoreBuddyWorkouts() {
               </div>
             )}
           </div>
-          )}
+          </div>
 
           {/* Recent History */}
           <div className="wk-hub-section wk-hub-section--recent">

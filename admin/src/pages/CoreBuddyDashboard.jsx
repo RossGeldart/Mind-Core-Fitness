@@ -12,6 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import LockBadge from '../components/LockBadge';
 import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
@@ -1221,7 +1222,7 @@ export default function CoreBuddyDashboard() {
                         <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => {
                           setNotifOpen(false);
                           if (n.type === 'buddy_request' || n.type === 'buddy_accept') {
-                            navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade');
+                            if (isPremium) navigate('/client/core-buddy/buddies');
                           } else if ((n.type === 'like' || n.type === 'comment') && n.postId) {
                             // Expand comments and load them if needed
                             if (!expandedComments.has(n.postId)) {
@@ -1394,8 +1395,10 @@ export default function CoreBuddyDashboard() {
         )}
 
         {/* Body Metrics Rings — premium only, only if setup done */}
-        {isPremium && metricsSetupDone && (
-          <button className="cb-metric-rings-wrap" onClick={() => navigate('/client/core-buddy/metrics')}>
+        {(isPremium ? metricsSetupDone : true) && (
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
+          <button className="cb-metric-rings-wrap" onClick={isPremium ? () => navigate('/client/core-buddy/metrics') : undefined}>
             <span className="cb-metric-rings-title">Body Metrics</span>
             <div className="cb-metric-rings-row">
               {[
@@ -1430,6 +1433,7 @@ export default function CoreBuddyDashboard() {
             </div>
             <span className="cb-metric-rings-cta">View details &rarr;</span>
           </button>
+          </div>
         )}
 
         {/* Coach Message */}
@@ -1467,11 +1471,12 @@ export default function CoreBuddyDashboard() {
         {/* Feature Cards */}
         <div className="cb-features">
 
-          {/* 1. Nutrition / Macros — hidden for free tier */}
-          {isPremium && (
+          {/* 1. Nutrition / Macros — locked for free tier */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <button
             className={`cb-feature-card cb-card-nutrition cb-card-has-preview ripple-btn${nutritionDone ? ' cb-card-done' : ''}`}
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); }}
+            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/nutrition'); } : undefined}
           >
             <div className="cb-card-top-row">
               <div className="cb-card-content">
@@ -1507,7 +1512,7 @@ export default function CoreBuddyDashboard() {
             </div>
             <p className="cb-card-desc">Track macros, scan barcodes, log water</p>
           </button>
-          )}
+          </div>
 
           {/* 2. Workouts */}
           <button
@@ -1578,7 +1583,8 @@ export default function CoreBuddyDashboard() {
           </button>
 
           {/* 7. Challenges & Badges — side-by-side */}
-          {isPremium && (
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <div className="cb-grid-row">
             <button
               className="cb-feature-card cb-grid-card cb-card-challenge ripple-btn"
@@ -1607,13 +1613,14 @@ export default function CoreBuddyDashboard() {
               <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
-          )}
+          </div>
 
-          {/* 8. Buddies — hidden for free tier */}
-          {isPremium && (
+          {/* 8. Buddies — locked for free tier */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <button
             className="cb-feature-card cb-card-buddies ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/buddies'); }}
+            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/buddies'); } : undefined}
           >
             <div className="cb-card-content">
               <h3>Buddies</h3>
@@ -1621,13 +1628,14 @@ export default function CoreBuddyDashboard() {
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          )}
+          </div>
 
-          {/* 9. Body Metrics — premium only */}
-          {isPremium && (
+          {/* 9. Body Metrics — locked for free tier */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <button
             className="cb-feature-card cb-card-metrics ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/metrics'); }}
+            onClick={isPremium ? (e) => { createRipple(e); navigate('/client/core-buddy/metrics'); } : undefined}
           >
             <div className="cb-card-metrics-ring">
               {(() => {
@@ -1653,10 +1661,11 @@ export default function CoreBuddyDashboard() {
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          )}
+          </div>
 
-          {/* My Journey — hidden for free tier */}
-          {isPremium && (
+          {/* My Journey — locked for free tier */}
+          <div className={!isPremium ? 'cb-locked-wrap' : undefined}>
+          {!isPremium && <LockBadge />}
           <div className="cb-journey-section">
             <h3 className="cb-journey-title">My Journey</h3>
 
@@ -1919,15 +1928,7 @@ export default function CoreBuddyDashboard() {
             )}
             </>
           </div>
-          )}
-
-          {/* Single upgrade CTA for free tier */}
-          {!isPremium && (
-            <button className="cb-upgrade-cta" onClick={() => navigate('/upgrade')}>
-              <span className="cb-upgrade-cta-text">Unlock the full experience</span>
-              <span className="cb-upgrade-cta-sub">Unlimited workout times, nutrition, buddies & more</span>
-              <svg className="cb-upgrade-cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            </button>
+          </div>
           )}
 
         </div>

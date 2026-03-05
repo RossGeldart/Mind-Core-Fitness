@@ -520,6 +520,14 @@
   background: rgba(var(--color-primary-rgb), 0.08);
 }
 
+/* ====== Locked habit tiles (free tier) ====== */
+.cbc-habit-locked {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ====== Modal ====== */
 .cbc-modal-overlay {
   position: fixed;
