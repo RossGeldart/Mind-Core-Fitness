@@ -7,8 +7,16 @@ let configured = false;
 async function getPurchases() {
   if (!Capacitor.isNativePlatform()) return null;
   if (!Purchases) {
-    const mod = await import('@revenuecat/purchases-capacitor');
-    Purchases = mod.Purchases;
+    try {
+      console.log('[RC] importing @revenuecat/purchases-capacitor…');
+      const mod = await import('@revenuecat/purchases-capacitor');
+      console.log('[RC] import done, mod keys:', Object.keys(mod));
+      Purchases = mod.Purchases;
+      console.log('[RC] Purchases object:', Purchases ? 'ok' : 'null');
+    } catch (err) {
+      console.error('[RC] import error:', err?.message || err);
+      return null;
+    }
   }
   return Purchases;
 }
