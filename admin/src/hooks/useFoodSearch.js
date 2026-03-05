@@ -31,6 +31,16 @@ function cacheSet(key, value) {
 // e.g. "Banana Chocolate Flakes deliciously creamy" → core words are ["banana", "chocolate", "flakes", "deliciously", "creamy"]
 const FILLER_WORDS = new Set(['the', 'a', 'an', 'by', 'of', 'and', '&', 'with', 'from', 'in', 'for', 'per', 'x']);
 
+// Words that describe quantity/quality but don't change WHAT the product is
+// "5 Fairtrade Organic Bananas" is still just bananas
+const DESCRIPTOR_WORDS = new Set([
+  'organic', 'fairtrade', 'fair', 'trade', 'free', 'range', 'fresh', 'raw',
+  'natural', 'pure', 'whole', 'loose', 'ripe', 'sweet', 'large', 'small',
+  'medium', 'mini', 'big', 'premium', 'finest', 'essential', 'everyday',
+  'value', 'basic', 'british', 'scottish', 'irish', 'welsh', 'english',
+  'farm', 'ripen', 'home', 'ready', 'eat', 'pack', 'bag',
+]);
+
 const coreWords = (str) =>
   str.toLowerCase().split(/[\s,\-/()]+/)
     .filter(w => w && !FILLER_WORDS.has(w) && !/^\d+\.?\d*[gml%]*$/.test(w));
@@ -91,24 +101,23 @@ const filterAndScore = (products, searchWords, term) => {
     .map(p => parseProduct(p))
     .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
     .filter(p => {
-      // All search words must appear as whole words in the product name
-      // (not just as substrings — "banana" should NOT match "banana chocolate flakes"
-      // unless the user typed those extra words too)
       const nameWords = coreWords(p.name);
+
+      // All search words must appear as whole words in the product name
       const allMatch = termWords.every(tw =>
         nameWords.some(nw => wordMatches(tw, nw))
       );
       if (!allMatch) return false;
 
-      // If the user typed a simple 1-2 word search, reject products with too many
-      // extra unrelated words. "banana" should show "Bananas", "5 Fairtrade Bananas",
-      // but NOT "Banana Chocolate Flakes deliciously creamy"
-      if (termWords.length <= 2) {
-        // Allow up to 3 extra words beyond what was searched
-        // (covers things like "5 Fairtrade Bananas" or "Organic Free Range Eggs")
-        const extraWords = nameWords.length - termWords.length;
-        if (extraWords > 3) return false;
-      }
+      // Strict filtering: every extra word in the name (beyond what was searched)
+      // must be a harmless descriptor like "organic", "fairtrade", "loose" etc.
+      // This means "banana" matches "Organic Fairtrade Bananas" but NOT
+      // "Banana chips", "Strawberry Banana", or "dried bananas"
+      const extraNameWords = nameWords.filter(nw =>
+        !termWords.some(tw => wordMatches(tw, nw))
+      );
+      const allExtrasAreDescriptors = extraNameWords.every(w => DESCRIPTOR_WORDS.has(w));
+      if (!allExtrasAreDescriptors) return false;
 
       return true;
     })
@@ -147,7 +156,7 @@ export default function useFoodSearch({ onError }) {
       const encoded = encodeURIComponent(q);
       const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments';
       const countryFilter = getCountryFilterParams();
-      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=15&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
+      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=50&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
       // Helper to merge global results into existing results
       const mergeResults = (existing, globalData) => {
