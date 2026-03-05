@@ -1530,30 +1530,7 @@ export default function CoreBuddyDashboard() {
           >
             <div className="cb-card-content">
               <h3>Today's Nutrition</h3>
-              <div className="cb-mini-rings">
-                {[
-                  { label: 'P', pct: nutPct('protein'), color: 'var(--color-primary)' },
-                  { label: 'C', pct: nutPct('carbs'), color: 'var(--color-primary)' },
-                  { label: 'F', pct: nutPct('fats'), color: 'var(--color-primary)' },
-                  { label: 'Cal', pct: nutPct('calories'), color: 'var(--color-primary)' },
-                ].map((ring) => {
-                  const r = 38;
-                  const circ = 2 * Math.PI * r;
-                  const off = circ - (ring.pct / 100) * circ;
-                  return (
-                    <div key={ring.label} className="cb-mini-ring">
-                      <svg viewBox="0 0 100 100">
-                        <circle className="cb-mini-track" cx="50" cy="50" r={r} />
-                        <circle className="cb-mini-fill" cx="50" cy="50" r={r}
-                          style={{ stroke: ring.color }}
-                          strokeDasharray={circ}
-                          strokeDashoffset={off} />
-                      </svg>
-                      <span style={{ color: ring.color }}>{ring.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              <p>P {nutPct('protein')}% &middot; C {nutPct('carbs')}% &middot; F {nutPct('fats')}% &middot; Cal {nutPct('calories')}%</p>
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
