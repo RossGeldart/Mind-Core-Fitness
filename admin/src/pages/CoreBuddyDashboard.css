@@ -2373,6 +2373,7 @@
   margin-top: 2px;
 }
 
+<<<<<<< HEAD
 /* ===== NUTRITION RINGS (matches body metrics card style) ===== */
 .cb-nutrition-mini {
   width: 64px;
@@ -2571,4 +2572,13 @@
     border-bottom: 1px solid var(--border-color);
     max-height: 80vh;
   }
+}
+
+/* Mono dark: ensure primary-bg buttons have readable text */
+[data-mono="true"][data-theme="dark"] .journey-post-btn {
+  color: #111;
+}
+[data-mono="true"][data-theme="dark"] .journey-btn-spinner {
+  border-color: rgba(0, 0, 0, 0.2);
+  border-top-color: #111;
 }
