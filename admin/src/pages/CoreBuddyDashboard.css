@@ -2408,10 +2408,15 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(var(--color-primary-rgb, 184, 49, 61), 0.3);
   cursor: pointer;
   z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, opacity 0.3s ease;
 }
 .cb-fab:active {
   transform: scale(0.92);
+}
+.cb-fab.cb-fab-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.5);
 }
 .cb-fab svg {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
