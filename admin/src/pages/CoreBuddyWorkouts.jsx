@@ -1809,6 +1809,34 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
+          {/* Stat Rings – matches dashboard pattern */}
+          <div className="wk-stats-row">
+            {[
+              { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
+              { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
+              { label: 'Wk Streak', value: `${streak}`, pct: streak > 0 ? Math.min(Math.round((streak / 12) * 100), 100) : 0, color: '#38B6FF', size: 'normal' },
+            ].map((ring) => {
+              const r = 38;
+              const circ = 2 * Math.PI * r;
+              const offset = circ - (ring.pct / 100) * circ;
+              return (
+                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
+                  <div className="wk-stat-ring">
+                    <svg viewBox="0 0 100 100">
+                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
+                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                        style={{ stroke: ring.color }}
+                        strokeDasharray={circ}
+                        strokeDashoffset={offset} />
+                    </svg>
+                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  </div>
+                  <span className="wk-stat-label">{ring.label}</span>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="wk-hub-heading">
             <h2>Randomiser</h2>
             <p>Generate, save &amp; replay workouts</p>
@@ -1816,30 +1844,6 @@ export default function CoreBuddyWorkouts() {
 
           {/* ===== Launch Zone ===== */}
           <div className="wk-hub-launch-zone">
-            {/* Stats banner */}
-            {hubStats.total > 0 && (
-              <div className="wk-hub-stats">
-                <div className="wk-hub-stat">
-                  <span className="wk-hub-stat-value">{hubStats.total}</span>
-                  <span className="wk-hub-stat-label">Workouts</span>
-                </div>
-                {hubStats.streak > 0 && (
-                  <div className="wk-hub-stat">
-                    <span className="wk-hub-stat-value">{hubStats.streak}<small>d</small></span>
-                    <span className="wk-hub-stat-label">Streak</span>
-                  </div>
-                )}
-                {hubStats.favouriteFocus && (
-                  <div className="wk-hub-stat">
-                    <span className="wk-hub-stat-value wk-hub-stat-focus" style={{ color: FOCUS_COLORS[hubStats.favouriteFocus] || 'var(--color-primary)' }}>
-                      {FOCUS_AREAS.find(f => f.key === hubStats.favouriteFocus)?.label || hubStats.favouriteFocus}
-                    </span>
-                    <span className="wk-hub-stat-label">Top Focus</span>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Action cards – styled like dashboard feature cards */}
             <button className="wk-hub-card wk-hub-new-glow" onClick={() => setView('setup')}>
               <div className="wk-hub-card-icon wk-hub-card-icon--primary">
@@ -2043,34 +2047,6 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main wk-setup-main">
-
-          {/* Stats Rings */}
-          <div className="wk-stats-row">
-            {[
-              { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
-              { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
-              { label: 'Wk Streak', value: `${streak}`, pct: streak > 0 ? Math.min(Math.round((streak / 12) * 100), 100) : 0, color: '#38B6FF', size: 'normal' },
-            ].map((ring) => {
-              const r = 38;
-              const circ = 2 * Math.PI * r;
-              const offset = circ - (ring.pct / 100) * circ;
-              return (
-                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
-                  <div className="wk-stat-ring">
-                    <svg viewBox="0 0 100 100">
-                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
-                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
-                        style={{ stroke: ring.color }}
-                        strokeDasharray={circ}
-                        strokeDashoffset={offset} />
-                    </svg>
-                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
-                  </div>
-                  <span className="wk-stat-label">{ring.label}</span>
-                </div>
-              );
-            })}
-          </div>
 
           <div className="wk-setup-flow">
             {/* Focus Area */}
