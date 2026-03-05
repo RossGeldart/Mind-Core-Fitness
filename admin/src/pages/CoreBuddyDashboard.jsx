@@ -16,6 +16,7 @@ import PullToRefresh from '../components/PullToRefresh';
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
 import BADGE_DEFS from '../utils/badgeConfig';
+import ActivityLogger from '../components/ActivityLogger';
 
 const TICK_COUNT = 60;
 const DEFAULT_WEEKLY_TARGET = 3;
@@ -131,6 +132,11 @@ export default function CoreBuddyDashboard() {
   const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [showTargetHint, setShowTargetHint] = useState(false);
   const [leaderboardTop3, setLeaderboardTop3] = useState([]);
+
+  // Activity logger
+  const [showActivityLogger, setShowActivityLogger] = useState(false);
+  const [weeklyActivities, setWeeklyActivities] = useState(0);
+  const [totalActivities, setTotalActivities] = useState(0);
 
   // Profile photo
   const [photoURL, setPhotoURL] = useState(null);
@@ -313,6 +319,8 @@ export default function CoreBuddyDashboard() {
         setWeeklyWorkoutTarget(c.weeklyWorkoutTarget ?? DEFAULT_WEEKLY_TARGET);
         setLeaderboardTop3(c.leaderboardTop3 ?? []);
         setStreakWeeks(c.streakWeeks ?? 0);
+        setWeeklyActivities(c.weeklyActivities ?? 0);
+        setTotalActivities(c.totalActivities ?? 0);
         setStatsLoaded(true);
       }
     } catch {}
@@ -593,6 +601,19 @@ export default function CoreBuddyDashboard() {
         }).length;
         setWeeklyWorkouts(weekCount);
 
+        // 2. Activity logs — count toward weekly target
+        const actLogsRef = collection(db, 'activityLogs');
+        const actQ = query(actLogsRef, where('clientId', '==', clientData.id));
+        const actSnap = await getDocs(actQ);
+        setTotalActivities(actSnap.docs.length);
+        const weekActCount = actSnap.docs.filter(d => {
+          const ts = d.data().completedAt;
+          if (!ts) return false;
+          const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+          return ms >= mondayMs;
+        }).length;
+        setWeeklyActivities(weekActCount);
+
         // 3. Habit completion today — fetch custom habits to get real total
         const [habitSnap, customHabitsSnap] = await Promise.all([
           getDocs(query(collection(db, 'habitLogs'), where('clientId', '==', clientData.id), where('date', '==', todayStr))),
@@ -663,13 +684,16 @@ export default function CoreBuddyDashboard() {
         console.error('Leaderboard preview error:', lbErr);
       }
 
-      // 7. Compute workout streak (consecutive weeks with at least 1 workout)
+      // 7. Compute workout streak (consecutive weeks with at least 1 workout or activity)
       // If the current week has no workouts yet, skip to last week without
       // breaking the streak (the new week may have only just started).
       try {
         let wkStreak = 0;
         if (logsSnap) {
-          const allDates = logsSnap.docs.map(d => d.data().date).filter(Boolean).sort().reverse();
+          const allDates = [
+            ...logsSnap.docs.map(d => d.data().date),
+            ...actSnap.docs.map(d => d.data().date),
+          ].filter(Boolean).sort().reverse();
           if (allDates.length > 0) {
             const now2 = new Date();
             let checkWeek = new Date(now2);
@@ -710,13 +734,13 @@ export default function CoreBuddyDashboard() {
         totalWorkouts, habitWeekPct,
         nutritionTotals, nutritionTargetData, todayHabitsCount,
         realHabitCount, weeklyWorkouts, weeklyWorkoutTarget, leaderboardTop3,
-        streakWeeks
+        streakWeeks, weeklyActivities, totalActivities
       }));
     } catch {}
   }, [statsLoaded, totalWorkouts, habitWeekPct,
      nutritionTotals, nutritionTargetData, todayHabitsCount,
      weeklyWorkouts, weeklyWorkoutTarget,
-     leaderboardTop3, streakWeeks, clientData]);
+     leaderboardTop3, streakWeeks, weeklyActivities, totalActivities, clientData]);
 
   // Body metrics status — check if setup done and if remeasure needed
   useEffect(() => {
@@ -767,7 +791,7 @@ export default function CoreBuddyDashboard() {
   // Weekly target celebration — triggers once per week when target met
   useEffect(() => {
     if (!statsLoaded || weeklyCelebrationShownRef.current) return;
-    if (weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
+    if ((weeklyWorkouts + weeklyActivities) >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0) {
       const celebKey = `weekCeleb_${clientData?.id}_${new Date().toISOString().slice(0, 10).replace(/-\d{2}$/, '')}`;
       try {
         if (localStorage.getItem(celebKey)) return;
@@ -777,7 +801,7 @@ export default function CoreBuddyDashboard() {
       setShowWeeklyCelebration(true);
       setTimeout(() => setShowWeeklyCelebration(false), 3500);
     }
-  }, [statsLoaded, weeklyWorkouts, weeklyWorkoutTarget, clientData]);
+  }, [statsLoaded, weeklyWorkouts, weeklyActivities, weeklyWorkoutTarget, clientData]);
 
   // Tour finish handler — persist to Firestore so it only shows once
   const handleTourFinish = useCallback(async () => {
@@ -832,27 +856,29 @@ export default function CoreBuddyDashboard() {
   const firstName = clientData?.name?.split(' ')[0] || 'there';
 
   // Calculate percentages for 3 stat rings (solid arc style)
-  const workoutPct = Math.min(Math.round((weeklyWorkouts / weeklyWorkoutTarget) * 100), 100);
+  // Activities count toward the weekly workout target
+  const combinedWeekly = weeklyWorkouts + weeklyActivities;
+  const workoutPct = Math.min(Math.round((combinedWeekly / weeklyWorkoutTarget) * 100), 100);
 
   const streakPct = streakWeeks > 0 ? Math.min(Math.round((streakWeeks / 12) * 100), 100) : 0;
 
   const statRings = [
     { label: 'Wk Streak', value: `${streakWeeks}`, pct: streakPct, color: 'var(--color-primary)', size: 'normal' },
-    { label: 'Workouts', value: `${weeklyWorkouts}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
+    { label: 'Sessions', value: `${combinedWeekly}/${weeklyWorkoutTarget}`, pct: workoutPct, color: 'var(--color-primary)', size: 'large', editable: true },
     { label: 'Habits Today', value: `${habitWeekPct}%`, pct: habitWeekPct, color: 'var(--color-primary)', size: 'normal' },
   ];
 
   // Compute whether nutrition / workouts / habits are complete for card signaling
   const nutritionDone = nutritionTotals.calories > 0 && nutritionTargetData?.calories && nutritionTotals.calories >= nutritionTargetData.calories * 0.8;
-  const workoutsDone = weeklyWorkouts >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0;
+  const workoutsDone = combinedWeekly >= weeklyWorkoutTarget && weeklyWorkoutTarget > 0;
   const habitsDone = todayHabitsCount >= habitCount;
 
   // Milestone approaching text for return trigger
   const milestoneText = (() => {
     if (!statsLoaded) return null;
-    const remaining = weeklyWorkoutTarget - weeklyWorkouts;
-    if (remaining === 1) return `1 more workout to hit your weekly target`;
-    if (remaining === 2) return `2 more workouts to hit your weekly target`;
+    const remaining = weeklyWorkoutTarget - combinedWeekly;
+    if (remaining === 1) return `1 more session to hit your weekly target`;
+    if (remaining === 2) return `2 more sessions to hit your weekly target`;
     if (habitCount - todayHabitsCount === 1) return `1 habit left to complete today`;
     return null;
   })();
@@ -878,11 +904,11 @@ export default function CoreBuddyDashboard() {
   // Priority-based smart nudge
   const nudge = (() => {
     if (!statsLoaded) return null;
-    // 1. No workouts this week — suggest a session
-    if (weeklyWorkouts === 0) {
+    // 1. No workouts or activities this week — suggest a session
+    if (combinedWeekly === 0) {
       return {
         label: 'WORKOUT',
-        message: 'No workouts this week yet',
+        message: 'No sessions this week yet',
         cta: 'Start One',
         action: () => navigate('/client/core-buddy/workouts'),
         pct: 0,
@@ -1552,6 +1578,31 @@ export default function CoreBuddyDashboard() {
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
+          {/* Activity Log */}
+          <button
+            className="cb-feature-card cb-card-activity ripple-btn"
+            onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
+          >
+            <div className="cb-card-content">
+              <h3>Log Activity</h3>
+              <p>Walk, run, cycle, swim &mdash; log any activity</p>
+            </div>
+            <div className="cb-activity-stats">
+              {weeklyActivities > 0 && <span className="cb-activity-count">{weeklyActivities} this week</span>}
+            </div>
+            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* View activity history link */}
+          {totalActivities > 0 && (
+            <button
+              className="cb-activity-history-link"
+              onClick={() => navigate('/client/core-buddy/activity')}
+            >
+              View activity history ({totalActivities} logged) &rarr;
+            </button>
+          )}
+
           {/* Cards moved to FAB menu: Habits, Leaderboard, Challenges, Badges, Buddies, Body Metrics */}
 
           {/* My Journey — hidden for free tier */}
@@ -1884,6 +1935,18 @@ export default function CoreBuddyDashboard() {
           </div>
         </div>
       )}
+
+      {/* Activity Logger Modal */}
+      <ActivityLogger
+        open={showActivityLogger}
+        onClose={() => setShowActivityLogger(false)}
+        clientData={clientData}
+        onLogged={() => {
+          setWeeklyActivities(c => c + 1);
+          setTotalActivities(c => c + 1);
+          showToast('Activity logged!', 'success');
+        }}
+      />
 
       {/* Core Buddy Bottom Nav */}
       <CoreBuddyNav active="home" />

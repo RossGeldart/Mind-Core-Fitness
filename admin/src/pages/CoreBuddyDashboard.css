@@ -76,7 +76,7 @@
 .cb-dashboard {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 40px;
+  padding-bottom: 80px;
 }
 
 /* Main Content */
@@ -766,6 +766,51 @@
 .cb-hero-dot {
   color: var(--color-primary);
   font-weight: 700;
+}
+
+/* Activity Card */
+.cb-card-activity {
+  position: relative;
+  border-left: 3px solid var(--color-primary);
+}
+
+.cb-card-activity .cb-card-content h3 {
+  margin: 0 0 2px;
+}
+
+.cb-card-activity .cb-card-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.cb-activity-stats {
+  margin-top: 4px;
+}
+
+.cb-activity-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.cb-activity-history-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 0;
+  margin: -4px 0 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cb-activity-history-link:hover {
+  text-decoration: underline;
 }
 
 /* Progress Preview */

@@ -120,6 +120,14 @@ service cloud.firestore {
       allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
       allow create: if isClientOwner(request.resource.data.clientId);
     }
+    // Activity Logs - admin full, clients read + create + delete own
+    // Logs for non-workout activities (walking, running, cycling, etc.)
+    match /activityLogs/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated(); // LEADERBOARD: all authenticated users can read for aggregation
+      allow create: if isClientOwner(request.resource.data.clientId);
+      allow delete: if isClientOwner(resource.data.clientId);
+    }
     // Saved Workouts - admin full, clients read/create/delete own
     match /savedWorkouts/{docId} {
       allow read, write: if isAdmin();
