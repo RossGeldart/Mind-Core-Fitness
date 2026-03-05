@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { REVENUECAT_API_KEY, RC_ENTITLEMENT_ID } from '../config/revenuecat';
 
 let Purchases = null;
+let configured = false;
 
 async function getPurchases() {
   if (!Capacitor.isNativePlatform()) return null;
@@ -25,10 +26,22 @@ export async function initRevenueCat(uid) {
       apiKey: REVENUECAT_API_KEY,
       appUserID: uid,
     });
+    configured = true;
     console.log('[RC] configured for user', uid);
   } catch (err) {
     console.error('[RC] configure error:', err);
   }
+}
+
+/** Ensure RC is configured before making SDK calls */
+async function ensureConfigured() {
+  if (configured) return;
+  // Wait up to 5s for TierContext to finish initRevenueCat
+  for (let i = 0; i < 10; i++) {
+    await new Promise(r => setTimeout(r, 500));
+    if (configured) return;
+  }
+  console.warn('[RC] timed out waiting for configure');
 }
 
 /**
@@ -40,6 +53,7 @@ export async function logOutRevenueCat() {
 
   try {
     await RC.logOut();
+    configured = false;
   } catch {
     // ignore — user may not have been logged in
   }
@@ -69,6 +83,9 @@ export async function getOfferings() {
   const RC = await getPurchases();
   console.log('[RC] getPurchases returned:', RC ? 'ok' : 'null');
   if (!RC) return null;
+
+  await ensureConfigured();
+  console.log('[RC] configured:', configured);
 
   try {
     console.log('[RC] calling getOfferings…');
