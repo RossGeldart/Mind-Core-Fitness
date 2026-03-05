@@ -1,0 +1,294 @@
+/* ── Standalone iOS Login ── */
+
+.native-login {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-body);
+  padding: calc(60px + env(safe-area-inset-top, 0px)) 32px calc(40px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+.native-login .login-theme-toggle {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  z-index: 10;
+}
+
+/* ── Brand / Logo ── */
+
+.native-login-brand {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.native-login-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-primary);
+  margin-bottom: 16px;
+}
+
+.native-login-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px 0;
+}
+
+.native-login-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* ── Actions area ── */
+
+.native-login-actions {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Buttons ── */
+
+.native-login-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.1s, opacity 0.2s;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.native-login-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.native-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Apple — black/white depending on theme */
+.native-login-btn-apple {
+  background: #000;
+  color: #fff;
+}
+
+[data-theme="dark"] .native-login-btn-apple {
+  background: #fff;
+  color: #000;
+}
+
+/* Google — outlined */
+.native-login-btn-google {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Email — subtle outlined */
+.native-login-btn-email {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Primary action (Log In, Reset) */
+.native-login-btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+}
+
+/* ── Divider ── */
+
+.native-login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.native-login-divider::before,
+.native-login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.native-login-divider span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* ── Email form ── */
+
+.native-login-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.native-login-field label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.native-login-field input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.native-login-field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* ── Text link ── */
+
+.native-login-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px 0;
+}
+
+/* ── Error ── */
+
+.native-login-error {
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* ── Reset sent ── */
+
+.native-login-reset-sent {
+  text-align: center;
+  width: 100%;
+  max-width: 340px;
+}
+
+.native-login-reset-sent p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 16px 0 6px;
+}
+
+.native-login-reset-sent span {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 24px;
+}
+
+/* ── Loading spinner ── */
+
+.native-login-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg-body);
+}
+
+
+.native-login-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-primary-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: app-spin 0.7s linear infinite;
+}
+
+/* ── Mode toggle ── */
+
+.native-login-mode-toggle {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.native-login-mode-toggle .native-login-link {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.native-login-mode-toggle .native-login-link strong {
+  color: var(--color-primary);
+}
+
+/* ── Verification hint ── */
+
+.native-login-verify-hint {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+/* ── Success message ── */
+
+.native-login-success {
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-success-bg, rgba(34, 197, 94, 0.1));
+  border: 1px solid var(--color-success, #22c55e);
+  color: var(--color-success, #22c55e);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  box-sizing: border-box;
+}

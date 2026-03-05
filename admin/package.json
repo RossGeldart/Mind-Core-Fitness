@@ -15,15 +15,16 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@capacitor-firebase/authentication": "^8.1.0",
+    "@capacitor-firebase/messaging": "^8.1.0",
     "@capacitor/android": "^8.1.0",
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
     "@capacitor/ios": "^8.1.0",
     "@capacitor/push-notifications": "^8.0.1",
-    "@capacitor-firebase/authentication": "^8.1.0",
-    "@capacitor-firebase/messaging": "^8.1.0",
     "@capacitor/status-bar": "^8.0.1",
     "@ericblade/quagga2": "^1.12.1",
+    "@revenuecat/purchases-capacitor": "^12.2.1",
     "firebase": "^12.8.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

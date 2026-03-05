@@ -154,7 +154,7 @@ service cloud.firestore {
     // Nutrition Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /nutritionLogs/{docId} {
       allow read, write: if isAdmin();
-      allow read: if isClientOwner(resource.data.clientId);
+      allow read: if resource == null || isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
     // Habit Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
