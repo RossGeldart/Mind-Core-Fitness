@@ -2491,3 +2491,120 @@
   color: var(--color-primary);
   margin-top: 2px;
 }
+
+/* ── FAB Button ── */
+.cb-fab {
+  position: fixed;
+  /* 50px nav height + safe-area for home bar + 14px gap */
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px));
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+.cb-fab:active {
+  transform: scale(0.92);
+}
+.cb-fab svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cb-fab.cb-fab-open svg {
+  transform: rotate(45deg);
+}
+.cb-fab.cb-fab-open {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── FAB Overlay ── */
+.cb-fab-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cbFabOverlayIn 0.25s ease-out;
+}
+@keyframes cbFabOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── FAB Menu Grid ── */
+.cb-fab-menu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  max-width: 340px;
+  width: 100%;
+  animation: cbFabMenuIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes cbFabMenuIn {
+  from { opacity: 0; transform: scale(0.85) translateY(30px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── FAB Menu Items ── */
+.cb-fab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 8px;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.cb-fab-item:active {
+  transform: scale(0.93);
+  background: rgba(255, 255, 255, 0.2);
+}
+.cb-fab-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.cb-fab-item-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Stagger animation for each item */
+.cb-fab-item:nth-child(1) { animation: cbFabItemIn 0.3s 0.05s both; }
+.cb-fab-item:nth-child(2) { animation: cbFabItemIn 0.3s 0.1s both; }
+.cb-fab-item:nth-child(3) { animation: cbFabItemIn 0.3s 0.15s both; }
+.cb-fab-item:nth-child(4) { animation: cbFabItemIn 0.3s 0.2s both; }
+.cb-fab-item:nth-child(5) { animation: cbFabItemIn 0.3s 0.25s both; }
+.cb-fab-item:nth-child(6) { animation: cbFabItemIn 0.3s 0.3s both; }
+
+@keyframes cbFabItemIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

@@ -112,6 +112,7 @@ export default function CoreBuddyDashboard() {
   const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
   const navigate = useNavigate();
+  const [fabOpen, setFabOpen] = useState(false);
   const [realHabitCount, setRealHabitCount] = useState(isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT);
   const habitCount = realHabitCount;
 
@@ -239,14 +240,9 @@ export default function CoreBuddyDashboard() {
           body: 'Set your macro targets, scan barcodes, and log meals to hit your daily goals.',
         },
         {
-          selector: '.cb-card-consistency',
-          title: 'Daily Habits',
-          body: '5 simple habits each day — train, hit protein, 10k steps, sleep, and hydrate. Build your streak.',
-        },
-        {
-          selector: '.cb-card-buddies',
-          title: 'Buddies & Social',
-          body: 'Connect with other members, share your journey, and keep each other accountable.',
+          selector: '.cb-fab',
+          title: 'Quick Menu',
+          body: 'Tap the + button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
         },
         {
           selector: '.cb-journey-section',
@@ -1607,137 +1603,7 @@ export default function CoreBuddyDashboard() {
             </button>
           )}
 
-          {/* 3. Habits */}
-          <button
-            className={`cb-feature-card cb-card-consistency ripple-btn${habitsDone ? ' cb-card-done' : ''}`}
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/consistency'); }}
-          >
-            <div className="cb-card-content">
-              <h3>Habits</h3>
-              <div className={`cb-habit-dots${todayHabitsCount >= habitCount ? ' cb-habits-all-done' : ''}`}>
-                {Array.from({ length: habitCount }, (_, i) => (
-                  <span key={i} className={`cb-habit-dot${i < todayHabitsCount ? ' done' : ''}${!i && todayHabitsCount > 0 && i >= todayHabitsCount ? ' cb-dot-warming' : ''}`}
-                    style={i >= todayHabitsCount && todayHabitsCount > 0 ? { '--glow-intensity': Math.min(todayHabitsCount / habitCount, 0.9) } : undefined} />
-                ))}
-              </div>
-              <span className="cb-habit-dots-label">{todayHabitsCount}/{habitCount} today</span>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-
-          {/* 6. Leaderboard */}
-          <button
-            className="cb-feature-card cb-card-leaderboard ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/leaderboard'); }}
-          >
-            <div className="cb-card-content">
-              <h3>Leaderboard</h3>
-              {leaderboardTop3.length > 0 ? (
-                <div className="cb-lb-preview">
-                  {leaderboardTop3.map((entry, idx) => {
-                    const medal = ['#FFD700', '#A8B4C0', '#CD7F32'][idx];
-                    const initials = entry.name ? entry.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
-                    const isMe = entry.id === clientData?.id;
-                    const currentRank = idx + 1;
-                    const rankDelta = isMe && prevLeaderboardRank ? prevLeaderboardRank - currentRank : 0;
-                    return (
-                      <div key={entry.id} className={`cb-lb-entry${isMe ? ' cb-lb-me' : ''}`}>
-                        <div className="cb-lb-avatar" style={{ borderColor: medal }}>
-                          {entry.photoURL ? <img src={entry.photoURL} alt="" className="cb-lb-avatar-img" /> : <span>{initials}</span>}
-                        </div>
-                        <span className="cb-lb-rank" style={{ color: medal }}>
-                          #{currentRank}
-                          {isMe && rankDelta > 0 && <span className="cb-lb-movement cb-lb-up">+{rankDelta}</span>}
-                          {isMe && rankDelta < 0 && <span className="cb-lb-movement cb-lb-down">{rankDelta}</span>}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p>Opt in to compete with your Core Buddies</p>
-              )}
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-
-          {/* 7. Challenges & Badges — side-by-side */}
-          {isPremium && (
-          <div className="cb-grid-row">
-            <button
-              className="cb-feature-card cb-grid-card cb-card-challenge ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/challenges'); }}
-            >
-              <div className="cb-card-icon-wrap cb-card-icon-challenge">
-                <img src={BADGE_DEFS.find(b => b.id === 'iron_will')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
-              </div>
-              <div className="cb-card-content">
-                <h3>Challenges</h3>
-                <p>Push yourself with timed fitness challenges</p>
-              </div>
-              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-            <button
-              className="cb-feature-card cb-grid-card cb-card-badges ripple-btn"
-              onClick={(e) => { createRipple(e); navigate('/client/core-buddy/badges'); }}
-            >
-              <div className="cb-card-icon-wrap cb-card-icon-badges">
-                <img src={BADGE_DEFS.find(b => b.id === 'first_workout')?.img} alt="" className="cb-card-badge-img" loading="lazy" />
-              </div>
-              <div className="cb-card-content">
-                <h3>Badges</h3>
-                <p>Collect badges as you hit milestones</p>
-              </div>
-              <svg className="cb-grid-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
-          )}
-
-          {/* 8. Buddies — hidden for free tier */}
-          {isPremium && (
-          <button
-            className="cb-feature-card cb-card-buddies ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/buddies'); }}
-          >
-            <div className="cb-card-content">
-              <h3>Buddies</h3>
-              <p>Connect with other members and track each other's progress</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          )}
-
-          {/* 9. Body Metrics — premium only */}
-          {isPremium && (
-          <button
-            className="cb-feature-card cb-card-metrics ripple-btn"
-            onClick={(e) => { createRipple(e); navigate('/client/core-buddy/metrics'); }}
-          >
-            <div className="cb-card-metrics-ring">
-              {(() => {
-                const r = 38;
-                const circ = 2 * Math.PI * r;
-                const off = circ - (metricsOverallPct / 100) * circ;
-                return (
-                  <svg viewBox="0 0 100 100">
-                    <circle className="cb-metrics-ring-track" cx="50" cy="50" r={r} />
-                    <circle className="cb-metrics-ring-fill" cx="50" cy="50" r={r}
-                      strokeDasharray={circ}
-                      strokeDashoffset={off} />
-                  </svg>
-                );
-              })()}
-              <span className="cb-metrics-ring-val">{metricsSetupDone ? `${metricsOverallPct}%` : '?'}</span>
-            </div>
-            <div className="cb-card-content">
-              <h3>Body Metrics</h3>
-              <p>{metricsSetupDone
-                ? (metricsNeedsRemeasure ? "It's time to measure up!" : 'Track your body transformation')
-                : 'Set up your measurements & targets'}</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          )}
+          {/* Cards moved to FAB menu: Habits, Leaderboard, Challenges, Badges, Buddies, Body Metrics */}
 
           {/* My Journey — hidden for free tier */}
           {isPremium && (
@@ -2014,6 +1880,61 @@ export default function CoreBuddyDashboard() {
 
         </div>
       </main>
+
+      {/* FAB + Overlay Menu */}
+      <button
+        className={`cb-fab${fabOpen ? ' cb-fab-open' : ''}`}
+        onClick={() => setFabOpen(prev => !prev)}
+        aria-label={fabOpen ? 'Close menu' : 'Open menu'}
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" className="cb-fab-v" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+
+      {fabOpen && (
+        <div className="cb-fab-overlay" onClick={() => setFabOpen(false)}>
+          <div className="cb-fab-menu" onClick={e => e.stopPropagation()}>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/consistency'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Habits</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/leaderboard'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Leaderboard</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/badges'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Badges</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/challenges'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Challenges</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/buddies'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Buddies</span>
+            </button>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/metrics'); }}>
+              <span className="cb-fab-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              </span>
+              <span className="cb-fab-item-label">Body Metrics</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Activity Logger Modal */}
       <ActivityLogger
