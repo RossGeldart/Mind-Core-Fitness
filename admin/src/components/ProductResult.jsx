@@ -89,8 +89,13 @@ export default function ProductResult({
           carbs: Math.round(product.carbs * mult),
           fats: Math.round(product.fats * mult),
           calories: Math.round(product.calories * mult),
-          serving: servingLabel
-        })}>Add</button>
+          serving: servingLabel,
+          per100g: { protein: product.protein, carbs: product.carbs, fats: product.fats, calories: product.calories },
+          servingUnit: product.servingUnit || 'g',
+          portion: product.portion || null,
+          brand: product.brand || '',
+          image: product.image || null,
+        })}>{product._editEntryId ? 'Save' : 'Add'}</button>
       </div>
     </div>
   );
