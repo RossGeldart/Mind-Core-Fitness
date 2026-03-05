@@ -22,15 +22,20 @@ export default function AdminCoreBuddy() {
   const [toast, setToast] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const fileRef = useRef(null);
+  const authChecked = useRef(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   }, []);
 
+  // Only redirect once after the initial auth check — not on every re-render
   useEffect(() => {
-    if (!authLoading && (!currentUser || !isAdmin)) {
-      navigate('/');
+    if (authLoading || authChecked.current) return;
+    if (!currentUser || !isAdmin) {
+      navigate('/', { replace: true });
+    } else {
+      authChecked.current = true;
     }
   }, [currentUser, isAdmin, authLoading, navigate]);
 
