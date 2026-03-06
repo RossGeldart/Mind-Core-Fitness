@@ -104,12 +104,13 @@ function SearchLoadingOverlay() {
 
   return (
     <div className="nut-search-loading-overlay">
-      <div className="nut-search-loading-percent">{progress}%</div>
-      <div className="nut-search-loading-bar-track">
-        <div className="nut-search-loading-bar-fill" style={{ width: `${progress}%` }} />
-      </div>
-      <p className="nut-search-loading-msg">{SEARCH_MESSAGES[msgIdx]}</p>
       <p className="nut-search-loading-tip">{SEARCH_TIPS[tipIdx]}</p>
+      <p className="nut-search-loading-msg">{SEARCH_MESSAGES[msgIdx]}</p>
+      <div className="nut-search-loading-bar-track">
+        <div className="nut-search-loading-bar-fill" style={{ width: `${progress}%` }}>
+          <span className="nut-search-loading-percent">{progress}%</span>
+        </div>
+      </div>
     </div>
   );
 }
