@@ -301,6 +301,12 @@
 }
 
 /* Notification panel needs a solid-ish bg in mono so text is readable */
+[data-mono="true"][data-theme="dark"] .cb-photo-badge,
+[data-mono="true"][data-theme="dark"] .lb-your-position,
+[data-mono="true"][data-theme="dark"] .prf-btn-primary {
+  color: var(--text-on-primary);
+}
+
 [data-mono="true"][data-theme="dark"] .notif-panel {
   background: rgba(30, 30, 30, 0.88);
 }
