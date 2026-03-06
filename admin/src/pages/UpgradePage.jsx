@@ -319,9 +319,11 @@ export default function UpgradePage() {
                 onClick={() => setSelectedPlan('annual')}
               >
                 <div className="pricing-card-badge">SAVE 33%</div>
-                <div className="pricing-card-label">Yearly</div>
-                <div className="pricing-card-price">{annualPrice}<span>/yr</span></div>
-                <div className="pricing-card-sub">~{'\u00a3'}9.99/mo</div>
+                <div className="pricing-card-info">
+                  <div className="pricing-card-label">Yearly</div>
+                  <div className="pricing-card-price">{annualPrice}<span>/yr</span></div>
+                  <div className="pricing-card-sub">~{'\u00a3'}9.99/mo</div>
+                </div>
                 <div className={`pricing-card-radio ${selectedPlan === 'annual' ? 'radio-selected' : ''}`} />
               </button>
 
@@ -329,9 +331,11 @@ export default function UpgradePage() {
                 className={`pricing-card ${selectedPlan === 'monthly' ? 'pricing-card-selected' : ''}`}
                 onClick={() => setSelectedPlan('monthly')}
               >
-                <div className="pricing-card-label">Monthly</div>
-                <div className="pricing-card-price">{monthlyPrice}<span>/mo</span></div>
-                <div className="pricing-card-sub">Billed monthly</div>
+                <div className="pricing-card-info">
+                  <div className="pricing-card-label">Monthly</div>
+                  <div className="pricing-card-price">{monthlyPrice}<span>/mo</span></div>
+                  <div className="pricing-card-sub">Billed monthly</div>
+                </div>
                 <div className={`pricing-card-radio ${selectedPlan === 'monthly' ? 'radio-selected' : ''}`} />
               </button>
             </div>
