@@ -13,7 +13,7 @@ import ScannerView from '../components/ScannerView';
 import ProductResult from '../components/ProductResult';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import BadgeCelebration from '../components/BadgeCelebration';
 
 function getTodayKey() {
@@ -925,7 +925,7 @@ export default function CoreBuddyNutrition() {
   const weekMonthLabel = `${MONTH_NAMES[selDateObj.getMonth()]} ${selDateObj.getFullYear()}`;
 
   return (
-    <PullToRefresh>
+    <>
     <div className="nut-page">
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
@@ -1547,6 +1547,6 @@ export default function CoreBuddyNutrition() {
 
       <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

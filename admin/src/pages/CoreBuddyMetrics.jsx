@@ -10,7 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import './CoreBuddyMetrics.css';
 
 const BODY_METRICS = [
@@ -503,7 +503,7 @@ export default function CoreBuddyMetrics() {
   const CIRC = 2 * Math.PI * R;
 
   return (
-    <PullToRefresh onRefresh={loadData}>
+    <>
     <div className="cbm-page">
       <header className="client-header">
         <div className="header-content">
@@ -1035,6 +1035,6 @@ export default function CoreBuddyMetrics() {
 
       <CoreBuddyNav active="home" />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

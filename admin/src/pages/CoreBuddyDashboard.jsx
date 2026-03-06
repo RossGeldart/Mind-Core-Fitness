@@ -12,7 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
 import BADGE_DEFS from '../utils/badgeConfig';
@@ -1239,7 +1239,7 @@ export default function CoreBuddyDashboard() {
   };
 
   return (
-    <PullToRefresh>
+    <>
     <div className="cb-dashboard">
       {/* Header */}
       <header className="client-header">
@@ -1984,6 +1984,6 @@ export default function CoreBuddyDashboard() {
       {/* Guided tour for new users */}
       <SpotlightTour steps={tourSteps} active={showTour} onFinish={handleTourFinish} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

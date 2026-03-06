@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './Leaderboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import BadgeCelebration from '../components/BadgeCelebration';
 
 function getWeekBounds() {
@@ -468,7 +468,7 @@ export default function Leaderboard() {
   }
 
   return (
-    <PullToRefresh>
+    <>
     <div className="lb-page">
       <header className="client-header">
         <div className="header-content">
@@ -713,6 +713,6 @@ export default function Leaderboard() {
 
       <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

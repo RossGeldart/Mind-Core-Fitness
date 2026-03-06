@@ -7,7 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { awardBadge } from '../utils/awardBadge';
 import BadgeCelebration from '../components/BadgeCelebration';
@@ -595,7 +595,7 @@ export default function CoreBuddyConsistency() {
   const perfectDays = weeklyStats.filter(d => d.completed === d.total && d.total > 0).length;
 
   return (
-    <PullToRefresh>
+    <>
     <div className="cbc-page">
       {/* Header */}
       <header className="client-header">
@@ -977,6 +977,6 @@ export default function CoreBuddyConsistency() {
 
       <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }
