@@ -192,7 +192,7 @@ export default function useFoodSearch({ onError }) {
       const encoded = encodeURIComponent(q);
       const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments,categories_tags';
       const countryFilter = getCountryFilterParams();
-      const baseUrl = `https://world.openfoodfacts.org/api/v2/search?search_terms=${encoded}&page_size=100&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
+      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=100&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
       // Helper to merge global results into existing results
       const mergeResults = (existing, globalData) => {
