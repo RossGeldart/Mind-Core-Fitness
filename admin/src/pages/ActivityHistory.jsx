@@ -5,7 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import ActivityLogger from '../components/ActivityLogger';
-import PullToRefresh from '../components/PullToRefresh';
+
 import './ActivityHistory.css';
 
 const ACTIVITY_ICONS = {
@@ -128,7 +128,7 @@ export default function ActivityHistory() {
   }
 
   return (
-    <PullToRefresh onRefresh={fetchActivities}>
+    <>
     <div className="ah-page">
       <header className="ah-header">
         <button className="ah-back" onClick={() => navigate('/client/core-buddy')} aria-label="Back">
@@ -212,6 +212,6 @@ export default function ActivityHistory() {
 
       <CoreBuddyNav active="home" />
     </div>
-    </PullToRefresh>
+    </>
   );
 }
