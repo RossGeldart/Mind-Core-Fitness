@@ -316,7 +316,7 @@
 /* ========== Native iOS Upgrade Page ========== */
 
 .upgrade-page-native {
-  min-height: auto;
+  min-height: 100dvh;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
