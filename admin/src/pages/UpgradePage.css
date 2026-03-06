@@ -552,3 +552,17 @@
 .upgrade-footer-links button:disabled {
   opacity: 0.5;
 }
+
+/* Mono dark: --color-primary is near-white, so elements with primary bg need dark text */
+[data-mono="true"][data-theme="dark"] .upgrade-continue-btn {
+  color: #111;
+}
+[data-mono="true"][data-theme="dark"] .tier-toggle-active {
+  color: #111;
+}
+[data-mono="true"][data-theme="dark"] .pricing-card-badge {
+  color: #111;
+}
+[data-mono="true"][data-theme="dark"] .cb-premium-badge {
+  color: #111;
+}
