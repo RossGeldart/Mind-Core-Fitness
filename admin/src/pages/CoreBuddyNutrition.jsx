@@ -13,7 +13,7 @@ import ScannerView from '../components/ScannerView';
 import ProductResult from '../components/ProductResult';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import BadgeCelebration from '../components/BadgeCelebration';
 
 function getTodayKey() {
@@ -56,6 +56,63 @@ function getDefaultMeal() {
   if (h < 14) return 'lunch';
   if (h < 17) return 'snacks';
   return 'dinner';
+}
+
+const SEARCH_TIPS = [
+  "Tip: Include the brand name for better results",
+  "Tip: Be specific — e.g. 'Fage 0% yoghurt' not just 'yoghurt'",
+  "Tip: Try the product's full name from the label",
+];
+
+const SEARCH_MESSAGES = [
+  "Searching thousands of products...",
+  "Almost there, won't be long now...",
+];
+
+function SearchLoadingOverlay() {
+  const [progress, setProgress] = useState(0);
+  const [tipIdx, setTipIdx] = useState(() => Math.floor(Math.random() * SEARCH_TIPS.length));
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    // Simulate progress: fast at first, slows down, never reaches 100
+    const start = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - start) / 1000;
+      // Fast to 60%, slow to 85%, crawl to 95%
+      let pct;
+      if (elapsed < 3) pct = (elapsed / 3) * 60;
+      else if (elapsed < 8) pct = 60 + ((elapsed - 3) / 5) * 25;
+      else pct = Math.min(95, 85 + (elapsed - 8) * 0.5);
+      setProgress(Math.round(pct));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Change tip once at ~5s, and again at ~10s (max 2 changes)
+  useEffect(() => {
+    const t1 = setTimeout(() => setTipIdx(i => (i + 1) % SEARCH_TIPS.length), 5000);
+    const t2 = setTimeout(() => setTipIdx(i => (i + 1) % SEARCH_TIPS.length), 10000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  // Change message once at ~6s (just one swap)
+  useEffect(() => {
+    const t = setTimeout(() => setMsgIdx(i => (i + 1) % SEARCH_MESSAGES.length), 6000);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="nut-search-loading-overlay">
+      <p className="nut-search-loading-tip">{SEARCH_TIPS[tipIdx]}</p>
+      <p className="nut-search-loading-msg">{SEARCH_MESSAGES[msgIdx]}</p>
+      <div className="nut-search-loading-bar-track">
+        <div className="nut-search-loading-bar-fill" style={{ width: `${progress}%` }}>
+          <span className="nut-search-loading-percent">{progress}%</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function CoreBuddyNutrition() {
@@ -602,10 +659,7 @@ export default function CoreBuddyNutrition() {
     setBarcodeLooking(false);
   };
 
-  // Debounced search-as-you-type
-  useEffect(() => {
-    startDebounceSearch(searchQuery, addMode === 'search' && !scannedProduct);
-  }, [searchQuery, addMode, scannedProduct, startDebounceSearch]);
+  // Search only fires on explicit action (Enter key or Search button), not while typing
 
   // ==================== RING HELPERS ====================
   const isDarkMode = isDark;
@@ -871,7 +925,7 @@ export default function CoreBuddyNutrition() {
   const weekMonthLabel = `${MONTH_NAMES[selDateObj.getMonth()]} ${selDateObj.getFullYear()}`;
 
   return (
-    <PullToRefresh>
+    <>
     <div className="nut-page">
       {/* ===== DARK ZONE (top) ===== */}
       <div className="nut-dark-zone">
@@ -899,7 +953,7 @@ export default function CoreBuddyNutrition() {
         <div className="nut-dark-content">
 
           {/* Week Calendar Strip */}
-          <div className="nut-week-strip anim-fade-up">
+          <div className="nut-week-strip">
             <div className="nut-week-header">
               <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() - 7); const key = d.toISOString().split('T')[0]; setSelectedDate(key); }} aria-label="Previous week">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -971,7 +1025,7 @@ export default function CoreBuddyNutrition() {
           )}
 
           {/* Macro Rings - 4 across */}
-          <div className="nut-rings-row anim-fade-up-d2">
+          <div className="nut-rings-row">
             {renderMacroRing('Protein', 'Protein', totals.protein, targets.protein, 'ring-protein')}
             {renderMacroRing('Carbs', 'Carbs', totals.carbs, targets.carbs, 'ring-carbs')}
             {renderMacroRing('Fats', 'Fats', totals.fats, targets.fats, 'ring-fats')}
@@ -981,7 +1035,7 @@ export default function CoreBuddyNutrition() {
       </div>
 
       {/* ===== LIGHT ZONE (bottom sheet) ===== */}
-      <div className="nut-light-zone anim-fade-up-d4">
+      <div className="nut-light-zone">
         <div className="nut-light-content">
 
           {/* Quick Actions Row */}
@@ -1236,8 +1290,9 @@ export default function CoreBuddyNutrition() {
                 {getCountryLabel() && (
                   <p className="nut-search-country-hint">Showing {getCountryLabel()} products first</p>
                 )}
+                {searchLoading && <SearchLoadingOverlay />}
                 <div className="nut-search-results">
-                  {searchResults.map((item, i) => (
+                  {!searchLoading && searchResults.map((item, i) => (
                     <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); if (item.portion) { setPortionCount(1); setServingInput(String(item.portion.weight)); setServingMode('portion'); } else { setPortionCount(0); setServingInput(String(item.servingValue || 100)); setServingMode('weight'); } }}>
                       {item.image && <img src={item.image} alt={item.name || 'Product'} loading="lazy" />}
                       <div className="nut-search-item-info">
@@ -1492,6 +1547,6 @@ export default function CoreBuddyNutrition() {
 
       <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

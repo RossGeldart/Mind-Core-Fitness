@@ -5,7 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import { TICKS_85_96 } from '../utils/ringTicks';
 import './CoreBuddyBuilder.css';
 
@@ -167,7 +167,7 @@ export default function CoreBuddyBuilder() {
   };
 
   return (
-    <PullToRefresh>
+    <>
     <div className="bldr-page">
       <div className="bldr-container">
         {/* Header */}
@@ -314,6 +314,6 @@ export default function CoreBuddyBuilder() {
 
       <CoreBuddyNav active="home" />
     </div>
-    </PullToRefresh>
+    </>
   );
 }

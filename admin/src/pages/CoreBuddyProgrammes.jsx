@@ -8,7 +8,7 @@ import { useTier } from '../contexts/TierContext';
 import { useTheme } from '../contexts/ThemeContext';
 import './CoreBuddyProgrammes.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { TICKS_78_94 } from '../utils/ringTicks';
 
@@ -819,7 +819,7 @@ export default function CoreBuddyProgrammes() {
   if (view === 'overview' && selectedTemplate) {
     const t = selectedTemplate;
     return (
-      <PullToRefresh>
+      <>
       <div className="pg-page">
         {renderHeader(t.name, () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
@@ -880,7 +880,7 @@ export default function CoreBuddyProgrammes() {
         </main>
         {toastEl}
       </div>
-      </PullToRefresh>
+      </>
     );
   }
 
@@ -894,7 +894,7 @@ export default function CoreBuddyProgrammes() {
     const ringFilled = Math.round((progress.totalCompleted / (progress.totalSessions || 1)) * TICK_COUNT);
 
     return (
-      <PullToRefresh>
+      <>
       <div className="pg-page">
         {renderHeader('Programme', () => navigate('/client/core-buddy/workouts'))}
         <main className="pg-main">
@@ -1003,7 +1003,7 @@ export default function CoreBuddyProgrammes() {
         <CoreBuddyNav active="workouts" />
         {toastEl}
       </div>
-      </PullToRefresh>
+      </>
     );
   }
 

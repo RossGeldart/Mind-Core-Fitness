@@ -26,11 +26,6 @@
   from { stroke-dashoffset: 238.76; }
 }
 
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Page */
 .cbm-page {
   min-height: 100vh;
@@ -51,7 +46,6 @@
   color: var(--text-primary);
   text-align: center;
   margin: 16px 0 20px;
-  animation: fadeSlideUp 0.8s ease-out both;
 }
 
 /* ===== REMEASURE BANNER ===== */
@@ -70,8 +64,6 @@
   box-shadow: none;
   font-family: inherit;
   text-align: left;
-  animation: fadeSlideUp 0.8s ease-out both;
-  animation-delay: 0.3s;
 }
 
 .cbm-remeasure-banner:active {
@@ -157,7 +149,6 @@
   padding: 24px 18px;
   margin-bottom: 24px;
   box-shadow: var(--shadow-glow);
-  animation: fadeSlideUp 0.8s ease-out both;
 }
 
 [data-theme="dark"] .cbm-setup-card {
@@ -292,8 +283,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 24px;
-  animation: fadeSlideUp 0.8s ease-out both;
-  animation-delay: 0.2s;
 }
 
 .cbm-ring-item {
@@ -399,8 +388,6 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
-  animation: fadeSlideUp 0.8s ease-out both;
-  animation-delay: 0.4s;
 }
 
 .cbm-detail-card {

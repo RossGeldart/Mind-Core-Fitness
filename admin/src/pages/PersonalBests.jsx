@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import PersonalBestsJunior from './PersonalBestsJunior';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import { TICKS_85_96, TICKS_TINY } from '../utils/ringTicks';
 import BUDDY_EXERCISES from '../config/buddyExercises';
 import './PersonalBests.css';
@@ -861,7 +861,7 @@ export default function PersonalBests() {
   const currentTarget = targets[currentExercise.key];
 
   return (
-    <PullToRefresh>
+    <>
     <div className="pb-page">
       <header className="client-header">
         <div className="header-content">
@@ -874,7 +874,7 @@ export default function PersonalBests() {
 
       <main className="pb-main page-transition-enter">
 
-        <div className="pb-intro anim-fade-up">
+        <div className="pb-intro">
           <h2>Personal Bests</h2>
           <p>{isBlockClient
             ? 'Track your strength benchmarks and body measurements each month.'
@@ -884,7 +884,7 @@ export default function PersonalBests() {
 
         {/* ====== CORE BUDDY PB VIEW ====== */}
         {!isBlockClient && (
-          <div className="pb-cb-section anim-fade-up-d2">
+          <div className="pb-cb-section">
             {Object.keys(cbPBs).length === 0 ? (
               <div className="pb-empty">
                 <div className="pb-cb-empty-icon">
@@ -2120,6 +2120,6 @@ export default function PersonalBests() {
       {/* Core Buddy Bottom Nav */}
       {coreBuddyMode && <CoreBuddyNav active="progress" />}
     </div>
-    </PullToRefresh>
+    </>
   );
 }

@@ -6,7 +6,7 @@ import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
-import PullToRefresh from '../components/PullToRefresh';
+
 import './CoreBuddyWorkouts.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
@@ -1647,7 +1647,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== MENU VIEW ====================
   if (view === 'menu') {
     return (
-      <PullToRefresh>
+      <>
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
@@ -1781,7 +1781,7 @@ export default function CoreBuddyWorkouts() {
         {toastEl}
         <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
       </div>
-      </PullToRefresh>
+      </>
     );
   }
 

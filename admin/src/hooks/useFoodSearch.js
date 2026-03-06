@@ -4,20 +4,26 @@ import { getCountryFilterParams } from '../utils/countryDetect';
 
 // ==================== LRU CACHE ====================
 const MAX_CACHE_SIZE = 50;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const searchCache = new Map();
 
 function cacheGet(key) {
   if (!searchCache.has(key)) return undefined;
-  const value = searchCache.get(key);
+  const entry = searchCache.get(key);
+  // Expire stale entries
+  if (Date.now() - entry.ts > CACHE_TTL_MS) {
+    searchCache.delete(key);
+    return undefined;
+  }
   // Move to end (most recently used)
   searchCache.delete(key);
-  searchCache.set(key, value);
-  return value;
+  searchCache.set(key, entry);
+  return entry.value;
 }
 
 function cacheSet(key, value) {
   if (searchCache.has(key)) searchCache.delete(key);
-  searchCache.set(key, value);
+  searchCache.set(key, { value, ts: Date.now() });
   // Evict oldest if over limit
   if (searchCache.size > MAX_CACHE_SIZE) {
     const oldest = searchCache.keys().next().value;
@@ -80,18 +86,38 @@ const scoreRelevance = (name, brand, term) => {
     score += 80;
   }
 
-  // Penalise extra words heavily — each extra word beyond the search = less relevant
-  const extraWords = Math.max(0, nameWords.length - termWords.length);
-  score -= extraWords * 15;
+  // Bonus when the product name starts with the search term
+  if (n.startsWith(termCore) || n.startsWith(term)) {
+    score += 30;
+  }
+
+  // Graduated extra-word penalty: descriptors penalised mildly, substantive words heavily
+  const extraNameWords = nameWords.filter(nw =>
+    !termWords.some(tw => wordMatches(tw, nw))
+  );
+  const descriptorExtras = extraNameWords.filter(w => DESCRIPTOR_WORDS.has(w)).length;
+  const nonDescriptorExtras = extraNameWords.length - descriptorExtras;
+  score -= descriptorExtras * 5;
+  score -= nonDescriptorExtras * 20;
 
   // Brand matches a search word — strong boost (e.g. searching "Tesco banana")
   const brandWords = coreWords(brand);
   if (termWords.some(tw => brandWords.some(bw => wordMatches(tw, bw)) || b.startsWith(tw))) score += 100;
 
   // Shorter names are more specific/relevant
-  score += Math.max(0, 20 - n.length);
+  score += Math.max(0, 30 - n.length);
 
   return score;
+};
+
+// ==================== CATEGORY MATCHING ====================
+// Extract searchable words from OFF categories_tags (e.g. "en:coffees" → "coffee")
+const categoryWords = (tags) => {
+  if (!tags || !Array.isArray(tags)) return [];
+  return tags
+    .filter(t => t.startsWith('en:'))
+    .flatMap(t => t.slice(3).split('-'))
+    .filter(Boolean);
 };
 
 // ==================== FILTER & SCORE PRODUCTS ====================
@@ -99,38 +125,38 @@ const filterAndScore = (products, searchWords, term) => {
   const termWords = coreWords(term);
 
   return products
-    .map(p => parseProduct(p))
-    .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
-    .filter(p => {
+    .map(p => ({ parsed: parseProduct(p), categories: categoryWords(p.categories_tags) }))
+    .filter(({ parsed: p }) => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
+    .filter(({ parsed: p, categories }) => {
       const nameWords = coreWords(p.name);
       const brandWords = coreWords(p.brand);
 
-      // Each search word must match in the name OR brand
-      // e.g. "Asda banana" → "Asda" matches brand, "banana" matches name
+      // Each search word must match in the name, brand, OR category
+      // e.g. "coffee" matches a product categorised as "en:coffees" even if name is "Nescafé Gold Blend"
       const allMatch = termWords.every(tw =>
         nameWords.some(nw => wordMatches(tw, nw)) ||
-        brandWords.some(bw => wordMatches(tw, bw))
+        brandWords.some(bw => wordMatches(tw, bw)) ||
+        categories.some(cw => wordMatches(tw, cw))
       );
       if (!allMatch) return false;
 
-      // At least one search word must match the product name itself
+      // At least one search word must match the product name OR category
       // (prevents matching random products that just happen to be by a searched brand)
-      const anyNameMatch = termWords.some(tw =>
-        nameWords.some(nw => wordMatches(tw, nw))
+      const anyNameOrCatMatch = termWords.some(tw =>
+        nameWords.some(nw => wordMatches(tw, nw)) ||
+        categories.some(cw => wordMatches(tw, cw))
       );
-      if (!anyNameMatch) return false;
+      if (!anyNameOrCatMatch) return false;
 
-      // Strict filtering: every extra word in the name (beyond what was searched)
-      // must be a harmless descriptor like "organic", "fairtrade", "loose" etc.
-      // "Banana chips", "Strawberry Banana", "dried bananas" all get rejected
+      // Soft cap: reject only products with excessively long names (compound/unrelated)
       const extraNameWords = nameWords.filter(nw =>
         !termWords.some(tw => wordMatches(tw, nw))
       );
-      const allExtrasAreDescriptors = extraNameWords.every(w => DESCRIPTOR_WORDS.has(w));
-      if (!allExtrasAreDescriptors) return false;
+      if (extraNameWords.length > 6) return false;
 
       return true;
     })
+    .map(({ parsed }) => parsed)
     .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term));
 };
 
@@ -164,9 +190,9 @@ export default function useFoodSearch({ onError }) {
     setSearchLoading(true);
     try {
       const encoded = encodeURIComponent(q);
-      const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments';
+      const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments,categories_tags';
       const countryFilter = getCountryFilterParams();
-      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=50&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
+      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=100&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
       // Helper to merge global results into existing results
       const mergeResults = (existing, globalData) => {
@@ -182,60 +208,43 @@ export default function useFoodSearch({ onError }) {
         return existing;
       };
 
-      // Fire both searches in parallel, but show results as soon as EITHER returns
-      let results = [];
-      let gotFirst = false;
-
+      // Fire both searches in parallel, collect raw API responses, merge at the end
       const localPromise = countryFilter
         ? fetch(baseUrl + countryFilter, { signal: controller.signal })
             .then(r => r.ok ? r.json() : null)
-            .then(data => {
-              if (data && !controller.signal.aborted) {
-                results = filterAndScore(data.products || [], searchWords, term);
-                if (results.length > 0) {
-                  gotFirst = true;
-                  setSearchResults(results.slice(0, 10));
-                  setSearchLoading(false);
-                }
-              }
-            })
-            .catch(() => {})
-        : Promise.resolve();
+            .catch(() => null)
+        : Promise.resolve(null);
 
       const globalPromise = fetch(baseUrl, { signal: controller.signal })
         .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (data && !controller.signal.aborted) {
-            if (results.length < 3) {
-              results = mergeResults(results, data);
-            }
-            // If local hasn't responded yet, show global results immediately
-            if (!gotFirst && results.length > 0) {
-              gotFirst = true;
-              setSearchResults(results.slice(0, 10));
-              setSearchLoading(false);
-            }
-          }
-        })
-        .catch(() => {});
+        .catch(() => null);
 
-      // Wait for both to finish, then do final merge and cache
-      await Promise.all([localPromise, globalPromise]);
+      // Wait for both, then merge local-first and dedupe
+      const [localData, globalData] = await Promise.all([localPromise, globalPromise]);
 
       if (!controller.signal.aborted) {
-        results = results.slice(0, 10);
-        cacheSet(term, results);
+        // Start with local results (higher priority), then merge global
+        let results = filterAndScore(localData?.products || [], searchWords, term);
+        results = mergeResults(results, { products: globalData?.products || [] });
+        results = results.slice(0, 15);
+        // Only cache non-empty results — empty may be a transient API/network issue
+        if (results.length > 0) {
+          cacheSet(term, results);
+        }
         setSearchResults(results);
         if (results.length === 0) {
           onError?.('No results found. Try a different search.', 'info');
         }
-        setSearchLoading(false);
       }
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error('Search error:', err);
       onError?.('Search failed. Check your connection.', 'error');
-      setSearchLoading(false);
+    } finally {
+      // Always clear loading unless this search was aborted (a newer search is running)
+      if (!controller.signal.aborted) {
+        setSearchLoading(false);
+      }
     }
   }, [onError]);
 
@@ -245,7 +254,7 @@ export default function useFoodSearch({ onError }) {
     if (!query?.trim() || !enabled) return;
     debounceTimer.current = setTimeout(() => {
       searchFood(query);
-    }, 350);
+    }, 250);
   }, [searchFood]);
 
   // Cleanup on unmount

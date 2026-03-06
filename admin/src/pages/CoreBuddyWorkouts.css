@@ -2927,7 +2927,6 @@
   -webkit-tap-highlight-color: transparent;
   font-family: inherit;
   box-shadow: var(--shadow-glow);
-  animation: hubCardIn 0.4s ease both;
 }
 
 [data-theme="dark"] .wk-hub-card {
@@ -3007,7 +3006,6 @@
   font-style: italic;
   color: var(--text-tertiary, var(--text-secondary));
   line-height: 1.5;
-  animation: hubCardIn 0.4s ease 0.15s both;
 }
 
 .wk-hub-tip svg {
@@ -3250,10 +3248,7 @@
   gap: 8px;
 }
 
-@keyframes hubCardIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+
 
 .wk-hub-saved-card {
   display: flex;
@@ -3262,7 +3257,6 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
-  animation: hubCardIn 0.3s ease both;
 }
 
 .wk-hub-saved-main {
@@ -3354,7 +3348,6 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s, border-color 0.2s;
-  animation: hubCardIn 0.3s ease both;
   font-family: inherit;
   text-align: left;
 }

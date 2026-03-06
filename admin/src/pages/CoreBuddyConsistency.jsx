@@ -7,7 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyConsistency.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
-import PullToRefresh from '../components/PullToRefresh';
+
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { awardBadge } from '../utils/awardBadge';
 import BadgeCelebration from '../components/BadgeCelebration';
@@ -595,7 +595,7 @@ export default function CoreBuddyConsistency() {
   const perfectDays = weeklyStats.filter(d => d.completed === d.total && d.total > 0).length;
 
   return (
-    <PullToRefresh>
+    <>
     <div className="cbc-page">
       {/* Header */}
       <header className="client-header">
@@ -621,7 +621,7 @@ export default function CoreBuddyConsistency() {
       ) : (
       <main className="cbc-main">
         {/* ===== Hero: Today's Progress Ring ===== */}
-        <div className="cbc-hero anim-fade-up">
+        <div className="cbc-hero">
           <div className={`cbc-progress-ring${allDone ? ' cbc-ring-complete' : ''}`}>
             <svg viewBox="0 0 200 200">
               <circle className="cbc-arc-track" cx="100" cy="100" r="80" />
@@ -640,7 +640,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* ===== Streak Banner ===== */}
-        <div className="cbc-streak-card anim-fade-up-d1">
+        <div className="cbc-streak-card">
           <div className="cbc-streak-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           </div>
@@ -655,7 +655,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* ===== Today's Habits ===== */}
-        <div className="cbc-section anim-fade-up-d2">
+        <div className="cbc-section">
           <h2 className="cbc-section-title">Today's Habits</h2>
           <div className="cbc-habits-grid">
             {allHabits.map((habit, habitIdx) => {
@@ -790,7 +790,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* ===== Weekly Overview — per-habit dot rows ===== */}
-        <div className="cbc-section anim-fade-up-d3">
+        <div className="cbc-section">
           <div className="cbc-section-header">
             <h2 className="cbc-section-title">This Week</h2>
             <span className="cbc-section-badge">{perfectDays}/7 perfect</span>
@@ -833,7 +833,7 @@ export default function CoreBuddyConsistency() {
         </div>
 
         {/* ===== Monthly Calendar Heat-Map ===== */}
-        <div className="cbc-section anim-fade-up-d4">
+        <div className="cbc-section">
           <div className="cbc-cal-nav">
             <button className="cbc-cal-nav-btn" onClick={() => setCalMonth(p => {
               let m = p.month - 1, y = p.year;
@@ -977,6 +977,6 @@ export default function CoreBuddyConsistency() {
 
       <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
     </div>
-    </PullToRefresh>
+    </>
   );
 }
