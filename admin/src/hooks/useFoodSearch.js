@@ -104,34 +104,45 @@ const scoreRelevance = (name, brand, term) => {
   return score;
 };
 
+// ==================== CATEGORY MATCHING ====================
+// Extract searchable words from OFF categories_tags (e.g. "en:coffees" → "coffee")
+const categoryWords = (tags) => {
+  if (!tags || !Array.isArray(tags)) return [];
+  return tags
+    .filter(t => t.startsWith('en:'))
+    .flatMap(t => t.slice(3).split('-'))
+    .filter(Boolean);
+};
+
 // ==================== FILTER & SCORE PRODUCTS ====================
 const filterAndScore = (products, searchWords, term) => {
   const termWords = coreWords(term);
 
   return products
-    .map(p => parseProduct(p))
-    .filter(p => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
-    .filter(p => {
+    .map(p => ({ parsed: parseProduct(p), categories: categoryWords(p.categories_tags) }))
+    .filter(({ parsed: p }) => p.name !== 'Unknown Product' && (p.calories > 0 || p.protein > 0))
+    .filter(({ parsed: p, categories }) => {
       const nameWords = coreWords(p.name);
       const brandWords = coreWords(p.brand);
 
-      // Each search word must match in the name OR brand
-      // e.g. "Asda banana" → "Asda" matches brand, "banana" matches name
+      // Each search word must match in the name, brand, OR category
+      // e.g. "coffee" matches a product categorised as "en:coffees" even if name is "Nescafé Gold Blend"
       const allMatch = termWords.every(tw =>
         nameWords.some(nw => wordMatches(tw, nw)) ||
-        brandWords.some(bw => wordMatches(tw, bw))
+        brandWords.some(bw => wordMatches(tw, bw)) ||
+        categories.some(cw => wordMatches(tw, cw))
       );
       if (!allMatch) return false;
 
-      // At least one search word must match the product name itself
+      // At least one search word must match the product name OR category
       // (prevents matching random products that just happen to be by a searched brand)
-      const anyNameMatch = termWords.some(tw =>
-        nameWords.some(nw => wordMatches(tw, nw))
+      const anyNameOrCatMatch = termWords.some(tw =>
+        nameWords.some(nw => wordMatches(tw, nw)) ||
+        categories.some(cw => wordMatches(tw, cw))
       );
-      if (!anyNameMatch) return false;
+      if (!anyNameOrCatMatch) return false;
 
       // Soft cap: reject only products with excessively long names (compound/unrelated)
-      // The relevance scoring handles ranking — no need to hard-reject valid products
       const extraNameWords = nameWords.filter(nw =>
         !termWords.some(tw => wordMatches(tw, nw))
       );
@@ -139,6 +150,7 @@ const filterAndScore = (products, searchWords, term) => {
 
       return true;
     })
+    .map(({ parsed }) => parsed)
     .sort((a, b) => scoreRelevance(b.name, b.brand, term) - scoreRelevance(a.name, a.brand, term));
 };
 
@@ -172,9 +184,9 @@ export default function useFoodSearch({ onError }) {
     setSearchLoading(true);
     try {
       const encoded = encodeURIComponent(q);
-      const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments';
+      const baseFields = 'product_name,product_name_en,brands,image_small_url,image_url,serving_size,quantity,nutriments,categories_tags';
       const countryFilter = getCountryFilterParams();
-      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=50&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
+      const baseUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encoded}&search_simple=1&action=process&json=1&page_size=100&lc=en&sort_by=unique_scans_n&fields=${baseFields}`;
 
       // Helper to merge global results into existing results
       const mergeResults = (existing, globalData) => {
