@@ -108,10 +108,11 @@
   font-weight: 500;
 }
 
-.al-type-btn:hover,
-.al-type-btn:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .al-type-btn:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 
 .al-type-icon {
