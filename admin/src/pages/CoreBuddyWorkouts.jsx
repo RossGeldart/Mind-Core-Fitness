@@ -1071,7 +1071,12 @@ export default function CoreBuddyWorkouts() {
 
     const config = LEVELS.find(l => l.key === byoLevel);
     setLevelConfig(config);
+    setLevel(byoLevel);
     const numRounds = byoSelected.length <= 4 ? 3 : 2;
+    const totalSeconds = byoSelected.length * numRounds * (config.work + config.rest);
+    setDuration(Math.ceil(totalSeconds / 60));
+    const equipmentUsed = [...new Set(byoSelected.map(e => e.equipment))];
+    setSelectedEquipment(equipmentUsed);
     setWorkout(resolved);
     setRounds(numRounds);
     setFocusArea('mix');
