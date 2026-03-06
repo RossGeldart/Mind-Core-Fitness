@@ -62,16 +62,11 @@ const SEARCH_TIPS = [
   "Tip: Include the brand name for better results",
   "Tip: Be specific — e.g. 'Fage 0% yoghurt' not just 'yoghurt'",
   "Tip: Try the product's full name from the label",
-  "Tip: Searching by barcode? Use the scanner instead!",
-  "Tip: Add pack size — e.g. 'Weetabix 48 pack'",
 ];
 
 const SEARCH_MESSAGES = [
-  "Hang tight, grabbing your food...",
-  "Almost there, searching thousands of products...",
-  "Won't be long now...",
-  "Matching the best results for you...",
-  "Crunching the numbers...",
+  "Searching thousands of products...",
+  "Almost there, won't be long now...",
 ];
 
 function SearchLoadingOverlay() {
@@ -94,18 +89,17 @@ function SearchLoadingOverlay() {
     return () => clearInterval(interval);
   }, []);
 
+  // Change tip once at ~5s, and again at ~10s (max 2 changes)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTipIdx(i => (i + 1) % SEARCH_TIPS.length);
-    }, 3500);
-    return () => clearInterval(interval);
+    const t1 = setTimeout(() => setTipIdx(i => (i + 1) % SEARCH_TIPS.length), 5000);
+    const t2 = setTimeout(() => setTipIdx(i => (i + 1) % SEARCH_TIPS.length), 10000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
+  // Change message once at ~6s (just one swap)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMsgIdx(i => (i + 1) % SEARCH_MESSAGES.length);
-    }, 2800);
-    return () => clearInterval(interval);
+    const t = setTimeout(() => setMsgIdx(i => (i + 1) % SEARCH_MESSAGES.length), 6000);
+    return () => clearTimeout(t);
   }, []);
 
   return (
