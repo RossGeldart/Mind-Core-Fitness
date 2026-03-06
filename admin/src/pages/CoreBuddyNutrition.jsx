@@ -58,6 +58,68 @@ function getDefaultMeal() {
   return 'dinner';
 }
 
+const SEARCH_TIPS = [
+  "Tip: Include the brand name for better results",
+  "Tip: Be specific — e.g. 'Fage 0% yoghurt' not just 'yoghurt'",
+  "Tip: Try the product's full name from the label",
+  "Tip: Searching by barcode? Use the scanner instead!",
+  "Tip: Add pack size — e.g. 'Weetabix 48 pack'",
+];
+
+const SEARCH_MESSAGES = [
+  "Hang tight, grabbing your food...",
+  "Almost there, searching thousands of products...",
+  "Won't be long now...",
+  "Matching the best results for you...",
+  "Crunching the numbers...",
+];
+
+function SearchLoadingOverlay() {
+  const [progress, setProgress] = useState(0);
+  const [tipIdx, setTipIdx] = useState(() => Math.floor(Math.random() * SEARCH_TIPS.length));
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    // Simulate progress: fast at first, slows down, never reaches 100
+    const start = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - start) / 1000;
+      // Fast to 60%, slow to 85%, crawl to 95%
+      let pct;
+      if (elapsed < 3) pct = (elapsed / 3) * 60;
+      else if (elapsed < 8) pct = 60 + ((elapsed - 3) / 5) * 25;
+      else pct = Math.min(95, 85 + (elapsed - 8) * 0.5);
+      setProgress(Math.round(pct));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTipIdx(i => (i + 1) % SEARCH_TIPS.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMsgIdx(i => (i + 1) % SEARCH_MESSAGES.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="nut-search-loading-overlay">
+      <div className="nut-search-loading-percent">{progress}%</div>
+      <div className="nut-search-loading-bar-track">
+        <div className="nut-search-loading-bar-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="nut-search-loading-msg">{SEARCH_MESSAGES[msgIdx]}</p>
+      <p className="nut-search-loading-tip">{SEARCH_TIPS[tipIdx]}</p>
+    </div>
+  );
+}
+
 export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -1233,8 +1295,9 @@ export default function CoreBuddyNutrition() {
                 {getCountryLabel() && (
                   <p className="nut-search-country-hint">Showing {getCountryLabel()} products first</p>
                 )}
+                {searchLoading && <SearchLoadingOverlay />}
                 <div className="nut-search-results">
-                  {searchResults.map((item, i) => (
+                  {!searchLoading && searchResults.map((item, i) => (
                     <button key={i} className="nut-search-item" onClick={() => { setScannedProduct(item); if (item.portion) { setPortionCount(1); setServingInput(String(item.portion.weight)); setServingMode('portion'); } else { setPortionCount(0); setServingInput(String(item.servingValue || 100)); setServingMode('weight'); } }}>
                       {item.image && <img src={item.image} alt={item.name || 'Product'} loading="lazy" />}
                       <div className="nut-search-item-info">
