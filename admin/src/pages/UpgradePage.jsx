@@ -270,18 +270,15 @@ export default function UpgradePage() {
 
     return (
       <div className="upgrade-page upgrade-page-native">
-        <button className="upgrade-back-btn" onClick={() => navigate(-1)}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-          Back
-        </button>
-
-        <div className="upgrade-native-logo">
-          <img src="/Logo.webp" alt="Mind Core Fitness" />
-        </div>
-
-        <div className="upgrade-header">
-          <h1>Unlock Your Full Potential</h1>
-          <p>Train smarter with Premium</p>
+        <div className="upgrade-native-top-row">
+          <button className="upgrade-back-btn" onClick={() => navigate(-1)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          </button>
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="upgrade-native-logo-inline" />
+          <div className="upgrade-native-header-text">
+            <h1>Unlock Your Full Potential</h1>
+            <p>Train smarter with Premium</p>
+          </div>
         </div>
 
         <div className="upgrade-tier-toggle">
@@ -299,14 +296,14 @@ export default function UpgradePage() {
           </button>
         </div>
 
-        <ul className="upgrade-feature-list">
+        <ul className="upgrade-feature-list upgrade-feature-grid">
           {features.map((f, i) => (
             <li key={i} className={f.included ? 'feature-included' : 'feature-excluded'}>
               <span className="feature-icon">
                 {f.included ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--color-primary)"/><path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--color-primary)"/><path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--text-tertiary)" opacity="0.3"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="var(--text-tertiary)" opacity="0.3"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round"/></svg>
                 )}
               </span>
               <span className={f.included ? '' : 'feature-text-muted'}>{f.text}</span>
@@ -324,7 +321,7 @@ export default function UpgradePage() {
                 <div className="pricing-card-badge">SAVE 33%</div>
                 <div className="pricing-card-label">Yearly</div>
                 <div className="pricing-card-price">{annualPrice}<span>/yr</span></div>
-                <div className="pricing-card-sub">Only ~{'\u00a3'}9.99/mo</div>
+                <div className="pricing-card-sub">~{'\u00a3'}9.99/mo</div>
                 <div className={`pricing-card-radio ${selectedPlan === 'annual' ? 'radio-selected' : ''}`} />
               </button>
 
