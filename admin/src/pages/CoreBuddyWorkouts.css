@@ -3188,10 +3188,11 @@
   text-align: left;
 }
 
-.wk-hub-saved-cat-header:hover,
-.wk-hub-saved-cat-header:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .wk-hub-saved-cat-header:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 
 .wk-hub-saved-cat--open .wk-hub-saved-cat-header {

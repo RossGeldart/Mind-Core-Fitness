@@ -2491,10 +2491,11 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.cb-fab-item:hover,
-.cb-fab-item:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .cb-fab-item:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 .cb-fab-item:active {
   transform: scale(0.95);
