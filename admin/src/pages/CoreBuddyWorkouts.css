@@ -2993,6 +2993,14 @@
   opacity: 0.25;
 }
 
+.wk-hub-card-locked {
+  opacity: 0.5;
+}
+.wk-hub-card-locked .wk-hub-card-icon {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--text-tertiary);
+}
+
 /* Motivational tip – multi-line readable card */
 .wk-hub-tip {
   display: flex;
