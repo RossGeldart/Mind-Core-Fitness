@@ -90,7 +90,7 @@
 
 /* ── Feature Showcase (Step 0) ── */
 .ob-page--showcase {
-  padding: 12px 0 16px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 0 16px;
   min-height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -99,7 +99,7 @@
 .ob-content--showcase {
   max-width: 100%;
   height: 100%;
-  max-height: calc(100dvh - 28px);
+  max-height: calc(100dvh - 28px - env(safe-area-inset-top, 0px));
   display: flex;
   flex-direction: column;
 }
