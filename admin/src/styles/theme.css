@@ -316,6 +316,20 @@
   background: rgba(30, 30, 30, 0.88);
 }
 
+/* Nutrition modal & search items need opaque bg in mono so text is readable */
+[data-mono="true"][data-theme="dark"] .nut-modal {
+  background: rgba(20, 20, 20, 0.95);
+}
+[data-mono="true"][data-theme="light"] .nut-modal {
+  background: rgba(255, 255, 255, 0.92);
+}
+[data-mono="true"][data-theme="dark"] .nut-search-item {
+  background: rgba(255, 255, 255, 0.08);
+}
+[data-mono="true"][data-theme="light"] .nut-search-item {
+  background: rgba(0, 0, 0, 0.04);
+}
+
 /* Keep 24hr countdown ring red in mono mode */
 [data-mono="true"] .cb-ring .ring-tick.remaining {
   stroke: #DA3F4F;
