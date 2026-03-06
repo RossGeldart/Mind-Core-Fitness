@@ -317,7 +317,9 @@
 
 .upgrade-page-native {
   min-height: 100dvh;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 14px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
 }
 
 /* Top row: back button + logo + header inline */
@@ -370,7 +372,7 @@
   border: 1px solid var(--border-color);
   border-radius: 30px;
   padding: 3px;
-  margin: 0 auto 10px;
+  margin: 0 auto 18px;
   max-width: 220px;
 }
 
@@ -395,11 +397,16 @@
   box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.4);
 }
 
+/* Spacer to push content apart in native flex layout */
+.upgrade-native-spacer {
+  flex: 1;
+}
+
 /* Feature list */
 .upgrade-feature-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 10px;
+  margin: 0;
 }
 
 .upgrade-feature-list li {
@@ -447,12 +454,12 @@
   color: var(--text-tertiary);
 }
 
-/* Pricing cards — stacked */
+/* Pricing cards — side by side */
 .upgrade-pricing-cards {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .pricing-card {
@@ -460,14 +467,15 @@
   background: var(--bg-card);
   border: 2px solid var(--border-color);
   border-radius: 14px;
-  padding: 10px 14px;
+  padding: 14px 12px;
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
   overflow: visible;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
 .pricing-card-selected {
@@ -527,13 +535,15 @@
 }
 
 .pricing-card-radio {
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 2px solid var(--border-color);
   transition: all 0.2s;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .radio-selected {

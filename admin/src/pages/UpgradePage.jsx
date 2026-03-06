@@ -311,6 +311,8 @@ export default function UpgradePage() {
           ))}
         </ul>
 
+        <div className="upgrade-native-spacer" />
+
         {tierTab === 'premium' && (
           <>
             <div className="upgrade-pricing-cards">
@@ -340,6 +342,8 @@ export default function UpgradePage() {
               </button>
             </div>
 
+            <div className="upgrade-native-spacer" />
+
             <button
               className="upgrade-continue-btn"
               onClick={() => handleNativePurchase(selectedPlan)}
@@ -351,12 +355,15 @@ export default function UpgradePage() {
         )}
 
         {tierTab === 'free' && (
-          <div className="upgrade-free-cta">
-            <p>Want more from your training?</p>
-            <button className="upgrade-continue-btn" onClick={() => setTierTab('premium')}>
-              See Premium
-            </button>
-          </div>
+          <>
+            <div className="upgrade-native-spacer" />
+            <div className="upgrade-free-cta">
+              <p>Want more from your training?</p>
+              <button className="upgrade-continue-btn" onClick={() => setTierTab('premium')}>
+                See Premium
+              </button>
+            </div>
+          </>
         )}
 
         <div className="upgrade-footer-links">
