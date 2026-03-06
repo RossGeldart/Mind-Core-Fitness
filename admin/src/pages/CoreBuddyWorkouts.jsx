@@ -712,6 +712,7 @@ export default function CoreBuddyWorkouts() {
   const [showByoFinish, setShowByoFinish] = useState(false);
   const [showByoSaveModal, setShowByoSaveModal] = useState(false);
   const [byoSaveName, setByoSaveName] = useState('');
+  const [byoWeightUnit, setByoWeightUnit] = useState(() => localStorage.getItem('mcf_weight_unit') || 'kg');
 
   // Recent workouts (last 3 for hub)
   const [recentWorkouts, setRecentWorkouts] = useState([]);
@@ -1111,6 +1112,7 @@ export default function CoreBuddyWorkouts() {
       await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         type: 'custom_sets',
+        weightUnit: byoWeightUnit,
         exercises,
         exerciseCount: exercises.length,
         totalSets,
@@ -2132,6 +2134,16 @@ export default function CoreBuddyWorkouts() {
             <p>{byoSelected.length} exercises &middot; {totalSets} sets logged</p>
           </div>
 
+          <div className="byo-unit-toggle">
+            <button className={`byo-unit-btn${byoWeightUnit === 'kg' ? ' byo-unit-active' : ''}`} onClick={() => { setByoWeightUnit('kg'); localStorage.setItem('mcf_weight_unit', 'kg'); }}>kg</button>
+            <button className={`byo-unit-btn${byoWeightUnit === 'lbs' ? ' byo-unit-active' : ''}`} onClick={() => { setByoWeightUnit('lbs'); localStorage.setItem('mcf_weight_unit', 'lbs'); }}>lbs</button>
+          </div>
+
+          <div className="byo-smart-tip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <span>Add an extra rep each week. Breezing through your sets? Up the weight.</span>
+          </div>
+
           {byoSelected.map(ex => {
             const sets = byoSetsData[ex.name] || [];
             const isWeighted = ex.type === 'weighted';
@@ -2144,7 +2156,7 @@ export default function CoreBuddyWorkouts() {
                 <div className="byo-set-rows">
                   <div className="byo-set-row byo-set-row-header">
                     <span className="byo-set-num">Set</span>
-                    {isWeighted && <span className="byo-set-weight">kg</span>}
+                    {isWeighted && <span className="byo-set-weight">{byoWeightUnit}</span>}
                     <span className="byo-set-reps">{ex.type === 'timed' ? 'Secs' : 'Reps'}</span>
                     <span className="byo-set-del"></span>
                   </div>

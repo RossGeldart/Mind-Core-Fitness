@@ -4080,3 +4080,64 @@
 .byo-complete-btn {
   width: 100%;
 }
+
+/* ── Weight Unit Toggle ── */
+.byo-unit-toggle {
+  display: flex;
+  gap: 0;
+  margin: 0 16px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.byo-unit-btn {
+  padding: 7px 18px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.byo-unit-btn + .byo-unit-btn {
+  border-left: 1px solid var(--border-color);
+}
+
+.byo-unit-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+[data-mono="true"][data-theme="dark"] .byo-unit-active {
+  color: var(--text-on-primary);
+}
+
+/* ── Smart Tip ── */
+.byo-smart-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 16px 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  border: 1px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.15);
+}
+
+.byo-smart-tip svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  margin-top: 1px;
+}
+
+.byo-smart-tip span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
