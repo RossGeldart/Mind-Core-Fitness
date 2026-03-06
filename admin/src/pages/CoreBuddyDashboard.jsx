@@ -211,53 +211,71 @@ export default function CoreBuddyDashboard() {
       {
         selector: '.cb-ring-container',
         title: 'Your 24-Hour Countdown',
-        body: 'Every day resets. This ring tracks the time you have left — tap your photo to personalise your profile.',
-        cta: 'Next',
+        body: 'Every day resets at midnight. This ring tracks the hours you have left — tap your photo to add a profile picture.',
       },
       {
         selector: '.cb-stats-row',
-        title: 'Progress at a Glance',
-        body: 'Your workout streak, sessions this week, and daily habits — all in one row. These fill up as you go.',
+        title: 'Your Stats at a Glance',
+        body: 'Streak, weekly workouts, habits, and activities — all tracked in real time. Tap the workout ring to set your weekly target.',
       },
       {
-        selector: '.cb-nudge-card',
+        selector: '.cb-card-nudge',
         title: 'Smart Suggestions',
-        body: "We'll highlight what needs your attention — your next session, unfinished habits, or a meal to log.",
+        body: "We'll tell you what needs your attention next — your next session, unfinished habits, or a meal to log.",
       },
       {
-        selector: '.cb-card-workouts-hero',
-        title: 'Workout',
-        body: 'Randomiser workouts — pick your focus, level and time. Save and replay your favourites.',
-        cta: 'Next',
+        selector: '.cb-card-workouts',
+        title: 'Workouts',
+        body: 'Pick your focus, level and duration. Save your favourites and replay them anytime.',
+      },
+      {
+        selector: '.cb-card-activity',
+        title: 'Log Activity',
+        body: 'Track walks, runs, cycles, swims — anything beyond your workouts counts here.',
       },
     ];
 
     if (isPremium) {
       base.push(
         {
-          selector: '.cb-card-nutrition',
-          title: 'Nutrition Tracking',
-          body: 'Set your macro targets, scan barcodes, and log meals to hit your daily goals.',
+          selector: '.cb-nutrition-wrap',
+          title: "Today's Nutrition",
+          body: 'Track your macros — protein, carbs, fats and calories. Tap to log meals and scan barcodes.',
         },
         {
           selector: '.cb-fab',
-          title: 'Quick Menu',
-          body: 'Tap the menu button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
+          title: 'Quick Access Menu',
+          body: 'Your hub for habits, leaderboard, badges, challenges, buddies and body metrics — all in one tap.',
         },
         {
           selector: '.cb-journey-section',
-          title: 'Share Your Journey',
-          body: 'Post photos, updates, and milestones — your fitness journey in one place. Like and comment on each other\'s posts.',
+          title: 'My Journey',
+          body: 'Share photos, updates and milestones with your buddies. Like, comment and @mention each other.',
         },
       );
     }
 
-    base.push({
-      selector: '.block-bottom-nav',
-      title: "You're All Set!",
-      body: 'Use the nav bar to jump between your profile, workouts, nutrition, and buddies. Time to get after it.',
-      cta: 'Let\'s Go!',
-    });
+    if (!isPremium) {
+      base.push({
+        selector: '.cb-upgrade-cta',
+        title: 'Unlock More',
+        body: 'Upgrade for nutrition tracking, buddies, social feed, challenges, badges and the full experience.',
+      });
+    }
+
+    base.push(
+      {
+        selector: '.header-left-group',
+        title: 'Notifications & Settings',
+        body: 'Tap the bell for notifications from buddies and coaches. Use settings to customise the look of the app and enable push notifications.',
+      },
+      {
+        selector: '.block-bottom-nav',
+        title: "You're All Set!",
+        body: 'Use the nav bar to jump between your profile, workouts, nutrition, and buddies. Time to get after it!',
+        cta: "Let's Go!",
+      },
+    );
 
     return base;
   })();
@@ -1489,7 +1507,7 @@ export default function CoreBuddyDashboard() {
 
         {/* Nutrition Rings — premium only, matches body metrics style */}
         {isPremium && (
-          <button className={`cb-metric-rings-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
+          <button className={`cb-metric-rings-wrap cb-nutrition-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
             <span className="cb-metric-rings-title">Today's Nutrition</span>
             <div className="cb-metric-rings-row">
               {[
@@ -1558,7 +1576,7 @@ export default function CoreBuddyDashboard() {
 
           {/* Workouts */}
           <button
-            className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
+            className={`cb-feature-card cb-card-unified cb-card-workouts ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
             <div className="cb-card-icon">
@@ -1573,7 +1591,7 @@ export default function CoreBuddyDashboard() {
 
           {/* Activity Log */}
           <button
-            className="cb-feature-card cb-card-unified ripple-btn"
+            className="cb-feature-card cb-card-unified cb-card-activity ripple-btn"
             onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
           >
             <div className="cb-card-icon">

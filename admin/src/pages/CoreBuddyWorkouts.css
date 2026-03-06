@@ -47,6 +47,7 @@
 
 .wk-page-workout {
   background: var(--bg-body);
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
