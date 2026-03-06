@@ -227,18 +227,24 @@ export default function useFoodSearch({ onError }) {
         let results = filterAndScore(localData?.products || [], searchWords, term);
         results = mergeResults(results, { products: globalData?.products || [] });
         results = results.slice(0, 15);
-        cacheSet(term, results);
+        // Only cache non-empty results — empty may be a transient API/network issue
+        if (results.length > 0) {
+          cacheSet(term, results);
+        }
         setSearchResults(results);
         if (results.length === 0) {
           onError?.('No results found. Try a different search.', 'info');
         }
-        setSearchLoading(false);
       }
     } catch (err) {
       if (err.name === 'AbortError') return;
       console.error('Search error:', err);
       onError?.('Search failed. Check your connection.', 'error');
-      setSearchLoading(false);
+    } finally {
+      // Always clear loading unless this search was aborted (a newer search is running)
+      if (!controller.signal.aborted) {
+        setSearchLoading(false);
+      }
     }
   }, [onError]);
 
