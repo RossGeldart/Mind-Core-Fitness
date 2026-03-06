@@ -80,16 +80,26 @@ const scoreRelevance = (name, brand, term) => {
     score += 80;
   }
 
-  // Penalise extra words heavily — each extra word beyond the search = less relevant
-  const extraWords = Math.max(0, nameWords.length - termWords.length);
-  score -= extraWords * 15;
+  // Bonus when the product name starts with the search term
+  if (n.startsWith(termCore) || n.startsWith(term)) {
+    score += 30;
+  }
+
+  // Graduated extra-word penalty: descriptors penalised mildly, substantive words heavily
+  const extraNameWords = nameWords.filter(nw =>
+    !termWords.some(tw => wordMatches(tw, nw))
+  );
+  const descriptorExtras = extraNameWords.filter(w => DESCRIPTOR_WORDS.has(w)).length;
+  const nonDescriptorExtras = extraNameWords.length - descriptorExtras;
+  score -= descriptorExtras * 5;
+  score -= nonDescriptorExtras * 20;
 
   // Brand matches a search word — strong boost (e.g. searching "Tesco banana")
   const brandWords = coreWords(brand);
   if (termWords.some(tw => brandWords.some(bw => wordMatches(tw, bw)) || b.startsWith(tw))) score += 100;
 
   // Shorter names are more specific/relevant
-  score += Math.max(0, 20 - n.length);
+  score += Math.max(0, 30 - n.length);
 
   return score;
 };
@@ -120,14 +130,12 @@ const filterAndScore = (products, searchWords, term) => {
       );
       if (!anyNameMatch) return false;
 
-      // Strict filtering: every extra word in the name (beyond what was searched)
-      // must be a harmless descriptor like "organic", "fairtrade", "loose" etc.
-      // "Banana chips", "Strawberry Banana", "dried bananas" all get rejected
+      // Soft cap: reject only products with excessively long names (compound/unrelated)
+      // The relevance scoring handles ranking — no need to hard-reject valid products
       const extraNameWords = nameWords.filter(nw =>
         !termWords.some(tw => wordMatches(tw, nw))
       );
-      const allExtrasAreDescriptors = extraNameWords.every(w => DESCRIPTOR_WORDS.has(w));
-      if (!allExtrasAreDescriptors) return false;
+      if (extraNameWords.length > 6) return false;
 
       return true;
     })
@@ -194,7 +202,7 @@ export default function useFoodSearch({ onError }) {
                 results = filterAndScore(data.products || [], searchWords, term);
                 if (results.length > 0) {
                   gotFirst = true;
-                  setSearchResults(results.slice(0, 10));
+                  setSearchResults(results.slice(0, 15));
                   setSearchLoading(false);
                 }
               }
@@ -206,13 +214,11 @@ export default function useFoodSearch({ onError }) {
         .then(r => r.ok ? r.json() : null)
         .then(data => {
           if (data && !controller.signal.aborted) {
-            if (results.length < 3) {
-              results = mergeResults(results, data);
-            }
+            results = mergeResults(results, data);
             // If local hasn't responded yet, show global results immediately
             if (!gotFirst && results.length > 0) {
               gotFirst = true;
-              setSearchResults(results.slice(0, 10));
+              setSearchResults(results.slice(0, 15));
               setSearchLoading(false);
             }
           }
@@ -223,7 +229,7 @@ export default function useFoodSearch({ onError }) {
       await Promise.all([localPromise, globalPromise]);
 
       if (!controller.signal.aborted) {
-        results = results.slice(0, 10);
+        results = results.slice(0, 15);
         cacheSet(term, results);
         setSearchResults(results);
         if (results.length === 0) {
@@ -245,7 +251,7 @@ export default function useFoodSearch({ onError }) {
     if (!query?.trim() || !enabled) return;
     debounceTimer.current = setTimeout(() => {
       searchFood(query);
-    }, 350);
+    }, 250);
   }, [searchFood]);
 
   // Cleanup on unmount
