@@ -2995,10 +2995,24 @@
 
 .wk-hub-card-locked {
   opacity: 0.5;
+  cursor: default;
 }
 .wk-hub-card-locked .wk-hub-card-icon {
   background: rgba(128, 128, 128, 0.1);
   color: var(--text-tertiary);
+}
+
+.wk-hub-coming-soon-badge {
+  flex-shrink: 0;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  background: var(--bg-card-elevated);
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
 }
 
 /* Motivational tip – multi-line readable card */
