@@ -874,7 +874,7 @@ export default function PersonalBests() {
 
       <main className="pb-main page-transition-enter">
 
-        <div className="pb-intro anim-fade-up">
+        <div className="pb-intro">
           <h2>Personal Bests</h2>
           <p>{isBlockClient
             ? 'Track your strength benchmarks and body measurements each month.'
@@ -884,7 +884,7 @@ export default function PersonalBests() {
 
         {/* ====== CORE BUDDY PB VIEW ====== */}
         {!isBlockClient && (
-          <div className="pb-cb-section anim-fade-up-d2">
+          <div className="pb-cb-section">
             {Object.keys(cbPBs).length === 0 ? (
               <div className="pb-empty">
                 <div className="pb-cb-empty-icon">

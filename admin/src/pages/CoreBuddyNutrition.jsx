@@ -953,7 +953,7 @@ export default function CoreBuddyNutrition() {
         <div className="nut-dark-content">
 
           {/* Week Calendar Strip */}
-          <div className="nut-week-strip anim-fade-up">
+          <div className="nut-week-strip">
             <div className="nut-week-header">
               <button className="nut-week-arrow" onClick={() => { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() - 7); const key = d.toISOString().split('T')[0]; setSelectedDate(key); }} aria-label="Previous week">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1025,7 +1025,7 @@ export default function CoreBuddyNutrition() {
           )}
 
           {/* Macro Rings - 4 across */}
-          <div className="nut-rings-row anim-fade-up-d2">
+          <div className="nut-rings-row">
             {renderMacroRing('Protein', 'Protein', totals.protein, targets.protein, 'ring-protein')}
             {renderMacroRing('Carbs', 'Carbs', totals.carbs, targets.carbs, 'ring-carbs')}
             {renderMacroRing('Fats', 'Fats', totals.fats, targets.fats, 'ring-fats')}
@@ -1035,7 +1035,7 @@ export default function CoreBuddyNutrition() {
       </div>
 
       {/* ===== LIGHT ZONE (bottom sheet) ===== */}
-      <div className="nut-light-zone anim-fade-up-d4">
+      <div className="nut-light-zone">
         <div className="nut-light-content">
 
           {/* Quick Actions Row */}
