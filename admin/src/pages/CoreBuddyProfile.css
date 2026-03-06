@@ -119,7 +119,7 @@
 
 .prf-btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
 }
 
 .prf-btn-success {

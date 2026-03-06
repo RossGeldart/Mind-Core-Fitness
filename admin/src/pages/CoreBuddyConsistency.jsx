@@ -121,6 +121,7 @@ export default function CoreBuddyConsistency() {
     ...customHabits.map((h, i) => { const c = CUSTOM_COLORS[i % CUSTOM_COLORS.length]; return { key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(c.color, c.darkColor), isCustom: true, id: h.id }; }),
   ];
   const allHabits = allHabitsRaw;
+  const trackableCount = isPremium ? allHabits.length : Math.min(allHabits.length, freeHabitLimit);
   const freeHabitLimit = isPremium ? Infinity : FREE_HABIT_LIMIT;
 
   useEffect(() => {
@@ -189,10 +190,10 @@ export default function CoreBuddyConsistency() {
   // Reset celebrationShownToday flag when habits change (new custom habit added or habit undone)
   useEffect(() => {
     const completedCount = Object.values(todayLog.habits || {}).filter(Boolean).length;
-    if (completedCount < allHabits.length && celebrationShownToday) {
+    if (completedCount < trackableCount && celebrationShownToday) {
       setCelebrationShownToday(false);
     }
-  }, [allHabits.length, todayLog.habits]);
+  }, [trackableCount, todayLog.habits]);
 
   const completeHabit = async (habitKey) => {
     if (!currentUser || saving) return;
@@ -236,7 +237,7 @@ export default function CoreBuddyConsistency() {
 
       // All habits complete — trigger celebration
       const completedCount = Object.values(updated).filter(Boolean).length;
-      if (completedCount === allHabits.length && !celebrationShownToday) {
+      if (completedCount >= trackableCount && !celebrationShownToday) {
         celebrationQuoteRef.current = CELEBRATION_QUOTES[Math.floor(Math.random() * CELEBRATION_QUOTES.length)];
         confettiRef.current = [...Array(80)].map((_, i) => ({
           x: 5 + Math.random() * 90,
@@ -265,7 +266,7 @@ export default function CoreBuddyConsistency() {
           const log = habitLogs[key];
           if (log) {
             const done = Object.values(log.habits || {}).filter(Boolean).length;
-            if (done >= allHabits.length) { habitStreak++; } else { break; }
+            if (done >= trackableCount) { habitStreak++; } else { break; }
           } else { break; }
         }
         if (habitStreak >= 7) {
@@ -527,16 +528,17 @@ export default function CoreBuddyConsistency() {
     const dateStr = formatDate(date);
     const log = habitLogs[dateStr];
     const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
-    return { date, dateStr, completed, total: allHabits.length };
+    return { date, dateStr, completed: Math.min(completed, trackableCount), total: trackableCount };
   });
 
   const weeklyCompleted = weeklyStats.reduce((sum, d) => sum + d.completed, 0);
   const weeklyTotal = weeklyStats.reduce((sum, d) => sum + d.total, 0);
   const weeklyPct = weeklyTotal > 0 ? Math.round((weeklyCompleted / weeklyTotal) * 100) : 0;
 
-  const todayCompleted = Object.values(todayLog.habits || {}).filter(Boolean).length;
-  const todayPct = allHabits.length > 0 ? Math.round((todayCompleted / allHabits.length) * 100) : 0;
-  const allDone = todayCompleted === allHabits.length && allHabits.length > 0;
+  const todayCompletedRaw = Object.values(todayLog.habits || {}).filter(Boolean).length;
+  const todayCompleted = Math.min(todayCompletedRaw, trackableCount);
+  const todayPct = trackableCount > 0 ? Math.round((todayCompleted / trackableCount) * 100) : 0;
+  const allDone = todayCompleted >= trackableCount && trackableCount > 0;
 
   // Best streak ever (scan all loaded logs)
   const bestStreak = (() => {
@@ -578,7 +580,7 @@ export default function CoreBuddyConsistency() {
     const log = habitLogs[dateStr];
     const completed = log ? Object.values(log.habits || {}).filter(Boolean).length : 0;
     const isFuture = d > today;
-    return { day: i + 1, dateStr, completed, total: allHabits.length, isFuture, isToday: dateStr === todayStr };
+    return { day: i + 1, dateStr, completed: Math.min(completed, trackableCount), total: trackableCount, isFuture, isToday: dateStr === todayStr };
   });
 
   // Weekly per-habit breakdown
@@ -630,12 +632,12 @@ export default function CoreBuddyConsistency() {
                 strokeDashoffset={2 * Math.PI * 80 - (todayPct / 100) * 2 * Math.PI * 80} />
             </svg>
             <div className="cbc-ring-center">
-              <span className="cbc-ring-count">{todayCompleted}<span className="cbc-ring-divider">/</span>{allHabits.length}</span>
+              <span className="cbc-ring-count">{todayCompleted}<span className="cbc-ring-divider">/</span>{trackableCount}</span>
               <span className="cbc-ring-label">{allDone ? 'complete' : 'today'}</span>
             </div>
           </div>
           <p className="cbc-hero-tagline">
-            {allDone ? 'You showed up for yourself today.' : todayCompleted === 0 ? 'Start your day strong.' : `${allHabits.length - todayCompleted} to go — keep pushing.`}
+            {allDone ? 'You showed up for yourself today.' : todayCompleted === 0 ? 'Start your day strong.' : `${trackableCount - todayCompleted} to go — keep pushing.`}
           </p>
         </div>
 
@@ -956,7 +958,7 @@ export default function CoreBuddyConsistency() {
           title="All Habits Complete!"
           subtitle={celebrationQuoteRef.current}
           stats={[
-            { value: `${todayCompleted}/${allHabits.length}`, label: 'Habits' },
+            { value: `${todayCompleted}/${trackableCount}`, label: 'Habits' },
             { value: streak || 1, label: 'Day Streak' },
           ]}
           buttonLabel="Keep Going"

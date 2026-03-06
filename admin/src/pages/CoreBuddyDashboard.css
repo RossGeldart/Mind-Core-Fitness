@@ -273,6 +273,7 @@
   height: 30px;
   border-radius: 50%;
   background: var(--color-primary);
+  color: #fff;
   border: 2px solid var(--bg-body);
   display: flex;
   align-items: center;
