@@ -2521,6 +2521,27 @@
   line-height: 1.2;
 }
 
+/* Locked FAB items (free tier) */
+.cb-fab-item-locked {
+  position: relative;
+  opacity: 0.5;
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+.cb-fab-item-locked .cb-fab-item-icon {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--text-tertiary);
+}
+.cb-fab-item-locked .cb-fab-item-label {
+  color: var(--text-tertiary);
+}
+.cb-fab-item-lock {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--text-tertiary);
+}
+
 /* Stagger animation for each item */
 .cb-fab-item:nth-child(1) { animation: cbFabItemIn 0.3s 0.03s both; }
 .cb-fab-item:nth-child(2) { animation: cbFabItemIn 0.3s 0.06s both; }
