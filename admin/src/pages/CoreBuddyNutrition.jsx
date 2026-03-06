@@ -602,10 +602,7 @@ export default function CoreBuddyNutrition() {
     setBarcodeLooking(false);
   };
 
-  // Debounced search-as-you-type
-  useEffect(() => {
-    startDebounceSearch(searchQuery, addMode === 'search' && !scannedProduct);
-  }, [searchQuery, addMode, scannedProduct, startDebounceSearch]);
+  // Search only fires on explicit action (Enter key or Search button), not while typing
 
   // ==================== RING HELPERS ====================
   const isDarkMode = isDark;
