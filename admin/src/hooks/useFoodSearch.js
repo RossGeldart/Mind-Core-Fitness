@@ -4,20 +4,26 @@ import { getCountryFilterParams } from '../utils/countryDetect';
 
 // ==================== LRU CACHE ====================
 const MAX_CACHE_SIZE = 50;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const searchCache = new Map();
 
 function cacheGet(key) {
   if (!searchCache.has(key)) return undefined;
-  const value = searchCache.get(key);
+  const entry = searchCache.get(key);
+  // Expire stale entries
+  if (Date.now() - entry.ts > CACHE_TTL_MS) {
+    searchCache.delete(key);
+    return undefined;
+  }
   // Move to end (most recently used)
   searchCache.delete(key);
-  searchCache.set(key, value);
-  return value;
+  searchCache.set(key, entry);
+  return entry.value;
 }
 
 function cacheSet(key, value) {
   if (searchCache.has(key)) searchCache.delete(key);
-  searchCache.set(key, value);
+  searchCache.set(key, { value, ts: Date.now() });
   // Evict oldest if over limit
   if (searchCache.size > MAX_CACHE_SIZE) {
     const oldest = searchCache.keys().next().value;
@@ -202,45 +208,24 @@ export default function useFoodSearch({ onError }) {
         return existing;
       };
 
-      // Fire both searches in parallel, but show results as soon as EITHER returns
-      let results = [];
-      let gotFirst = false;
-
+      // Fire both searches in parallel, collect raw API responses, merge at the end
       const localPromise = countryFilter
         ? fetch(baseUrl + countryFilter, { signal: controller.signal })
             .then(r => r.ok ? r.json() : null)
-            .then(data => {
-              if (data && !controller.signal.aborted) {
-                results = filterAndScore(data.products || [], searchWords, term);
-                if (results.length > 0) {
-                  gotFirst = true;
-                  setSearchResults(results.slice(0, 15));
-                  setSearchLoading(false);
-                }
-              }
-            })
-            .catch(() => {})
-        : Promise.resolve();
+            .catch(() => null)
+        : Promise.resolve(null);
 
       const globalPromise = fetch(baseUrl, { signal: controller.signal })
         .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (data && !controller.signal.aborted) {
-            results = mergeResults(results, data);
-            // If local hasn't responded yet, show global results immediately
-            if (!gotFirst && results.length > 0) {
-              gotFirst = true;
-              setSearchResults(results.slice(0, 15));
-              setSearchLoading(false);
-            }
-          }
-        })
-        .catch(() => {});
+        .catch(() => null);
 
-      // Wait for both to finish, then do final merge and cache
-      await Promise.all([localPromise, globalPromise]);
+      // Wait for both, then merge local-first and dedupe
+      const [localData, globalData] = await Promise.all([localPromise, globalPromise]);
 
       if (!controller.signal.aborted) {
+        // Start with local results (higher priority), then merge global
+        let results = filterAndScore(localData?.products || [], searchWords, term);
+        results = mergeResults(results, { products: globalData?.products || [] });
         results = results.slice(0, 15);
         cacheSet(term, results);
         setSearchResults(results);
