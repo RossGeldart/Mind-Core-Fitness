@@ -55,7 +55,7 @@
 
 .lb-title {
   flex: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-on-header);
@@ -115,7 +115,7 @@
 }
 
 .lb-optin-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -171,7 +171,7 @@
 }
 
 .lb-optin-category-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -413,7 +413,7 @@
 }
 
 .lb-podium-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -426,7 +426,7 @@
 }
 
 .lb-podium-stat {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -444,7 +444,7 @@
 }
 
 .lb-podium-rank {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -507,7 +507,7 @@
 }
 
 .lb-rank-number {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--text-tertiary);
@@ -566,7 +566,7 @@
 }
 
 .lb-rank-stat {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--color-primary);
@@ -617,7 +617,7 @@
 }
 
 .lb-your-rank {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -630,7 +630,7 @@
 }
 
 .lb-your-stat {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
 }
@@ -658,7 +658,7 @@
 }
 
 .lb-empty h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 6px;
@@ -695,7 +695,7 @@
 }
 
 .lb-modal h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);

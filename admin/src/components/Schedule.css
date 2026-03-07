@@ -24,7 +24,7 @@
 }
 
 .today-summary h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   margin: 0;
 }
@@ -95,7 +95,7 @@
 }
 
 .next-session-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -340,7 +340,7 @@
 }
 
 .session-details strong {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-primary);
   font-size: 0.95rem;
 }

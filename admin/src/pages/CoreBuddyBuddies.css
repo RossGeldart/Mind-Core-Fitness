@@ -30,7 +30,7 @@
 }
 
 .bdy-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--text-primary);
@@ -364,7 +364,7 @@
 }
 
 .bdy-empty h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   color: var(--text-primary);
   margin: 0 0 6px;
@@ -515,7 +515,7 @@
 }
 
 .bdy-announcement-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -636,7 +636,7 @@
 .bdy-feed-card-badge { border-color: rgba(255, 193, 7, 0.4); }
 
 .bdy-feed-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);

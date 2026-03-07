@@ -73,7 +73,7 @@
 }
 
 .prf-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
   color: var(--text-primary);
@@ -177,7 +177,7 @@
 }
 
 .prf-stat-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.15rem;
   color: var(--text-primary);
@@ -206,7 +206,7 @@
 }
 
 .prf-section-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--text-primary);
@@ -329,7 +329,7 @@
 }
 
 .prf-info-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text-primary);
@@ -396,7 +396,7 @@
 
 .prf-pb-rank {
   width: 24px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.7rem;
   color: #f9a825;
@@ -416,7 +416,7 @@
 }
 
 .prf-pb-weight {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.82rem;
   color: var(--text-primary);
@@ -745,7 +745,7 @@
 
 /* ===== BADGE OVERLAY NAME ===== */
 .prf-badge-overlay-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: #fff;
@@ -1494,7 +1494,7 @@
 }
 
 .journey-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);

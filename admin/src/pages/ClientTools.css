@@ -36,7 +36,7 @@
 }
 
 .tools-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -103,7 +103,7 @@
 }
 
 .tool-select-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -139,7 +139,7 @@
 }
 
 .tool-header h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   margin: 0 0 4px 0;
 }
@@ -351,7 +351,7 @@
 }
 
 .deficit-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--text-primary);
@@ -409,7 +409,7 @@
 }
 
 .results-header h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0;
@@ -436,7 +436,7 @@
 
 .calories-value {
   display: block;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 3rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -472,7 +472,7 @@
 }
 
 .macro-bar-segment span {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: white;
@@ -545,7 +545,7 @@
 }
 
 .macro-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -590,7 +590,7 @@
 .info-row span:last-child,
 .info-row .info-value {
   color: var(--text-primary);
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 500;
   font-size: 0.8rem;
 }
@@ -678,7 +678,7 @@
 }
 
 .snack-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -699,7 +699,7 @@
 }
 
 .snack-detail-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -773,7 +773,7 @@
 }
 
 .snack-counter-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -952,7 +952,7 @@
 }
 
 .quote-empty-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);

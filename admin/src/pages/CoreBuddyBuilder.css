@@ -38,7 +38,7 @@
 }
 
 .bldr-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -171,7 +171,7 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   margin-top: 8px;
 }
@@ -239,7 +239,7 @@
 }
 
 .bldr-section-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -323,7 +323,7 @@
 }
 
 .bldr-premium-tag {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -386,7 +386,7 @@
 }
 
 .bldr-order-num {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--color-primary);
