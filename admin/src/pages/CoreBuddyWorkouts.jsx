@@ -663,6 +663,106 @@ function StaticThumb({ src, isGif }) {
   );
 }
 
+/* ── Tick sound + haptic utilities for scroll picker ── */
+let _audioCtx = null;
+function playTick() {
+  try {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = _audioCtx.createOscillator();
+    const gain = _audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 900;
+    gain.gain.setValueAtTime(0.08, _audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.03);
+    osc.connect(gain).connect(_audioCtx.destination);
+    osc.start();
+    osc.stop(_audioCtx.currentTime + 0.03);
+  } catch (_) { /* silent fallback */ }
+}
+
+function triggerHaptic() {
+  try { if (navigator.vibrate) navigator.vibrate(8); } catch (_) {}
+}
+
+/* ── RepsPicker: scroll-snap drum picker ── */
+const REPS_MIN = 1;
+const REPS_MAX = 100;
+const ITEM_H = 44; // px per item row
+
+function RepsPicker({ value, onSelect, onClose, label }) {
+  const scrollRef = useRef(null);
+  const lastTickRef = useRef(value || 10);
+  const [currentVal, setCurrentVal] = useState(value || 10);
+
+  // Build number list with padding
+  const numbers = [];
+  for (let i = REPS_MIN; i <= REPS_MAX; i++) numbers.push(i);
+
+  // Scroll to initial value on mount
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = (value || 10) - REPS_MIN;
+    el.scrollTop = idx * ITEM_H;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollTop / ITEM_H);
+    const num = Math.min(Math.max(REPS_MIN + idx, REPS_MIN), REPS_MAX);
+    setCurrentVal(num);
+    if (num !== lastTickRef.current) {
+      lastTickRef.current = num;
+      playTick();
+      triggerHaptic();
+    }
+  }, []);
+
+  const confirmValue = useCallback(() => {
+    onSelect(currentVal);
+    onClose();
+  }, [currentVal, onSelect, onClose]);
+
+  // Visible window: 5 items (2 above, selected, 2 below)
+  const visibleH = ITEM_H * 5;
+
+  return (
+    <div className="reps-picker-backdrop" onClick={onClose}>
+      <div className="reps-picker-sheet" onClick={e => e.stopPropagation()}>
+        <div className="reps-picker-header">
+          <button className="reps-picker-cancel" onClick={onClose}>Cancel</button>
+          <span className="reps-picker-title">{label || 'Reps'}</span>
+          <button className="reps-picker-done" onClick={confirmValue}>Done</button>
+        </div>
+        <div className="reps-picker-drum-wrapper">
+          <div className="reps-picker-highlight" />
+          <div
+            ref={scrollRef}
+            className="reps-picker-scroll"
+            style={{ height: visibleH }}
+            onScroll={handleScroll}
+          >
+            {/* Top padding so first item can center */}
+            <div style={{ height: ITEM_H * 2 }} />
+            {numbers.map(n => (
+              <div
+                key={n}
+                className={`reps-picker-item${n === currentVal ? ' reps-picker-item-active' : ''}`}
+                style={{ height: ITEM_H }}
+              >
+                {n}
+              </div>
+            ))}
+            {/* Bottom padding so last item can center */}
+            <div style={{ height: ITEM_H * 2 }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -673,6 +773,7 @@ export default function CoreBuddyWorkouts() {
   const [view, setView] = useState('landing');
   const [fabSavedOverlay, setFabSavedOverlay] = useState(null); // which FAB category is expanded (focus key or 'hiit'/'sets')
   const [fabOpen, setFabOpen] = useState(false);
+  const [byoFabTab, setByoFabTab] = useState('byo_hiit'); // 'byo_hiit' | 'byo_sets'
 
   // Setup
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
@@ -799,6 +900,7 @@ export default function CoreBuddyWorkouts() {
   const [byoLevel, setByoLevel] = useState('intermediate');
   const [byoSetsConfig, setByoSetsConfig] = useState({}); // { exerciseName: numberOfSets }
   const [byoSetsData, setByoSetsData] = useState({}); // { exerciseName: [{ reps: '', weight: '' }, ...] }
+  const [repsPicker, setRepsPicker] = useState(null); // { exercise: name, idx: setIndex, label: 'Reps'|'Secs' }
   const [byoLoading, setByoLoading] = useState(false);
   const [showByoFinish, setShowByoFinish] = useState(false);
   const [showByoSaveModal, setShowByoSaveModal] = useState(false);
@@ -2341,8 +2443,9 @@ export default function CoreBuddyWorkouts() {
                     {FOCUS_AREAS.map((fa, i) => {
                       const count = byoWorkouts.filter(sw => sw.focus === fa.key).length;
                       if (count === 0) return null;
+                      const hasHiit = byoWorkouts.some(sw => sw.focus === fa.key && sw.type === 'byo_hiit');
                       return (
-                        <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => setFabSavedOverlay(fa.key)}>
+                        <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => { setByoFabTab(hasHiit ? 'byo_hiit' : 'byo_sets'); setFabSavedOverlay(fa.key); }}>
                           <span className="cb-fab-item-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
                           </span>
@@ -2355,8 +2458,9 @@ export default function CoreBuddyWorkouts() {
                     {(() => {
                       const uncatCount = byoWorkouts.filter(sw => !sw.focus).length;
                       if (uncatCount === 0) return null;
+                      const hasHiit = byoWorkouts.some(sw => !sw.focus && sw.type === 'byo_hiit');
                       return (
-                        <button className="cb-fab-item" onClick={() => setFabSavedOverlay('uncategorised')}>
+                        <button className="cb-fab-item" onClick={() => { setByoFabTab(hasHiit ? 'byo_hiit' : 'byo_sets'); setFabSavedOverlay('uncategorised'); }}>
                           <span className="cb-fab-item-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                           </span>
@@ -2370,13 +2474,17 @@ export default function CoreBuddyWorkouts() {
               </div>
             )}
 
-            {/* BYO FAB Saved Overlay */}
+            {/* BYO FAB Saved Overlay — tabbed by HIIT / Reps & Sets */}
             {fabOpen && fabSavedOverlay && (() => {
               const catWorkouts = fabSavedOverlay === 'uncategorised'
                 ? byoWorkouts.filter(sw => !sw.focus)
                 : byoWorkouts.filter(sw => sw.focus === fabSavedOverlay);
               const fa = FOCUS_AREAS.find(f => f.key === fabSavedOverlay);
               const catLabel = fa?.label || 'Other';
+              const hiitList = catWorkouts.filter(sw => sw.type === 'byo_hiit');
+              const setsList = catWorkouts.filter(sw => sw.type === 'byo_sets');
+              const activeTab = byoFabTab;
+              const tabWorkouts = activeTab === 'byo_hiit' ? hiitList : setsList;
               return (
                 <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
                   <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
@@ -2389,16 +2497,32 @@ export default function CoreBuddyWorkouts() {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       </button>
                     </div>
+                    {/* Type tabs */}
+                    <div className="wk-byo-fab-tabs">
+                      <button className={`wk-byo-fab-tab${activeTab === 'byo_hiit' ? ' wk-byo-fab-tab-active' : ''}`} onClick={() => setByoFabTab('byo_hiit')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        HIIT
+                        {hiitList.length > 0 && <span className="wk-byo-fab-tab-count">{hiitList.length}</span>}
+                      </button>
+                      <button className={`wk-byo-fab-tab${activeTab === 'byo_sets' ? ' wk-byo-fab-tab-active' : ''}`} onClick={() => setByoFabTab('byo_sets')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        Reps &amp; Sets
+                        {setsList.length > 0 && <span className="wk-byo-fab-tab-count">{setsList.length}</span>}
+                      </button>
+                    </div>
                     <div className="wk-saved-overlay-list">
-                      {catWorkouts.map((sw, i) => {
+                      {tabWorkouts.length === 0 ? (
+                        <div className="wk-hub-empty" style={{ padding: '24px 0' }}>
+                          <p style={{ color: '#999', fontSize: '0.85rem' }}>No {activeTab === 'byo_hiit' ? 'HIIT' : 'Reps & Sets'} workouts saved here.</p>
+                        </div>
+                      ) : tabWorkouts.map((sw, i) => {
                         const exCount = (sw.exercises || []).length;
-                        const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
                         return (
                           <div key={sw.id} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
                             <button className="wk-saved-overlay-main" onClick={() => { beginSavedByo(sw); setFabSavedOverlay(null); }}>
                               <div className="wk-saved-overlay-info">
                                 <span className="wk-saved-overlay-name">{sw.name}</span>
-                                <span className="wk-saved-overlay-meta">{typeLabel} &middot; {exCount} exercises</span>
+                                <span className="wk-saved-overlay-meta">{exCount} exercises</span>
                               </div>
                               <span className="byo-begin-label">Begin</span>
                             </button>
@@ -2955,14 +3079,12 @@ export default function CoreBuddyWorkouts() {
                         onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
                         tabIndex={isWeighted ? 0 : -1}
                       />
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        className="byo-set-input byo-set-reps"
-                        placeholder="0"
-                        value={set.reps}
-                        onChange={e => byoUpdateSet(ex.name, idx, 'reps', e.target.value)}
-                      />
+                      <button
+                        className="byo-set-input byo-set-reps byo-reps-tap"
+                        onClick={() => setRepsPicker({ exercise: ex.name, idx, label: ex.type === 'timed' ? 'Secs' : 'Reps' })}
+                      >
+                        {set.reps || <span className="byo-reps-placeholder">0</span>}
+                      </button>
                       <button className="byo-set-del-btn" onClick={() => byoRemoveSet(ex.name, idx)} aria-label="Remove set">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       </button>
@@ -2977,6 +3099,15 @@ export default function CoreBuddyWorkouts() {
             );
           })}
         </main>
+
+        {repsPicker && (
+          <RepsPicker
+            value={parseInt(byoSetsData[repsPicker.exercise]?.[repsPicker.idx]?.reps) || 10}
+            label={repsPicker.label}
+            onSelect={val => byoUpdateSet(repsPicker.exercise, repsPicker.idx, 'reps', String(val))}
+            onClose={() => setRepsPicker(null)}
+          />
+        )}
 
         <div className="byo-sets-footer">
           <button className="wk-btn-primary byo-complete-btn" onClick={byoCompleteSets}>
