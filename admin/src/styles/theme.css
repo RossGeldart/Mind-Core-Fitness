@@ -670,3 +670,16 @@
 .locked-feature-card h2 {
   font-weight: 800 !important;
 }
+
+/* ====== Extra-bold clock countdowns ====== */
+.cb-timer-digit,
+.cb-timer-colon,
+.cb-ring-countdown,
+.bldr-timer-digit,
+.bldr-timer-colon,
+.bldr-countdown,
+.timer-digit,
+.timer-colon,
+.ring-timer-countdown {
+  font-weight: 900 !important;
+}
