@@ -511,11 +511,13 @@ const LEVELS = [
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
 const BYO_GROUPS = [
-  { key: 'push', label: 'Push' },
-  { key: 'pull', label: 'Pull' },
-  { key: 'lower', label: 'Lower' },
-  { key: 'core', label: 'Core' },
+  { key: 'upper', label: 'Upper Body', groups: ['push', 'pull'] },
+  { key: 'lower', label: 'Lower Body', groups: ['lower'] },
+  { key: 'core', label: 'Core', groups: ['core'] },
 ];
+
+const BYO_EQUIPMENT_ORDER = ['bodyweight', 'dumbbells', 'kettlebell'];
+const BYO_EQUIPMENT_LABELS = { bodyweight: 'Bodyweight', dumbbells: 'Dumbbells', kettlebell: 'Kettlebells' };
 
 // Advanced core exercises excluded from beginner-level randomiser.
 // Matched case-insensitively against exercise names loaded from Firebase Storage.
@@ -705,7 +707,9 @@ export default function CoreBuddyWorkouts() {
   // Build Your Own (BYO)
   const [byoMode, setByoMode] = useState(null); // 'hiit' | 'sets'
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
-  const [byoExpandedGroups, setByoExpandedGroups] = useState({ push: true, pull: false, lower: false, core: false });
+  const [byoExpandedGroups, setByoExpandedGroups] = useState({});
+  const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
+  const [byoPreviewEx, setByoPreviewEx] = useState(null); // exercise for preview modal
   const [byoLevel, setByoLevel] = useState('intermediate');
   const [byoSetsData, setByoSetsData] = useState({}); // { exerciseName: [{ reps: '', weight: '' }, ...] }
   const [byoLoading, setByoLoading] = useState(false);
@@ -1011,6 +1015,46 @@ export default function CoreBuddyWorkouts() {
   };
 
   // ==================== BUILD YOUR OWN ====================
+
+  // Resolve video URLs for a batch of exercises (lazy, on expand)
+  const byoResolveUrls = async (exercises) => {
+    const urlCache = readUrlCache();
+    const toResolve = exercises.filter(ex => ex.storagePath && !byoVideoUrls[ex.storagePath] && !urlCache[ex.storagePath]);
+    if (toResolve.length === 0) {
+      // Still populate from cache
+      const fromCache = {};
+      exercises.forEach(ex => {
+        if (ex.storagePath && urlCache[ex.storagePath]) fromCache[ex.storagePath] = urlCache[ex.storagePath];
+      });
+      if (Object.keys(fromCache).length > 0) setByoVideoUrls(prev => ({ ...prev, ...fromCache }));
+      return;
+    }
+    const newUrls = {};
+    await Promise.all(toResolve.map(async (ex) => {
+      try {
+        const url = await getDownloadURL(ref(storage, ex.storagePath));
+        urlCache[ex.storagePath] = url;
+        newUrls[ex.storagePath] = url;
+      } catch { /* skip */ }
+    }));
+    // Also pull any cached ones
+    exercises.forEach(ex => {
+      if (ex.storagePath && urlCache[ex.storagePath]) newUrls[ex.storagePath] = urlCache[ex.storagePath];
+    });
+    writeUrlCache(urlCache);
+    setByoVideoUrls(prev => ({ ...prev, ...newUrls }));
+  };
+
+  const byoToggleGroup = (groupKey, exercises) => {
+    setByoExpandedGroups(prev => {
+      const isOpen = prev[groupKey];
+      if (!isOpen) {
+        // Expanding — resolve video URLs
+        byoResolveUrls(exercises);
+      }
+      return { ...prev, [groupKey]: !isOpen };
+    });
+  };
 
   const byoToggleExercise = (exercise) => {
     setByoSelected(prev => {
@@ -2001,17 +2045,21 @@ export default function CoreBuddyWorkouts() {
           <div className="byo-mode-grid">
             <button className={`byo-mode-card${byoMode === 'hiit' ? ' byo-mode-active' : ''}`} onClick={() => setByoMode('hiit')}>
               <div className="byo-mode-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
-              <h3>HIIT</h3>
-              <p>Timed intervals with work &amp; rest periods</p>
+              <div className="byo-mode-card-text">
+                <h3>HIIT</h3>
+                <p>Timed intervals with work &amp; rest periods</p>
+              </div>
             </button>
             <button className={`byo-mode-card${byoMode === 'sets' ? ' byo-mode-active' : ''}`} onClick={() => setByoMode('sets')}>
               <div className="byo-mode-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               </div>
-              <h3>Reps &amp; Sets</h3>
-              <p>Log weight, reps and sets for each exercise</p>
+              <div className="byo-mode-card-text">
+                <h3>Reps &amp; Sets</h3>
+                <p>Log weight, reps and sets for each exercise</p>
+              </div>
             </button>
           </div>
           {byoMode && (
@@ -2062,29 +2110,80 @@ export default function CoreBuddyWorkouts() {
           )}
 
           {BYO_GROUPS.map(group => {
-            const groupExercises = exercisePool.filter(e => e.group === group.key);
+            const groupExercises = exercisePool.filter(e => group.groups.includes(e.group));
             if (groupExercises.length === 0) return null;
-            const isOpen = byoExpandedGroups[group.key];
+            const isGroupOpen = byoExpandedGroups[group.key];
             const selectedInGroup = groupExercises.filter(e => byoSelected.find(s => s.name === e.name)).length;
+
+            // Sub-group by equipment
+            const equipmentSubgroups = BYO_EQUIPMENT_ORDER
+              .map(eqKey => ({
+                key: eqKey,
+                label: BYO_EQUIPMENT_LABELS[eqKey],
+                exercises: groupExercises.filter(e => e.equipment === eqKey),
+              }))
+              .filter(sg => sg.exercises.length > 0);
+
             return (
               <div key={group.key} className="byo-group">
                 <button className="byo-group-header" onClick={() => setByoExpandedGroups(prev => ({ ...prev, [group.key]: !prev[group.key] }))}>
                   <span className="byo-group-label">{group.label}</span>
                   {selectedInGroup > 0 && <span className="byo-group-badge">{selectedInGroup}</span>}
-                  <svg className={`byo-group-chevron${isOpen ? ' byo-group-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                  <svg className={`byo-group-chevron${isGroupOpen ? ' byo-group-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
                 </button>
-                {isOpen && (
-                  <div className="byo-exercise-list">
-                    {groupExercises.map(ex => {
-                      const isSelected = byoSelected.find(s => s.name === ex.name);
+                {isGroupOpen && (
+                  <div className="byo-subgroups">
+                    {equipmentSubgroups.map(sg => {
+                      const subKey = `${group.key}_${sg.key}`;
+                      const isSubOpen = byoExpandedGroups[subKey];
+                      const selectedInSub = sg.exercises.filter(e => byoSelected.find(s => s.name === e.name)).length;
                       return (
-                        <button key={ex.name} className={`byo-exercise-btn${isSelected ? ' byo-exercise-selected' : ''}`} onClick={() => byoToggleExercise(ex)}>
-                          <span className="byo-exercise-name">{ex.name}</span>
-                          <span className="byo-exercise-meta">{ex.equipment} &middot; {ex.type}</span>
-                          {isSelected && (
-                            <svg className="byo-exercise-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        <div key={subKey} className="byo-subgroup">
+                          <button className="byo-subgroup-header" onClick={() => byoToggleGroup(subKey, sg.exercises)}>
+                            <span className="byo-subgroup-label">{sg.label}</span>
+                            {selectedInSub > 0 && <span className="byo-group-badge">{selectedInSub}</span>}
+                            <svg className={`byo-group-chevron${isSubOpen ? ' byo-group-chevron-open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                          </button>
+                          {isSubOpen && (
+                            <div className="byo-exercise-grid">
+                              {sg.exercises.map(ex => {
+                                const isSelected = byoSelected.find(s => s.name === ex.name);
+                                const videoUrl = byoVideoUrls[ex.storagePath];
+                                const isGif = /\.gif$/i.test(ex.storagePath || '');
+                                return (
+                                  <div key={ex.name} className={`byo-exercise-card${isSelected ? ' byo-exercise-selected' : ''}`}>
+                                    <div className="byo-exercise-thumb" onClick={() => {
+                                      if (videoUrl) setByoPreviewEx({ name: ex.name, videoUrl, isGif });
+                                    }}>
+                                      {videoUrl ? (
+                                        isGif ? (
+                                          <img src={videoUrl} alt={ex.name} loading="lazy" />
+                                        ) : (
+                                          <LazyVideo src={`${videoUrl}#t=0.1`} muted playsInline preload="metadata" />
+                                        )
+                                      ) : (
+                                        <div className="byo-thumb-placeholder">
+                                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                        </div>
+                                      )}
+                                      {videoUrl && (
+                                        <div className="byo-thumb-play">
+                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <button className="byo-exercise-info" onClick={() => byoToggleExercise(ex)}>
+                                      <span className="byo-exercise-name">{ex.name}</span>
+                                      {isSelected && (
+                                        <svg className="byo-exercise-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           )}
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -2092,6 +2191,25 @@ export default function CoreBuddyWorkouts() {
               </div>
             );
           })}
+
+          {/* Exercise preview modal */}
+          {byoPreviewEx && (
+            <div className="wk-preview-modal-backdrop" onClick={() => setByoPreviewEx(null)}>
+              <div className="wk-preview-modal" onClick={e => e.stopPropagation()}>
+                <button className="wk-preview-modal-close" onClick={() => setByoPreviewEx(null)} aria-label="Close preview">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div className="wk-preview-modal-video">
+                  {byoPreviewEx.isGif ? (
+                    <img src={byoPreviewEx.videoUrl} alt={byoPreviewEx.name} />
+                  ) : (
+                    <video src={byoPreviewEx.videoUrl} autoPlay loop muted playsInline />
+                  )}
+                </div>
+                <h3 className="wk-preview-modal-title">{byoPreviewEx.name}</h3>
+              </div>
+            </div>
+          )}
         </main>
 
         {byoSelected.length > 0 && (
@@ -2328,15 +2446,15 @@ export default function CoreBuddyWorkouts() {
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <button className="wk-hub-card wk-hub-card-locked" disabled>
+            <button className="wk-hub-card" onClick={() => setView('byo_mode')}>
               <div className="wk-hub-card-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </div>
               <div className="wk-hub-card-body">
                 <h3>Build Your Own</h3>
-                <p>Coming soon</p>
+                <p>Pick exercises &amp; build your workout</p>
               </div>
-              <span className="wk-hub-coming-soon-badge">Soon</span>
+              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
             <button className="wk-hub-card" onClick={quickStart} disabled={freeRandomiserLimitReached}>
