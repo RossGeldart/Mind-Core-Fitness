@@ -782,6 +782,7 @@ export default function CoreBuddyWorkouts() {
   // Build Your Own (BYO)
   const [byoMode, setByoMode] = useState(null); // 'hiit' | 'sets'
   const [byoFromSaved, setByoFromSaved] = useState(false); // true when launched from saved template
+  const [byoSearch, setByoSearch] = useState('');
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
@@ -1121,6 +1122,14 @@ export default function CoreBuddyWorkouts() {
     writeUrlCache(urlCache);
     setByoVideoUrls(prev => ({ ...prev, ...newUrls }));
   };
+
+  // Resolve video URLs for search results
+  useEffect(() => {
+    const q = byoSearch.trim().toLowerCase();
+    if (!q) return;
+    const matches = PROGRAMMABLE_EXERCISES.filter(e => e.name.toLowerCase().includes(q));
+    if (matches.length > 0) byoResolveUrls(matches);
+  }, [byoSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const byoToggleGroup = (groupKey, exercises) => {
     setByoExpandedGroups(prev => {
@@ -2237,6 +2246,22 @@ export default function CoreBuddyWorkouts() {
             <p>Tap to select &middot; {byoSelected.length} chosen</p>
           </div>
 
+          <div className="byo-search-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              type="text"
+              className="byo-search-input"
+              placeholder="Search exercises..."
+              value={byoSearch}
+              onChange={e => setByoSearch(e.target.value)}
+            />
+            {byoSearch && (
+              <button className="byo-search-clear" onClick={() => setByoSearch('')} aria-label="Clear search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            )}
+          </div>
+
           {byoMode === 'hiit' && (
             <div className="byo-level-row">
               {LEVELS.map(l => (
@@ -2248,7 +2273,50 @@ export default function CoreBuddyWorkouts() {
             </div>
           )}
 
-          {BYO_GROUPS.map(group => {
+          {/* Search results — flat list */}
+          {byoSearch.trim() && (() => {
+            const q = byoSearch.trim().toLowerCase();
+            const matches = exercisePool.filter(e => e.name.toLowerCase().includes(q));
+            if (matches.length === 0) {
+              return <div className="byo-search-empty">No exercises found</div>;
+            }
+            return (
+              <div className="byo-exercise-list byo-search-results">
+                {matches.map(ex => {
+                  const isSelected = byoSelected.find(s => s.name === ex.name);
+                  const videoUrl = byoVideoUrls[ex.storagePath];
+                  const isGif = /\.gif$/i.test(ex.storagePath || '');
+                  return (
+                    <div key={ex.name} className={`byo-exercise-row${isSelected ? ' byo-exercise-selected' : ''}`} onClick={() => byoToggleExercise(ex)}>
+                      <div className="byo-exercise-thumb-sm" onClick={(e) => {
+                        if (videoUrl) { e.stopPropagation(); setByoPreviewEx({ name: ex.name, videoUrl, isGif }); }
+                      }}>
+                        {videoUrl ? (
+                          <StaticThumb src={videoUrl} isGif={isGif} />
+                        ) : (
+                          <div className="byo-thumb-placeholder">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          </div>
+                        )}
+                        {videoUrl && (
+                          <div className="byo-thumb-play-sm">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          </div>
+                        )}
+                      </div>
+                      <span className="byo-exercise-name">{ex.name}</span>
+                      {isSelected && (
+                        <svg className="byo-exercise-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          {/* Group/subgroup browsing — hidden when searching */}
+          {!byoSearch.trim() && BYO_GROUPS.map(group => {
             const groupExercises = exercisePool.filter(e => group.groups.includes(e.group));
             if (groupExercises.length === 0) return null;
             const isGroupOpen = byoExpandedGroups[group.key];
@@ -2719,7 +2787,7 @@ export default function CoreBuddyWorkouts() {
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <button className="wk-hub-card" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setView('byo_mode'); }}>
+            <button className="wk-hub-card" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setByoSearch(''); setView('byo_mode'); }}>
               <div className="wk-hub-card-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </div>
