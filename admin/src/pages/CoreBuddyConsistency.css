@@ -112,7 +112,7 @@
 }
 
 .cbc-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -121,7 +121,7 @@
 }
 
 .cbc-hero-tagline {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   text-align: center;
@@ -176,7 +176,7 @@
 }
 
 .cbc-streak-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -198,7 +198,7 @@
 }
 
 .cbc-streak-best-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -399,7 +399,7 @@
 }
 
 .cbc-habit-done-tag {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   color: #4caf50;
@@ -408,7 +408,7 @@
 }
 
 .cbc-habit-hold-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   color: var(--text-tertiary);
   letter-spacing: 0.3px;
@@ -565,7 +565,7 @@
 }
 
 .cbc-modal-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin: 0 0 16px 0;
@@ -577,7 +577,7 @@
 
 .cbc-saved-label {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -612,7 +612,7 @@
   background: none;
   border: none;
   color: var(--color-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -643,7 +643,7 @@
   padding: 14px;
   border: 2px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -675,7 +675,7 @@
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -694,7 +694,7 @@
   border: none;
   color: var(--text-on-primary);
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -718,7 +718,7 @@
   border: none;
   color: #ffffff;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -743,7 +743,7 @@
 }
 
 .cbc-section-badge {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -780,7 +780,7 @@
 }
 
 .cbc-weekly-day-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -805,7 +805,7 @@
 }
 
 .cbc-weekly-habit-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   overflow: hidden;
@@ -858,7 +858,7 @@
 }
 
 .cbc-week-summary-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -919,7 +919,7 @@
 }
 
 .cbc-cal-day-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -938,7 +938,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 500;
   border-radius: 8px;
@@ -1000,7 +1000,7 @@
 }
 
 .cbc-cal-legend-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   color: var(--text-tertiary);
   margin: 0 2px;
@@ -1026,7 +1026,7 @@
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
@@ -1212,7 +1212,7 @@
 
 /* Sub-text */
 .cbc-celeb-subtext {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.7);
   text-align: center;
@@ -1223,7 +1223,7 @@
 
 /* Stats line */
 .cbc-celeb-stats {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.5);
@@ -1246,7 +1246,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 50px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -1377,14 +1377,14 @@
 }
 
 .cbc-premium-card-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--text-primary);
 }
 
 .cbc-premium-card-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   line-height: 1.3;

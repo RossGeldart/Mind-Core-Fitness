@@ -9,7 +9,7 @@
   padding: 80px 20px;
   gap: 16px;
   color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .cm-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -77,7 +77,7 @@
   padding: 10px;
   border: none;
   border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -104,7 +104,7 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-card);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -161,14 +161,14 @@
 }
 
 .cm-session-date {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary);
 }
 
 .cm-next-badge {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -193,7 +193,7 @@
 }
 
 .cm-waitlist-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--color-warning);
   font-weight: 500;
@@ -223,7 +223,7 @@
 }
 
 .cm-detail-header p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -234,7 +234,7 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -303,7 +303,7 @@
 }
 
 .cm-slot-empty span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
 }
@@ -346,7 +346,7 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 6px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -424,14 +424,14 @@
 }
 
 .cm-attended-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-success);
 }
 
 .cm-noshow-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-error);
@@ -478,7 +478,7 @@
   border: 1px dashed var(--color-primary);
   border-radius: 8px;
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -520,7 +520,7 @@
   padding: 10px 12px;
   border: none;
   border-bottom: 1px solid var(--border-color);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   background: transparent;
   color: var(--text-primary);
@@ -551,7 +551,7 @@
 }
 
 .cm-dropdown-item span:first-child {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
 }
@@ -559,7 +559,7 @@
 .cm-dropdown-empty {
   padding: 16px;
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
 }
@@ -598,7 +598,7 @@
 }
 
 .cm-wl-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
   flex: 1;
@@ -609,7 +609,7 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   background: transparent;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   cursor: pointer;
@@ -663,7 +663,7 @@
 }
 
 .cm-ban-until {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--color-error);
 }
@@ -673,7 +673,7 @@
   border: 1px solid var(--color-error);
   border-radius: 8px;
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-error);
@@ -745,7 +745,7 @@
 }
 
 .cm-strike-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin-left: 4px;
@@ -759,7 +759,7 @@
 .cm-small-btn {
   padding: 4px 12px;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -794,14 +794,14 @@
 }
 
 .cm-empty p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .cm-empty span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
 }
@@ -814,7 +814,7 @@
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   z-index: 2000;

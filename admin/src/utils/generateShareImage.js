@@ -87,7 +87,7 @@ export default async function generateShareImage(opts) {
   const titleLines = wrapText(ctx, title.toUpperCase(), cardW - 100);
 
   // ── Pre-measure content (stats for workout, description for badge) ──
-  ctx.font = `500 ${contentFontSize}px 'Montserrat', sans-serif`;
+  ctx.font = `500 ${contentFontSize}px 'Plus Jakarta Sans', sans-serif`;
   let contentLines = [];
   if (type === 'badge' && badgeDesc) {
     contentLines = wrapText(ctx, badgeDesc, cardW - 120);
@@ -103,7 +103,7 @@ export default async function generateShareImage(opts) {
     : type === 'habits'
     ? 'I just completed my daily habits with Core Buddy \u2705'
     : 'I just completed a workout using Core Buddy \uD83D\uDCAA\uD83C\uDFFB';
-  ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
+  ctx.font = `bold ${ctaFontSize}px 'Plus Jakarta Sans', sans-serif`;
   const ctaLines = wrapText(ctx, ctaText, cardW - 80);
 
   // ── Calculate text block height (everything below the logo) ──
@@ -186,7 +186,7 @@ export default async function generateShareImage(opts) {
   if (contentLines.length > 0) {
     curY += gapTitleContent;
     ctx.fillStyle = TEXT_MUTED;
-    ctx.font = `500 ${contentFontSize}px 'Montserrat', sans-serif`;
+    ctx.font = `500 ${contentFontSize}px 'Plus Jakarta Sans', sans-serif`;
     for (const line of contentLines) {
       ctx.fillText(line, W / 2, curY);
       curY += contentLineHeight;
@@ -196,7 +196,7 @@ export default async function generateShareImage(opts) {
   // ── Bold CTA line ──
   curY += gapContentCta;
   ctx.fillStyle = TEXT_BLACK;
-  ctx.font = `bold ${ctaFontSize}px 'Montserrat', sans-serif`;
+  ctx.font = `bold ${ctaFontSize}px 'Plus Jakarta Sans', sans-serif`;
   for (const line of ctaLines) {
     ctx.fillText(line, W / 2, curY);
     curY += ctaLineHeight;
@@ -205,7 +205,7 @@ export default async function generateShareImage(opts) {
   // ── Slogan ──
   curY += gapCtaSlogan;
   ctx.fillStyle = ACCENT_RED;
-  ctx.font = `600 ${sloganFontSize}px 'Montserrat', sans-serif`;
+  ctx.font = `600 ${sloganFontSize}px 'Plus Jakarta Sans', sans-serif`;
   ctx.fillText('Make It Count with Core Buddy', W / 2, curY);
 
   return new Promise(resolve => {

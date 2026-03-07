@@ -30,20 +30,20 @@
 }
 
 .today-count .session-count {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
 }
 
 .today-count .no-sessions {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   opacity: 0.8;
 }
 
 .today-stats {
   display: flex;
   gap: 16px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .completed-count {
@@ -61,7 +61,7 @@
   text-align: center;
   padding: 40px;
   color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Next Session Banner */
@@ -78,7 +78,7 @@
 }
 
 .next-session-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -102,13 +102,13 @@
 }
 
 .next-session-time {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
 .next-session-countdown {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: var(--color-primary);
@@ -122,7 +122,7 @@
   color: white;
   padding: 5px 12px;
   border-radius: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -159,7 +159,7 @@
   border-radius: 8px;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
 }
 
@@ -178,7 +178,7 @@
   border-radius: 8px;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   appearance: none;
@@ -207,7 +207,7 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -256,7 +256,7 @@
   padding: 14px 12px;
   text-align: center;
   color: #4caf50;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
 }
@@ -293,7 +293,7 @@
 }
 
 .date-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -303,7 +303,7 @@
 }
 
 .date-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -326,7 +326,7 @@
 }
 
 .session-time {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   color: var(--color-primary);
@@ -346,7 +346,7 @@
 }
 
 .session-details span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -387,7 +387,7 @@
   background: transparent;
   color: #d32f2f;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
