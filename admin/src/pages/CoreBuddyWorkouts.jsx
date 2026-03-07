@@ -594,7 +594,7 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_mode' | 'byo_pick' | 'byo_sets'
+  // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
   const [view, setView] = useState('randomiser_hub');
   const [fabOpen, setFabOpen] = useState(false);
 
@@ -711,6 +711,7 @@ export default function CoreBuddyWorkouts() {
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
   const [byoPreviewEx, setByoPreviewEx] = useState(null); // exercise for preview modal
   const [byoLevel, setByoLevel] = useState('intermediate');
+  const [byoSetsConfig, setByoSetsConfig] = useState({}); // { exerciseName: numberOfSets }
   const [byoSetsData, setByoSetsData] = useState({}); // { exerciseName: [{ reps: '', weight: '' }, ...] }
   const [byoLoading, setByoLoading] = useState(false);
   const [showByoFinish, setShowByoFinish] = useState(false);
@@ -1203,21 +1204,82 @@ export default function CoreBuddyWorkouts() {
     setSavingWorkout(true);
     try {
       const autoName = name || `Custom ${byoSelected.length} exercises`;
-      await addDoc(collection(db, 'savedWorkouts'), {
+      const docData = {
         clientId: clientData.id,
         name: autoName,
         type: byoMode === 'hiit' ? 'byo_hiit' : 'byo_sets',
         exercises: byoSelected.map(e => ({ name: e.name, type: e.type, equipment: e.equipment, group: e.group, storagePath: e.storagePath })),
         savedAt: Timestamp.now(),
-      });
+      };
+      if (byoMode === 'hiit') {
+        docData.level = byoLevel;
+      } else {
+        docData.setsConfig = byoSetsConfig;
+      }
+      await addDoc(collection(db, 'savedWorkouts'), docData);
       showToast('Workout saved!', 'success');
+      // Reset BYO state and go back to hub
+      setByoSelected([]);
+      setByoSetsConfig({});
+      setByoSaveName('');
+      setByoMode(null);
+      setView('randomiser_hub');
     } catch (err) {
       console.error('Error saving BYO template:', err);
       showToast('Failed to save workout', 'error');
     } finally {
       setSavingWorkout(false);
-      setShowByoSaveModal(false);
-      setByoSaveName('');
+    }
+  };
+
+  // Begin a saved BYO workout from library
+  const beginSavedByo = async (saved) => {
+    const exercises = saved.exercises || [];
+    if (saved.type === 'byo_hiit') {
+      // Resolve video URLs and start HIIT
+      setByoLoading(true);
+      const urlCache = readUrlCache();
+      const resolved = [];
+      for (const ex of exercises) {
+        if (!ex.storagePath) {
+          resolved.push({ name: ex.name, videoUrl: null, isGif: false });
+          continue;
+        }
+        let url = urlCache[ex.storagePath];
+        if (!url) {
+          try { url = await getDownloadURL(ref(storage, ex.storagePath)); urlCache[ex.storagePath] = url; } catch { url = null; }
+        }
+        resolved.push({ name: ex.name, videoUrl: url, isGif: /\.gif$/i.test(ex.storagePath) });
+      }
+      writeUrlCache(urlCache);
+
+      const lvl = saved.level || 'intermediate';
+      const config = LEVELS.find(l => l.key === lvl);
+      setLevelConfig(config);
+      setLevel(lvl);
+      const numRounds = exercises.length <= 4 ? 3 : 2;
+      setWorkout(resolved);
+      setRounds(numRounds);
+      setFocusArea('mix');
+      setSelectedEquipment([...new Set(exercises.map(e => e.equipment))]);
+      setDuration(Math.ceil(exercises.length * numRounds * (config.work + config.rest) / 60));
+      setByoLoading(false);
+      setFabOpen(false);
+      setView('countdown');
+      setStartCountdown(3);
+    } else {
+      // Reps & Sets — load into logging view with pre-configured sets
+      const setsConfig = saved.setsConfig || {};
+      const data = {};
+      exercises.forEach(ex => {
+        const numSets = setsConfig[ex.name] || 3;
+        data[ex.name] = Array.from({ length: numSets }, () => ({ reps: '', weight: '' }));
+      });
+      setByoSelected(exercises);
+      setByoSetsData(data);
+      setByoMode('sets');
+      setFabOpen(false);
+      setView('byo_sets');
     }
   };
 
@@ -2214,11 +2276,152 @@ export default function CoreBuddyWorkouts() {
 
         {byoSelected.length > 0 && (
           <div className="byo-pick-footer">
-            <button className="wk-btn-primary byo-start-btn" onClick={byoMode === 'hiit' ? byoStartHiit : byoStartSets} disabled={byoLoading}>
-              {byoLoading ? 'Loading...' : byoMode === 'hiit' ? `Start HIIT (${byoSelected.length} exercises)` : `Start Logging (${byoSelected.length} exercises)`}
+            <button className="wk-btn-primary byo-start-btn" onClick={() => setView(byoMode === 'sets' ? 'byo_sets_config' : 'byo_save')}>
+              Next ({byoSelected.length} exercises)
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
         )}
+        <CoreBuddyNav active="workouts" />
+      </div>
+    );
+  }
+
+  // ==================== BUILD YOUR OWN — SETS CONFIG ====================
+  if (view === 'byo_sets_config') {
+    // Initialize setsConfig defaults if empty
+    if (Object.keys(byoSetsConfig).length === 0 && byoSelected.length > 0) {
+      const defaults = {};
+      byoSelected.forEach(ex => { defaults[ex.name] = 3; });
+      setByoSetsConfig(defaults);
+    }
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('byo_pick')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main byo-pick-main">
+          <div className="wk-hub-heading">
+            <h2>Set Amounts</h2>
+            <p>Choose how many sets for each exercise</p>
+          </div>
+
+          {byoSelected.map(ex => (
+            <div key={ex.name} className="byo-config-card">
+              <div className="byo-config-info">
+                <span className="byo-config-name">{ex.name}</span>
+                <span className="byo-config-meta">{BYO_EQUIPMENT_LABELS[ex.equipment] || ex.equipment}</span>
+              </div>
+              <div className="byo-config-stepper">
+                <button
+                  className="byo-stepper-btn"
+                  onClick={() => setByoSetsConfig(prev => ({ ...prev, [ex.name]: Math.max(1, (prev[ex.name] || 3) - 1) }))}
+                  disabled={(byoSetsConfig[ex.name] || 3) <= 1}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span className="byo-stepper-value">{byoSetsConfig[ex.name] || 3}</span>
+                <button
+                  className="byo-stepper-btn"
+                  onClick={() => setByoSetsConfig(prev => ({ ...prev, [ex.name]: Math.min(10, (prev[ex.name] || 3) + 1) }))}
+                  disabled={(byoSetsConfig[ex.name] || 3) >= 10}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </main>
+
+        <div className="byo-pick-footer">
+          <button className="wk-btn-primary byo-start-btn" onClick={() => setView('byo_save')}>
+            Next
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <CoreBuddyNav active="workouts" />
+      </div>
+    );
+  }
+
+  // ==================== BUILD YOUR OWN — NAME & SAVE ====================
+  if (view === 'byo_save') {
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView(byoMode === 'sets' ? 'byo_sets_config' : 'byo_pick')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
+          <div className="wk-hub-heading">
+            <h2>Save Workout</h2>
+            <p>Give your workout a name</p>
+          </div>
+
+          <div className="byo-save-form">
+            <input
+              type="text"
+              className="byo-save-input"
+              value={byoSaveName}
+              onChange={e => setByoSaveName(e.target.value)}
+              placeholder={`Custom ${byoSelected.length} exercises`}
+              maxLength={40}
+              autoFocus
+            />
+
+            <div className="byo-save-summary">
+              <div className="byo-save-summary-row">
+                <span>Type</span>
+                <span>{byoMode === 'hiit' ? 'HIIT' : 'Reps & Sets'}</span>
+              </div>
+              <div className="byo-save-summary-row">
+                <span>Exercises</span>
+                <span>{byoSelected.length}</span>
+              </div>
+              {byoMode === 'hiit' && (
+                <div className="byo-save-summary-row">
+                  <span>Level</span>
+                  <span>{LEVELS.find(l => l.key === byoLevel)?.label || byoLevel}</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              className="wk-btn-primary byo-save-btn"
+              onClick={() => byoSaveAsTemplate(byoSaveName)}
+              disabled={savingWorkout}
+            >
+              {savingWorkout ? 'Saving...' : 'Save Workout'}
+            </button>
+          </div>
+        </main>
         <CoreBuddyNav active="workouts" />
       </div>
     );
@@ -2519,7 +2722,7 @@ export default function CoreBuddyWorkouts() {
                   {isPremium && (
                     !savedWorkoutsLoaded ? (
                       <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
-                    ) : savedWorkouts.length === 0 ? (
+                    ) : savedWorkouts.filter(sw => sw.type !== 'byo_hiit' && sw.type !== 'byo_sets').length === 0 ? (
                       <div className="wk-hub-empty wk-hub-empty-enhanced">
                         <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                         <p><strong>No saved workouts yet</strong></p>
@@ -2527,7 +2730,7 @@ export default function CoreBuddyWorkouts() {
                       </div>
                     ) : (
                       FOCUS_AREAS.map(fa => {
-                        const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key);
+                        const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key && sw.type !== 'byo_hiit' && sw.type !== 'byo_sets');
                         if (catWorkouts.length === 0) return null;
                         const isOpen = expandedSavedCats[fa.key] || false;
                         return (
@@ -2572,6 +2775,51 @@ export default function CoreBuddyWorkouts() {
                       })
                     )
                   )}
+
+                  {/* My Workouts (BYO) */}
+                  {(() => {
+                    const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
+                    if (byoWorkouts.length === 0) return null;
+                    const isByoOpen = expandedSavedCats['byo'] || false;
+                    return (
+                      <div className={`wk-hub-saved-cat${isByoOpen ? ' wk-hub-saved-cat--open' : ''}`}>
+                        <button
+                          className="wk-hub-saved-cat-header"
+                          onClick={() => setExpandedSavedCats(prev => ({ ...prev, byo: !prev.byo }))}
+                        >
+                          <span className="wk-hub-saved-cat-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          </span>
+                          <span className="wk-hub-saved-cat-name">My Workouts</span>
+                          <svg className={`wk-hub-saved-cat-chevron${isByoOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        {isByoOpen && (
+                          <div className="wk-hub-saved-cat-dropdown">
+                            {byoWorkouts.map((sw, i) => {
+                              const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
+                              const exCount = (sw.exercises || []).length;
+                              return (
+                                <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                                  <button className="wk-hub-saved-main" onClick={() => beginSavedByo(sw)}>
+                                    <div className="wk-hub-saved-info">
+                                      <span className="wk-hub-saved-name">{sw.name}</span>
+                                      <span className="wk-hub-saved-tags">
+                                        <span className="wk-hub-saved-meta">{typeLabel} &middot; {exCount} exercises</span>
+                                      </span>
+                                    </div>
+                                    <span className="byo-begin-label">Begin</span>
+                                  </button>
+                                  <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Recent – same dropdown card */}
                   <div className={`wk-hub-saved-cat${recentOpen ? ' wk-hub-saved-cat--open' : ''}`}>
