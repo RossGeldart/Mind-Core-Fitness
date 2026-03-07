@@ -542,6 +542,9 @@
             <div id="newsletterSuccess" style="display:none;padding:14px 24px;background:rgba(255,255,255,0.06);border:1px solid var(--card-border);border-radius:12px;color:var(--text-muted);font-size:0.95rem;max-width:400px;margin:0 auto 16px;">
                 You're in! Check your inbox for a confirmation.
             </div>
+            <div id="newsletterError" style="display:none;padding:14px 24px;background:rgba(255,0,0,0.08);border:1px solid rgba(255,0,0,0.2);border-radius:12px;color:#ff6b6b;font-size:0.9rem;max-width:400px;margin:0 auto 16px;">
+                Something went wrong. Please try again or email directly.
+            </div>
             <p class="newsletter-privacy" style="font-size:0.8rem;">No spam. Unsubscribe anytime.</p>
         </div>
     </section>
@@ -659,31 +662,39 @@
         });
 
         // Newsletter form AJAX submit
-        const newsletterForm = document.getElementById('newsletterForm');
+        var newsletterForm = document.getElementById('newsletterForm');
         if (newsletterForm) {
-            newsletterForm.addEventListener('submit', async function(e) {
+            newsletterForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const btn = this.querySelector('button[type="submit"]');
+                var form = this;
+                var btn = form.querySelector('button[type="submit"]');
+                var errorDiv = document.getElementById('newsletterError');
+                errorDiv.style.display = 'none';
                 btn.textContent = 'Sending...';
                 btn.disabled = true;
-                try {
-                    const res = await fetch(this.action, {
-                        method: 'POST',
-                        body: new FormData(this),
-                        headers: { 'Accept': 'application/json' }
-                    });
+                var data = new URLSearchParams(new FormData(form)).toString();
+                fetch(form.action, {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json'
+                    }
+                }).then(function(res) {
                     if (res.ok) {
-                        this.style.display = 'none';
+                        form.style.display = 'none';
                         document.getElementById('newsletterSuccess').style.display = 'block';
                         if (typeof fbq !== 'undefined') fbq('track', 'Lead', { content_name: 'Newsletter Signup' });
                     } else {
                         btn.textContent = 'Try again';
                         btn.disabled = false;
+                        errorDiv.style.display = 'block';
                     }
-                } catch {
+                }).catch(function() {
                     btn.textContent = 'Try again';
                     btn.disabled = false;
-                }
+                    errorDiv.style.display = 'block';
+                });
             });
         }
 
