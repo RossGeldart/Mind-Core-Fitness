@@ -2758,6 +2758,47 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
+          {/* ===== My Workouts (BYO) – visible on hub ===== */}
+          {(() => {
+            const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
+            if (byoWorkouts.length === 0) return null;
+            return (
+              <div className="wk-hub-byo-section">
+                <div className="wk-hub-heading">
+                  <h2>My Workouts</h2>
+                  <p>{byoWorkouts.length} saved workout{byoWorkouts.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div className="wk-hub-byo-list">
+                  {byoWorkouts.map((sw, i) => {
+                    const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
+                    const exCount = (sw.exercises || []).length;
+                    return (
+                      <div key={sw.id} className="wk-hub-byo-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                        <button className="wk-hub-byo-main" onClick={() => beginSavedByo(sw)}>
+                          <div className="wk-hub-byo-icon">
+                            {sw.type === 'byo_hiit' ? (
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ) : (
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            )}
+                          </div>
+                          <div className="wk-hub-byo-info">
+                            <span className="wk-hub-byo-name">{sw.name}</span>
+                            <span className="wk-hub-byo-meta">{typeLabel} &middot; {exCount} exercises</span>
+                          </div>
+                          <span className="wk-hub-byo-begin">Begin</span>
+                        </button>
+                        <button className="wk-hub-byo-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove workout">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
         </main>
 
         {/* FAB Button */}
