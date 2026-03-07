@@ -4020,7 +4020,56 @@
   color: var(--text-secondary);
 }
 
-/* ── Exercise Cards Grid ── */
+/* ── Search bar ── */
+.byo-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-tertiary);
+}
+
+.byo-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.byo-search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.byo-search-clear {
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.byo-search-empty {
+  text-align: center;
+  padding: 32px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.byo-search-results {
+  padding-top: 4px;
+}
+
+/* ── Exercise Cards List ── */
 .byo-exercise-list {
   display: flex;
   flex-direction: column;
