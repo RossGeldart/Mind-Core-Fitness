@@ -77,7 +77,7 @@
 
 /* Coach Message */
 .cb-coach-msg {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -103,7 +103,7 @@
 }
 
 .cb-nudge-title-text {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -146,7 +146,7 @@
 .cb-nudge-ring-val {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -292,7 +292,7 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   margin-top: 8px;
 }
@@ -403,7 +403,7 @@
 .cb-stat-value {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
 }
@@ -470,7 +470,7 @@
 }
 
 .cb-target-picker h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -498,7 +498,7 @@
   border: 1.5px solid var(--border-color);
   background: transparent;
   color: var(--text-secondary);
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -715,7 +715,7 @@
 }
 
 .cb-pb-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -765,7 +765,7 @@
 }
 
 .cb-lb-rank {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
 }
@@ -860,7 +860,7 @@
 }
 
 .cb-card-content h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1077,7 +1077,7 @@
 }
 
 .cb-journey-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   color: var(--text-primary);
@@ -1271,7 +1271,7 @@
 
 /* ── Title ── */
 .journey-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1920,7 +1920,7 @@
 }
 
 .cb-celebration-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
   color: #FFD700;
@@ -2125,7 +2125,7 @@
 }
 
 .cb-weekly-celebration-card h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -2235,7 +2235,7 @@
 .cb-metrics-ring-val {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   color: #4CAF50;
@@ -2272,7 +2272,7 @@
 }
 
 .cb-metric-rings-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-primary);

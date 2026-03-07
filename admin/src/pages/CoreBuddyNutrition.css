@@ -240,7 +240,7 @@
 }
 
 .nut-setup-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -412,7 +412,7 @@
 }
 
 .nut-goal-icon {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
 }
@@ -502,7 +502,7 @@
 }
 
 .nut-calc-results h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   text-align: center;
@@ -664,7 +664,7 @@
 }
 
 .nut-ring-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
@@ -687,7 +687,7 @@
 }
 
 .nut-ring-pct {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   margin-top: 4px;
@@ -830,7 +830,7 @@
 }
 
 .nut-meal-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -838,7 +838,7 @@
 }
 
 .nut-meal-card-cal {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -910,7 +910,7 @@
 }
 
 .nut-add-picker-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1202,7 +1202,7 @@
 }
 
 .nut-copy-from-header span {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1313,7 +1313,7 @@
 }
 
 .nut-cal-header span {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1414,7 +1414,7 @@
 }
 
 .nut-log-section h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1518,7 +1518,7 @@
 }
 
 .nut-macro-cal {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -1578,7 +1578,7 @@
 }
 
 .nut-modal-header h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1686,7 +1686,7 @@
 }
 
 .nut-scan-detected-code {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   letter-spacing: 2px;
@@ -1813,7 +1813,7 @@
 }
 
 .nut-product-result h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);

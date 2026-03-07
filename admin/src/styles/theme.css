@@ -532,7 +532,7 @@
 }
 
 .empty-state h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -583,4 +583,85 @@
 @keyframes pullRefreshSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* ====== Orbitron — numeric / data-display elements only ====== */
+.cb-stat-value,
+.cb-nudge-ring-val,
+.cb-pb-value,
+.cb-lb-rank,
+.cb-metrics-ring-val,
+.summary-number,
+.stat-number,
+.circuit-digit,
+.circuit-stat-value,
+.wk-hero-ring-stat,
+.wk-stat-value,
+.wk-stat-val,
+.wk-timer-time,
+.wk-countdown-num,
+.wk-time-num,
+.wk-ap-pct,
+.mg-timer-value,
+.cbm-banner-ring-val,
+.cbm-ring-val,
+.cbm-detail-value,
+.cbm-detail-pct,
+.cbm-history-metric-val,
+.cbm-compare-val,
+.cbc-streak-count,
+.cbc-streak-best-val,
+.cbc-ring-count,
+.nut-ring-value,
+.nut-ring-pct,
+.nut-macro-cal,
+.nut-meal-card-cal,
+.pg-ring-pct,
+.pg-dash-pct,
+.pg-ov-stat-num,
+.pg-timer-value,
+.pg-session-counter,
+.pg-done-stat-num,
+.pg-last-week-value,
+.pb-ring-value,
+.pb-ring-change,
+.pb-metric-current,
+.pb-metric-change,
+.pb-metric-percent,
+.pb-timeline-value,
+.pb-timeline-change,
+.pb-compare-val,
+.pb-compare-change,
+.pb-cb-card-value,
+.pb-cb-progress-current,
+.pb-cb-progress-pct,
+.lb-podium-stat,
+.lb-podium-rank,
+.lb-rank-number,
+.lb-rank-stat,
+.lb-your-rank,
+.lb-your-stat,
+.ch-ring-num,
+.ch-info-val,
+.prf-stat-value,
+.prf-pb-rank,
+.prf-pb-weight,
+.ob-plan-amount,
+.plan-amount,
+.pricing-card-price,
+.calories-value,
+.macro-value,
+.snack-counter-value,
+.cm-stat-num,
+.cm-session-fill,
+.cm-slot-num,
+.cm-wl-pos,
+.byo-stepper-value,
+.forms-filter-count,
+.session-notes-count,
+.achievements-card-count,
+.wc-celeb-stat-val,
+.cb-waitlist-pos,
+.circuit-colon {
+  font-family: 'Orbitron', 'Courier New', monospace !important;
 }

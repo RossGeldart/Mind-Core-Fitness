@@ -125,7 +125,7 @@
 }
 
 .circuit-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 6px 0;
@@ -221,14 +221,14 @@
 }
 
 .circuit-digit {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .circuit-colon {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -324,7 +324,7 @@
 }
 
 .circuit-status-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -372,7 +372,7 @@
 }
 
 .circuit-stats-card h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 16px 0;
@@ -393,7 +393,7 @@
 
 .circuit-stat-value {
   display: block;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -434,7 +434,7 @@
 }
 
 .circuit-rules h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 10px 0;
@@ -505,7 +505,7 @@
 }
 
 .circuit-vip-promo h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
@@ -519,7 +519,7 @@
 }
 
 .vip-promo-price strong {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   color: #ffc107;
 }

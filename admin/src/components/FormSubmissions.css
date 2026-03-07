@@ -23,7 +23,7 @@
 
 .stat-number {
   display: block;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-success);
@@ -143,7 +143,7 @@
 }
 
 .forms-filter-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.15);
@@ -246,7 +246,7 @@
 }
 
 .forms-client-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -357,7 +357,7 @@
 }
 
 .form-data-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-primary);

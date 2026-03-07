@@ -97,7 +97,7 @@
 }
 
 .cbc-ring-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.8rem;
   color: var(--text-primary);
@@ -169,7 +169,7 @@
 }
 
 .cbc-streak-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--color-primary);
@@ -191,7 +191,7 @@
 }
 
 .cbc-streak-best-val {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-primary);
@@ -211,7 +211,7 @@
 }
 
 .cbc-section-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -384,7 +384,7 @@
 
 /* Habit label (below ring) */
 .cbc-habit-label {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -557,7 +557,7 @@
 }
 
 .cbc-modal-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1200,7 +1200,7 @@
 
 /* Heading */
 .cbc-celeb-heading {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
