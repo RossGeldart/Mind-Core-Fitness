@@ -536,14 +536,12 @@
             <form id="newsletterForm" action="https://formspree.io/f/meeaprar" method="POST" class="newsletter-form" style="display:flex;gap:10px;max-width:500px;margin:0 auto 16px;flex-wrap:wrap;justify-content:center;">
                 <input type="hidden" name="_subject" value="Newsletter Signup">
                 <input type="hidden" name="type" value="newsletter">
+                <input type="hidden" name="_next" value="https://mindcorefitness.com/?subscribed=1">
                 <input type="email" name="email" placeholder="Your email address" required autocomplete="email" style="flex:1;min-width:200px;padding:14px 20px;border-radius:30px;border:2px solid var(--card-border);background:var(--bg-color);color:var(--text-color);font-family:'Roboto',sans-serif;font-size:0.95rem;outline:none;">
                 <button type="submit" style="padding:14px 26px;background:var(--accent-color);color:#ffffff;border:none;border-radius:30px;font-family:'Montserrat',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;white-space:nowrap;">Subscribe</button>
             </form>
             <div id="newsletterSuccess" style="display:none;padding:14px 24px;background:rgba(255,255,255,0.06);border:1px solid var(--card-border);border-radius:12px;color:var(--text-muted);font-size:0.95rem;max-width:400px;margin:0 auto 16px;">
                 You're in! Check your inbox for a confirmation.
-            </div>
-            <div id="newsletterError" style="display:none;padding:14px 24px;background:rgba(255,0,0,0.08);border:1px solid rgba(255,0,0,0.2);border-radius:12px;color:#ff6b6b;font-size:0.9rem;max-width:400px;margin:0 auto 16px;">
-                Something went wrong. Please try again or email directly.
             </div>
             <p class="newsletter-privacy" style="font-size:0.8rem;">No spam. Unsubscribe anytime.</p>
         </div>
@@ -661,41 +659,18 @@
             }
         });
 
-        // Newsletter form AJAX submit
-        var newsletterForm = document.getElementById('newsletterForm');
-        if (newsletterForm) {
-            newsletterForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                var form = this;
-                var btn = form.querySelector('button[type="submit"]');
-                var errorDiv = document.getElementById('newsletterError');
-                errorDiv.style.display = 'none';
-                btn.textContent = 'Sending...';
-                btn.disabled = true;
-                var data = new URLSearchParams(new FormData(form)).toString();
-                fetch(form.action, {
-                    method: 'POST',
-                    body: data,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                }).then(function(res) {
-                    if (res.ok) {
-                        form.style.display = 'none';
-                        document.getElementById('newsletterSuccess').style.display = 'block';
-                        if (typeof fbq !== 'undefined') fbq('track', 'Lead', { content_name: 'Newsletter Signup' });
-                    } else {
-                        btn.textContent = 'Try again';
-                        btn.disabled = false;
-                        errorDiv.style.display = 'block';
-                    }
-                }).catch(function() {
-                    btn.textContent = 'Try again';
-                    btn.disabled = false;
-                    errorDiv.style.display = 'block';
-                });
-            });
+        // Show newsletter success message after Formspree redirect
+        if (new URLSearchParams(window.location.search).get('subscribed') === '1') {
+            var nlForm = document.getElementById('newsletterForm');
+            var nlSuccess = document.getElementById('newsletterSuccess');
+            if (nlForm) nlForm.style.display = 'none';
+            if (nlSuccess) nlSuccess.style.display = 'block';
+            // Scroll to newsletter section so user sees the confirmation
+            var nlSection = document.querySelector('.newsletter-section');
+            if (nlSection) nlSection.scrollIntoView({ behavior: 'smooth' });
+            // Clean up URL
+            window.history.replaceState({}, '', window.location.pathname);
+            if (typeof fbq !== 'undefined') fbq('track', 'Lead', { content_name: 'Newsletter Signup' });
         }
 
         // Cookie Consent Functions
