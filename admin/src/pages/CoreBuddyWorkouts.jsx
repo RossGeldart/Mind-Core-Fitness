@@ -775,6 +775,7 @@ export default function CoreBuddyWorkouts() {
 
   // Build Your Own (BYO)
   const [byoMode, setByoMode] = useState(null); // 'hiit' | 'sets'
+  const [byoFromSaved, setByoFromSaved] = useState(false); // true when launched from saved template
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
@@ -1347,6 +1348,7 @@ export default function CoreBuddyWorkouts() {
       setByoSelected(exercises);
       setByoSetsData(data);
       setByoMode('sets');
+      setByoFromSaved(true);
       setFabOpen(false);
       setView('byo_sets');
     }
@@ -2499,7 +2501,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('byo_pick')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => { if (byoFromSaved) { setByoFromSaved(false); setView('randomiser_hub'); } else { setView('byo_pick'); } }} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -2542,23 +2544,22 @@ export default function CoreBuddyWorkouts() {
                 <div className="byo-set-rows">
                   <div className="byo-set-row byo-set-row-header">
                     <span className="byo-set-num">Set</span>
-                    {isWeighted && <span className="byo-set-weight">{byoWeightUnit}</span>}
+                    <span className={`byo-set-weight${isWeighted ? '' : ' byo-set-invisible'}`}>{byoWeightUnit}</span>
                     <span className="byo-set-reps">{ex.type === 'timed' ? 'Secs' : 'Reps'}</span>
                     <span className="byo-set-del"></span>
                   </div>
                   {sets.map((set, idx) => (
                     <div key={idx} className="byo-set-row">
                       <span className="byo-set-num">{idx + 1}</span>
-                      {isWeighted && (
-                        <input
-                          type="number"
-                          inputMode="decimal"
-                          className="byo-set-input byo-set-weight"
-                          placeholder="0"
-                          value={set.weight}
-                          onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
-                        />
-                      )}
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        className={`byo-set-input byo-set-weight${isWeighted ? '' : ' byo-set-invisible'}`}
+                        placeholder="0"
+                        value={set.weight}
+                        onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
+                        tabIndex={isWeighted ? 0 : -1}
+                      />
                       <input
                         type="number"
                         inputMode="numeric"
