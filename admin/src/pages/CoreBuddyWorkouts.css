@@ -3705,6 +3705,103 @@
    BUILD YOUR OWN (BYO) STYLES
    ===================================================== */
 
+/* ── My Workouts section on hub ── */
+.wk-hub-byo-section {
+  margin-top: 8px;
+}
+
+.wk-hub-byo-list {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wk-hub-byo-card {
+  display: flex;
+  align-items: center;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+  animation: fadeSlideIn 0.3s ease-out both;
+}
+
+.wk-hub-byo-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.wk-hub-byo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.wk-hub-byo-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.wk-hub-byo-name {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-hub-byo-meta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.wk-hub-byo-begin {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.wk-hub-byo-delete {
+  padding: 14px 14px;
+  border: none;
+  border-left: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wk-hub-byo-delete:active {
+  background: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+}
+
 /* ── Mode Picker ── */
 .byo-mode-grid {
   display: flex;
