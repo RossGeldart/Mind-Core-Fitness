@@ -775,6 +775,7 @@ export default function CoreBuddyWorkouts() {
 
   // Build Your Own (BYO)
   const [byoMode, setByoMode] = useState(null); // 'hiit' | 'sets'
+  const [byoFromSaved, setByoFromSaved] = useState(false); // true when launched from saved template
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
@@ -1347,6 +1348,7 @@ export default function CoreBuddyWorkouts() {
       setByoSelected(exercises);
       setByoSetsData(data);
       setByoMode('sets');
+      setByoFromSaved(true);
       setFabOpen(false);
       setView('byo_sets');
     }
@@ -2499,7 +2501,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('byo_pick')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => { if (byoFromSaved) { setByoFromSaved(false); setView('randomiser_hub'); } else { setView('byo_pick'); } }} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
