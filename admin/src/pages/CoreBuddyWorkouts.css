@@ -4370,11 +4370,18 @@
 }
 
 .byo-set-weight {
-  max-width: 70px;
+  flex: 1;
+  max-width: 90px;
 }
 
 .byo-set-reps {
-  max-width: 70px;
+  width: 65px;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.byo-set-invisible {
+  visibility: hidden;
 }
 
 .byo-set-del {

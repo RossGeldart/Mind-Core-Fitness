@@ -2542,23 +2542,22 @@ export default function CoreBuddyWorkouts() {
                 <div className="byo-set-rows">
                   <div className="byo-set-row byo-set-row-header">
                     <span className="byo-set-num">Set</span>
-                    {isWeighted && <span className="byo-set-weight">{byoWeightUnit}</span>}
+                    <span className={`byo-set-weight${isWeighted ? '' : ' byo-set-invisible'}`}>{byoWeightUnit}</span>
                     <span className="byo-set-reps">{ex.type === 'timed' ? 'Secs' : 'Reps'}</span>
                     <span className="byo-set-del"></span>
                   </div>
                   {sets.map((set, idx) => (
                     <div key={idx} className="byo-set-row">
                       <span className="byo-set-num">{idx + 1}</span>
-                      {isWeighted && (
-                        <input
-                          type="number"
-                          inputMode="decimal"
-                          className="byo-set-input byo-set-weight"
-                          placeholder="0"
-                          value={set.weight}
-                          onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
-                        />
-                      )}
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        className={`byo-set-input byo-set-weight${isWeighted ? '' : ' byo-set-invisible'}`}
+                        placeholder="0"
+                        value={set.weight}
+                        onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
+                        tabIndex={isWeighted ? 0 : -1}
+                      />
                       <input
                         type="number"
                         inputMode="numeric"
