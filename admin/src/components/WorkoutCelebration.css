@@ -296,7 +296,7 @@
 
 /* Subtitle (e.g. "Back — Session A") */
 .wc-celeb-subtext {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
@@ -308,7 +308,7 @@
 
 /* Motivational quote */
 .wc-celeb-quote {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
@@ -342,7 +342,7 @@
 }
 
 .wc-celeb-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
@@ -362,7 +362,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 50px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -395,7 +395,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50px;
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -453,7 +453,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50px;
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   z-index: 2100;

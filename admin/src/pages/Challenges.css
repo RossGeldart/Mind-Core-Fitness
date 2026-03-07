@@ -4,7 +4,7 @@
   background: var(--bg-body);
   color: var(--text-primary);
   padding-bottom: 90px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .ch-main {
@@ -22,7 +22,7 @@
 }
 
 .ch-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-secondary);
   font-size: 0.88rem;
   margin: 0 0 24px;
@@ -71,7 +71,7 @@
   border-radius: 16px;
   cursor: pointer;
   text-align: left;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   box-shadow: var(--shadow-sm);
 }
@@ -127,7 +127,7 @@
 }
 
 .ch-card-body p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   margin: 0;
@@ -141,7 +141,7 @@
 }
 
 .ch-tag {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -167,7 +167,7 @@
   background: var(--color-primary-light);
   border-radius: 12px;
   margin-bottom: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--color-primary);
@@ -180,7 +180,7 @@
   border: none;
   border-radius: 8px;
   padding: 6px 14px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -228,14 +228,14 @@
 }
 
 .ch-ring-slash {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .ch-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   margin-top: 4px;
@@ -268,13 +268,13 @@
 }
 
 .ch-info-key {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
 .ch-pace {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   padding: 4px 12px;
@@ -296,7 +296,7 @@
 }
 
 .ch-active-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   color: var(--text-secondary);
   margin: 0;
@@ -306,7 +306,7 @@
   background: none;
   border: none;
   color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   cursor: pointer;
   padding: 8px 16px;
@@ -323,7 +323,7 @@
 
 .ch-browse-locked-note {
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-tertiary);
   margin: 0 0 12px;
@@ -391,7 +391,7 @@
 }
 
 .ch-completed-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -399,7 +399,7 @@
 }
 
 .ch-completed-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -409,7 +409,7 @@
 }
 
 .ch-completed-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -432,7 +432,7 @@
   padding: 14px 20px;
   border-radius: 12px;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -500,7 +500,7 @@
 }
 
 .ch-modal p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   color: var(--text-secondary);
   margin: 0;
@@ -521,7 +521,7 @@
 .ch-modal-details {
   display: flex;
   gap: 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -535,7 +535,7 @@
   transform: translateX(-50%);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   z-index: 2000;

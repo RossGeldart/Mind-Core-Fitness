@@ -35,7 +35,7 @@
 }
 
 .native-login-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -43,7 +43,7 @@
 }
 
 .native-login-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -65,7 +65,7 @@
   width: 100%;
   padding: 16px;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -137,7 +137,7 @@
 }
 
 .native-login-divider span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -154,7 +154,7 @@
   display: block;
   margin-bottom: 6px;
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.85rem;
 }
@@ -165,7 +165,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: 1rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg-input);
   color: var(--text-primary);
   box-sizing: border-box;
@@ -183,7 +183,7 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   text-align: center;
@@ -215,7 +215,7 @@
 }
 
 .native-login-reset-sent p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -223,7 +223,7 @@
 }
 
 .native-login-reset-sent span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   display: block;
@@ -270,7 +270,7 @@
 
 .native-login-verify-hint {
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.5;

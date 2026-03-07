@@ -119,7 +119,7 @@
 }
 
 .cbm-banner-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -135,7 +135,7 @@
 }
 
 .cbm-banner-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-primary);
@@ -167,7 +167,7 @@
 }
 
 .cbm-setup-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   line-height: 1.4;
@@ -188,7 +188,7 @@
 }
 
 .cbm-form-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-tertiary);
   margin: 0 0 12px;
@@ -204,7 +204,7 @@
 }
 
 .cbm-form-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -242,7 +242,7 @@
 }
 
 .cbm-form-suffix {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-tertiary);
   min-width: 20px;
@@ -250,7 +250,7 @@
 
 /* Direction badges */
 .cbm-dir-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   padding: 2px 8px;
@@ -357,7 +357,7 @@
 }
 
 .cbm-ring-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -435,7 +435,7 @@
 }
 
 .cbm-detail-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -488,7 +488,7 @@
 
 .cbm-detail-change {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   color: var(--text-tertiary);
   margin-top: 6px;
@@ -508,7 +508,7 @@
   border: none;
   background: var(--color-primary);
   color: var(--text-on-primary, #fff);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -530,7 +530,7 @@
   border: 1px solid var(--border-color);
   background: var(--bg-card);
   color: var(--text-primary);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
@@ -587,7 +587,7 @@
 }
 
 .cbm-empty-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -667,7 +667,7 @@
 
 .cbm-history-metric-name {
   flex: 1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-secondary);
 }
@@ -682,7 +682,7 @@
 }
 
 .cbm-history-metric-diff {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -738,7 +738,7 @@
   border: 1px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
   background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.06);
   color: var(--color-primary);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.72rem;
   cursor: pointer;
@@ -789,7 +789,7 @@
 .cbm-photo-delete:active { opacity: 1; }
 
 .cbm-photo-empty {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -803,7 +803,7 @@
   border: 1px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
   background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.06);
   color: var(--color-primary);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.72rem;
   cursor: pointer;
@@ -864,7 +864,7 @@
 }
 
 .cbm-overlay-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   margin: 0 0 16px;
@@ -895,7 +895,7 @@
 }
 
 .cbm-compare-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -907,7 +907,7 @@
   padding: 8px 10px;
   border: 1px solid rgba(150, 150, 150, 0.2);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-primary);
   background: transparent;
@@ -929,7 +929,7 @@
 }
 
 .cbm-compare-photo-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1021,7 +1021,7 @@
 }
 
 .cbm-compare-photo-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1037,7 +1037,7 @@
   justify-content: center;
   border-radius: 12px;
   background: rgba(150, 150, 150, 0.08);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-tertiary);
 }
@@ -1059,7 +1059,7 @@
 
 .cbm-compare-metric-name {
   flex: 1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-secondary);
 }
@@ -1079,7 +1079,7 @@
 }
 
 .cbm-compare-diff {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1103,7 +1103,7 @@
   transform: translateX(-50%);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: #fff;

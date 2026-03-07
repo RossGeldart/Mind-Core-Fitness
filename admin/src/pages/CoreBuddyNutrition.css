@@ -139,7 +139,7 @@
 }
 
 .nut-week-month-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: #fff;
@@ -179,7 +179,7 @@
 }
 
 .nut-week-day-letter {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -188,7 +188,7 @@
 }
 
 .nut-week-day-num {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
@@ -247,7 +247,7 @@
 }
 
 .nut-setup-intro p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -275,7 +275,7 @@
 
 .nut-form-group label {
   display: block;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -298,7 +298,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
@@ -324,7 +324,7 @@
   padding: 10px;
   background: var(--bg-secondary);
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -360,7 +360,7 @@
   padding: 10px 12px;
   background: var(--bg-secondary);
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -401,7 +401,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-secondary);
 }
 
@@ -439,7 +439,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-secondary);
 }
 
@@ -465,7 +465,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -526,7 +526,7 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -543,7 +543,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -671,14 +671,14 @@
 }
 
 .nut-ring-target {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   color: var(--text-tertiary);
   margin-top: 2px;
 }
 
 .nut-ring-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -713,7 +713,7 @@
   border-radius: 14px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -954,7 +954,7 @@
 .nut-add-picker-options button:nth-child(4) { color: #ff9800; }
 
 .nut-add-picker-options button span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -987,7 +987,7 @@
 }
 
 .nut-meal-bar-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   width: 12px;
@@ -1020,7 +1020,7 @@
 [data-theme="dark"] .bar-fats { background: #a78bfa; }
 
 .nut-meal-bar-val {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1036,7 +1036,7 @@
 }
 
 .nut-meal-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -1095,7 +1095,7 @@
   background: transparent;
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .nut-card-action svg {
@@ -1158,7 +1158,7 @@
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -1210,7 +1210,7 @@
 }
 
 .nut-copy-from-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin: 0 0 16px;
@@ -1231,7 +1231,7 @@
   justify-content: center;
   gap: 10px;
   padding: 14px 0 4px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -1282,7 +1282,7 @@
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text-primary);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -1350,7 +1350,7 @@
 }
 
 .nut-cal-days-header span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -1369,7 +1369,7 @@
   border-radius: 50%;
   border: none;
   background: transparent;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -1439,7 +1439,7 @@
 }
 
 .nut-log-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -1475,7 +1475,7 @@
 
 .nut-log-item-name {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1485,7 +1485,7 @@
 }
 
 .nut-log-item-serving {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -1497,21 +1497,21 @@
 }
 
 .nut-macro-p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: #14b8a6;
 }
 
 .nut-macro-c {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: #f59e0b;
 }
 
 .nut-macro-f {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: #8b5cf6;
@@ -1678,7 +1678,7 @@
 }
 
 .nut-scan-detected-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: #4caf50;
@@ -1704,7 +1704,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -1716,7 +1716,7 @@
 }
 
 .nut-scan-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -1738,7 +1738,7 @@
 }
 
 .nut-barcode-divider span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   white-space: nowrap;
@@ -1755,7 +1755,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
@@ -1771,7 +1771,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -1786,7 +1786,7 @@
 
 /* Open Food Facts attribution */
 .nut-off-credit {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -1821,14 +1821,14 @@
 }
 
 .nut-product-brand {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0 0 12px 0;
 }
 
 .nut-product-per {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin: 0 0 8px 0;
@@ -1851,7 +1851,7 @@
 }
 
 .nut-serving-adjust label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -1863,7 +1863,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
@@ -1887,7 +1887,7 @@
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -1920,7 +1920,7 @@
   border: none;
   background: var(--bg-secondary);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -1976,7 +1976,7 @@
 }
 
 .nut-stepper-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1984,7 +1984,7 @@
 }
 
 .nut-stepper-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -1992,7 +1992,7 @@
 }
 
 .nut-stepper-weight {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-secondary);
   opacity: 0.7;
@@ -2000,7 +2000,7 @@
 }
 
 .nut-product-total {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -2022,7 +2022,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -2045,7 +2045,7 @@
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -2064,7 +2064,7 @@
   color: #ef4444;
   border: 1px solid #ef4444;
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -2098,7 +2098,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
@@ -2114,7 +2114,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -2172,7 +2172,7 @@
 }
 
 .nut-search-item-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -2182,13 +2182,13 @@
 }
 
 .nut-search-item-brand {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
 
 .nut-search-item-macros {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-secondary);
   margin-top: 2px;
@@ -2196,7 +2196,7 @@
 
 .nut-search-empty {
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   padding: 20px;
@@ -2213,7 +2213,7 @@
 }
 
 .nut-search-loading-tip {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -2225,7 +2225,7 @@
 }
 
 .nut-search-loading-msg {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -2254,7 +2254,7 @@
 }
 
 .nut-search-loading-percent {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--text-on-primary);
@@ -2354,7 +2354,7 @@
   text-align: left;
   flex: 1;
   min-width: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .nut-recent-item:hover {

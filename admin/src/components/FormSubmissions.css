@@ -2,7 +2,7 @@
   padding: 60px;
   text-align: center;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 /* ====== Stats ====== */
@@ -39,7 +39,7 @@
 
 .stat-label {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -69,7 +69,7 @@
   padding: 12px 40px 12px 42px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   background: var(--bg-card);
   color: var(--text-primary);
@@ -121,7 +121,7 @@
   border: none;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -173,14 +173,14 @@
 }
 
 .forms-empty p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .forms-empty span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-tertiary);
   font-size: 0.9rem;
 }
@@ -235,7 +235,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   flex-shrink: 0;
@@ -261,7 +261,7 @@
 }
 
 .form-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   padding: 2px 8px;
@@ -302,14 +302,14 @@
 }
 
 .forms-no-data p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin: 0 0 4px 0;
 }
 
 .forms-no-data span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
 }
@@ -330,7 +330,7 @@
   border: none;
   background: var(--bg-input);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -364,7 +364,7 @@
 }
 
 .form-data-date {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -378,7 +378,7 @@
 
 .form-data-field label {
   display: block;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -388,7 +388,7 @@
 }
 
 .form-data-field p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0;
@@ -420,7 +420,7 @@
 }
 
 .parq-answer {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 3px 8px;
@@ -440,7 +440,7 @@
 }
 
 .parq-question-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
   line-height: 1.4;
@@ -454,14 +454,14 @@
 }
 
 .parq-declaration-status .declared {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-success);
 }
 
 .parq-declaration-status .not-declared {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-error);
@@ -469,7 +469,7 @@
 
 /* ====== Type Badge ====== */
 .forms-type-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   padding: 2px 8px;

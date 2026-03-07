@@ -33,7 +33,7 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   padding: 16px 0 8px;
@@ -46,7 +46,7 @@
 
 /* ==================== BROWSE VIEW ==================== */
 .pg-browse-intro {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -116,7 +116,7 @@
 }
 
 .pg-browse-level {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -125,7 +125,7 @@
 }
 
 .pg-browse-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin: 0;
@@ -135,7 +135,7 @@
 .pg-browse-meta {
   display: flex;
   gap: 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -165,7 +165,7 @@
 }
 
 .pg-overview-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   text-align: center;
@@ -199,7 +199,7 @@
 }
 
 .pg-ov-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -238,7 +238,7 @@
 }
 
 .pg-day-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--color-primary);
   font-weight: 600;
@@ -257,7 +257,7 @@
 
 .pg-day-ex-name {
   flex: 1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-primary);
 }
@@ -270,7 +270,7 @@
 }
 
 .pg-day-ex-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   padding: 3px 8px;
@@ -295,7 +295,7 @@
 
 /* Overload note */
 .pg-overview-note {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   background: var(--bg-card);
@@ -393,7 +393,7 @@
 }
 
 .pg-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -423,7 +423,7 @@
 }
 
 .pg-dash-week {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -524,7 +524,7 @@
 }
 
 .pg-next-info {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--color-primary);
   margin: 0 0 12px;
@@ -551,7 +551,7 @@
 }
 
 .pg-next-ex-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-primary);
 }
@@ -574,7 +574,7 @@
   padding-top: 0;
 }
 .pg-avail-day-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -600,7 +600,7 @@
 }
 
 .pg-complete-msg p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0 0 16px;
@@ -613,7 +613,7 @@
   background: none;
   border: 1px solid rgba(244, 67, 54, 0.3);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: #f44336;
   cursor: pointer;
@@ -781,7 +781,7 @@
 }
 
 .pg-ex-type-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   padding: 3px 10px;
@@ -805,7 +805,7 @@
 }
 
 .pg-ex-target {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -826,7 +826,7 @@
 }
 
 .pg-input-group label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -890,7 +890,7 @@
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -915,7 +915,7 @@
   color: #fff;
   border: none;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -953,7 +953,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   padding: 4px 0;
@@ -1008,7 +1008,7 @@
 }
 
 .pg-done-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -1040,7 +1040,7 @@
 }
 
 .pg-done-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -1055,7 +1055,7 @@
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
@@ -1151,7 +1151,7 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 50px;
   color: #f59e0b;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -1172,7 +1172,7 @@
 .pg-badge-celebration-dismiss {
   background: none;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   cursor: pointer;
