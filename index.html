@@ -663,7 +663,7 @@
         if (newsletterForm) {
             newsletterForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const btn = this.querySelector('.newsletter-btn');
+                const btn = this.querySelector('button[type="submit"]');
                 btn.textContent = 'Sending...';
                 btn.disabled = true;
                 try {
