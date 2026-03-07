@@ -783,6 +783,9 @@ export default function CoreBuddyWorkouts() {
   const [byoMode, setByoMode] = useState(null); // 'hiit' | 'sets'
   const [byoFromSaved, setByoFromSaved] = useState(false); // true when launched from saved template
   const [byoSearch, setByoSearch] = useState('');
+  const [byoShowCustom, setByoShowCustom] = useState(false);
+  const [byoCustomName, setByoCustomName] = useState('');
+  const [byoCustomType, setByoCustomType] = useState('weighted');
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
@@ -2261,6 +2264,54 @@ export default function CoreBuddyWorkouts() {
               </button>
             )}
           </div>
+
+          <button className="byo-add-custom-btn" onClick={() => { setByoShowCustom(true); setByoCustomName(''); setByoCustomType('weighted'); }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Your Own Exercise
+          </button>
+
+          {byoShowCustom && (
+            <div className="wk-save-modal-backdrop" onClick={() => setByoShowCustom(false)}>
+              <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
+                <h3>Add Custom Exercise</h3>
+                <p>Enter a name and choose the type</p>
+                <input
+                  type="text"
+                  className="wk-save-input"
+                  value={byoCustomName}
+                  onChange={e => setByoCustomName(e.target.value)}
+                  placeholder="e.g. Cable Flyes"
+                  maxLength={50}
+                  autoFocus
+                />
+                <div className="byo-custom-type-row">
+                  {[
+                    { key: 'weighted', label: 'Weighted' },
+                    { key: 'bodyweight', label: 'Bodyweight' },
+                    { key: 'timed', label: 'Timed' },
+                  ].map(t => (
+                    <button key={t.key} className={`byo-custom-type-btn${byoCustomType === t.key ? ' byo-custom-type-active' : ''}`} onClick={() => setByoCustomType(t.key)}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="wk-save-modal-actions">
+                  <button className="wk-btn-secondary" onClick={() => setByoShowCustom(false)}>Cancel</button>
+                  <button className="wk-btn-primary" disabled={!byoCustomName.trim()} onClick={() => {
+                    const name = byoCustomName.trim();
+                    if (!name) return;
+                    const exists = byoSelected.find(s => s.name.toLowerCase() === name.toLowerCase());
+                    if (exists) { setByoShowCustom(false); return; }
+                    const custom = { name, type: byoCustomType, equipment: 'custom', group: 'custom', storagePath: '' };
+                    setByoSelected(prev => [...prev, custom]);
+                    setByoShowCustom(false);
+                  }}>
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {byoMode === 'hiit' && (
             <div className="byo-level-row">
