@@ -588,6 +588,75 @@ function LazyVideo({ src, ...props }) {
   return <video ref={vidRef} src={inView ? src : undefined} {...props} />;
 }
 
+// Static thumbnail — captures first frame of video/gif onto a canvas (no autoplay)
+function StaticThumb({ src, isGif }) {
+  const containerRef = useRef(null);
+  const [poster, setPoster] = useState(null);
+  const attempted = useRef(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !src) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !attempted.current) {
+        attempted.current = true;
+        io.disconnect();
+        if (isGif) {
+          // For GIFs: load into an Image, draw first frame to canvas
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            try {
+              const c = document.createElement('canvas');
+              c.width = img.naturalWidth;
+              c.height = img.naturalHeight;
+              c.getContext('2d').drawImage(img, 0, 0);
+              setPoster(c.toDataURL('image/webp', 0.7));
+            } catch { setPoster(src); }
+          };
+          img.src = src;
+        } else {
+          // For videos: load minimal data, grab first frame
+          const vid = document.createElement('video');
+          vid.crossOrigin = 'anonymous';
+          vid.muted = true;
+          vid.playsInline = true;
+          vid.preload = 'metadata';
+          vid.onloadeddata = () => {
+            vid.currentTime = 0.1;
+          };
+          vid.onseeked = () => {
+            try {
+              const c = document.createElement('canvas');
+              c.width = vid.videoWidth;
+              c.height = vid.videoHeight;
+              c.getContext('2d').drawImage(vid, 0, 0);
+              setPoster(c.toDataURL('image/webp', 0.7));
+            } catch { /* CORS or other — fall back to video element */ }
+            vid.src = '';
+            vid.load();
+          };
+          vid.src = src;
+        }
+      }
+    }, { rootMargin: '300px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [src, isGif]);
+
+  return (
+    <div ref={containerRef} className="static-thumb-wrap">
+      {poster ? (
+        <img src={poster} alt="" loading="lazy" />
+      ) : (
+        <div className="byo-thumb-placeholder">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -2218,11 +2287,7 @@ export default function CoreBuddyWorkouts() {
                                       if (videoUrl) setByoPreviewEx({ name: ex.name, videoUrl, isGif });
                                     }}>
                                       {videoUrl ? (
-                                        isGif ? (
-                                          <img src={videoUrl} alt={ex.name} loading="lazy" />
-                                        ) : (
-                                          <LazyVideo src={`${videoUrl}#t=0.1`} muted playsInline preload="metadata" />
-                                        )
+                                        <StaticThumb src={videoUrl} isGif={isGif} />
                                       ) : (
                                         <div className="byo-thumb-placeholder">
                                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
