@@ -4844,6 +4844,13 @@
 .wk-landing-card-icon--byo {
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
   color: var(--color-primary);
+  overflow: hidden;
+}
+.wk-landing-byo-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
 }
 
 .wk-landing-card-body {
