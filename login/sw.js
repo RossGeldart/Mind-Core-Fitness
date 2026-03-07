@@ -64,7 +64,7 @@ self.addEventListener('notificationclick', (e) => {
 
 /* ==================== CACHING ==================== */
 
-const CACHE_NAME = 'mcf-v4';
+const CACHE_NAME = 'mcf-v5';
 
 // App-shell assets cached on install
 const APP_SHELL = [
@@ -99,18 +99,23 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
 
-  // HTML navigation: network-first, fallback to cached SPA shell
+  // HTML navigation: stale-while-revalidate to avoid white screen on slow networks
   if (e.request.mode === 'navigate') {
     e.respondWith(
-      fetch(e.request)
-        .then((res) => {
-          if (res.ok) {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
-          }
-          return res;
-        })
-        .catch(() => caches.match('/login/'))
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match('/login/').then((cachedResponse) => {
+          var fetchPromise = fetch(e.request)
+            .then((res) => {
+              if (res.ok) {
+                cache.put('/login/', res.clone());
+              }
+              return res;
+            })
+            .catch(() => cachedResponse);
+
+          return cachedResponse || fetchPromise;
+        });
+      })
     );
     return;
   }
