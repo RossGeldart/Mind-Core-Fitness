@@ -1724,7 +1724,6 @@
   padding: 12px 14px;
   background: radial-gradient(circle at center, var(--bg-body) 0%, var(--bg-card) 100%);
   border: none;
-  border-left: 4px solid transparent;
   border-radius: 14px;
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -1737,11 +1736,6 @@
   box-shadow: 0 2px 10px rgba(var(--color-primary-rgb), 0.12);
 }
 
-/* Colour-coded left accent per level */
-.wk-level-beginner { border-left-color: rgba(66, 165, 245, 0.4); }
-.wk-level-intermediate { border-left-color: rgba(var(--color-primary-rgb), 0.4); }
-.wk-level-advanced { border-left-color: rgba(255, 112, 67, 0.4); }
-
 .wk-level-card.active {
   background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   box-shadow: none;
@@ -1750,10 +1744,6 @@
 .wk-level-cards:has(.wk-level-card.active) .wk-level-card:not(.active) {
   opacity: 0.55;
 }
-
-.wk-level-card.active.wk-level-beginner { border-left-color: #42a5f5; }
-.wk-level-card.active.wk-level-intermediate { border-left-color: var(--color-primary); }
-.wk-level-card.active.wk-level-advanced { border-left-color: #ff7043; }
 
 .wk-level-name {
   font-family: 'Plus Jakarta Sans', sans-serif;

@@ -3556,7 +3556,7 @@ export default function CoreBuddyWorkouts() {
               <h2>Level</h2>
               <div className="wk-level-cards">
                 {LEVELS.map(l => (
-                  <button key={l.key} className={`wk-level-card wk-level-${l.key}${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
+                  <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
                     <span className="wk-level-desc">{l.desc}</span>
                   </button>
