@@ -4914,3 +4914,65 @@
 [data-mono="true"][data-theme="dark"] .wk-saved-overlay-meta {
   color: #999;
 }
+
+/* ═══════════════════════════════════════════════════
+   BYO SAVE — Category Selector
+   ═══════════════════════════════════════════════════ */
+.byo-save-category-section {
+  margin-top: 16px;
+}
+
+.byo-save-category-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.byo-save-category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.byo-save-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.byo-save-category-btn:active {
+  transform: scale(0.95);
+}
+
+.byo-save-category-btn.byo-save-category-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}
+
+/* Inside the solid white save modal */
+.byo-save-category-modal .byo-save-category-label {
+  color: #555;
+}
+.byo-save-category-modal .byo-save-category-btn {
+  background: #f5f5f5;
+  border-color: #ddd;
+  color: #555;
+}
+.byo-save-category-modal .byo-save-category-btn.byo-save-category-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}

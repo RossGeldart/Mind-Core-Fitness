@@ -803,6 +803,7 @@ export default function CoreBuddyWorkouts() {
   const [showByoFinish, setShowByoFinish] = useState(false);
   const [showByoSaveModal, setShowByoSaveModal] = useState(false);
   const [byoSaveName, setByoSaveName] = useState('');
+  const [byoSaveCategory, setByoSaveCategory] = useState('core');
   const [byoWeightUnit, setByoWeightUnit] = useState(() => localStorage.getItem('mcf_weight_unit') || 'kg');
 
   // Recent workouts (last 3 for hub)
@@ -1335,6 +1336,7 @@ export default function CoreBuddyWorkouts() {
         clientId: clientData.id,
         name: autoName,
         type: byoMode === 'hiit' ? 'byo_hiit' : 'byo_sets',
+        focus: byoSaveCategory,
         exercises: byoSelected.map(e => ({ name: e.name, type: e.type, equipment: e.equipment, group: e.group, storagePath: e.storagePath })),
         savedAt: Timestamp.now(),
       };
@@ -1350,6 +1352,7 @@ export default function CoreBuddyWorkouts() {
       setByoSelected([]);
       setByoSetsConfig({});
       setByoSaveName('');
+      setByoSaveCategory('core');
       setByoMode(null);
       setView('byo_hub');
     } catch (err) {
@@ -2335,30 +2338,31 @@ export default function CoreBuddyWorkouts() {
                     </button>
                   </div>
                   <div className="cb-fab-grid">
-                    {(() => {
-                      const hiitCount = byoWorkouts.filter(sw => sw.type === 'byo_hiit').length;
-                      const setsCount = byoWorkouts.filter(sw => sw.type === 'byo_sets').length;
+                    {FOCUS_AREAS.map((fa, i) => {
+                      const count = byoWorkouts.filter(sw => sw.focus === fa.key).length;
+                      if (count === 0) return null;
                       return (
-                        <>
-                          {hiitCount > 0 && (
-                            <button className="cb-fab-item" onClick={() => setFabSavedOverlay('byo_hiit')}>
-                              <span className="cb-fab-item-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                              </span>
-                              <span className="cb-fab-item-label">HIIT</span>
-                              <span className="wk-fab-count">{hiitCount}</span>
-                            </button>
-                          )}
-                          {setsCount > 0 && (
-                            <button className="cb-fab-item" onClick={() => setFabSavedOverlay('byo_sets')}>
-                              <span className="cb-fab-item-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                              </span>
-                              <span className="cb-fab-item-label">Reps &amp; Sets</span>
-                              <span className="wk-fab-count">{setsCount}</span>
-                            </button>
-                          )}
-                        </>
+                        <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => setFabSavedOverlay(fa.key)}>
+                          <span className="cb-fab-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                          </span>
+                          <span className="cb-fab-item-label">{fa.label}</span>
+                          <span className="wk-fab-count">{count}</span>
+                        </button>
+                      );
+                    })}
+                    {/* Uncategorised (legacy BYO workouts without focus) */}
+                    {(() => {
+                      const uncatCount = byoWorkouts.filter(sw => !sw.focus).length;
+                      if (uncatCount === 0) return null;
+                      return (
+                        <button className="cb-fab-item" onClick={() => setFabSavedOverlay('uncategorised')}>
+                          <span className="cb-fab-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                          </span>
+                          <span className="cb-fab-item-label">Other</span>
+                          <span className="wk-fab-count">{uncatCount}</span>
+                        </button>
                       );
                     })()}
                   </div>
@@ -2367,9 +2371,12 @@ export default function CoreBuddyWorkouts() {
             )}
 
             {/* BYO FAB Saved Overlay */}
-            {fabOpen && fabSavedOverlay && (fabSavedOverlay === 'byo_hiit' || fabSavedOverlay === 'byo_sets') && (() => {
-              const typeWorkouts = byoWorkouts.filter(sw => sw.type === fabSavedOverlay);
-              const typeLabel = fabSavedOverlay === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
+            {fabOpen && fabSavedOverlay && (() => {
+              const catWorkouts = fabSavedOverlay === 'uncategorised'
+                ? byoWorkouts.filter(sw => !sw.focus)
+                : byoWorkouts.filter(sw => sw.focus === fabSavedOverlay);
+              const fa = FOCUS_AREAS.find(f => f.key === fabSavedOverlay);
+              const catLabel = fa?.label || 'Other';
               return (
                 <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
                   <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
@@ -2377,14 +2384,15 @@ export default function CoreBuddyWorkouts() {
                       <button className="wk-saved-overlay-back" onClick={() => setFabSavedOverlay(null)}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                       </button>
-                      <h3>{typeLabel}</h3>
+                      <h3>{catLabel}</h3>
                       <button className="cb-fab-close" onClick={() => { setFabSavedOverlay(null); setFabOpen(false); }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       </button>
                     </div>
                     <div className="wk-saved-overlay-list">
-                      {typeWorkouts.map((sw, i) => {
+                      {catWorkouts.map((sw, i) => {
                         const exCount = (sw.exercises || []).length;
+                        const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
                         return (
                           <div key={sw.id} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
                             <button className="wk-saved-overlay-main" onClick={() => { beginSavedByo(sw); setFabSavedOverlay(null); }}>
@@ -2834,6 +2842,22 @@ export default function CoreBuddyWorkouts() {
               autoFocus
             />
 
+            <div className="byo-save-category-section">
+              <label className="byo-save-category-label">Category</label>
+              <div className="byo-save-category-grid">
+                {FOCUS_AREAS.map(fa => (
+                  <button
+                    key={fa.key}
+                    className={`byo-save-category-btn${byoSaveCategory === fa.key ? ' byo-save-category-active' : ''}`}
+                    onClick={() => setByoSaveCategory(fa.key)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                    <span>{fa.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="byo-save-summary">
               <div className="byo-save-summary-row">
                 <span>Type</span>
@@ -2995,6 +3019,21 @@ export default function CoreBuddyWorkouts() {
                       maxLength={40}
                       autoFocus
                     />
+                    <div className="byo-save-category-section byo-save-category-modal">
+                      <label className="byo-save-category-label">Category</label>
+                      <div className="byo-save-category-grid">
+                        {FOCUS_AREAS.map(fa => (
+                          <button
+                            key={fa.key}
+                            className={`byo-save-category-btn${byoSaveCategory === fa.key ? ' byo-save-category-active' : ''}`}
+                            onClick={() => setByoSaveCategory(fa.key)}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                            <span>{fa.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <div className="wk-save-modal-actions">
                       <button className="wk-btn-secondary" onClick={() => setShowByoSaveModal(false)}>Cancel</button>
                       <button className="wk-btn-primary" onClick={() => byoSaveAsTemplate(byoSaveName)} disabled={savingWorkout}>
