@@ -663,6 +663,106 @@ function StaticThumb({ src, isGif }) {
   );
 }
 
+/* ── Tick sound + haptic utilities for scroll picker ── */
+let _audioCtx = null;
+function playTick() {
+  try {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = _audioCtx.createOscillator();
+    const gain = _audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 900;
+    gain.gain.setValueAtTime(0.08, _audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.03);
+    osc.connect(gain).connect(_audioCtx.destination);
+    osc.start();
+    osc.stop(_audioCtx.currentTime + 0.03);
+  } catch (_) { /* silent fallback */ }
+}
+
+function triggerHaptic() {
+  try { if (navigator.vibrate) navigator.vibrate(8); } catch (_) {}
+}
+
+/* ── RepsPicker: scroll-snap drum picker ── */
+const REPS_MIN = 1;
+const REPS_MAX = 100;
+const ITEM_H = 44; // px per item row
+
+function RepsPicker({ value, onSelect, onClose, label }) {
+  const scrollRef = useRef(null);
+  const lastTickRef = useRef(value || 10);
+  const [currentVal, setCurrentVal] = useState(value || 10);
+
+  // Build number list with padding
+  const numbers = [];
+  for (let i = REPS_MIN; i <= REPS_MAX; i++) numbers.push(i);
+
+  // Scroll to initial value on mount
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = (value || 10) - REPS_MIN;
+    el.scrollTop = idx * ITEM_H;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollTop / ITEM_H);
+    const num = Math.min(Math.max(REPS_MIN + idx, REPS_MIN), REPS_MAX);
+    setCurrentVal(num);
+    if (num !== lastTickRef.current) {
+      lastTickRef.current = num;
+      playTick();
+      triggerHaptic();
+    }
+  }, []);
+
+  const confirmValue = useCallback(() => {
+    onSelect(currentVal);
+    onClose();
+  }, [currentVal, onSelect, onClose]);
+
+  // Visible window: 5 items (2 above, selected, 2 below)
+  const visibleH = ITEM_H * 5;
+
+  return (
+    <div className="reps-picker-backdrop" onClick={onClose}>
+      <div className="reps-picker-sheet" onClick={e => e.stopPropagation()}>
+        <div className="reps-picker-header">
+          <button className="reps-picker-cancel" onClick={onClose}>Cancel</button>
+          <span className="reps-picker-title">{label || 'Reps'}</span>
+          <button className="reps-picker-done" onClick={confirmValue}>Done</button>
+        </div>
+        <div className="reps-picker-drum-wrapper">
+          <div className="reps-picker-highlight" />
+          <div
+            ref={scrollRef}
+            className="reps-picker-scroll"
+            style={{ height: visibleH }}
+            onScroll={handleScroll}
+          >
+            {/* Top padding so first item can center */}
+            <div style={{ height: ITEM_H * 2 }} />
+            {numbers.map(n => (
+              <div
+                key={n}
+                className={`reps-picker-item${n === currentVal ? ' reps-picker-item-active' : ''}`}
+                style={{ height: ITEM_H }}
+              >
+                {n}
+              </div>
+            ))}
+            {/* Bottom padding so last item can center */}
+            <div style={{ height: ITEM_H * 2 }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -800,6 +900,7 @@ export default function CoreBuddyWorkouts() {
   const [byoLevel, setByoLevel] = useState('intermediate');
   const [byoSetsConfig, setByoSetsConfig] = useState({}); // { exerciseName: numberOfSets }
   const [byoSetsData, setByoSetsData] = useState({}); // { exerciseName: [{ reps: '', weight: '' }, ...] }
+  const [repsPicker, setRepsPicker] = useState(null); // { exercise: name, idx: setIndex, label: 'Reps'|'Secs' }
   const [byoLoading, setByoLoading] = useState(false);
   const [showByoFinish, setShowByoFinish] = useState(false);
   const [showByoSaveModal, setShowByoSaveModal] = useState(false);
@@ -2978,14 +3079,12 @@ export default function CoreBuddyWorkouts() {
                         onChange={e => byoUpdateSet(ex.name, idx, 'weight', e.target.value)}
                         tabIndex={isWeighted ? 0 : -1}
                       />
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        className="byo-set-input byo-set-reps"
-                        placeholder="0"
-                        value={set.reps}
-                        onChange={e => byoUpdateSet(ex.name, idx, 'reps', e.target.value)}
-                      />
+                      <button
+                        className="byo-set-input byo-set-reps byo-reps-tap"
+                        onClick={() => setRepsPicker({ exercise: ex.name, idx, label: ex.type === 'timed' ? 'Secs' : 'Reps' })}
+                      >
+                        {set.reps || <span className="byo-reps-placeholder">0</span>}
+                      </button>
                       <button className="byo-set-del-btn" onClick={() => byoRemoveSet(ex.name, idx)} aria-label="Remove set">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       </button>
@@ -3000,6 +3099,15 @@ export default function CoreBuddyWorkouts() {
             );
           })}
         </main>
+
+        {repsPicker && (
+          <RepsPicker
+            value={parseInt(byoSetsData[repsPicker.exercise]?.[repsPicker.idx]?.reps) || 10}
+            label={repsPicker.label}
+            onSelect={val => byoUpdateSet(repsPicker.exercise, repsPicker.idx, 'reps', String(val))}
+            onClose={() => setRepsPicker(null)}
+          />
+        )}
 
         <div className="byo-sets-footer">
           <button className="wk-btn-primary byo-complete-btn" onClick={byoCompleteSets}>
