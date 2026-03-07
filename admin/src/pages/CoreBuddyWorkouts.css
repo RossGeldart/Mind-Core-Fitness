@@ -4842,8 +4842,8 @@
   color: var(--color-primary);
 }
 .wk-landing-card-icon--byo {
-  background: rgba(56, 182, 255, 0.1);
-  color: #38B6FF;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  color: var(--color-primary);
 }
 
 .wk-landing-card-body {
