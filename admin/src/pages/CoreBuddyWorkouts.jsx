@@ -673,6 +673,7 @@ export default function CoreBuddyWorkouts() {
   const [view, setView] = useState('landing');
   const [fabSavedOverlay, setFabSavedOverlay] = useState(null); // which FAB category is expanded (focus key or 'hiit'/'sets')
   const [fabOpen, setFabOpen] = useState(false);
+  const [byoFabTab, setByoFabTab] = useState('byo_hiit'); // 'byo_hiit' | 'byo_sets'
 
   // Setup
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
@@ -2341,8 +2342,9 @@ export default function CoreBuddyWorkouts() {
                     {FOCUS_AREAS.map((fa, i) => {
                       const count = byoWorkouts.filter(sw => sw.focus === fa.key).length;
                       if (count === 0) return null;
+                      const hasHiit = byoWorkouts.some(sw => sw.focus === fa.key && sw.type === 'byo_hiit');
                       return (
-                        <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => setFabSavedOverlay(fa.key)}>
+                        <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => { setByoFabTab(hasHiit ? 'byo_hiit' : 'byo_sets'); setFabSavedOverlay(fa.key); }}>
                           <span className="cb-fab-item-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
                           </span>
@@ -2355,8 +2357,9 @@ export default function CoreBuddyWorkouts() {
                     {(() => {
                       const uncatCount = byoWorkouts.filter(sw => !sw.focus).length;
                       if (uncatCount === 0) return null;
+                      const hasHiit = byoWorkouts.some(sw => !sw.focus && sw.type === 'byo_hiit');
                       return (
-                        <button className="cb-fab-item" onClick={() => setFabSavedOverlay('uncategorised')}>
+                        <button className="cb-fab-item" onClick={() => { setByoFabTab(hasHiit ? 'byo_hiit' : 'byo_sets'); setFabSavedOverlay('uncategorised'); }}>
                           <span className="cb-fab-item-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                           </span>
@@ -2370,13 +2373,17 @@ export default function CoreBuddyWorkouts() {
               </div>
             )}
 
-            {/* BYO FAB Saved Overlay */}
+            {/* BYO FAB Saved Overlay — tabbed by HIIT / Reps & Sets */}
             {fabOpen && fabSavedOverlay && (() => {
               const catWorkouts = fabSavedOverlay === 'uncategorised'
                 ? byoWorkouts.filter(sw => !sw.focus)
                 : byoWorkouts.filter(sw => sw.focus === fabSavedOverlay);
               const fa = FOCUS_AREAS.find(f => f.key === fabSavedOverlay);
               const catLabel = fa?.label || 'Other';
+              const hiitList = catWorkouts.filter(sw => sw.type === 'byo_hiit');
+              const setsList = catWorkouts.filter(sw => sw.type === 'byo_sets');
+              const activeTab = byoFabTab;
+              const tabWorkouts = activeTab === 'byo_hiit' ? hiitList : setsList;
               return (
                 <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
                   <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
@@ -2389,16 +2396,32 @@ export default function CoreBuddyWorkouts() {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                       </button>
                     </div>
+                    {/* Type tabs */}
+                    <div className="wk-byo-fab-tabs">
+                      <button className={`wk-byo-fab-tab${activeTab === 'byo_hiit' ? ' wk-byo-fab-tab-active' : ''}`} onClick={() => setByoFabTab('byo_hiit')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        HIIT
+                        {hiitList.length > 0 && <span className="wk-byo-fab-tab-count">{hiitList.length}</span>}
+                      </button>
+                      <button className={`wk-byo-fab-tab${activeTab === 'byo_sets' ? ' wk-byo-fab-tab-active' : ''}`} onClick={() => setByoFabTab('byo_sets')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        Reps &amp; Sets
+                        {setsList.length > 0 && <span className="wk-byo-fab-tab-count">{setsList.length}</span>}
+                      </button>
+                    </div>
                     <div className="wk-saved-overlay-list">
-                      {catWorkouts.map((sw, i) => {
+                      {tabWorkouts.length === 0 ? (
+                        <div className="wk-hub-empty" style={{ padding: '24px 0' }}>
+                          <p style={{ color: '#999', fontSize: '0.85rem' }}>No {activeTab === 'byo_hiit' ? 'HIIT' : 'Reps & Sets'} workouts saved here.</p>
+                        </div>
+                      ) : tabWorkouts.map((sw, i) => {
                         const exCount = (sw.exercises || []).length;
-                        const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
                         return (
                           <div key={sw.id} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
                             <button className="wk-saved-overlay-main" onClick={() => { beginSavedByo(sw); setFabSavedOverlay(null); }}>
                               <div className="wk-saved-overlay-info">
                                 <span className="wk-saved-overlay-name">{sw.name}</span>
-                                <span className="wk-saved-overlay-meta">{typeLabel} &middot; {exCount} exercises</span>
+                                <span className="wk-saved-overlay-meta">{exCount} exercises</span>
                               </div>
                               <span className="byo-begin-label">Begin</span>
                             </button>
