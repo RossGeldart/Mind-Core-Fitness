@@ -764,6 +764,11 @@ export default function CoreBuddyWorkouts() {
   const [badgeCelebration, setBadgeCelebration] = useState(null);
   const [levelBreakdown, setLevelBreakdown] = useState({ beginner: 0, intermediate: 0, advanced: 0 });
 
+  // BYO stats
+  const [byoTotalVolume, setByoTotalVolume] = useState(0);
+  const [byoTotalReps, setByoTotalReps] = useState(0);
+  const [byoTotalWorkouts, setByoTotalWorkouts] = useState(0);
+
   // Free-tier gating: limit available durations and weekly usage
   const availableTimeOptions = isPremium ? TIME_OPTIONS : TIME_OPTIONS.filter(t => FREE_RANDOMISER_DURATIONS.includes(t));
   const freeRandomiserLimitReached = !isPremium && weeklyCount >= FREE_RANDOMISER_WEEKLY_LIMIT;
@@ -934,6 +939,24 @@ export default function CoreBuddyWorkouts() {
           }
           setStreak(streakCount);
         }
+
+        // BYO Reps & Sets stats
+        const byoDocs = docs.filter(d => d.type === 'custom_sets');
+        setByoTotalWorkouts(byoDocs.length);
+        let vol = 0;
+        let reps = 0;
+        byoDocs.forEach(d => {
+          (d.exercises || []).forEach(ex => {
+            (ex.sets || []).forEach(s => {
+              const r = parseInt(s.reps) || 0;
+              const w = parseFloat(s.weight) || 0;
+              reps += r;
+              vol += r * w;
+            });
+          });
+        });
+        setByoTotalVolume(vol);
+        setByoTotalReps(reps);
       } catch (err) {
         console.error('Error loading workout stats:', err);
       } finally {
@@ -1257,6 +1280,21 @@ export default function CoreBuddyWorkouts() {
       const newTotal = totalCount + 1;
       setTotalCount(newTotal);
       setLevelBreakdown(lb => ({ ...lb, custom: (lb.custom || 0) + 1 }));
+
+      // Update BYO stats
+      setByoTotalWorkouts(c => c + 1);
+      let sessionVol = 0;
+      let sessionReps = 0;
+      exercises.forEach(ex => {
+        ex.sets.forEach(s => {
+          const r = parseInt(s.reps) || 0;
+          const w = parseFloat(s.weight) || 0;
+          sessionReps += r;
+          sessionVol += r * w;
+        });
+      });
+      setByoTotalVolume(v => v + sessionVol);
+      setByoTotalReps(r => r + sessionReps);
 
       // Check badges
       const workoutThresholds = [
@@ -2192,6 +2230,34 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
+          {/* BYO Stat Rings */}
+          <div className="wk-stats-row">
+            {[
+              { label: 'Volume', value: byoTotalVolume >= 1000 ? `${(byoTotalVolume / 1000).toFixed(1)}k` : `${Math.round(byoTotalVolume)}`, pct: byoTotalVolume > 0 ? Math.round(((byoTotalVolume % 10000) / 10000) * 100) : 0, color: '#14b8a6', size: 'normal' },
+              { label: 'Workouts', value: `${byoTotalWorkouts}`, pct: byoTotalWorkouts > 0 ? Math.min(Math.round((byoTotalWorkouts / 100) * 100), 100) : 0, color: 'var(--color-primary)', size: 'large' },
+              { label: 'Total Reps', value: byoTotalReps >= 1000 ? `${(byoTotalReps / 1000).toFixed(1)}k` : `${byoTotalReps}`, pct: byoTotalReps > 0 ? Math.round(((byoTotalReps % 1000) / 1000) * 100) : 0, color: '#38B6FF', size: 'normal' },
+            ].map((ring) => {
+              const r = 38;
+              const circ = 2 * Math.PI * r;
+              const offset = circ - (ring.pct / 100) * circ;
+              return (
+                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
+                  <div className="wk-stat-ring">
+                    <svg viewBox="0 0 100 100">
+                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
+                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                        style={{ stroke: ring.color }}
+                        strokeDasharray={circ}
+                        strokeDashoffset={offset} />
+                    </svg>
+                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  </div>
+                  <span className="wk-stat-label">{ring.label}</span>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="wk-hub-heading">
             <h2>Build Your Own</h2>
             <p>Create &amp; replay custom workouts</p>
@@ -2998,33 +3064,6 @@ export default function CoreBuddyWorkouts() {
             </button>
           </div>
 
-          {/* Stat Rings */}
-          <div className="wk-stats-row wk-landing-stats">
-            {[
-              { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
-              { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
-              { label: 'Wk Streak', value: `${streak}`, pct: streak > 0 ? Math.min(Math.round((streak / 12) * 100), 100) : 0, color: '#38B6FF', size: 'normal' },
-            ].map((ring) => {
-              const r = 38;
-              const circ = 2 * Math.PI * r;
-              const offset = circ - (ring.pct / 100) * circ;
-              return (
-                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
-                  <div className="wk-stat-ring">
-                    <svg viewBox="0 0 100 100">
-                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
-                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
-                        style={{ stroke: ring.color }}
-                        strokeDasharray={circ}
-                        strokeDashoffset={offset} />
-                    </svg>
-                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
-                  </div>
-                  <span className="wk-stat-label">{ring.label}</span>
-                </div>
-              );
-            })}
-          </div>
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
@@ -3059,6 +3098,33 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main">
+          {/* Stat Rings */}
+          <div className="wk-stats-row">
+            {[
+              { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
+              { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
+              { label: 'Wk Streak', value: `${streak}`, pct: streak > 0 ? Math.min(Math.round((streak / 12) * 100), 100) : 0, color: '#38B6FF', size: 'normal' },
+            ].map((ring) => {
+              const r = 38;
+              const circ = 2 * Math.PI * r;
+              const offset = circ - (ring.pct / 100) * circ;
+              return (
+                <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
+                  <div className="wk-stat-ring">
+                    <svg viewBox="0 0 100 100">
+                      <circle className="wk-stat-track" cx="50" cy="50" r={r} />
+                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                        style={{ stroke: ring.color }}
+                        strokeDasharray={circ}
+                        strokeDashoffset={offset} />
+                    </svg>
+                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                  </div>
+                  <span className="wk-stat-label">{ring.label}</span>
+                </div>
+              );
+            })}
+          </div>
 
           <div className="wk-hub-heading">
             <h2>Randomiser</h2>
