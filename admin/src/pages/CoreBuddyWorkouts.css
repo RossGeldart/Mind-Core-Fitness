@@ -3707,8 +3707,8 @@
 
 /* ── Mode Picker ── */
 .byo-mode-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   padding: 0 16px;
   margin-bottom: 24px;
@@ -3716,16 +3716,17 @@
 
 .byo-mode-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 28px 16px;
+  gap: 16px;
+  padding: 20px;
   border-radius: 16px;
   border: 1.5px solid var(--border-color);
   background: var(--bg-card);
   cursor: pointer;
   transition: all 0.2s;
-  text-align: center;
+  text-align: left;
+  width: 100%;
 }
 
 .byo-mode-card h3 {
@@ -3748,19 +3749,25 @@
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
 }
 
+.byo-mode-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .byo-mode-icon {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .byo-continue-btn {
-  margin: 0 16px;
+  margin: 0 16px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3769,7 +3776,7 @@
 
 /* ── Exercise Picker ── */
 .byo-pick-main {
-  padding-bottom: 100px;
+  padding-bottom: 140px;
 }
 
 .byo-pick-count {
@@ -3882,44 +3889,120 @@
   transform: rotate(180deg);
 }
 
-.byo-exercise-list {
+/* ── Subgroups (equipment level) ── */
+.byo-subgroups {
   border-top: 1px solid var(--border-color);
 }
 
-.byo-exercise-btn {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
+.byo-subgroup {
   border-bottom: 1px solid var(--border-light);
-  background: transparent;
-  cursor: pointer;
-  gap: 10px;
-  transition: background 0.15s;
 }
 
-.byo-exercise-btn:last-child {
+.byo-subgroup:last-child {
   border-bottom: none;
 }
 
-.byo-exercise-selected {
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+.byo-subgroup-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px 12px 28px;
+  background: var(--bg-card);
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.byo-subgroup-label {
+  flex: 1;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Exercise Cards Grid ── */
+.byo-exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px 16px 14px;
+  background: var(--bg-body);
+}
+
+.byo-exercise-card {
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.byo-exercise-card.byo-exercise-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.byo-exercise-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--bg-body);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.byo-exercise-thumb img,
+.byo-exercise-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.byo-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+.byo-thumb-play {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.byo-exercise-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  gap: 6px;
 }
 
 .byo-exercise-name {
   flex: 1;
   text-align: left;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.byo-exercise-meta {
-  font-size: 0.7rem;
-  color: var(--text-tertiary);
-  text-transform: capitalize;
+  line-height: 1.25;
 }
 
 .byo-exercise-check {
@@ -3927,12 +4010,13 @@
   flex-shrink: 0;
 }
 
+/* ── Footer ── */
 .byo-pick-footer {
   position: fixed;
-  bottom: 70px;
+  bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 16px;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 76px);
   background: var(--bg-body);
   border-top: 1px solid var(--border-color);
   z-index: 100;
@@ -4090,10 +4174,10 @@
 
 .byo-sets-footer {
   position: fixed;
-  bottom: 70px;
+  bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 16px;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 76px);
   background: var(--bg-body);
   border-top: 1px solid var(--border-color);
   z-index: 100;
