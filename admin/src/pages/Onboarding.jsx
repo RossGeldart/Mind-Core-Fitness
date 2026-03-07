@@ -10,15 +10,15 @@ import './Onboarding.css';
 
 const isNative = Capacitor.isNativePlatform();
 
-import cbProfileMain from '../assets/images/cards/cb_profilemain.png';
-import cbEquipment from '../assets/images/cards/cb_equipment.png';
-import cbWorkoutList from '../assets/images/cards/cb_workoutlist.png';
-import cbWorkout from '../assets/images/cards/cb_workout.png';
-import cbNutrition from '../assets/images/cards/cb_nutrition.png';
-import cbActivitys from '../assets/images/cards/cb_activitys.png';
-import cbHabits from '../assets/images/cards/cb_habits.png';
-import cbLeaderboard from '../assets/images/cards/cb_leaderboard.png';
-import cbBodyMetrics from '../assets/images/cards/cb_bodymetrics.png';
+import cbProfileMain from '../assets/images/cards/cb_profilemain.PNG';
+import cbEquipment from '../assets/images/cards/cb_equipment.PNG';
+import cbWorkoutList from '../assets/images/cards/cb_workoutlist.PNG';
+import cbWorkout from '../assets/images/cards/cb_workout.PNG';
+import cbNutrition from '../assets/images/cards/cb_nutrition.PNG';
+import cbActivitys from '../assets/images/cards/cb_activitys.PNG';
+import cbHabits from '../assets/images/cards/cb_habits.PNG';
+import cbLeaderboard from '../assets/images/cards/cb_leaderboard.PNG';
+import cbBodyMetrics from '../assets/images/cards/cb_bodymetrics.PNG';
 
 const FEATURES = [
   {
