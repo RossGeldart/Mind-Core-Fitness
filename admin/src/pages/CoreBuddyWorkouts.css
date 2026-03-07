@@ -4021,38 +4021,43 @@
 }
 
 /* ── Exercise Cards Grid ── */
-.byo-exercise-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 10px 16px 14px;
+.byo-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px 14px;
   background: var(--bg-body);
 }
 
-.byo-exercise-card {
+.byo-exercise-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
   border-radius: 12px;
   border: 1.5px solid var(--border-color);
   background: var(--bg-card);
-  overflow: hidden;
+  cursor: pointer;
   transition: border-color 0.2s;
 }
 
-.byo-exercise-card.byo-exercise-selected {
+.byo-exercise-row.byo-exercise-selected {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 1px var(--color-primary);
 }
 
-.byo-exercise-thumb {
+.byo-exercise-thumb-sm {
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   background: var(--bg-body);
   overflow: hidden;
-  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.byo-exercise-thumb img,
-.byo-exercise-thumb video {
+.byo-exercise-thumb-sm img,
+.byo-exercise-thumb-sm video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -4068,12 +4073,12 @@
   color: var(--text-tertiary);
 }
 
-.byo-thumb-play {
+.byo-thumb-play-sm {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 28px;
-  height: 28px;
+  bottom: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
   display: flex;
@@ -4082,22 +4087,11 @@
   color: #fff;
 }
 
-.byo-exercise-info {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 10px 10px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  gap: 6px;
-}
-
 .byo-exercise-name {
   flex: 1;
   text-align: left;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.25;
@@ -4108,7 +4102,8 @@
   height: 100%;
 }
 
-.static-thumb-wrap img {
+.static-thumb-wrap img,
+.static-thumb-wrap video {
   width: 100%;
   height: 100%;
   object-fit: cover;

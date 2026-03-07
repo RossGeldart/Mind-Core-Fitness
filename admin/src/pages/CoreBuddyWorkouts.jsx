@@ -648,6 +648,12 @@ function StaticThumb({ src, isGif }) {
     <div ref={containerRef} className="static-thumb-wrap">
       {poster ? (
         <img src={poster} alt="" loading="lazy" />
+      ) : src ? (
+        isGif ? (
+          <img src={src} alt="" loading="lazy" />
+        ) : (
+          <video src={src} muted playsInline preload="metadata" />
+        )
       ) : (
         <div className="byo-thumb-placeholder">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -2278,35 +2284,33 @@ export default function CoreBuddyWorkouts() {
                             <svg className={`byo-group-chevron${isSubOpen ? ' byo-group-chevron-open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
                           </button>
                           {isSubOpen && (
-                            <div className="byo-exercise-grid">
+                            <div className="byo-exercise-list">
                               {sg.exercises.map(ex => {
                                 const isSelected = byoSelected.find(s => s.name === ex.name);
                                 const videoUrl = byoVideoUrls[ex.storagePath];
                                 const isGif = /\.gif$/i.test(ex.storagePath || '');
                                 return (
-                                  <div key={ex.name} className={`byo-exercise-card${isSelected ? ' byo-exercise-selected' : ''}`}>
-                                    <div className="byo-exercise-thumb" onClick={() => {
-                                      if (videoUrl) setByoPreviewEx({ name: ex.name, videoUrl, isGif });
+                                  <div key={ex.name} className={`byo-exercise-row${isSelected ? ' byo-exercise-selected' : ''}`} onClick={() => byoToggleExercise(ex)}>
+                                    <div className="byo-exercise-thumb-sm" onClick={(e) => {
+                                      if (videoUrl) { e.stopPropagation(); setByoPreviewEx({ name: ex.name, videoUrl, isGif }); }
                                     }}>
                                       {videoUrl ? (
                                         <StaticThumb src={videoUrl} isGif={isGif} />
                                       ) : (
                                         <div className="byo-thumb-placeholder">
-                                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                                         </div>
                                       )}
                                       {videoUrl && (
-                                        <div className="byo-thumb-play">
-                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                        <div className="byo-thumb-play-sm">
+                                          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                                         </div>
                                       )}
                                     </div>
-                                    <button className="byo-exercise-info" onClick={() => byoToggleExercise(ex)}>
-                                      <span className="byo-exercise-name">{ex.name}</span>
-                                      {isSelected && (
-                                        <svg className="byo-exercise-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                      )}
-                                    </button>
+                                    <span className="byo-exercise-name">{ex.name}</span>
+                                    {isSelected && (
+                                      <svg className="byo-exercise-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -2715,7 +2719,7 @@ export default function CoreBuddyWorkouts() {
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <button className="wk-hub-card" onClick={() => setView('byo_mode')}>
+            <button className="wk-hub-card" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setView('byo_mode'); }}>
               <div className="wk-hub-card-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </div>
