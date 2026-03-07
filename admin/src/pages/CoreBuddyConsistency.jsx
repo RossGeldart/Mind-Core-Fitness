@@ -335,7 +335,9 @@ export default function CoreBuddyConsistency() {
       // Update SVG directly — avoids 60 re-renders/sec
       const el = ringRefs.current[habitKey];
       if (el) {
-        el.style.strokeDashoffset = RING_CIRCUMFERENCE - (progress * RING_CIRCUMFERENCE);
+        // Skip tiny offsets so stroke-linecap:round doesn't render a stray dot
+        const visible = progress * RING_CIRCUMFERENCE;
+        el.style.strokeDashoffset = visible < 12 ? RING_CIRCUMFERENCE : RING_CIRCUMFERENCE - visible;
       }
 
       if (progress < 1) {
