@@ -1304,7 +1304,8 @@ export default function CoreBuddyWorkouts() {
       } else {
         docData.setsConfig = byoSetsConfig;
       }
-      await addDoc(collection(db, 'savedWorkouts'), docData);
+      const docRef = await addDoc(collection(db, 'savedWorkouts'), docData);
+      setSavedWorkouts(prev => [...prev, { id: docRef.id, ...docData }]);
       showToast('Workout saved!', 'success');
       // Reset BYO state and go back to hub
       setByoSelected([]);
