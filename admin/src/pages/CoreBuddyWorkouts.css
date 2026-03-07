@@ -3768,6 +3768,7 @@
 
 .byo-continue-btn {
   margin: 0 16px 24px;
+  width: calc(100% - 32px);
   display: flex;
   align-items: center;
   justify-content: center;
