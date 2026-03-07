@@ -4057,6 +4057,57 @@
   align-items: center;
 }
 
+/* ── Add Custom Exercise ── */
+.byo-add-custom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 16px 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: calc(100% - 32px);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.byo-add-custom-btn:active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.byo-custom-type-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.byo-custom-type-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.byo-custom-type-btn.byo-custom-type-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}
+
 .byo-search-empty {
   text-align: center;
   padding: 32px 16px;
