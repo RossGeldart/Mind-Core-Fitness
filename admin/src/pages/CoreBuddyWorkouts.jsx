@@ -669,8 +669,9 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const navigate = useNavigate();
 
-  // Views: 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
-  const [view, setView] = useState('randomiser_hub');
+  // Views: 'landing' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_hub' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
+  const [view, setView] = useState('landing');
+  const [fabSavedOverlay, setFabSavedOverlay] = useState(null); // which FAB category is expanded (focus key or 'hiit'/'sets')
   const [fabOpen, setFabOpen] = useState(false);
 
   // Setup
@@ -1312,7 +1313,7 @@ export default function CoreBuddyWorkouts() {
       setByoSetsConfig({});
       setByoSaveName('');
       setByoMode(null);
-      setView('randomiser_hub');
+      setView('byo_hub');
     } catch (err) {
       console.error('Error saving BYO template:', err);
       showToast('Failed to save workout', 'error');
@@ -2168,13 +2169,193 @@ export default function CoreBuddyWorkouts() {
     );
   }
 
+  // ==================== BUILD YOUR OWN HUB VIEW ====================
+  if (view === 'byo_hub') {
+    const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('landing')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
+          <div className="wk-hub-heading">
+            <h2>Build Your Own</h2>
+            <p>Create &amp; replay custom workouts</p>
+          </div>
+
+          <div className="wk-hub-launch-zone">
+            <button className="wk-hub-card wk-hub-new-glow" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setByoSearch(''); setView('byo_mode'); }}>
+              <div className="wk-hub-card-icon wk-hub-card-icon--primary">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div className="wk-hub-card-body">
+                <h3>Let&apos;s Build</h3>
+                <p>Pick exercises &amp; build your workout</p>
+              </div>
+              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          {/* Saved BYO workouts inline */}
+          {byoWorkouts.length > 0 && (
+            <div className="wk-hub-byo-section">
+              <div className="wk-hub-heading">
+                <h2>My Workouts</h2>
+                <p>{byoWorkouts.length} saved workout{byoWorkouts.length !== 1 ? 's' : ''}</p>
+              </div>
+              <div className="wk-hub-byo-list">
+                {byoWorkouts.map((sw, i) => {
+                  const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
+                  const exCount = (sw.exercises || []).length;
+                  return (
+                    <div key={sw.id} className="wk-hub-byo-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <button className="wk-hub-byo-main" onClick={() => beginSavedByo(sw)}>
+                        <div className="wk-hub-byo-icon">
+                          {sw.type === 'byo_hiit' ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                          ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                          )}
+                        </div>
+                        <div className="wk-hub-byo-info">
+                          <span className="wk-hub-byo-name">{sw.name}</span>
+                          <span className="wk-hub-byo-meta">{typeLabel} &middot; {exCount} exercises</span>
+                        </div>
+                        <span className="wk-hub-byo-begin">Begin</span>
+                      </button>
+                      <button className="wk-hub-byo-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove workout">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </main>
+
+        {/* BYO FAB Button */}
+        {byoWorkouts.length > 0 && (
+          <>
+            <button
+              className={`wk-fab${fabOpen ? ' wk-fab-open wk-fab-hidden' : ''}`}
+              onClick={() => { setFabOpen(prev => !prev); setFabSavedOverlay(null); }}
+              aria-label={fabOpen ? 'Close menu' : 'Saved Workouts'}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </button>
+
+            {fabOpen && !fabSavedOverlay && (
+              <div className="cb-fab-overlay" onClick={() => setFabOpen(false)}>
+                <div className="cb-fab-sheet" onClick={e => e.stopPropagation()}>
+                  <div className="cb-fab-header">
+                    <h3>My Workouts</h3>
+                    <button className="cb-fab-close" onClick={() => setFabOpen(false)}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                  <div className="cb-fab-grid">
+                    {(() => {
+                      const hiitCount = byoWorkouts.filter(sw => sw.type === 'byo_hiit').length;
+                      const setsCount = byoWorkouts.filter(sw => sw.type === 'byo_sets').length;
+                      return (
+                        <>
+                          {hiitCount > 0 && (
+                            <button className="cb-fab-item" onClick={() => setFabSavedOverlay('byo_hiit')}>
+                              <span className="cb-fab-item-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                              </span>
+                              <span className="cb-fab-item-label">HIIT</span>
+                              <span className="wk-fab-count">{hiitCount}</span>
+                            </button>
+                          )}
+                          {setsCount > 0 && (
+                            <button className="cb-fab-item" onClick={() => setFabSavedOverlay('byo_sets')}>
+                              <span className="cb-fab-item-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                              </span>
+                              <span className="cb-fab-item-label">Reps &amp; Sets</span>
+                              <span className="wk-fab-count">{setsCount}</span>
+                            </button>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* BYO FAB Saved Overlay */}
+            {fabOpen && fabSavedOverlay && (fabSavedOverlay === 'byo_hiit' || fabSavedOverlay === 'byo_sets') && (() => {
+              const typeWorkouts = byoWorkouts.filter(sw => sw.type === fabSavedOverlay);
+              const typeLabel = fabSavedOverlay === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
+              return (
+                <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
+                  <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
+                    <div className="wk-saved-overlay-header">
+                      <button className="wk-saved-overlay-back" onClick={() => setFabSavedOverlay(null)}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                      </button>
+                      <h3>{typeLabel}</h3>
+                      <button className="cb-fab-close" onClick={() => { setFabSavedOverlay(null); setFabOpen(false); }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+                    <div className="wk-saved-overlay-list">
+                      {typeWorkouts.map((sw, i) => {
+                        const exCount = (sw.exercises || []).length;
+                        return (
+                          <div key={sw.id} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                            <button className="wk-saved-overlay-main" onClick={() => { beginSavedByo(sw); setFabSavedOverlay(null); }}>
+                              <div className="wk-saved-overlay-info">
+                                <span className="wk-saved-overlay-name">{sw.name}</span>
+                                <span className="wk-saved-overlay-meta">{typeLabel} &middot; {exCount} exercises</span>
+                              </div>
+                              <span className="byo-begin-label">Begin</span>
+                            </button>
+                            <button className="wk-saved-overlay-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </>
+        )}
+
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
+      </div>
+    );
+  }
+
   // ==================== BUILD YOUR OWN — MODE PICKER ====================
   if (view === 'byo_mode') {
     return (
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('randomiser_hub')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => setView('byo_hub')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -2625,7 +2806,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => { if (byoFromSaved) { setByoFromSaved(false); setView('randomiser_hub'); } else { setView('byo_pick'); } }} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => { if (byoFromSaved) { setByoFromSaved(false); setView('byo_hub'); } else { setView('byo_pick'); } }} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -2727,7 +2908,7 @@ export default function CoreBuddyWorkouts() {
                 hideShare={!isPremium}
                 onShareJourney={clientData ? shareToJourney : null}
                 userName={clientData?.name}
-                onDismissStart={() => setView('randomiser_hub')}
+                onDismissStart={() => setView('byo_hub')}
                 onDone={() => { setShowByoFinish(false); setByoSelected([]); setByoSetsData({}); }}
               />
               <button className="wk-complete-save-btn" onClick={() => setShowByoSaveModal(true)} disabled={savingWorkout}>
@@ -2766,12 +2947,8 @@ export default function CoreBuddyWorkouts() {
     );
   }
 
-  // ==================== RANDOMISER HUB VIEW ====================
-  if (view === 'randomiser_hub') {
-    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null') || { equipment: ['bodyweight'], focus: 'core', level: 'intermediate', duration: 15 };
-    const lastFocusLabel = FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus;
-    const lastLevelLabel = LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level;
-
+  // ==================== LANDING VIEW ====================
+  if (view === 'landing') {
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -2791,9 +2968,38 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
         </header>
-        <main className="wk-main">
-          {/* Stat Rings – matches dashboard pattern */}
-          <div className="wk-stats-row">
+        <main className="wk-main wk-landing-main">
+          <div className="wk-hub-heading">
+            <h2>Workouts</h2>
+            <p>Choose your training style</p>
+          </div>
+
+          <div className="wk-landing-cards">
+            <button className="wk-landing-card" onClick={() => setView('randomiser_hub')}>
+              <div className="wk-landing-card-icon wk-landing-card-icon--randomiser">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              </div>
+              <div className="wk-landing-card-body">
+                <h3>Randomiser</h3>
+                <p>Generate HIIT workouts with random exercises based on focus, level &amp; duration</p>
+              </div>
+              <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+            <button className="wk-landing-card" onClick={() => setView('byo_hub')}>
+              <div className="wk-landing-card-icon wk-landing-card-icon--byo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+              <div className="wk-landing-card-body">
+                <h3>Build Your Own</h3>
+                <p>Pick your exercises and build custom HIIT or Reps &amp; Sets workouts</p>
+              </div>
+              <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          {/* Stat Rings */}
+          <div className="wk-stats-row wk-landing-stats">
             {[
               { label: 'Total', value: `${totalCount}`, pct: totalCount > 0 ? Math.min(Math.round((totalCount / 100) * 100), 100) : 0, color: '#14b8a6', size: 'normal' },
               { label: 'This Week', value: `${weeklyCount}/${WEEKLY_TARGET}`, pct: Math.round((Math.min(weeklyCount, WEEKLY_TARGET) / WEEKLY_TARGET) * 100), color: 'var(--color-primary)', size: 'large' },
@@ -2819,6 +3025,40 @@ export default function CoreBuddyWorkouts() {
               );
             })}
           </div>
+        </main>
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
+        <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
+      </div>
+    );
+  }
+
+  // ==================== RANDOMISER HUB VIEW ====================
+  if (view === 'randomiser_hub') {
+    const lastSettings = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null') || { equipment: ['bodyweight'], focus: 'core', level: 'intermediate', duration: 15 };
+    const lastFocusLabel = FOCUS_AREAS.find(f => f.key === lastSettings.focus)?.label || lastSettings.focus;
+    const lastLevelLabel = LEVELS.find(l => l.key === lastSettings.level)?.label || lastSettings.level;
+
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('landing')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main">
 
           <div className="wk-hub-heading">
             <h2>Randomiser</h2>
@@ -2835,17 +3075,6 @@ export default function CoreBuddyWorkouts() {
               <div className="wk-hub-card-body">
                 <h3>New Workout</h3>
                 <p>Choose focus, level &amp; duration</p>
-              </div>
-              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-
-            <button className="wk-hub-card" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setByoSearch(''); setView('byo_mode'); }}>
-              <div className="wk-hub-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              </div>
-              <div className="wk-hub-card-body">
-                <h3>Build Your Own</h3>
-                <p>Pick exercises &amp; build your workout</p>
               </div>
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
@@ -2883,37 +3112,97 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
-          {/* ===== My Workouts (BYO) – visible on hub ===== */}
-          {(() => {
-            const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
-            if (byoWorkouts.length === 0) return null;
-            return (
-              <div className="wk-hub-byo-section">
-                <div className="wk-hub-heading">
-                  <h2>My Workouts</h2>
-                  <p>{byoWorkouts.length} saved workout{byoWorkouts.length !== 1 ? 's' : ''}</p>
+        </main>
+
+        {/* FAB Button — grid style matching Dashboard */}
+        <button
+          className={`wk-fab${fabOpen ? ' wk-fab-open wk-fab-hidden' : ''}`}
+          onClick={() => { setFabOpen(prev => !prev); setFabSavedOverlay(null); }}
+          aria-label={fabOpen ? 'Close menu' : 'Saved Workouts'}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+
+        {/* FAB Bottom Sheet — Grid of saved workout categories */}
+        {fabOpen && !fabSavedOverlay && (
+          <div className="cb-fab-overlay" onClick={() => setFabOpen(false)}>
+            <div className="cb-fab-sheet" onClick={e => e.stopPropagation()}>
+              <div className="cb-fab-header">
+                <h3>Saved Workouts</h3>
+                <button className="cb-fab-close" onClick={() => setFabOpen(false)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              {!savedWorkoutsLoaded ? (
+                <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
+              ) : savedWorkouts.filter(sw => sw.type !== 'byo_hiit' && sw.type !== 'byo_sets').length === 0 ? (
+                <div className="wk-hub-empty wk-hub-empty-enhanced">
+                  <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  <p><strong>No saved workouts yet</strong></p>
+                  <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
                 </div>
-                <div className="wk-hub-byo-list">
-                  {byoWorkouts.map((sw, i) => {
-                    const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
-                    const exCount = (sw.exercises || []).length;
+              ) : (
+                <div className="cb-fab-grid">
+                  {FOCUS_AREAS.map((fa, i) => {
+                    const count = savedWorkouts.filter(sw => sw.focus === fa.key && sw.type !== 'byo_hiit' && sw.type !== 'byo_sets').length;
+                    if (count === 0) return null;
                     return (
-                      <div key={sw.id} className="wk-hub-byo-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                        <button className="wk-hub-byo-main" onClick={() => beginSavedByo(sw)}>
-                          <div className="wk-hub-byo-icon">
-                            {sw.type === 'byo_hiit' ? (
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            ) : (
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                            )}
+                      <button key={fa.key} className="cb-fab-item" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => setFabSavedOverlay(fa.key)}>
+                        <span className="cb-fab-item-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
+                        </span>
+                        <span className="cb-fab-item-label">{fa.label}</span>
+                        <span className="wk-fab-count">{count}</span>
+                      </button>
+                    );
+                  })}
+                  {/* Recent tile */}
+                  {recentWorkouts.length > 0 && (
+                    <button className="cb-fab-item" onClick={() => setFabSavedOverlay('recent')}>
+                      <span className="cb-fab-item-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      </span>
+                      <span className="cb-fab-item-label">Recent</span>
+                      <span className="wk-fab-count">{recentWorkouts.length}</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* FAB Saved Overlay — show workouts for selected category */}
+        {fabOpen && fabSavedOverlay && fabSavedOverlay !== 'recent' && (() => {
+          const fa = FOCUS_AREAS.find(f => f.key === fabSavedOverlay);
+          const catWorkouts = savedWorkouts.filter(sw => sw.focus === fabSavedOverlay && sw.type !== 'byo_hiit' && sw.type !== 'byo_sets');
+          return (
+            <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
+              <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
+                <div className="wk-saved-overlay-header">
+                  <button className="wk-saved-overlay-back" onClick={() => setFabSavedOverlay(null)}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                  </button>
+                  <h3>{fa?.label || 'Saved'}</h3>
+                  <button className="cb-fab-close" onClick={() => { setFabSavedOverlay(null); setFabOpen(false); }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div className="wk-saved-overlay-list">
+                  {catWorkouts.map((sw, i) => {
+                    const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
+                    const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
+                    return (
+                      <div key={sw.id} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                        <button className="wk-saved-overlay-main" onClick={() => { replaySavedWorkout(sw); setFabOpen(false); setFabSavedOverlay(null); }}>
+                          <div className="wk-saved-overlay-info">
+                            <span className="wk-saved-overlay-name">{sw.name}</span>
+                            <span className="wk-saved-overlay-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
+                            {eqLabels && <span className="wk-saved-overlay-equip">{eqLabels}</span>}
                           </div>
-                          <div className="wk-hub-byo-info">
-                            <span className="wk-hub-byo-name">{sw.name}</span>
-                            <span className="wk-hub-byo-meta">{typeLabel} &middot; {exCount} exercises</span>
-                          </div>
-                          <span className="wk-hub-byo-begin">Begin</span>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                         </button>
-                        <button className="wk-hub-byo-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove workout">
+                        <button className="wk-saved-overlay-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                       </div>
@@ -2921,201 +3210,54 @@ export default function CoreBuddyWorkouts() {
                   })}
                 </div>
               </div>
-            );
-          })()}
+            </div>
+          );
+        })()}
 
-        </main>
-
-        {/* FAB Button */}
-        <button
-          className={`wk-fab${fabOpen ? ' wk-fab-open wk-fab-hidden' : ''}`}
-          onClick={() => setFabOpen(prev => !prev)}
-          aria-label={fabOpen ? 'Close menu' : 'Saved & Recent'}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        </button>
-
-        {/* FAB Bottom Sheet – Saved & Recent Workouts */}
-        {fabOpen && (
-          <div className="wk-fab-overlay" onClick={() => setFabOpen(false)}>
-            <div className="wk-fab-sheet" onClick={e => e.stopPropagation()}>
-              <div className="wk-fab-header">
-                <h3>Saved &amp; Recent</h3>
-                <button className="wk-fab-close" onClick={() => setFabOpen(false)}>
+        {/* FAB Recent Overlay */}
+        {fabOpen && fabSavedOverlay === 'recent' && (
+          <div className="wk-saved-overlay-backdrop" onClick={() => setFabSavedOverlay(null)}>
+            <div className="wk-saved-overlay-card" onClick={e => e.stopPropagation()}>
+              <div className="wk-saved-overlay-header">
+                <button className="wk-saved-overlay-back" onClick={() => setFabSavedOverlay(null)}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <h3>Recent</h3>
+                <button className="cb-fab-close" onClick={() => { setFabSavedOverlay(null); setFabOpen(false); }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-
-              <div className="wk-fab-body">
-                <div className="wk-hub-saved-categories">
-
-                  {/* Saved workout category cards */}
-                  {isPremium && (
-                    !savedWorkoutsLoaded ? (
-                      <div className="wk-hub-empty"><div className="wk-loading-spinner" /></div>
-                    ) : savedWorkouts.filter(sw => sw.type !== 'byo_hiit' && sw.type !== 'byo_sets').length === 0 ? (
-                      <div className="wk-hub-empty wk-hub-empty-enhanced">
-                        <svg className="wk-hub-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                        <p><strong>No saved workouts yet</strong></p>
-                        <p className="wk-hub-empty-sub">Generate a workout and hit save to stash it here for quick replay.</p>
-                      </div>
-                    ) : (
-                      FOCUS_AREAS.map(fa => {
-                        const catWorkouts = savedWorkouts.filter(sw => sw.focus === fa.key && sw.type !== 'byo_hiit' && sw.type !== 'byo_sets');
-                        if (catWorkouts.length === 0) return null;
-                        const isOpen = expandedSavedCats[fa.key] || false;
-                        return (
-                          <div key={fa.key} className={`wk-hub-saved-cat${isOpen ? ' wk-hub-saved-cat--open' : ''}`}>
-                            <button
-                              className="wk-hub-saved-cat-header"
-                              onClick={() => setExpandedSavedCats(prev => ({ ...prev, [fa.key]: !prev[fa.key] }))}
-                            >
-                              <span className="wk-hub-saved-cat-icon">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d={fa.icon}/></svg>
-                              </span>
-                              <span className="wk-hub-saved-cat-name">{fa.label}</span>
-                              <svg className={`wk-hub-saved-cat-chevron${isOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                            </button>
-                            {isOpen && (
-                              <div className="wk-hub-saved-cat-dropdown">
-                                {catWorkouts.map((sw, i) => {
-                                  const eqLabels = (sw.equipment || []).map(e => EQUIPMENT.find(eq => eq.key === e)?.label || e).join(', ');
-                                  const levelLbl = LEVELS.find(l => l.key === sw.level)?.label || sw.level;
-                                  return (
-                                    <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                                      <button className="wk-hub-saved-main" onClick={() => { replaySavedWorkout(sw); setFabOpen(false); }}>
-                                        <div className="wk-hub-saved-info">
-                                          <span className="wk-hub-saved-name">{sw.name}</span>
-                                          <span className="wk-hub-saved-tags">
-                                            <span className="wk-hub-saved-meta">{levelLbl} &middot; {sw.duration}min &middot; {(sw.exercises || []).length} ex</span>
-                                          </span>
-                                          {eqLabels && <span className="wk-hub-saved-equip">{eqLabels}</span>}
-                                        </div>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                      </button>
-                                      <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })
-                    )
-                  )}
-
-                  {/* My Workouts (BYO) */}
-                  {(() => {
-                    const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
-                    if (byoWorkouts.length === 0) return null;
-                    const isByoOpen = expandedSavedCats['byo'] || false;
-                    return (
-                      <div className={`wk-hub-saved-cat${isByoOpen ? ' wk-hub-saved-cat--open' : ''}`}>
-                        <button
-                          className="wk-hub-saved-cat-header"
-                          onClick={() => setExpandedSavedCats(prev => ({ ...prev, byo: !prev.byo }))}
-                        >
-                          <span className="wk-hub-saved-cat-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                          </span>
-                          <span className="wk-hub-saved-cat-name">My Workouts</span>
-                          <svg className={`wk-hub-saved-cat-chevron${isByoOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                        </button>
-                        {isByoOpen && (
-                          <div className="wk-hub-saved-cat-dropdown">
-                            {byoWorkouts.map((sw, i) => {
-                              const typeLabel = sw.type === 'byo_hiit' ? 'HIIT' : 'Reps & Sets';
-                              const exCount = (sw.exercises || []).length;
-                              return (
-                                <div key={sw.id} className="wk-hub-saved-card" style={{ animationDelay: `${i * 0.05}s` }}>
-                                  <button className="wk-hub-saved-main" onClick={() => beginSavedByo(sw)}>
-                                    <div className="wk-hub-saved-info">
-                                      <span className="wk-hub-saved-name">{sw.name}</span>
-                                      <span className="wk-hub-saved-tags">
-                                        <span className="wk-hub-saved-meta">{typeLabel} &middot; {exCount} exercises</span>
-                                      </span>
-                                    </div>
-                                    <span className="byo-begin-label">Begin</span>
-                                  </button>
-                                  <button className="wk-hub-saved-delete" onClick={() => deleteSavedWorkout(sw.id)} aria-label="Remove saved workout">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-
-                  {/* Recent – same dropdown card */}
-                  <div className={`wk-hub-saved-cat${recentOpen ? ' wk-hub-saved-cat--open' : ''}`}>
-                    <button className="wk-hub-saved-cat-header" onClick={() => setRecentOpen(o => !o)}>
-                      <span className="wk-hub-saved-cat-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      </span>
-                      <span className="wk-hub-saved-cat-name">Recent</span>
-                      <svg className={`wk-hub-saved-cat-chevron${recentOpen ? ' wk-hub-saved-cat-chevron-open' : ''}`} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    {recentOpen && (
-                      recentWorkouts.length === 0 ? (
-                        <div className="wk-hub-saved-cat-dropdown">
-                          <div className="wk-hub-empty wk-hub-empty-enhanced">
-                            <p><strong>No workouts yet</strong></p>
-                            <p className="wk-hub-empty-sub">Complete your first workout to see history here.</p>
-                          </div>
+              <div className="wk-saved-overlay-list">
+                {recentWorkouts.map((rw, i) => {
+                  const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
+                  const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
+                  const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
+                  const ago = ts ? (() => {
+                    const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
+                    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                    return `${Math.floor(diff / 86400)}d ago`;
+                  })() : '';
+                  return (
+                    <div key={i} className="wk-saved-overlay-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                      <button className="wk-saved-overlay-main" onClick={() => {
+                        setFocusArea(rw.focus || 'core');
+                        setLevel(rw.level || 'intermediate');
+                        setDuration(rw.duration || 15);
+                        if (rw.equipment) setSelectedEquipment(rw.equipment);
+                        setFabOpen(false);
+                        setFabSavedOverlay(null);
+                        setView('setup');
+                      }}>
+                        <div className="wk-saved-overlay-info">
+                          <span className="wk-saved-overlay-name">{focusLbl}</span>
+                          <span className="wk-saved-overlay-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
                         </div>
-                      ) : (
-                        <div className="wk-hub-saved-cat-dropdown">
-                          <div className="wk-hub-recent-list">
-                            {recentWorkouts.map((rw, i) => {
-                              const focusLbl = FOCUS_AREAS.find(f => f.key === rw.focus)?.label || rw.focus || '—';
-                              const levelLbl = LEVELS.find(l => l.key === rw.level)?.label || rw.level || '—';
-                              const ts = rw.completedAt?.toDate ? rw.completedAt.toDate() : rw.completedAt ? new Date(rw.completedAt) : null;
-                              const ago = ts ? (() => {
-                                const diff = Math.floor((Date.now() - ts.getTime()) / 1000);
-                                if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-                                if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-                                return `${Math.floor(diff / 86400)}d ago`;
-                              })() : '';
-                              return (
-                                <button
-                                  key={i}
-                                  className="wk-hub-recent-card"
-                                  style={{ animationDelay: `${i * 0.05}s` }}
-                                  onClick={() => {
-                                    setFocusArea(rw.focus || 'core');
-                                    setLevel(rw.level || 'intermediate');
-                                    setDuration(rw.duration || 15);
-                                    if (rw.equipment) setSelectedEquipment(rw.equipment);
-                                    setFabOpen(false);
-                                    setView('setup');
-                                  }}
-                                >
-                                  <div className="wk-hub-recent-info">
-                                    <span className="wk-hub-recent-tags">
-                                      <span className="wk-hub-focus-pill" style={{ '--pill-color': FOCUS_COLORS[rw.focus] || 'var(--color-primary)' }}>{focusLbl}</span>
-                                      <span className="wk-hub-recent-meta">{levelLbl} &middot; {rw.duration || '?'}min &middot; {rw.exerciseCount || '?'} ex</span>
-                                    </span>
-                                  </div>
-                                  <div className="wk-hub-recent-action">
-                                    <span className="wk-hub-recent-time">{ago}</span>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-
-                </div>
+                        <span className="wk-saved-overlay-ago">{ago}</span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
