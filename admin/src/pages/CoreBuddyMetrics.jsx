@@ -4,7 +4,7 @@ import {
   collection, query, where, getDocs, doc, getDoc, setDoc,
   updateDoc, deleteDoc, serverTimestamp, Timestamp
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, getBlob } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -498,18 +498,15 @@ export default function CoreBuddyMetrics() {
     if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
     setSavingCompare(true);
     try {
-      const loadImg = async (url) => {
-        // Use Firebase SDK getBlob to avoid CORS issues with storage URLs
-        const storageRef = ref(storage, url);
-        const blob = await getBlob(storageRef);
-        const objectUrl = URL.createObjectURL(blob);
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => { URL.revokeObjectURL(objectUrl); resolve(img); };
-          img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image')); };
-          img.src = objectUrl;
-        });
-      };
+      const loadImg = (url) => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        const timeout = setTimeout(() => reject(new Error('Image load timeout')), 15000);
+        img.onload = () => { clearTimeout(timeout); resolve(img); };
+        img.onerror = () => { clearTimeout(timeout); reject(new Error('Image load failed')); };
+        // Append cache-bust to force CORS-aware reload (browser may have cached non-CORS version)
+        img.src = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+      });
       const rRect = (ctx2, x, y, w, h, r) => {
         ctx2.beginPath();
         ctx2.moveTo(x + r, y);
