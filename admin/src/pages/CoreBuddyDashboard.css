@@ -2049,6 +2049,7 @@
 
 /* 5. COMPLETION SIGNALING — feature cards show done state */
 .cb-card-done {
+  position: relative;
   border-color: rgba(76, 175, 80, 0.25) !important;
 }
 
