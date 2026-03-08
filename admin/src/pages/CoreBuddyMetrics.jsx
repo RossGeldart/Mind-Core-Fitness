@@ -506,21 +506,33 @@ export default function CoreBuddyMetrics() {
     if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
     setSavingCompare(true);
     try {
-      const loadImg = (url) => {
-        // Extract storage path from Firebase download URL and use Cloud Function proxy
-        // URL format: https://firebasestorage.googleapis.com/v0/b/BUCKET/o/ENCODED_PATH?alt=media&token=xxx
+      const loadImg = async (url) => {
+        // Fetch image as blob so the objectURL is same-origin — avoids canvas CORS tainting
         const pathMatch = url.match(/\/o\/([^?]+)/);
         const storagePath = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
         const proxyUrl = storagePath
           ? `https://europe-west2-mind-core-fitness-client.cloudfunctions.net/imageProxy?path=${encodeURIComponent(storagePath)}`
-          : url;
+          : null;
+
+        // Try proxy first, then fall back to direct Firebase URL
+        const urls = proxyUrl ? [proxyUrl, url] : [url];
+        let blob;
+        for (const src of urls) {
+          try {
+            const resp = await fetch(src);
+            if (!resp.ok) continue;
+            blob = await resp.blob();
+            break;
+          } catch { /* try next */ }
+        }
+        if (!blob) throw new Error('Could not load image');
+
+        const objUrl = URL.createObjectURL(blob);
         return new Promise((resolve, reject) => {
           const img = new Image();
-          img.crossOrigin = 'anonymous';
-          const timeout = setTimeout(() => reject(new Error('Image load timeout')), 15000);
-          img.onload = () => { clearTimeout(timeout); resolve(img); };
-          img.onerror = () => { clearTimeout(timeout); reject(new Error('Image load failed')); };
-          img.src = proxyUrl;
+          img.onload = () => { URL.revokeObjectURL(objUrl); resolve(img); };
+          img.onerror = () => { URL.revokeObjectURL(objUrl); reject(new Error('Image decode failed')); };
+          img.src = objUrl;
         });
       };
       const rRect = (ctx2, x, y, w, h, r) => {
