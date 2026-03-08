@@ -582,22 +582,36 @@ export default function CoreBuddyMetrics() {
       const ctx = canvas.getContext('2d');
 
       // --- Layer 1: Blurred photo background + dark overlay ---
-      // Safari/iOS doesn't support ctx.filter, so we blur by downscaling
-      // to a tiny offscreen canvas then drawing it back up at full size.
+      // Safari/iOS doesn't support ctx.filter, so we progressively
+      // downscale in steps for a smooth, non-pixelated blur.
       const bgImg = imgA || imgB;
       if (bgImg) {
-        const blurCanvas = document.createElement('canvas');
-        const scale = 20; // draw at 1/20th size for heavy blur
-        blurCanvas.width = Math.ceil(S / scale);
-        blurCanvas.height = Math.ceil(S / scale);
-        const bCtx = blurCanvas.getContext('2d');
-        bCtx.drawImage(bgImg, 0, 0, blurCanvas.width, blurCanvas.height);
-        // Draw tiny canvas back to full size — upscale creates blur
+        const steps = [
+          { w: 300, h: 300 },
+          { w: 80, h: 80 },
+          { w: 40, h: 40 },
+        ];
+        let prev = bgImg;
+        let prevW = bgImg.width;
+        let prevH = bgImg.height;
+        const tempCanvas = document.createElement('canvas');
+        const tCtx = tempCanvas.getContext('2d');
+        tCtx.imageSmoothingEnabled = true;
+        tCtx.imageSmoothingQuality = 'high';
+        for (const step of steps) {
+          tempCanvas.width = step.w;
+          tempCanvas.height = step.h;
+          tCtx.drawImage(prev, 0, 0, prevW, prevH, 0, 0, step.w, step.h);
+          prev = tempCanvas;
+          prevW = step.w;
+          prevH = step.h;
+        }
+        // Draw the tiny result back at full size — smooth upscale = blur
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(blurCanvas, 0, 0, S, S);
+        ctx.drawImage(tempCanvas, 0, 0, prevW, prevH, 0, 0, S, S);
         // Dark overlay so photos pop
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.fillRect(0, 0, S, S);
       } else {
         ctx.fillStyle = '#1a1a1a';
