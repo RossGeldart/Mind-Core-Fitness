@@ -4832,6 +4832,12 @@
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
   color: var(--color-primary);
 }
+.wk-landing-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 0;
+}
 .wk-landing-card-icon--byo {
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
   color: var(--color-primary);
