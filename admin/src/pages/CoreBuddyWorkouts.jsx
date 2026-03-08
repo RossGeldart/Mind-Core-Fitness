@@ -575,14 +575,20 @@ function shuffleArray(arr) {
 // Static thumbnail — shows a frozen first-frame for both videos and GIFs.
 // GIFs: drawn onto an in-DOM <canvas> (no crossOrigin / toDataURL needed).
 // Videos: a paused <video> seeked to 0.5s so a real frame is visible.
-function StaticThumb({ src, isGif }) {
+function StaticThumb({ src, isGif, onReady, eager }) {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(!!eager);
   const [videoReady, setVideoReady] = useState(false);
+  const signalledRef = useRef(false);
 
-  // Lazy-observe: only load once near viewport
+  const signalReady = useCallback(() => {
+    if (!signalledRef.current) { signalledRef.current = true; onReady?.(); }
+  }, [onReady]);
+
+  // Lazy-observe: only load once near viewport (skipped when eager)
   useEffect(() => {
+    if (eager) return;
     const el = wrapRef.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => {
@@ -590,7 +596,10 @@ function StaticThumb({ src, isGif }) {
     }, { rootMargin: '300px' });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [eager]);
+
+  // No src — signal ready immediately
+  useEffect(() => { if (!src) signalReady(); }, [src, signalReady]);
 
   // GIF: draw first frame onto canvas element (no CORS export needed)
   useEffect(() => {
@@ -602,16 +611,22 @@ function StaticThumb({ src, isGif }) {
       c.width = img.naturalWidth;
       c.height = img.naturalHeight;
       c.getContext('2d').drawImage(img, 0, 0);
+      signalReady();
     };
+    img.onerror = signalReady;
     img.src = src;
-  }, [inView, isGif, src]);
+  }, [inView, isGif, src, signalReady]);
 
   // Video: once metadata loads, seek to 0.5s for a visible frame
   const handleLoadedData = useCallback((e) => {
     const vid = e.target;
     vid.currentTime = 0.5;
   }, []);
-  const handleSeeked = useCallback(() => setVideoReady(true), []);
+  const handleSeeked = useCallback(() => {
+    setVideoReady(true);
+    signalReady();
+  }, [signalReady]);
+  const handleError = useCallback(() => signalReady(), [signalReady]);
 
   if (!src) {
     return (
@@ -635,6 +650,7 @@ function StaticThumb({ src, isGif }) {
           preload="auto"
           onLoadedData={handleLoadedData}
           onSeeked={handleSeeked}
+          onError={handleError}
           style={{ opacity: videoReady ? 1 : 0 }}
         />
       ) : null}
@@ -771,6 +787,21 @@ export default function CoreBuddyWorkouts() {
   const [workout, setWorkout] = useState([]); // [{ name, videoUrl }]
   const [rounds, setRounds] = useState(2);
   const [levelConfig, setLevelConfig] = useState(LEVELS[1]);
+
+  // Track thumbnail readiness so spinner stays until all thumbs are loaded
+  const thumbsReadyCount = useRef(0);
+  const thumbsTotal = useRef(0);
+  const spinMinDone = useRef(false);
+  const thumbsAllReady = useRef(false);
+  const tryRevealPreview = useRef(() => {});
+  // Called by each StaticThumb via onReady in the preview view
+  const handleThumbReady = useCallback(() => {
+    thumbsReadyCount.current += 1;
+    if (thumbsReadyCount.current >= thumbsTotal.current) {
+      thumbsAllReady.current = true;
+      tryRevealPreview.current();
+    }
+  }, []);
 
   // Active workout state
   const [currentRound, setCurrentRound] = useState(1);
@@ -1706,11 +1737,27 @@ export default function CoreBuddyWorkouts() {
     const shuffled = shuffleArray(pool);
     const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
 
+    // Reset thumb-readiness tracking before mounting the preview
+    thumbsReadyCount.current = 0;
+    thumbsTotal.current = selected.length;
+    spinMinDone.current = false;
+    thumbsAllReady.current = false;
+
     setWorkout(selected);
     setRounds(numRounds);
 
-    // Spin animation for 2s then show preview
-    setTimeout(() => setView('preview'), 2000);
+    // Show preview only once BOTH the min spinner time AND all thumbs are ready.
+    // We switch to a hidden 'preview_loading' view so StaticThumbs mount and
+    // start loading, but the spinner stays visually on top.
+    const reveal = () => {
+      if (spinMinDone.current && thumbsAllReady.current) setView('preview');
+    };
+    tryRevealPreview.current = reveal;
+
+    setView('preview_loading');
+    setTimeout(() => { spinMinDone.current = true; reveal(); }, 2000);
+    // Safety net: if thumbs don't load within 6s, reveal anyway
+    setTimeout(() => { thumbsAllReady.current = true; reveal(); }, 6000);
   };
 
   // Start workout (3-2-1 countdown then go)
@@ -3606,25 +3653,42 @@ export default function CoreBuddyWorkouts() {
   }
 
   // ==================== SPINNING VIEW ====================
-  if (view === 'spinning') {
+  // 'spinning' = pure spinner (exercises still loading from Firestore)
+  // 'preview_loading' = exercises chosen, preview mounted off-screen so thumbs load
+  if (view === 'spinning' || view === 'preview_loading') {
+    const previewConfig = view === 'preview_loading'
+      ? (selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level))
+      : null;
+    const totalTime = previewConfig ? workout.length * rounds * (previewConfig.work + previewConfig.rest) : 0;
     return (
-      <div className="wk-page wk-page-center">
-        <div className="wk-spin-container">
-          <div className="wk-spin-ring">
-            <svg className="wk-spin-svg" viewBox="0 0 200 200">
-              {TICKS_78_94.map((t, i) => (
-                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                  className="wk-spin-tick"
-                  strokeWidth={t.thick ? '3.5' : '2'}
-                  style={{ animationDelay: `${i * 0.03}s` }} />
-              ))}
-            </svg>
-            <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
+      <>
+        {/* Spinner overlay */}
+        <div className="wk-page wk-page-center" style={{ position: view === 'preview_loading' ? 'fixed' : undefined, inset: view === 'preview_loading' ? 0 : undefined, zIndex: view === 'preview_loading' ? 50 : undefined, background: 'var(--color-bg)' }}>
+          <div className="wk-spin-container">
+            <div className="wk-spin-ring">
+              <svg className="wk-spin-svg" viewBox="0 0 200 200">
+                {TICKS_78_94.map((t, i) => (
+                  <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                    className="wk-spin-tick"
+                    strokeWidth={t.thick ? '3.5' : '2'}
+                    style={{ animationDelay: `${i * 0.03}s` }} />
+                ))}
+              </svg>
+              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
+            </div>
+            <p className="wk-spin-text">Generating workout...</p>
           </div>
-          <p className="wk-spin-text">Generating workout...</p>
+          {toastEl}
         </div>
-        {toastEl}
-      </div>
+        {/* Hidden preview so StaticThumb components mount and start loading media */}
+        {view === 'preview_loading' && (
+          <div aria-hidden="true" style={{ position: 'fixed', top: '-200vh', left: '-200vw', width: '100vw', height: '100vh', overflow: 'hidden', pointerEvents: 'none' }}>
+            {workout.map((ex, i) => (
+              <StaticThumb key={i} src={ex.videoUrl} isGif={ex.isGif} onReady={handleThumbReady} eager />
+            ))}
+          </div>
+        )}
+      </>
     );
   }
 
