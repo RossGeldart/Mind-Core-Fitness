@@ -684,16 +684,10 @@
   font-weight: 900 !important;
 }
 
-/* Welcome splash animations */
-@keyframes splash-logo {
-  0%   { opacity: 0; transform: translateY(0); }
-  35%  { opacity: 1; transform: translateY(0); }
-  65%  { opacity: 1; transform: translateY(0); }
-  100% { opacity: 1; transform: translateY(-30px); }
-}
-@keyframes splash-text-enter {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Welcome splash animation */
+@keyframes splash-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Page fade-in after welcome splash */
