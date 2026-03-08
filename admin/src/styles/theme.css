@@ -685,9 +685,9 @@
 }
 
 /* Welcome splash animation */
-@keyframes splash-appear {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes splash-slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Page fade-in after welcome splash */
