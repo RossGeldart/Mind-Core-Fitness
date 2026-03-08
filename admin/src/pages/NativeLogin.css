@@ -276,7 +276,7 @@
   margin: 0;
   padding-top: 32px;
   height: 70px;
-  animation: splash-text-fade 0.8s ease-out 2s both;
+  animation: splash-text-fade 0.8s ease-out 1.5s both;
   opacity: 0;
 }
 
