@@ -4218,7 +4218,8 @@
 }
 
 .static-thumb-wrap img,
-.static-thumb-wrap video {
+.static-thumb-wrap video,
+.static-thumb-wrap canvas {
   width: 100%;
   height: 100%;
   object-fit: cover;
