@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
 import './Login.css';
+import './NativeLogin.css';
 
 const PORTAL_OPTIONS = [
   {
@@ -43,6 +44,7 @@ export default function LoginPortal() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
   const [splashReady, setSplashReady] = useState(false);
+  const [splashFading, setSplashFading] = useState(false);
 
   // On native (App Store), skip the portal — only Core Buddy is available
   const isNative = Capacitor.isNativePlatform();
@@ -52,11 +54,12 @@ export default function LoginPortal() {
     }
   }, [isNative, navigate]);
 
-  // When auth resolves for a returning user, hold the welcome splash for 2s
+  // When auth resolves for a returning user, hold the welcome splash then fade out
   useEffect(() => {
     if (!authLoading && currentUser && (isAdmin || isClient)) {
-      const timer = setTimeout(() => setSplashReady(true), 2000);
-      return () => clearTimeout(timer);
+      const holdTimer = setTimeout(() => setSplashFading(true), 3000);
+      const navTimer = setTimeout(() => setSplashReady(true), 3600);
+      return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
     }
   }, [authLoading, currentUser, isAdmin, isClient]);
 
@@ -76,10 +79,9 @@ export default function LoginPortal() {
   if (isNative || authLoading || (currentUser && (isAdmin || isClient))) {
     const displayName = clientData?.name || currentUser?.displayName;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)', gap: 24 }}>
-        <img src="/Logo.webp" alt="Mind Core Fitness" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'splash-fade-in .5s ease-out' }} />
-        {displayName && <h1 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0, animation: 'splash-fade-in .5s ease-out .2s both' }}>Welcome back, {displayName.split(' ')[0]}</h1>}
-        <div style={{ width: 28, height: 28, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
+      <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
+        <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
+        {displayName && <h1 className="native-login-splash-name">Welcome back, {displayName.split(' ')[0]}</h1>}
       </div>
     );
   }
