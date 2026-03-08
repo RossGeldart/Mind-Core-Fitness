@@ -566,8 +566,7 @@ export default function CoreBuddyMetrics() {
       const gap = 20;            // gap between the two photos
       const labelH = 36;         // space for date text above photos
       const labelGap = 12;       // gap between label and photo top
-      const logoDiam = 120;      // circular logo diameter
-      const logoBottomPad = 40;  // space from logo bottom to canvas bottom
+      const logoDiam = 220;      // circular logo diameter (large)
 
       // Photos: fill available width, 3:4 aspect, centred vertically
       const photoW = Math.floor((S - pad * 2 - gap) / 2);
@@ -582,15 +581,22 @@ export default function CoreBuddyMetrics() {
       const ctx = canvas.getContext('2d');
 
       // --- Layer 1: Blurred photo background + dark overlay ---
+      // Safari/iOS doesn't support ctx.filter, so we blur by downscaling
+      // to a tiny offscreen canvas then drawing it back up at full size.
       const bgImg = imgA || imgB;
       if (bgImg) {
-        ctx.save();
-        ctx.filter = 'blur(50px)';
-        const margin = 100;
-        ctx.drawImage(bgImg, -margin, -margin, S + margin * 2, S + margin * 2);
-        ctx.restore();
-        // Dark overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        const blurCanvas = document.createElement('canvas');
+        const scale = 20; // draw at 1/20th size for heavy blur
+        blurCanvas.width = Math.ceil(S / scale);
+        blurCanvas.height = Math.ceil(S / scale);
+        const bCtx = blurCanvas.getContext('2d');
+        bCtx.drawImage(bgImg, 0, 0, blurCanvas.width, blurCanvas.height);
+        // Draw tiny canvas back to full size — upscale creates blur
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(blurCanvas, 0, 0, S, S);
+        // Dark overlay so photos pop
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, S, S);
       } else {
         ctx.fillStyle = '#1a1a1a';
@@ -659,11 +665,11 @@ export default function CoreBuddyMetrics() {
         ctx.clip();
         ctx.drawImage(logoImg, logoX - logoDiam / 2, logoY - logoDiam / 2, logoDiam, logoDiam);
         ctx.restore();
-        // Subtle ring around the circle
+        // Ring around the circle
         ctx.beginPath();
-        ctx.arc(logoX, logoY, logoDiam / 2 + 2, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-        ctx.lineWidth = 2;
+        ctx.arc(logoX, logoY, logoDiam / 2 + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 3;
         ctx.stroke();
       }
 
