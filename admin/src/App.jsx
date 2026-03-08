@@ -27,6 +27,7 @@ import Challenges from './pages/Challenges';
 import CoreBuddyBadges from './pages/CoreBuddyBadges';
 import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 import ActivityHistory from './pages/ActivityHistory';
+import AIMealScanner from './pages/AIMealScanner';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -107,7 +108,7 @@ function App() {
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
             <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
             <Route path="/client/core-buddy/nutrition/manual" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
-            <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><AIMealScanner /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
             <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />

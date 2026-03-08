@@ -1,6 +1,7 @@
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { onRequest } = require('firebase-functions/v2/https');
+const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
@@ -8,6 +9,8 @@ const { getStorage } = require('firebase-admin/storage');
 
 initializeApp();
 const db = getFirestore();
+
+const anthropicApiKey = defineSecret('ANTHROPIC_API_KEY');
 
 // Human-readable notification messages per type
 const NOTIF_MESSAGES = {
@@ -257,3 +260,103 @@ exports.imageProxy = onRequest({ region: 'europe-west2', cors: true }, async (re
     res.status(500).send('Error');
   }
 });
+
+/**
+ * AI Meal Scanner — analyses a meal photo and returns estimated macros.
+ * Expects: { imageBase64: string, mimeType: string }
+ * Returns: { items: [...], totals: { calories, protein, carbs, fats }, confidence: string }
+ */
+exports.analyseMeal = onCall(
+  { region: 'europe-west2', secrets: [anthropicApiKey], timeoutSeconds: 60, memory: '512MiB' },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'You must be signed in.');
+    }
+
+    const { imageBase64, mimeType } = request.data;
+    if (!imageBase64 || !mimeType) {
+      throw new HttpsError('invalid-argument', 'imageBase64 and mimeType are required.');
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(mimeType)) {
+      throw new HttpsError('invalid-argument', 'Unsupported image type.');
+    }
+
+    // Max ~4MB base64 (roughly 3MB image)
+    if (imageBase64.length > 5_500_000) {
+      throw new HttpsError('invalid-argument', 'Image is too large. Please use a smaller photo.');
+    }
+
+    const Anthropic = require('@anthropic-ai/sdk');
+    const client = new Anthropic({ apiKey: anthropicApiKey.value() });
+
+    const systemPrompt = `You are a nutrition analysis AI for a fitness app called Mind Core Fitness. Analyse the meal photo and estimate the macronutrients.
+
+Rules:
+- Identify each distinct food item visible in the photo
+- Estimate portion sizes using visual cues (plate size, utensils, hands for scale)
+- If unsure about portion size, use conservative middle-ground estimates
+- Calculate macros per item, then sum for totals
+- Round all numbers to whole integers
+- Return ONLY valid JSON — no markdown, no backticks, no explanation
+
+Response format:
+{
+  "items": [
+    { "name": "Grilled chicken breast", "estimatedGrams": 150, "calories": 248, "protein": 46, "carbs": 0, "fats": 5 }
+  ],
+  "totals": {
+    "calories": 520,
+    "protein": 48,
+    "carbs": 62,
+    "fats": 8
+  },
+  "confidence": "medium"
+}
+
+confidence must be one of: "high", "medium", "low"
+- "high": clearly identifiable foods with good visual cues for portions
+- "medium": foods are identifiable but portions are harder to judge
+- "low": blurry image, unusual dishes, or hard-to-identify ingredients`;
+
+    try {
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: { type: 'base64', media_type: mimeType, data: imageBase64 },
+              },
+              {
+                type: 'text',
+                text: 'Analyse this meal photo and return the macronutrient breakdown as JSON.',
+              },
+            ],
+          },
+        ],
+        system: systemPrompt,
+      });
+
+      const text = response.content[0]?.text || '';
+      // Parse JSON — handle possible markdown wrapping
+      const jsonStr = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const result = JSON.parse(jsonStr);
+
+      // Validate structure
+      if (!result.items || !result.totals) {
+        throw new Error('Invalid response structure from AI.');
+      }
+
+      return result;
+    } catch (err) {
+      console.error('analyseMeal error:', err);
+      if (err instanceof HttpsError) throw err;
+      throw new HttpsError('internal', 'Failed to analyse meal. Please try again.');
+    }
+  }
+);
