@@ -30,9 +30,9 @@ export default function NativeLogin() {
   // When auth resolves for a returning user, hold the welcome splash then fade out
   useEffect(() => {
     if (!authLoading && currentUser && (isAdmin || isClient)) {
-      // Text finishes at 3.4s + 2s hold = 5.4s, then fade out over 0.6s
-      const holdTimer = setTimeout(() => setSplashFading(true), 5400);
-      const navTimer = setTimeout(() => setSplashReady(true), 6000);
+      // Text finishes at 2.8s + 2.5s hold = 5.3s, then fade out over 0.6s
+      const holdTimer = setTimeout(() => setSplashFading(true), 5300);
+      const navTimer = setTimeout(() => setSplashReady(true), 5900);
       return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
     }
   }, [authLoading, currentUser, isAdmin, isClient]);
