@@ -3653,51 +3653,56 @@ export default function CoreBuddyWorkouts() {
   }
 
   // ==================== SPINNING VIEW ====================
-  // 'spinning' = pure spinner (exercises still loading from Firestore)
-  // 'preview_loading' = exercises chosen, preview mounted off-screen so thumbs load
-  if (view === 'spinning' || view === 'preview_loading') {
-    const previewConfig = view === 'preview_loading'
-      ? (selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level))
-      : null;
-    const totalTime = previewConfig ? workout.length * rounds * (previewConfig.work + previewConfig.rest) : 0;
+  if (view === 'spinning') {
     return (
-      <>
-        {/* Spinner overlay */}
-        <div className="wk-page wk-page-center" style={{ position: view === 'preview_loading' ? 'fixed' : undefined, inset: view === 'preview_loading' ? 0 : undefined, zIndex: view === 'preview_loading' ? 50 : undefined, background: 'var(--color-bg)' }}>
-          <div className="wk-spin-container">
-            <div className="wk-spin-ring">
-              <svg className="wk-spin-svg" viewBox="0 0 200 200">
-                {TICKS_78_94.map((t, i) => (
-                  <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                    className="wk-spin-tick"
-                    strokeWidth={t.thick ? '3.5' : '2'}
-                    style={{ animationDelay: `${i * 0.03}s` }} />
-                ))}
-              </svg>
-              <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
-            </div>
-            <p className="wk-spin-text">Generating workout...</p>
+      <div className="wk-page wk-page-center">
+        <div className="wk-spin-container">
+          <div className="wk-spin-ring">
+            <svg className="wk-spin-svg" viewBox="0 0 200 200">
+              {TICKS_78_94.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  className="wk-spin-tick"
+                  strokeWidth={t.thick ? '3.5' : '2'}
+                  style={{ animationDelay: `${i * 0.03}s` }} />
+              ))}
+            </svg>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
           </div>
-          {toastEl}
+          <p className="wk-spin-text">Generating workout...</p>
         </div>
-        {/* Hidden preview so StaticThumb components mount and start loading media */}
-        {view === 'preview_loading' && (
-          <div aria-hidden="true" style={{ position: 'fixed', top: '-200vh', left: '-200vw', width: '100vw', height: '100vh', overflow: 'hidden', pointerEvents: 'none' }}>
-            {workout.map((ex, i) => (
-              <StaticThumb key={i} src={ex.videoUrl} isGif={ex.isGif} onReady={handleThumbReady} eager />
-            ))}
-          </div>
-        )}
-      </>
+        {toastEl}
+      </div>
     );
   }
 
-  // ==================== PREVIEW VIEW ====================
-  if (view === 'preview') {
+  // ==================== PREVIEW VIEW (with optional spinner overlay while thumbs load) ====================
+  if (view === 'preview_loading' || view === 'preview') {
+    const isLoading = view === 'preview_loading';
     const previewConfig = selectedMuscleSession?.interval ? { work: selectedMuscleSession.work, rest: selectedMuscleSession.rest } : LEVELS.find(l => l.key === level);
     const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
-      <div className="wk-page">
+      <>
+        {/* Spinner overlay — covers the preview while thumbs load */}
+        {isLoading && (
+          <div className="wk-page wk-page-center" style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'var(--color-bg)' }}>
+            <div className="wk-spin-container">
+              <div className="wk-spin-ring">
+                <svg className="wk-spin-svg" viewBox="0 0 200 200">
+                  {TICKS_78_94.map((t, i) => (
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                      className="wk-spin-tick"
+                      strokeWidth={t.thick ? '3.5' : '2'}
+                      style={{ animationDelay: `${i * 0.03}s` }} />
+                  ))}
+                </svg>
+                <img src="/Logo.webp" alt="Mind Core Fitness" className="wk-spin-logo" width="50" height="50" />
+              </div>
+              <p className="wk-spin-text">Generating workout...</p>
+            </div>
+          </div>
+        )}
+        {/* Actual preview page — mounts immediately so thumbs start loading */}
+        <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
             <button className="header-back-btn" onClick={() => setView(selectedMuscleSession?.interval ? 'muscle_sessions' : 'setup')} aria-label="Go back">
@@ -3740,10 +3745,10 @@ export default function CoreBuddyWorkouts() {
 
           <div className="wk-preview-list">
             {workout.map((ex, i) => (
-              <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }} onClick={() => setPreviewEx(ex)}>
+              <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }} onClick={() => !isLoading && setPreviewEx(ex)}>
                 <span className="wk-preview-num">{i + 1}</span>
                 <div className="wk-preview-thumb">
-                  <StaticThumb src={ex.videoUrl} isGif={ex.isGif} />
+                  <StaticThumb src={ex.videoUrl} isGif={ex.isGif} onReady={handleThumbReady} eager />
                 </div>
                 <span className="wk-preview-name">{ex.name}</span>
                 <svg className="wk-preview-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -3816,6 +3821,8 @@ export default function CoreBuddyWorkouts() {
           )}
         </main>
       </div>
+        {toastEl}
+      </>
     );
   }
 
