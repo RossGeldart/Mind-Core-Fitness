@@ -59,12 +59,12 @@
       }
       [data-theme="dark"] #app-loader { background: #111114; }
       .app-loader-logo {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
         object-fit: cover;
         border-radius: 50%;
         border: 3px solid #C83846;
-        animation: app-fade-in .4s ease-out;
+        animation: app-fade-in .6s ease-out;
       }
       .app-loader-spinner {
         width: 28px;
@@ -75,13 +75,13 @@
         animation: app-spin .7s linear infinite;
       }
       @keyframes app-spin { to { transform: rotate(1turn); } }
-      @keyframes app-fade-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+      @keyframes app-fade-in { from { opacity: 0; } to { opacity: 1; } }
     </style>
   </head>
   <body>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
     <div id="root">
-      <div id="app-loader"><img src="/Logo.webp" alt="Mind Core Fitness" class="app-loader-logo" width="120" height="120" /><div class="app-loader-spinner"></div></div>
+      <div id="app-loader"><img src="/Logo.webp" alt="Mind Core Fitness" class="app-loader-logo" width="140" height="140" /><div class="app-loader-spinner"></div></div>
     </div>
     <script>
       window.addEventListener('error', function(e) {
