@@ -1,11 +1,19 @@
-var CACHE_NAME = 'mcf-v2';
+var CACHE_NAME = 'mcf-v3';
 var ASSETS_TO_CACHE = [
   '/',
   '/styles.css',
   '/social-share.css',
+  '/social-share.js',
   '/Logo.webp',
   '/Logo.PNG',
-  '/manifest.json'
+  '/manifest.json',
+  '/index.html',
+  '/pricing.html',
+  '/about.html',
+  '/personal-training.html',
+  '/blog.html',
+  '/faq.html',
+  '/core-buddy.html'
 ];
 
 self.addEventListener('install', function(event) {
@@ -39,14 +47,39 @@ self.addEventListener('fetch', function(event) {
   // Only handle GET requests
   if (request.method !== 'GET') return;
 
-  // Skip cross-origin analytics/tracking requests
   var url = new URL(request.url);
+
+  // Skip cross-origin analytics/tracking requests entirely
   if (url.origin !== self.location.origin &&
       !url.hostname.includes('fonts.googleapis.com') &&
       !url.hostname.includes('fonts.gstatic.com')) {
     return;
   }
 
+  // Skip API calls — always go to network
+  if (url.pathname.startsWith('/api/')) return;
+
+  // For navigation requests, use network-first with cache fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).then(function(networkResponse) {
+        if (networkResponse && networkResponse.status === 200) {
+          var responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(request, responseClone);
+          });
+        }
+        return networkResponse;
+      }).catch(function() {
+        return caches.match(request).then(function(cachedResponse) {
+          return cachedResponse || caches.match('/');
+        });
+      })
+    );
+    return;
+  }
+
+  // For all other assets: stale-while-revalidate
   event.respondWith(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.match(request).then(function(cachedResponse) {

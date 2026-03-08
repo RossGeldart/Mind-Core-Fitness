@@ -273,8 +273,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -285,6 +286,9 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -292,7 +296,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -1001,7 +1006,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -1248,7 +1253,7 @@
             <div class="author-bio">
                 <picture>
                     <source srcset="Logo.webp" type="image/webp">
-                    <img loading="lazy" src="Logo.PNG" alt="Ross Geldart - Mind Core Fitness" width="60" height="60">
+                    <img loading="lazy" src="Logo.PNG" alt="Ross Geldart - Mind Core Fitness" width="60" height="60" decoding="async">
                 </picture>
                 <p>Answered by Ross Geldart &mdash; Personal Trainer, Fitness Coach, and creator of Core Buddy. Based in Elgin, Scotland. <a href="about.html">Learn more about Ross</a>.</p>
             </div>
@@ -1309,7 +1314,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
