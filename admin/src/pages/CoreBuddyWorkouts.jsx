@@ -572,77 +572,72 @@ function shuffleArray(arr) {
   return a;
 }
 
-// Static thumbnail — captures first frame of video/gif onto a canvas (no autoplay)
+// Static thumbnail — shows a frozen first-frame for both videos and GIFs.
+// GIFs: drawn onto an in-DOM <canvas> (no crossOrigin / toDataURL needed).
+// Videos: a paused <video> seeked to 0.5s so a real frame is visible.
 function StaticThumb({ src, isGif }) {
-  const containerRef = useRef(null);
-  const [poster, setPoster] = useState(null);
-  const attempted = useRef(false);
+  const wrapRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [inView, setInView] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
+  // Lazy-observe: only load once near viewport
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el || !src) return;
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !attempted.current) {
-        attempted.current = true;
-        io.disconnect();
-        if (isGif) {
-          // For GIFs: load into an Image, draw first frame to canvas
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            try {
-              const c = document.createElement('canvas');
-              c.width = img.naturalWidth;
-              c.height = img.naturalHeight;
-              c.getContext('2d').drawImage(img, 0, 0);
-              setPoster(c.toDataURL('image/webp', 0.7));
-            } catch { setPoster(src); }
-          };
-          img.src = src;
-        } else {
-          // For videos: load minimal data, grab first frame
-          const vid = document.createElement('video');
-          vid.crossOrigin = 'anonymous';
-          vid.muted = true;
-          vid.playsInline = true;
-          vid.preload = 'metadata';
-          vid.onloadeddata = () => {
-            vid.currentTime = 0.1;
-          };
-          vid.onseeked = () => {
-            try {
-              const c = document.createElement('canvas');
-              c.width = vid.videoWidth;
-              c.height = vid.videoHeight;
-              c.getContext('2d').drawImage(vid, 0, 0);
-              setPoster(c.toDataURL('image/webp', 0.7));
-            } catch { /* CORS or other — fall back to video element */ }
-            vid.src = '';
-            vid.load();
-          };
-          vid.src = src;
-        }
-      }
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setInView(true); io.disconnect(); }
     }, { rootMargin: '300px' });
     io.observe(el);
     return () => io.disconnect();
-  }, [src, isGif]);
+  }, []);
 
-  return (
-    <div ref={containerRef} className="static-thumb-wrap">
-      {poster ? (
-        <img src={poster} alt="" loading="lazy" />
-      ) : src ? (
-        isGif ? (
-          <img src={src} alt="" loading="lazy" />
-        ) : (
-          <video src={src} muted playsInline preload="metadata" />
-        )
-      ) : (
+  // GIF: draw first frame onto canvas element (no CORS export needed)
+  useEffect(() => {
+    if (!inView || !isGif || !src || !canvasRef.current) return;
+    const img = new Image();
+    img.onload = () => {
+      const c = canvasRef.current;
+      if (!c) return;
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      c.getContext('2d').drawImage(img, 0, 0);
+    };
+    img.src = src;
+  }, [inView, isGif, src]);
+
+  // Video: once metadata loads, seek to 0.5s for a visible frame
+  const handleLoadedData = useCallback((e) => {
+    const vid = e.target;
+    vid.currentTime = 0.5;
+  }, []);
+  const handleSeeked = useCallback(() => setVideoReady(true), []);
+
+  if (!src) {
+    return (
+      <div ref={wrapRef} className="static-thumb-wrap">
         <div className="byo-thumb-placeholder">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={wrapRef} className="static-thumb-wrap">
+      {isGif ? (
+        <canvas ref={canvasRef} className="static-thumb-canvas" />
+      ) : inView ? (
+        <video
+          src={`${src}#t=0.5`}
+          muted
+          playsInline
+          preload="auto"
+          onLoadedData={handleLoadedData}
+          onSeeked={handleSeeked}
+          style={{ opacity: videoReady ? 1 : 0 }}
+        />
+      ) : null}
     </div>
   );
 }
