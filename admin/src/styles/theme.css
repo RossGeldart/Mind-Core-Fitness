@@ -323,10 +323,12 @@
 }
 
 /* Nutrition modal & search items need opaque bg in mono so text is readable */
-[data-mono="true"][data-theme="dark"] .nut-modal {
+[data-mono="true"][data-theme="dark"] .nut-modal,
+[data-mono="true"][data-theme="dark"] .nut-search-panel {
   background: rgba(20, 20, 20, 0.95);
 }
-[data-mono="true"][data-theme="light"] .nut-modal {
+[data-mono="true"][data-theme="light"] .nut-modal,
+[data-mono="true"][data-theme="light"] .nut-search-panel {
   background: rgba(255, 255, 255, 0.92);
 }
 [data-mono="true"][data-theme="dark"] .nut-search-item {
