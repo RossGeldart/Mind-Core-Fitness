@@ -4829,14 +4829,15 @@
   flex-shrink: 0;
 }
 .wk-landing-card-icon--randomiser {
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
-  color: var(--color-primary);
+  background: none;
+  padding: 0;
+  overflow: hidden;
 }
 .wk-landing-logo {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  border-radius: 0;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 14px;
 }
 .wk-landing-card-icon--byo {
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
