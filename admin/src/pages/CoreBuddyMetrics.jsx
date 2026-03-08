@@ -498,13 +498,17 @@ export default function CoreBuddyMetrics() {
     if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
     setSavingCompare(true);
     try {
-      const loadImg = (url) => new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error('Failed to load image'));
-        img.src = url;
-      });
+      const loadImg = async (url) => {
+        const resp = await fetch(url);
+        const blob = await resp.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => { URL.revokeObjectURL(objectUrl); resolve(img); };
+          img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image')); };
+          img.src = objectUrl;
+        });
+      };
       const [imgA, imgB] = await Promise.all([
         urlA ? loadImg(urlA) : null,
         urlB ? loadImg(urlB) : null,
