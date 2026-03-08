@@ -3684,7 +3684,7 @@ export default function CoreBuddyWorkouts() {
       <>
         {/* Spinner overlay — covers the preview while thumbs load */}
         {isLoading && (
-          <div className="wk-page wk-page-center" style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'var(--color-bg)' }}>
+          <div className="wk-page wk-page-center" style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'var(--bg-body)' }}>
             <div className="wk-spin-container">
               <div className="wk-spin-ring">
                 <svg className="wk-spin-svg" viewBox="0 0 200 200">
