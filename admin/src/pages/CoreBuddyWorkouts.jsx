@@ -341,6 +341,9 @@ export default function CoreBuddyWorkouts() {
   const [rounds, setRounds] = useState(2);
   const [levelConfig, setLevelConfig] = useState(LEVELS[1]);
 
+  // Ref flag for quickStart: triggers generateWorkout after state settles
+  const pendingQuickStartRef = useRef(false);
+
   // Track thumbnail readiness so spinner stays until all thumbs are loaded
   const thumbsReadyCount = useRef(0);
   const thumbsTotal = useRef(0);
@@ -1042,16 +1045,23 @@ export default function CoreBuddyWorkouts() {
     setView('preview');
   };
 
-  // Quick Start: store last settings and generate instantly
-  const quickStart = async () => {
+  // Quick Start: store last settings and generate after re-render
+  const quickStart = () => {
     const last = JSON.parse(localStorage.getItem('mcf_last_randomiser') || 'null');
     setSelectedEquipment(last?.equipment || ['bodyweight']);
     setFocusArea(last?.focus || 'core');
     setLevel(last?.level || 'intermediate');
     setDuration(last?.duration || 15);
-    // Small delay to let state settle, then generate
-    setTimeout(() => generateWorkout(), 50);
+    pendingQuickStartRef.current = true;
   };
+
+  // Effect: run generateWorkout AFTER state has settled from quickStart
+  useEffect(() => {
+    if (pendingQuickStartRef.current) {
+      pendingQuickStartRef.current = false;
+      generateWorkout();
+    }
+  }); // runs every render — only fires when flag is set
 
   // Save last-used settings to localStorage whenever we generate
   const saveLastSettings = () => {
