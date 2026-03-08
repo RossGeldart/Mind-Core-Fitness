@@ -1890,3 +1890,14 @@ body {
 .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
 @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
+
+/* Reduce motion for users who prefer it — also reduces CPU/GPU load */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .fade-in { opacity: 1; transform: none; }
+}

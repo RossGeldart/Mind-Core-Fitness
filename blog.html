@@ -83,8 +83,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Facebook Pixel -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -95,6 +96,9 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -102,7 +106,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -851,7 +856,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness" width="32" height="32">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="32" height="32" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -909,7 +914,7 @@
             <div class="blog-grid" id="blogGrid">
                 <!-- Blog Post: Quick Workouts for Busy People -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/Logo.PNG" alt="Quick workouts for busy people - Mind Core Fitness" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/Logo.PNG" alt="Quick workouts for busy people - Mind Core Fitness" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -930,7 +935,7 @@
 
                 <!-- Blog Post: 5 Minute Beginner Core Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/1w7ivJ05sEw/maxresdefault.jpg" alt="5 minute beginner core workout - forearm plank shoulder taps" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/1w7ivJ05sEw/maxresdefault.jpg" alt="5 minute beginner core workout - forearm plank shoulder taps" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -951,7 +956,7 @@
 
                 <!-- Blog Post: What Is Core Buddy? -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/core-buddy-assets/dashboard.PNG" alt="Core Buddy fitness app dashboard" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/core-buddy-assets/dashboard.PNG" alt="Core Buddy fitness app dashboard" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Core Buddy</span>
@@ -972,7 +977,7 @@
 
                 <!-- Blog Post: Why Most People Fail to Get Fit -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/blog/images/why-people-1.avif" alt="Why most people fail to get fit" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/why-people-1.avif" alt="Why most people fail to get fit" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Mindset</span>
@@ -993,7 +998,7 @@
 
                 <!-- Blog Post: Scott's 25kg Weight Loss Journey -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/blog/images/scotty-hero-image.avif" alt="Scott's 25kg weight loss transformation" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/scotty-hero-image.avif" alt="Scott's 25kg weight loss transformation" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Success Story</span>
@@ -1014,7 +1019,7 @@
 
                 <!-- Blog Post: Wall Sit HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/Z5lTajMembU/maxresdefault.jpg" alt="Wall Sit HIIT Workout - marching wall sit exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/Z5lTajMembU/maxresdefault.jpg" alt="Wall Sit HIIT Workout - marching wall sit exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1035,7 +1040,7 @@
 
                 <!-- Blog Post: Core + Glute Stability HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/Q2KdDhe_W5A/maxresdefault.jpg" alt="Core + Glute Stability HIIT Workout - bird dog exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/Q2KdDhe_W5A/maxresdefault.jpg" alt="Core + Glute Stability HIIT Workout - bird dog exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1056,7 +1061,7 @@
 
                 <!-- Blog Post: Bridge Power HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/QKjFY-uV7IE/maxresdefault.jpg" alt="Bridge Power HIIT Workout - glute bridge pulse exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/QKjFY-uV7IE/maxresdefault.jpg" alt="Bridge Power HIIT Workout - glute bridge pulse exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1077,7 +1082,7 @@
 
                 <!-- Blog Post: Advanced Ab HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/ZPXlunlMc7w/maxresdefault.jpg" alt="Advanced Ab HIIT Workout - single leg V-up exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/ZPXlunlMc7w/maxresdefault.jpg" alt="Advanced Ab HIIT Workout - single leg V-up exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1098,7 +1103,7 @@
 
                 <!-- Blog Post: Oblique HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/1Bn4s9-tsYk/maxresdefault.jpg" alt="Oblique HIIT Workout - Russian twist exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/1Bn4s9-tsYk/maxresdefault.jpg" alt="Oblique HIIT Workout - Russian twist exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1119,7 +1124,7 @@
 
                 <!-- Blog Post: Crunch HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/T8Cymd8X71Q/maxresdefault.jpg" alt="Crunch HIIT Workout - crunch exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/T8Cymd8X71Q/maxresdefault.jpg" alt="Crunch HIIT Workout - crunch exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1140,7 +1145,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout Part 3 -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/38YaCvWH0cQ/maxresdefault.jpg" alt="Plank HIIT Workout Part 3 - side plank hip drops exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/38YaCvWH0cQ/maxresdefault.jpg" alt="Plank HIIT Workout Part 3 - side plank hip drops exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1161,7 +1166,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout Part 2 -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/d2jFwB8Gor4/maxresdefault.jpg" alt="Plank HIIT Workout Part 2 - plank climb exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/d2jFwB8Gor4/maxresdefault.jpg" alt="Plank HIIT Workout Part 2 - plank climb exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1182,7 +1187,7 @@
 
                 <!-- Blog Post: Plank HIIT Workout -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/oLNtHe_c7-Q/maxresdefault.jpg" alt="Plank HIIT Workout - forearm plank exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/oLNtHe_c7-Q/maxresdefault.jpg" alt="Plank HIIT Workout - forearm plank exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1253,7 +1258,7 @@
 
                 <!-- Blog Post: Core Progression -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg" alt="Core progression - bear crawl exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/E9RbNHiiQII/maxresdefault.jpg" alt="Core progression - bear crawl exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1274,7 +1279,7 @@
 
                 <!-- Blog Post: Beyond the Mat -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/blog/images/beyond-the-mat.avif" alt="Core strength for everyday life" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/beyond-the-mat.avif" alt="Core strength for everyday life" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1295,7 +1300,7 @@
 
                 <!-- Blog Post: The Core Connection -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/RtROKLrBnbE/maxresdefault.jpg" alt="Core engagement in every exercise - plank walkout" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/RtROKLrBnbE/maxresdefault.jpg" alt="Core engagement in every exercise - plank walkout" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1316,7 +1321,7 @@
 
                 <!-- Blog Post: Core Training Mistakes -->
                 <article class="blog-card">
-                    <img loading="lazy" src="https://img.youtube.com/vi/VzFUd1JO-Z8/maxresdefault.jpg" alt="Core training mistakes - hollow hold exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="https://img.youtube.com/vi/VzFUd1JO-Z8/maxresdefault.jpg" alt="Core training mistakes - hollow hold exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1337,7 +1342,7 @@
 
                 <!-- Blog Post: How to Engage Your Core -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/blog/images/forearm-plank.avif" alt="How to engage your core - forearm plank exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/forearm-plank.avif" alt="How to engage your core - forearm plank exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1358,7 +1363,7 @@
 
                 <!-- Blog Post: Understanding Core Strength -->
                 <article class="blog-card">
-                    <img loading="lazy" src="/blog/images/high-knee-exercise.jpg.avif" alt="Understanding core strength - high knee exercise" class="blog-card-image" width="400" height="200">
+                    <img loading="lazy" src="/blog/images/high-knee-exercise.jpg.avif" alt="Understanding core strength - high knee exercise" class="blog-card-image" width="400" height="200" decoding="async">
                     <div class="blog-card-content">
                         <div class="blog-card-meta">
                             <span class="blog-card-category">Training</span>
@@ -1396,7 +1401,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>

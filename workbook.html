@@ -109,8 +109,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -127,6 +128,9 @@
         value: 9.99,
         currency: 'GBP'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -135,7 +139,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="workbook-page.css">
     <link rel="stylesheet" href="social-share.css">
@@ -204,7 +209,7 @@
                 <div class="workbook-hero-image">
                     <picture>
                         <source srcset="downloads/front-cover-square.webp" type="image/webp">
-                        <img loading="lazy" src="downloads/front-cover-square.jpeg" alt="The Mind Core Mindset Workbook - 6-Month Transformation Journal" class="hero-book-cover">
+                        <img loading="lazy" src="downloads/front-cover-square.jpeg" alt="The Mind Core Mindset Workbook - 6-Month Transformation Journal" class="hero-book-cover" decoding="async">
                     </picture>
                 </div>
                 <div class="workbook-hero-text">
@@ -361,37 +366,37 @@
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-one.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-one.png" alt="Workbook Sample Page 1" loading="lazy">
+                        <img src="downloads/mind-core-mindset-one.png" alt="Workbook Sample Page 1" loading="lazy" decoding="async">
                     </picture>
                 </div>
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-two.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-two.png" alt="Workbook Sample Page 2" loading="lazy">
+                        <img src="downloads/mind-core-mindset-two.png" alt="Workbook Sample Page 2" loading="lazy" decoding="async">
                     </picture>
                 </div>
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-three.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-three.png" alt="Workbook Sample Page 3" loading="lazy">
+                        <img src="downloads/mind-core-mindset-three.png" alt="Workbook Sample Page 3" loading="lazy" decoding="async">
                     </picture>
                 </div>
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-four.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-four.png" alt="Workbook Sample Page 4" loading="lazy">
+                        <img src="downloads/mind-core-mindset-four.png" alt="Workbook Sample Page 4" loading="lazy" decoding="async">
                     </picture>
                 </div>
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-five.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-five.png" alt="Workbook Sample Page 5" loading="lazy">
+                        <img src="downloads/mind-core-mindset-five.png" alt="Workbook Sample Page 5" loading="lazy" decoding="async">
                     </picture>
                 </div>
                 <div class="preview-item">
                     <picture>
                         <source srcset="downloads/mind-core-mindset-six.webp" type="image/webp">
-                        <img src="downloads/mind-core-mindset-six.png" alt="Workbook Sample Page 6" loading="lazy">
+                        <img src="downloads/mind-core-mindset-six.png" alt="Workbook Sample Page 6" loading="lazy" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -409,7 +414,7 @@
                     <div class="format-image">
                         <picture>
                             <source srcset="downloads/front-cover-square.webp" type="image/webp">
-                            <img src="downloads/front-cover-square.jpeg" alt="Paperback - The Mind Core Mindset Workbook" loading="lazy">
+                            <img src="downloads/front-cover-square.jpeg" alt="Paperback - The Mind Core Mindset Workbook" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="format-details">
@@ -435,7 +440,7 @@
                     <div class="format-image">
                         <picture>
                             <source srcset="downloads/digital-mock-up.webp" type="image/webp">
-                            <img src="downloads/digital-mock-up.png" alt="Digital Download - The Mind Core Mindset Workbook" loading="lazy">
+                            <img src="downloads/digital-mock-up.png" alt="Digital Download - The Mind Core Mindset Workbook" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="format-details">
@@ -475,7 +480,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
@@ -617,7 +622,7 @@
     </script>
 
     <!-- Social Share -->
-    <script src="social-share.js"></script>
+    <script defer src="social-share.js"></script>
 
     <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>

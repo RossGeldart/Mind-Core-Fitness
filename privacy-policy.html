@@ -40,7 +40,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -295,7 +298,7 @@
 <body>
     <nav class="nav">
         <a href="/" class="nav-logo">
-            <img src="Logo.PNG" alt="Mind Core Fitness">
+            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" decoding="async">
         </a>
         <a href="/" class="nav-back">← Back to Home</a>
     </nav>
@@ -405,7 +408,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>

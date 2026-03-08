@@ -147,8 +147,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -164,6 +165,9 @@
         content_category: 'Personal Training',
         content_type: 'product'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -172,7 +176,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -2275,7 +2280,7 @@
         <a href="/" class="nav-logo">
             <picture>
                     <source srcset="Logo.webp" type="image/webp">
-                    <img src="Logo.PNG" alt="Mind Core Fitness">
+                    <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" decoding="async">
                 </picture>
         </a>
         <div class="nav-links">
@@ -2341,7 +2346,7 @@
             <div class="hero-image">
                 <picture>
                     <source srcset="Circuit 3.webp" type="image/webp">
-                    <img loading="lazy" src="Circuit 3.jpg" alt="Personal Training Session">
+                    <img loading="lazy" src="Circuit 3.jpg" alt="Personal Training Session" decoding="async">
                 </picture>
             </div>
         </div>
@@ -2426,7 +2431,7 @@
                 <div class="about-image fade-in">
                     <picture>
                         <source srcset="Client Bond.webp" type="image/webp">
-                        <img loading="lazy" src="Client Bond.jpg" alt="Ross - Mind Core Fitness">
+                        <img loading="lazy" src="Client Bond.jpg" alt="Ross - Mind Core Fitness" decoding="async">
                     </picture>
                     <div class="about-image-badge">
                         <strong>200+</strong>
@@ -2480,37 +2485,37 @@
                 <div class="gallery-item large slide-up">
                     <picture>
                         <source srcset="Gym Studio 1.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 1.jpg" alt="Training Studio">
+                        <img loading="lazy" src="Gym Studio 1.jpg" alt="Training Studio" decoding="async">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 2.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 2.jpg" alt="Equipment">
+                        <img loading="lazy" src="Gym Studio 2.jpg" alt="Equipment" decoding="async">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 3.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 3.jpg" alt="Training Area">
+                        <img loading="lazy" src="Gym Studio 3.jpg" alt="Training Area" decoding="async">
                     </picture>
                 </div>
                 <div class="gallery-item scale-in">
                     <picture>
                         <source srcset="Gym Studio 4.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 4.jpg" alt="Weights">
+                        <img loading="lazy" src="Gym Studio 4.jpg" alt="Weights" decoding="async">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-left">
                     <picture>
                         <source srcset="Gym Studio 5.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 5.jpg" alt="Functional Area">
+                        <img loading="lazy" src="Gym Studio 5.jpg" alt="Functional Area" decoding="async">
                     </picture>
                 </div>
                 <div class="gallery-item slide-in-right">
                     <picture>
                         <source srcset="Gym Studio 6.webp" type="image/webp">
-                        <img loading="lazy" src="Gym Studio 6.jpg" alt="Studio Space">
+                        <img loading="lazy" src="Gym Studio 6.jpg" alt="Studio Space" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2562,7 +2567,7 @@
                 <div class="expect-image fade-in">
                     <picture>
                         <source srcset="Circuit 2.webp" type="image/webp">
-                        <img loading="lazy" src="Circuit 2.jpg" alt="Training Session">
+                        <img loading="lazy" src="Circuit 2.jpg" alt="Training Session" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2583,7 +2588,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"So far I have lost 25 kilos and still going. I find that Ross is a good motivator and pushing me onwards to better and more physical work outs even at my tender age of 53. I can only praise on the way Ross trains me and the monthly weigh ins which for me is a very strong motivator to get to my target."</p>
                     <div class="testimonial-author">
-                        <img loading="lazy" src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <img loading="lazy" src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant" decoding="async">
                         <div class="testimonial-author-info">
                             <strong>Scott Grant</strong>
                             <span>Lost 25 Kilos</span>
@@ -2596,7 +2601,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Emily Paterson.webp" type="image/webp">
-                            <img loading="lazy" src="Emily Paterson.jpg" alt="Emily">
+                            <img loading="lazy" src="Emily Paterson.jpg" alt="Emily" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Emily Paterson</strong>
@@ -2610,7 +2615,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Baz Duncan.webp" type="image/webp">
-                            <img loading="lazy" src="Baz Duncan.jpg" alt="Lee">
+                            <img loading="lazy" src="Baz Duncan.jpg" alt="Lee" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
@@ -2622,7 +2627,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"The sessions were intense and challenging at times, but Ross kept me going. He pushed me just enough to keep coming back each week. Even on the days when my mental health made things tough, Ross was always there to reassure me. This didn't just make me feel good physically — it made a huge difference mentally too."</p>
                     <div class="testimonial-author">
-                        <img loading="lazy" src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch">
+                        <img loading="lazy" src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch" decoding="async">
                         <div class="testimonial-author-info">
                             <strong>Christopher Snedden Murdoch</strong>
                             <span>Mental & Physical Progress</span>
@@ -2647,55 +2652,55 @@
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/charlie-anderson.webp" type="image/webp">
-                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/russell-anderson.webp" type="image/webp">
-                            <img src="/images/client-results/russell-anderson.png" alt="Russell Anderson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/russell-anderson.png" alt="Russell Anderson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/ross-geldart.webp" type="image/webp">
-                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/baz-duncan.webp" type="image/webp">
-                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/scott-grant.webp" type="image/webp">
-                            <img src="/images/client-results/scott-grant.png" alt="Scott Grant - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/scott-grant.png" alt="Scott Grant - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/james .webp" type="image/webp">
-                            <img src="/images/client-results/james .png" alt="James - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/james .png" alt="James - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/emily-paterson.webp" type="image/webp">
-                            <img src="/images/client-results/emily-paterson.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/emily-paterson.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/emily-paterson-2.webp" type="image/webp">
-                            <img src="/images/client-results/emily-paterson-2.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/emily-paterson-2.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/jake-morrison .webp" type="image/webp">
-                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                 </div>
@@ -2724,7 +2729,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Circuit 3.webp" type="image/webp">
-                            <img loading="lazy" src="Circuit 3.jpg" alt="4 Week Fit Starter">
+                            <img loading="lazy" src="Circuit 3.jpg" alt="4 Week Fit Starter" decoding="async">
                         </picture>
                     </div>
                     <h3 class="pricing-name">4 Week Fit Starter</h3>
@@ -2746,7 +2751,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Gym Studio 2.webp" type="image/webp">
-                            <img loading="lazy" src="Gym Studio 2.jpg" alt="12 Week Strength Builder">
+                            <img loading="lazy" src="Gym Studio 2.jpg" alt="12 Week Strength Builder" decoding="async">
                         </picture>
                     </div>
                     <h3 class="pricing-name">12-Week Strength Builder</h3>
@@ -2769,7 +2774,7 @@
                     <div class="pricing-card-image">
                         <picture>
                             <source srcset="Gym Studio 4.webp" type="image/webp">
-                            <img loading="lazy" src="Gym Studio 4.jpg" alt="24 Week Performance Phase">
+                            <img loading="lazy" src="Gym Studio 4.jpg" alt="24 Week Performance Phase" decoding="async">
                         </picture>
                     </div>
                     <h3 class="pricing-name">24-Week Performance Phase</h3>
@@ -2850,7 +2855,7 @@
                 <div class="location-image fade-in">
                     <picture>
                         <source srcset="Gym 2.webp" type="image/webp">
-                        <img loading="lazy" src="Gym 2.jpg" alt="Training Location">
+                        <img loading="lazy" src="Gym 2.jpg" alt="Training Location" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2945,7 +2950,7 @@
         <div class="container">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo" decoding="async">
             </picture>
             <h2>Your Transformation Starts Here</h2>
             <p>Stop waiting for the perfect time. Get in touch today and take the first step towards building strength, discipline, and the body you deserve.</p>
@@ -2960,7 +2965,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
@@ -3257,7 +3262,7 @@
     </div>
 
     <!-- Social Share -->
-    <script src="social-share.js"></script>
+    <script defer src="social-share.js"></script>
 
     <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>

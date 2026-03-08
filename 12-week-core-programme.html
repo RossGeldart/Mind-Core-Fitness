@@ -144,8 +144,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -162,6 +163,9 @@
         value: 149.00,
         currency: 'GBP'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -170,7 +174,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -1715,7 +1720,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness" width="32" height="32">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="32" height="32" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -1754,7 +1759,7 @@
             <div class="hero-image">
                 <picture>
                     <source srcset="images/client-results/ross-geldart.webp" type="image/webp">
-                    <img loading="lazy" src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness">
+                    <img loading="lazy" src="images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Mind Core Fitness" decoding="async">
                 </picture>
             </div>
             <div class="hero-content">
@@ -1938,7 +1943,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/lorna-gallagher.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/lorna-gallagher.jpeg" alt="Lorna Gallagher">
+                            <img loading="lazy" src="images/client-results/lorna-gallagher.jpeg" alt="Lorna Gallagher" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lorna Gallagher</strong>
@@ -1952,7 +1957,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/sharon-hughes.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes">
+                            <img loading="lazy" src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Sharon Hughes</strong>
@@ -1966,7 +1971,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/paula-coutts.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts">
+                            <img loading="lazy" src="images/client-results/paula-coutts.jpeg" alt="Paula Coutts" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Paula Coutts</strong>
@@ -1980,7 +1985,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/chloe-barker.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/chloe-barker.jpeg" alt="Chloe Barker">
+                            <img loading="lazy" src="images/client-results/chloe-barker.jpeg" alt="Chloe Barker" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Chloe Barker</strong>
@@ -1994,7 +1999,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/cheryl-mcinnes.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/cheryl-mcinnes.jpeg" alt="Cheryl McInnes">
+                            <img loading="lazy" src="images/client-results/cheryl-mcinnes.jpeg" alt="Cheryl McInnes" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Cheryl McInnes</strong>
@@ -2008,7 +2013,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="images/client-results/lee-bazzie-duncan.webp" type="image/webp">
-                            <img loading="lazy" src="images/client-results/lee-bazzie-duncan.jpeg" alt="Lee Bazzie Duncan">
+                            <img loading="lazy" src="images/client-results/lee-bazzie-duncan.jpeg" alt="Lee Bazzie Duncan" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
@@ -2027,7 +2032,7 @@
                 <div class="who-image fade-in">
                     <picture>
                         <source srcset="Circuit 3.webp" type="image/webp">
-                        <img loading="lazy" src="Circuit 3.jpg" alt="Core Training">
+                        <img loading="lazy" src="Circuit 3.jpg" alt="Core Training" decoding="async">
                     </picture>
                 </div>
                 <div class="who-content fade-in">
@@ -2080,7 +2085,7 @@
                 <div class="everfit-image fade-in">
                     <picture>
                         <source srcset="Everfit.webp" type="image/webp">
-                        <img loading="lazy" src="Everfit.png" alt="Everfit App">
+                        <img loading="lazy" src="Everfit.png" alt="Everfit App" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2101,25 +2106,25 @@
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/charlie-anderson.webp" type="image/webp">
-                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/ross-geldart.webp" type="image/webp">
-                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/baz-duncan.webp" type="image/webp">
-                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/jake-morrison .webp" type="image/webp">
-                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                 </div>
@@ -2205,7 +2210,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
@@ -2570,7 +2575,7 @@
     </script>
 
     <!-- Social Share -->
-    <script src="social-share.js"></script>
+    <script defer src="social-share.js"></script>
 
     <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>

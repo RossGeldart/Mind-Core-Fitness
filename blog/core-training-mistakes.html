@@ -107,8 +107,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Facebook Pixel -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -119,6 +120,9 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -126,7 +130,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -1209,7 +1214,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <a href="../index.html" class="nav-logo">
-            <img src="../Logo.PNG" alt="Mind Core Fitness" width="32" height="32">
+            <img loading="lazy" src="../Logo.PNG" alt="Mind Core Fitness" width="32" height="32" decoding="async">
         </a>
         <div class="nav-links">
             <a href="../index.html">Home</a>
@@ -1532,7 +1537,7 @@
     <footer>
         <picture>
             <source srcset="../Logo.webp" type="image/webp">
-            <img loading="lazy" src="../Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60">
+            <img loading="lazy" src="../Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60" decoding="async">
         </picture>
         <p class="footer-text">Strength. Mindset. Support.</p>
         <div class="footer-links">

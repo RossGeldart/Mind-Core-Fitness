@@ -147,8 +147,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -164,6 +165,9 @@
         content_category: 'Online Coaching',
         content_type: 'product'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -172,7 +176,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -2068,7 +2073,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -2131,7 +2136,7 @@
             <div class="hero-image">
                 <picture>
                     <source srcset="Mike Mortz.webp" type="image/webp">
-                    <img loading="lazy" src="Mike Mortz.jpg" alt="Online Coaching">
+                    <img loading="lazy" src="Mike Mortz.jpg" alt="Online Coaching" decoding="async">
                 </picture>
             </div>
         </div>
@@ -2290,7 +2295,7 @@
                 <div class="featured-image">
                     <picture>
                         <source srcset="Core 1.webp" type="image/webp">
-                        <img loading="lazy" src="Core 1.jpg" alt="12-Week Core Rebuild">
+                        <img loading="lazy" src="Core 1.jpg" alt="12-Week Core Rebuild" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2301,7 +2306,7 @@
                     <div class="programme-image">
                         <picture>
                             <source srcset="Circuit 2.webp" type="image/webp">
-                            <img loading="lazy" src="Circuit 2.jpg" alt="Core Foundation">
+                            <img loading="lazy" src="Circuit 2.jpg" alt="Core Foundation" decoding="async">
                         </picture>
                     </div>
                     <span class="programme-level">Beginner</span>
@@ -2317,7 +2322,7 @@
                     <div class="programme-image">
                         <picture>
                             <source srcset="Circuit 3.webp" type="image/webp">
-                            <img loading="lazy" src="Circuit 3.jpg" alt="Core Strength & Endurance">
+                            <img loading="lazy" src="Circuit 3.jpg" alt="Core Strength & Endurance" decoding="async">
                         </picture>
                     </div>
                     <span class="programme-level">Intermediate</span>
@@ -2333,7 +2338,7 @@
                     <div class="programme-image">
                         <picture>
                             <source srcset="Circuit Class 1.webp" type="image/webp">
-                            <img loading="lazy" src="Circuit Class 1.jpg" alt="Core Power & Control">
+                            <img loading="lazy" src="Circuit Class 1.jpg" alt="Core Power & Control" decoding="async">
                         </picture>
                     </div>
                     <span class="programme-level">Advanced</span>
@@ -2368,7 +2373,7 @@
                 <div class="everfit-image fade-in">
                     <picture>
                         <source srcset="Everfit.webp" type="image/webp">
-                        <img loading="lazy" src="Everfit.png" alt="Everfit App">
+                        <img loading="lazy" src="Everfit.png" alt="Everfit App" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2388,7 +2393,7 @@
                     <div class="testimonial-stars">★★★★★</div>
                     <p>"So far I have lost 25 kilos and still going. Ross is a good motivator and pushing me onwards to better and more physical work outs even at my tender age of 53."</p>
                     <div class="testimonial-author">
-                        <img loading="lazy" src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant">
+                        <img loading="lazy" src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant" decoding="async">
                         <div class="testimonial-author-info">
                             <strong>Scott Grant</strong>
                             <span>Lost 25 Kilos</span>
@@ -2401,7 +2406,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Emily Paterson.webp" type="image/webp">
-                            <img loading="lazy" src="Emily Paterson.jpg" alt="Emily Paterson">
+                            <img loading="lazy" src="Emily Paterson.jpg" alt="Emily Paterson" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Emily Paterson</strong>
@@ -2415,7 +2420,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Baz Duncan.webp" type="image/webp">
-                            <img loading="lazy" src="Baz Duncan.jpg" alt="Lee Bazzie Duncan">
+                            <img loading="lazy" src="Baz Duncan.jpg" alt="Lee Bazzie Duncan" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Lee Bazzie Duncan</strong>
@@ -2441,55 +2446,55 @@
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/charlie-anderson.webp" type="image/webp">
-                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/charlie-anderson.png" alt="Charlie Anderson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/russell-anderson.webp" type="image/webp">
-                            <img src="/images/client-results/russell-anderson.png" alt="Russell Anderson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/russell-anderson.png" alt="Russell Anderson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/ross-geldart.webp" type="image/webp">
-                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/ross-geldart.jpeg" alt="Ross Geldart - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/baz-duncan.webp" type="image/webp">
-                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/baz-duncan.png" alt="Baz Duncan - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/scott-grant.webp" type="image/webp">
-                            <img src="/images/client-results/scott-grant.png" alt="Scott Grant - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/scott-grant.png" alt="Scott Grant - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/james .webp" type="image/webp">
-                            <img src="/images/client-results/james .png" alt="James - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/james .png" alt="James - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/emily-paterson.webp" type="image/webp">
-                            <img src="/images/client-results/emily-paterson.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/emily-paterson.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/emily-paterson-2.webp" type="image/webp">
-                            <img src="/images/client-results/emily-paterson-2.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/emily-paterson-2.jpeg" alt="Emily Paterson - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                     <div class="carousel-slide">
                         <picture>
                             <source srcset="/images/client-results/jake-morrison .webp" type="image/webp">
-                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy">
+                            <img src="/images/client-results/jake-morrison .png" alt="Jake Morrison - Client Transformation" loading="lazy" decoding="async">
                         </picture>
                     </div>
                 </div>
@@ -2591,7 +2596,7 @@
                 <div class="contact-image fade-in">
                     <picture>
                         <source srcset="Gym 2.webp" type="image/webp">
-                        <img loading="lazy" src="Gym 2.jpg" alt="Contact">
+                        <img loading="lazy" src="Gym 2.jpg" alt="Contact" decoding="async">
                     </picture>
                 </div>
             </div>
@@ -2649,7 +2654,7 @@
         <div class="container">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness Logo" class="final-logo" decoding="async">
             </picture>
             <h2>Ready To Start Training?</h2>
             <p>Choose your programme and start building real strength, discipline, and habits that last - from anywhere in the world.</p>
@@ -2664,7 +2669,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
@@ -2961,7 +2966,7 @@
     </div>
 
     <!-- Social Share -->
-    <script src="social-share.js"></script>
+    <script defer src="social-share.js"></script>
 
     <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>

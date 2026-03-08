@@ -142,8 +142,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -161,13 +162,17 @@
       value: 0,
       currency: 'GBP'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
 
     <link rel="preload" as="image" href="core-buddy-assets/dashboard.PNG">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
 
     <style>
         /* ===== Reset ===== */
@@ -1505,7 +1510,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness" width="38" height="38">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="38" height="38" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -1790,7 +1795,7 @@
                     <div class="cb-testimonial-author">
                         <picture>
                             <source srcset="images/client-results/sharon-hughes.webp" type="image/webp">
-                            <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" loading="lazy" width="52" height="52">
+                            <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" loading="lazy" width="52" height="52" decoding="async">
                         </picture>
                         <div class="cb-testimonial-author-info">
                             <strong>Sharon Hughes</strong>
@@ -1803,7 +1808,7 @@
                     <div class="cb-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                     <p>&ldquo;Core Buddy has everything you need in one place to help you stay motivated and on track. It definitely plays a big role in helping me stay consistent in hitting my habits and food goals.&rdquo;</p>
                     <div class="cb-testimonial-author">
-                        <img src="images/client-results/georgia-laing.JPG" alt="Georgia Laing" loading="lazy" width="52" height="52">
+                        <img src="images/client-results/georgia-laing.JPG" alt="Georgia Laing" loading="lazy" width="52" height="52" decoding="async">
                         <div class="cb-testimonial-author-info">
                             <strong>Georgia Laing</strong>
                             <span>Core Buddy Member</span>
@@ -1870,7 +1875,7 @@
     <section class="final-cta">
         <picture>
             <source srcset="Logo.webp" type="image/webp">
-            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="final-logo" width="80" height="80">
+            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="final-logo" width="80" height="80" decoding="async">
         </picture>
         <h2>You've Got 5 Minutes.<br>That's Enough.</h2>
         <p>Stop putting it off. Hit Randomise, get your workout, and start building the consistency you've been after. No credit card. No app store. No excuses.</p>
@@ -1890,7 +1895,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
