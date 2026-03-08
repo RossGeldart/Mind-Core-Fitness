@@ -267,14 +267,15 @@
   animation: splash-logo-fade 1s ease-out both;
 }
 
-/* Phase 2: Text fades in after logo (no movement) */
+/* Phase 2: Text fades in below logo — fixed height so it never shifts layout */
 .native-login-splash-name {
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-  margin-top: 32px;
+  padding-top: 32px;
+  height: 70px;
   animation: splash-text-fade 0.8s ease-out 2s both;
   opacity: 0;
 }
