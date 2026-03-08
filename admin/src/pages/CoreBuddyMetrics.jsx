@@ -542,7 +542,7 @@ export default function CoreBuddyMetrics() {
       ctx.font = '600 24px Inter, system-ui, sans-serif';
       ctx.fillStyle = '#444';
       ctx.textAlign = 'center';
-      const drawPhoto = (img, x, y, w, h) => {
+      const drawPhoto = (img, x, y, w, h, zoom) => {
         if (!img) {
           ctx.fillStyle = '#e0e0e0';
           rRect(ctx, x, y, w, h, 16);
@@ -555,6 +555,7 @@ export default function CoreBuddyMetrics() {
           ctx.fillStyle = '#444';
           return;
         }
+        // Crop source to 3:4 aspect (object-fit: cover equivalent)
         const imgRatio = img.width / img.height;
         const targetRatio = w / h;
         let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -568,6 +569,17 @@ export default function CoreBuddyMetrics() {
         ctx.save();
         rRect(ctx, x, y, w, h, 16);
         ctx.clip();
+        // Apply zoom/pan: translate to center, apply scale + pan, translate back
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+        const { scale = 1, x: panX = 0, y: panY = 0 } = zoom || {};
+        // Screen container is roughly half the overlay width (~180px on phone)
+        // Scale pan from screen pixels to canvas pixels
+        const screenW = 170; // approximate on-screen photo width in px
+        const ratio = w / screenW;
+        ctx.translate(cx + panX * ratio, cy + panY * ratio);
+        ctx.scale(scale, scale);
+        ctx.translate(-cx, -cy);
         ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         ctx.restore();
       };
@@ -578,8 +590,8 @@ export default function CoreBuddyMetrics() {
       ctx.textAlign = 'center';
       ctx.fillText(formatPeriod(compareA), x1 + photoW / 2, yLabel);
       ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, yLabel);
-      drawPhoto(imgA, x1, yPhoto, photoW, photoH);
-      drawPhoto(imgB, x2, yPhoto, photoW, photoH);
+      drawPhoto(imgA, x1, yPhoto, photoW, photoH, zoomA);
+      drawPhoto(imgB, x2, yPhoto, photoW, photoH, zoomB);
       const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
       const file = new File([blob], 'progress-compare.jpg', { type: 'image/jpeg' });
       if (navigator.canShare?.({ files: [file] })) {
