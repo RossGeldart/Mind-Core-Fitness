@@ -559,50 +559,68 @@ export default function CoreBuddyMetrics() {
         img.onerror = () => resolve(null);
         img.src = '/Logo.webp';
       });
-      const W = 1080;
-      const gap = 20;
-      const photoW = Math.floor((W - gap * 3) / 2);
+
+      // --- Layout: 1200×1200 square ---
+      const S = 1200;
+      const pad = 48;            // padding from edges
+      const gap = 20;            // gap between the two photos
+      const labelH = 36;         // space for date text above photos
+      const labelGap = 12;       // gap between label and photo top
+      const logoDiam = 120;      // circular logo diameter
+      const logoBottomPad = 40;  // space from logo bottom to canvas bottom
+
+      // Photos: fill available width, 3:4 aspect, centred vertically
+      const photoW = Math.floor((S - pad * 2 - gap) / 2);
       const photoH = Math.floor(photoW * 4 / 3);
-      const labelH = 48;
-      const logoH = logoImg ? 60 : 0;
-      const logoGap = logoImg ? 16 : 0;
-      const H = gap + labelH + photoH + gap + logoH + logoGap;
+      // Vertical positioning: centre the block (labels + photos + logo) in the square
+      const contentH = labelH + labelGap + photoH + gap + logoDiam;
+      const topY = Math.floor((S - contentH) / 2);
+
       const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
+      canvas.width = S;
+      canvas.height = S;
       const ctx = canvas.getContext('2d');
 
-      // Draw blurred photo as background
+      // --- Layer 1: Blurred photo background + dark overlay ---
       const bgImg = imgA || imgB;
       if (bgImg) {
         ctx.save();
-        ctx.filter = 'blur(40px) brightness(0.45)';
-        // Draw oversize to avoid transparent blur edges
-        const margin = 80;
-        ctx.drawImage(bgImg, -margin, -margin, W + margin * 2, H + margin * 2);
+        ctx.filter = 'blur(50px)';
+        const margin = 100;
+        ctx.drawImage(bgImg, -margin, -margin, S + margin * 2, S + margin * 2);
         ctx.restore();
+        // Dark overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillRect(0, 0, S, S);
       } else {
         ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, W, H);
+        ctx.fillRect(0, 0, S, S);
       }
 
-      ctx.font = '600 24px Inter, system-ui, sans-serif';
+      // --- Layer 2: Date labels (on blurred bg, above photos) ---
+      const x1 = pad;
+      const x2 = pad + photoW + gap;
+      ctx.font = '600 28px Inter, system-ui, sans-serif';
       ctx.fillStyle = '#fff';
       ctx.textAlign = 'center';
+      ctx.fillText(formatPeriod(compareA), x1 + photoW / 2, topY + labelH - 4);
+      ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, topY + labelH - 4);
+
+      // --- Layer 3: Two comparison photos ---
+      const yPhoto = topY + labelH + labelGap;
       const drawPhoto = (img, x, y, w, h, zoom) => {
         if (!img) {
-          ctx.fillStyle = '#e0e0e0';
+          ctx.save();
           rRect(ctx, x, y, w, h, 16);
+          ctx.fillStyle = 'rgba(255,255,255,0.08)';
           ctx.fill();
-          ctx.fillStyle = '#888';
-          ctx.font = '500 20px Inter, system-ui, sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.font = '500 22px Inter, system-ui, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText('No photo', x + w / 2, y + h / 2 + 7);
-          ctx.font = '600 24px Inter, system-ui, sans-serif';
-          ctx.fillStyle = '#fff';
+          ctx.restore();
           return;
         }
-        // Crop source to 3:4 aspect (object-fit: cover equivalent)
         const imgRatio = img.width / img.height;
         const targetRatio = w / h;
         let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -616,13 +634,10 @@ export default function CoreBuddyMetrics() {
         ctx.save();
         rRect(ctx, x, y, w, h, 16);
         ctx.clip();
-        // Apply zoom/pan: translate to center, apply scale + pan, translate back
         const cx = x + w / 2;
         const cy = y + h / 2;
         const { scale = 1, x: panX = 0, y: panY = 0 } = zoom || {};
-        // Screen container is roughly half the overlay width (~180px on phone)
-        // Scale pan from screen pixels to canvas pixels
-        const screenW = 170; // approximate on-screen photo width in px
+        const screenW = 170;
         const ratio = w / screenW;
         ctx.translate(cx + panX * ratio, cy + panY * ratio);
         ctx.scale(scale, scale);
@@ -630,24 +645,28 @@ export default function CoreBuddyMetrics() {
         ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         ctx.restore();
       };
-      const x1 = gap;
-      const x2 = gap + photoW + gap;
-      const yLabel = gap + 28;
-      const yPhoto = gap + labelH;
-      ctx.textAlign = 'center';
-      ctx.fillText(formatPeriod(compareA), x1 + photoW / 2, yLabel);
-      ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, yLabel);
       drawPhoto(imgA, x1, yPhoto, photoW, photoH, zoomA);
       drawPhoto(imgB, x2, yPhoto, photoW, photoH, zoomB);
-      // Draw logo centered below photos
+
+      // --- Layer 4: Circular logo centred at bottom ---
       if (logoImg) {
-        const logoAspect = logoImg.width / logoImg.height;
-        const drawLogoH = logoH;
-        const drawLogoW = drawLogoH * logoAspect;
-        const logoX = (W - drawLogoW) / 2;
-        const logoY = gap + labelH + photoH + logoGap;
-        ctx.drawImage(logoImg, logoX, logoY, drawLogoW, drawLogoH);
+        const logoX = S / 2;
+        const logoY = yPhoto + photoH + gap + logoDiam / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(logoX, logoY, logoDiam / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(logoImg, logoX - logoDiam / 2, logoY - logoDiam / 2, logoDiam, logoDiam);
+        ctx.restore();
+        // Subtle ring around the circle
+        ctx.beginPath();
+        ctx.arc(logoX, logoY, logoDiam / 2 + 2, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
+
       const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
       const file = new File([blob], 'progress-compare.jpg', { type: 'image/jpeg' });
       if (navigator.canShare?.({ files: [file] })) {
