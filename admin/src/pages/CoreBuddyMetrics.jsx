@@ -571,9 +571,10 @@ export default function CoreBuddyMetrics() {
       // Photos: fill available width, 3:4 aspect, centred vertically
       const photoW = Math.floor((S - pad * 2 - gap) / 2);
       const photoH = Math.floor(photoW * 4 / 3);
-      // Vertical positioning: centre the block (labels + photos + logo) in the square
-      const contentH = labelH + labelGap + photoH + gap + logoDiam;
-      const topY = Math.floor((S - contentH) / 2);
+      // Centre the labels+photos block; logo overlaps bottom of photos so excluded
+      const contentH = labelH + labelGap + photoH;
+      // Shift up slightly so the logo half below photos has room
+      const topY = Math.floor((S - contentH) / 2) - logoDiam / 4;
 
       const canvas = document.createElement('canvas');
       canvas.width = S;
@@ -654,10 +655,10 @@ export default function CoreBuddyMetrics() {
       drawPhoto(imgA, x1, yPhoto, photoW, photoH, zoomA);
       drawPhoto(imgB, x2, yPhoto, photoW, photoH, zoomB);
 
-      // --- Layer 4: Circular logo centred at bottom ---
+      // --- Layer 4: Circular logo — half on photos, half on background ---
       if (logoImg) {
         const logoX = S / 2;
-        const logoY = yPhoto + photoH + gap + logoDiam / 2;
+        const logoY = yPhoto + photoH; // centre at bottom edge of photos
         ctx.save();
         ctx.beginPath();
         ctx.arc(logoX, logoY, logoDiam / 2, 0, Math.PI * 2);
