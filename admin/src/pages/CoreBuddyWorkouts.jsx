@@ -572,22 +572,6 @@ function shuffleArray(arr) {
   return a;
 }
 
-// Lazy-loading video thumbnail — only sets src once the element is in viewport
-function LazyVideo({ src, ...props }) {
-  const vidRef = useRef(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = vidRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); io.disconnect(); }
-    }, { rootMargin: '200px' });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return <video ref={vidRef} src={inView ? src : undefined} {...props} />;
-}
-
 // Static thumbnail — captures first frame of video/gif onto a canvas (no autoplay)
 function StaticThumb({ src, isGif }) {
   const containerRef = useRef(null);
@@ -3700,11 +3684,7 @@ export default function CoreBuddyWorkouts() {
               <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }} onClick={() => setPreviewEx(ex)}>
                 <span className="wk-preview-num">{i + 1}</span>
                 <div className="wk-preview-thumb">
-                  {ex.isGif ? (
-                    <img src={ex.videoUrl} alt={ex.name} loading="lazy" />
-                  ) : (
-                    <LazyVideo src={`${ex.videoUrl}#t=0.1`} muted playsInline preload="metadata" />
-                  )}
+                  <StaticThumb src={ex.videoUrl} isGif={ex.isGif} />
                 </div>
                 <span className="wk-preview-name">{ex.name}</span>
                 <svg className="wk-preview-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
