@@ -22,16 +22,27 @@ export default function NativeLogin() {
   const [verificationSent, setVerificationSent] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMsg, setResendMsg] = useState('');
+  const [splashReady, setSplashReady] = useState(false);
   const { login, signup, loginWithGoogle, loginWithApple, resetPassword, currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // When auth resolves for a returning user, hold the welcome splash for 2s
+  useEffect(() => {
+    if (!authLoading && currentUser && (isAdmin || isClient)) {
+      const timer = setTimeout(() => setSplashReady(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, currentUser, isAdmin, isClient]);
+
+  // Redirect after splash has shown
   useEffect(() => {
     if (!authLoading && currentUser) {
       if (!currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
         setVerificationSent(true);
         return;
       }
+      // Wait for the welcome splash to finish before navigating
+      if (!splashReady && (isAdmin || isClient)) return;
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
@@ -41,7 +52,7 @@ export default function NativeLogin() {
         setError('No account found. Please contact your trainer.');
       }
     }
-  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate, splashReady]);
 
   // Poll for email verification
   useEffect(() => {

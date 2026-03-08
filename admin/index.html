@@ -59,9 +59,11 @@
       }
       [data-theme="dark"] #app-loader { background: #111114; }
       .app-loader-logo {
-        width: 90px;
-        height: 90px;
-        object-fit: contain;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #C83846;
         animation: app-fade-in .4s ease-out;
       }
       .app-loader-spinner {
@@ -79,7 +81,7 @@
   <body>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
     <div id="root">
-      <div id="app-loader"><img src="/Logo.webp" alt="Mind Core Fitness" class="app-loader-logo" width="90" height="90" /><div class="app-loader-spinner"></div></div>
+      <div id="app-loader"><img src="/Logo.webp" alt="Mind Core Fitness" class="app-loader-logo" width="120" height="120" /><div class="app-loader-spinner"></div></div>
     </div>
     <script>
       window.addEventListener('error', function(e) {
