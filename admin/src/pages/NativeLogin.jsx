@@ -81,10 +81,7 @@ export default function NativeLogin() {
         <div className="native-login-splash-inner">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
           {firstName && (
-            <div className="native-login-splash-text">
-              <span>Hello {firstName},</span>
-              <span>Welcome back</span>
-            </div>
+            <h1 className="native-login-splash-name">Welcome back, {firstName}</h1>
           )}
         </div>
       </div>
