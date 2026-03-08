@@ -232,12 +232,36 @@
 
 /* ── Loading spinner ── */
 
-.native-login-loading {
+.native-login-loading,
+.native-login-splash {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: var(--bg-body);
+  gap: 24px;
+}
+
+.native-login-splash-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  animation: splash-fade-in .4s ease-out;
+}
+
+.native-login-splash-name {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  animation: splash-fade-in .5s ease-out .15s both;
+}
+
+@keyframes splash-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 

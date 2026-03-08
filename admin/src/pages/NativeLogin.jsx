@@ -60,8 +60,11 @@ export default function NativeLogin() {
   }, [verificationSent, currentUser, navigate]);
 
   if (authLoading || currentUser) {
+    const displayName = clientData?.name || currentUser?.displayName;
     return (
-      <div className="native-login-loading">
+      <div className="native-login-splash">
+        <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
+        {displayName && <h1 className="native-login-splash-name">Welcome back, {displayName.split(' ')[0]}</h1>}
         <div className="native-login-spinner" />
       </div>
     );
