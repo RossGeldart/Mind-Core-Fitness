@@ -30,9 +30,9 @@ export default function NativeLogin() {
   // When auth resolves for a returning user, hold the welcome splash then fade out
   useEffect(() => {
     if (!authLoading && currentUser && (isAdmin || isClient)) {
-      // 3s slide-up animation + 2s hold = 5s, then fade out over 0.6s
-      const holdTimer = setTimeout(() => setSplashFading(true), 5000);
-      const navTimer = setTimeout(() => setSplashReady(true), 5600);
+      // Logo fade-in 0.8s + hold 0.7s + logo slide-up 0.8s + text fade-in 0.8s + hold 1.5s = ~4.6s, then fade out 0.6s
+      const holdTimer = setTimeout(() => setSplashFading(true), 4600);
+      const navTimer = setTimeout(() => setSplashReady(true), 5200);
       return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
     }
   }, [authLoading, currentUser, isAdmin, isClient]);
@@ -75,13 +75,17 @@ export default function NativeLogin() {
 
   if (authLoading || currentUser) {
     const displayName = clientData?.name || currentUser?.displayName;
+    const firstName = displayName ? displayName.split(' ')[0] : null;
     return (
       <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
         <div className="native-login-splash-inner">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
-          <h1 className="native-login-splash-name" style={displayName ? undefined : { visibility: 'hidden' }}>
-            {displayName ? `Welcome back, ${displayName.split(' ')[0]}` : '\u00A0'}
-          </h1>
+          {firstName && (
+            <div className="native-login-splash-text">
+              <span>Hello {firstName},</span>
+              <span>Welcome back</span>
+            </div>
+          )}
         </div>
       </div>
     );

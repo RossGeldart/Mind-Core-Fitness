@@ -684,9 +684,17 @@
   font-weight: 900 !important;
 }
 
-/* Welcome splash animation */
-@keyframes splash-slide-up {
-  from { opacity: 0; transform: translateY(20px); }
+/* Welcome splash animations */
+@keyframes splash-logo-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes splash-logo-slideup {
+  from { transform: translateY(0); }
+  to { transform: translateY(-30px); }
+}
+@keyframes splash-text-enter {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
