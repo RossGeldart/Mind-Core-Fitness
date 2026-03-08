@@ -255,28 +255,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
-  animation: splash-slide-up 3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Phase 1: Logo fades in at center, pauses, then slides up */
 .native-login-splash-logo {
   width: 140px;
   height: 140px;
   object-fit: cover;
   border-radius: 50%;
   border: 3px solid var(--color-primary);
+  opacity: 0;
+  animation:
+    splash-logo-fadein 0.8s ease-out forwards,
+    splash-logo-slideup 0.8s cubic-bezier(0.33, 1, 0.68, 1) 1.5s forwards;
 }
 
-.native-login-splash-name {
+/* Phase 2: Text fades in + slides up after logo settles */
+.native-login-splash-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 28px;
+  opacity: 0;
+  animation: splash-text-enter 0.8s cubic-bezier(0.33, 1, 0.68, 1) 2.6s forwards;
+}
+
+.native-login-splash-text span {
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
-@keyframes splash-slide-up {
-  from { opacity: 0; transform: translateY(20px); }
+@keyframes splash-logo-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes splash-logo-slideup {
+  from { transform: translateY(0); }
+  to { transform: translateY(-30px); }
+}
+
+@keyframes splash-text-enter {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
