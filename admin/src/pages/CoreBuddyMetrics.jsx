@@ -4,7 +4,7 @@ import {
   collection, query, where, getDocs, doc, getDoc, setDoc,
   updateDoc, deleteDoc, serverTimestamp, Timestamp
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, getBlob } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -499,19 +499,9 @@ export default function CoreBuddyMetrics() {
     setSavingCompare(true);
     try {
       const loadImg = async (url) => {
-        // Use Capacitor native HTTP on iOS to bypass CORS
-        let blob;
-        if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
-          const { CapacitorHttp } = await import('@capacitor/core');
-          const resp = await CapacitorHttp.get({ url, responseType: 'blob' });
-          const binary = atob(resp.data);
-          const bytes = new Uint8Array(binary.length);
-          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-          blob = new Blob([bytes], { type: resp.headers['content-type'] || 'image/jpeg' });
-        } else {
-          const resp = await fetch(url);
-          blob = await resp.blob();
-        }
+        // Use Firebase SDK getBlob to avoid CORS issues with storage URLs
+        const storageRef = ref(storage, url);
+        const blob = await getBlob(storageRef);
         const objectUrl = URL.createObjectURL(blob);
         return new Promise((resolve, reject) => {
           const img = new Image();
