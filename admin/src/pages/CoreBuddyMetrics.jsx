@@ -424,8 +424,8 @@ export default function CoreBuddyMetrics() {
         photos: newPhotos,
       });
 
+      setPhotos(prev => ({ ...prev, [photoUploadPeriod]: newPhotos }));
       showToast('Photo uploaded!', 'success');
-      await loadData();
     } catch (err) {
       console.error('Photo upload error:', err);
       showToast('Upload failed — try again', 'error');
@@ -451,8 +451,16 @@ export default function CoreBuddyMetrics() {
           photos: updated,
         });
       }
+      setPhotos(prev => {
+        const next = { ...prev };
+        if (updated.length === 0) {
+          delete next[period];
+        } else {
+          next[period] = updated;
+        }
+        return next;
+      });
       showToast('Photo removed', 'info');
-      await loadData();
     } catch (err) {
       console.error('Delete photo error:', err);
       showToast('Error removing photo', 'error');
