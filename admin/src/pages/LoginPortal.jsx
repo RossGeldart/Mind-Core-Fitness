@@ -83,7 +83,7 @@ export default function LoginPortal() {
       <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
         <div className="native-login-splash-inner">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
-          {displayName && <h1 className="native-login-splash-name">Welcome back, {displayName.split(' ')[0]}</h1>}
+          <h1 className="native-login-splash-name">{displayName ? `Welcome back, ${displayName.split(' ')[0]}` : '\u00A0'}</h1>
         </div>
       </div>
     );

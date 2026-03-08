@@ -80,9 +80,7 @@ export default function NativeLogin() {
       <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
         <div className="native-login-splash-inner">
           <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
-          {firstName && (
-            <h1 className="native-login-splash-name">Welcome back, {firstName}</h1>
-          )}
+          <h1 className="native-login-splash-name">{firstName ? `Welcome back, ${firstName}` : '\u00A0'}</h1>
         </div>
       </div>
     );
