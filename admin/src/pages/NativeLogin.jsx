@@ -23,14 +23,16 @@ export default function NativeLogin() {
   const [resending, setResending] = useState(false);
   const [resendMsg, setResendMsg] = useState('');
   const [splashReady, setSplashReady] = useState(false);
+  const [splashFading, setSplashFading] = useState(false);
   const { login, signup, loginWithGoogle, loginWithApple, resetPassword, currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // When auth resolves for a returning user, hold the welcome splash for 2s
+  // When auth resolves for a returning user, hold the welcome splash then fade out
   useEffect(() => {
     if (!authLoading && currentUser && (isAdmin || isClient)) {
-      const timer = setTimeout(() => setSplashReady(true), 2000);
-      return () => clearTimeout(timer);
+      const holdTimer = setTimeout(() => setSplashFading(true), 3000);
+      const navTimer = setTimeout(() => setSplashReady(true), 3600);
+      return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
     }
   }, [authLoading, currentUser, isAdmin, isClient]);
 
@@ -73,10 +75,9 @@ export default function NativeLogin() {
   if (authLoading || currentUser) {
     const displayName = clientData?.name || currentUser?.displayName;
     return (
-      <div className="native-login-splash">
+      <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
         <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
         {displayName && <h1 className="native-login-splash-name">Welcome back, {displayName.split(' ')[0]}</h1>}
-        <div className="native-login-spinner" />
       </div>
     );
   }
