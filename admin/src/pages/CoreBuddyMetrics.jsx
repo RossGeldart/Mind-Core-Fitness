@@ -424,8 +424,8 @@ export default function CoreBuddyMetrics() {
         photos: newPhotos,
       });
 
+      setPhotos(prev => ({ ...prev, [photoUploadPeriod]: newPhotos }));
       showToast('Photo uploaded!', 'success');
-      await loadData();
     } catch (err) {
       console.error('Photo upload error:', err);
       showToast('Upload failed — try again', 'error');
@@ -451,8 +451,16 @@ export default function CoreBuddyMetrics() {
           photos: updated,
         });
       }
+      setPhotos(prev => {
+        const next = { ...prev };
+        if (updated.length === 0) {
+          delete next[period];
+        } else {
+          next[period] = updated;
+        }
+        return next;
+      });
       showToast('Photo removed', 'info');
-      await loadData();
     } catch (err) {
       console.error('Delete photo error:', err);
       showToast('Error removing photo', 'error');
@@ -498,15 +506,23 @@ export default function CoreBuddyMetrics() {
     if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
     setSavingCompare(true);
     try {
-      const loadImg = (url) => new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        const timeout = setTimeout(() => reject(new Error('Image load timeout')), 15000);
-        img.onload = () => { clearTimeout(timeout); resolve(img); };
-        img.onerror = () => { clearTimeout(timeout); reject(new Error('Image load failed')); };
-        // Append cache-bust to force CORS-aware reload (browser may have cached non-CORS version)
-        img.src = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
-      });
+      const loadImg = (url) => {
+        // Extract storage path from Firebase download URL and use Cloud Function proxy
+        // URL format: https://firebasestorage.googleapis.com/v0/b/BUCKET/o/ENCODED_PATH?alt=media&token=xxx
+        const pathMatch = url.match(/\/o\/([^?]+)/);
+        const storagePath = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+        const proxyUrl = storagePath
+          ? `https://europe-west2-mind-core-fitness-client.cloudfunctions.net/imageProxy?path=${encodeURIComponent(storagePath)}`
+          : url;
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          const timeout = setTimeout(() => reject(new Error('Image load timeout')), 15000);
+          img.onload = () => { clearTimeout(timeout); resolve(img); };
+          img.onerror = () => { clearTimeout(timeout); reject(new Error('Image load failed')); };
+          img.src = proxyUrl;
+        });
+      };
       const rRect = (ctx2, x, y, w, h, r) => {
         ctx2.beginPath();
         ctx2.moveTo(x + r, y);

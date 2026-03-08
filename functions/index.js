@@ -1,8 +1,10 @@
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
+const { onRequest } = require('firebase-functions/v2/https');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
+const { getStorage } = require('firebase-admin/storage');
 
 initializeApp();
 const db = getFirestore();
@@ -229,3 +231,29 @@ exports.dailyEveningNotification = onSchedule(
     console.log(`Evening notification created for ${count} clients`);
   }
 );
+
+/**
+ * Image proxy for progress photos — serves storage images with CORS headers
+ * so the browser can draw them onto a canvas for the share feature.
+ * Usage: /imageProxy?path=progressPhotos/userId/period/img.jpg
+ */
+exports.imageProxy = onRequest({ region: 'europe-west2', cors: true }, async (req, res) => {
+  const filePath = req.query.path;
+  if (!filePath || typeof filePath !== 'string' || !filePath.startsWith('progressPhotos/')) {
+    res.status(400).send('Invalid path');
+    return;
+  }
+  try {
+    const bucket = getStorage().bucket();
+    const file = bucket.file(filePath);
+    const [exists] = await file.exists();
+    if (!exists) { res.status(404).send('Not found'); return; }
+    const [metadata] = await file.getMetadata();
+    res.set('Content-Type', metadata.contentType || 'image/jpeg');
+    res.set('Cache-Control', 'public, max-age=86400');
+    file.createReadStream().pipe(res);
+  } catch (err) {
+    console.error('imageProxy error:', err);
+    res.status(500).send('Error');
+  }
+});
