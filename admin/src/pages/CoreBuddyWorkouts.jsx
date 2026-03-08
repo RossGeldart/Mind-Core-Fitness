@@ -350,6 +350,7 @@ export default function CoreBuddyWorkouts() {
   const spinMinDone = useRef(false);
   const thumbsAllReady = useRef(false);
   const tryRevealPreview = useRef(() => {});
+  const previewTimers = useRef([]);
   // Called by each StaticThumb via onReady in the preview view
   const handleThumbReady = useCallback(() => {
     thumbsReadyCount.current += 1;
@@ -857,6 +858,8 @@ export default function CoreBuddyWorkouts() {
     setRounds(numRounds);
     setFocusArea('mix');
     setByoLoading(false);
+    previewTimers.current.forEach(clearTimeout);
+    previewTimers.current = [];
     setView('countdown');
     setStartCountdown(3);
   };
@@ -1013,6 +1016,8 @@ export default function CoreBuddyWorkouts() {
       setDuration(Math.ceil(exercises.length * numRounds * (config.work + config.rest) / 60));
       setByoLoading(false);
       setFabOpen(false);
+      previewTimers.current.forEach(clearTimeout);
+      previewTimers.current = [];
       setView('countdown');
       setStartCountdown(3);
     } else {
@@ -1267,13 +1272,20 @@ export default function CoreBuddyWorkouts() {
     tryRevealPreview.current = reveal;
 
     setView('preview_loading');
-    setTimeout(() => { spinMinDone.current = true; reveal(); }, 2000);
-    // Safety net: if thumbs don't load within 6s, reveal anyway
-    setTimeout(() => { thumbsAllReady.current = true; reveal(); }, 6000);
+    // Clear any leftover timers from a previous generate
+    previewTimers.current.forEach(clearTimeout);
+    previewTimers.current = [
+      setTimeout(() => { spinMinDone.current = true; reveal(); }, 2000),
+      // Safety net: if thumbs don't load within 6s, reveal anyway
+      setTimeout(() => { thumbsAllReady.current = true; reveal(); }, 6000),
+    ];
   };
 
   // Start workout (3-2-1 countdown then go)
   const startWorkout = () => {
+    // Cancel any pending preview reveal timers so they can't override the view
+    previewTimers.current.forEach(clearTimeout);
+    previewTimers.current = [];
     setView('countdown');
     setStartCountdown(3);
   };
