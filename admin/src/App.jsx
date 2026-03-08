@@ -87,7 +87,7 @@ function App() {
         <BrowserRouter basename={basename}>
           <RedirectHandler />
           <ScrollToTop>
-          <Suspense fallback={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 24 }}><img src="/Logo.webp" alt="" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)' }} /><div style={{ width: 28, height: 28, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} /></div>}>
+          <Suspense fallback={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}><img src="/Logo.webp" alt="" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'app-fade-in 1s ease-out both' }} /></div>}>
           <Routes>
             <Route path="/" element={isNative ? <NativeLogin /> : <LoginPortal />} />
             <Route path="/login" element={isNative ? <NativeLogin /> : <Login />} />
