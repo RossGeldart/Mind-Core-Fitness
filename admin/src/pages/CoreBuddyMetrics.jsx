@@ -499,8 +499,19 @@ export default function CoreBuddyMetrics() {
     setSavingCompare(true);
     try {
       const loadImg = async (url) => {
-        const resp = await fetch(url);
-        const blob = await resp.blob();
+        // Use Capacitor native HTTP on iOS to bypass CORS
+        let blob;
+        if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) {
+          const { CapacitorHttp } = await import('@capacitor/core');
+          const resp = await CapacitorHttp.get({ url, responseType: 'blob' });
+          const binary = atob(resp.data);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+          blob = new Blob([bytes], { type: resp.headers['content-type'] || 'image/jpeg' });
+        } else {
+          const resp = await fetch(url);
+          blob = await resp.blob();
+        }
         const objectUrl = URL.createObjectURL(blob);
         return new Promise((resolve, reject) => {
           const img = new Image();
@@ -508,6 +519,19 @@ export default function CoreBuddyMetrics() {
           img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image')); };
           img.src = objectUrl;
         });
+      };
+      const rRect = (ctx2, x, y, w, h, r) => {
+        ctx2.beginPath();
+        ctx2.moveTo(x + r, y);
+        ctx2.lineTo(x + w - r, y);
+        ctx2.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx2.lineTo(x + w, y + h - r);
+        ctx2.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx2.lineTo(x + r, y + h);
+        ctx2.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx2.lineTo(x, y + r);
+        ctx2.quadraticCurveTo(x, y, x + r, y);
+        ctx2.closePath();
       };
       const [imgA, imgB] = await Promise.all([
         urlA ? loadImg(urlA) : null,
@@ -531,8 +555,7 @@ export default function CoreBuddyMetrics() {
       const drawPhoto = (img, x, y, w, h) => {
         if (!img) {
           ctx.fillStyle = '#e0e0e0';
-          ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 16);
+          rRect(ctx, x, y, w, h, 16);
           ctx.fill();
           ctx.fillStyle = '#999';
           ctx.font = '500 20px Inter, system-ui, sans-serif';
@@ -553,8 +576,7 @@ export default function CoreBuddyMetrics() {
           sy = (img.height - sh) / 2;
         }
         ctx.save();
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, 16);
+        rRect(ctx, x, y, w, h, 16);
         ctx.clip();
         ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         ctx.restore();
@@ -583,7 +605,7 @@ export default function CoreBuddyMetrics() {
     } catch (err) {
       if (err.name !== 'AbortError') {
         console.error('Save compare error:', err);
-        showToast('Failed to save photo', 'error');
+        showToast(err.message || 'Failed to save photo', 'error');
       }
     } finally {
       setSavingCompare(false);
