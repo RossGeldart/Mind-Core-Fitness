@@ -4520,7 +4520,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: cbFabOverlayIn 0.15s ease;
+  animation: cbFabOverlayIn 0.15s ease forwards;
 }
 
 .reps-picker-sheet {
@@ -4528,7 +4528,7 @@
   border-radius: 18px 18px 0 0;
   width: 100%;
   max-width: 420px;
-  animation: repsSheetIn 0.25s ease;
+  animation: repsSheetIn 0.25s ease forwards;
   overflow: hidden;
 }
 @keyframes repsSheetIn {
@@ -4904,7 +4904,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: cbFabOverlayIn 0.2s ease;
+  animation: cbFabOverlayIn 0.2s ease forwards;
 }
 
 .wk-saved-overlay-card {
@@ -4916,7 +4916,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: cbFabSheetIn 0.3s ease;
+  animation: cbFabSheetIn 0.3s ease forwards;
 }
 
 .wk-saved-overlay-header {
@@ -5199,4 +5199,25 @@
   border-color: var(--color-primary);
   background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
   color: var(--color-primary);
+}
+
+/* ── Missing keyframes (shared with Dashboard but needed independently) ── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cbFabOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cbFabSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes cbFabItemIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
