@@ -255,8 +255,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  animation: splash-slide-up 2s ease-out both;
+  gap: 32px;
+  animation: splash-slide-up 3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .native-login-splash-logo {
@@ -276,7 +276,7 @@
 }
 
 @keyframes splash-slide-up {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
