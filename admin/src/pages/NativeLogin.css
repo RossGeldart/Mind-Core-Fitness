@@ -244,19 +244,21 @@
 }
 
 .native-login-splash-logo {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  animation: splash-fade-in .4s ease-out;
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary);
+  animation: splash-fade-in .5s ease-out;
 }
 
 .native-login-splash-name {
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-  animation: splash-fade-in .5s ease-out .15s both;
+  animation: splash-fade-in .5s ease-out .2s both;
 }
 
 @keyframes splash-fade-in {

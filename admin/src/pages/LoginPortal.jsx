@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../contexts/AuthContext';
@@ -42,6 +42,7 @@ const PORTAL_OPTIONS = [
 export default function LoginPortal() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
+  const [splashReady, setSplashReady] = useState(false);
 
   // On native (App Store), skip the portal — only Core Buddy is available
   const isNative = Capacitor.isNativePlatform();
@@ -51,22 +52,33 @@ export default function LoginPortal() {
     }
   }, [isNative, navigate]);
 
-  // If already logged in, skip the portal and go straight to the dashboard
+  // When auth resolves for a returning user, hold the welcome splash for 2s
+  useEffect(() => {
+    if (!authLoading && currentUser && (isAdmin || isClient)) {
+      const timer = setTimeout(() => setSplashReady(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, currentUser, isAdmin, isClient]);
+
+  // If already logged in, wait for splash then redirect
   useEffect(() => {
     if (!authLoading && currentUser) {
+      if (!splashReady && (isAdmin || isClient)) return;
       if (isAdmin) {
         navigate('/dashboard', { replace: true });
       } else if (isClient) {
         navigate(getClientHomePath(clientData), { replace: true });
       }
     }
-  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate, splashReady]);
 
-  // Show branded splash while checking auth state, native redirect, or while navigating a resolved user
+  // Show branded welcome splash while checking auth / holding for returning users
   if (isNative || authLoading || (currentUser && (isAdmin || isClient))) {
+    const displayName = clientData?.name || currentUser?.displayName;
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)', gap: 24 }}>
-        <img src="/Logo.webp" alt="Mind Core Fitness" style={{ width: 90, height: 90, objectFit: 'contain' }} />
+        <img src="/Logo.webp" alt="Mind Core Fitness" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'splash-fade-in .5s ease-out' }} />
+        {displayName && <h1 style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0, animation: 'splash-fade-in .5s ease-out .2s both' }}>Welcome back, {displayName.split(' ')[0]}</h1>}
         <div style={{ width: 28, height: 28, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
       </div>
     );
