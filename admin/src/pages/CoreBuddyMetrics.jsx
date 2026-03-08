@@ -552,32 +552,54 @@ export default function CoreBuddyMetrics() {
         urlA ? loadImg(urlA) : null,
         urlB ? loadImg(urlB) : null,
       ]);
+      // Load logo
+      const logoImg = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = '/Logo.webp';
+      });
       const W = 1080;
       const gap = 20;
       const photoW = Math.floor((W - gap * 3) / 2);
       const photoH = Math.floor(photoW * 4 / 3);
       const labelH = 48;
-      const H = gap + labelH + photoH + gap;
+      const logoH = logoImg ? 60 : 0;
+      const logoGap = logoImg ? 16 : 0;
+      const H = gap + labelH + photoH + gap + logoH + logoGap;
       const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#f0f0f0';
-      ctx.fillRect(0, 0, W, H);
+
+      // Draw blurred photo as background
+      const bgImg = imgA || imgB;
+      if (bgImg) {
+        ctx.save();
+        ctx.filter = 'blur(40px) brightness(0.45)';
+        // Draw oversize to avoid transparent blur edges
+        const margin = 80;
+        ctx.drawImage(bgImg, -margin, -margin, W + margin * 2, H + margin * 2);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, W, H);
+      }
+
       ctx.font = '600 24px Inter, system-ui, sans-serif';
-      ctx.fillStyle = '#444';
+      ctx.fillStyle = '#fff';
       ctx.textAlign = 'center';
       const drawPhoto = (img, x, y, w, h, zoom) => {
         if (!img) {
           ctx.fillStyle = '#e0e0e0';
           rRect(ctx, x, y, w, h, 16);
           ctx.fill();
-          ctx.fillStyle = '#999';
+          ctx.fillStyle = '#888';
           ctx.font = '500 20px Inter, system-ui, sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText('No photo', x + w / 2, y + h / 2 + 7);
           ctx.font = '600 24px Inter, system-ui, sans-serif';
-          ctx.fillStyle = '#444';
+          ctx.fillStyle = '#fff';
           return;
         }
         // Crop source to 3:4 aspect (object-fit: cover equivalent)
@@ -617,6 +639,15 @@ export default function CoreBuddyMetrics() {
       ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, yLabel);
       drawPhoto(imgA, x1, yPhoto, photoW, photoH, zoomA);
       drawPhoto(imgB, x2, yPhoto, photoW, photoH, zoomB);
+      // Draw logo centered below photos
+      if (logoImg) {
+        const logoAspect = logoImg.width / logoImg.height;
+        const drawLogoH = logoH;
+        const drawLogoW = drawLogoH * logoAspect;
+        const logoX = (W - drawLogoW) / 2;
+        const logoY = gap + labelH + photoH + logoGap;
+        ctx.drawImage(logoImg, logoX, logoY, drawLogoW, drawLogoH);
+      }
       const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
       const file = new File([blob], 'progress-compare.jpg', { type: 'image/jpeg' });
       if (navigator.canShare?.({ files: [file] })) {
