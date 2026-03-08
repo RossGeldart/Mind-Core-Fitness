@@ -204,6 +204,7 @@ export default function CoreBuddyMetrics() {
   const [zoomA, setZoomA] = useState({ scale: 1, x: 0, y: 0 });
   const [zoomB, setZoomB] = useState({ scale: 1, x: 0, y: 0 });
   const touchStateRef = useRef({});
+  const [savingCompare, setSavingCompare] = useState(false);
 
   // Auth guard
   useEffect(() => {
@@ -490,6 +491,100 @@ export default function CoreBuddyMetrics() {
     const fourWeeks = 28 * 24 * 60 * 60 * 1000;
     return (Date.now() - last.getTime()) >= fourWeeks;
   })();
+
+  const handleSaveCompare = async () => {
+    const urlA = photos[compareA]?.[comparePhotoA]?.url;
+    const urlB = photos[compareB]?.[comparePhotoB]?.url;
+    if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
+    setSavingCompare(true);
+    try {
+      const loadImg = (url) => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = url;
+      });
+      const [imgA, imgB] = await Promise.all([
+        urlA ? loadImg(urlA) : null,
+        urlB ? loadImg(urlB) : null,
+      ]);
+      const W = 1080;
+      const gap = 20;
+      const photoW = Math.floor((W - gap * 3) / 2);
+      const photoH = Math.floor(photoW * 4 / 3);
+      const labelH = 48;
+      const H = gap + labelH + photoH + gap;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(0, 0, W, H);
+      ctx.font = '600 24px Inter, system-ui, sans-serif';
+      ctx.fillStyle = '#444';
+      ctx.textAlign = 'center';
+      const drawPhoto = (img, x, y, w, h) => {
+        if (!img) {
+          ctx.fillStyle = '#e0e0e0';
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, 16);
+          ctx.fill();
+          ctx.fillStyle = '#999';
+          ctx.font = '500 20px Inter, system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('No photo', x + w / 2, y + h / 2 + 7);
+          ctx.font = '600 24px Inter, system-ui, sans-serif';
+          ctx.fillStyle = '#444';
+          return;
+        }
+        const imgRatio = img.width / img.height;
+        const targetRatio = w / h;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > targetRatio) {
+          sw = img.height * targetRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / targetRatio;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 16);
+        ctx.clip();
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        ctx.restore();
+      };
+      const x1 = gap;
+      const x2 = gap + photoW + gap;
+      const yLabel = gap + 28;
+      const yPhoto = gap + labelH;
+      ctx.textAlign = 'center';
+      ctx.fillText(formatPeriod(compareA), x1 + photoW / 2, yLabel);
+      ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, yLabel);
+      drawPhoto(imgA, x1, yPhoto, photoW, photoH);
+      drawPhoto(imgB, x2, yPhoto, photoW, photoH);
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
+      const file = new File([blob], 'progress-compare.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'progress-compare.jpg';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Photo saved!', 'success');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Save compare error:', err);
+        showToast('Failed to save photo', 'error');
+      }
+    } finally {
+      setSavingCompare(false);
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -1016,6 +1111,20 @@ export default function CoreBuddyMetrics() {
               );
             })()}
 
+            {(photos[compareA]?.length > 0 || photos[compareB]?.length > 0) && (
+              <button
+                className="cbm-btn-primary cbm-compare-close"
+                onClick={handleSaveCompare}
+                disabled={savingCompare}
+              >
+                {savingCompare ? <div className="cbm-btn-spinner" /> : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Share Photo
+                  </>
+                )}
+              </button>
+            )}
             <button className="cbm-btn-secondary cbm-compare-close" onClick={() => setShowCompare(false)}>Close</button>
           </div>
         </div>
