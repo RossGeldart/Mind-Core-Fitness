@@ -15,6 +15,7 @@ const basename = isNative ? '' : '/login';
 
 // Eagerly import CoreBuddy pages (shared bottom-nav group — no loading gap)
 import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
+import NutritionHub from './pages/NutritionHub';
 import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
 import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
@@ -104,7 +105,9 @@ function App() {
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
-            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition/manual" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
             <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
