@@ -264,7 +264,7 @@
   object-fit: cover;
   border-radius: 50%;
   border: 3px solid var(--color-primary);
-  animation: splash-logo 2.3s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: splash-logo 2.3s ease-in-out both;
 }
 
 /* Phase 2: Text fades in + slides up after logo has settled */
