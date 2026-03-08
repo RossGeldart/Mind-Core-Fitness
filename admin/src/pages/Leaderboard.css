@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-body);
 }
 
@@ -24,7 +24,7 @@
 
 /* Page */
 .lb-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-body);
   padding-bottom: 80px;
 }
@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 56px - 64px);
+  min-height: calc(100dvh - 56px - 64px);
 }
 
 .lb-optin-card {

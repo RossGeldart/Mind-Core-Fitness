@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--bg-body);
+}
+
 body {
   font-family: 'Inter', sans-serif;
   color: var(--text-primary);
@@ -14,5 +18,7 @@ body {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-body);
 }
 
