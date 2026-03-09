@@ -57,14 +57,11 @@ export default function UpgradePage() {
     setError(null);
     (async () => {
       try {
-        console.log('[UpgradePage] loading RC offerings… (attempt', rcRetry + 1, ')');
         const mod = await import('../services/revenueCatService');
-        console.log('[UpgradePage] import ok, calling getOfferings…');
         const result = await Promise.race([
           mod.getOfferings(currentUser?.uid),
           new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 20000)),
         ]);
-        console.log('[UpgradePage] offerings loaded:', result);
         if (!cancelled) setOfferings(result);
       } catch (err) {
         console.error('[UpgradePage] Failed to load offerings:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
