@@ -47,30 +47,33 @@ export default function UpgradePage() {
   const [tierTab, setTierTab] = useState('premium');
   const [selectedPlan, setSelectedPlan] = useState('annual');
 
-  // Load RevenueCat offerings on native (with 8s timeout)
+  // Load RevenueCat offerings on native (with 20s timeout)
+  const [rcRetry, setRcRetry] = useState(0);
   useEffect(() => {
     if (!isNative) return;
     let cancelled = false;
+    setRcLoading(true);
+    setError(null);
     (async () => {
       try {
-        console.log('[UpgradePage] loading RC offerings…');
-        console.log('[UpgradePage] importing revenueCatService…');
+        console.log('[UpgradePage] loading RC offerings… (attempt', rcRetry + 1, ')');
         const mod = await import('../services/revenueCatService');
         console.log('[UpgradePage] import ok, calling getOfferings…');
         const result = await Promise.race([
           mod.getOfferings(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 8000)),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 20000)),
         ]);
         console.log('[UpgradePage] offerings loaded:', result);
         if (!cancelled) setOfferings(result);
       } catch (err) {
         console.error('[UpgradePage] Failed to load offerings:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
+        if (!cancelled) setError('Unable to load subscription options. Tap below to retry.');
       } finally {
         if (!cancelled) setRcLoading(false);
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [rcRetry]);
 
   // Clear loading state when user navigates back from Stripe (bfcache restore)
   useEffect(() => {
@@ -205,7 +208,10 @@ export default function UpgradePage() {
 
   // Native in-app purchase handler
   async function handleNativePurchase(plan) {
-    if (!offerings) return;
+    if (!offerings) {
+      setError('Subscription options not loaded yet. Tap "Retry" below.');
+      return;
+    }
     const pkg = plan === 'annual' ? offerings.annual : offerings.monthly;
     if (!pkg) {
       setError('Package not available');
@@ -364,6 +370,16 @@ export default function UpgradePage() {
               </button>
             </div>
           </>
+        )}
+
+        {!offerings && !rcLoading && (
+          <button
+            className="upgrade-continue-btn"
+            style={{ background: 'var(--text-secondary)', marginBottom: 8 }}
+            onClick={() => setRcRetry(r => r + 1)}
+          >
+            Retry Loading
+          </button>
         )}
 
         <div className="upgrade-footer-links">
