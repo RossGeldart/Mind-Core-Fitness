@@ -217,7 +217,7 @@ export default function Challenges() {
                     // Create journey post
                     await addDoc(collection(db, 'posts'), {
                       authorId: clientData.id,
-                      authorName: clientData.name || clientData.email || 'Anonymous',
+                      authorName: clientData.name || currentUser?.displayName || clientData.email || 'Anonymous',
                       authorPhotoURL: clientData.photoURL || null,
                       type: 'badge_earned',
                       metadata: { title: badge.name, badgeDesc: badge.desc, badgeId: badge.id },
