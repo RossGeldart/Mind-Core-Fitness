@@ -60,7 +60,7 @@ export default function UpgradePage() {
         const mod = await import('../services/revenueCatService');
         console.log('[UpgradePage] import ok, calling getOfferings…');
         const result = await Promise.race([
-          mod.getOfferings(),
+          mod.getOfferings(currentUser?.uid),
           new Promise((_, reject) => setTimeout(() => reject(new Error('RC offerings timeout')), 20000)),
         ]);
         console.log('[UpgradePage] offerings loaded:', result);
