@@ -270,8 +270,8 @@ export default function UpgradePage() {
       );
     }
 
-    const monthlyPrice = offerings?.monthly?.product?.priceString || '\u00a314.99';
-    const annualPrice = offerings?.annual?.product?.priceString || '\u00a3119.99';
+    const monthlyPrice = '\u00a314.99';
+    const annualPrice = '\u00a3119.99';
     const features = tierTab === 'premium' ? PREMIUM_FEATURES_LIST : FREE_FEATURES;
 
     return (
