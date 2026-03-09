@@ -10,12 +10,9 @@ let configured = false;
  */
 export async function initRevenueCat(uid) {
   if (!isNative || configured) return;
-  console.log('[RC] initRevenueCat called for', uid);
   try {
-    console.log('[RC] calling configure…');
     await Purchases.configure({ apiKey: REVENUECAT_API_KEY, appUserID: uid });
     configured = true;
-    console.log('[RC] configured OK');
   } catch (err) {
     console.error('[RC] configure failed:', err?.message || err);
   }
@@ -53,15 +50,12 @@ export async function checkEntitlement() {
  */
 export async function getOfferings(uid) {
   if (!isNative) return null;
-  console.log('[RC] getOfferings called, configured:', configured);
 
   // Configure inline if not yet done
   if (!configured && uid) {
     try {
-      console.log('[RC] getOfferings — configuring inline for', uid);
       await Purchases.configure({ apiKey: REVENUECAT_API_KEY, appUserID: uid });
       configured = true;
-      console.log('[RC] getOfferings — configured OK');
     } catch (err) {
       console.error('[RC] getOfferings — configure failed:', err?.message || err);
       return null;
@@ -74,9 +68,7 @@ export async function getOfferings(uid) {
   }
 
   try {
-    console.log('[RC] calling getOfferings…');
     const result = await Purchases.getOfferings();
-    console.log('[RC] getOfferings raw:', JSON.stringify(result).substring(0, 300));
     // Capacitor plugin returns offerings directly (not wrapped in { offerings })
     const current = result?.current ?? result?.offerings?.current;
     if (!current) return null;
