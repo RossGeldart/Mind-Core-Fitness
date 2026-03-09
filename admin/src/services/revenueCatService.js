@@ -77,7 +77,8 @@ export async function getOfferings(uid) {
     console.log('[RC] calling getOfferings…');
     const result = await Purchases.getOfferings();
     console.log('[RC] getOfferings raw:', JSON.stringify(result).substring(0, 300));
-    const current = result?.offerings?.current;
+    // Capacitor plugin returns offerings directly (not wrapped in { offerings })
+    const current = result?.current ?? result?.offerings?.current;
     if (!current) return null;
 
     let monthly = null;
