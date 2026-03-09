@@ -3,6 +3,8 @@ import { REVENUECAT_API_KEY, RC_ENTITLEMENT_ID } from '../config/revenuecat';
 
 let Purchases = null;
 let configured = false;
+let configurePromise = null;
+let lastConfiguredUid = null;
 
 async function getPurchases() {
   if (!Capacitor.isNativePlatform()) return null;
@@ -22,52 +24,75 @@ async function getPurchases() {
 }
 
 /**
+ * Internal: configure RC exactly once. Returns true on success.
+ * Safe to call multiple times — deduplicates via configurePromise.
+ */
+async function doConfigure(uid) {
+  if (configured && lastConfiguredUid === uid) return true;
+  if (configurePromise) return configurePromise;
+
+  configurePromise = (async () => {
+    const RC = await getPurchases();
+    if (!RC) return false;
+
+    try {
+      try {
+        await RC.setLogLevel({ level: 'DEBUG' });
+        console.log('[RC] debug logging enabled');
+      } catch (e) {
+        console.warn('[RC] could not set log level:', e?.message);
+      }
+
+      console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
+      const configResult = await Promise.race([
+        RC.configure({
+          apiKey: REVENUECAT_API_KEY,
+          appUserID: uid,
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 15000)),
+      ]);
+      configured = true;
+      lastConfiguredUid = uid;
+      console.log('[RC] configured OK for user', uid, 'result:', JSON.stringify(configResult));
+      return true;
+    } catch (err) {
+      console.error('[RC] configure FAILED:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
+      return false;
+    } finally {
+      configurePromise = null;
+    }
+  })();
+
+  return configurePromise;
+}
+
+/**
  * Initialise RevenueCat with the current user's Firebase UID.
  * Call once after authentication.
  */
 export async function initRevenueCat(uid) {
   console.log('[RC] initRevenueCat called for', uid);
-  const RC = await getPurchases();
-  console.log('[RC] getPurchases returned in initRevenueCat:', RC ? 'ok' : 'null');
-  if (!RC) return;
-
-  try {
-    // Enable debug logging so we can see native-side errors
-    try {
-      await RC.setLogLevel({ level: 'DEBUG' });
-      console.log('[RC] debug logging enabled');
-    } catch (e) {
-      console.warn('[RC] could not set log level:', e?.message);
-    }
-
-    console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
-    const configResult = await Promise.race([
-      RC.configure({
-        apiKey: REVENUECAT_API_KEY,
-        appUserID: uid,
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 15000)),
-    ]);
-    configured = true;
-    console.log('[RC] configured OK for user', uid, 'result:', JSON.stringify(configResult));
-  } catch (err) {
-    console.error('[RC] configure FAILED:', err?.message || err, JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
-  }
+  await doConfigure(uid);
 }
 
 /** Ensure RC is configured before making SDK calls */
-async function ensureConfigured() {
-  console.log('[RC] ensureConfigured — configured:', configured);
+async function ensureConfigured(uid) {
   if (configured) return;
-  // Wait up to 15s for TierContext to finish initRevenueCat
-  for (let i = 0; i < 30; i++) {
+  // If we have a uid, configure directly instead of waiting
+  if (uid) {
+    await doConfigure(uid);
+    return;
+  }
+  // Wait up to 10s for TierContext to finish initRevenueCat
+  console.log('[RC] ensureConfigured — waiting for TierContext…');
+  for (let i = 0; i < 20; i++) {
     await new Promise(r => setTimeout(r, 500));
     if (configured) {
       console.log('[RC] ensureConfigured — now configured after', (i + 1) * 500, 'ms');
       return;
     }
   }
-  console.warn('[RC] ensureConfigured — timed out after 15s, configured still:', configured);
+  console.warn('[RC] ensureConfigured — timed out after 10s');
 }
 
 /**
@@ -105,13 +130,14 @@ export async function checkEntitlement() {
  * Fetch available packages from the default offering.
  * Returns { monthly, annual } package objects (or null).
  */
-export async function getOfferings() {
+export async function getOfferings(uid) {
   const RC = await getPurchases();
   console.log('[RC] getPurchases returned:', RC ? 'ok' : 'null');
   if (!RC) return null;
 
-  await ensureConfigured();
+  await ensureConfigured(uid);
   console.log('[RC] configured:', configured);
+  if (!configured) return null;
 
   try {
     console.log('[RC] calling getOfferings… configured:', configured);
