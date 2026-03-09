@@ -32,6 +32,14 @@ export async function initRevenueCat(uid) {
   if (!RC) return;
 
   try {
+    // Enable debug logging so we can see native-side errors
+    try {
+      await RC.setLogLevel({ level: 'DEBUG' });
+      console.log('[RC] debug logging enabled');
+    } catch (e) {
+      console.warn('[RC] could not set log level:', e?.message);
+    }
+
     console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
     const configResult = await Promise.race([
       RC.configure({
