@@ -95,10 +95,15 @@ export function AuthProvider({ children }) {
           unsubClient = onSnapshot(clientsQuery, async (snapshot) => {
             if (!snapshot.empty) {
               const clientDoc = snapshot.docs[0];
+              const data = clientDoc.data();
               setIsClient(true);
-              setClientData({ id: clientDoc.id, ...clientDoc.data() });
+              setClientData({ id: clientDoc.id, ...data });
               // Keep localStorage in sync for post-redirect recovery
               try { localStorage.setItem('mcf_clientId', clientDoc.id); } catch {};
+              // Backfill missing name from Firebase displayName (e.g. Apple sign-in)
+              if (!data.name && user.displayName) {
+                updateDoc(doc(db, 'clients', clientDoc.id), { name: user.displayName }).catch(() => {});
+              }
             } else {
               // Query returned empty — may happen after cross-domain redirect
               // (e.g. Stripe checkout) when the auth token isn't fully ready.

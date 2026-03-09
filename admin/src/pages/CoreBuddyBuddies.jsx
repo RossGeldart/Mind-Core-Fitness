@@ -454,7 +454,7 @@ export default function CoreBuddyBuddies() {
         imageURL = await getDownloadURL(imgRef);
       }
       const commentData = {
-        postId, authorId: clientData.id, authorName: clientData.name || clientData.email || 'Unknown',
+        postId, authorId: clientData.id, authorName: clientData.name || currentUser?.displayName || clientData.email || 'Unknown',
         authorPhotoURL: clientData.photoURL || null, content: text || '', createdAt: serverTimestamp()
       };
       if (imageURL) commentData.imageURL = imageURL;

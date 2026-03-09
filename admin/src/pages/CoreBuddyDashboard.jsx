@@ -1032,7 +1032,7 @@ export default function CoreBuddyDashboard() {
       }
       await addDoc(collection(db, 'posts'), {
         authorId: clientData.id,
-        authorName: clientData.name || clientData.email || 'Unknown',
+        authorName: clientData.name || currentUser?.displayName || clientData.email || 'Unknown',
         authorPhotoURL: clientData.photoURL || null,
         content: journeyText.trim(),
         type: imageURL ? 'image' : 'text',
@@ -1157,7 +1157,7 @@ export default function CoreBuddyDashboard() {
         imageURL = await getDownloadURL(imgRef);
       }
       const commentData = {
-        postId, authorId: clientData.id, authorName: clientData.name || clientData.email || 'Unknown',
+        postId, authorId: clientData.id, authorName: clientData.name || currentUser?.displayName || clientData.email || 'Unknown',
         authorPhotoURL: clientData.photoURL || null, content: text || '', createdAt: serverTimestamp()
       };
       if (imageURL) commentData.imageURL = imageURL;

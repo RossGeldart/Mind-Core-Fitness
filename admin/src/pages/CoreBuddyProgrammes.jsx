@@ -387,7 +387,7 @@ export default function CoreBuddyProgrammes() {
     const isStructured = data && typeof data === 'object' && data.type;
     await addDoc(collection(db, 'posts'), {
       authorId: clientData.id,
-      authorName: clientData.name || clientData.email || 'Unknown',
+      authorName: clientData.name || currentUser?.displayName || clientData.email || 'Unknown',
       authorPhotoURL: clientData.photoURL || null,
       content: isStructured ? '' : data,
       type: isStructured ? data.type : 'text',
