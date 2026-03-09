@@ -28,15 +28,23 @@ async function getPurchases() {
  * Safe to call multiple times — deduplicates via configurePromise.
  */
 async function doConfigure(uid) {
+  console.log('[RC] doConfigure entered — configured:', configured, 'hasPromise:', !!configurePromise, 'uid:', uid);
   if (configured && lastConfiguredUid === uid) return true;
-  if (configurePromise) return configurePromise;
+  if (configurePromise) {
+    console.log('[RC] doConfigure — returning existing promise');
+    return configurePromise;
+  }
 
+  console.log('[RC] doConfigure — creating new configure promise');
   configurePromise = (async () => {
+    console.log('[RC] IIFE started');
     const RC = await getPurchases();
+    console.log('[RC] IIFE — getPurchases returned:', RC ? 'ok' : 'null');
     if (!RC) return false;
 
+    console.log('[RC] IIFE — about to configure, apiKey exists:', !!REVENUECAT_API_KEY);
     try {
-      console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
+      console.log('[RC] calling configure for user', uid);
       const configResult = await Promise.race([
         RC.configure({
           apiKey: REVENUECAT_API_KEY,
@@ -53,6 +61,7 @@ async function doConfigure(uid) {
       return false;
     } finally {
       configurePromise = null;
+      console.log('[RC] doConfigure finally — promise cleared');
     }
   })();
 
