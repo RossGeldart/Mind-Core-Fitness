@@ -315,6 +315,7 @@ export default function CoreBuddyWorkouts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
+  const FREE_BYO_LIMIT = 1; // Free users can only save 1 BYO workout
   const navigate = useNavigate();
 
   // Views: 'landing' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_hub' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
@@ -949,6 +950,12 @@ export default function CoreBuddyWorkouts() {
 
   const byoSaveAsTemplate = async (name) => {
     if (!currentUser || !clientData || byoSelected.length === 0) return;
+    // Free-tier limit: only 1 saved BYO workout
+    const existingByoCount = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets').length;
+    if (!isPremium && existingByoCount >= FREE_BYO_LIMIT) {
+      showToast('Free plan allows 1 saved workout — upgrade for unlimited', 'error');
+      return;
+    }
     setSavingWorkout(true);
     try {
       const autoName = name || `Custom ${byoSelected.length} exercises`;
@@ -1609,6 +1616,7 @@ export default function CoreBuddyWorkouts() {
   // ==================== BUILD YOUR OWN HUB VIEW ====================
   if (view === 'byo_hub') {
     const byoWorkouts = savedWorkouts.filter(sw => sw.type === 'byo_hiit' || sw.type === 'byo_sets');
+    const freeBuildLimitReached = !isPremium && byoWorkouts.length >= FREE_BYO_LIMIT;
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -1663,16 +1671,29 @@ export default function CoreBuddyWorkouts() {
           </div>
 
           <div className="wk-hub-launch-zone">
-            <button className="wk-hub-card wk-hub-new-glow" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setByoSearch(''); setView('byo_mode'); }}>
-              <div className="wk-hub-card-icon wk-hub-card-icon--primary">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </div>
-              <div className="wk-hub-card-body">
-                <h3>Let&apos;s Build</h3>
-                <p>Pick exercises &amp; build your workout</p>
-              </div>
-              <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
+            {freeBuildLimitReached ? (
+              <button className="wk-hub-card wk-hub-new-glow" onClick={() => navigate('/upgrade')}>
+                <div className="wk-hub-card-icon wk-hub-card-icon--primary">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                </div>
+                <div className="wk-hub-card-body">
+                  <h3>Upgrade for More</h3>
+                  <p>Free plan includes 1 saved workout</p>
+                </div>
+                <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            ) : (
+              <button className="wk-hub-card wk-hub-new-glow" onClick={() => { setByoSelected([]); setByoExpandedGroups({}); setByoMode(null); setByoSearch(''); setView('byo_mode'); }}>
+                <div className="wk-hub-card-icon wk-hub-card-icon--primary">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <div className="wk-hub-card-body">
+                  <h3>Let&apos;s Build</h3>
+                  <p>Pick exercises &amp; build your workout</p>
+                </div>
+                <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            )}
           </div>
 
           {/* Saved BYO workouts inline */}
