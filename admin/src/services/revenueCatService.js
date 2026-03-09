@@ -32,13 +32,21 @@ export async function initRevenueCat(uid) {
   if (!RC) return;
 
   try {
+    // Enable debug logging so we can see native-side errors
+    try {
+      await RC.setLogLevel({ level: 'DEBUG' });
+      console.log('[RC] debug logging enabled');
+    } catch (e) {
+      console.warn('[RC] could not set log level:', e?.message);
+    }
+
     console.log('[RC] calling configure for user', uid, 'key:', REVENUECAT_API_KEY?.substring(0, 8) + '…');
     const configResult = await Promise.race([
       RC.configure({
         apiKey: REVENUECAT_API_KEY,
         appUserID: uid,
       }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 5000)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('RC configure timeout')), 15000)),
     ]);
     configured = true;
     console.log('[RC] configured OK for user', uid, 'result:', JSON.stringify(configResult));
@@ -51,15 +59,15 @@ export async function initRevenueCat(uid) {
 async function ensureConfigured() {
   console.log('[RC] ensureConfigured — configured:', configured);
   if (configured) return;
-  // Wait up to 5s for TierContext to finish initRevenueCat
-  for (let i = 0; i < 10; i++) {
+  // Wait up to 15s for TierContext to finish initRevenueCat
+  for (let i = 0; i < 30; i++) {
     await new Promise(r => setTimeout(r, 500));
     if (configured) {
       console.log('[RC] ensureConfigured — now configured after', (i + 1) * 500, 'ms');
       return;
     }
   }
-  console.warn('[RC] ensureConfigured — timed out after 5s, configured still:', configured);
+  console.warn('[RC] ensureConfigured — timed out after 15s, configured still:', configured);
 }
 
 /**
