@@ -20,9 +20,16 @@
   var alreadyCounted = false;
   try { alreadyCounted = !!sessionStorage.getItem(sessionKey); } catch(e) {}
 
+  // AbortController for request timeout (8 seconds)
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 8000) : null;
+  var fetchOpts = controller ? { signal: controller.signal } : {};
+
   // Fetch current count, then increment if needed
-  fetch(FIRESTORE_BASE + '?key=' + FIREBASE_CONFIG.apiKey)
+  fetch(FIRESTORE_BASE + '?key=' + FIREBASE_CONFIG.apiKey, fetchOpts)
     .then(function(res) {
+      if (timeoutId) clearTimeout(timeoutId);
+
       if (res.status === 404) {
         // Document doesn't exist yet — create it
         if (!alreadyCounted) {
@@ -50,7 +57,7 @@
           display = current + 1;
           try { sessionStorage.setItem(sessionKey, '1'); } catch(e) {}
 
-          // Increment using Firestore REST — use the transform/increment approach
+          // Increment using Firestore REST transform
           var commitUrl = 'https://firestore.googleapis.com/v1/projects/'
             + FIREBASE_CONFIG.projectId
             + '/databases/(default)/documents:commit?key=' + FIREBASE_CONFIG.apiKey;
@@ -69,13 +76,19 @@
                 }
               }]
             })
-          }).catch(function() {});
+          }).catch(function(err) {
+            console.warn('Blog view increment failed:', err.message || err);
+          });
         }
 
         if (viewEl) viewEl.textContent = display + (display === 1 ? ' view' : ' views');
       });
     })
-    .catch(function() {
-      // Silently fail — don't break the page
+    .catch(function(err) {
+      if (timeoutId) clearTimeout(timeoutId);
+      // Don't break the page — log for debugging only
+      if (err.name !== 'AbortError') {
+        console.warn('Blog view fetch failed:', err.message || err);
+      }
     });
 })();

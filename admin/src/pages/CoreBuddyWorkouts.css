@@ -47,6 +47,7 @@
 
 .wk-page-workout {
   background: var(--bg-body);
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -71,7 +72,7 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   padding: 16px 0 8px;
@@ -91,7 +92,7 @@
 }
 
 .wk-menu-heading h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -100,7 +101,7 @@
 }
 
 .wk-menu-heading p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   margin: 4px 0 0;
@@ -165,7 +166,7 @@
 .wk-ap-pct {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: #fff;
@@ -179,7 +180,7 @@
 }
 
 .wk-ap-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.7);
@@ -188,14 +189,14 @@
 }
 
 .wk-ap-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: #fff;
 }
 
 .wk-ap-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
@@ -343,7 +344,7 @@
 .wk-hero-ring-stat {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: #fff;
@@ -357,7 +358,7 @@
 }
 
 .wk-hero-week-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.6);
@@ -372,7 +373,7 @@
 }
 
 .wk-hero-bottom h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
   color: #fff;
@@ -381,7 +382,7 @@
 }
 
 .wk-hero-bottom p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
@@ -391,7 +392,7 @@
 .wk-hero-go {
   display: inline-block;
   margin-top: 4px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -411,7 +412,7 @@
 }
 
 .wk-section-header h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -419,7 +420,7 @@
 }
 
 .wk-section-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -529,7 +530,7 @@
 }
 
 .wk-prog-hero-badge {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   color: #fff;
@@ -542,7 +543,7 @@
 }
 
 .wk-prog-hero-level {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.6);
@@ -557,7 +558,7 @@
 }
 
 .wk-prog-hero-bottom h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
   color: #fff;
@@ -567,7 +568,7 @@
 }
 
 .wk-prog-hero-bottom p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
@@ -577,7 +578,7 @@
 .wk-prog-hero-go {
   display: inline-block;
   margin-top: 4px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
@@ -703,7 +704,7 @@
 }
 
 .wk-muscle-hero-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 800;
   color: #fff;
@@ -713,7 +714,7 @@
 }
 
 .wk-muscle-hero-soon {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.6);
@@ -725,7 +726,7 @@
 }
 
 .wk-muscle-hero-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.65);
@@ -757,7 +758,7 @@
 }
 
 .mg-sessions-header h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -765,7 +766,7 @@
 }
 
 .mg-sessions-header p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -812,7 +813,7 @@
 }
 
 .mg-session-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -820,7 +821,7 @@
 }
 
 .mg-session-info p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin: 0;
@@ -834,7 +835,7 @@
 }
 
 .mg-session-tag {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -910,7 +911,7 @@
 }
 
 .mg-overview-title-row h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -918,7 +919,7 @@
 }
 
 .mg-overview-level {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -930,7 +931,7 @@
 }
 
 .mg-overview-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin-top: 6px;
@@ -941,7 +942,7 @@
 }
 
 .mg-overview-section h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -957,7 +958,7 @@
 }
 
 .mg-overview-section > p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   line-height: 1.6;
   color: var(--text-secondary);
@@ -974,7 +975,7 @@
 }
 
 .mg-overview-tips li {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -1018,7 +1019,7 @@
   border-radius: 50%;
   background: var(--color-primary);
   color: #fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
@@ -1035,7 +1036,7 @@
 }
 
 .mg-overview-ex-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1045,7 +1046,7 @@
 }
 
 .mg-overview-ex-detail {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
@@ -1066,7 +1067,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 14px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -1099,7 +1100,7 @@
 }
 
 .mg-header-info {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -1139,7 +1140,7 @@
 }
 
 .mg-video-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -1159,7 +1160,7 @@
 }
 
 .mg-video-placeholder span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
 }
@@ -1179,7 +1180,7 @@
 }
 
 .mg-ex-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1188,7 +1189,7 @@
 }
 
 .mg-ex-type-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -1220,14 +1221,14 @@
 }
 
 .mg-ex-set-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .mg-ex-target {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -1252,7 +1253,7 @@
 }
 
 .mg-input-group label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1267,7 +1268,7 @@
   background: var(--bg-body);
   border: 2px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1301,7 +1302,7 @@
 }
 
 .mg-timer-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.5rem;
   font-weight: 900;
   color: var(--text-primary);
@@ -1313,7 +1314,7 @@
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -1334,7 +1335,7 @@
   color: #fff;
   border: none;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -1366,7 +1367,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   padding: 4px 0;
@@ -1379,7 +1380,7 @@
 
 /* Muscle Group Complete View */
 .mg-complete-session-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: -12px 0 0;
@@ -1426,7 +1427,7 @@
 }
 
 .mg-badge-celebration-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1442,7 +1443,7 @@
 }
 
 .mg-badge-celebration-item {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: #f59e0b;
@@ -1468,7 +1469,7 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 50px;
   color: #f59e0b;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -1487,7 +1488,7 @@
 }
 
 .mg-badge-celebration-dismiss {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   background: none;
@@ -1498,7 +1499,7 @@
 
 /* Preview title for core interval */
 .mg-preview-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1589,7 +1590,7 @@
 .wk-stat-value {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
 }
@@ -1599,7 +1600,7 @@
 }
 
 .wk-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -1631,7 +1632,7 @@
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1693,7 +1694,7 @@
 }
 
 .wk-setup-section h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1723,7 +1724,6 @@
   padding: 12px 14px;
   background: radial-gradient(circle at center, var(--bg-body) 0%, var(--bg-card) 100%);
   border: none;
-  border-left: 4px solid transparent;
   border-radius: 14px;
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -1736,11 +1736,6 @@
   box-shadow: 0 2px 10px rgba(var(--color-primary-rgb), 0.12);
 }
 
-/* Colour-coded left accent per level */
-.wk-level-beginner { border-left-color: rgba(66, 165, 245, 0.4); }
-.wk-level-intermediate { border-left-color: rgba(var(--color-primary-rgb), 0.4); }
-.wk-level-advanced { border-left-color: rgba(255, 112, 67, 0.4); }
-
 .wk-level-card.active {
   background: radial-gradient(circle at center, rgba(var(--color-primary-rgb), 0.7) 0%, rgba(var(--color-primary-rgb), 0.25) 100%);
   box-shadow: none;
@@ -1750,19 +1745,15 @@
   opacity: 0.55;
 }
 
-.wk-level-card.active.wk-level-beginner { border-left-color: #42a5f5; }
-.wk-level-card.active.wk-level-intermediate { border-left-color: var(--color-primary); }
-.wk-level-card.active.wk-level-advanced { border-left-color: #ff7043; }
-
 .wk-level-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .wk-level-desc {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -1816,7 +1807,7 @@
 }
 
 .wk-time-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1824,7 +1815,7 @@
 }
 
 .wk-time-unit {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   color: var(--text-primary);
   text-transform: uppercase;
@@ -1844,7 +1835,7 @@
 }
 
 .wk-setup-summary span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 1px;
@@ -1907,7 +1898,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -2001,7 +1992,7 @@
 }
 
 .wk-spin-text {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -2029,14 +2020,14 @@
 }
 
 .wk-stat-val {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .wk-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -2093,7 +2084,7 @@
   border-radius: 50%;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
@@ -2102,7 +2093,7 @@
 }
 
 .wk-preview-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -2199,7 +2190,7 @@
 }
 
 .wk-preview-modal-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -2240,7 +2231,7 @@
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -2262,7 +2253,7 @@
   color: var(--text-on-primary);
   border: none;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -2289,7 +2280,7 @@
 }
 
 .wk-countdown-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 7rem;
   font-weight: 900;
   color: var(--color-primary);
@@ -2298,7 +2289,7 @@
 }
 
 .wk-countdown-label {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -2406,7 +2397,7 @@
 }
 
 .wk-rest-label {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 900;
   color: #42a5f5;
@@ -2423,7 +2414,7 @@
 }
 
 .wk-rest-next-tag {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 3px;
@@ -2433,7 +2424,7 @@
 }
 
 .wk-rest-next-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
@@ -2449,7 +2440,7 @@
 }
 
 .wk-exercise-counter {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-tertiary);
@@ -2457,7 +2448,7 @@
 }
 
 .wk-exercise-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -2465,7 +2456,7 @@
 }
 
 .wk-round-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -2520,7 +2511,7 @@
 }
 
 .wk-timer-time {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 3rem;
   font-weight: 900;
   color: var(--text-primary);
@@ -2528,7 +2519,7 @@
 }
 
 .wk-timer-phase {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 3px;
@@ -2661,7 +2652,7 @@
 }
 
 .wk-complete-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -2690,7 +2681,7 @@
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
@@ -2867,7 +2858,7 @@
   border: 1px dashed var(--border-color);
   border-radius: 8px;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   margin-bottom: 16px;
@@ -2886,7 +2877,7 @@
 }
 
 .wk-hub-heading h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -2966,7 +2957,7 @@
 }
 
 .wk-hub-card-body h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -2977,7 +2968,7 @@
 }
 
 .wk-hub-card-body p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -2992,6 +2983,28 @@
   opacity: 0.25;
 }
 
+.wk-hub-card-locked {
+  opacity: 0.5;
+  cursor: default;
+}
+.wk-hub-card-locked .wk-hub-card-icon {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--text-tertiary);
+}
+
+.wk-hub-coming-soon-badge {
+  flex-shrink: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  background: var(--bg-card-elevated);
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
 /* Motivational tip – multi-line readable card */
 .wk-hub-tip {
   display: flex;
@@ -3001,7 +3014,7 @@
   background: rgba(var(--color-primary-rgb), 0.06);
   border-left: 3px solid rgba(var(--color-primary-rgb), 0.35);
   border-radius: 0 12px 12px 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-style: italic;
   color: var(--text-tertiary, var(--text-secondary));
@@ -3099,7 +3112,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -3131,7 +3144,7 @@
   padding: 0 6px;
   background: var(--color-primary);
   color: #fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   border-radius: 10px;
@@ -3187,10 +3200,11 @@
   text-align: left;
 }
 
-.wk-hub-saved-cat-header:hover,
-.wk-hub-saved-cat-header:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .wk-hub-saved-cat-header:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 
 .wk-hub-saved-cat--open .wk-hub-saved-cat-header {
@@ -3288,7 +3302,7 @@
 
 .wk-hub-saved-name {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -3364,7 +3378,7 @@
 
 .wk-hub-recent-focus {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -3452,9 +3466,7 @@
 
 /* FAB Bottom Sheet – matches Activity Logger modal style */
 .wk-fab-sheet {
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  backdrop-filter: blur(40px) saturate(180%);
+  background: #ffffff;
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -3537,7 +3549,7 @@
 
 /* Dark mode: translucent dark glass */
 [data-theme="dark"] .wk-fab-sheet {
-  background: rgba(30, 30, 30, 0.85);
+  background: #1e1e1e;
 }
 
 /* ==================== SAVE WORKOUT BUTTON & MODAL ==================== */
@@ -3551,7 +3563,7 @@
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -3574,7 +3586,7 @@
 .wk-save-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3583,27 +3595,54 @@
 }
 
 .wk-save-modal {
-  background: var(--bg-card);
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
   width: 100%;
   max-width: 360px;
   text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .wk-save-modal h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1a1a1a;
   margin: 0 0 8px;
 }
 
 .wk-save-modal p {
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: #555;
   margin: 0 0 16px;
   line-height: 1.4;
+}
+
+.wk-save-modal .wk-save-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.wk-save-modal .byo-custom-type-btn {
+  background: #f5f5f5;
+  border-color: #ddd;
+  color: #555;
+}
+
+.wk-save-modal .byo-custom-type-btn.byo-custom-type-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
 }
 
 .wk-save-input {
@@ -3612,7 +3651,7 @@
   background: var(--bg-body);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
@@ -3652,7 +3691,7 @@
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 24px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -3675,4 +3714,1510 @@
 /* Mono dark: ensure primary-bg badges have readable text */
 [data-mono="true"][data-theme="dark"] .wk-hub-count {
   color: #111;
+}
+
+/* =====================================================
+   BUILD YOUR OWN (BYO) STYLES
+   ===================================================== */
+
+/* ── My Workouts section on hub ── */
+.wk-hub-byo-section {
+  margin-top: 8px;
+}
+
+.wk-hub-byo-list {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wk-hub-byo-card {
+  display: flex;
+  align-items: center;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+  animation: fadeSlideIn 0.3s ease-out both;
+}
+
+.wk-hub-byo-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.wk-hub-byo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.wk-hub-byo-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.wk-hub-byo-name {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-hub-byo-meta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.wk-hub-byo-begin {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.wk-hub-byo-delete {
+  padding: 14px 14px;
+  border: none;
+  border-left: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wk-hub-byo-delete:active {
+  background: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+}
+
+/* ── Mode Picker ── */
+.byo-mode-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px;
+  margin-bottom: 24px;
+}
+
+.byo-mode-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.byo-mode-card h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.byo-mode-card p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.byo-mode-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+}
+
+.byo-mode-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.byo-mode-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.byo-continue-btn {
+  margin: 0 16px 24px;
+  width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ── Exercise Picker ── */
+.byo-pick-main {
+  padding-bottom: 140px;
+}
+
+.byo-pick-count {
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+[data-mono="true"][data-theme="dark"] .byo-pick-count {
+  color: var(--text-on-primary);
+}
+
+.byo-level-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.byo-level-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.byo-level-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+}
+
+.byo-level-label {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.byo-level-desc {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.byo-group {
+  margin: 0 16px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.byo-group-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.byo-group-label {
+  flex: 1;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.byo-group-badge {
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+[data-mono="true"][data-theme="dark"] .byo-group-badge {
+  color: var(--text-on-primary);
+}
+
+.byo-group-chevron {
+  color: var(--text-tertiary);
+  transition: transform 0.2s;
+}
+
+.byo-group-chevron-open {
+  transform: rotate(180deg);
+}
+
+/* ── Subgroups (equipment level) ── */
+.byo-subgroups {
+  border-top: 1px solid var(--border-color);
+}
+
+.byo-subgroup {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.byo-subgroup:last-child {
+  border-bottom: none;
+}
+
+.byo-subgroup-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px 12px 28px;
+  background: var(--bg-card);
+  border: none;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.byo-subgroup-label {
+  flex: 1;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Search bar ── */
+.byo-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-tertiary);
+}
+
+.byo-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.byo-search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.byo-search-clear {
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Add Custom Exercise ── */
+.byo-add-custom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 16px 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: calc(100% - 32px);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.byo-add-custom-btn:active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.byo-custom-type-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.byo-custom-type-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.byo-custom-type-btn.byo-custom-type-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}
+
+.byo-search-empty {
+  text-align: center;
+  padding: 32px 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.byo-search-results {
+  padding-top: 4px;
+}
+
+/* ── Exercise Cards List ── */
+.byo-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px 14px;
+  background: var(--bg-body);
+}
+
+.byo-exercise-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.byo-exercise-row.byo-exercise-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.byo-exercise-thumb-sm {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--bg-body);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.byo-exercise-thumb-sm img,
+.byo-exercise-thumb-sm video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.byo-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+.byo-thumb-play-sm {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.byo-exercise-name {
+  flex: 1;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.static-thumb-wrap {
+  width: 100%;
+  height: 100%;
+}
+
+.static-thumb-wrap img,
+.static-thumb-wrap video,
+.static-thumb-wrap canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.byo-exercise-check {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ── Footer ── */
+.byo-pick-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 76px);
+  background: var(--bg-body);
+  border-top: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.byo-start-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ── Sets Config View ── */
+.byo-config-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 16px 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+
+.byo-config-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.byo-config-name {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.byo-config-meta {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.byo-config-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.byo-stepper-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.15s;
+}
+
+.byo-stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.byo-stepper-btn:active:not(:disabled) {
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  border-color: var(--color-primary);
+}
+
+.byo-stepper-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* ── Save View ── */
+.byo-save-form {
+  padding: 0 16px;
+}
+
+.byo-save-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.byo-save-input:focus {
+  border-color: var(--color-primary);
+}
+
+.byo-save-summary {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.byo-save-summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.byo-save-summary-row:last-child {
+  border-bottom: none;
+}
+
+.byo-save-summary-row span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.byo-save-btn {
+  width: 100%;
+}
+
+/* ── Begin label in library ── */
+.byo-begin-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+/* ── Reps & Sets View ── */
+.byo-sets-main {
+  padding-bottom: 100px;
+}
+
+.byo-set-card {
+  margin: 0 16px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.byo-set-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.byo-set-header h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.byo-set-type {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  text-transform: capitalize;
+  background: var(--bg-card-elevated);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.byo-set-rows {
+  padding: 8px 16px 4px;
+}
+
+.byo-set-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.byo-set-row-header {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 4px;
+}
+
+.byo-set-row-header span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.byo-set-num {
+  width: 28px;
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.byo-set-input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.byo-set-input::-webkit-outer-spin-button,
+.byo-set-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.byo-set-weight {
+  flex: 1;
+  max-width: 90px;
+}
+
+.byo-set-reps {
+  width: 65px;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+/* Tappable reps button (replaces input for scroll picker) */
+.byo-reps-tap {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  transition: background 0.15s;
+}
+.byo-reps-tap:active {
+  background: rgba(var(--color-primary-rgb), 0.1);
+}
+.byo-reps-placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* ── RepsPicker bottom-sheet overlay ── */
+.reps-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: cbFabOverlayIn 0.15s ease forwards;
+}
+
+.reps-picker-sheet {
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  width: 100%;
+  max-width: 420px;
+  animation: repsSheetIn 0.25s ease forwards;
+  overflow: hidden;
+}
+@keyframes repsSheetIn {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.reps-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+}
+.reps-picker-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.reps-picker-cancel,
+.reps-picker-done {
+  background: none;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.reps-picker-cancel {
+  color: #999;
+}
+.reps-picker-done {
+  color: var(--color-primary);
+}
+
+.reps-picker-drum-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 24px;
+}
+
+.reps-picker-highlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  border: 2px solid var(--color-primary);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.reps-picker-scroll {
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  width: 100px;
+  position: relative;
+  z-index: 2;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.reps-picker-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.reps-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #bbb;
+  transition: color 0.1s, font-size 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.reps-picker-item-active {
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+/* ── RepsPicker dark theme ── */
+[data-theme="dark"] .reps-picker-sheet {
+  background: #1e1e1e;
+}
+[data-theme="dark"] .reps-picker-header {
+  border-bottom-color: #333;
+}
+[data-theme="dark"] .reps-picker-title {
+  color: #fff;
+}
+[data-theme="dark"] .reps-picker-cancel {
+  color: #666;
+}
+[data-theme="dark"] .reps-picker-item {
+  color: #555;
+}
+[data-theme="dark"] .reps-picker-item-active {
+  color: #fff;
+}
+[data-theme="dark"] .reps-picker-highlight {
+  background: rgba(var(--color-primary-rgb), 0.15);
+}
+
+/* Mono dark */
+[data-mono="true"][data-theme="dark"] .reps-picker-sheet {
+  background: #1a1a1a;
+}
+
+.byo-set-invisible {
+  visibility: hidden;
+}
+
+.byo-set-del {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.byo-set-del-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.byo-set-del-btn:active {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--color-error);
+}
+
+.byo-add-set-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--color-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.byo-add-set-btn:active {
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+}
+
+.byo-sets-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 76px);
+  background: var(--bg-body);
+  border-top: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.byo-complete-btn {
+  width: 100%;
+}
+
+/* ── Weight Unit Toggle ── */
+.byo-unit-toggle {
+  display: flex;
+  gap: 0;
+  margin: 0 16px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.byo-unit-btn {
+  padding: 7px 18px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.byo-unit-btn + .byo-unit-btn {
+  border-left: 1px solid var(--border-color);
+}
+
+.byo-unit-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+[data-mono="true"][data-theme="dark"] .byo-unit-active {
+  color: var(--text-on-primary);
+}
+
+/* ── Smart Tip ── */
+.byo-smart-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 16px 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  border: 1px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.15);
+}
+
+.byo-smart-tip svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  margin-top: 1px;
+}
+
+.byo-smart-tip span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════
+   LANDING PAGE — Two-card workout type selector
+   ═══════════════════════════════════════════════════ */
+
+.wk-landing-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 24px;
+}
+
+.wk-landing-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+  margin-bottom: 28px;
+}
+
+.wk-landing-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+.wk-landing-card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .wk-landing-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 16px rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
+}
+
+.wk-landing-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wk-landing-card-icon--randomiser {
+  background: none;
+  padding: 0;
+  overflow: hidden;
+}
+.wk-landing-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+.wk-landing-card-icon--byo {
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  color: var(--color-primary);
+  overflow: hidden;
+}
+.wk-landing-byo-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.wk-landing-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.wk-landing-card-body h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.wk-landing-card-body p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.wk-landing-card-arrow {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.wk-landing-stats {
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════
+   FAB COUNT BADGE
+   ═══════════════════════════════════════════════════ */
+.wk-fab-count {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════
+   SAVED OVERLAY — Drills into a FAB category
+   ═══════════════════════════════════════════════════ */
+.wk-saved-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: cbFabOverlayIn 0.2s ease forwards;
+}
+
+.wk-saved-overlay-card {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: cbFabSheetIn 0.3s ease forwards;
+}
+
+.wk-saved-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #eee;
+}
+.wk-saved-overlay-header h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.wk-saved-overlay-back {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BYO FAB type tabs (HIIT / Reps & Sets) */
+.wk-byo-fab-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 16px;
+  border-bottom: 1px solid #eee;
+}
+.wk-byo-fab-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.wk-byo-fab-tab:hover {
+  color: #666;
+}
+.wk-byo-fab-tab-active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+.wk-byo-fab-tab svg {
+  flex-shrink: 0;
+}
+.wk-byo-fab-tab-count {
+  background: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+[data-theme="dark"] .wk-byo-fab-tabs {
+  border-bottom-color: #333;
+}
+[data-theme="dark"] .wk-byo-fab-tab {
+  color: #666;
+}
+[data-theme="dark"] .wk-byo-fab-tab:hover {
+  color: #aaa;
+}
+[data-theme="dark"] .wk-byo-fab-tab-active {
+  color: var(--color-primary);
+}
+[data-theme="dark"] .wk-byo-fab-tab-count {
+  background: rgba(var(--color-primary-rgb), 0.2);
+}
+
+.wk-saved-overlay-list {
+  overflow-y: auto;
+  padding: 12px 16px 16px;
+  flex: 1;
+}
+
+.wk-saved-overlay-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  animation: cbFabItemIn 0.3s both;
+}
+.wk-saved-overlay-item:last-child {
+  border-bottom: none;
+}
+
+.wk-saved-overlay-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 4px 0;
+  min-width: 0;
+}
+
+.wk-saved-overlay-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wk-saved-overlay-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wk-saved-overlay-meta {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.wk-saved-overlay-equip {
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.wk-saved-overlay-ago {
+  font-size: 0.72rem;
+  color: #999;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.wk-saved-overlay-main svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.wk-saved-overlay-delete {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.wk-saved-overlay-delete:hover {
+  color: var(--color-primary);
+}
+
+/* Dark theme for saved overlay */
+[data-theme="dark"] .wk-saved-overlay-card {
+  background: #1e1e1e;
+}
+[data-theme="dark"] .wk-saved-overlay-header {
+  border-bottom-color: #333;
+}
+[data-theme="dark"] .wk-saved-overlay-header h3 {
+  color: #fff;
+}
+[data-theme="dark"] .wk-saved-overlay-back {
+  color: #aaa;
+}
+[data-theme="dark"] .wk-saved-overlay-name {
+  color: #f0f0f0;
+}
+[data-theme="dark"] .wk-saved-overlay-meta {
+  color: #aaa;
+}
+[data-theme="dark"] .wk-saved-overlay-equip {
+  color: #888;
+}
+[data-theme="dark"] .wk-saved-overlay-ago {
+  color: #888;
+}
+[data-theme="dark"] .wk-saved-overlay-item {
+  border-bottom-color: #333;
+}
+[data-theme="dark"] .wk-saved-overlay-delete {
+  color: #555;
+}
+
+/* Mono dark — ensure solid readable cards */
+[data-mono="true"][data-theme="dark"] .wk-saved-overlay-card {
+  background: #1a1a1a;
+}
+[data-mono="true"][data-theme="dark"] .wk-saved-overlay-name {
+  color: #e8e8e8;
+}
+[data-mono="true"][data-theme="dark"] .wk-saved-overlay-meta {
+  color: #999;
+}
+
+/* ═══════════════════════════════════════════════════
+   BYO SAVE — Category Selector
+   ═══════════════════════════════════════════════════ */
+.byo-save-category-section {
+  margin-top: 16px;
+}
+
+.byo-save-category-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.byo-save-category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.byo-save-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.byo-save-category-btn:active {
+  transform: scale(0.95);
+}
+
+.byo-save-category-btn.byo-save-category-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}
+
+/* Inside the solid white save modal */
+.byo-save-category-modal .byo-save-category-label {
+  color: #555;
+}
+.byo-save-category-modal .byo-save-category-btn {
+  background: #f5f5f5;
+  border-color: #ddd;
+  color: #555;
+}
+.byo-save-category-modal .byo-save-category-btn.byo-save-category-active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--color-primary);
+}
+
+/* ── Missing keyframes (shared with Dashboard but needed independently) ── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cbFabOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cbFabSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes cbFabItemIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

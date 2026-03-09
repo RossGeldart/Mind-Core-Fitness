@@ -15,6 +15,7 @@ const basename = isNative ? '' : '/login';
 
 // Eagerly import CoreBuddy pages (shared bottom-nav group — no loading gap)
 import CoreBuddyDashboard from './pages/CoreBuddyDashboard';
+import NutritionHub from './pages/NutritionHub';
 import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
 import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
@@ -26,6 +27,7 @@ import Challenges from './pages/Challenges';
 import CoreBuddyBadges from './pages/CoreBuddyBadges';
 import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 import ActivityHistory from './pages/ActivityHistory';
+import AIMealScanner from './pages/AIMealScanner';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -87,7 +89,7 @@ function App() {
         <BrowserRouter basename={basename}>
           <RedirectHandler />
           <ScrollToTop>
-          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}><div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} /></div>}>
+          <Suspense fallback={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}><img src="/Logo.webp" alt="" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'app-fade-in 1s ease-out both' }} /></div>}>
           <Routes>
             <Route path="/" element={isNative ? <NativeLogin /> : <LoginPortal />} />
             <Route path="/login" element={isNative ? <NativeLogin /> : <Login />} />
@@ -104,7 +106,9 @@ function App() {
             <Route path="/client/circuit" element={<CircuitDashboard />} />
             <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
-            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition/manual" element={<LockedFeature feature="nutrition"><CoreBuddyNutrition /></LockedFeature>} />
+            <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><AIMealScanner /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
             <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />

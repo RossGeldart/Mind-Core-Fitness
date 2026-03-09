@@ -36,7 +36,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Set theme early to prevent flash -->
     <script>
@@ -47,8 +47,11 @@
       } catch(e) {}
     </script>
     <style>
+      html, body { background: #f5f5f5; }
+      [data-theme="dark"], [data-theme="dark"] body { background: #111114; }
       #app-loader {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
@@ -56,28 +59,36 @@
         background: #f5f5f5;
       }
       [data-theme="dark"] #app-loader { background: #111114; }
-      .app-loader-spinner {
-        width: 36px;
-        height: 36px;
-        border: 3px solid rgba(200,56,70,0.2);
-        border-top-color: #C83846;
+      .app-loader-logo {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
         border-radius: 50%;
-        animation: app-spin .7s linear infinite;
+        border: 3px solid #C83846;
+        opacity: 0;
+        animation: app-fade-in 1s ease-out forwards;
       }
+      .app-loader-spinner { display: none; }
       @keyframes app-spin { to { transform: rotate(1turn); } }
+      @keyframes app-fade-in { from { opacity: 0; } to { opacity: 1; } }
     </style>
-    <script type="module" crossorigin src="/login/assets/index-Byzl4OfS.js"></script>
-    <link rel="stylesheet" crossorigin href="/login/assets/index-REwGSk2e.css">
+    <script type="module" crossorigin src="/login/assets/index-i6ZZ4tPc.js"></script>
+    <link rel="stylesheet" crossorigin href="/login/assets/index-CsgKks3s.css">
   </head>
   <body>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
     <div id="root">
-      <div id="app-loader"><div class="app-loader-spinner"></div><p style="margin-top:16px;font-family:sans-serif;font-size:14px;color:#888" id="app-loader-msg">Loading app...</p></div>
+      <div id="app-loader"><img src="/login/Logo.webp" alt="Mind Core Fitness" class="app-loader-logo" width="140" height="140" /><div class="app-loader-spinner"></div></div>
     </div>
     <script>
       window.addEventListener('error', function(e) {
-        var msg = document.getElementById('app-loader-msg');
-        if (msg) msg.textContent = 'JS Error: ' + (e.message || e);
+        var loader = document.getElementById('app-loader');
+        if (loader) {
+          var p = document.createElement('p');
+          p.style.cssText = 'font-family:sans-serif;font-size:13px;color:#888;text-align:center;padding:0 24px';
+          p.textContent = 'Error: ' + (e.message || e);
+          loader.appendChild(p);
+        }
       });
     </script>
   </body>

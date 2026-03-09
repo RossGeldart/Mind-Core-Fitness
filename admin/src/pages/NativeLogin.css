@@ -35,7 +35,7 @@
 }
 
 .native-login-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -43,7 +43,7 @@
 }
 
 .native-login-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -65,7 +65,7 @@
   width: 100%;
   padding: 16px;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -137,7 +137,7 @@
 }
 
 .native-login-divider span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -154,7 +154,7 @@
   display: block;
   margin-bottom: 6px;
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.85rem;
 }
@@ -165,7 +165,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: 1rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg-input);
   color: var(--text-primary);
   box-sizing: border-box;
@@ -183,7 +183,7 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   text-align: center;
@@ -215,7 +215,7 @@
 }
 
 .native-login-reset-sent p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -223,7 +223,7 @@
 }
 
 .native-login-reset-sent span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   display: block;
@@ -232,12 +232,64 @@
 
 /* ── Loading spinner ── */
 
-.native-login-loading {
+.native-login-loading,
+.native-login-splash {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: var(--bg-body);
+  transition: opacity 0.6s ease-out;
+}
+
+.native-login-loading {
+  gap: 24px;
+}
+
+.native-login-splash-fadeout {
+  opacity: 0;
+}
+
+.native-login-splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Phase 1: Logo fades in at center (no movement) */
+.native-login-splash-logo {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary);
+  animation: splash-logo-fade 1s ease-out both;
+}
+
+/* Phase 2: Text fades in below logo — fixed height so it never shifts layout */
+.native-login-splash-name {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  padding-top: 32px;
+  height: 70px;
+  animation: splash-text-fade 0.8s ease-out 1.5s both;
+  opacity: 0;
+}
+
+/* Logo: simple fade in, no transform */
+@keyframes splash-logo-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Text: simple fade in, no transform */
+@keyframes splash-text-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 
@@ -270,7 +322,7 @@
 
 .native-login-verify-hint {
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.5;

@@ -8,7 +8,7 @@
   justify-content: center;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   gap: 4px;
   overflow: hidden;
@@ -125,14 +125,14 @@
 }
 
 .circuit-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 6px 0;
 }
 
 .circuit-intro p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin: 0;
@@ -206,7 +206,7 @@
 }
 
 .circuit-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -221,14 +221,14 @@
 }
 
 .circuit-digit {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .circuit-colon {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -240,14 +240,14 @@
 }
 
 .circuit-ring-sub {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin-top: 6px;
 }
 
 .circuit-date-full {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 12px 0 0 0;
@@ -313,7 +313,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-error);
@@ -324,14 +324,14 @@
 }
 
 .circuit-status-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .circuit-status-info p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin: 0;
@@ -343,7 +343,7 @@
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
@@ -372,7 +372,7 @@
 }
 
 .circuit-stats-card h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   color: var(--text-primary);
   margin: 0 0 16px 0;
@@ -393,7 +393,7 @@
 
 .circuit-stat-value {
   display: block;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -405,7 +405,7 @@
 }
 
 .circuit-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -418,7 +418,7 @@
   background: var(--color-error-bg);
   border: 1px solid var(--color-error);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--color-error);
   text-align: center;
@@ -434,7 +434,7 @@
 }
 
 .circuit-rules h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 10px 0;
@@ -447,7 +447,7 @@
 }
 
 .circuit-rules li {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   padding: 6px 0;
@@ -494,7 +494,7 @@
   display: inline-block;
   background: linear-gradient(135deg, #ffc107, #ffab00);
   color: #333331;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
   font-size: 0.7rem;
   letter-spacing: 2px;
@@ -505,27 +505,27 @@
 }
 
 .circuit-vip-promo h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .vip-promo-price {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 10px 0;
 }
 
 .vip-promo-price strong {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   color: #ffc107;
 }
 
 .vip-promo-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin: 0 0 16px 0;
@@ -540,7 +540,7 @@
 }
 
 .vip-promo-perks li {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   padding: 5px 0 5px 24px;
@@ -563,7 +563,7 @@
   padding: 12px 28px;
   background: #25D366;
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -618,7 +618,7 @@
 }
 
 .circuit-nav-tab span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.3px;

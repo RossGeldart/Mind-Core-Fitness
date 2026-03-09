@@ -142,8 +142,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -161,13 +162,17 @@
       value: 0,
       currency: 'GBP'
     });
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.net/tr?id=1512543690146167&ev=PageView&noscript=1" /></noscript>
 
     <link rel="preload" as="image" href="core-buddy-assets/dashboard.PNG">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
 
     <style>
         /* ===== Reset ===== */
@@ -1505,7 +1510,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness" width="38" height="38">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="38" height="38" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -1559,7 +1564,7 @@
             </div>
             <div class="hero-visual">
                 <div class="phone phone-glow hero-phone">
-                    <img loading="lazy" src="core-buddy-assets/dashboard.PNG" alt="Core Buddy dashboard showing workout stats, daily habits, and motivational countdown timer" width="640" height="1386" fetchpriority="high" decoding="async">
+                    <img loading="lazy" src="core-buddy-assets/cb_profilemain.PNG" alt="Core Buddy profile dashboard showing stats, streaks and leaderboard position" width="640" height="1386" fetchpriority="high" decoding="async">
                 </div>
             </div>
         </div>
@@ -1584,7 +1589,7 @@
                 </div>
                 <div class="feature-visual">
                     <div class="phone phone-glow">
-                        <img src="core-buddy-assets/select-workout.PNG" alt="Workout customisation screen with focus area, level, and time selection" loading="lazy" decoding="async" width="640" height="1386">
+                        <img src="core-buddy-assets/cb_equipment.PNG" alt="Equipment selection screen showing bodyweight, dumbbells, kettlebells and gym options" loading="lazy" decoding="async" width="640" height="1386">
                     </div>
                 </div>
             </div>
@@ -1599,7 +1604,7 @@
                 </div>
                 <div class="feature-visual">
                     <div class="phone phone-glow">
-                        <img src="core-buddy-assets/workout-video.PNG" alt="Workout in progress showing exercise video, Spotify integration, and countdown timer" loading="lazy" decoding="async" width="640" height="1386">
+                        <img src="core-buddy-assets/cb_workout.PNG" alt="Workout in progress showing exercise video demo with timer and rep tracking" loading="lazy" decoding="async" width="640" height="1386">
                     </div>
                 </div>
             </div>
@@ -1614,7 +1619,7 @@
                 </div>
                 <div class="feature-visual">
                     <div class="phone phone-glow">
-                        <img src="core-buddy-assets/nutrition.PNG" alt="Nutrition tracking screen showing macro rings, meal breakdown, and food log" loading="lazy" decoding="async" width="640" height="1386">
+                        <img src="core-buddy-assets/cb_nutrition.PNG" alt="Nutrition tracking screen showing macro rings, meal breakdown and food log" loading="lazy" decoding="async" width="640" height="1386">
                     </div>
                 </div>
             </div>
@@ -1623,17 +1628,51 @@
             <div class="feature-cards">
                 <div class="feature-card fade-in">
                     <div class="phone">
-                        <img src="core-buddy-assets/generated-workout.PNG" alt="Generated workout showing exercise list with thumbnails and reshuffle option" loading="lazy" decoding="async" width="640" height="1386">
+                        <img src="core-buddy-assets/cb_workoutlist.PNG" alt="Generated workout list showing exercises with thumbnails and duration" loading="lazy" decoding="async" width="640" height="1386">
                     </div>
                     <h4>Your Workout Plan</h4>
                     <p>See your full exercise list with video thumbnails. Don't like it? Hit Reshuffle. Ready? Start Workout.</p>
                 </div>
                 <div class="feature-card fade-in">
                     <div class="phone">
-                        <img src="core-buddy-assets/habits.PNG" alt="Daily habit tracker showing Trained, Hit Protein, 10k Steps, and 2L Water circles" loading="lazy" decoding="async" width="640" height="1386">
+                        <img src="core-buddy-assets/cb_habits.PNG" alt="Daily habit tracker showing streaks for training, protein, steps and water" loading="lazy" decoding="async" width="640" height="1386">
                     </div>
                     <h4>Build Daily Habits</h4>
                     <p>Track the habits that matter &mdash; Trained, Hit Protein, 10k Steps, 2L Water. Build streaks and stay consistent.</p>
+                </div>
+            </div>
+
+            <div class="feature-cards">
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/cb_activitys.PNG" alt="Activity logging screen showing walks, runs, cycles and other activities" loading="lazy" decoding="async" width="640" height="1386">
+                    </div>
+                    <h4>Log Your Activities</h4>
+                    <p>Track walks, runs, cycles, swims &mdash; anything beyond your workouts counts here. Every bit of movement matters.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/cb_bodymetrics.PNG" alt="Body metrics tracking screen showing weight, measurements and progress photos" loading="lazy" decoding="async" width="640" height="1386">
+                    </div>
+                    <h4>Track Body Metrics</h4>
+                    <p>Log your weight, measurements and progress photos to see how far you've come.</p>
+                </div>
+            </div>
+
+            <div class="feature-cards">
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/cb_leaderboard.PNG" alt="Leaderboard showing rankings for workouts, minutes and streaks" loading="lazy" decoding="async" width="640" height="1386">
+                    </div>
+                    <h4>Join the Leaderboard</h4>
+                    <p>Compete with other members across workouts, minutes and streaks. See where you rank.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="phone">
+                        <img src="core-buddy-assets/cb_profilemain.PNG" alt="Core Buddy profile dashboard showing stats, streaks and leaderboard position" loading="lazy" decoding="async" width="640" height="1386">
+                    </div>
+                    <h4>Your Profile Dashboard</h4>
+                    <p>Track your stats, climb the leaderboards, and connect with your Core Buddies &mdash; all from your profile.</p>
                 </div>
             </div>
         </div>
@@ -1756,7 +1795,7 @@
                     <div class="cb-testimonial-author">
                         <picture>
                             <source srcset="images/client-results/sharon-hughes.webp" type="image/webp">
-                            <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" loading="lazy" width="52" height="52">
+                            <img src="images/client-results/sharon-hughes.jpeg" alt="Sharon Hughes" loading="lazy" width="52" height="52" decoding="async">
                         </picture>
                         <div class="cb-testimonial-author-info">
                             <strong>Sharon Hughes</strong>
@@ -1769,7 +1808,7 @@
                     <div class="cb-testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                     <p>&ldquo;Core Buddy has everything you need in one place to help you stay motivated and on track. It definitely plays a big role in helping me stay consistent in hitting my habits and food goals.&rdquo;</p>
                     <div class="cb-testimonial-author">
-                        <img src="images/client-results/georgia-laing.JPG" alt="Georgia Laing" loading="lazy" width="52" height="52">
+                        <img src="images/client-results/georgia-laing.JPG" alt="Georgia Laing" loading="lazy" width="52" height="52" decoding="async">
                         <div class="cb-testimonial-author-info">
                             <strong>Georgia Laing</strong>
                             <span>Core Buddy Member</span>
@@ -1836,7 +1875,7 @@
     <section class="final-cta">
         <picture>
             <source srcset="Logo.webp" type="image/webp">
-            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="final-logo" width="80" height="80">
+            <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="final-logo" width="80" height="80" decoding="async">
         </picture>
         <h2>You've Got 5 Minutes.<br>That's Enough.</h2>
         <p>Stop putting it off. Hit Randomise, get your workout, and start building the consistency you've been after. No credit card. No app store. No excuses.</p>
@@ -1856,7 +1895,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>

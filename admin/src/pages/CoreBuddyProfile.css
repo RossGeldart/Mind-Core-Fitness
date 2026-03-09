@@ -48,7 +48,7 @@
   align-items: center;
   justify-content: center;
   background: var(--bg-card-elevated);
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.8rem;
   color: var(--text-secondary);
@@ -73,7 +73,7 @@
 }
 
 .prf-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
   color: var(--text-primary);
@@ -82,7 +82,7 @@
 }
 
 .prf-you-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -106,7 +106,7 @@
   padding: 10px 24px;
   border-radius: 12px;
   border: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
@@ -119,7 +119,7 @@
 
 .prf-btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
 }
 
 .prf-btn-success {
@@ -177,7 +177,7 @@
 }
 
 .prf-stat-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.15rem;
   color: var(--text-primary);
@@ -194,7 +194,7 @@
 }
 
 .prf-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   margin-top: 4px;
@@ -206,7 +206,7 @@
 }
 
 .prf-section-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--text-primary);
@@ -256,7 +256,7 @@
 }
 
 .prf-badge-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -265,7 +265,7 @@
 }
 
 .prf-badges-count {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -319,7 +319,7 @@
 }
 
 .prf-info-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.72rem;
   color: var(--text-primary);
@@ -329,14 +329,14 @@
 }
 
 .prf-info-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text-primary);
 }
 
 .prf-info-sub {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
 }
@@ -396,7 +396,7 @@
 
 .prf-pb-rank {
   width: 24px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.7rem;
   color: #f9a825;
@@ -406,7 +406,7 @@
 
 .prf-pb-name {
   flex: 1;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.8rem;
   color: var(--text-primary);
@@ -416,7 +416,7 @@
 }
 
 .prf-pb-weight {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.82rem;
   color: var(--text-primary);
@@ -473,7 +473,7 @@
 }
 
 .prf-badge-chip span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.6rem;
   white-space: nowrap;
@@ -526,7 +526,7 @@
 }
 
 .prf-badge-overlay-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.8);
   text-align: center;
@@ -536,7 +536,7 @@
 .prf-badge-overlay-close {
   background: none;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
@@ -605,7 +605,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.75rem;
   color: var(--color-success);
@@ -646,7 +646,7 @@
 }
 
 .prf-private-title {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -654,7 +654,7 @@
 }
 
 .prf-private-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -668,7 +668,7 @@
 }
 
 .prf-badges-tally {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-tertiary);
@@ -729,7 +729,7 @@
 }
 
 .prf-carousel-badge-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -745,7 +745,7 @@
 
 /* ===== BADGE OVERLAY NAME ===== */
 .prf-badge-overlay-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: #fff;
@@ -807,7 +807,7 @@
 }
 
 .prf-confirm-title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   color: var(--text-primary);
@@ -815,7 +815,7 @@
 }
 
 .prf-confirm-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   line-height: 1.4;
@@ -832,7 +832,7 @@
   padding: 10px 16px;
   border-radius: 12px;
   border: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.82rem;
   cursor: pointer;
@@ -867,7 +867,7 @@
   transform: translateX(-50%);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: #fff;
@@ -972,7 +972,7 @@
 }
 
 .journey-compose-avatar span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -990,7 +990,7 @@
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   resize: none;
   outline: none;
@@ -1068,7 +1068,7 @@
   border: none;
   background: var(--color-primary);
   color: #fff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.8rem;
   cursor: pointer;
@@ -1126,7 +1126,7 @@
 }
 
 .journey-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   margin: 0;
 }
@@ -1182,7 +1182,7 @@
 }
 
 .journey-post-avatar span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -1196,14 +1196,14 @@
 }
 
 .journey-post-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .journey-post-time {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -1231,7 +1231,7 @@
 
 /* Post Content & Image */
 .journey-post-content {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   line-height: 1.5;
@@ -1270,7 +1270,7 @@
   border-radius: 10px;
   background: transparent;
   color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -1333,7 +1333,7 @@
 }
 
 .journey-comment-avatar span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.5rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -1358,14 +1358,14 @@
 }
 
 .journey-comment-name {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .journey-comment-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
   line-height: 1.4;
@@ -1373,7 +1373,7 @@
 }
 
 .journey-comment-time {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.62rem;
   color: var(--text-tertiary);
   margin-left: 12px;
@@ -1381,7 +1381,7 @@
 }
 
 .journey-no-comments {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -1401,7 +1401,7 @@
   border: 1px solid rgba(150, 150, 150, 0.2);
   border-radius: 20px;
   padding: 8px 14px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-primary);
   background: transparent;
@@ -1494,7 +1494,7 @@
 }
 
 .journey-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1504,7 +1504,7 @@
 }
 
 .journey-card-stats-line {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.74rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -1512,7 +1512,7 @@
 }
 
 .journey-card-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1521,7 +1521,7 @@
 }
 
 .journey-card-slogan {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
   color: var(--color-primary);

@@ -43,7 +43,7 @@
 }
 
 .cb-header h1 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   margin: 0;
@@ -68,14 +68,14 @@
 }
 
 .cb-class-info h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .cb-class-info p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -88,7 +88,7 @@
   background: var(--color-error-bg);
   border: 1px solid var(--color-error);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--color-error);
   margin-bottom: 20px;
@@ -129,7 +129,7 @@
 }
 
 .cb-slot-number {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -146,14 +146,14 @@
 }
 
 .cb-slot-available {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--color-success);
   font-weight: 500;
 }
 
 .cb-slot-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -163,7 +163,7 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 6px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -196,7 +196,7 @@
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.8rem;
   cursor: pointer;
@@ -224,7 +224,7 @@
   color: var(--text-secondary);
   padding: 6px 12px;
   border-radius: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -252,7 +252,7 @@
   background: var(--bg-card);
   border: 2px dashed var(--border-color);
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--color-primary);
@@ -283,7 +283,7 @@
 }
 
 .cb-waitlist-status p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -295,7 +295,7 @@
   color: var(--text-tertiary);
   padding: 8px 14px;
   border-radius: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -317,7 +317,7 @@
 }
 
 .cb-waitlist-preview h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0 0 12px 0;
@@ -336,7 +336,7 @@
 }
 
 .cb-waitlist-pos {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -344,7 +344,7 @@
 }
 
 .cb-waitlist-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
   flex: 1;
@@ -357,7 +357,7 @@
 }
 
 .cb-rules p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -377,14 +377,14 @@
 }
 
 .cb-error-state h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 8px 0 0 0;
 }
 
 .cb-error-state p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -397,7 +397,7 @@
   border: none;
   padding: 12px 32px;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;

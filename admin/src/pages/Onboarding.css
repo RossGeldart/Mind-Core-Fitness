@@ -58,7 +58,7 @@
 }
 
 .ob-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -90,7 +90,7 @@
 
 /* ── Feature Showcase (Step 0) ── */
 .ob-page--showcase {
-  padding: 12px 0 16px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 0 16px;
   min-height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
@@ -99,7 +99,7 @@
 .ob-content--showcase {
   max-width: 100%;
   height: 100%;
-  max-height: calc(100dvh - 28px);
+  max-height: calc(100dvh - 28px - env(safe-area-inset-top, 0px));
   display: flex;
   flex-direction: column;
 }
@@ -185,7 +185,7 @@
 
 .ob-showcase-title {
   margin: 0 0 4px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -238,7 +238,7 @@
   color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
   margin-top: 4px;
 }
@@ -253,7 +253,7 @@
   color: var(--text-on-primary);
   font-size: 1rem;
   font-weight: 600;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
   box-shadow: var(--shadow-primary);
   transition: background 0.2s, transform 0.1s;
@@ -298,7 +298,7 @@
   text-align: center;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   box-shadow: var(--shadow-card);
   animation: ob-card-in 0.5s ease-out both;
   overflow: visible;
@@ -371,7 +371,7 @@
   color: #ffffff;
   font-size: 0.7rem;
   font-weight: 700;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   padding: 5px 16px;
   border-radius: 20px;
   letter-spacing: 0.04em;
@@ -381,7 +381,7 @@
 }
 
 .ob-plan-name {
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -399,7 +399,7 @@
 }
 
 .ob-plan-currency {
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -408,7 +408,7 @@
 }
 
 .ob-plan-amount {
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.6rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -473,7 +473,7 @@
   color: var(--color-primary);
   font-size: 0.92rem;
   font-weight: 600;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   transition: background 0.3s, border-color 0.3s;
   letter-spacing: 0.02em;
 }
@@ -487,7 +487,7 @@
   color: var(--color-primary);
   font-size: 0.92rem;
   font-weight: 600;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: 0.02em;
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -544,7 +544,7 @@
   background: var(--bg-card);
   color: var(--text-primary);
   font-size: 0.92rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   box-sizing: border-box;
 }
 
@@ -562,7 +562,7 @@
   background: var(--bg-card);
   color: var(--text-primary);
   font-size: 0.92rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   resize: vertical;
   box-sizing: border-box;
 }
@@ -588,7 +588,7 @@
   color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 500;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -617,7 +617,7 @@
   background: var(--bg-card);
   cursor: pointer;
   transition: border-color 0.15s;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .ob-level-card strong {
@@ -672,7 +672,7 @@
   color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 600;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -763,7 +763,7 @@
   font-weight: 600;
   cursor: pointer;
   padding: 4px 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .ob-sig-canvas {
@@ -885,7 +885,7 @@
 
 /* ── Wizard Typography ── */
 .ob-wizard-question {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -919,7 +919,7 @@
   color: var(--text-secondary);
   font-size: 0.88rem;
   font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
   transition: color 0.15s;
 }

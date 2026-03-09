@@ -22,16 +22,30 @@ export default function NativeLogin() {
   const [verificationSent, setVerificationSent] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMsg, setResendMsg] = useState('');
+  const [splashReady, setSplashReady] = useState(false);
+  const [splashFading, setSplashFading] = useState(false);
   const { login, signup, loginWithGoogle, loginWithApple, resetPassword, currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // When auth resolves for a returning user, hold the welcome splash then fade out
+  useEffect(() => {
+    if (!authLoading && currentUser && (isAdmin || isClient)) {
+      // Text finishes at 2.3s + 2s hold = 4.3s, then fade out over 0.6s
+      const holdTimer = setTimeout(() => setSplashFading(true), 4300);
+      const navTimer = setTimeout(() => setSplashReady(true), 4900);
+      return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
+    }
+  }, [authLoading, currentUser, isAdmin, isClient]);
+
+  // Redirect after splash has shown
   useEffect(() => {
     if (!authLoading && currentUser) {
       if (!currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
         setVerificationSent(true);
         return;
       }
+      // Wait for the welcome splash to finish before navigating
+      if (!splashReady && (isAdmin || isClient)) return;
       if (isAdmin) {
         navigate('/dashboard');
       } else if (isClient) {
@@ -41,7 +55,7 @@ export default function NativeLogin() {
         setError('No account found. Please contact your trainer.');
       }
     }
-  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate, splashReady]);
 
   // Poll for email verification
   useEffect(() => {
@@ -60,9 +74,14 @@ export default function NativeLogin() {
   }, [verificationSent, currentUser, navigate]);
 
   if (authLoading || currentUser) {
+    const displayName = clientData?.name || currentUser?.displayName;
+    const firstName = displayName ? displayName.split(' ')[0] : null;
     return (
-      <div className="native-login-loading">
-        <div className="native-login-spinner" />
+      <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
+        <div className="native-login-splash-inner">
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
+          <h1 className="native-login-splash-name">{firstName ? `Welcome back, ${firstName}` : '\u00A0'}</h1>
+        </div>
       </div>
     );
   }

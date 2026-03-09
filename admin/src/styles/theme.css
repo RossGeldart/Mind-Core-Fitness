@@ -301,6 +301,12 @@
 }
 
 /* Notification panel needs a solid-ish bg in mono so text is readable */
+[data-mono="true"][data-theme="dark"] .cb-photo-badge,
+[data-mono="true"][data-theme="dark"] .lb-your-position,
+[data-mono="true"][data-theme="dark"] .prf-btn-primary {
+  color: var(--text-on-primary);
+}
+
 [data-mono="true"][data-theme="dark"] .notif-panel {
   background: rgba(30, 30, 30, 0.88);
 }
@@ -317,10 +323,12 @@
 }
 
 /* Nutrition modal & search items need opaque bg in mono so text is readable */
-[data-mono="true"][data-theme="dark"] .nut-modal {
+[data-mono="true"][data-theme="dark"] .nut-modal,
+[data-mono="true"][data-theme="dark"] .nut-search-panel {
   background: rgba(20, 20, 20, 0.95);
 }
-[data-mono="true"][data-theme="light"] .nut-modal {
+[data-mono="true"][data-theme="light"] .nut-modal,
+[data-mono="true"][data-theme="light"] .nut-search-panel {
   background: rgba(255, 255, 255, 0.92);
 }
 [data-mono="true"][data-theme="dark"] .nut-search-item {
@@ -526,14 +534,14 @@
 }
 
 .empty-state h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -569,7 +577,7 @@
 }
 
 .refresh-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -577,4 +585,113 @@
 @keyframes pullRefreshSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+
+/* ====== Bold card headers & section titles ====== */
+.cb-card-content h3,
+.cb-nudge-title-text,
+.cb-journey-title,
+.cb-coach-msg,
+.cb-celebration-title,
+.cb-weekly-celebration-card h4,
+.cb-metric-rings-title,
+.cb-target-picker h4,
+.prf-section-title,
+.prf-name,
+.bdg-title,
+.bdg-category-title,
+.bdy-title,
+.cbc-section-title,
+.cbm-title,
+.cbm-section-title,
+.cbm-banner-title,
+.cbm-setup-heading,
+.bldr-title,
+.bldr-section-title,
+.wk-section-header h2,
+.wk-hub-heading h2,
+.wk-hub-card-body h3,
+.wk-menu-heading h2,
+.wk-hero-bottom h3,
+.wk-prog-hero-bottom h3,
+.wk-muscle-hero-name,
+.wk-landing-card-body h3,
+.mg-sessions-header h2,
+.mg-session-info h3,
+.mg-overview-title-row h2,
+.mg-overview-section h3,
+.pg-overview-name,
+.pg-browse-name,
+.pg-dash-name,
+.pg-next-session h3,
+.pg-week-label,
+.nut-setup-intro h2,
+.nut-meal-card-title,
+.nut-add-picker-title,
+.nut-calc-results h3,
+.nut-modal-header h3,
+.nut-log-section h3,
+.pb-intro h2,
+.pb-trend-section h4,
+.pb-target-section-title,
+.pb-metrics-card h3,
+.pb-edit-header h3,
+.lb-title,
+.lb-optin-title,
+.ch-title,
+.ch-card-body h3,
+.ch-completed-heading,
+.welcome-section h2,
+.block-info-card h3,
+.daily-quote-label,
+.daily-quote-cta-title,
+.core-buddy-cta-title,
+.completed-section h3,
+.modal-header h3,
+.confirm-modal h3,
+.header-left h1,
+.view-header h2,
+.page-header h1,
+.acb-header h1,
+.acb-main h2,
+.tools-intro h2,
+.forms-intro h2,
+.form-header h2,
+.today-summary h3,
+.calendar-header h3,
+.availability-header h3,
+.client-section-header,
+.client-name-text h3,
+.circuit-intro h2,
+.circuit-status-info h3,
+.circuit-stats-card h3,
+.circuit-rules h4,
+.cb-header h1,
+.cb-class-info h2,
+.locked-feature-card h2 {
+  font-weight: 800 !important;
+}
+
+/* ====== Extra-bold clock countdowns ====== */
+.cb-timer-digit,
+.cb-timer-colon,
+.cb-ring-countdown,
+.bldr-timer-digit,
+.bldr-timer-colon,
+.bldr-countdown,
+.timer-digit,
+.timer-colon,
+.ring-timer-countdown {
+  font-weight: 900 !important;
+}
+
+/* Page fade-in after welcome splash */
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#root > :first-child:not(#app-loader) {
+  animation: page-fade-in 0.5s ease-out;
 }

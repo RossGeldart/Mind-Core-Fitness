@@ -8,7 +8,7 @@
   justify-content: center;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   gap: 4px;
   overflow: hidden;
@@ -77,7 +77,7 @@
 
 /* Coach Message */
 .cb-coach-msg {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -103,7 +103,7 @@
 }
 
 .cb-nudge-title-text {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -146,14 +146,14 @@
 .cb-nudge-ring-val {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .cb-nudge-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -162,7 +162,7 @@
 }
 
 .cb-nudge-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-primary);
@@ -273,6 +273,7 @@
   height: 30px;
   border-radius: 50%;
   background: var(--color-primary);
+  color: #fff;
   border: 2px solid var(--bg-body);
   display: flex;
   align-items: center;
@@ -291,7 +292,7 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   margin-top: 8px;
 }
@@ -316,7 +317,7 @@
 }
 
 .cb-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -330,7 +331,7 @@
 }
 
 .cb-ring-tagline {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   text-align: center;
@@ -402,7 +403,7 @@
 .cb-stat-value {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
 }
@@ -412,7 +413,7 @@
 }
 
 .cb-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -469,7 +470,7 @@
 }
 
 .cb-target-picker h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -477,7 +478,7 @@
 }
 
 .cb-target-picker p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-tertiary);
   margin: 0 0 20px;
@@ -497,7 +498,7 @@
   border: 1.5px solid var(--border-color);
   background: transparent;
   color: var(--text-secondary);
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -624,7 +625,7 @@
 }
 
 .cb-unified-stat {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -683,7 +684,7 @@
 }
 
 .cb-progress-preview span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   color: var(--text-tertiary);
 }
@@ -704,7 +705,7 @@
 }
 
 .cb-pb-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-tertiary);
   white-space: nowrap;
@@ -714,7 +715,7 @@
 }
 
 .cb-pb-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -749,7 +750,7 @@
 }
 
 .cb-lb-avatar span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -764,7 +765,7 @@
 }
 
 .cb-lb-rank {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
 }
@@ -822,7 +823,7 @@
 }
 
 .cb-habit-dots-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -859,7 +860,7 @@
 }
 
 .cb-card-content h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -867,7 +868,7 @@
 }
 
 .cb-card-content p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -907,7 +908,7 @@
 .cb-mini-ring span {
   position: relative;
   z-index: 1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
 }
@@ -929,7 +930,7 @@
 /* Coming Soon Badge */
 .cb-coming-soon {
   flex-shrink: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -960,7 +961,7 @@
   transform: translateX(-50%);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   color: #ffffff;
@@ -1076,7 +1077,7 @@
 }
 
 .cb-journey-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   color: var(--text-primary);
@@ -1116,7 +1117,7 @@
 }
 
 .journey-compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-compose-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--color-primary); }
+.journey-compose-avatar span { font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-compose-body {
   flex: 1;
@@ -1130,7 +1131,7 @@
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   resize: none;
   outline: none;
@@ -1163,7 +1164,7 @@
 
 .journey-post-btn {
   padding: 8px 20px; border-radius: 20px; border: none; background: var(--color-primary);
-  color: #fff; font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 0.8rem;
+  color: #fff; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem;
   cursor: pointer; transition: opacity 0.2s, transform 0.15s; -webkit-tap-highlight-color: transparent;
   display: flex; align-items: center; justify-content: center; min-width: 70px;
 }
@@ -1179,7 +1180,7 @@
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   padding: 32px 20px; text-align: center; color: var(--text-tertiary);
 }
-.journey-empty p { font-family: 'Roboto', sans-serif; font-size: 0.85rem; margin: 0; }
+.journey-empty p { font-family: 'Inter', sans-serif; font-size: 0.85rem; margin: 0; }
 
 .journey-list { display: flex; flex-direction: column; gap: 16px; }
 
@@ -1205,11 +1206,11 @@
   border: 2px solid rgba(var(--color-primary-rgb, 161, 47, 58), 0.2);
 }
 .journey-post-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-post-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.6rem; font-weight: 700; color: var(--color-primary); }
+.journey-post-avatar span { font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-post-meta { flex: 1; display: flex; flex-direction: column; gap: 1px; }
-.journey-post-name { font-family: 'Roboto', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
-.journey-post-time { font-family: 'Roboto', sans-serif; font-size: 0.7rem; color: var(--text-tertiary); }
+.journey-post-name { font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+.journey-post-time { font-family: 'Inter', sans-serif; font-size: 0.7rem; color: var(--text-tertiary); }
 
 .journey-delete-btn {
   width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent;
@@ -1219,7 +1220,7 @@
 .journey-delete-btn:active { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
 .journey-post-content {
-  font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: var(--text-primary);
+  font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text-primary);
   line-height: 1.5; margin: 0 0 10px; white-space: pre-wrap; word-break: break-word;
 }
 
@@ -1270,7 +1271,7 @@
 
 /* ── Title ── */
 .journey-card-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1281,7 +1282,7 @@
 
 /* ── Stats / description line ── */
 .journey-card-stats-line {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.74rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -1290,7 +1291,7 @@
 
 /* ── CTA line ── */
 .journey-card-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1300,7 +1301,7 @@
 
 /* ── Slogan ── */
 .journey-card-slogan {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.62rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -1316,7 +1317,7 @@
 .journey-action-btn {
   display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: none;
   border-radius: 10px; background: transparent; color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif; font-size: 0.78rem; font-weight: 600;
+  font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600;
   cursor: pointer; transition: color 0.2s, background 0.15s; -webkit-tap-highlight-color: transparent;
 }
 .journey-action-btn:active { background: rgba(150, 150, 150, 0.1); }
@@ -1341,7 +1342,7 @@
   display: flex; align-items: center; justify-content: center;
 }
 .journey-comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.journey-comment-avatar span { font-family: 'Roboto', sans-serif; font-size: 0.5rem; font-weight: 700; color: var(--color-primary); }
+.journey-comment-avatar span { font-family: 'Inter', sans-serif; font-size: 0.5rem; font-weight: 700; color: var(--color-primary); }
 
 .journey-comment-body { flex: 1; min-width: 0; }
 .journey-comment-bubble {
@@ -1350,16 +1351,16 @@
 }
 [data-theme="dark"] .journey-comment-bubble { background: rgba(255, 255, 255, 0.06); }
 
-.journey-comment-name { font-family: 'Roboto', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--text-primary); }
-.journey-comment-text { font-family: 'Roboto', sans-serif; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; word-break: break-word; }
-.journey-comment-time { font-family: 'Roboto', sans-serif; font-size: 0.62rem; color: var(--text-tertiary); }
-.journey-no-comments { font-family: 'Roboto', sans-serif; font-size: 0.78rem; color: var(--text-tertiary); text-align: center; margin: 4px 0; }
+.journey-comment-name { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--text-primary); }
+.journey-comment-text { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; word-break: break-word; }
+.journey-comment-time { font-family: 'Inter', sans-serif; font-size: 0.62rem; color: var(--text-tertiary); }
+.journey-no-comments { font-family: 'Inter', sans-serif; font-size: 0.78rem; color: var(--text-tertiary); text-align: center; margin: 4px 0; }
 
 .journey-comment-actions-row {
   display: flex; align-items: center; gap: 10px; margin-left: 12px; margin-top: 2px;
 }
 .journey-comment-reply-btn {
-  background: none; border: none; padding: 0; font-family: 'Roboto', sans-serif;
+  background: none; border: none; padding: 0; font-family: 'Inter', sans-serif;
   font-size: 0.62rem; font-weight: 600; color: var(--text-tertiary); cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1374,7 +1375,7 @@
 
 .journey-comment-reply-tag {
   display: inline-flex; align-items: center; gap: 3px;
-  font-family: 'Roboto', sans-serif; font-size: 0.68rem; color: var(--color-primary);
+  font-family: 'Inter', sans-serif; font-size: 0.68rem; color: var(--color-primary);
   margin-bottom: 1px;
 }
 .journey-comment-image {
@@ -1385,7 +1386,7 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 6px 12px; border-radius: 10px;
   background: rgba(var(--color-primary-rgb, 161, 47, 58), 0.08);
-  font-family: 'Roboto', sans-serif; font-size: 0.72rem; color: var(--text-secondary);
+  font-family: 'Inter', sans-serif; font-size: 0.72rem; color: var(--text-secondary);
 }
 .journey-comment-replying button {
   background: none; border: none; cursor: pointer; color: var(--text-tertiary); display: flex; align-items: center;
@@ -1415,7 +1416,7 @@
 .journey-comment-img-btn:hover { color: var(--color-primary); }
 .journey-comment-input input {
   flex: 1; border: 1px solid rgba(150, 150, 150, 0.2); border-radius: 22px;
-  padding: 10px 16px; font-family: 'Roboto', sans-serif; font-size: 0.88rem;
+  padding: 10px 16px; font-family: 'Inter', sans-serif; font-size: 0.88rem;
   color: var(--text-primary); background: transparent; outline: none; transition: border-color 0.2s;
 }
 .journey-comment-input input:focus { border-color: rgba(var(--color-primary-rgb, 161, 47, 58), 0.4); }
@@ -1756,7 +1757,7 @@
   border: 1px dashed var(--border-color);
   border-radius: 8px;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
@@ -1788,14 +1789,14 @@
   transform: scale(0.98);
 }
 .cb-upgrade-cta-text {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 .cb-upgrade-cta-sub {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 300;
   opacity: 0.85;
@@ -1919,7 +1920,7 @@
 }
 
 .cb-celebration-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
   color: #FFD700;
@@ -1931,7 +1932,7 @@
 }
 
 .cb-celebration-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
@@ -1940,7 +1941,7 @@
 }
 
 .cb-celebration-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
@@ -1953,7 +1954,7 @@
 .cb-celebration-dismiss {
   background: none;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
@@ -2025,7 +2026,7 @@
 
 /* 3. LEADERBOARD RANK MOVEMENT */
 .cb-lb-movement {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.5rem;
   font-weight: 700;
   margin-left: 2px;
@@ -2048,6 +2049,7 @@
 
 /* 5. COMPLETION SIGNALING — feature cards show done state */
 .cb-card-done {
+  position: relative;
   border-color: rgba(76, 175, 80, 0.25) !important;
 }
 
@@ -2124,7 +2126,7 @@
 }
 
 .cb-weekly-celebration-card h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -2132,7 +2134,7 @@
 }
 
 .cb-weekly-celebration-card p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -2163,7 +2165,7 @@
 }
 
 .cb-milestone-hint span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -2234,7 +2236,7 @@
 .cb-metrics-ring-val {
   position: relative;
   z-index: 1;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.6rem;
   font-weight: 700;
   color: #4CAF50;
@@ -2271,7 +2273,7 @@
 }
 
 .cb-metric-rings-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -2328,7 +2330,7 @@
 }
 
 .cb-metric-mini-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.5rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -2337,7 +2339,7 @@
 }
 
 .cb-metric-rings-cta {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   font-weight: 500;
   color: var(--color-primary);
@@ -2416,9 +2418,7 @@
 
 /* ── FAB Bottom Sheet ── */
 .cb-fab-sheet {
-  background: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  backdrop-filter: blur(40px) saturate(180%);
+  background: #ffffff;
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -2490,10 +2490,11 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.cb-fab-item:hover,
-.cb-fab-item:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .cb-fab-item:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 .cb-fab-item:active {
   transform: scale(0.95);
@@ -2513,12 +2514,33 @@
 
 /* Label */
 .cb-fab-item-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--text-primary);
   text-align: center;
   line-height: 1.2;
+}
+
+/* Locked FAB items (free tier) */
+.cb-fab-item-locked {
+  position: relative;
+  opacity: 0.5;
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+.cb-fab-item-locked .cb-fab-item-icon {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--text-tertiary);
+}
+.cb-fab-item-locked .cb-fab-item-label {
+  color: var(--text-tertiary);
+}
+.cb-fab-item-lock {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--text-tertiary);
 }
 
 /* Stagger animation for each item */
@@ -2548,7 +2570,7 @@
 
 /* Dark mode: translucent dark glass */
 [data-theme="dark"] .cb-fab-sheet {
-  background: rgba(30, 30, 30, 0.85);
+  background: #1e1e1e;
 }
 
 /* Mono dark: ensure primary-bg buttons have readable text */

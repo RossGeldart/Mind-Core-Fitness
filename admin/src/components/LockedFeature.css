@@ -50,7 +50,7 @@
 
 .locked-feature-card h2 {
   margin: 0 0 10px;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -71,7 +71,7 @@
   border-radius: 30px;
   background: var(--color-primary);
   color: #ffffff;
-  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;

@@ -33,7 +33,7 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   padding: 16px 0 8px;
@@ -46,7 +46,7 @@
 
 /* ==================== BROWSE VIEW ==================== */
 .pg-browse-intro {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   text-align: center;
@@ -98,7 +98,7 @@
 }
 
 .pg-browse-duration {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -108,7 +108,7 @@
 }
 
 .pg-browse-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -116,7 +116,7 @@
 }
 
 .pg-browse-level {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -125,7 +125,7 @@
 }
 
 .pg-browse-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin: 0;
@@ -135,7 +135,7 @@
 .pg-browse-meta {
   display: flex;
   gap: 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -156,7 +156,7 @@
 }
 
 .pg-overview-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -165,7 +165,7 @@
 }
 
 .pg-overview-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   text-align: center;
@@ -192,14 +192,14 @@
 }
 
 .pg-ov-stat-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .pg-ov-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -231,14 +231,14 @@
 }
 
 .pg-day-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .pg-day-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--color-primary);
   font-weight: 600;
@@ -257,20 +257,20 @@
 
 .pg-day-ex-name {
   flex: 1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-primary);
 }
 
 .pg-day-ex-target {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .pg-day-ex-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.55rem;
   font-weight: 700;
   padding: 3px 8px;
@@ -295,7 +295,7 @@
 
 /* Overload note */
 .pg-overview-note {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   background: var(--bg-card);
@@ -318,7 +318,7 @@
   color: #fff;
   border: none;
   border-radius: 16px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -386,14 +386,14 @@
 }
 
 .pg-ring-pct {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 1.6rem;
   color: var(--color-primary);
 }
 
 .pg-ring-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -402,7 +402,7 @@
 }
 
 .pg-dash-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -416,14 +416,14 @@
 }
 
 .pg-dash-pct {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 900;
   color: var(--color-primary);
 }
 
 .pg-dash-week {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -450,7 +450,7 @@
 }
 
 .pg-week-label {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -472,7 +472,7 @@
   background: var(--bg-card);
   border: 1.5px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -516,7 +516,7 @@
 }
 
 .pg-next-session h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -524,7 +524,7 @@
 }
 
 .pg-next-info {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--color-primary);
   margin: 0 0 12px;
@@ -551,13 +551,13 @@
 }
 
 .pg-next-ex-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-primary);
 }
 
 .pg-next-ex-target {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -574,7 +574,7 @@
   padding-top: 0;
 }
 .pg-avail-day-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -592,7 +592,7 @@
 }
 
 .pg-complete-msg h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -600,7 +600,7 @@
 }
 
 .pg-complete-msg p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0 0 16px;
@@ -613,7 +613,7 @@
   background: none;
   border: 1px solid rgba(244, 67, 54, 0.3);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: #f44336;
   cursor: pointer;
@@ -663,7 +663,7 @@
 }
 
 .pg-session-counter {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-tertiary);
@@ -671,7 +671,7 @@
 }
 
 .pg-session-week {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -751,7 +751,7 @@
 }
 
 .pg-last-week-value {
-  font-family: var(--font-numbers, 'Orbitron', monospace);
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -772,7 +772,7 @@
 }
 
 .pg-ex-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -781,7 +781,7 @@
 }
 
 .pg-ex-type-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   padding: 3px 10px;
@@ -798,14 +798,14 @@
 }
 
 .pg-ex-set-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .pg-ex-target {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -826,7 +826,7 @@
 }
 
 .pg-input-group label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -844,7 +844,7 @@
   background: var(--bg-body);
   border: 2px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -878,7 +878,7 @@
 }
 
 .pg-timer-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.5rem;
   font-weight: 900;
   color: var(--text-primary);
@@ -890,7 +890,7 @@
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -915,7 +915,7 @@
   color: #fff;
   border: none;
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -953,7 +953,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   padding: 4px 0;
@@ -1000,7 +1000,7 @@
 }
 
 .pg-done-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1008,7 +1008,7 @@
 }
 
 .pg-done-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin: 0;
@@ -1033,14 +1033,14 @@
 }
 
 .pg-done-stat-num {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .pg-done-stat-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -1055,7 +1055,7 @@
   transform: translateX(-50%);
   padding: 12px 24px;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
@@ -1111,7 +1111,7 @@
 }
 
 .pg-badge-celebration-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1126,7 +1126,7 @@
 }
 
 .pg-badge-celebration-item {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: #f59e0b;
@@ -1151,7 +1151,7 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 50px;
   color: #f59e0b;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -1172,7 +1172,7 @@
 .pg-badge-celebration-dismiss {
   background: none;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   cursor: pointer;

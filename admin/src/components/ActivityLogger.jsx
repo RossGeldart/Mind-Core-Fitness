@@ -90,6 +90,7 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
   const [customDuration, setCustomDuration] = useState('');
   const [customName, setCustomName] = useState('');
   const [notes, setNotes] = useState('');
+  const [calories, setCalories] = useState('');
   const [saving, setSaving] = useState(false);
 
   const reset = () => {
@@ -99,6 +100,7 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
     setCustomDuration('');
     setCustomName('');
     setNotes('');
+    setCalories('');
     setSaving(false);
   };
 
@@ -127,11 +129,13 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
       const label = activityType.id === 'other' && customName.trim()
         ? customName.trim()
         : activityType.label;
+      const caloriesBurned = calories ? parseInt(calories, 10) : null;
       await addDoc(collection(db, 'activityLogs'), {
         clientId: clientData.id,
         activityType: activityType.id,
         activityLabel: label,
         duration: finalDuration,
+        ...(caloriesBurned ? { calories: caloriesBurned } : {}),
         notes: notes.trim() || null,
         date: today,
         completedAt: Timestamp.now(),
@@ -223,6 +227,21 @@ export default function ActivityLogger({ open, onClose, clientData, onLogged }) 
                   max="600"
                   inputMode="numeric"
                 />
+              </div>
+
+              <label className="al-label">Calories burned (optional)</label>
+              <div className="al-calories-row">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  className="al-calories-input"
+                  placeholder="0"
+                  value={calories}
+                  onChange={(e) => setCalories(e.target.value)}
+                  min="0"
+                  max="9999"
+                />
+                <span className="al-calories-unit">kcal</span>
               </div>
 
               <label className="al-label">Notes (optional)</label>

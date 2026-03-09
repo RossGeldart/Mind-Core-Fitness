@@ -1,0 +1,190 @@
+/* ═══════════════════════════════════════════════════
+   NUTRITION HUB — Two-card nutrition type selector
+   ═══════════════════════════════════════════════════ */
+
+.nut-hub-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+}
+
+.nut-hub-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+}
+
+.nut-hub-main {
+  flex: 1;
+  padding: 0 16px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 24px;
+}
+
+.nut-hub-heading {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.nut-hub-heading h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.nut-hub-heading p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.nut-hub-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+  margin-bottom: 28px;
+}
+
+.nut-hub-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+.nut-hub-card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .nut-hub-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 16px rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
+}
+
+/* Locked state */
+.nut-hub-card--locked {
+  cursor: default;
+  opacity: 0.7;
+  position: relative;
+}
+.nut-hub-card--locked:active {
+  transform: none;
+}
+@media (hover: hover) {
+  .nut-hub-card--locked:hover {
+    border-color: var(--border-color);
+    box-shadow: none;
+  }
+}
+
+/* Card icons */
+.nut-hub-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nut-hub-card-icon--manual {
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  color: var(--color-primary);
+}
+.nut-hub-card-icon--ai {
+  background: linear-gradient(135deg, rgba(56, 182, 255, 0.15), rgba(139, 92, 246, 0.15));
+  color: #8b5cf6;
+}
+
+/* Card body */
+.nut-hub-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.nut-hub-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.nut-hub-card-body h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.nut-hub-card-title-row h3 {
+  margin-bottom: 0;
+}
+.nut-hub-card-body p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Arrow */
+.nut-hub-card-arrow {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+/* Lock icon */
+.nut-hub-card-lock {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+/* Beta badge */
+.nut-hub-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nut-hub-badge--beta {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+}
+
+/* Coming soon label */
+.nut-hub-coming-soon {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Beta access label */
+.nut-hub-beta-access {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #8b5cf6;
+  letter-spacing: 0.02em;
+}

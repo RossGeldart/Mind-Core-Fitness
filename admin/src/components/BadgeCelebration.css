@@ -92,7 +92,7 @@
 }
 
 .bc-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
   color: #ffffff;
@@ -104,7 +104,7 @@
 }
 
 .bc-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
@@ -113,7 +113,7 @@
 }
 
 .bc-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
@@ -126,7 +126,7 @@
 .bc-dismiss {
   background: none;
   border: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.3);
   cursor: pointer;

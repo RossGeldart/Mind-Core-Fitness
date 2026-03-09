@@ -204,6 +204,7 @@ export default function CoreBuddyMetrics() {
   const [zoomA, setZoomA] = useState({ scale: 1, x: 0, y: 0 });
   const [zoomB, setZoomB] = useState({ scale: 1, x: 0, y: 0 });
   const touchStateRef = useRef({});
+  const [savingCompare, setSavingCompare] = useState(false);
 
   // Auth guard
   useEffect(() => {
@@ -423,8 +424,8 @@ export default function CoreBuddyMetrics() {
         photos: newPhotos,
       });
 
+      setPhotos(prev => ({ ...prev, [photoUploadPeriod]: newPhotos }));
       showToast('Photo uploaded!', 'success');
-      await loadData();
     } catch (err) {
       console.error('Photo upload error:', err);
       showToast('Upload failed — try again', 'error');
@@ -450,8 +451,16 @@ export default function CoreBuddyMetrics() {
           photos: updated,
         });
       }
+      setPhotos(prev => {
+        const next = { ...prev };
+        if (updated.length === 0) {
+          delete next[period];
+        } else {
+          next[period] = updated;
+        }
+        return next;
+      });
       showToast('Photo removed', 'info');
-      await loadData();
     } catch (err) {
       console.error('Delete photo error:', err);
       showToast('Error removing photo', 'error');
@@ -490,6 +499,216 @@ export default function CoreBuddyMetrics() {
     const fourWeeks = 28 * 24 * 60 * 60 * 1000;
     return (Date.now() - last.getTime()) >= fourWeeks;
   })();
+
+  const handleSaveCompare = async () => {
+    const urlA = photos[compareA]?.[comparePhotoA]?.url;
+    const urlB = photos[compareB]?.[comparePhotoB]?.url;
+    if (!urlA && !urlB) { showToast('No photos to save', 'error'); return; }
+    setSavingCompare(true);
+    try {
+      const loadImg = async (url) => {
+        // Fetch image as blob so the objectURL is same-origin — avoids canvas CORS tainting
+        const pathMatch = url.match(/\/o\/([^?]+)/);
+        const storagePath = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+        const proxyUrl = storagePath
+          ? `https://europe-west2-mind-core-fitness-client.cloudfunctions.net/imageProxy?path=${encodeURIComponent(storagePath)}`
+          : null;
+
+        // Try proxy first, then fall back to direct Firebase URL
+        const urls = proxyUrl ? [proxyUrl, url] : [url];
+        let blob;
+        for (const src of urls) {
+          try {
+            const resp = await fetch(src);
+            if (!resp.ok) continue;
+            blob = await resp.blob();
+            break;
+          } catch { /* try next */ }
+        }
+        if (!blob) throw new Error('Could not load image');
+
+        const objUrl = URL.createObjectURL(blob);
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => { URL.revokeObjectURL(objUrl); resolve(img); };
+          img.onerror = () => { URL.revokeObjectURL(objUrl); reject(new Error('Image decode failed')); };
+          img.src = objUrl;
+        });
+      };
+      const rRect = (ctx2, x, y, w, h, r) => {
+        ctx2.beginPath();
+        ctx2.moveTo(x + r, y);
+        ctx2.lineTo(x + w - r, y);
+        ctx2.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx2.lineTo(x + w, y + h - r);
+        ctx2.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx2.lineTo(x + r, y + h);
+        ctx2.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx2.lineTo(x, y + r);
+        ctx2.quadraticCurveTo(x, y, x + r, y);
+        ctx2.closePath();
+      };
+      const [imgA, imgB] = await Promise.all([
+        urlA ? loadImg(urlA) : null,
+        urlB ? loadImg(urlB) : null,
+      ]);
+      // Load logo
+      const logoImg = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = '/Logo.webp';
+      });
+
+      // --- Layout: 1200×1200 square ---
+      const S = 1200;
+      const pad = 48;            // padding from edges
+      const gap = 20;            // gap between the two photos
+      const labelH = 36;         // space for date text above photos
+      const labelGap = 12;       // gap between label and photo top
+      const logoDiam = 220;      // circular logo diameter (large)
+
+      // Photos: fill available width, 3:4 aspect, centred vertically
+      const photoW = Math.floor((S - pad * 2 - gap) / 2);
+      const photoH = Math.floor(photoW * 4 / 3);
+      // Centre the labels+photos block; logo overlaps bottom of photos so excluded
+      const contentH = labelH + labelGap + photoH;
+      // Shift up slightly so the logo half below photos has room
+      const topY = Math.floor((S - contentH) / 2) - logoDiam / 4;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = S;
+      canvas.height = S;
+      const ctx = canvas.getContext('2d');
+
+      // --- Layer 1: Blurred photo background + dark overlay ---
+      // Safari/iOS doesn't support ctx.filter, so we progressively
+      // downscale in steps for a smooth, non-pixelated blur.
+      const bgImg = imgA || imgB;
+      if (bgImg) {
+        const steps = [
+          { w: 300, h: 300 },
+          { w: 80, h: 80 },
+          { w: 40, h: 40 },
+        ];
+        let prev = bgImg;
+        let prevW = bgImg.width;
+        let prevH = bgImg.height;
+        const tempCanvas = document.createElement('canvas');
+        const tCtx = tempCanvas.getContext('2d');
+        tCtx.imageSmoothingEnabled = true;
+        tCtx.imageSmoothingQuality = 'high';
+        for (const step of steps) {
+          tempCanvas.width = step.w;
+          tempCanvas.height = step.h;
+          tCtx.drawImage(prev, 0, 0, prevW, prevH, 0, 0, step.w, step.h);
+          prev = tempCanvas;
+          prevW = step.w;
+          prevH = step.h;
+        }
+        // Draw the tiny result back at full size — smooth upscale = blur
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(tempCanvas, 0, 0, prevW, prevH, 0, 0, S, S);
+        // Dark overlay so photos pop
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillRect(0, 0, S, S);
+      } else {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, S, S);
+      }
+
+      // --- Layer 2: Date labels (on blurred bg, above photos) ---
+      const x1 = pad;
+      const x2 = pad + photoW + gap;
+      ctx.font = '600 28px Inter, system-ui, sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(formatPeriod(compareA), x1 + photoW / 2, topY + labelH - 4);
+      ctx.fillText(formatPeriod(compareB), x2 + photoW / 2, topY + labelH - 4);
+
+      // --- Layer 3: Two comparison photos ---
+      const yPhoto = topY + labelH + labelGap;
+      const drawPhoto = (img, x, y, w, h, zoom) => {
+        if (!img) {
+          ctx.save();
+          rRect(ctx, x, y, w, h, 16);
+          ctx.fillStyle = 'rgba(255,255,255,0.08)';
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.font = '500 22px Inter, system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('No photo', x + w / 2, y + h / 2 + 7);
+          ctx.restore();
+          return;
+        }
+        const imgRatio = img.width / img.height;
+        const targetRatio = w / h;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > targetRatio) {
+          sw = img.height * targetRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / targetRatio;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.save();
+        rRect(ctx, x, y, w, h, 16);
+        ctx.clip();
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+        const { scale = 1, x: panX = 0, y: panY = 0 } = zoom || {};
+        const screenW = 170;
+        const ratio = w / screenW;
+        ctx.translate(cx + panX * ratio, cy + panY * ratio);
+        ctx.scale(scale, scale);
+        ctx.translate(-cx, -cy);
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        ctx.restore();
+      };
+      drawPhoto(imgA, x1, yPhoto, photoW, photoH, zoomA);
+      drawPhoto(imgB, x2, yPhoto, photoW, photoH, zoomB);
+
+      // --- Layer 4: Circular logo — half on photos, half on background ---
+      if (logoImg) {
+        const logoX = S / 2;
+        const logoY = yPhoto + photoH; // centre at bottom edge of photos
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(logoX, logoY, logoDiam / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(logoImg, logoX - logoDiam / 2, logoY - logoDiam / 2, logoDiam, logoDiam);
+        ctx.restore();
+        // Ring around the circle
+        ctx.beginPath();
+        ctx.arc(logoX, logoY, logoDiam / 2 + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
+      const file = new File([blob], 'progress-compare.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'progress-compare.jpg';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Photo saved!', 'success');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Save compare error:', err);
+        showToast(err.message || 'Failed to save photo', 'error');
+      }
+    } finally {
+      setSavingCompare(false);
+    }
+  };
 
   if (authLoading || loading) {
     return (
@@ -1016,6 +1235,20 @@ export default function CoreBuddyMetrics() {
               );
             })()}
 
+            {(photos[compareA]?.length > 0 || photos[compareB]?.length > 0) && (
+              <button
+                className="cbm-btn-primary cbm-compare-close"
+                onClick={handleSaveCompare}
+                disabled={savingCompare}
+              >
+                {savingCompare ? <div className="cbm-btn-spinner" /> : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Share Photo
+                  </>
+                )}
+              </button>
+            )}
             <button className="cbm-btn-secondary cbm-compare-close" onClick={() => setShowCompare(false)}>Close</button>
           </div>
         </div>

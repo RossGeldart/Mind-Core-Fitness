@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../contexts/AuthContext';
 import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
 import './Login.css';
+import './NativeLogin.css';
 
 const PORTAL_OPTIONS = [
   {
@@ -42,6 +43,8 @@ const PORTAL_OPTIONS = [
 export default function LoginPortal() {
   const navigate = useNavigate();
   const { currentUser, isAdmin, isClient, clientData, loading: authLoading } = useAuth();
+  const [splashReady, setSplashReady] = useState(false);
+  const [splashFading, setSplashFading] = useState(false);
 
   // On native (App Store), skip the portal — only Core Buddy is available
   const isNative = Capacitor.isNativePlatform();
@@ -51,23 +54,37 @@ export default function LoginPortal() {
     }
   }, [isNative, navigate]);
 
-  // If already logged in, skip the portal and go straight to the dashboard
+  // When auth resolves for a returning user, hold the welcome splash then fade out
+  useEffect(() => {
+    if (!authLoading && currentUser && (isAdmin || isClient)) {
+      // Text finishes at 2.3s + 2s hold = 4.3s, then fade out over 0.6s
+      const holdTimer = setTimeout(() => setSplashFading(true), 4300);
+      const navTimer = setTimeout(() => setSplashReady(true), 4900);
+      return () => { clearTimeout(holdTimer); clearTimeout(navTimer); };
+    }
+  }, [authLoading, currentUser, isAdmin, isClient]);
+
+  // If already logged in, wait for splash then redirect
   useEffect(() => {
     if (!authLoading && currentUser) {
+      if (!splashReady && (isAdmin || isClient)) return;
       if (isAdmin) {
         navigate('/dashboard', { replace: true });
       } else if (isClient) {
         navigate(getClientHomePath(clientData), { replace: true });
       }
     }
-  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate]);
+  }, [authLoading, currentUser, isAdmin, isClient, clientData, navigate, splashReady]);
 
-  // Show spinner while checking auth state, native redirect, or while navigating a resolved user
+  // Show branded welcome splash while checking auth / holding for returning users
   if (isNative || authLoading || (currentUser && (isAdmin || isClient))) {
+    const displayName = clientData?.name || currentUser?.displayName;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}>
-        <div style={{ width: 36, height: 36, border: '3px solid var(--color-primary-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'app-spin .7s linear infinite' }} />
-        <p style={{ marginTop: 16, fontFamily: 'sans-serif', fontSize: 14, color: '#888' }}>Checking login...</p>
+      <div className={`native-login-splash${splashFading ? ' native-login-splash-fadeout' : ''}`}>
+        <div className="native-login-splash-inner">
+          <img src="/Logo.webp" alt="Mind Core Fitness" className="native-login-splash-logo" />
+          <h1 className="native-login-splash-name">{displayName ? `Welcome back, ${displayName.split(' ')[0]}` : '\u00A0'}</h1>
+        </div>
       </div>
     );
   }

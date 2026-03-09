@@ -16,14 +16,14 @@
 }
 
 .pb-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .pb-intro p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin: 0;
@@ -46,7 +46,7 @@
   background: transparent;
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--text-tertiary);
@@ -127,7 +127,7 @@
 }
 
 .pb-ring-category {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -136,7 +136,7 @@
 }
 
 .pb-ring-exercise {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -144,7 +144,7 @@
 }
 
 .pb-ring-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -153,7 +153,7 @@
 }
 
 .pb-ring-change {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 2px 10px;
@@ -177,7 +177,7 @@
 
 /* Target label in ring */
 .pb-ring-target {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   color: var(--text-tertiary);
   margin-top: 4px;
@@ -296,7 +296,7 @@
 }
 
 .pb-trend-section h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-primary);
   margin: 0 0 12px 0;
@@ -318,7 +318,7 @@
 }
 
 .pb-trend-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -329,7 +329,7 @@
 }
 
 .pb-trend-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -351,7 +351,7 @@
   background: var(--bg-card);
   border: 2px dashed var(--border-color);
   border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--color-primary);
@@ -413,7 +413,7 @@
 }
 
 .pb-exercise-manager-header h4 {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -421,7 +421,7 @@
 }
 
 .pb-exercise-manager-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -449,14 +449,14 @@
 }
 
 .pb-exercise-manager-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary);
 }
 
 .pb-exercise-manager-cat {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: var(--text-secondary);
 }
@@ -497,7 +497,7 @@
   border-radius: 10px;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   appearance: auto;
   min-width: 0;
@@ -514,7 +514,7 @@
   border: none;
   border-radius: 10px;
   padding: 10px 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
@@ -532,7 +532,7 @@
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   text-decoration: underline;
   cursor: pointer;
@@ -569,7 +569,7 @@
   padding: 10px;
   background: var(--bg-input);
   border: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -584,7 +584,7 @@
 }
 
 .pb-target-hint {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin: 0 0 20px 0;
@@ -592,7 +592,7 @@
 }
 
 .pb-target-section-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -617,7 +617,7 @@
 }
 
 .pb-edit-current-best {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -645,7 +645,7 @@
 }
 
 .pb-edit-header h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   margin: 0;
 }
@@ -682,7 +682,7 @@
 }
 
 .pb-edit-exercise-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--text-primary);
@@ -708,7 +708,7 @@
 }
 
 .pb-unit-toggle-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -722,7 +722,7 @@
 
 .pb-unit-btn {
   padding: 5px 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   border: none;
@@ -752,7 +752,7 @@
 
 .pb-edit-field label {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 6px;
@@ -763,7 +763,7 @@
   padding: 12px 14px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -797,7 +797,7 @@
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -820,7 +820,7 @@
   border: none;
   color: var(--text-on-primary);
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -854,14 +854,14 @@
 }
 
 .pb-metrics-card h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .pb-metrics-month {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-tertiary);
   margin: 0 0 20px 0;
@@ -896,13 +896,13 @@
 }
 
 .pb-metric-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
 
 .pb-metric-target-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
 }
@@ -914,14 +914,14 @@
 }
 
 .pb-metric-current {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .pb-metric-change {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 2px 8px;
@@ -971,7 +971,7 @@
 }
 
 .pb-metric-percent {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -997,7 +997,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1047,14 +1047,14 @@
 }
 
 .pb-achievement-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .pb-achievement-date {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin-top: 2px;
@@ -1071,7 +1071,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--color-primary);
@@ -1133,7 +1133,7 @@
 }
 
 .pb-timeline-card h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   color: var(--text-primary);
   margin: 0 0 16px 0;
@@ -1148,7 +1148,7 @@
 }
 
 .pb-timeline-group h5 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   color: var(--color-primary);
   text-transform: uppercase;
@@ -1169,7 +1169,7 @@
 }
 
 .pb-timeline-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -1181,14 +1181,14 @@
 }
 
 .pb-timeline-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .pb-timeline-change {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   padding: 2px 6px;
@@ -1224,7 +1224,7 @@
 
 .pb-compare-select label {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin-bottom: 6px;
@@ -1237,7 +1237,7 @@
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
   background: var(--bg-card);
@@ -1256,7 +1256,7 @@
 }
 
 .pb-compare-vs {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text-tertiary);
@@ -1272,7 +1272,7 @@
 }
 
 .pb-compare-group h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-primary);
   margin: 0 0 14px 0;
@@ -1292,7 +1292,7 @@
 }
 
 .pb-compare-header-row span {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1314,20 +1314,20 @@
 }
 
 .pb-compare-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   color: var(--text-secondary);
 }
 
 .pb-compare-val {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .pb-compare-change {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -1352,14 +1352,14 @@
 }
 
 .pb-empty h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .pb-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -1532,7 +1532,7 @@
 }
 
 .pb-cb-group-label {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
@@ -1542,7 +1542,7 @@
 }
 
 .pb-cb-group-subtitle {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.45);
   display: block;
@@ -1558,7 +1558,7 @@
 }
 
 .pb-cb-group-count {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--group-color);
@@ -1568,7 +1568,7 @@
 }
 
 .pb-cb-group-best {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.68rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
@@ -1681,7 +1681,7 @@
 }
 
 .pb-cb-card-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1689,7 +1689,7 @@
 }
 
 .pb-cb-card-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -1698,7 +1698,7 @@
 }
 
 .pb-cb-card-date {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -1718,7 +1718,7 @@
 }
 
 .pb-cb-target-info {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   margin-top: 4px;
@@ -1753,14 +1753,14 @@
 }
 
 .pb-cb-progress-current {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .pb-cb-progress-target {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -1786,7 +1786,7 @@
 }
 
 .pb-cb-progress-pct {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -1844,7 +1844,7 @@
 }
 
 .pb-cb-target-modal h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1852,7 +1852,7 @@
 }
 
 .pb-cb-target-exercise-name {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--color-primary);
   font-weight: 600;
@@ -1860,7 +1860,7 @@
 }
 
 .pb-cb-target-current {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-bottom: 16px;
@@ -1870,7 +1870,7 @@
 }
 
 .pb-cb-target-current strong {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-primary);
 }
 
@@ -1880,7 +1880,7 @@
 
 .pb-cb-target-input-wrap label {
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 6px;
@@ -1891,7 +1891,7 @@
   padding: 14px;
   border: 2px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1949,7 +1949,7 @@
 }
 
 .pb-celebration-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -1964,7 +1964,7 @@
 }
 
 .pb-celebration-badge {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: #f59e0b;
@@ -1975,7 +1975,7 @@
 }
 
 .pb-celebration-sub {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;

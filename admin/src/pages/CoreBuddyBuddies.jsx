@@ -595,55 +595,8 @@ export default function CoreBuddyBuddies() {
             {/* ── Feed ── */}
             {tab === 'feed' && (
               <div className="bdy-section">
-                {/* Feed mode toggle */}
-                <div className="bdy-feed-toggle">
-                  <button
-                    className={`bdy-feed-toggle-btn${feedMode === 'buddyFeed' ? ' active' : ''}`}
-                    onClick={() => setFeedMode('buddyFeed')}
-                  >
-                    Buddy Feed
-                  </button>
-                  <button
-                    className={`bdy-feed-toggle-btn${feedMode === 'announcements' ? ' active' : ''}`}
-                    onClick={() => setFeedMode('announcements')}
-                  >
-                    Announcements
-                  </button>
-                </div>
 
-                {feedMode === 'announcements' ? (
-                  announcementsLoading ? (
-                    <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
-                  ) : announcements.length === 0 ? (
-                    <div className="bdy-empty">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
-                      <h3>No announcements</h3>
-                      <p>Check back later for updates!</p>
-                    </div>
-                  ) : (
-                    <div className="bdy-feed-list">
-                      {announcements.map(a => (
-                        <div key={a.id} className="bdy-feed-post bdy-announcement-post">
-                          <div className="bdy-feed-post-header">
-                            <div className="bdy-feed-avatar bdy-announcement-avatar">
-                              <img src="/Logo.webp" alt="MCF" />
-                            </div>
-                            <div className="bdy-feed-meta">
-                              <span className="bdy-feed-name">{a.authorName || 'Mind Core Fitness'}</span>
-                              <span className="bdy-feed-time">{timeAgo(a.createdAt)}</span>
-                            </div>
-                            <span className="bdy-announcement-badge">Announcement</span>
-                          </div>
-                          <h3 className="bdy-announcement-title">{a.title}</h3>
-                          <p className="bdy-feed-content">{a.content}</p>
-                          {a.imageURL && (
-                            <div className="bdy-feed-image"><img src={a.imageURL} alt="" loading="lazy" /></div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )
-                ) : buddies.length === 0 ? (
+                {buddies.length === 0 ? (
                   <div className="bdy-empty">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
                     <h3>No buddies yet</h3>

@@ -36,14 +36,14 @@
 }
 
 .tools-intro h2 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .tools-intro p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin: 0;
@@ -103,7 +103,7 @@
 }
 
 .tool-select-info h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -111,7 +111,7 @@
 }
 
 .tool-select-info p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -139,13 +139,13 @@
 }
 
 .tool-header h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   margin: 0 0 4px 0;
 }
 
 .tool-header p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: #aaa;
   margin: 0;
@@ -172,7 +172,7 @@
 }
 
 .form-group label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.9rem;
   color: var(--text-primary);
@@ -191,7 +191,7 @@
   padding: 10px;
   border: none;
   background: var(--bg-input);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -212,7 +212,7 @@
   padding: 12px 14px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   transition: border-color 0.2s;
   background: var(--bg-input);
@@ -262,7 +262,7 @@
   padding: 8px 10px;
   border: none;
   background: var(--bg-input);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -313,7 +313,7 @@
 }
 
 .goal-btn span:last-child {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
 }
@@ -351,20 +351,20 @@
 }
 
 .deficit-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--text-primary);
 }
 
 .deficit-desc {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
 .deficit-rate {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--color-primary);
   font-weight: 500;
@@ -377,7 +377,7 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -409,7 +409,7 @@
 }
 
 .results-header h4 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0;
@@ -420,7 +420,7 @@
   background: var(--color-primary);
   color: white;
   border-radius: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -436,7 +436,7 @@
 
 .calories-value {
   display: block;
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 3rem;
   font-weight: 700;
   color: var(--color-primary);
@@ -444,7 +444,7 @@
 }
 
 .calories-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   margin-top: 4px;
@@ -472,7 +472,7 @@
 }
 
 .macro-bar-segment span {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 600;
   color: white;
@@ -501,7 +501,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
@@ -545,21 +545,21 @@
 }
 
 .macro-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .macro-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin: 4px 0;
 }
 
 .macro-calories {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -575,7 +575,7 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
 }
 
@@ -590,7 +590,7 @@
 .info-row span:last-child,
 .info-row .info-value {
   color: var(--text-primary);
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 500;
   font-size: 0.8rem;
 }
@@ -603,7 +603,7 @@
 }
 
 .results-note p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--warning-text);
   margin: 0;
@@ -627,7 +627,7 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   background: var(--bg-input);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -678,7 +678,7 @@
 }
 
 .snack-name {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -699,14 +699,14 @@
 }
 
 .snack-detail-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .snack-detail-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -719,7 +719,7 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -756,7 +756,7 @@
 }
 
 .prep-indicator-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-left: 4px;
@@ -773,14 +773,14 @@
 }
 
 .snack-counter-value {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .snack-counter-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   color: var(--text-tertiary);
 }
@@ -794,7 +794,7 @@
 }
 
 .snack-instructions-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -804,7 +804,7 @@
 }
 
 .snack-instructions p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.6;
@@ -819,7 +819,7 @@
 .quote-loading {
   text-align: center;
   padding: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-tertiary);
 }
 
@@ -863,7 +863,7 @@
 }
 
 .quote-text {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.35rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -873,14 +873,14 @@
 }
 
 .quote-author {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--color-primary);
   font-weight: 500;
 }
 
 .quote-date-note {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin-top: 16px;
@@ -893,7 +893,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
   margin-top: 12px;
@@ -952,7 +952,7 @@
 }
 
 .quote-empty-title {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -960,7 +960,7 @@
 }
 
 .quote-empty p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
   margin: 0;
@@ -976,7 +976,7 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;

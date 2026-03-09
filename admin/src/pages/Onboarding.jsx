@@ -10,28 +10,36 @@ import './Onboarding.css';
 
 const isNative = Capacitor.isNativePlatform();
 
-import cbSelectWorkout from '../assets/cb-select-workout.PNG';
-import cbGeneratedWorkout from '../assets/cb-generated-workout.PNG';
-import cbWorkoutVideo from '../assets/cb-workout-video.PNG';
-import cbNutrition from '../assets/cb-nutrition.PNG';
-import cbHabits from '../assets/cb-habits.PNG';
-import cbDashboard from '../assets/cb-dashboard.PNG';
+import cbProfileMain from '../assets/images/cards/cb_profilemain.PNG';
+import cbEquipment from '../assets/images/cards/cb_equipment.PNG';
+import cbWorkoutList from '../assets/images/cards/cb_workoutlist.PNG';
+import cbWorkout from '../assets/images/cards/cb_workout.PNG';
+import cbNutrition from '../assets/images/cards/cb_nutrition.PNG';
+import cbActivitys from '../assets/images/cards/cb_activitys.PNG';
+import cbHabits from '../assets/images/cards/cb_habits.PNG';
+import cbLeaderboard from '../assets/images/cards/cb_leaderboard.PNG';
+import cbBodyMetrics from '../assets/images/cards/cb_bodymetrics.PNG';
 
 const FEATURES = [
   {
-    title: 'Build Your Workout',
-    desc: 'Choose your equipment, time, focus area and difficulty — then let Core Buddy generate a workout tailored to you.',
-    image: cbSelectWorkout,
+    title: 'Your Profile Dashboard',
+    desc: 'Track your stats, climb the leaderboards, and connect with your Core Buddies — all from your profile.',
+    image: cbProfileMain,
   },
   {
-    title: 'Your Workout, Ready to Go',
-    desc: 'Your personalised workout is generated instantly. Not feeling it? Hit reshuffle for a new one, or save it for later.',
-    image: cbGeneratedWorkout,
+    title: 'Choose Your Equipment',
+    desc: 'Tell us what gear you have access to and we\'ll tailor every workout to match.',
+    image: cbEquipment,
+  },
+  {
+    title: 'Build Your Workout',
+    desc: 'Choose your focus area, level and duration — then let Core Buddy generate a workout tailored to you.',
+    image: cbWorkoutList,
   },
   {
     title: 'Follow Along with Video',
     desc: 'Every exercise comes with a video demo so you can nail your form. Track sets, reps and weights as you go.',
-    image: cbWorkoutVideo,
+    image: cbWorkout,
   },
   {
     title: 'Track Your Nutrition',
@@ -39,14 +47,24 @@ const FEATURES = [
     image: cbNutrition,
   },
   {
+    title: 'Log Your Activities',
+    desc: 'Track walks, runs, cycles, swims — anything beyond your workouts counts here.',
+    image: cbActivitys,
+  },
+  {
     title: 'Build Better Habits',
     desc: 'Set daily habits and track your streaks. Small wins every day add up to big results.',
     image: cbHabits,
   },
   {
-    title: 'Your Profile & Community',
-    desc: 'Track your stats, climb the leaderboards, and connect with your Core Buddies — all from your profile dashboard.',
-    image: cbDashboard,
+    title: 'Join the Leaderboard',
+    desc: 'Compete with other Mind Core Fitness members across workouts, minutes and streaks.',
+    image: cbLeaderboard,
+  },
+  {
+    title: 'Track Body Metrics',
+    desc: 'Log your weight, measurements and progress photos to see how far you\'ve come.',
+    image: cbBodyMetrics,
   },
 ];
 
@@ -787,8 +805,10 @@ export default function Onboarding() {
         </div>
 
         {/* Back button */}
-        {wizardStep > 0 && (
-          <button className="ob-wizard-back" onClick={() => setWizardStep((prev) => prev - 1)}>
+        {wizardStep >= 0 && (
+          <button className="ob-wizard-back" onClick={() => {
+            if (wizardStep === 0) { setStep(isNative ? 0 : 1); } else { setWizardStep((prev) => prev - 1); }
+          }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>

@@ -37,10 +37,13 @@ export default function Dashboard() {
   const mainRef = useRef(null);
 
   // Toast notification helper
+  const toastTimer = useRef(null);
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 4000);
   }, []);
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
   // Ripple effect helper
   const createRipple = (event) => {

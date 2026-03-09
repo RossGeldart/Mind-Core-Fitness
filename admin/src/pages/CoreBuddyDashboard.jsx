@@ -211,53 +211,71 @@ export default function CoreBuddyDashboard() {
       {
         selector: '.cb-ring-container',
         title: 'Your 24-Hour Countdown',
-        body: 'Every day resets. This ring tracks the time you have left — tap your photo to personalise your profile.',
-        cta: 'Next',
+        body: 'Every day resets at midnight. This ring tracks the hours you have left — tap your photo to add a profile picture.',
       },
       {
         selector: '.cb-stats-row',
-        title: 'Progress at a Glance',
-        body: 'Your workout streak, sessions this week, and daily habits — all in one row. These fill up as you go.',
+        title: 'Your Stats at a Glance',
+        body: 'Streak, weekly workouts, habits, and activities — all tracked in real time. Tap the workout ring to set your weekly target.',
       },
       {
-        selector: '.cb-nudge-card',
+        selector: '.cb-card-nudge',
         title: 'Smart Suggestions',
-        body: "We'll highlight what needs your attention — your next session, unfinished habits, or a meal to log.",
+        body: "We'll tell you what needs your attention next — your next session, unfinished habits, or a meal to log.",
       },
       {
-        selector: '.cb-card-workouts-hero',
-        title: 'Workout',
-        body: 'Randomiser workouts — pick your focus, level and time. Save and replay your favourites.',
-        cta: 'Next',
+        selector: '.cb-card-workouts',
+        title: 'Workouts',
+        body: 'Pick your focus, level and duration. Save your favourites and replay them anytime.',
+      },
+      {
+        selector: '.cb-card-activity',
+        title: 'Log Activity',
+        body: 'Track walks, runs, cycles, swims — anything beyond your workouts counts here.',
       },
     ];
 
     if (isPremium) {
       base.push(
         {
-          selector: '.cb-card-nutrition',
-          title: 'Nutrition Tracking',
-          body: 'Set your macro targets, scan barcodes, and log meals to hit your daily goals.',
+          selector: '.cb-nutrition-wrap',
+          title: "Today's Nutrition",
+          body: 'Track your macros — protein, carbs, fats and calories. Tap to log meals and scan barcodes.',
         },
         {
           selector: '.cb-fab',
-          title: 'Quick Menu',
-          body: 'Tap the menu button to access habits, leaderboard, badges, challenges, buddies and body metrics.',
+          title: 'Quick Access Menu',
+          body: 'Your hub for habits, leaderboard, badges, challenges, buddies and body metrics — all in one tap.',
         },
         {
           selector: '.cb-journey-section',
-          title: 'Share Your Journey',
-          body: 'Post photos, updates, and milestones — your fitness journey in one place. Like and comment on each other\'s posts.',
+          title: 'My Journey',
+          body: 'Share photos, updates and milestones with your buddies. Like, comment and @mention each other.',
         },
       );
     }
 
-    base.push({
-      selector: '.block-bottom-nav',
-      title: "You're All Set!",
-      body: 'Use the nav bar to jump between your profile, workouts, nutrition, and buddies. Time to get after it.',
-      cta: 'Let\'s Go!',
-    });
+    if (!isPremium) {
+      base.push({
+        selector: '.cb-upgrade-cta',
+        title: 'Unlock More',
+        body: 'Upgrade for nutrition tracking, buddies, social feed, challenges, badges and the full experience.',
+      });
+    }
+
+    base.push(
+      {
+        selector: '.header-left-group',
+        title: 'Notifications & Settings',
+        body: 'Tap the bell for notifications from buddies and coaches. Use settings to customise the look of the app and enable push notifications.',
+      },
+      {
+        selector: '.block-bottom-nav',
+        title: "You're All Set!",
+        body: 'Use the nav bar to jump between your profile, workouts, nutrition, and buddies. Time to get after it!',
+        cta: "Let's Go!",
+      },
+    );
 
     return base;
   })();
@@ -1378,7 +1396,7 @@ export default function CoreBuddyDashboard() {
               </div>
               {!photoURL && !uploadingPhoto && (
                 <div className="cb-photo-badge" onClick={() => photoInputRef.current?.click()}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 </div>
               )}
             </div>
@@ -1489,7 +1507,7 @@ export default function CoreBuddyDashboard() {
 
         {/* Nutrition Rings — premium only, matches body metrics style */}
         {isPremium && (
-          <button className={`cb-metric-rings-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
+          <button className={`cb-metric-rings-wrap cb-nutrition-wrap${nutritionDone ? ' cb-card-done' : ''}`} onClick={() => navigate('/client/core-buddy/nutrition')}>
             <span className="cb-metric-rings-title">Today's Nutrition</span>
             <div className="cb-metric-rings-row">
               {[
@@ -1558,7 +1576,7 @@ export default function CoreBuddyDashboard() {
 
           {/* Workouts */}
           <button
-            className={`cb-feature-card cb-card-unified ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
+            className={`cb-feature-card cb-card-unified cb-card-workouts ripple-btn${workoutsDone ? ' cb-card-done' : ''}`}
             onClick={(e) => { createRipple(e); navigate('/client/core-buddy/workouts'); }}
           >
             <div className="cb-card-icon">
@@ -1573,7 +1591,7 @@ export default function CoreBuddyDashboard() {
 
           {/* Activity Log */}
           <button
-            className="cb-feature-card cb-card-unified ripple-btn"
+            className="cb-feature-card cb-card-unified cb-card-activity ripple-btn"
             onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
           >
             <div className="cb-card-icon">
@@ -1917,23 +1935,26 @@ export default function CoreBuddyDashboard() {
               </span>
               <span className="cb-fab-item-label">Badges</span>
             </button>
-            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/challenges'); }}>
+            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/challenges' : '/upgrade'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </span>
               <span className="cb-fab-item-label">Challenges</span>
+              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
-            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/buddies'); }}>
+            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </span>
               <span className="cb-fab-item-label">Buddies</span>
+              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
-            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/metrics'); }}>
+            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/metrics' : '/upgrade'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
               </span>
               <span className="cb-fab-item-label">Body Metrics</span>
+              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
             </div>
           </div>

@@ -103,8 +103,9 @@
         gtag('config', 'G-0ECBK32DRR');
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (deferred for performance) -->
     <script>
+    (function(){var _load=function(){
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -115,6 +116,9 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1512543690146167');
     fbq('track', 'PageView');
+    };
+    'requestIdleCallback' in window ? requestIdleCallback(_load) : setTimeout(_load, 2000);
+    })();
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1512543690146167&ev=PageView&noscript=1"
@@ -122,7 +126,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
     <style>
         * {
             margin: 0;
@@ -1348,7 +1353,7 @@
         <a href="/" class="nav-logo">
             <picture>
                 <source srcset="Logo.webp" type="image/webp">
-                <img src="Logo.PNG" alt="Mind Core Fitness">
+                <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" decoding="async">
             </picture>
         </a>
         <div class="nav-links">
@@ -1410,7 +1415,7 @@
                     </div>
                 </div>
             </div>
-            <img src="images/testimonials/ross-hero.PNG" alt="Ross Geldart — Personal Trainer at Mind Core Fitness, Elgin" class="hero-image" width="400" height="500" loading="eager">
+            <img src="images/testimonials/ross-hero.PNG" alt="Ross Geldart — Personal Trainer at Mind Core Fitness, Elgin" class="hero-image" width="400" height="500" loading="eager" decoding="async">
         </div>
     </section>
 
@@ -1520,8 +1525,8 @@
                 </div>
             </div>
             <div class="quals-certificates">
-                <img src="images/testimonials/level-2-3-diploma-1.JPG" alt="Level 2 & 3 Diploma in Gym Instructing and Personal Training" loading="lazy">
-                <img src="images/testimonials/level-3-diploma-2.JPG" alt="Level 3 Diploma in Personal Training" loading="lazy">
+                <img src="images/testimonials/level-2-3-diploma-1.JPG" alt="Level 2 & 3 Diploma in Gym Instructing and Personal Training" loading="lazy" decoding="async">
+                <img src="images/testimonials/level-3-diploma-2.JPG" alt="Level 3 Diploma in Personal Training" loading="lazy" decoding="async">
             </div>
         </div>
     </section>
@@ -1598,7 +1603,7 @@
                     <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                     <p>"So far I have lost 25 kilos and still going. Ross is a good motivator, pushing me onwards to better and more physical workouts even at my tender age of 53. The monthly weigh ins are a very strong motivator to get to my target."</p>
                     <div class="testimonial-author">
-                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant" loading="lazy" width="60" height="60">
+                        <img src="Mind Core Fitness - Scott Grant.avif" alt="Scott Grant" loading="lazy" width="60" height="60" decoding="async">
                         <div class="testimonial-author-info">
                             <strong>Scott Grant</strong>
                             <span>Lost 25 Kilos &bull; 1-2-1 Training</span>
@@ -1612,7 +1617,7 @@
                     <div class="testimonial-author">
                         <picture>
                             <source srcset="Emily Paterson.webp" type="image/webp">
-                            <img src="Emily Paterson.jpg" alt="Emily Paterson" loading="lazy" width="60" height="60">
+                            <img src="Emily Paterson.jpg" alt="Emily Paterson" loading="lazy" width="60" height="60" decoding="async">
                         </picture>
                         <div class="testimonial-author-info">
                             <strong>Emily Paterson</strong>
@@ -1625,7 +1630,7 @@
                     <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                     <p>"The sessions were intense and challenging at times, but Ross kept me going. Even on the days when my mental health made things tough, Ross was always there to reassure me. This made a huge difference mentally too."</p>
                     <div class="testimonial-author">
-                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch" loading="lazy" width="60" height="60">
+                        <img src="Christopher Snedden Murdoch - Mind Core Fitness_JPG.avif" alt="Christopher Snedden Murdoch" loading="lazy" width="60" height="60" decoding="async">
                         <div class="testimonial-author-info">
                             <strong>Christopher Snedden Murdoch</strong>
                             <span>Mental &amp; Physical Progress &bull; 1-2-1 Training</span>
@@ -1723,7 +1728,7 @@
                 <div class="site-footer__brand">
                     <picture>
                         <source srcset="Logo.webp" type="image/webp">
-                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44">
+                        <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
                     </picture>
                     <p>Professional personal training and online coaching helping you build strength, consistency and confidence.</p>
                     <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
@@ -1956,7 +1961,7 @@
     </div>
 
     <!-- Social Share -->
-    <script src="social-share.js"></script>
+    <script defer src="social-share.js"></script>
 
     <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">Link copied to clipboard!</div>

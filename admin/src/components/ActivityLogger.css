@@ -108,10 +108,11 @@
   font-weight: 500;
 }
 
-.al-type-btn:hover,
-.al-type-btn:active {
-  border-color: var(--color-primary);
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+@media (hover: hover) {
+  .al-type-btn:hover {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  }
 }
 
 .al-type-icon {
@@ -240,6 +241,50 @@
 }
 
 .al-notes::placeholder {
+  color: var(--text-tertiary);
+}
+
+.al-calories-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.al-calories-input {
+  flex: 1;
+  max-width: 120px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+
+.al-calories-input::-webkit-outer-spin-button,
+.al-calories-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.al-calories-input:focus {
+  border-color: var(--color-primary);
+}
+
+.al-calories-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.al-calories-unit {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
   color: var(--text-tertiary);
 }
 

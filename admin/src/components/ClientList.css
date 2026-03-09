@@ -9,18 +9,18 @@
 
 .client-list-loading {
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .client-list-empty p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .client-list-empty span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-tertiary);
   font-size: 0.95rem;
 }
@@ -53,7 +53,7 @@
   padding: 12px 40px 12px 42px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   background: var(--bg-card);
   color: var(--text-primary);
@@ -104,7 +104,7 @@
   border-radius: 10px;
   background: var(--bg-card);
   color: var(--text-primary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -130,7 +130,7 @@
   border-radius: 10px;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -145,7 +145,7 @@
 
 /* ====== Section Headers ====== */
 .client-section-header {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -158,7 +158,7 @@
 }
 
 .client-section-header span {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   background: var(--bg-input);
   padding: 2px 8px;
@@ -169,7 +169,7 @@
 .client-section-empty {
   text-align: center;
   padding: 40px 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   color: var(--text-tertiary);
 }
@@ -225,7 +225,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.9rem;
   flex-shrink: 0;
@@ -236,7 +236,7 @@
 }
 
 .client-name-text h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-primary);
   margin: 0;
@@ -246,7 +246,7 @@
 }
 
 .client-name-sub {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
@@ -299,7 +299,7 @@
 }
 
 .client-expand-info .client-email {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -309,7 +309,7 @@
   font-size: 0.7rem;
   padding: 4px 10px;
   border-radius: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   text-transform: uppercase;
   border: 1px solid;
@@ -346,7 +346,7 @@
 }
 
 .detail-label {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -354,7 +354,7 @@
 }
 
 .detail-value {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
 }
@@ -370,7 +370,7 @@
 .action-btn {
   padding: 8px 16px;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -438,7 +438,7 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.9rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg-input);
   color: var(--text-primary);
 }
@@ -453,7 +453,7 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.9rem;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg-input);
   color: var(--text-primary);
   cursor: pointer;
@@ -482,7 +482,7 @@
 .portal-status {
   padding: 10px 16px;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   width: 100%;
   text-align: center;
@@ -506,7 +506,7 @@
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.2s;
@@ -522,7 +522,7 @@
   color: var(--text-secondary);
   padding: 10px 20px;
   border-radius: 6px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -538,7 +538,7 @@
   padding: 2px 8px;
   border-radius: 10px;
   margin-left: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -561,7 +561,7 @@
 
 /* ====== Warning Badges on Collapsed Cards ====== */
 .client-warn-badge {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   padding: 2px 7px;
@@ -603,7 +603,7 @@
   border: none;
   background: var(--bg-input);
   color: var(--text-secondary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -629,7 +629,7 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-secondary);
   user-select: none;
@@ -696,7 +696,7 @@
 }
 
 .notes-modal-header h3 {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -736,7 +736,7 @@
   text-align: center;
   padding: 40px 0;
   color: var(--text-tertiary);
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .notes-empty {
@@ -751,14 +751,14 @@
 }
 
 .notes-empty p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin: 0 0 4px;
 }
 
 .notes-empty span {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
 }
 
@@ -784,7 +784,7 @@
 }
 
 .note-date {
-  font-family: 'Orbitron', 'Courier New', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -819,7 +819,7 @@
 }
 
 .note-section-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -830,7 +830,7 @@
 }
 
 .note-section p {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   color: var(--text-primary);
   margin: 0;
@@ -861,7 +861,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -885,7 +885,7 @@
   padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   background: var(--bg-input);
   color: var(--text-primary);
@@ -922,7 +922,7 @@
   color: white;
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -939,7 +939,7 @@
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: 10px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
 }
@@ -951,7 +951,7 @@
   color: white;
   border: none;
   border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
