@@ -109,7 +109,7 @@ export default function Onboarding() {
   // Block unverified self-signup users — send them back to the verification screen
   useEffect(() => {
     if (!authLoading && currentUser && !currentUser.emailVerified && clientData?.signupSource === 'self_signup') {
-      navigate('/signup', { replace: true });
+      navigate('/login?type=core_buddy&mode=signup', { replace: true });
     }
   }, [authLoading, currentUser, clientData, navigate]);
 
