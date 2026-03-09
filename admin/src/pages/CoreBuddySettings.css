@@ -99,6 +99,66 @@
   padding-bottom: 0;
 }
 
+/* Edit Profile */
+.settings-profile-field {
+  margin-bottom: 12px;
+}
+
+.settings-profile-label {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.settings-profile-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.settings-profile-input:focus {
+  border-color: var(--color-primary);
+}
+
+.settings-profile-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.settings-profile-save-btn {
+  flex-shrink: 0;
+  padding: 8px 22px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.settings-profile-save-btn:hover {
+  opacity: 0.85;
+}
+
+.settings-profile-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Rows */
 .settings-row {
   display: flex;

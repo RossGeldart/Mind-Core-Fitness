@@ -100,10 +100,10 @@ export function AuthProvider({ children }) {
               setClientData({ id: clientDoc.id, ...data });
               // Keep localStorage in sync for post-redirect recovery
               try { localStorage.setItem('mcf_clientId', clientDoc.id); } catch {};
-              // Backfill missing name from Firebase displayName or email
+              // Backfill missing name from Firebase displayName (Google/Apple OAuth only).
+              // Do NOT fall back to email prefix — let onboarding collect the real name.
               if (!data.name) {
-                const fallbackName = user.displayName
-                  || (user.email ? user.email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null);
+                const fallbackName = user.displayName || null;
                 if (fallbackName) {
                   updateDoc(doc(db, 'clients', clientDoc.id), { name: fallbackName }).catch(() => {});
                   setClientData(prev => prev ? { ...prev, name: fallbackName } : prev);

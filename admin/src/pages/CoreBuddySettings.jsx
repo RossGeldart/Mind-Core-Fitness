@@ -48,6 +48,11 @@ export default function CoreBuddySettings() {
   const [toast, setToast] = useState(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
+  // Edit Profile state
+  const [editName, setEditName] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [nameEdited, setNameEdited] = useState(false);
+
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
@@ -82,6 +87,29 @@ export default function CoreBuddySettings() {
       showToast('Unable to open subscription portal', 'error');
     } finally {
       setPortalLoading(false);
+    }
+  };
+
+  // Sync edit name when clientData loads
+  useEffect(() => {
+    if (clientData?.name && !nameEdited) setEditName(clientData.name);
+  }, [clientData?.name, nameEdited]);
+
+  const handleSaveProfile = async () => {
+    if (!clientData) return;
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === clientData.name) return;
+    setProfileSaving(true);
+    try {
+      await updateDoc(doc(db, 'clients', clientData.id), { name: trimmed });
+      updateClientData({ name: trimmed });
+      setNameEdited(false);
+      showToast('Profile updated', 'success');
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      showToast('Failed to save — try again', 'error');
+    } finally {
+      setProfileSaving(false);
     }
   };
 
@@ -228,6 +256,38 @@ export default function CoreBuddySettings() {
 
       <main className="settings-main">
         <h1 className="settings-title">Settings</h1>
+
+        {/* ===== Edit Profile Section ===== */}
+        <section className="settings-section">
+          <h2 className="settings-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Profile
+          </h2>
+          <div className="settings-profile-field">
+            <label className="settings-profile-label" htmlFor="settings-name">Display Name</label>
+            <input
+              id="settings-name"
+              className="settings-profile-input"
+              type="text"
+              value={editName}
+              onChange={(e) => { setEditName(e.target.value); setNameEdited(true); }}
+              placeholder="Enter your name"
+              maxLength={100}
+            />
+          </div>
+          <div className="settings-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+            <div className="settings-row-text">
+              <span className="settings-row-desc">This is how you appear to your buddies</span>
+            </div>
+            <button
+              className="settings-profile-save-btn"
+              onClick={handleSaveProfile}
+              disabled={profileSaving || !editName.trim() || editName.trim() === clientData?.name}
+            >
+              {profileSaving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </section>
 
         {/* ===== Accent Colour Section ===== */}
         <section className="settings-section">
