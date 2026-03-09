@@ -111,6 +111,7 @@ export default function CoreBuddyDashboard() {
   const { currentUser, isClient, clientData, logout, updateClientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
+  const FREE_ACTIVITY_WEEKLY_LIMIT = 2;
   const navigate = useNavigate();
   const [fabOpen, setFabOpen] = useState(false);
   const [realHabitCount, setRealHabitCount] = useState(isPremium ? DEFAULT_HABIT_COUNT : FREE_HABIT_LIMIT);
@@ -1592,16 +1593,27 @@ export default function CoreBuddyDashboard() {
           {/* Activity Log */}
           <button
             className="cb-feature-card cb-card-unified cb-card-activity ripple-btn"
-            onClick={(e) => { createRipple(e); setShowActivityLogger(true); }}
+            onClick={(e) => {
+              createRipple(e);
+              if (!isPremium && weeklyActivities >= FREE_ACTIVITY_WEEKLY_LIMIT) {
+                navigate('/upgrade');
+              } else {
+                setShowActivityLogger(true);
+              }
+            }}
           >
             <div className="cb-card-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
             <div className="cb-card-content">
               <h3>Log Activity</h3>
-              <p>Walk, run, cycle, swim &mdash; log any activity</p>
+              {!isPremium && weeklyActivities >= FREE_ACTIVITY_WEEKLY_LIMIT ? (
+                <p>Weekly limit reached &mdash; upgrade for unlimited</p>
+              ) : (
+                <p>Walk, run, cycle, swim &mdash; log any activity</p>
+              )}
             </div>
-            {weeklyActivities > 0 && <span className="cb-unified-stat">{weeklyActivities} this week</span>}
+            {weeklyActivities > 0 && <span className="cb-unified-stat">{weeklyActivities}{!isPremium ? `/${FREE_ACTIVITY_WEEKLY_LIMIT}` : ''} this week</span>}
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
 
