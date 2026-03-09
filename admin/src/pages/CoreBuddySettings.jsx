@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,8 +12,15 @@ import {
   requestPushPermission,
   revokePushToken,
 } from '../utils/pushNotifications';
+import {
+  getNativePermissionState,
+  requestNativePushPermission,
+  revokeNativePushToken,
+} from '../utils/nativePushNotifications';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import './CoreBuddySettings.css';
+
+const isNative = Capacitor.isNativePlatform();
 
 const NOTIF_PREFS = [
   { key: 'daily_morning', label: 'Morning motivation', desc: 'Daily 6 AM motivational nudge to start your day' },
@@ -131,7 +139,12 @@ export default function CoreBuddySettings() {
       setPushEnabled(true);
       setPushToken(tokens[tokens.length - 1]);
     }
-    setPermissionState(getPermissionState());
+    // Check permission state (async on native, sync on web)
+    if (isNative) {
+      getNativePermissionState().then(state => setPermissionState(state));
+    } else {
+      setPermissionState(getPermissionState());
+    }
   }, [clientData]);
 
   // Toggle master push notifications
@@ -143,14 +156,42 @@ export default function CoreBuddySettings() {
       if (pushEnabled) {
         // Disable push
         if (pushToken) {
-          await revokePushToken(clientData.id, pushToken);
+          if (isNative) {
+            await revokeNativePushToken(clientData.id, pushToken);
+          } else {
+            await revokePushToken(clientData.id, pushToken);
+          }
         }
         setPushEnabled(false);
         setPushToken(null);
         updateClientData({ fcmTokens: [] });
         showToast('Push notifications disabled', 'info');
+      } else if (isNative) {
+        // Native iOS push via @capacitor-firebase/messaging
+        const result = await requestNativePushPermission(clientData.id);
+        if (result.token) {
+          setPushEnabled(true);
+          setPushToken(result.token);
+          // Write default notificationPrefs if not already stored
+          const existingPrefs = clientData.notificationPrefs;
+          const prefsToWrite = existingPrefs && Object.keys(existingPrefs).length > 0
+            ? existingPrefs
+            : notifPrefs;
+          await updateDoc(doc(db, 'clients', clientData.id), {
+            notificationPrefs: prefsToWrite,
+          });
+          updateClientData({
+            fcmTokens: [...(clientData.fcmTokens || []), result.token],
+            notificationPrefs: prefsToWrite,
+          });
+          showToast('Push notifications enabled!', 'success');
+        } else if (result.error === 'permission-denied') {
+          showToast('Notifications blocked — enable in Settings > Mind Core Fitness > Notifications', 'error');
+        } else {
+          showToast('Could not enable notifications — please try again', 'error');
+        }
       } else {
-        // Enable push
+        // Web push via FCM service worker
         if (!isPushSupported()) {
           showToast('Push notifications are not supported on this device', 'error');
           return;
@@ -336,8 +377,8 @@ export default function CoreBuddySettings() {
             Notifications
           </h2>
 
-          {/* Push master toggle — only shown when device supports it */}
-          {isPushSupported() ? (
+          {/* Push master toggle — shown on native or when web push is supported */}
+          {(isNative || isPushSupported()) ? (
             <div className="settings-row">
               <div className="settings-row-text">
                 <span className="settings-row-label">Push notifications</span>

@@ -58,5 +58,9 @@
 	<string>Mind Core Fitness needs camera access to scan food barcodes for nutrition tracking.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>
