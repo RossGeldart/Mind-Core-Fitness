@@ -121,8 +121,8 @@ export default function CoreBuddyConsistency() {
     ...customHabits.map((h, i) => { const c = CUSTOM_COLORS[i % CUSTOM_COLORS.length]; return { key: `custom_${h.id}`, label: h.label, icon: CUSTOM_ICON, color: resolveColor(c.color, c.darkColor), isCustom: true, id: h.id }; }),
   ];
   const allHabits = allHabitsRaw;
-  const trackableCount = isPremium ? allHabits.length : Math.min(allHabits.length, freeHabitLimit);
   const freeHabitLimit = isPremium ? Infinity : FREE_HABIT_LIMIT;
+  const trackableCount = isPremium ? allHabits.length : Math.min(allHabits.length, freeHabitLimit);
 
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
