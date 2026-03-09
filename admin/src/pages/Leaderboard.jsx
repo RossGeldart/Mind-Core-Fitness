@@ -273,7 +273,7 @@ export default function Leaderboard() {
       clients.forEach(c => {
         stats[c.id] = {
           id: c.id,
-          name: c.name,
+          name: c.name || c.email?.split('@')[0] || 'Anonymous',
           photoURL: c.photoURL || null,
           workouts: 0,
           minutes: 0,

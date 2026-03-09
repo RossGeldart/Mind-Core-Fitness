@@ -95,10 +95,20 @@ export function AuthProvider({ children }) {
           unsubClient = onSnapshot(clientsQuery, async (snapshot) => {
             if (!snapshot.empty) {
               const clientDoc = snapshot.docs[0];
+              const data = clientDoc.data();
               setIsClient(true);
-              setClientData({ id: clientDoc.id, ...clientDoc.data() });
+              setClientData({ id: clientDoc.id, ...data });
               // Keep localStorage in sync for post-redirect recovery
               try { localStorage.setItem('mcf_clientId', clientDoc.id); } catch {};
+              // Backfill missing name from Firebase displayName or email
+              if (!data.name) {
+                const fallbackName = user.displayName
+                  || (user.email ? user.email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null);
+                if (fallbackName) {
+                  updateDoc(doc(db, 'clients', clientDoc.id), { name: fallbackName }).catch(() => {});
+                  setClientData(prev => prev ? { ...prev, name: fallbackName } : prev);
+                }
+              }
             } else {
               // Query returned empty — may happen after cross-domain redirect
               // (e.g. Stripe checkout) when the auth token isn't fully ready.
