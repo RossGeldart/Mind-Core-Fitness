@@ -322,7 +322,7 @@ confidence must be one of: "high", "medium", "low"
 
     try {
       const response = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1024,
         messages: [
           {
@@ -356,7 +356,15 @@ confidence must be one of: "high", "medium", "low"
     } catch (err) {
       console.error('analyseMeal error:', err);
       if (err instanceof HttpsError) throw err;
-      throw new HttpsError('internal', 'Failed to analyse meal. Please try again.');
+      if (err instanceof SyntaxError) {
+        throw new HttpsError('internal', 'AI returned an unexpected format. Please try again.');
+      }
+      const msg = err?.status === 401
+        ? 'AI service authentication failed. Please contact support.'
+        : err?.status === 429
+          ? 'Too many requests — please wait a moment and try again.'
+          : 'Failed to analyse meal. Please try again.';
+      throw new HttpsError('internal', msg);
     }
   }
 );

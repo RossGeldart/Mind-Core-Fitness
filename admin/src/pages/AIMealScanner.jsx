@@ -126,7 +126,13 @@ export default function AIMealScanner() {
       setStage('results');
     } catch (err) {
       console.error('Analysis failed:', err);
-      setError(err.message || 'Failed to analyse meal. Please try again.');
+      // Firebase callable errors: err.message contains the server message,
+      // but for generic codes like "internal" it may just show the code.
+      // err.details may contain extra info. Prefer the descriptive message.
+      const msg = (err.message && err.message !== 'internal' && err.message !== 'INTERNAL')
+        ? err.message
+        : 'Failed to analyse meal. Please try again.';
+      setError(msg);
       setStage('preview');
     }
   };
