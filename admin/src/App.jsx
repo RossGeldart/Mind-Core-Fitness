@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { TierProvider } from './contexts/TierContext';
@@ -81,6 +82,29 @@ function RedirectHandler() {
   return null;
 }
 
+// Handle Android hardware back button
+function AndroidBackButton() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const handleBack = useCallback(() => {
+    // If on a root/login screen, exit the app
+    if (pathname === '/' || pathname === '/login') {
+      CapApp.exitApp();
+    } else {
+      navigate(-1);
+    }
+  }, [pathname, navigate]);
+
+  useEffect(() => {
+    if (!isNative || Capacitor.getPlatform() !== 'android') return;
+    const listener = CapApp.addListener('backButton', handleBack);
+    return () => { listener.then(l => l.remove()); };
+  }, [handleBack]);
+
+  return null;
+}
+
 function App() {
   return (
     <ThemeProvider>
@@ -88,6 +112,7 @@ function App() {
         <TierProvider>
         <BrowserRouter basename={basename}>
           <RedirectHandler />
+          <AndroidBackButton />
           <ScrollToTop>
           <Suspense fallback={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}><img src="/Logo.webp" alt="" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'app-fade-in 1s ease-out both' }} /></div>}>
           <Routes>
