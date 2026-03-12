@@ -680,28 +680,12 @@
             }
         });
 
-        // Word reveal animation configuration
-        const text = "Your fitness, simplified.";
-        const questionElement = document.getElementById('questionText');
-        const WORD_STAGGER_MS = 80;
-
-        function revealWords() {
-            const words = text.split(' ');
-            questionElement.innerHTML = words.map((word, i) =>
-                `<span class="word" style="animation-delay: ${i * WORD_STAGGER_MS}ms">${word}</span>`
-            ).join(' ');
-
-        }
-
         // Start animations when page loads
         window.addEventListener('DOMContentLoaded', function() {
             // Animate hero elements
             setTimeout(function() {
                 document.querySelector('.hero-content').classList.add('visible');
             }, 300);
-
-            // Start word reveal after hero animation
-            setTimeout(revealWords, 800);
 
             // Add fade-in animations on scroll
             const observerOptions = {

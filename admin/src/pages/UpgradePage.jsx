@@ -359,11 +359,14 @@ export default function UpgradePage() {
               {loading ? 'Loading...' : 'Continue'}
             </button>
 
-            <p className="upgrade-disclosure">
-              Core Buddy Premium — {selectedPlan === 'annual' ? `Annual (${annualPrice}/year)` : `Monthly (${monthlyPrice}/month)`}. Includes a 7-day free trial.{' '}
+            <p className="upgrade-subscription-disclosure">
+              {selectedPlan === 'annual'
+                ? `Core Buddy Premium — Annual Subscription. ${annualPrice}/year (${'\u00a3'}9.99/mo).`
+                : `Core Buddy Premium — Monthly Subscription. ${monthlyPrice}/month.`}
+              {' '}Includes a 7-day free trial.{' '}
               {isAndroid
-                ? 'Payment will be charged to your Google account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
-                : 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings \u203A Apple ID \u203A Subscriptions.'}
+                ? 'Payment will be charged to your Google account at confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
+                : 'Payment will be charged to your Apple ID account at the confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your device Settings \u203A Apple ID \u203A Subscriptions.'}
             </p>
           </>
         )}
@@ -394,8 +397,8 @@ export default function UpgradePage() {
           <button onClick={handleRestore} disabled={!!loading}>
             {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
           </button>
-          <a href="https://mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms of Use (EULA)</a>
-          <a href="https://mindcorefitness.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="https://www.mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms of Use (EULA)</a>
+          <a href="https://www.mindcorefitness.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </div>
 
         {error && <p className="upgrade-error">{error}</p>}

@@ -579,16 +579,6 @@
   cursor: not-allowed;
 }
 
-/* Auto-renewal disclosure */
-.upgrade-disclosure {
-  margin-top: 12px;
-  font-size: 0.68rem;
-  line-height: 1.5;
-  color: var(--text-tertiary);
-  text-align: center;
-  padding: 0 8px;
-}
-
 /* Free tier CTA */
 .upgrade-free-cta {
   text-align: center;
@@ -600,6 +590,15 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.82rem;
   margin-bottom: 8px;
+}
+
+/* Subscription disclosure text (Apple 3.1.2(c) requirement) */
+.upgrade-subscription-disclosure {
+  margin: 12px 0 0;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+  text-align: center;
 }
 
 /* Footer links (Restore / Terms / Privacy) */
