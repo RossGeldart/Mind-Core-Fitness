@@ -174,7 +174,7 @@
 /* Main Content */
 .dashboard-main {
   padding: 24px;
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -995,7 +995,7 @@
 
   .dashboard-main {
     padding: 16px;
-    padding-bottom: 80px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   .toast-container {

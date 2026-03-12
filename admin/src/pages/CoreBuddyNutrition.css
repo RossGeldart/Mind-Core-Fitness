@@ -25,7 +25,7 @@
 .nut-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
 }
@@ -82,7 +82,7 @@
 .nut-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px 20px 80px;
+  padding: 20px 20px calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ===== WEEK CALENDAR STRIP ===== */
