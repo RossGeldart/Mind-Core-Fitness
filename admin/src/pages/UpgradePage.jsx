@@ -8,6 +8,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import './UpgradePage.css';
 
 const isNative = Capacitor.isNativePlatform();
+const isAndroid = isNative && Capacitor.getPlatform() === 'android';
 
 const FREE_FEATURES = [
   { text: '2 workouts per week', included: true },
@@ -187,7 +188,9 @@ export default function UpgradePage() {
 
         {isNative ? (
           <p style={{ textAlign: 'center', opacity: 0.7, marginTop: 16 }}>
-            Manage your subscription in your device's Settings &gt; Subscriptions.
+            {isAndroid
+              ? 'Manage your subscription in Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
+              : 'Manage your subscription in Settings \u203A Apple ID \u203A Subscriptions.'}
           </p>
         ) : clientData?.stripeCustomerId ? (
           <button
@@ -360,7 +363,10 @@ export default function UpgradePage() {
               {selectedPlan === 'annual'
                 ? `Core Buddy Premium — Annual Subscription. ${annualPrice}/year (${'\u00a3'}9.99/mo).`
                 : `Core Buddy Premium — Monthly Subscription. ${monthlyPrice}/month.`}
-              {' '}Includes a 7-day free trial. Payment will be charged to your Apple ID account at the confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your device Settings &gt; Apple ID &gt; Subscriptions.
+              {' '}Includes a 7-day free trial.{' '}
+              {isAndroid
+                ? 'Payment will be charged to your Google account at confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
+                : 'Payment will be charged to your Apple ID account at the confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your device Settings \u203A Apple ID \u203A Subscriptions.'}
             </p>
           </>
         )}
