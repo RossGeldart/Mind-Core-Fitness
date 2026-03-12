@@ -31,7 +31,7 @@
   max-width: 480px;
   max-height: 85vh;
   overflow-y: auto;
-  padding: 20px 20px calc(32px + env(safe-area-inset-bottom, 0px));
+  padding: 20px 20px calc(32px + var(--safe-area-bottom));
   animation: al-slideUp 0.3s ease;
   border: 1px solid var(--border-color);
   border-bottom: none;

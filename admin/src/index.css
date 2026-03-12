@@ -20,7 +20,9 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--bg-body);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --nav-clearance: calc(80px + env(safe-area-inset-bottom, 0px));
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-bottom: var(--safe-area-bottom);
+  --nav-clearance: calc(80px + var(--safe-area-bottom));
 }
 

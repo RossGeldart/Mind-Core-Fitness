@@ -598,7 +598,7 @@
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
   z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: var(--safe-area-bottom);
 }
 
 .circuit-nav-tab {

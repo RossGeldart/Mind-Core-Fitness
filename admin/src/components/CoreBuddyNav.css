@@ -1,7 +1,7 @@
 /* ====== Shared CoreBuddy Header ====== */
 .client-header {
   background: transparent;
-  padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 16px;
+  padding: calc(16px + var(--safe-area-top)) 20px 16px;
 }
 
 .header-content {
@@ -75,7 +75,7 @@
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
   z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: var(--safe-area-bottom);
 }
 
 /* Mono mode: bg-card is translucent — give nav a solid backdrop */

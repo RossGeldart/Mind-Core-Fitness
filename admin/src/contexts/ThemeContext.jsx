@@ -3,6 +3,15 @@ import { Capacitor } from '@capacitor/core';
 
 const ThemeContext = createContext();
 
+// Set Android safe-area CSS variables (env() doesn't work in Android WebView)
+function setAndroidSafeAreas() {
+  if (Capacitor.getPlatform() !== 'android') return;
+  const root = document.documentElement;
+  // Android status bar ~24dp, gesture nav ~24dp; add buffer for varied devices
+  root.style.setProperty('--safe-area-top', '36px');
+  root.style.setProperty('--safe-area-bottom', '24px');
+}
+
 // Sync native status bar appearance with current theme
 async function syncStatusBar(isDark) {
   if (!Capacitor.isNativePlatform()) return;
@@ -11,6 +20,7 @@ async function syncStatusBar(isDark) {
     await StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light });
     await StatusBar.setOverlaysWebView({ overlay: true });
     await StatusBar.setBackgroundColor({ color: '#00000000' });
+    setAndroidSafeAreas();
   } catch (_) {
     // StatusBar plugin not available
   }

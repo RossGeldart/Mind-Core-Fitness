@@ -2,7 +2,7 @@
 .ah-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .ah-loading {
@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;
+  padding: calc(16px + var(--safe-area-top)) 16px 8px;
   position: sticky;
   top: 0;
   background: var(--bg-body);
@@ -223,7 +223,7 @@
 /* FAB — matches Profile page .cb-fab */
 .ah-fab {
   position: fixed;
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(64px + var(--safe-area-bottom));
   right: max(18px, env(safe-area-inset-right, 0px));
   width: 54px;
   height: 54px;
