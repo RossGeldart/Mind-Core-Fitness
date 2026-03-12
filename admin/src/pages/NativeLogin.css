@@ -7,13 +7,13 @@
   align-items: center;
   justify-content: center;
   background: var(--bg-body);
-  padding: calc(60px + env(safe-area-inset-top, 0px)) 32px calc(40px + env(safe-area-inset-bottom, 0px));
+  padding: calc(60px + var(--safe-area-top)) 32px calc(40px + var(--safe-area-bottom));
   box-sizing: border-box;
 }
 
 .native-login .login-theme-toggle {
   position: fixed;
-  top: calc(12px + env(safe-area-inset-top, 0px));
+  top: calc(12px + var(--safe-area-top));
   right: 16px;
   z-index: 10;
 }

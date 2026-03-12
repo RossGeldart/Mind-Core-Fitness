@@ -26,7 +26,7 @@
 .lb-page {
   min-height: 100dvh;
   background: var(--bg-body);
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 /* Header */
@@ -83,7 +83,7 @@
 .lb-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px));
+  padding: 0 16px calc(80px + var(--safe-area-bottom));
 }
 
 /* ===== OPT-IN SCREEN ===== */

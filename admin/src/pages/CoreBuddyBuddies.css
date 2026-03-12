@@ -20,13 +20,13 @@
 .bdy-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .bdy-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px));
+  padding: 0 16px calc(80px + var(--safe-area-bottom));
 }
 
 .bdy-title {
@@ -1006,7 +1006,7 @@
 
 .bdy-fab {
   position: fixed;
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(64px + var(--safe-area-bottom));
   right: max(18px, env(safe-area-inset-right, 0px));
   width: 54px;
   height: 54px;
@@ -1062,7 +1062,7 @@
   width: 100%;
   max-width: 480px;
   padding: 20px 20px 32px;
-  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(32px + var(--safe-area-bottom));
   animation: bdyFabSheetIn 0.3s ease;
   border: 1px solid var(--border-color);
   border-bottom: none;

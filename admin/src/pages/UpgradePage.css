@@ -2,7 +2,7 @@
 .upgrade-page {
   position: relative;
   min-height: 100dvh;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 40px;
+  padding: calc(20px + var(--safe-area-top)) 16px 40px;
   background: var(--bg-body);
   max-width: 480px;
   margin: 0 auto;
@@ -317,7 +317,7 @@
 
 .upgrade-page-native {
   min-height: 100dvh;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: calc(12px + var(--safe-area-top)) 16px calc(16px + var(--safe-area-bottom));
   display: flex;
   flex-direction: column;
 }

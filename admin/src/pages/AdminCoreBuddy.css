@@ -35,7 +35,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: calc(16px + env(safe-area-inset-top, 0px)) 24px 16px;
+  padding: calc(16px + var(--safe-area-top)) 24px 16px;
 }
 
 .acb-header h1 {
@@ -375,7 +375,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .acb-header {
-    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+    padding: calc(12px + var(--safe-area-top)) 16px 12px;
   }
 
   .acb-main {

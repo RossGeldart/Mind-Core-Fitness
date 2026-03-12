@@ -2,7 +2,7 @@
 .cb-settings {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .settings-main {
