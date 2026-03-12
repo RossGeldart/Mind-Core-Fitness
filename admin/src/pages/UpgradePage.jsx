@@ -355,6 +355,13 @@ export default function UpgradePage() {
             >
               {loading ? 'Loading...' : 'Continue'}
             </button>
+
+            <p className="upgrade-subscription-disclosure">
+              {selectedPlan === 'annual'
+                ? `Core Buddy Premium — Annual Subscription. ${annualPrice}/year (${'\u00a3'}9.99/mo).`
+                : `Core Buddy Premium — Monthly Subscription. ${monthlyPrice}/month.`}
+              {' '}Includes a 7-day free trial. Payment will be charged to your Apple ID account at the confirmation of purchase. Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your device Settings &gt; Apple ID &gt; Subscriptions.
+            </p>
           </>
         )}
 
@@ -384,8 +391,8 @@ export default function UpgradePage() {
           <button onClick={handleRestore} disabled={!!loading}>
             {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
           </button>
-          <a href="https://mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms</a>
-          <a href="https://mindcorefitness.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+          <a href="https://www.mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms of Use (EULA)</a>
+          <a href="https://www.mindcorefitness.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </div>
 
         {error && <p className="upgrade-error">{error}</p>}

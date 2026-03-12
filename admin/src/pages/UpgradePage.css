@@ -592,6 +592,15 @@
   margin-bottom: 8px;
 }
 
+/* Subscription disclosure text (Apple 3.1.2(c) requirement) */
+.upgrade-subscription-disclosure {
+  margin: 12px 0 0;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
 /* Footer links (Restore / Terms / Privacy) */
 .upgrade-footer-links {
   display: flex;
