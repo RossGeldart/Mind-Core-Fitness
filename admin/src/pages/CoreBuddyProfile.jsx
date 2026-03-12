@@ -572,6 +572,7 @@ export default function CoreBuddyProfile() {
   }
 
   return (
+    <>
     <PullToRefresh>
     <div className="prf-page">
       <header className="client-header">
@@ -900,8 +901,6 @@ export default function CoreBuddyProfile() {
         )}
       </main>
 
-      <CoreBuddyNav active="buddies" />
-
       {/* Profile photo overlay */}
       {showPhotoOverlay && profile.photoURL && (
         <div className="prf-photo-overlay" onClick={() => setShowPhotoOverlay(false)}>
@@ -956,5 +955,7 @@ export default function CoreBuddyProfile() {
       )}
     </div>
     </PullToRefresh>
+    <CoreBuddyNav active="buddies" />
+    </>
   );
 }
