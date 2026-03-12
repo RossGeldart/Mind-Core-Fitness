@@ -200,7 +200,7 @@ function StaticThumb({ src, isGif, onReady, eager }) {
           src={`${src}#t=0.5`}
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
           onLoadedData={handleLoadedData}
           onSeeked={handleSeeked}
           onError={handleError}
@@ -3146,7 +3146,7 @@ export default function CoreBuddyWorkouts() {
               {nextEx && (
                 nextEx.isGif
                   ? <img className="wk-rest-preview" src={nextEx.videoUrl} alt={nextEx.name} />
-                  : <video className="wk-rest-preview" src={nextEx.videoUrl} autoPlay loop muted playsInline />
+                  : <video className="wk-rest-preview" src={`${nextEx.videoUrl}#t=0.5`} muted playsInline preload="metadata" />
               )}
               <div className="wk-rest-overlay" />
               <div className="wk-rest-text">
