@@ -65,14 +65,14 @@
 .cb-dashboard {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Main Content */
 .cb-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px 80px;
+  padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Coach Message */

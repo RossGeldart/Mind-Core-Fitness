@@ -33,14 +33,14 @@
 .cbc-page {
   min-height: 100vh;
   background: var(--bg-body);
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Main */
 .cbc-main {
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 16px 80px;
+  padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ====== Hero Section ====== */
@@ -1333,7 +1333,7 @@
 
 @media (min-width: 500px) {
   .cbc-main {
-    padding: 0 24px 80px;
+    padding: 0 24px calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
 
