@@ -8,6 +8,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import './UpgradePage.css';
 
 const isNative = Capacitor.isNativePlatform();
+const isAndroid = isNative && Capacitor.getPlatform() === 'android';
 
 const FREE_FEATURES = [
   { text: '2 workouts per week', included: true },
@@ -187,7 +188,9 @@ export default function UpgradePage() {
 
         {isNative ? (
           <p style={{ textAlign: 'center', opacity: 0.7, marginTop: 16 }}>
-            Manage your subscription in your device's Settings &gt; Subscriptions.
+            {isAndroid
+              ? 'Manage your subscription in Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
+              : 'Manage your subscription in Settings \u203A Apple ID \u203A Subscriptions.'}
           </p>
         ) : clientData?.stripeCustomerId ? (
           <button
@@ -355,6 +358,13 @@ export default function UpgradePage() {
             >
               {loading ? 'Loading...' : 'Continue'}
             </button>
+
+            <p className="upgrade-disclosure">
+              Core Buddy Premium — {selectedPlan === 'annual' ? `Annual (${annualPrice}/year)` : `Monthly (${monthlyPrice}/month)`}. Includes a 7-day free trial.{' '}
+              {isAndroid
+                ? 'Payment will be charged to your Google account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Google Play Store \u203A Payments & subscriptions \u203A Subscriptions.'
+                : 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings \u203A Apple ID \u203A Subscriptions.'}
+            </p>
           </>
         )}
 
@@ -384,8 +394,8 @@ export default function UpgradePage() {
           <button onClick={handleRestore} disabled={!!loading}>
             {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
           </button>
-          <a href="https://mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms</a>
-          <a href="https://mindcorefitness.com/privacy" target="_blank" rel="noopener noreferrer">Privacy</a>
+          <a href="https://mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms of Use (EULA)</a>
+          <a href="https://mindcorefitness.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </div>
 
         {error && <p className="upgrade-error">{error}</p>}
