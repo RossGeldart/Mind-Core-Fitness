@@ -115,58 +115,34 @@ export default function UpgradePage() {
     }
   }
 
-  async function handleSelectPlan(plan) {
+  const STRIPE_PAYMENT_LINKS = {
+    monthly: 'https://buy.stripe.com/5kQ8wP98F9qwdgbcJx8IU05',
+    annual: 'https://buy.stripe.com/4gM14nbgNbyEfoj38X8IU06',
+  };
+
+  function handleSelectPlan(plan) {
     setLoading(plan);
     setError(null);
 
-    if (!currentUser?.uid || !currentUser?.email || !clientData?.id) {
+    if (!currentUser?.email) {
       setError('Please sign in again and retry');
       setLoading(null);
       return;
     }
 
-    try {
-      if (typeof fbq === 'function') {
-        fbq('track', 'InitiateCheckout', {
-          content_name: 'Core Buddy ' + (plan === 'annual' ? 'Annual' : 'Monthly'),
-          content_category: 'Fitness App',
-          value: plan === 'annual' ? 99.99 : 9.99,
-          currency: 'GBP'
-        });
-      }
-
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId: STRIPE_PRICES[plan],
-          clientId: clientData.id,
-          uid: currentUser.uid,
-          email: currentUser.email,
-        }),
+    if (typeof fbq === 'function') {
+      fbq('track', 'InitiateCheckout', {
+        content_name: 'Core Buddy ' + (plan === 'annual' ? 'Annual' : 'Monthly'),
+        content_category: 'Fitness App',
+        value: plan === 'annual' ? 119.99 : 14.99,
+        currency: 'GBP'
       });
-
-      if (!res.ok) {
-        const text = await res.text();
-        let msg;
-        try { msg = JSON.parse(text).error; } catch { msg = text; }
-        setError(msg || `Server error (${res.status})`);
-        setLoading(null);
-        return;
-      }
-
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setError('No checkout URL returned — please try again');
-        setLoading(null);
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setError('Unable to reach checkout — check your connection');
-      setLoading(null);
     }
+
+    const url = new URL(STRIPE_PAYMENT_LINKS[plan]);
+    url.searchParams.set('prefilled_email', currentUser.email);
+    if (clientData?.id) url.searchParams.set('client_reference_id', clientData.id);
+    window.location.href = url.toString();
   }
 
   // Already premium — show manage subscription
@@ -427,7 +403,7 @@ export default function UpgradePage() {
         <div className="plan-card">
           <div className="plan-name">Monthly</div>
           <div className="plan-price">
-            <span className="plan-amount">£9.99</span>
+            <span className="plan-amount">£14.99</span>
             <span className="plan-period">/month</span>
           </div>
           <ul className="plan-features">
@@ -445,13 +421,13 @@ export default function UpgradePage() {
         </div>
 
         <div className="plan-card plan-card-featured">
-          <div className="plan-badge-save">Best Value — Save 17%</div>
+          <div className="plan-badge-save">Best Value — Save 33%</div>
           <div className="plan-name">Annual</div>
           <div className="plan-price">
-            <span className="plan-amount">£99.99</span>
+            <span className="plan-amount">£119.99</span>
             <span className="plan-period">/year</span>
           </div>
-          <div className="plan-price-sub">That's just £8.33/month</div>
+          <div className="plan-price-sub">That's just £9.99/month</div>
           <ul className="plan-features">
             <li>7-day free trial</li>
             <li>Unlimited workout durations</li>
