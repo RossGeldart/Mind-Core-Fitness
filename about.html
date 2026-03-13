@@ -126,9 +126,38 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
     <style>
+        @font-face { font-family: 'Anton'; src: url('fonts/Anton-Regular.ttf') format('truetype'); font-display: swap; }
+
+        .section-divider {
+            display: block;
+            width: 100%;
+            line-height: 0;
+            font-size: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .section-divider svg {
+            display: block;
+            width: calc(100% + 2px);
+            margin-left: -1px;
+            height: auto;
+            margin-top: -1px;
+            margin-bottom: -1px;
+        }
+        .section-divider--hero {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            z-index: 2;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -167,7 +196,7 @@
         body {
             background: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: 300;
             line-height: 1.6;
             overflow-x: hidden;
@@ -212,7 +241,7 @@
 
         .nav-links a {
             color: rgba(255, 255, 255, 0.85);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
@@ -234,7 +263,7 @@
         .nav-back {
             padding: 8px 16px;
             color: rgba(255, 255, 255, 0.7);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
@@ -249,7 +278,7 @@
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.8rem;
             text-decoration: none;
@@ -310,7 +339,7 @@
 
         .section-label {
             display: inline-block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.7rem;
             letter-spacing: 2px;
@@ -320,7 +349,7 @@
         }
 
         .section-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: clamp(1.8rem, 4vw, 2.4rem);
             margin-bottom: 16px;
@@ -374,7 +403,7 @@
             background: rgba(153, 49, 60, 0.3);
             border: 1px solid var(--accent-color);
             border-radius: 4px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.7rem;
             letter-spacing: 2px;
@@ -384,7 +413,7 @@
         }
 
         .hero h1 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 800;
             font-size: clamp(2.2rem, 5vw, 3.2rem);
             line-height: 1.1;
@@ -417,7 +446,7 @@
             padding: 16px 32px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             text-decoration: none;
@@ -437,7 +466,7 @@
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 1rem;
             text-decoration: none;
@@ -471,7 +500,7 @@
         }
 
         .hero-stat-number {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 800;
             font-size: 2rem;
             color: var(--accent-color);
@@ -508,7 +537,7 @@
         }
 
         .pull-quote {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: clamp(1.4rem, 3vw, 1.8rem);
             color: var(--accent-color);
@@ -521,7 +550,7 @@
         }
 
         .punch-line {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1.2rem;
             color: var(--text-color);
@@ -530,7 +559,7 @@
         }
 
         .closing-statement {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: clamp(1.3rem, 3vw, 1.6rem);
             color: var(--accent-color);
@@ -580,7 +609,7 @@
         }
 
         .pillar-card h3 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.3rem;
             margin-bottom: 12px;
@@ -632,7 +661,7 @@
         }
 
         .qual-card h4 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             margin-bottom: 8px;
@@ -743,7 +772,7 @@
         }
 
         .carousel-slide .video-caption {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
             color: var(--text-color);
@@ -853,7 +882,7 @@
 
         .testimonial-author-info strong {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             color: var(--text-color);
@@ -907,7 +936,7 @@
         }
 
         .service-card h3 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             margin-bottom: 10px;
@@ -923,7 +952,7 @@
             display: inline-block;
             margin-top: 16px;
             color: var(--accent-color);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -967,7 +996,7 @@
         }
 
         .form-group label {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.85rem;
             color: var(--text-color);
@@ -981,7 +1010,7 @@
             border: 1px solid rgba(0, 0, 0, 0.15);
             border-radius: 8px;
             color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1rem;
             transition: all 0.3s ease;
         }
@@ -1015,7 +1044,7 @@
             padding: 18px 40px;
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             border: none;
@@ -1052,14 +1081,14 @@
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
         .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
-        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
-        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+        .site-footer__tagline { font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Anton', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
         .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
         .site-footer__col li { margin-bottom: 10px; }
-        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; }
         .site-footer__col a:hover { color: #99313c; }
-        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Inter', sans-serif; }
         @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
 
@@ -1071,7 +1100,7 @@
         .cookie-text p { font-size: 0.9rem; line-height: 1.6; color: #ccc; margin: 0; }
         .cookie-text a { color: var(--accent-color); text-decoration: underline; }
         .cookie-buttons { display: flex; gap: 12px; flex-shrink: 0; }
-        .cookie-btn { padding: 12px 24px; border-radius: 6px; font-family: 'Roboto', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .cookie-btn { padding: 12px 24px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; }
         .cookie-btn.accept { background: var(--accent-color); color: #ffffff; }
         .cookie-btn.accept:hover { background: #b33a47; }
         .cookie-btn.decline { background: transparent; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -1346,7 +1375,7 @@
 </script>
 </head>
 <body>
-    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Montserrat,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
+    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Anton,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
 
     <!-- Navigation -->
     <nav class="nav">
@@ -1416,6 +1445,7 @@
             </div>
             <img src="images/testimonials/ross-hero.PNG" alt="Ross Geldart — Personal Trainer at Mind Core Fitness, Elgin" class="hero-image" width="400" height="500" loading="eager" decoding="async">
         </div>
+        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#ffffff"/></svg></div>
     </section>
 
     <!-- SECTION 2: MY STORY -->
@@ -1461,6 +1491,8 @@
         </div>
     </section>
 
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#f9f9f9"/></svg></div>
+
     <!-- SECTION 3: THREE PILLARS -->
     <section class="pillars" id="pillars">
         <div class="container text-center">
@@ -1485,6 +1517,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
 
     <!-- SECTION 4: QUALIFICATIONS -->
     <section class="qualifications" id="qualifications">
@@ -1529,6 +1563,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
 
     <!-- SECTION 5: VIDEO CAROUSEL -->
     <section class="video-carousel" id="videos">
@@ -1592,6 +1628,8 @@
         </div>
     </section>
 
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#f9f9f9"/></svg></div>
+
     <!-- SECTION 6: CLIENT TESTIMONIALS -->
     <section class="testimonials" id="testimonials">
         <div class="container text-center">
@@ -1640,6 +1678,8 @@
         </div>
     </section>
 
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#1a1a1a"/></svg></div>
+
     <!-- SECTION 7: HOW I CAN HELP -->
     <section class="services" id="services">
         <div class="container text-center">
@@ -1673,6 +1713,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#ffffff"/></svg></div>
 
     <!-- SECTION 8: CTA / CONTACT -->
     <section class="contact-form-section" id="contact">

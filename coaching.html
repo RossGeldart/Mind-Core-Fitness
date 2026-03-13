@@ -116,10 +116,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 
     <style>
+        @font-face { font-family: 'Anton'; src: url('fonts/Anton-Regular.ttf') format('truetype'); font-display: swap; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
@@ -136,7 +138,7 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             color: var(--text-color);
             background: var(--bg-color);
             font-size: 16px;
@@ -159,17 +161,17 @@
         }
         .nav-logo img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; }
         .nav-links { display: flex; align-items: center; gap: 28px; }
-        .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-family: 'Anton', sans-serif; font-size: 0.85rem; font-weight: 500; transition: color 0.2s; }
         .nav-links a:hover, .nav-links a.active { color: #ffffff; }
         .nav-buttons { display: flex; align-items: center; gap: 12px; }
-        .nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 500; }
+        .nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: 'Anton', sans-serif; font-size: 0.82rem; font-weight: 500; }
         .nav-cta {
             padding: 10px 22px;
             background: var(--accent-color);
             color: #ffffff;
             text-decoration: none;
             border-radius: 6px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.82rem;
             transition: background 0.2s;
@@ -191,10 +193,11 @@
             padding: 140px 24px 80px;
             background: var(--dark-bg);
             text-align: center;
+            position: relative;
         }
         .hero-label {
             display: inline-block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 3px;
@@ -203,7 +206,7 @@
             margin-bottom: 20px;
         }
         .hero h1 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: clamp(2.2rem, 5vw, 3.5rem);
             font-weight: 800;
             color: #ffffff;
@@ -222,7 +225,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         .section-label {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 3px;
@@ -231,7 +234,7 @@
             margin-bottom: 12px;
         }
         .section-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: clamp(1.8rem, 3.5vw, 2.6rem);
             font-weight: 800;
             line-height: 1.15;
@@ -308,7 +311,7 @@
             transform: translateX(-50%);
             background: var(--accent-color);
             color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 1px;
@@ -326,7 +329,7 @@
         }
         .pricing-card-image img { width: 100%; height: 100%; object-fit: cover; }
         .pricing-name {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.2rem;
             color: #ffffff;
@@ -362,7 +365,7 @@
         .pricing-features li:last-child { border-bottom: none; }
         .pricing-features li::before { content: '✓'; color: var(--accent-color); font-weight: 700; flex-shrink: 0; }
         .pricing-amount {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 800;
             font-size: 3.2rem;
             color: #ffffff;
@@ -379,7 +382,7 @@
             display: inline-block;
             background: rgba(153,49,60,0.2);
             color: var(--accent-color);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: 0.75rem;
             font-weight: 700;
             padding: 3px 10px;
@@ -393,7 +396,7 @@
             background: rgba(255,255,255,0.08);
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
             color: #ffffff;
@@ -453,9 +456,30 @@
 
         /* ---- SECTION DIVIDER ---- */
         .section-divider {
-            height: 4px;
-            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
-            opacity: 0.3;
+            display: block;
+            width: 100%;
+            line-height: 0;
+            font-size: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .section-divider svg {
+            display: block;
+            width: calc(100% + 2px);
+            margin-left: -1px;
+            height: auto;
+            margin-top: -1px;
+            margin-bottom: -1px;
+        }
+        .section-divider--hero {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            z-index: 2;
         }
 
         /* ---- FAQ ---- */
@@ -480,7 +504,7 @@
             border-bottom-color: var(--card-border);
         }
         .faq-question {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -520,7 +544,7 @@
             text-align: center;
         }
         .cta-band h2 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: clamp(1.6rem, 3vw, 2.2rem);
             font-weight: 800;
             color: #ffffff;
@@ -532,7 +556,7 @@
             padding: 16px 36px;
             background: #ffffff;
             color: var(--accent-color);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 0.95rem;
             border-radius: 8px;
@@ -563,14 +587,14 @@
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
         .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
-        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
-        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+        .site-footer__tagline { font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Anton', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
         .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
         .site-footer__col li { margin-bottom: 10px; }
-        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; }
         .site-footer__col a:hover { color: #99313c; }
-        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Inter', sans-serif; }
         @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
 
@@ -585,7 +609,7 @@
     </style>
 </head>
 <body>
-    <a href="#main-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:'Montserrat',sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s">Skip to main content</a>
+    <a href="#main-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--accent-color);color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:'Anton',sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s">Skip to main content</a>
 
     <nav class="nav">
         <a href="/" class="nav-logo">
@@ -615,6 +639,7 @@
         <div class="hero-label">Coaching & Programmes</div>
         <h1>Ready for More <span>Structure?</span></h1>
         <p>Whether you want a guided programme or full 1-2-1 accountability, there's a coaching option built for your goals.</p>
+        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
     </section>
 
     <!-- ========================================================
@@ -727,7 +752,7 @@
         </div>
     </section>
 
-    <div class="section-divider"></div>
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#f4f4f4"/></svg></div>
 
     <!-- ========================================================
          SECTION 2: 1-2-1 PERSONAL TRAINING
@@ -816,6 +841,8 @@
         </div>
     </section>
 
+    <div class="section-divider" style="background:#f4f4f4" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
+
     <!-- PT FAQ -->
     <section class="faq-section light">
         <div class="container">
@@ -842,6 +869,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#99313c"/></svg></div>
 
     <!-- CTA Band -->
     <section class="cta-band">
