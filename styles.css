@@ -1477,11 +1477,16 @@ body {
     }
 
     .hero-title {
-        font-size: clamp(1.8rem, 7vw, 2.4rem);
+        font-size: clamp(2.2rem, 9vw, 3rem);
+        margin-bottom: 12px;
     }
 
     .hero-subtitle {
         font-size: 1rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 20px;
+        line-height: 1.5;
     }
 
     .hero-cta {
