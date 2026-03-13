@@ -561,21 +561,35 @@ body {
 
 /* Phone Card Overrides */
 .phone-card {
-    padding: 30px 24px 32px;
+    background: none;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+.phone-card:hover {
+    box-shadow: none;
 }
 
 .phone-card .phone-frame {
-    width: 180px;
+    width: 260px;
     margin: 0 auto 24px;
+}
+
+.phone-card h3 {
+    margin-top: 8px;
 }
 
 @media (max-width: 768px) {
     .phone-grid {
-        gap: 30px;
+        grid-template-columns: 1fr;
+        gap: 50px;
+        max-width: 320px;
+        margin: 0 auto;
     }
 
     .phone-card .phone-frame {
-        width: 160px;
+        width: 260px;
     }
 }
 
