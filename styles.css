@@ -1477,24 +1477,29 @@ body {
     }
 
     .hero {
-        align-items: flex-end;
+        align-items: stretch;
     }
 
     .hero-content {
-        padding: 0 20px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 0 16px 40px;
+        height: 100%;
     }
 
     .hero-title {
-        font-size: clamp(3rem, 13vw, 4.5rem);
-        margin-bottom: 16px;
-        line-height: 1.05;
+        font-size: clamp(4rem, 18vw, 7rem);
+        margin-bottom: auto;
+        padding-top: 30vh;
+        line-height: 1.0;
     }
 
     .hero-subtitle {
         font-size: 1.1rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.95);
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         line-height: 1.5;
     }
 
