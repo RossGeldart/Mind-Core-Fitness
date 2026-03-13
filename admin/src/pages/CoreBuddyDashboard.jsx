@@ -594,6 +594,7 @@ export default function CoreBuddyDashboard() {
     if (!currentUser || !clientData) return;
     const loadStats = async () => {
       let logsSnap = null;
+      let actSnap = null;
       let localNutTargets = null;
 
       try {
@@ -623,7 +624,7 @@ export default function CoreBuddyDashboard() {
         // 2. Activity logs — count toward weekly target
         const actLogsRef = collection(db, 'activityLogs');
         const actQ = query(actLogsRef, where('clientId', '==', clientData.id));
-        const actSnap = await getDocs(actQ);
+        actSnap = await getDocs(actQ);
         setTotalActivities(actSnap.docs.length);
         const weekActCount = actSnap.docs.filter(d => {
           const ts = d.data().completedAt;
@@ -711,7 +712,7 @@ export default function CoreBuddyDashboard() {
         if (logsSnap) {
           const allDates = [
             ...logsSnap.docs.map(d => d.data().date),
-            ...actSnap.docs.map(d => d.data().date),
+            ...(actSnap ? actSnap.docs.map(d => d.data().date) : []),
           ].filter(Boolean).sort().reverse();
           if (allDates.length > 0) {
             const now2 = new Date();
