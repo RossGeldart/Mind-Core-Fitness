@@ -555,6 +555,26 @@ body {
     line-height: 1.7;
 }
 
+/* Phone Card Overrides */
+.phone-card {
+    padding: 30px 24px 32px;
+}
+
+.phone-card .phone-frame {
+    width: 180px;
+    margin: 0 auto 24px;
+}
+
+@media (max-width: 768px) {
+    .phone-grid {
+        gap: 30px;
+    }
+
+    .phone-card .phone-frame {
+        width: 160px;
+    }
+}
+
 /* Options Section */
 .options-section {
     padding: 0;
