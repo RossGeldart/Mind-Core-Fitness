@@ -398,8 +398,8 @@ export default function UpgradePage() {
           <button onClick={handleRestore} disabled={!!loading}>
             {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
           </button>
-          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/terms')}>Terms of Use (EULA)</button>
-          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/privacy-policy')}>Privacy Policy</button>
+          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/terms.html')}>Terms of Use (EULA)</button>
+          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/privacy-policy.html')}>Privacy Policy</button>
         </div>
 
         {error && <p className="upgrade-error">{error}</p>}
