@@ -1489,16 +1489,16 @@ body {
     }
 
     .hero-title {
-        font-size: clamp(4rem, 18vw, 7rem);
+        font-size: clamp(4.5rem, 22vw, 9rem);
         margin-bottom: auto;
-        padding-top: 30vh;
-        line-height: 1.0;
+        padding-top: 20vh;
+        line-height: 0.95;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
         margin-bottom: 20px;
         line-height: 1.5;
     }
