@@ -355,11 +355,11 @@ body {
 .hero-title {
     font-family: 'Anton', sans-serif;
     font-weight: 400;
-    font-size: clamp(3.5rem, 10vw, 110px);
+    font-size: clamp(2rem, 5vw, 56px);
     color: #ffffff;
     margin-bottom: 24px;
     letter-spacing: 2px;
-    line-height: 1.05;
+    line-height: 1.1;
     text-transform: uppercase;
     text-align: center;
 }
@@ -1481,7 +1481,7 @@ body {
     }
 
     .hero-title {
-        font-size: clamp(2.5rem, 10vw, 3.5rem);
+        font-size: clamp(1.8rem, 7vw, 2.4rem);
     }
 
     .hero-subtitle {
