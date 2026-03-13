@@ -980,12 +980,49 @@
             line-height: 1.7;
         }
 
-        /* ===== Elevated Section Overrides (features, install, faq) ===== */
-        .features,
+        /* ===== Light / Accent Section Overrides ===== */
+        #who,
         .install,
-        .faq {
-            background: var(--bg-elevated);
+        .cb-testimonials {
+            background: #ffffff;
+            --text: #373737;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --bg-card: #f9f9f9;
+            --border: rgba(0,0,0,0.08);
+            --border-light: rgba(0,0,0,0.12);
         }
+
+        .features,
+        .comparison,
+        .faq {
+            background: #f9f9f9;
+            --text: #373737;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --bg-card: #ffffff;
+            --border: rgba(0,0,0,0.08);
+            --border-light: rgba(0,0,0,0.12);
+        }
+
+        .stats {
+            background: var(--accent);
+            border-top: none;
+            border-bottom: none;
+        }
+        .stats .stat-number { color: #ffffff; }
+        .stats .stat-label { color: rgba(255,255,255,0.8); }
+
+        /* Keep phone frames dark on light backgrounds */
+        .features .phone,
+        .install .phone { background: #1a1a1a; }
+
+        /* Keep store badges visible on white */
+        .install .store-badge { background: #f9f9f9; color: #373737; }
+        .install .store-badge svg { fill: #373737; }
+        .install .store-badge-small { color: #666; }
+        .install .store-badge-name { color: #373737; }
+        .install .store-coming-soon { color: var(--accent); }
 
         /* ===== Final CTA ===== */
         .final-cta {
@@ -1761,7 +1798,7 @@
                 </div>
             </div>
         </div>
-        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#ffffff"/></svg></div>
     </section>
 
     <!-- ===== Who Is This For ===== -->
@@ -1793,7 +1830,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#242424"/></svg></div>
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#f9f9f9"/></svg></div>
 
     <!-- ===== Features ===== -->
     <section class="features" id="features">
@@ -1933,7 +1970,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#242424" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#99313c"/></svg></div>
 
     <!-- ===== Stats ===== -->
     <section class="stats">
@@ -1959,7 +1996,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#242424"/></svg></div>
+    <div class="section-divider" style="background:#99313c" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
 
     <!-- ===== Install / Get The App ===== -->
     <section class="install" id="install">
@@ -1995,6 +2032,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#f9f9f9"/></svg></div>
 
     <!-- ===== Free vs Premium Comparison ===== -->
     <section class="comparison" id="compare">
@@ -2074,7 +2113,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#242424" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
 
     <!-- ===== Pricing ===== -->
     <section class="pricing" id="pricing">
@@ -2142,7 +2181,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#242424"/></svg></div>
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
 
     <!-- ===== Testimonials ===== -->
     <section class="cb-testimonials">
@@ -2182,6 +2221,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#f9f9f9"/></svg></div>
 
     <!-- ===== FAQ ===== -->
     <section class="faq" id="faq">
@@ -2240,7 +2281,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#242424" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
 
     <!-- ===== Final CTA ===== -->
     <section class="final-cta">
