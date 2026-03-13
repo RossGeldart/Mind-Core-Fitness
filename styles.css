@@ -396,15 +396,27 @@ body {
     width: 100%;
     line-height: 0;
     font-size: 0;
-    margin: -1px 0;
+    margin-top: -2px;
+    margin-bottom: -2px;
     padding: 0;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 
 .section-divider svg {
     display: block;
     width: 100%;
     height: auto;
+}
+
+.section-divider--hero {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    z-index: 2;
 }
 
 /* Philosophy Section */
