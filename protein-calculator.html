@@ -111,10 +111,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 
     <style>
+        @font-face { font-family: 'Anton'; src: url('fonts/Anton-Regular.ttf') format('truetype'); font-display: swap; }
+
         * {
             margin: 0;
             padding: 0;
@@ -149,7 +151,7 @@
         body {
             background: var(--background);
             color: var(--text-color);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: 300;
             line-height: 1.6;
             min-height: 100vh;
@@ -173,7 +175,7 @@
         }
 
         .calculator-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.8rem;
             color: var(--text-color);
@@ -200,7 +202,7 @@
 
         .form-group label {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.9rem;
             color: var(--text-color);
@@ -213,7 +215,7 @@
             padding: 14px 16px;
             border: 1.5px solid rgba(55, 55, 55, 0.2);
             border-radius: 8px;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1rem;
             color: var(--text-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -262,7 +264,7 @@
             color: #ffffff;
             border: none;
             border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -303,7 +305,7 @@
         }
 
         .results-number {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 4rem;
             color: var(--accent-color);
@@ -313,7 +315,7 @@
         }
 
         .results-unit {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1.2rem;
             color: var(--text-color);
@@ -329,7 +331,7 @@
         }
 
         .results-breakdown-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
             color: var(--text-color);
@@ -355,7 +357,7 @@
         }
 
         .results-breakdown-value {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             color: var(--text-color);
@@ -376,7 +378,7 @@
             color: var(--accent-color);
             border: 1.5px solid var(--accent-color);
             border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
@@ -396,7 +398,7 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             cursor: pointer;
             padding: 0;

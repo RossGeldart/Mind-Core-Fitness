@@ -1635,6 +1635,34 @@
         @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
 
+        /* ===== Section Dividers ===== */
+        .section-divider {
+            display: block;
+            width: 100%;
+            line-height: 0;
+            font-size: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .section-divider svg {
+            display: block;
+            width: calc(100% + 2px);
+            margin-left: -1px;
+            height: auto;
+            margin-top: -1px;
+            margin-bottom: -1px;
+        }
+        .section-divider--hero {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            z-index: 2;
+        }
+
     </style>
 <script type="application/ld+json">
 {
@@ -1682,7 +1710,7 @@
 </script>
 </head>
 <body>
-    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Montserrat,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
+    <a href="#main-content" class="skip-to-content" onfocus="this.style.top='0'" onblur="this.style.top='-100%'" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#99313c;color:#fff;padding:12px 24px;border-radius:0 0 6px 6px;z-index:10000;text-decoration:none;font-family:Anton,sans-serif;font-weight:600;font-size:0.85rem;transition:top 0.2s ease;">Skip to main content</a>
 
     <!-- ===== Navigation ===== -->
     <nav class="nav">
@@ -1745,6 +1773,7 @@
                 </div>
             </div>
         </div>
+        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
     </section>
 
     <!-- ===== Who Is This For ===== -->
@@ -1775,6 +1804,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#212a2a"/></svg></div>
 
     <!-- ===== Features ===== -->
     <section class="features" id="features">
@@ -1914,6 +1945,8 @@
         </div>
     </section>
 
+    <div class="section-divider" style="background:#212a2a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+
     <!-- ===== Stats ===== -->
     <section class="stats">
         <div class="container">
@@ -1937,6 +1970,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#212a2a"/></svg></div>
 
     <!-- ===== Install / Get The App ===== -->
     <section class="install" id="install">
