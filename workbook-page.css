@@ -48,6 +48,8 @@
 .workbook-hero {
     padding: 140px 20px 100px;
     background: var(--card-bg);
+    position: relative;
+    overflow: hidden;
 }
 
 .workbook-hero-content {
