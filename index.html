@@ -62,7 +62,7 @@
     <link rel="preload" href="Logo.PNG" as="image">
 
     <!-- Load fonts with display=swap for faster text rendering -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media=\'all\'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
 
     <!-- Stylesheets -->
@@ -170,9 +170,15 @@
     <section class="hero" id="main-content">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title">Simple Fitness<br>That Fits<br>Your Life</h1>
-            <p class="hero-subtitle">Get Your S#!t Together<br>With Core Buddy</p>
-            <a href="core-buddy.html" class="hero-cta">Try For Free</a>
+            <div class="logo-wrapper">
+                <picture>
+                    <source srcset="Logo.webp" type="image/webp">
+                    <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="200" height="200" decoding="async">
+                </picture>
+            </div>
+            <h1 class="hero-title">Simple Fitness That<br>Fits Your Life.</h1>
+            <p class="hero-subtitle">Core Buddy gives you quick workouts, easy nutrition logging, and daily habit tracking — all in one app. No complexity. Just consistency.</p>
+            <a href="core-buddy.html" class="hero-cta">Try Core Buddy Free</a>
         </div>
     </section>
 
