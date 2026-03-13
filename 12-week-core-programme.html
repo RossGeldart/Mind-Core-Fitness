@@ -1674,17 +1674,11 @@
             width: 100%;
             line-height: 0;
             font-size: 0;
-            padding: 0;
-            margin-top: -1px;
-            margin-bottom: -1px;
+            padding: 2px 0;
+            margin: -2px 0;
+            overflow: hidden;
             position: relative;
             z-index: 1;
-        }
-        /* Eliminate subpixel hairlines between adjacent sections */
-        section + section,
-        section + .section-divider,
-        .section-divider + section {
-            margin-top: -1px;
         }
         .section-divider svg {
             display: block;
@@ -1698,6 +1692,7 @@
             left: 0;
             right: 0;
             margin: 0;
+            padding: 0;
             z-index: 2;
         }
 
