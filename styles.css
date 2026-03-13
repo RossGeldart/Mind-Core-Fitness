@@ -1476,22 +1476,31 @@ body {
         height: 160px;
     }
 
+    .hero {
+        align-items: flex-end;
+    }
+
+    .hero-content {
+        padding: 0 20px 80px;
+    }
+
     .hero-title {
-        font-size: clamp(2.2rem, 9vw, 3rem);
-        margin-bottom: 12px;
+        font-size: clamp(3rem, 13vw, 4.5rem);
+        margin-bottom: 16px;
+        line-height: 1.05;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.95);
-        margin-bottom: 20px;
+        margin-bottom: 24px;
         line-height: 1.5;
     }
 
     .hero-cta {
-        padding: 14px 32px;
-        font-size: 0.9rem;
+        padding: 16px 40px;
+        font-size: 1rem;
     }
 
     .value-prop,
