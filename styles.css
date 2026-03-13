@@ -402,6 +402,14 @@ body {
     z-index: 1;
 }
 
+/* Eliminate subpixel hairlines between adjacent sections */
+section + section,
+section + .section-divider,
+.section-divider + section,
+.section-divider + .container + section {
+    margin-top: -1px;
+}
+
 .section-divider svg {
     display: block;
     width: calc(100% + 2px);
