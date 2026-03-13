@@ -297,17 +297,12 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    background: url('Circuit 3.jpg') center/cover no-repeat;
+    background: url('newhero.jpg') center/cover no-repeat;
     text-align: center;
 }
 
 .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(26, 26, 26, 0.85) 0%, rgba(26, 26, 26, 0.7) 100%);
+    display: none;
 }
 
 .hero-content {
