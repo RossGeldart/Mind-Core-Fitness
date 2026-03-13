@@ -1471,6 +1471,7 @@ body {
 @media (max-width: 600px) {
     .hero {
         min-height: 100svh;
+        background: url('mobilehero.PNG') center/cover no-repeat;
     }
 
     .logo {
