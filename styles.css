@@ -11,7 +11,7 @@
     border-radius: 0 0 6px 6px;
     z-index: 10000;
     text-decoration: none;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.85rem;
     transition: top 0.2s ease;
@@ -80,7 +80,7 @@
     gap: 10px;
     text-decoration: none;
     color: #ffffff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 1rem;
 }
@@ -98,7 +98,7 @@
 .nav-link {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 500;
     font-size: 0.85rem;
     padding: 8px 14px;
@@ -344,7 +344,7 @@ body {
 }
 
 .hero-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 800;
     font-size: clamp(2rem, 6vw, 3.2rem);
     color: #ffffff;
@@ -365,7 +365,7 @@ body {
     padding: 16px 40px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
@@ -388,7 +388,7 @@ body {
 
 .section-label {
     display: inline-block;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.7rem;
     letter-spacing: 2px;
@@ -398,7 +398,7 @@ body {
 }
 
 .section-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 800;
     font-size: clamp(1.8rem, 4vw, 2.4rem);
     margin-bottom: 50px;
@@ -446,7 +446,7 @@ body {
 }
 
 .value-card h3 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 1.2rem;
     margin-bottom: 12px;
@@ -473,7 +473,7 @@ body {
 }
 
 .question {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 500;
     font-size: clamp(1.3rem, 4vw, 1.7rem);
     color: var(--text-color);
@@ -572,7 +572,7 @@ body {
     padding: 6px 12px 8px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.6rem;
     letter-spacing: 0.5px;
@@ -629,7 +629,7 @@ body {
 /* Label - small uppercase tag */
 .service-label {
     display: inline-block;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.7rem;
     letter-spacing: 2px;
@@ -652,7 +652,7 @@ body {
 
 /* Title */
 .service-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-size: clamp(1.6rem, 4vw, 2.2rem);
     font-weight: 800;
     margin-bottom: 16px;
@@ -734,7 +734,7 @@ body {
     padding: 12px 28px;
     background: var(--accent-color);
     color: #ffffff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     border-radius: 8px;
@@ -827,7 +827,7 @@ body {
 
 /* Quick Links - Tertiary Options */
 .quick-links-label {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -873,7 +873,7 @@ body {
 
 .quick-link-title {
     display: block;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-color);
@@ -914,7 +914,7 @@ body {
 }
 
 .coming-soon-badge {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -995,7 +995,7 @@ body {
 }
 
 .testimonial-author-info strong {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -1199,7 +1199,7 @@ body {
 }
 
 .modal-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 1.8rem;
     color: var(--text-color);
@@ -1228,7 +1228,7 @@ body {
 }
 
 .form-group label {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
     color: var(--text-color);
@@ -1272,7 +1272,7 @@ body {
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -1723,7 +1723,7 @@ body {
     color: #ffffff;
     border: none;
     border-radius: 30px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
@@ -1796,7 +1796,7 @@ body {
 }
 
 .google-badge-rating {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
     color: var(--text-color);
@@ -1823,7 +1823,7 @@ body {
     background: var(--bg-color);
     border: 2px solid var(--card-border);
     border-radius: 30px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--text-color);
@@ -1853,7 +1853,7 @@ body {
     border: 2px solid var(--card-border);
     background: var(--bg-color);
     color: var(--text-muted);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-weight: 600;
     font-size: 0.82rem;
     cursor: pointer;
@@ -1881,8 +1881,8 @@ body {
 .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
 .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
 .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
-.site-footer__tagline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-.site-footer__col h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+.site-footer__tagline { font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+.site-footer__col h4 { font-family: 'Anton', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
 .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
 .site-footer__col li { margin-bottom: 10px; }
 .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; }
