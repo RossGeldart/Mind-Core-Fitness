@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTier } from '../contexts/TierContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import { Capacitor } from '@capacitor/core';
+import { openExternal } from '../utils/openExternal';
 import ThemeToggle from '../components/ThemeToggle';
 import './UpgradePage.css';
 
@@ -397,8 +398,8 @@ export default function UpgradePage() {
           <button onClick={handleRestore} disabled={!!loading}>
             {loading === 'restore' ? 'Restoring...' : 'Restore Purchases'}
           </button>
-          <a href="https://www.mindcorefitness.com/terms" target="_blank" rel="noopener noreferrer">Terms of Use (EULA)</a>
-          <a href="https://www.mindcorefitness.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/terms')}>Terms of Use (EULA)</button>
+          <button type="button" onClick={() => openExternal('https://www.mindcorefitness.com/privacy-policy')}>Privacy Policy</button>
         </div>
 
         {error && <p className="upgrade-error">{error}</p>}
