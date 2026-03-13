@@ -579,6 +579,179 @@ body {
     }
 }
 
+/* App Showcase Section */
+.app-showcase {
+    background: var(--accent-color);
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.app-showcase-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-showcase-inner.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.app-showcase-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 3rem);
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 48px;
+}
+
+.app-showcase-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 48px;
+    text-align: left;
+}
+
+.app-showcase-features li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.app-showcase-features li:last-child {
+    border-bottom: none;
+}
+
+.app-check {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-check svg circle {
+    fill: #ffffff;
+}
+
+.app-check svg path {
+    stroke: var(--accent-color);
+}
+
+.app-showcase-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.store-badge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 14px;
+    padding: 14px 32px;
+    color: #ffffff;
+    text-decoration: none;
+    width: 280px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.store-badge:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.store-badge svg {
+    flex-shrink: 0;
+}
+
+.store-badge-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.store-badge-small {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    line-height: 1;
+}
+
+.store-badge-big {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.store-badge-coming {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ffffff;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+.app-showcase-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: opacity 0.3s ease;
+}
+
+.app-showcase-link:hover {
+    opacity: 0.8;
+}
+
+.app-showcase-note {
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .app-showcase {
+        padding: 70px 20px;
+    }
+
+    .app-showcase-features li {
+        font-size: 1rem;
+        padding: 12px 0;
+    }
+
+    .store-badge {
+        width: 260px;
+        padding: 12px 24px;
+    }
+}
+
 /* Options Section */
 .options-section {
     padding: 0;
