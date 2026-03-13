@@ -390,6 +390,94 @@ body {
 }
 
 /* Value Proposition Section */
+/* Philosophy Section */
+.philosophy-section {
+    padding: 100px 20px;
+    background: var(--bg-color);
+}
+
+.philosophy-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.philosophy-text {
+    flex: 1;
+    max-width: 520px;
+}
+
+.philosophy-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--text-color);
+    margin-bottom: 24px;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.philosophy-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+}
+
+.philosophy-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Anton', sans-serif;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    transition: gap 0.3s ease;
+}
+
+.philosophy-link:hover {
+    gap: 12px;
+}
+
+.philosophy-phone {
+    flex-shrink: 0;
+}
+
+.phone-frame {
+    width: 260px;
+    background: #1a1a1a;
+    border-radius: 36px;
+    padding: 12px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.phone-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 24px;
+}
+
+@media (max-width: 768px) {
+    .philosophy-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .philosophy-link {
+        justify-content: center;
+    }
+
+    .phone-frame {
+        width: 220px;
+    }
+}
+
 .value-prop {
     padding: 100px 20px;
     background: var(--card-bg);
@@ -465,6 +553,26 @@ body {
     color: var(--text-muted);
     font-size: 0.95rem;
     line-height: 1.7;
+}
+
+/* Phone Card Overrides */
+.phone-card {
+    padding: 30px 24px 32px;
+}
+
+.phone-card .phone-frame {
+    width: 180px;
+    margin: 0 auto 24px;
+}
+
+@media (max-width: 768px) {
+    .phone-grid {
+        gap: 30px;
+    }
+
+    .phone-card .phone-frame {
+        width: 160px;
+    }
 }
 
 /* Options Section */
