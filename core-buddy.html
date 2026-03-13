@@ -179,10 +179,12 @@
     <link rel="preload" as="image" href="core-buddy-assets/dashboard.PNG">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap" media="print" onload="this.media=\'all\'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media=\'all\'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
 
     <style>
+        @font-face { font-family: 'Anton'; src: url('fonts/Anton-Regular.ttf') format('truetype'); font-display: swap; }
+
         /* ===== Reset ===== */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -205,7 +207,7 @@
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-weight: 300;
             line-height: 1.6;
             overflow-x: hidden;
@@ -218,7 +220,7 @@
 
         .section-label {
             display: inline-block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.65rem;
             letter-spacing: 2px;
@@ -228,7 +230,7 @@
         }
 
         .section-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: clamp(1.8rem, 4vw, 2.5rem);
             letter-spacing: -0.5px;
@@ -310,7 +312,7 @@
         }
 
         .nav-logo span {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.7rem;
             letter-spacing: 1.5px;
@@ -325,7 +327,7 @@
 
         .nav-links a {
             color: var(--text-secondary);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
@@ -348,7 +350,7 @@
         .nav-back {
             padding: 8px 16px;
             color: var(--text-secondary);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 0.85rem;
             text-decoration: none;
@@ -361,7 +363,7 @@
             padding: 10px 22px;
             background: var(--accent);
             color: #fff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.8rem;
             text-decoration: none;
@@ -425,7 +427,7 @@
         }
 
         .hero-tagline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.75rem;
             letter-spacing: 4px;
@@ -446,7 +448,7 @@
         }
 
         .hero h1 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 800;
             font-size: clamp(2.2rem, 5vw, 3.2rem);
             line-height: 1.08;
@@ -476,7 +478,7 @@
             padding: 16px 36px;
             background: var(--accent);
             color: #fff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             text-decoration: none;
@@ -496,7 +498,7 @@
             background: transparent;
             border: 1px solid var(--border-light);
             color: var(--text);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500;
             font-size: 1rem;
             text-decoration: none;
@@ -555,7 +557,7 @@
         }
 
         .feature-text h3 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.6rem;
             margin-bottom: 12px;
@@ -574,7 +576,7 @@
             padding: 8px 16px;
             background: rgba(161, 47, 58, 0.12);
             color: var(--accent);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.8rem;
             border-radius: 6px;
@@ -608,7 +610,7 @@
         }
 
         .feature-card h4 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 1.15rem;
             margin-bottom: 8px;
@@ -636,7 +638,7 @@
         }
 
         .stat-number {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 2.2rem;
             color: var(--accent);
@@ -671,7 +673,7 @@
         }
 
         .install-platform-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             margin-bottom: 14px;
@@ -749,7 +751,7 @@
             transform: translateX(-50%);
             background: var(--accent);
             color: #fff;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 0.6rem;
             letter-spacing: 1px;
@@ -760,14 +762,14 @@
         }
 
         .pricing-name {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.2rem;
             margin-bottom: 16px;
         }
 
         .pricing-amount {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 2.8rem;
             line-height: 1;
@@ -818,7 +820,7 @@
             width: 100%;
             padding: 14px;
             border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.9rem;
             text-decoration: none;
@@ -923,7 +925,7 @@
 
         .cb-testimonial-author-info strong {
             display: block;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.92rem;
         }
@@ -953,7 +955,7 @@
 
         .faq-item summary {
             padding: 20px 24px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.92rem;
             cursor: pointer;
@@ -1023,7 +1025,7 @@
         }
 
         .final-cta h2 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: clamp(1.8rem, 4vw, 2.4rem);
             margin-bottom: 16px;
@@ -1083,7 +1085,7 @@
         }
 
         .footer-tagline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-size: 0.65rem;
             letter-spacing: 2px;
             color: var(--text-tertiary);
@@ -1091,7 +1093,7 @@
         }
 
         .footer-links h4 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600;
             font-size: 0.82rem;
             margin-bottom: 18px;
@@ -1174,7 +1176,7 @@
         .cookie-btn {
             padding: 10px 22px;
             border-radius: 8px;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
@@ -1360,7 +1362,7 @@
         }
 
         .persona-card h4 {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 1.05rem;
             margin-bottom: 10px;
@@ -1394,7 +1396,7 @@
         }
 
         .comparison-table th {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--text);
@@ -1445,7 +1447,7 @@
             border-radius: 12px;
             color: var(--text);
             text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             transition: border-color 0.3s ease;
             position: relative;
         }
@@ -1561,7 +1563,7 @@
         }
         .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
         .modal-title {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600; font-size: 1.8rem;
             color: var(--text); margin-bottom: 8px; text-align: center;
         }
@@ -1576,7 +1578,7 @@
             display: flex; flex-direction: column; gap: 6px;
         }
         .modal-overlay .form-group label {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 500; font-size: 0.9rem; color: var(--text);
         }
         .modal-overlay .form-group input,
@@ -1585,7 +1587,7 @@
             padding: 14px 16px;
             border: 1.5px solid var(--border-light);
             border-radius: 8px;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1rem; color: var(--text);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
             background: var(--bg-elevated);
@@ -1605,7 +1607,7 @@
             padding: 16px 32px;
             background: var(--accent); color: #ffffff;
             border: none; border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Anton', sans-serif;
             font-weight: 600; font-size: 1rem;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -1622,14 +1624,14 @@
         .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
         .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
-        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Roboto', sans-serif; }
-        .site-footer__tagline { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-        .site-footer__col h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+        .site-footer__tagline { font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+        .site-footer__col h4 { font-family: 'Anton', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
         .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
         .site-footer__col li { margin-bottom: 10px; }
-        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Roboto', sans-serif; transition: color 0.2s; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; }
         .site-footer__col a:hover { color: #99313c; }
-        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Roboto', sans-serif; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Inter', sans-serif; }
         @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
 
