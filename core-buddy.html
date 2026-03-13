@@ -192,8 +192,8 @@
         /* ===== Variables ===== */
         :root {
             --bg: #1a1a1a;
-            --bg-elevated: #212a2a;
-            --bg-card: #2d3d3d;
+            --bg-elevated: #242424;
+            --bg-card: #2d2d2d;
             --accent: #99313c;
             --accent-hover: #b33a47;
             --accent-glow: rgba(153, 49, 60, 0.25);
@@ -592,20 +592,11 @@
         }
 
         .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
             text-align: center;
-            transition: border-color 0.3s ease;
-        }
-
-        .feature-card:hover {
-            border-color: rgba(161, 47, 58, 0.3);
         }
 
         .feature-card .phone {
-            max-width: 220px;
+            max-width: 280px;
             margin: 0 auto 24px;
         }
 
@@ -989,12 +980,47 @@
             line-height: 1.7;
         }
 
-        /* ===== Elevated Section Overrides (features, install, faq) ===== */
-        .features,
+        /* ===== Light Section Overrides ===== */
+        #who,
         .install,
-        .faq {
-            background: var(--bg-elevated);
+        .cb-testimonials {
+            background: #ffffff;
+            color: #373737;
+            --text: #373737;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --bg-card: #f9f9f9;
+            --border: rgba(0,0,0,0.08);
+            --border-light: rgba(0,0,0,0.12);
         }
+
+        .comparison,
+        .faq {
+            background: #f9f9f9;
+            color: #373737;
+            --text: #373737;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --bg-card: #ffffff;
+            --border: rgba(0,0,0,0.08);
+            --border-light: rgba(0,0,0,0.12);
+        }
+
+        /* Accent section */
+        .stats {
+            background: var(--accent);
+            border-top: none;
+            border-bottom: none;
+        }
+        .stats .stat-number { color: #ffffff; }
+        .stats .stat-label { color: rgba(255,255,255,0.8); }
+
+        /* Keep store badges visible on white */
+        .install .store-badge { background: #f9f9f9; color: #373737; }
+        .install .store-badge svg { fill: #373737; }
+        .install .store-badge-small { color: #666; }
+        .install .store-badge-name { color: #373737; }
+        .install .store-coming-soon { color: var(--accent); }
 
         /* ===== Final CTA ===== */
         .final-cta {
@@ -1377,7 +1403,7 @@
 
         /* ===== Comparison Table ===== */
         .comparison {
-            background: var(--bg-elevated);
+            /* background set in Light Section Overrides */
         }
 
         .comparison-table {
@@ -1649,8 +1675,8 @@
         }
         .section-divider svg {
             display: block;
-            width: calc(100% + 2px);
-            margin-left: -1px;
+            width: calc(100% + 4px);
+            margin: -2px;
             height: auto;
         }
         .section-divider--hero {
@@ -1773,7 +1799,7 @@
                 </div>
             </div>
         </div>
-        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+        <div class="section-divider section-divider--hero" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#ffffff"/></svg></div>
     </section>
 
     <!-- ===== Who Is This For ===== -->
@@ -1805,7 +1831,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#212a2a"/></svg></div>
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#242424"/></svg></div>
 
     <!-- ===== Features ===== -->
     <section class="features" id="features">
@@ -1945,7 +1971,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#212a2a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#242424" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#99313c"/></svg></div>
 
     <!-- ===== Stats ===== -->
     <section class="stats">
@@ -1971,7 +1997,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#212a2a"/></svg></div>
+    <div class="section-divider" style="background:#99313c" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
 
     <!-- ===== Install / Get The App ===== -->
     <section class="install" id="install">
@@ -2007,6 +2033,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#f9f9f9"/></svg></div>
 
     <!-- ===== Free vs Premium Comparison ===== -->
     <section class="comparison" id="compare">
@@ -2086,7 +2114,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#212a2a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
 
     <!-- ===== Pricing ===== -->
     <section class="pricing" id="pricing">
@@ -2154,7 +2182,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#212a2a"/></svg></div>
+    <div class="section-divider" style="background:#1a1a1a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#ffffff"/></svg></div>
 
     <!-- ===== Testimonials ===== -->
     <section class="cb-testimonials">
@@ -2194,6 +2222,8 @@
             </div>
         </div>
     </section>
+
+    <div class="section-divider" style="background:#ffffff" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><polygon points="0,150 1440,0 1440,150" fill="#f9f9f9"/></svg></div>
 
     <!-- ===== FAQ ===== -->
     <section class="faq" id="faq">
@@ -2252,7 +2282,7 @@
         </div>
     </section>
 
-    <div class="section-divider" style="background:#212a2a" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
+    <div class="section-divider" style="background:#f9f9f9" aria-hidden="true"><svg viewBox="0 0 1440 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C320,150 720,30 1440,120 L1440,150 L0,150 Z" fill="#1a1a1a"/></svg></div>
 
     <!-- ===== Final CTA ===== -->
     <section class="final-cta">

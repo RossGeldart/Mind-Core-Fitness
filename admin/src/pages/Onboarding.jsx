@@ -359,7 +359,7 @@ export default function Onboarding() {
           fbq('track', 'InitiateCheckout', {
             content_name: `Core Buddy ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
             content_category: 'Fitness App',
-            value: plan === 'annual' ? 99.99 : 9.99,
+            value: plan === 'annual' ? 119.99 : 14.99,
             currency: 'GBP',
           });
         }
@@ -370,49 +370,21 @@ export default function Onboarding() {
         return;
       }
 
-      if (!clientData?.id || !currentUser?.uid || !currentUser?.email) {
+      if (!currentUser?.email) {
         setCheckoutError('Account is still loading — please wait a moment and try again.');
         return;
       }
 
-      // Stripe checkout for monthly/annual
-      setCheckoutLoading(plan);
-      setCheckoutError(null);
-      try {
-        const res = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            priceId: STRIPE_PRICES[plan],
-            clientId: clientData.id,
-            uid: currentUser.uid,
-            email: currentUser.email,
-          }),
-        });
-
-        if (!res.ok) {
-          const text = await res.text();
-          let msg;
-          try { msg = JSON.parse(text).error; } catch { msg = text; }
-          setCheckoutError(msg || `Server error (${res.status})`);
-          setCheckoutLoading(null);
-          return;
-        }
-
-        const data = await res.json();
-        if (data.url) {
-          // Persist clientId so we can recover after Stripe redirect
-          try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
-          window.location.href = data.url;
-        } else {
-          setCheckoutError('No checkout URL returned — please try again');
-          setCheckoutLoading(null);
-        }
-      } catch (err) {
-        console.error('Checkout error:', err);
-        setCheckoutError('Unable to reach checkout — check your connection');
-        setCheckoutLoading(null);
-      }
+      // Stripe payment link for monthly/annual
+      const STRIPE_PAYMENT_LINKS = {
+        monthly: 'https://buy.stripe.com/5kQ8wP98F9qwdgbcJx8IU05',
+        annual: 'https://buy.stripe.com/4gM14nbgNbyEfoj38X8IU06',
+      };
+      try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
+      const url = new URL(STRIPE_PAYMENT_LINKS[plan]);
+      url.searchParams.set('prefilled_email', currentUser.email);
+      if (clientData?.id) url.searchParams.set('client_reference_id', clientData.id);
+      window.location.href = url.toString();
     };
 
     return (
@@ -447,7 +419,7 @@ export default function Onboarding() {
               <div className="ob-plan-name">Monthly</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">9.99</span>
+                <span className="ob-plan-amount">14.99</span>
                 <span className="ob-plan-period">/month</span>
               </div>
               <ul className="ob-plan-features">
@@ -460,14 +432,14 @@ export default function Onboarding() {
 
             {/* Annual */}
             <button className="ob-plan-card ob-plan-featured" onClick={() => handlePlanSelect('annual')} disabled={!!checkoutLoading}>
-              <div className="ob-plan-badge">Best Value — Save 17%</div>
+              <div className="ob-plan-badge">Best Value — Save 33%</div>
               <div className="ob-plan-name">Annual</div>
               <div className="ob-plan-price">
                 <span className="ob-plan-currency">£</span>
-                <span className="ob-plan-amount">99.99</span>
+                <span className="ob-plan-amount">119.99</span>
                 <span className="ob-plan-period">/year</span>
               </div>
-              <div className="ob-plan-price-sub">Just £8.33/month</div>
+              <div className="ob-plan-price-sub">Just £9.99/month</div>
               <ul className="ob-plan-features">
                 <li><span className="ob-plan-feat-icon">&#10024;</span> 7-day free trial</li>
                 <li><span className="ob-plan-feat-icon">&#128275;</span> All features unlocked</li>

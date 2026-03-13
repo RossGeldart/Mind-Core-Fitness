@@ -67,7 +67,7 @@ export default async function handler(req, res) {
       // --- Checkout completed (first subscription) ---
       case 'checkout.session.completed': {
         const session = event.data.object;
-        const clientId = session.metadata?.firestoreClientId;
+        const clientId = session.metadata?.firestoreClientId || session.client_reference_id;
 
         if (clientId) {
           await adminDb.collection('clients').doc(clientId).update({

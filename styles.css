@@ -405,8 +405,8 @@ body {
 
 .section-divider svg {
     display: block;
-    width: calc(100% + 2px);
-    margin-left: -1px;
+    width: calc(100% + 4px);
+    margin: -2px;
     height: auto;
 }
 
