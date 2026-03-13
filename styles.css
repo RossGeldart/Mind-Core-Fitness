@@ -390,6 +390,22 @@ body {
 }
 
 /* Value Proposition Section */
+/* Section Dividers */
+.section-divider {
+    display: block;
+    width: 100%;
+    height: auto;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.section-divider svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
 /* Philosophy Section */
 .philosophy-section {
     padding: 100px 20px;
