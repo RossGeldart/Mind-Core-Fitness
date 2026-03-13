@@ -61,9 +61,8 @@
     <!-- Preload critical assets -->
     <link rel="preload" href="Logo.PNG" as="image">
 
-    <!-- Load fonts with display=swap for faster text rendering -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media=\'all\'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
+    <!-- Load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
@@ -170,14 +169,8 @@
     <section class="hero" id="main-content">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <div class="logo-wrapper">
-                <picture>
-                    <source srcset="Logo.webp" type="image/webp">
-                    <img loading="lazy" src="Logo.PNG" alt="Mind Core Fitness" class="logo" width="200" height="200" decoding="async">
-                </picture>
-            </div>
-            <h1 class="hero-title">Simple Fitness That<br>Fits Your Life.</h1>
-            <p class="hero-subtitle">Core Buddy gives you quick workouts, easy nutrition logging, and daily habit tracking — all in one app. No complexity. Just consistency.</p>
+            <h1 class="hero-title">Simple Fitness That<br>Fits Your Life</h1>
+            <p class="hero-subtitle">Core Buddy gives you quick workouts, easy nutrition logging, and daily habit tracking — all in one app.</p>
             <a href="core-buddy.html" class="hero-cta">Try Core Buddy Free</a>
         </div>
     </section>
@@ -415,7 +408,7 @@
     <!-- Google Reviews Section -->
     <section class="google-reviews-section" style="padding:60px 20px;text-align:center;">
         <div style="max-width:480px;margin:0 auto;">
-            <span style="display:inline-block;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-color);margin-bottom:24px;">Rated on Google</span>
+            <span style="display:inline-block;font-family:'Anton',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-color);margin-bottom:24px;">Rated on Google</span>
             <div class="google-badge" style="display:flex;align-items:center;gap:16px;border-radius:16px;padding:20px 28px;box-shadow:0 2px 14px rgba(0,0,0,0.07);margin-bottom:20px;max-width:320px;margin-left:auto;margin-right:auto;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="34" height="34" style="flex-shrink:0;">
                     <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -425,12 +418,12 @@
                 </svg>
                 <div style="text-align:left;">
                     <div style="color:#fbbc04;font-size:1.25rem;line-height:1;margin-bottom:5px;">★★★★★</div>
-                    <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.5rem;color:var(--text-color);line-height:1;">5.0</div>
+                    <div style="font-family:'Anton',sans-serif;font-weight:700;font-size:1.5rem;color:var(--text-color);line-height:1;">5.0</div>
                     <div class="google-badge-count" style="font-size:0.8rem;margin-top:3px;">5-star rated</div>
                 </div>
             </div>
             <p style="color:var(--text-muted);font-size:0.95rem;margin-bottom:24px;line-height:1.6;">Trusted by hundreds of people in Elgin and beyond. See what they're saying.</p>
-            <a href="https://www.google.com/search?q=Mind+Core+Fitness+Elgin+reviews" target="_blank" rel="noopener noreferrer" class="google-reviews-btn" style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:30px;font-family:'Montserrat',sans-serif;font-weight:600;font-size:0.9rem;text-decoration:none;">
+            <a href="https://www.google.com/search?q=Mind+Core+Fitness+Elgin+reviews" target="_blank" rel="noopener noreferrer" class="google-reviews-btn" style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:30px;font-family:'Anton',sans-serif;font-weight:600;font-size:0.9rem;text-decoration:none;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18" style="flex-shrink:0;">
                     <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
                     <path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -507,15 +500,15 @@
     <!-- Newsletter Section -->
     <section class="newsletter-section" style="background:var(--card-bg);padding:80px 20px;text-align:center;">
         <div style="max-width:580px;margin:0 auto;">
-            <span style="display:inline-block;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-color);margin-bottom:14px;">Stay in the Loop</span>
-            <h2 style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(1.6rem,4vw,2.2rem);color:var(--text-color);margin-bottom:14px;letter-spacing:-0.5px;line-height:1.2;">Free Fitness Tips, Weekly</h2>
+            <span style="display:inline-block;font-family:'Anton',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-color);margin-bottom:14px;">Stay in the Loop</span>
+            <h2 style="font-family:'Anton',sans-serif;font-weight:700;font-size:clamp(1.6rem,4vw,2.2rem);color:var(--text-color);margin-bottom:14px;letter-spacing:-0.5px;line-height:1.2;">Free Fitness Tips, Weekly</h2>
             <p style="color:var(--text-muted);font-size:1rem;margin-bottom:36px;line-height:1.6;">Workouts, mindset advice, and real talk on training — straight to your inbox. No spam, ever.</p>
             <form id="newsletterForm" action="https://formspree.io/f/meeaprar" method="POST" class="newsletter-form" style="display:flex;gap:10px;max-width:500px;margin:0 auto 16px;flex-wrap:wrap;justify-content:center;">
                 <input type="hidden" name="_subject" value="Newsletter Signup">
                 <input type="hidden" name="type" value="newsletter">
                 <input type="hidden" name="_next" value="https://mindcorefitness.com/?subscribed=1">
                 <input type="email" name="email" placeholder="Your email address" required autocomplete="email" style="flex:1;min-width:200px;padding:14px 20px;border-radius:30px;border:2px solid var(--card-border);background:var(--bg-color);color:var(--text-color);font-family:'Roboto',sans-serif;font-size:0.95rem;outline:none;">
-                <button type="submit" style="padding:14px 26px;background:var(--accent-color);color:#ffffff;border:none;border-radius:30px;font-family:'Montserrat',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;white-space:nowrap;">Subscribe</button>
+                <button type="submit" style="padding:14px 26px;background:var(--accent-color);color:#ffffff;border:none;border-radius:30px;font-family:'Anton',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;white-space:nowrap;">Subscribe</button>
             </form>
             <div id="newsletterSuccess" style="display:none;padding:14px 24px;background:rgba(255,255,255,0.06);border:1px solid var(--card-border);border-radius:12px;color:var(--text-muted);font-size:0.95rem;max-width:400px;margin:0 auto 16px;">
                 You're in! Check your inbox for a confirmation.
