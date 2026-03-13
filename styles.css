@@ -346,11 +346,11 @@ body {
 .hero-title {
     font-family: 'Anton', sans-serif;
     font-weight: 400;
-    font-size: clamp(3rem, 8vw, 96px);
+    font-size: clamp(3.5rem, 10vw, 110px);
     color: #ffffff;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+    line-height: 1.05;
     text-transform: uppercase;
     text-align: center;
 }
