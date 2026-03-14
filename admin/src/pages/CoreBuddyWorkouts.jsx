@@ -895,6 +895,7 @@ export default function CoreBuddyWorkouts() {
         exercises,
         exerciseCount: exercises.length,
         totalSets,
+        date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
 
@@ -1369,6 +1370,7 @@ export default function CoreBuddyWorkouts() {
         exerciseCount: workout.length,
         rounds,
         exercises: workout.map(e => e.name),
+        date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
       if (typeof fbq === 'function') {
