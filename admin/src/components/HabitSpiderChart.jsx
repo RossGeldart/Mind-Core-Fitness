@@ -21,7 +21,7 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function HabitSpiderChart({ period = 30, startDate, endDate, compact = false }) {
+function HabitSpiderChart({ period = 30, startDate, endDate, compact = false, interactive = true }) {
   const { clientData } = useAuth();
   const { isDark } = useTheme();
   const [chartData, setChartData] = useState([]);
@@ -141,7 +141,7 @@ function HabitSpiderChart({ period = 30, startDate, endDate, compact = false }) 
   }
 
   return (
-    <div className={`spider-chart-wrap${compact ? ' spider-compact' : ''}`} style={{ minHeight: chartHeight }}>
+    <div className={`spider-chart-wrap${compact ? ' spider-compact' : ''}`} style={{ minHeight: chartHeight, pointerEvents: interactive ? 'auto' : 'none' }}>
       <ResponsiveContainer width="100%" height={chartHeight}>
         <RadarChart cx="50%" cy="50%" outerRadius={compact ? '65%' : '70%'} data={chartData}>
           <PolarGrid stroke={gridColor} />
@@ -165,18 +165,20 @@ function HabitSpiderChart({ period = 30, startDate, endDate, compact = false }) 
             dot={{ r: 3, fill: primaryColor, strokeWidth: 0 }}
             isAnimationActive={false}
           />
-          <Tooltip
-            contentStyle={{
-              background: isDark ? '#1a1a1f' : '#fff',
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : '#e0e0e0'}`,
-              borderRadius: 10,
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 12,
-              color: isDark ? '#fff' : '#373737',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            }}
-            formatter={(value) => [`${value}%`, 'Completion']}
-          />
+          {interactive && (
+            <Tooltip
+              contentStyle={{
+                background: isDark ? '#1a1a1f' : '#fff',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : '#e0e0e0'}`,
+                borderRadius: 10,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 12,
+                color: isDark ? '#fff' : '#373737',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              }}
+              formatter={(value) => [`${value}%`, 'Completion']}
+            />
+          )}
         </RadarChart>
       </ResponsiveContainer>
     </div>

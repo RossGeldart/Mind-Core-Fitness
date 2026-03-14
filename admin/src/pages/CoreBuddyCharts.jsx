@@ -653,7 +653,7 @@ export default function CoreBuddyCharts() {
                 <BarChart data={volumeData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Reps × Weight', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Volume', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v.toLocaleString()}`, 'Volume']} />
                   <Bar dataKey="volume" name="Volume" fill={barColor} radius={[4, 4, 0, 0]}>
                   </Bar>

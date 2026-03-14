@@ -1467,7 +1467,7 @@ export default function CoreBuddyDashboard() {
           <div className="cb-spider-section">
             <h3 className="cb-spider-title">Habit Consistency</h3>
             <p className="cb-spider-subtitle">30-day completion rate</p>
-            <HabitSpiderChart period={30} compact />
+            <HabitSpiderChart period={30} compact interactive={false} />
             <button className="cb-charts-cta" onClick={() => navigate('/client/core-buddy/charts')}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
               My Charts
