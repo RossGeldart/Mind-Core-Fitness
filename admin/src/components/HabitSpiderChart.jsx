@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,7 +21,7 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-export default function HabitSpiderChart({ period = 30, compact = false }) {
+function HabitSpiderChart({ period = 30, compact = false }) {
   const { clientData } = useAuth();
   const { isDark } = useTheme();
   const [chartData, setChartData] = useState([]);
@@ -158,3 +158,5 @@ export default function HabitSpiderChart({ period = 30, compact = false }) {
     </div>
   );
 }
+
+export default memo(HabitSpiderChart);

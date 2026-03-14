@@ -1,5 +1,9 @@
 /* My Charts Page */
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .cht-loading {
   display: flex;
   align-items: center;

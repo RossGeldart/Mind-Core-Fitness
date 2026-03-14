@@ -1,4 +1,8 @@
 /* Habit Spider Chart */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .spider-chart-wrap {
   width: 100%;
   display: flex;
