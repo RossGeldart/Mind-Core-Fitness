@@ -118,6 +118,19 @@ exports.sendPushNotification = onDocumentCreated({ document: 'notifications/{not
           tag: type,
         },
       },
+      apns: {
+        headers: {
+          'apns-priority': '10',
+          'apns-push-type': 'alert',
+        },
+        payload: {
+          aps: {
+            alert: { title, body },
+            sound: 'default',
+            badge: 1,
+          },
+        },
+      },
     };
 
     // Send to all registered device tokens
