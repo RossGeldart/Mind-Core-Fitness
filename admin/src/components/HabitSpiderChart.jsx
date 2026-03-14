@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,14 +25,16 @@ export default function HabitSpiderChart({ period = 30, compact = false }) {
   const { clientData } = useAuth();
   const { isDark } = useTheme();
   const [chartData, setChartData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
     if (!clientData?.id) return;
+    // Prevent duplicate fetches on re-mount with same data
+    if (fetchedRef.current && chartData.length > 0) return;
     let cancelled = false;
 
     (async () => {
-      setLoading(true);
       try {
         // Load custom habits config
         const customDoc = await getDoc(doc(db, 'customHabits', clientData.id));
@@ -78,20 +80,29 @@ export default function HabitSpiderChart({ period = 30, compact = false }) {
           };
         });
 
-        if (!cancelled) setChartData(data);
+        if (!cancelled) {
+          setChartData(data);
+          fetchedRef.current = true;
+          setInitialLoad(false);
+        }
       } catch (err) {
         console.error('Error loading spider chart data:', err);
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setInitialLoad(false);
       }
     })();
 
     return () => { cancelled = true; };
   }, [clientData?.id, period]);
 
-  if (loading) {
+  const primaryColor = isDark ? '#DA3F4F' : '#B8313D';
+  const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+  const textColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(55,55,55,0.8)';
+  const chartHeight = compact ? 220 : 280;
+
+  // Only show spinner on very first load, not subsequent re-renders
+  if (initialLoad && chartData.length === 0) {
     return (
-      <div className={`spider-loading${compact ? ' spider-compact' : ''}`}>
+      <div className={`spider-loading${compact ? ' spider-compact' : ''}`} style={{ minHeight: chartHeight }}>
         <div className="spider-spinner" />
       </div>
     );
@@ -105,13 +116,8 @@ export default function HabitSpiderChart({ period = 30, compact = false }) {
     );
   }
 
-  const primaryColor = isDark ? '#DA3F4F' : '#B8313D';
-  const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
-  const textColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(55,55,55,0.8)';
-  const chartHeight = compact ? 220 : 280;
-
   return (
-    <div className={`spider-chart-wrap${compact ? ' spider-compact' : ''}`}>
+    <div className={`spider-chart-wrap${compact ? ' spider-compact' : ''}`} style={{ minHeight: chartHeight }}>
       <ResponsiveContainer width="100%" height={chartHeight}>
         <RadarChart cx="50%" cy="50%" outerRadius={compact ? '65%' : '70%'} data={chartData}>
           <PolarGrid stroke={gridColor} />
@@ -133,6 +139,7 @@ export default function HabitSpiderChart({ period = 30, compact = false }) {
             fillOpacity={0.2}
             strokeWidth={2}
             dot={{ r: 3, fill: primaryColor, strokeWidth: 0 }}
+            isAnimationActive={false}
           />
           <Tooltip
             contentStyle={{
