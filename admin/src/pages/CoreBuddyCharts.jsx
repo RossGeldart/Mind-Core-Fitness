@@ -635,8 +635,8 @@ export default function CoreBuddyCharts() {
                 <ComposedChart data={activityData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} allowDecimals={false} label={{ value: 'Sessions', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Minutes', angle: 90, position: 'insideRight', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: 5 }} />
                   <Tooltip contentStyle={tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'Inter' }} />
                   <Bar yAxisId="left" dataKey="sessions" name="Sessions" fill={barColor} radius={[4, 4, 0, 0]} />
@@ -653,7 +653,7 @@ export default function CoreBuddyCharts() {
                 <BarChart data={volumeData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Reps × Weight', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v.toLocaleString()}`, 'Volume']} />
                   <Bar dataKey="volume" name="Volume" fill={barColor} radius={[4, 4, 0, 0]}>
                   </Bar>
@@ -669,7 +669,7 @@ export default function CoreBuddyCharts() {
                 <LineChart data={minutesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, 'Minutes']} />
                   <Line type="monotone" dataKey="minutes" name="Minutes" stroke={primaryColor} strokeWidth={2} dot={{ r: 3, fill: primaryColor }} />
                 </LineChart>
@@ -699,7 +699,7 @@ export default function CoreBuddyCharts() {
                     tick={{ fill: textColor, fontSize: 9, fontFamily: 'Inter' }}
                     interval={isMonthly ? 4 : 0}
                   />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: currentMacro?.unit || '', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} ${currentMacro?.unit}`, currentMacro?.label]} />
                   {macroTargetValue && (
                     <ReferenceLine y={macroTargetValue} stroke={isDark ? '#4CAF50' : '#2e7d32'} strokeDasharray="5 5" label={{ value: 'Target', fill: isDark ? '#4CAF50' : '#2e7d32', fontSize: 10, fontFamily: 'Inter' }} />
@@ -729,7 +729,7 @@ export default function CoreBuddyCharts() {
                   <LineChart data={bodyMetricsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                     <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                    <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={['dataMin - 2', 'dataMax + 2']} />
+                    <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={['dataMin - 2', 'dataMax + 2']} label={{ value: 'cm', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                     <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} cm`, BODY_METRICS.find(m => m.key === selectedMetric)?.name]} />
                     {bodyMetricTargets?.targets?.[selectedMetric] && (
                       <ReferenceLine y={bodyMetricTargets.targets[selectedMetric]} stroke={isDark ? '#4CAF50' : '#2e7d32'} strokeDasharray="5 5" label={{ value: 'Target', fill: isDark ? '#4CAF50' : '#2e7d32', fontSize: 10, fontFamily: 'Inter' }} />
