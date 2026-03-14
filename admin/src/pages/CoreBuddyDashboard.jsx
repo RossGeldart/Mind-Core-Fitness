@@ -12,6 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import './CoreBuddyDashboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import HabitSpiderChart from '../components/HabitSpiderChart';
 
 import { TICKS_85_96 } from '../utils/ringTicks';
 import SpotlightTour from '../components/SpotlightTour';
@@ -294,6 +295,20 @@ export default function CoreBuddyDashboard() {
       navigate('/onboarding');
     }
   }, [authLoading, clientData, navigate]);
+
+  // Sunday auto-trigger: navigate to charts page for weekly summary
+  useEffect(() => {
+    if (!isPremium || !clientData?.id || !statsLoaded) return;
+    const now = new Date();
+    if (now.getDay() !== 0) return; // 0 = Sunday
+    const key = `weeklySummary_${clientData.id}_${formatDate(now)}`;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+    } catch { return; }
+    const t = setTimeout(() => navigate('/client/core-buddy/charts', { state: { autoSummary: true } }), 1200);
+    return () => clearTimeout(t);
+  }, [isPremium, clientData?.id, statsLoaded, navigate]);
 
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)
@@ -1446,6 +1461,20 @@ export default function CoreBuddyDashboard() {
             );
           })}
         </div>
+
+        {/* Habit Spider Chart — premium only */}
+        {isPremium && (
+          <div className="cb-spider-section">
+            <h3 className="cb-spider-title">Habit Consistency</h3>
+            <p className="cb-spider-subtitle">30-day completion rate</p>
+            <HabitSpiderChart period={30} compact />
+            <button className="cb-charts-cta" onClick={() => navigate('/client/core-buddy/charts')}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+              My Charts
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        )}
 
         {/* Weekly target picker */}
         {showTargetPicker && (
