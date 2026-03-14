@@ -2000,6 +2000,66 @@
   color: #4CAF50 !important;
 }
 
+/* ===== HABIT SPIDER CHART SECTION ===== */
+.cb-spider-section {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 16px 12px 12px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+[data-theme="dark"] .cb-spider-section {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cb-spider-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.cb-spider-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  margin: 2px 0 0;
+}
+
+.cb-charts-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 4px;
+}
+
+.cb-charts-cta:active {
+  transform: scale(0.95);
+}
+
 /* 2. PROGRESSIVE TENSION — habit dots warm up as more complete */
 @keyframes dotWarmPulse {
   0%, 100% { box-shadow: 0 0 0 transparent; }

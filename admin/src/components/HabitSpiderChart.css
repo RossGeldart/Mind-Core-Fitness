@@ -1,0 +1,46 @@
+/* Habit Spider Chart */
+.spider-chart-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spider-compact {
+  /* No extra spacing in compact mode */
+}
+
+.spider-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.spider-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spider-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+}
+
+.spider-empty p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* Recharts tooltip overrides */
+.spider-chart-wrap .recharts-tooltip-wrapper {
+  z-index: 10;
+}

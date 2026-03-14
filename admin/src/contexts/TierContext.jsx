@@ -16,6 +16,7 @@ const PREMIUM_FEATURES = [
   'nutrition',
   'buddies',
   'metrics',
+  'charts',
 ];
 
 // Free users: only 5 & 10 min, 2 per week, 1 habit
