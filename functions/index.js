@@ -302,7 +302,14 @@ exports.analyseMeal = onCall(
     }
 
     const Anthropic = require('@anthropic-ai/sdk');
-    const client = new Anthropic({ apiKey: anthropicApiKey.value() });
+
+    let client;
+    try {
+      client = new Anthropic({ apiKey: anthropicApiKey.value() });
+    } catch (keyErr) {
+      console.error('Anthropic API key error:', keyErr);
+      throw new HttpsError('failed-precondition', 'AI service is not configured. Please contact support.');
+    }
 
     const systemPrompt = `You are a nutrition analysis AI for a fitness app called Mind Core Fitness. Analyse the meal photo and estimate the macronutrients.
 
@@ -356,28 +363,34 @@ confidence must be one of: "high", "medium", "low"
       });
 
       const text = response.content[0]?.text || '';
-      // Parse JSON — handle possible markdown wrapping
-      const jsonStr = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      const result = JSON.parse(jsonStr);
+      // Parse JSON — strip markdown fences and any surrounding text
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error('AI response was not JSON:', text);
+        throw new SyntaxError('No JSON object found in response');
+      }
+      const result = JSON.parse(jsonMatch[0]);
 
       // Validate structure
-      if (!result.items || !result.totals) {
+      if (!result.items || !Array.isArray(result.items) || !result.totals) {
+        console.error('AI response missing required fields:', result);
         throw new Error('Invalid response structure from AI.');
       }
 
       return result;
     } catch (err) {
-      console.error('analyseMeal error:', err);
+      console.error('analyseMeal error:', err?.message || err);
       if (err instanceof HttpsError) throw err;
       if (err instanceof SyntaxError) {
-        throw new HttpsError('internal', 'AI returned an unexpected format. Please try again.');
+        throw new HttpsError('failed-precondition', 'AI returned an unexpected format. Please try again.');
       }
-      const msg = err?.status === 401
-        ? 'AI service authentication failed. Please contact support.'
-        : err?.status === 429
-          ? 'Too many requests — please wait a moment and try again.'
-          : 'Failed to analyse meal. Please try again.';
-      throw new HttpsError('internal', msg);
+      if (err?.status === 401 || err?.error?.type === 'authentication_error') {
+        throw new HttpsError('failed-precondition', 'AI service authentication failed. Please contact support.');
+      }
+      if (err?.status === 429 || err?.error?.type === 'rate_limit_error') {
+        throw new HttpsError('resource-exhausted', 'Too many requests — please wait a moment and try again.');
+      }
+      throw new HttpsError('failed-precondition', err?.message || 'Failed to analyse meal. Please try again.');
     }
   }
 );

@@ -29,17 +29,30 @@ function getDefaultMeal() {
 }
 
 function compressImage(file, maxSize = 800) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
       const canvas = document.createElement('canvas');
       const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
       canvas.width = img.width * ratio;
       canvas.height = img.height * ratio;
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Failed to compress image.'));
+        },
+        'image/jpeg',
+        0.8
+      );
     };
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Failed to load image. Please try a different photo.'));
+    };
+    img.src = objectUrl;
   });
 }
 
