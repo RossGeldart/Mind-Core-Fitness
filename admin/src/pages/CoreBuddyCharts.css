@@ -90,6 +90,59 @@
   transform: scale(0.97);
 }
 
+/* ===== DATE NAVIGATION ===== */
+.cht-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.cht-date-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.cht-date-nav-btn:active {
+  transform: scale(0.92);
+}
+
+.cht-date-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cht-date-nav-btn:disabled:active {
+  transform: none;
+}
+
+[data-theme="dark"] .cht-date-nav-btn {
+  background: rgba(30, 30, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.cht-date-nav-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  text-align: center;
+  flex: 1;
+}
+
 /* ===== WEEKLY SUMMARY CARD ===== */
 .cht-summary-card {
   display: flex;

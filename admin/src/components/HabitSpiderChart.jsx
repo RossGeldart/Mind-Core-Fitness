@@ -21,17 +21,40 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function HabitSpiderChart({ period = 30, compact = false }) {
+function HabitSpiderChart({ period = 30, startDate, endDate, compact = false }) {
   const { clientData } = useAuth();
   const { isDark } = useTheme();
   const [chartData, setChartData] = useState([]);
   const [initialLoad, setInitialLoad] = useState(true);
-  const fetchedRef = useRef(false);
+  const prevKeyRef = useRef('');
 
   useEffect(() => {
     if (!clientData?.id) return;
-    // Prevent duplicate fetches on re-mount with same data
-    if (fetchedRef.current && chartData.length > 0) return;
+
+    // Compute the date range
+    let cutoffStr, endStr, dayCount;
+    if (startDate && endDate) {
+      cutoffStr = startDate;
+      // endDate is inclusive, so add 1 day for the end bound
+      const endD = new Date(endDate);
+      endD.setDate(endD.getDate() + 1);
+      endStr = formatDate(endD);
+      // Count days in range
+      const s = new Date(startDate);
+      const e = new Date(endDate);
+      dayCount = Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1;
+    } else {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - period);
+      cutoffStr = formatDate(cutoff);
+      endStr = null; // no upper bound
+      dayCount = period;
+    }
+
+    // Avoid re-fetching if the key hasn't changed
+    const fetchKey = `${clientData.id}_${cutoffStr}_${endStr || 'none'}`;
+    if (prevKeyRef.current === fetchKey && chartData.length > 0) return;
+
     let cancelled = false;
 
     (async () => {
@@ -57,14 +80,15 @@ function HabitSpiderChart({ period = 30, compact = false }) {
         const q = query(logsRef, where('clientId', '==', clientData.id));
         const snap = await getDocs(q);
 
-        // Filter to the period range
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - period);
-        const cutoffStr = formatDate(cutoff);
-
+        // Filter to the date range
         const logsInRange = snap.docs
           .map(d => d.data())
-          .filter(l => l.date >= cutoffStr);
+          .filter(l => {
+            if (!l.date) return false;
+            if (l.date < cutoffStr) return false;
+            if (endStr && l.date >= endStr) return false;
+            return true;
+          });
 
         // Calculate completion % for each habit
         const data = activeHabits.map(habit => {
@@ -72,7 +96,7 @@ function HabitSpiderChart({ period = 30, compact = false }) {
           logsInRange.forEach(log => {
             if (log.habits && log.habits[habit.key]) completed++;
           });
-          const pct = period > 0 ? Math.round((completed / period) * 100) : 0;
+          const pct = dayCount > 0 ? Math.round((completed / dayCount) * 100) : 0;
           return {
             habit: habit.label,
             value: pct,
@@ -82,7 +106,7 @@ function HabitSpiderChart({ period = 30, compact = false }) {
 
         if (!cancelled) {
           setChartData(data);
-          fetchedRef.current = true;
+          prevKeyRef.current = fetchKey;
           setInitialLoad(false);
         }
       } catch (err) {
@@ -92,7 +116,7 @@ function HabitSpiderChart({ period = 30, compact = false }) {
     })();
 
     return () => { cancelled = true; };
-  }, [clientData?.id, period]);
+  }, [clientData?.id, period, startDate, endDate]);
 
   const primaryColor = isDark ? '#DA3F4F' : '#B8313D';
   const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
