@@ -666,13 +666,21 @@ export default function CoreBuddyCharts() {
               <h3 className="cht-card-title">Minutes Trained</h3>
               <p className="cht-card-subtitle">{isMonthly ? 'Weekly training minutes' : 'Daily training minutes'}</p>
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={minutesData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, 'Minutes']} />
-                  <Line type="monotone" dataKey="minutes" name="Minutes" stroke={primaryColor} strokeWidth={2} dot={{ r: 3, fill: primaryColor }} />
-                </LineChart>
+                {(() => {
+                  const maxMin = Math.max(0, ...minutesData.map(d => d.minutes || 0));
+                  const topTick = Math.ceil(maxMin / 5) * 5 || 5;
+                  const ticks = [];
+                  for (let i = 0; i <= topTick; i += 5) ticks.push(i);
+                  return (
+                    <LineChart data={minutesData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                      <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                      <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={[0, topTick]} ticks={ticks} label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
+                      <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, 'Minutes']} />
+                      <Line type="monotone" dataKey="minutes" name="Minutes" stroke={primaryColor} strokeWidth={2} dot={{ r: 3, fill: primaryColor }} />
+                    </LineChart>
+                  );
+                })()}
               </ResponsiveContainer>
             </div>
 
