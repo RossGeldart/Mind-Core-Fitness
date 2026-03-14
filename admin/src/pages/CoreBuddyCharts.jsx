@@ -70,6 +70,35 @@ function shortDate(dateStr) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
+// Get the date range for a given period + offset
+function getDateRange(period, offset) {
+  const now = new Date();
+  if (period === 'weekly') {
+    const monday = getMonday(now);
+    monday.setDate(monday.getDate() - (offset * 7));
+    const sunday = new Date(monday);
+    sunday.setDate(sunday.getDate() + 6);
+    return { start: monday, end: sunday };
+  } else {
+    // Monthly: go back `offset` months from current month
+    const year = now.getFullYear();
+    const month = now.getMonth() - offset;
+    const start = new Date(year, month, 1);
+    const end = new Date(year, month + 1, 0); // last day of month
+    return { start, end };
+  }
+}
+
+function formatNavLabel(period, range) {
+  const { start, end } = range;
+  if (period === 'weekly') {
+    return `${shortDateLabel(start)} - ${shortDateLabel(end)}`;
+  } else {
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return `${monthNames[start.getMonth()]} ${start.getFullYear()}`;
+  }
+}
+
 export default function CoreBuddyCharts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
@@ -78,6 +107,7 @@ export default function CoreBuddyCharts() {
 
   // Global period toggle
   const [period, setPeriod] = useState('weekly'); // 'weekly' | 'monthly'
+  const [offset, setOffset] = useState(0); // 0 = current week/month, 1 = previous, etc.
 
   // Chart data states
   const [activityData, setActivityData] = useState([]);
@@ -98,6 +128,16 @@ export default function CoreBuddyCharts() {
   const [summaryAdvice, setSummaryAdvice] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(false);
 
+  // Reset offset when period changes
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod);
+    setOffset(0);
+  };
+
+  // Navigation date range
+  const dateRange = getDateRange(period, offset);
+  const navLabel = formatNavLabel(period, dateRange);
+
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
@@ -109,9 +149,13 @@ export default function CoreBuddyCharts() {
     setError(null);
 
     try {
-      const now = new Date();
       const isMonthly = period === 'monthly';
-      const daysBack = isMonthly ? 30 : 7;
+      const range = getDateRange(period, offset);
+      const rangeStartStr = formatDate(range.start);
+      // End is inclusive, so add 1 day for < comparison
+      const rangeEndDate = new Date(range.end);
+      rangeEndDate.setDate(rangeEndDate.getDate() + 1);
+      const rangeEndStr = formatDate(rangeEndDate);
 
       // Parallel data fetches
       const [activitySnap, workoutSnap, nutritionTargetSnap] = await Promise.all([
@@ -128,7 +172,6 @@ export default function CoreBuddyCharts() {
       const activityDocs = activitySnap.docs.map(d => d.data());
       const workoutDocs = workoutSnap.docs.map(d => {
         const data = d.data();
-        // Backfill date from completedAt for older docs that lack it
         if (!data.date && data.completedAt) {
           const ts = data.completedAt.toDate ? data.completedAt.toDate() : new Date(data.completedAt);
           data.date = ts.toISOString().split('T')[0];
@@ -136,69 +179,80 @@ export default function CoreBuddyCharts() {
         return data;
       });
 
-      // --- Activity & Sessions chart (weekly view = last 8 weeks, monthly view = last 4 months by week) ---
-      {
-        const weeksBack = isMonthly ? 12 : 8;
-        const weekData = [];
-        for (let wk = weeksBack - 1; wk >= 0; wk--) {
-          const weekStart = new Date(now);
-          weekStart.setDate(weekStart.getDate() - (wk * 7));
-          const monday = getMonday(weekStart);
-          const mondayStr = formatDate(monday);
-          const sunday = new Date(monday);
-          sunday.setDate(sunday.getDate() + 7);
-          const sundayStr = formatDate(sunday);
-
-          const sessions = activityDocs.filter(a => a.date >= mondayStr && a.date < sundayStr).length
-            + workoutDocs.filter(doc => doc.date >= mondayStr && doc.date < sundayStr).length;
-          const totalDuration = activityDocs
-            .filter(a => a.date >= mondayStr && a.date < sundayStr)
-            .reduce((sum, a) => sum + (a.duration || 0), 0)
-            + workoutDocs
-              .filter(doc => doc.date >= mondayStr && doc.date < sundayStr)
-              .reduce((sum, doc) => sum + (doc.duration || 0), 0);
-
-          weekData.push({
-            label: shortDateLabel(monday),
-            sessions,
-            duration: totalDuration,
-          });
-        }
-        setActivityData(weekData);
-      }
-
-      // --- Daily Training Volume (BYO workouts only) ---
+      // --- Activity & Sessions ---
       {
         if (isMonthly) {
-          // Group by week for monthly view
-          const weeksBack = 4;
-          const volData = [];
-          for (let wk = weeksBack - 1; wk >= 0; wk--) {
-            const weekStart = new Date(now);
-            weekStart.setDate(weekStart.getDate() - (wk * 7));
-            const monday = getMonday(weekStart);
+          // Weekly bars for the selected month
+          const firstMonday = getMonday(range.start);
+          const weekData = [];
+          let monday = new Date(firstMonday);
+          while (monday <= range.end) {
             const mondayStr = formatDate(monday);
-            const sunday = new Date(monday);
-            sunday.setDate(sunday.getDate() + 7);
-            const sundayStr = formatDate(sunday);
+            const nextMon = new Date(monday);
+            nextMon.setDate(nextMon.getDate() + 7);
+            const nextMonStr = formatDate(nextMon);
+
+            const sessions = activityDocs.filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr).length
+              + workoutDocs.filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr).length;
+            const totalDuration = activityDocs
+              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .reduce((sum, a) => sum + (a.duration || 0), 0)
+              + workoutDocs
+                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .reduce((sum, d) => sum + (d.duration || 0), 0);
+
+            weekData.push({ label: shortDateLabel(monday), sessions, duration: totalDuration });
+            monday = nextMon;
+          }
+          setActivityData(weekData);
+        } else {
+          // Daily for the selected week
+          const monday = getMonday(range.start);
+          const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          const dayData = [];
+          for (let d = 0; d < 7; d++) {
+            const day = new Date(monday);
+            day.setDate(monday.getDate() + d);
+            const dayStr = formatDate(day);
+            const sessions = activityDocs.filter(a => a.date === dayStr).length
+              + workoutDocs.filter(doc => doc.date === dayStr).length;
+            const duration = activityDocs.filter(a => a.date === dayStr).reduce((sum, a) => sum + (a.duration || 0), 0)
+              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.duration || 0), 0);
+            dayData.push({ label: dayNames[d], sessions, duration });
+          }
+          setActivityData(dayData);
+        }
+      }
+
+      // --- Training Volume (BYO workouts only) ---
+      {
+        if (isMonthly) {
+          const firstMonday = getMonday(range.start);
+          const volData = [];
+          let monday = new Date(firstMonday);
+          while (monday <= range.end) {
+            const mondayStr = formatDate(monday);
+            const nextMon = new Date(monday);
+            nextMon.setDate(nextMon.getDate() + 7);
+            const nextMonStr = formatDate(nextMon);
 
             const weekWorkouts = workoutDocs.filter(
-              doc => doc.type === 'custom_sets' && doc.date >= mondayStr && doc.date < sundayStr
+              d => d.type === 'custom_sets' && d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr
             );
             let totalVol = 0;
-            weekWorkouts.forEach(doc => {
-              (doc.exercises || []).forEach(ex => {
+            weekWorkouts.forEach(d => {
+              (d.exercises || []).forEach(ex => {
                 (ex.sets || []).forEach(s => {
                   totalVol += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0);
                 });
               });
             });
             volData.push({ label: shortDateLabel(monday), volume: Math.round(totalVol) });
+            monday = nextMon;
           }
           setVolumeData(volData);
         } else {
-          // Daily for current week
-          const monday = getMonday(now);
+          const monday = getMonday(range.start);
           const volData = [];
           for (let d = 0; d < 7; d++) {
             const day = new Date(monday);
@@ -219,38 +273,50 @@ export default function CoreBuddyCharts() {
         }
       }
 
-      // --- Minutes Trained (weekly) ---
+      // --- Minutes Trained ---
       {
-        const weeksBack = isMonthly ? 12 : 8;
-        const minData = [];
-        for (let wk = weeksBack - 1; wk >= 0; wk--) {
-          const weekStart = new Date(now);
-          weekStart.setDate(weekStart.getDate() - (wk * 7));
-          const monday = getMonday(weekStart);
-          const mondayStr = formatDate(monday);
-          const sunday = new Date(monday);
-          sunday.setDate(sunday.getDate() + 7);
-          const sundayStr = formatDate(sunday);
+        if (isMonthly) {
+          const firstMonday = getMonday(range.start);
+          const minData = [];
+          let monday = new Date(firstMonday);
+          while (monday <= range.end) {
+            const mondayStr = formatDate(monday);
+            const nextMon = new Date(monday);
+            nextMon.setDate(nextMon.getDate() + 7);
+            const nextMonStr = formatDate(nextMon);
 
-          const totalMin = activityDocs
-            .filter(a => a.date >= mondayStr && a.date < sundayStr)
-            .reduce((sum, a) => sum + (a.duration || 0), 0)
-            + workoutDocs
-              .filter(doc => doc.date >= mondayStr && doc.date < sundayStr)
-              .reduce((sum, doc) => sum + (doc.duration || 0), 0);
+            const totalMin = activityDocs
+              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .reduce((sum, a) => sum + (a.duration || 0), 0)
+              + workoutDocs
+                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-          minData.push({ label: shortDateLabel(monday), minutes: totalMin });
+            minData.push({ label: shortDateLabel(monday), minutes: totalMin });
+            monday = nextMon;
+          }
+          setMinutesData(minData);
+        } else {
+          const monday = getMonday(range.start);
+          const minData = [];
+          for (let d = 0; d < 7; d++) {
+            const day = new Date(monday);
+            day.setDate(monday.getDate() + d);
+            const dayStr = formatDate(day);
+            const totalMin = activityDocs.filter(a => a.date === dayStr).reduce((sum, a) => sum + (a.duration || 0), 0)
+              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.duration || 0), 0);
+            minData.push({ label: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d], minutes: totalMin });
+          }
+          setMinutesData(minData);
         }
-        setMinutesData(minData);
       }
 
       // --- Macro Trends ---
       {
         const macData = [];
-        for (let d = daysBack - 1; d >= 0; d--) {
-          const day = new Date(now);
-          day.setDate(day.getDate() - d);
-          const dayStr = formatDate(day);
+        const current = new Date(range.start);
+        while (current <= range.end) {
+          const dayStr = formatDate(current);
           try {
             const logSnap = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${dayStr}`));
             if (logSnap.exists()) {
@@ -268,11 +334,12 @@ export default function CoreBuddyCharts() {
           } catch {
             macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
           }
+          current.setDate(current.getDate() + 1);
         }
         setMacroData(macData);
       }
 
-      // --- Body Metrics (monthly only — load all records) ---
+      // --- Body Metrics (load all records) ---
       {
         const [metricsSnap, targetsSnap] = await Promise.all([
           getDocs(query(collection(db, 'coreBuddyMetrics'), where('clientId', '==', clientData.id))),
@@ -303,7 +370,7 @@ export default function CoreBuddyCharts() {
     } finally {
       setLoading(false);
     }
-  }, [clientData?.id, period]);
+  }, [clientData?.id, period, offset]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -485,6 +552,11 @@ export default function CoreBuddyCharts() {
 
   const currentMacro = MACRO_TABS.find(m => m.key === selectedMacro);
   const macroTargetValue = macroTarget?.[selectedMacro] || null;
+  const isMonthly = period === 'monthly';
+
+  // Compute days in the current range for the habit spider chart
+  const habitStartDate = formatDate(dateRange.start);
+  const habitEndDate = formatDate(dateRange.end);
 
   return (
     <>
@@ -512,8 +584,19 @@ export default function CoreBuddyCharts() {
 
         {/* Period Toggle */}
         <div className="cht-period-toggle">
-          <button className={`cht-period-btn${period === 'weekly' ? ' active' : ''}`} onClick={() => setPeriod('weekly')}>Weekly</button>
-          <button className={`cht-period-btn${period === 'monthly' ? ' active' : ''}`} onClick={() => setPeriod('monthly')}>Monthly</button>
+          <button className={`cht-period-btn${period === 'weekly' ? ' active' : ''}`} onClick={() => handlePeriodChange('weekly')}>Weekly</button>
+          <button className={`cht-period-btn${period === 'monthly' ? ' active' : ''}`} onClick={() => handlePeriodChange('monthly')}>Monthly</button>
+        </div>
+
+        {/* Date Navigation */}
+        <div className="cht-date-nav">
+          <button className="cht-date-nav-btn" onClick={() => setOffset(o => o + 1)} aria-label="Previous">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span className="cht-date-nav-label">{navLabel}</span>
+          <button className="cht-date-nav-btn" onClick={() => setOffset(o => Math.max(0, o - 1))} disabled={offset === 0} aria-label="Next">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
 
         {loading ? (
@@ -540,14 +623,14 @@ export default function CoreBuddyCharts() {
             {/* 1. Habit Spider Chart */}
             <div className="cht-card">
               <h3 className="cht-card-title">Habit Consistency</h3>
-              <p className="cht-card-subtitle">{period === 'monthly' ? '30' : '7'}-day completion rate</p>
-              <HabitSpiderChart period={period === 'monthly' ? 30 : 7} />
+              <p className="cht-card-subtitle">{navLabel} completion rate</p>
+              <HabitSpiderChart startDate={habitStartDate} endDate={habitEndDate} />
             </div>
 
-            {/* 2. Weekly Activity & Sessions */}
+            {/* 2. Activity & Sessions */}
             <div className="cht-card">
               <h3 className="cht-card-title">Activity & Sessions</h3>
-              <p className="cht-card-subtitle">Sessions count & duration per week</p>
+              <p className="cht-card-subtitle">{isMonthly ? 'Sessions per week' : 'Daily sessions & duration'}</p>
               <ResponsiveContainer width="100%" height={220}>
                 <ComposedChart data={activityData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -562,7 +645,7 @@ export default function CoreBuddyCharts() {
               </ResponsiveContainer>
             </div>
 
-            {/* 3. Daily Training Volume */}
+            {/* 3. Training Volume */}
             <div className="cht-card">
               <h3 className="cht-card-title">Training Volume</h3>
               <p className="cht-card-subtitle">BYO workout volume (reps x weight)</p>
@@ -581,7 +664,7 @@ export default function CoreBuddyCharts() {
             {/* 4. Minutes Trained */}
             <div className="cht-card">
               <h3 className="cht-card-title">Minutes Trained</h3>
-              <p className="cht-card-subtitle">Total training minutes per week</p>
+              <p className="cht-card-subtitle">{isMonthly ? 'Weekly training minutes' : 'Daily training minutes'}</p>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={minutesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -614,7 +697,7 @@ export default function CoreBuddyCharts() {
                   <XAxis
                     dataKey="label"
                     tick={{ fill: textColor, fontSize: 9, fontFamily: 'Inter' }}
-                    interval={period === 'monthly' ? 4 : 0}
+                    interval={isMonthly ? 4 : 0}
                   />
                   <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} ${currentMacro?.unit}`, currentMacro?.label]} />
