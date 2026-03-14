@@ -725,6 +725,7 @@ export default function CoreBuddyProgrammes() {
         day: sessionDay + 1,
         exerciseCount: logs.length,
         duration: Math.round(logs.reduce((sum, l) => sum + l.sets.length * 1.5, 0)),
+        date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
     } catch (err) {

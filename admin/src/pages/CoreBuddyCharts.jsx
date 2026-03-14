@@ -46,6 +46,11 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
+const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function shortDateLabel(date) {
+  return `${date.getDate()} ${shortMonths[date.getMonth()]}`;
+}
+
 function getMonday(date) {
   const d = new Date(date);
   const day = d.getDay();
@@ -121,7 +126,15 @@ export default function CoreBuddyCharts() {
       }
 
       const activityDocs = activitySnap.docs.map(d => d.data());
-      const workoutDocs = workoutSnap.docs.map(d => d.data());
+      const workoutDocs = workoutSnap.docs.map(d => {
+        const data = d.data();
+        // Backfill date from completedAt for older docs that lack it
+        if (!data.date && data.completedAt) {
+          const ts = data.completedAt.toDate ? data.completedAt.toDate() : new Date(data.completedAt);
+          data.date = ts.toISOString().split('T')[0];
+        }
+        return data;
+      });
 
       // --- Activity & Sessions chart (weekly view = last 8 weeks, monthly view = last 4 months by week) ---
       {
@@ -143,7 +156,7 @@ export default function CoreBuddyCharts() {
             .reduce((sum, a) => sum + (a.duration || 0), 0);
 
           weekData.push({
-            label: `Wk ${weeksBack - wk}`,
+            label: shortDateLabel(monday),
             sessions,
             duration: totalDuration,
           });
@@ -177,7 +190,7 @@ export default function CoreBuddyCharts() {
                 });
               });
             });
-            volData.push({ label: `Wk ${weeksBack - wk}`, volume: Math.round(totalVol) });
+            volData.push({ label: shortDateLabel(monday), volume: Math.round(totalVol) });
           }
           setVolumeData(volData);
         } else {
@@ -220,7 +233,7 @@ export default function CoreBuddyCharts() {
             .filter(a => a.date >= mondayStr && a.date < sundayStr)
             .reduce((sum, a) => sum + (a.duration || 0), 0);
 
-          minData.push({ label: `Wk ${weeksBack - wk}`, minutes: totalMin });
+          minData.push({ label: shortDateLabel(monday), minutes: totalMin });
         }
         setMinutesData(minData);
       }
