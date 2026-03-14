@@ -421,6 +421,12 @@ export default function CoreBuddyWorkouts() {
   const [byoTotalReps, setByoTotalReps] = useState(0);
   const [byoTotalWorkouts, setByoTotalWorkouts] = useState(0);
 
+  // Combined landing stats
+  const [combinedWeeklyCount, setCombinedWeeklyCount] = useState(0);
+  const [weeklyVolume, setWeeklyVolume] = useState(0);
+  const [weekWorkoutDays, setWeekWorkoutDays] = useState([]); // 7 booleans Mon-Sun
+  const [allRecentWorkouts, setAllRecentWorkouts] = useState([]); // last 4, any type
+
   // Free-tier gating: limit available durations and weekly usage
   const availableTimeOptions = isPremium ? TIME_OPTIONS : TIME_OPTIONS.filter(t => FREE_RANDOMISER_DURATIONS.includes(t));
   const freeRandomiserLimitReached = !isPremium && weeklyCount >= FREE_RANDOMISER_WEEKLY_LIMIT;
@@ -479,8 +485,11 @@ export default function CoreBuddyWorkouts() {
       try {
         const logsRef = collection(db, 'workoutLogs');
         const q = query(logsRef, where('clientId', '==', clientData.id));
-        const snap = await getDocs(q);
+        // Fetch workoutLogs and activityLogs in parallel
+        const actQ = query(collection(db, 'activityLogs'), where('clientId', '==', clientData.id));
+        const [snap, actSnap] = await Promise.all([getDocs(q), getDocs(actQ)]);
         const docs = snap.docs.map(d => d.data());
+        const actDocs = actSnap.docs.map(d => d.data());
 
         const randomiserDocs = docs.filter(d => d.type !== 'programme');
         setTotalCount(randomiserDocs.length);
@@ -502,28 +511,65 @@ export default function CoreBuddyWorkouts() {
         monday.setDate(now.getDate() + mondayOffset);
         monday.setHours(0, 0, 0, 0);
         const mondayMs = monday.getTime();
+        const sundayMs = mondayMs + 7 * 24 * 60 * 60 * 1000 - 1;
+
+        const getMs = (ts) => {
+          if (!ts) return 0;
+          return ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+        };
 
         const weekly = docs.filter(d => {
-          const ts = d.completedAt;
-          if (!ts) return false;
-          const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+          const ms = getMs(d.completedAt);
           return ms >= mondayMs;
         });
         setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
 
-        // Streak: consecutive weeks (going backwards) with at least 1 randomiser workout
-        const timestamps = randomiserDocs
-          .map(d => d.completedAt)
-          .filter(Boolean)
-          .map(ts => ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime())
-          .sort((a, b) => b - a);
+        // Combined weekly count (all workout types + activities)
+        const weeklyActs = actDocs.filter(d => getMs(d.completedAt) >= mondayMs);
+        setCombinedWeeklyCount(weekly.length + weeklyActs.length);
 
-        if (timestamps.length === 0) {
+        // Weekly volume (BYO sets this week)
+        let wkVol = 0;
+        weekly.filter(d => d.type === 'custom_sets').forEach(d => {
+          (d.exercises || []).forEach(ex => {
+            (ex.sets || []).forEach(s => {
+              wkVol += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0);
+            });
+          });
+        });
+        setWeeklyVolume(wkVol);
+
+        // Weekly workout days (Mon=0 to Sun=6) for consistency bars
+        const dayFlags = [false, false, false, false, false, false, false];
+        [...weekly, ...weeklyActs].forEach(d => {
+          const ms = getMs(d.completedAt);
+          if (ms >= mondayMs && ms <= sundayMs) {
+            const dt = new Date(ms);
+            const dow = dt.getDay(); // 0=Sun
+            const idx = dow === 0 ? 6 : dow - 1; // convert to Mon=0
+            dayFlags[idx] = true;
+          }
+        });
+        setWeekWorkoutDays(dayFlags);
+
+        // All recent workouts (last 4, any type including activities)
+        const allWithType = [
+          ...docs.map(d => ({ ...d, _kind: d.type === 'custom_sets' ? 'byo' : d.type === 'programme' ? 'programme' : 'randomiser' })),
+          ...actDocs.map(d => ({ ...d, _kind: 'activity' })),
+        ].sort((a, b) => getMs(b.completedAt) - getMs(a.completedAt)).slice(0, 4);
+        setAllRecentWorkouts(allWithType);
+
+        // Streak: consecutive weeks (going backwards) with at least 1 workout (any type)
+        const allTimestamps = [
+          ...docs.map(d => getMs(d.completedAt)),
+          ...actDocs.map(d => getMs(d.completedAt)),
+        ].filter(Boolean).sort((a, b) => b - a);
+
+        if (allTimestamps.length === 0) {
           setStreak(0);
         } else {
-          // Build set of ISO week keys (YYYY-WW) for each workout
           const weekKeys = new Set();
-          timestamps.forEach(ms => {
+          allTimestamps.forEach(ms => {
             const d = new Date(ms);
             const dayOfWeek = d.getDay();
             const monOff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
@@ -533,9 +579,6 @@ export default function CoreBuddyWorkouts() {
             weekKeys.add(mon.getTime());
           });
 
-          // Walk backwards from current week
-          // If current week has no workouts yet, start from last week
-          // (don't break the streak just because the new week only just started)
           const sortedWeeks = [...weekKeys].sort((a, b) => b - a);
           let streakCount = 0;
           const currentMonday = new Date(now);
@@ -544,7 +587,6 @@ export default function CoreBuddyWorkouts() {
           currentMonday.setHours(0, 0, 0, 0);
           let checkMs = currentMonday.getTime();
 
-          // If no workout this week, skip to last week without breaking streak
           if (!sortedWeeks.includes(checkMs)) {
             checkMs -= 7 * 24 * 60 * 60 * 1000;
           }
@@ -2500,8 +2542,59 @@ export default function CoreBuddyWorkouts() {
     );
   }
 
-  // ==================== LANDING VIEW ====================
+  // ==================== LANDING VIEW (DASHBOARD) ====================
   if (view === 'landing') {
+    const weekPct = WEEKLY_TARGET > 0 ? Math.min(100, Math.round((combinedWeeklyCount / WEEKLY_TARGET) * 100)) : 0;
+    const volDisplay = weeklyVolume >= 1000000 ? `${(weeklyVolume / 1000000).toFixed(1).replace(/\.0$/, '')}M`
+      : weeklyVolume >= 1000 ? `${(weeklyVolume / 1000).toFixed(1).replace(/\.0$/, '')}k`
+      : Math.round(weeklyVolume).toLocaleString();
+    const weightUnit = localStorage.getItem('mcf_weight_unit') || 'kg';
+    const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const todayDow = new Date().getDay();
+    const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
+
+    const getNudge = () => {
+      const left = Math.max(0, WEEKLY_TARGET - combinedWeeklyCount);
+      if (left === 0) return { text: `You've hit your ${WEEKLY_TARGET}-session target this week!`, done: true };
+      if (streak > 0 && combinedWeeklyCount === 0) return { text: `Don't break your ${streak}-week streak \u2014 get a session in!`, done: false };
+      return { text: `${left} more session${left !== 1 ? 's' : ''} to hit your weekly target`, done: false };
+    };
+    const nudge = getNudge();
+
+    const getTimeAgo = (ts) => {
+      if (!ts) return '';
+      const ms = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+      const diff = Date.now() - ms;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days === 1) return 'Yesterday';
+      return `${days}d ago`;
+    };
+
+    const getWorkoutLabel = (w) => {
+      if (w._kind === 'byo') return 'BYO Sets';
+      if (w._kind === 'activity') return w.activityType || 'Activity';
+      if (w._kind === 'programme') return 'Programme';
+      return w.focus ? `${w.focus.charAt(0).toUpperCase() + w.focus.slice(1)} HIIT` : 'Randomiser';
+    };
+
+    const getWorkoutStat = (w) => {
+      if (w._kind === 'byo') {
+        let v = 0;
+        (w.exercises || []).forEach(ex => (ex.sets || []).forEach(s => { v += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0); }));
+        return v > 0 ? `${v >= 1000 ? (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : Math.round(v)} ${weightUnit}` : `${w.totalSets || 0} sets`;
+      }
+      if (w.duration) return `${w.duration}m`;
+      return '';
+    };
+
+    // Ring constants for landing
+    const LR = 34;
+    const LC = 2 * Math.PI * LR;
+
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -2522,39 +2615,166 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main wk-landing-main">
-          <div className="wk-hub-heading">
-            <h2>Workouts</h2>
-            <p>Choose your training style</p>
-          </div>
+          {!statsLoaded ? (
+            <div className="nut-hub-loading"><div className="cb-loading-spinner" /></div>
+          ) : (
+            <>
+              {/* Greeting + streak */}
+              <div className="wkl-top">
+                <div className="wkl-greeting-row">
+                  <div className="wkl-greeting">
+                    <h2>Workouts</h2>
+                    <p>Your training this week</p>
+                  </div>
+                  {streak > 0 && (
+                    <div className="nhub-streak">
+                      <div className="nhub-streak-flame">
+                        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M12 23c-3.866 0-7-3.134-7-7 0-3.527 3.397-6.67 5-9.338C11.602 9.33 19 12.473 19 16c0 3.866-3.134 7-7 7zm0-2c2.761 0 5-2.239 5-5 0-1.94-2.476-4.178-5-6.71C9.476 11.822 7 14.06 7 16c0 2.761 2.239 5 5 5z"/>
+                        </svg>
+                      </div>
+                      <span className="nhub-streak-count">{streak}</span>
+                      <span className="nhub-streak-label">wk{streak !== 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                </div>
 
-          <div className="wk-landing-cards">
-            <button className="wk-landing-card" onClick={() => setView('randomiser_hub')}>
-              <div className="wk-landing-card-icon wk-landing-card-icon--randomiser">
-                <img src="/Logo.webp" alt="Mind Core Fitness" width="50" height="50" className="wk-landing-logo" />
-              </div>
-              <div className="wk-landing-card-body">
-                <h3>Randomiser</h3>
-                <p>Generate HIIT workouts with random exercises based on focus, level &amp; duration</p>
-              </div>
-              <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
+                {/* Stats row: This Week ring + Volume + Total */}
+                <div className="wkl-stats-row">
+                  {/* This Week (hero) */}
+                  <div className="wkl-stat wkl-stat--hero">
+                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                        style={{ stroke: 'var(--color-primary)' }}
+                        strokeDasharray={LC}
+                        strokeDashoffset={LC - (weekPct / 100) * LC} />
+                    </svg>
+                    <div className="wkl-stat-center">
+                      <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{combinedWeeklyCount}<span className="wkl-stat-of">/{WEEKLY_TARGET}</span></span>
+                    </div>
+                    <span className="wkl-stat-label">This Week</span>
+                  </div>
 
-            <button className="wk-landing-card" onClick={() => setView('byo_hub')}>
-              <div className="wk-landing-card-icon wk-landing-card-icon--byo">
-                {clientData?.photoURL ? (
-                  <img src={clientData.photoURL} alt="" className="wk-landing-byo-photo" />
-                ) : (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                )}
-              </div>
-              <div className="wk-landing-card-body">
-                <h3>Build Your Own</h3>
-                <p>Pick your exercises and build custom HIIT or Reps &amp; Sets workouts</p>
-              </div>
-              <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
+                  {/* Volume */}
+                  <div className="wkl-stat">
+                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                        style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
+                        strokeDasharray={LC}
+                        strokeDashoffset={LC - (Math.min(100, (weeklyVolume % 10000) / 100) / 100) * LC} />
+                    </svg>
+                    <div className="wkl-stat-center">
+                      <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{volDisplay}</span>
+                    </div>
+                    <span className="wkl-stat-label">Volume</span>
+                  </div>
 
+                  {/* Total sessions */}
+                  <div className="wkl-stat">
+                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                        style={{ stroke: isDark ? '#60a5fa' : '#3b82f6' }}
+                        strokeDasharray={LC}
+                        strokeDashoffset={LC - (Math.min(100, (totalCount + byoTotalWorkouts) / 100 * 100) / 100) * LC} />
+                    </svg>
+                    <div className="wkl-stat-center">
+                      <span className="wkl-stat-value" style={{ color: isDark ? '#60a5fa' : '#3b82f6' }}>{totalCount + byoTotalWorkouts}</span>
+                    </div>
+                    <span className="wkl-stat-label">Total</span>
+                  </div>
+                </div>
+
+                {/* Nudge */}
+                <div className={`nhub-nudge ${nudge.done ? 'nhub-nudge--complete' : ''}`}>
+                  {nudge.done ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  )}
+                  <span>{nudge.text}</span>
+                </div>
+              </div>
+
+              {/* Weekly consistency bars */}
+              <div className="nhub-week-section">
+                <div className="nhub-section-header">
+                  <span className="nhub-section-title">This Week</span>
+                </div>
+                <div className="nhub-week-bars">
+                  {DAY_LABELS.map((label, i) => (
+                    <div key={i} className={`nhub-bar-col ${i === todayIdx ? 'nhub-bar-today' : ''}`}>
+                      <div className="nhub-bar-track">
+                        <div className={`nhub-bar-fill ${weekWorkoutDays[i] ? 'nhub-bar-good' : 'nhub-bar-empty'}`}
+                          style={{ height: weekWorkoutDays[i] ? '100%' : '0%' }} />
+                      </div>
+                      <span className="nhub-bar-day">{i === todayIdx ? 'Today' : label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recent workouts */}
+              {allRecentWorkouts.length > 0 && (
+                <div className="wkl-recent-section">
+                  <div className="nhub-section-header">
+                    <span className="nhub-section-title">Recent</span>
+                  </div>
+                  <div className="wkl-recent-list">
+                    {allRecentWorkouts.map((w, i) => (
+                      <div key={i} className="wkl-recent-item">
+                        <div className={`wkl-recent-icon wkl-recent-icon--${w._kind}`}>
+                          {w._kind === 'byo' ? (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2M14 7V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/></svg>
+                          ) : w._kind === 'activity' ? (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                          ) : (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z"/></svg>
+                          )}
+                        </div>
+                        <div className="wkl-recent-info">
+                          <span className="wkl-recent-name">{getWorkoutLabel(w)}</span>
+                          <span className="wkl-recent-time">{getTimeAgo(w.completedAt)}</span>
+                        </div>
+                        <span className="wkl-recent-stat">{getWorkoutStat(w)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action cards */}
+              <div className="nhub-actions-section">
+                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); setView('randomiser_hub'); }}>
+                  <div className="wk-landing-card-icon wk-landing-card-icon--randomiser">
+                    <img src="/Logo.webp" alt="Mind Core Fitness" width="50" height="50" className="wk-landing-logo" />
+                  </div>
+                  <div className="wk-landing-card-body">
+                    <h3>Randomiser</h3>
+                    <p>Generate HIIT workouts with random exercises</p>
+                  </div>
+                  <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+
+                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); setView('byo_hub'); }}>
+                  <div className="wk-landing-card-icon wk-landing-card-icon--byo">
+                    {clientData?.photoURL ? (
+                      <img src={clientData.photoURL} alt="" className="wk-landing-byo-photo" />
+                    ) : (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    )}
+                  </div>
+                  <div className="wk-landing-card-body">
+                    <h3>Build Your Own</h3>
+                    <p>Pick exercises and build custom workouts</p>
+                  </div>
+                  <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+            </>
+          )}
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
