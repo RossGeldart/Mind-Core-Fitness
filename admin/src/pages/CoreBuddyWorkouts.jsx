@@ -320,6 +320,7 @@ export default function CoreBuddyWorkouts() {
 
   // Views: 'landing' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_hub' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
   const [view, setView] = useState('landing');
+  const [landingTab, setLandingTab] = useState('week'); // 'week' | 'overall'
   const [fabSavedOverlay, setFabSavedOverlay] = useState(null); // which FAB category is expanded (focus key or 'hiit'/'sets')
   const [fabOpen, setFabOpen] = useState(false);
   const [byoFabTab, setByoFabTab] = useState('byo_hiit'); // 'byo_hiit' | 'byo_sets'
@@ -2544,14 +2545,17 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== LANDING VIEW (DASHBOARD) ====================
   if (view === 'landing') {
+    const isWeek = landingTab === 'week';
     const weekPct = WEEKLY_TARGET > 0 ? Math.min(100, Math.round((combinedWeeklyCount / WEEKLY_TARGET) * 100)) : 0;
-    const volDisplay = weeklyVolume >= 1000000 ? `${(weeklyVolume / 1000000).toFixed(1).replace(/\.0$/, '')}M`
-      : weeklyVolume >= 1000 ? `${(weeklyVolume / 1000).toFixed(1).replace(/\.0$/, '')}k`
-      : Math.round(weeklyVolume).toLocaleString();
+    const fmtVol = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1).replace(/\.0$/, '')}M`
+      : v >= 1000 ? `${(v / 1000).toFixed(1).replace(/\.0$/, '')}k`
+      : Math.round(v).toLocaleString();
     const weightUnit = localStorage.getItem('mcf_weight_unit') || 'kg';
     const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     const todayDow = new Date().getDay();
     const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
+    const allTimeSessions = totalCount + byoTotalWorkouts;
+    const hrsDisplay = totalMinutes >= 60 ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m` : `${totalMinutes}m`;
 
     const getNudge = () => {
       const left = Math.max(0, WEEKLY_TARGET - combinedWeeklyCount);
@@ -2595,6 +2599,14 @@ export default function CoreBuddyWorkouts() {
     const LR = 34;
     const LC = 2 * Math.PI * LR;
 
+    // Level breakdown for overall tab
+    const lvlTotal = levelBreakdown.beginner + levelBreakdown.intermediate + levelBreakdown.advanced;
+    const lvlData = [
+      { key: 'beginner', label: 'Beg', count: levelBreakdown.beginner, color: isDark ? '#34d399' : '#10b981' },
+      { key: 'intermediate', label: 'Int', count: levelBreakdown.intermediate, color: isDark ? '#fbbf24' : '#f59e0b' },
+      { key: 'advanced', label: 'Adv', count: levelBreakdown.advanced, color: isDark ? '#f87171' : '#ef4444' },
+    ];
+
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -2624,7 +2636,7 @@ export default function CoreBuddyWorkouts() {
                 <div className="wkl-greeting-row">
                   <div className="wkl-greeting">
                     <h2>Workouts</h2>
-                    <p>Your training this week</p>
+                    <p>{isWeek ? 'Your training this week' : 'Your all-time stats'}</p>
                   </div>
                   {streak > 0 && (
                     <div className="nhub-streak">
@@ -2639,82 +2651,145 @@ export default function CoreBuddyWorkouts() {
                   )}
                 </div>
 
-                {/* Stats row: This Week ring + Volume + Total */}
-                <div className="wkl-stats-row">
-                  {/* This Week (hero) */}
-                  <div className="wkl-stat wkl-stat--hero">
-                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                        style={{ stroke: 'var(--color-primary)' }}
-                        strokeDasharray={LC}
-                        strokeDashoffset={LC - (weekPct / 100) * LC} />
-                    </svg>
-                    <div className="wkl-stat-center">
-                      <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{combinedWeeklyCount}<span className="wkl-stat-of">/{WEEKLY_TARGET}</span></span>
-                    </div>
-                    <span className="wkl-stat-label">This Week</span>
-                  </div>
-
-                  {/* Volume */}
-                  <div className="wkl-stat">
-                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                        style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
-                        strokeDasharray={LC}
-                        strokeDashoffset={LC - (Math.min(100, (weeklyVolume % 10000) / 100) / 100) * LC} />
-                    </svg>
-                    <div className="wkl-stat-center">
-                      <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{volDisplay}</span>
-                    </div>
-                    <span className="wkl-stat-label">Volume</span>
-                  </div>
-
-                  {/* Total sessions */}
-                  <div className="wkl-stat">
-                    <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                      <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                      <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                        style={{ stroke: isDark ? '#60a5fa' : '#3b82f6' }}
-                        strokeDasharray={LC}
-                        strokeDashoffset={LC - (Math.min(100, (totalCount + byoTotalWorkouts) / 100 * 100) / 100) * LC} />
-                    </svg>
-                    <div className="wkl-stat-center">
-                      <span className="wkl-stat-value" style={{ color: isDark ? '#60a5fa' : '#3b82f6' }}>{totalCount + byoTotalWorkouts}</span>
-                    </div>
-                    <span className="wkl-stat-label">Total</span>
-                  </div>
+                {/* Tab toggle */}
+                <div className="wkl-tabs">
+                  <button className={`wkl-tab${isWeek ? ' wkl-tab--active' : ''}`} onClick={() => setLandingTab('week')}>This Week</button>
+                  <button className={`wkl-tab${!isWeek ? ' wkl-tab--active' : ''}`} onClick={() => setLandingTab('overall')}>Overall</button>
                 </div>
 
-                {/* Nudge */}
-                <div className={`nhub-nudge ${nudge.done ? 'nhub-nudge--complete' : ''}`}>
-                  {nudge.done ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                  )}
-                  <span>{nudge.text}</span>
-                </div>
-              </div>
-
-              {/* Weekly consistency bars */}
-              <div className="nhub-week-section">
-                <div className="nhub-section-header">
-                  <span className="nhub-section-title">This Week</span>
-                </div>
-                <div className="nhub-week-bars">
-                  {DAY_LABELS.map((label, i) => (
-                    <div key={i} className={`nhub-bar-col ${i === todayIdx ? 'nhub-bar-today' : ''}`}>
-                      <div className="nhub-bar-track">
-                        <div className={`nhub-bar-fill ${weekWorkoutDays[i] ? 'nhub-bar-good' : 'nhub-bar-empty'}`}
-                          style={{ height: weekWorkoutDays[i] ? '100%' : '0%' }} />
+                {/* Stats rings — swap content per tab */}
+                {isWeek ? (
+                  <div className="wkl-stats-row">
+                    <div className="wkl-stat wkl-stat--hero">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: 'var(--color-primary)' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (weekPct / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{combinedWeeklyCount}<span className="wkl-stat-of">/{WEEKLY_TARGET}</span></span>
                       </div>
-                      <span className="nhub-bar-day">{i === todayIdx ? 'Today' : label}</span>
+                      <span className="wkl-stat-label">Sessions</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="wkl-stat">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (Math.min(100, (weeklyVolume % 10000) / 100) / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{fmtVol(weeklyVolume)}</span>
+                      </div>
+                      <span className="wkl-stat-label">Volume</span>
+                    </div>
+                    <div className="wkl-stat">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: isDark ? '#60a5fa' : '#3b82f6' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (Math.min(100, allTimeSessions / 100 * 100) / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value" style={{ color: isDark ? '#60a5fa' : '#3b82f6' }}>{allTimeSessions}</span>
+                      </div>
+                      <span className="wkl-stat-label">Total</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="wkl-stats-row">
+                    <div className="wkl-stat wkl-stat--hero">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: 'var(--color-primary)' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (Math.min(100, allTimeSessions) / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{allTimeSessions}</span>
+                      </div>
+                      <span className="wkl-stat-label">Sessions</span>
+                    </div>
+                    <div className="wkl-stat">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (Math.min(100, (byoTotalVolume % 100000) / 1000) / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{fmtVol(byoTotalVolume)}</span>
+                      </div>
+                      <span className="wkl-stat-label">Volume</span>
+                    </div>
+                    <div className="wkl-stat">
+                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
+                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
+                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
+                          style={{ stroke: isDark ? '#a78bfa' : '#8b5cf6' }}
+                          strokeDasharray={LC}
+                          strokeDashoffset={LC - (Math.min(100, totalMinutes / 60) / 100) * LC} />
+                      </svg>
+                      <div className="wkl-stat-center">
+                        <span className="wkl-stat-value wkl-stat-value--sm" style={{ color: isDark ? '#a78bfa' : '#8b5cf6' }}>{hrsDisplay}</span>
+                      </div>
+                      <span className="wkl-stat-label">Time</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Nudge (week) or level breakdown (overall) */}
+                {isWeek ? (
+                  <div className={`nhub-nudge ${nudge.done ? 'nhub-nudge--complete' : ''}`}>
+                    {nudge.done ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    )}
+                    <span>{nudge.text}</span>
+                  </div>
+                ) : lvlTotal > 0 ? (
+                  <div className="wkl-levels">
+                    {lvlData.map(l => (
+                      <div key={l.key} className="wkl-level-item">
+                        <div className="wkl-level-bar-track">
+                          <div className="wkl-level-bar-fill" style={{ width: `${(l.count / lvlTotal) * 100}%`, background: l.color }} />
+                        </div>
+                        <div className="wkl-level-meta">
+                          <span className="wkl-level-label" style={{ color: l.color }}>{l.label}</span>
+                          <span className="wkl-level-count">{l.count}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
+
+              {/* Weekly consistency bars (week tab) */}
+              {isWeek && (
+                <div className="nhub-week-section">
+                  <div className="nhub-section-header">
+                    <span className="nhub-section-title">This Week</span>
+                  </div>
+                  <div className="nhub-week-bars">
+                    {DAY_LABELS.map((label, i) => (
+                      <div key={i} className={`nhub-bar-col ${i === todayIdx ? 'nhub-bar-today' : ''}`}>
+                        <div className="nhub-bar-track">
+                          <div className={`nhub-bar-fill ${weekWorkoutDays[i] ? 'nhub-bar-good' : 'nhub-bar-empty'}`}
+                            style={{ height: weekWorkoutDays[i] ? '100%' : '0%' }} />
+                        </div>
+                        <span className="nhub-bar-day">{i === todayIdx ? 'Today' : label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Recent workouts */}
               {allRecentWorkouts.length > 0 && (
