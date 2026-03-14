@@ -1,24 +1,10 @@
 /* ==================== FIREBASE CLOUD MESSAGING ==================== */
 
-// Import Firebase scripts for push notifications
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
-
-firebase.initializeApp({
-  apiKey: 'AIzaSyBCIgMJd3By7qkWH27YiW9VooIBGE3bFLs',
-  authDomain: 'mind-core-fitness-client.firebaseapp.com',
-  projectId: 'mind-core-fitness-client',
-  storageBucket: 'mind-core-fitness-client.firebasestorage.app',
-  messagingSenderId: '669343392406',
-  appId: '1:669343392406:web:f5a35ee062387e7d6f58b7',
-});
-
-const messaging = firebase.messaging();
-
 // Handle background push messages using raw push event.
-// This is more reliable than onBackgroundMessage on iOS Safari PWAs
-// because we can use e.waitUntil() to prevent iOS from killing
-// the service worker before the notification is shown.
+// We intentionally do NOT initialise firebase.messaging() here —
+// having both the Firebase SDK listener and a raw 'push' handler
+// causes duplicate or dropped notifications. The raw handler is
+// more reliable on iOS Safari PWAs because we control waitUntil().
 self.addEventListener('push', (e) => {
   if (!e.data) return;
 

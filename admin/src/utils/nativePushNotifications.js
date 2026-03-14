@@ -68,6 +68,54 @@ export async function revokeNativePushToken(clientId, token) {
 }
 
 /**
+ * Re-fetch the current FCM token and update Firestore if it changed.
+ * Also registers a listener for future token refreshes so the stored
+ * token is always valid.
+ *
+ * @param {string} clientId - Firestore client document ID
+ * @param {string[]} storedTokens - Current fcmTokens array from Firestore
+ * @returns {Promise<{token: string|null, unsubscribe: Function}>}
+ */
+export async function refreshNativePushToken(clientId, storedTokens) {
+  if (!clientId || !storedTokens || storedTokens.length === 0) {
+    return { token: null, unsubscribe: () => {} };
+  }
+
+  try {
+    // Check we still have permission
+    const perm = await getNativePermissionState();
+    if (perm !== 'granted') return { token: null, unsubscribe: () => {} };
+
+    // Get the current token
+    const { token } = await FirebaseMessaging.getToken();
+    if (token && !storedTokens.includes(token)) {
+      await updateDoc(doc(db, 'clients', clientId), {
+        fcmTokens: arrayUnion(token),
+      });
+    }
+
+    // Listen for future token refreshes
+    const listener = await FirebaseMessaging.addListener('tokenReceived', async (event) => {
+      const newToken = event.token;
+      if (newToken && clientId) {
+        try {
+          await updateDoc(doc(db, 'clients', clientId), {
+            fcmTokens: arrayUnion(newToken),
+          });
+        } catch (err) {
+          console.warn('[NativePush] token refresh write failed:', err);
+        }
+      }
+    });
+
+    return { token: token || null, unsubscribe: () => listener.remove() };
+  } catch (err) {
+    console.warn('[NativePush] token refresh failed:', err);
+    return { token: null, unsubscribe: () => {} };
+  }
+}
+
+/**
  * Listen for foreground push messages on native
  * @param {Function} callback - Called with { title, body, data }
  * @returns {Promise<Function>} unsubscribe

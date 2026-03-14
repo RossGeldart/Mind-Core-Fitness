@@ -183,6 +183,55 @@ export async function revokePushToken(clientId, token) {
 }
 
 /**
+ * Re-fetch the current FCM token and update Firestore if it changed.
+ * Call this on every app open so expired/rotated tokens are replaced.
+ * Only runs if the user previously granted permission and has tokens stored.
+ *
+ * @param {string} clientId - Firestore client document ID
+ * @param {string[]} storedTokens - Current fcmTokens array from Firestore
+ * @returns {Promise<string|null>} The current token, or null on failure
+ */
+export async function refreshPushToken(clientId, storedTokens) {
+  if (!isPushSupported() || !clientId) return null;
+  if (!storedTokens || storedTokens.length === 0) return null;
+
+  // Only refresh if user previously granted permission
+  const permission = getPermissionState();
+  if (permission !== 'granted') return null;
+
+  try {
+    const msg = getMessagingInstance();
+    if (!msg) return null;
+
+    const swReg = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('sw-timeout')), 10000)),
+    ]).catch(() => null);
+
+    if (!swReg) return null;
+
+    const currentToken = await getToken(msg, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swReg,
+    });
+
+    if (!currentToken) return null;
+
+    // If the token changed (rotated), update Firestore
+    if (!storedTokens.includes(currentToken)) {
+      await updateDoc(doc(db, 'clients', clientId), {
+        fcmTokens: arrayUnion(currentToken),
+      });
+    }
+
+    return currentToken;
+  } catch (err) {
+    console.warn('Push token refresh failed:', err);
+    return null;
+  }
+}
+
+/**
  * Listen for foreground push messages and show an in-app callback
  * @param {Function} callback - Called with { title, body, data }
  * @returns {Function} unsubscribe

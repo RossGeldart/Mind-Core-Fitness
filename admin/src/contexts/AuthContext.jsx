@@ -18,6 +18,8 @@ import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/firebase';
+import { refreshPushToken } from '../utils/pushNotifications';
+import { refreshNativePushToken } from '../utils/nativePushNotifications';
 
 const isNative = Capacitor.isNativePlatform();
 
@@ -131,6 +133,25 @@ export function AuthProvider({ children }) {
       if (unsubClient) unsubClient();
     };
   }, []);
+
+  // Refresh FCM push token on every app open so expired tokens are replaced
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const tokens = clientData.fcmTokens || [];
+    if (tokens.length === 0) return;
+
+    let nativeUnsub = () => {};
+
+    if (isNative) {
+      refreshNativePushToken(clientData.id, tokens).then(({ unsubscribe }) => {
+        nativeUnsub = unsubscribe;
+      });
+    } else {
+      refreshPushToken(clientData.id, tokens);
+    }
+
+    return () => nativeUnsub();
+  }, [clientData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (email, password, rememberMe = true) => {
     // Set persistence based on remember me checkbox
