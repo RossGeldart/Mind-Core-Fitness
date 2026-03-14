@@ -1,4 +1,4 @@
-var CACHE_NAME = 'mcf-v5';
+var CACHE_NAME = 'mcf-v6';
 var ASSETS_TO_CACHE = [
   '/',
   '/styles.css',
@@ -13,7 +13,8 @@ var ASSETS_TO_CACHE = [
   '/personal-training.html',
   '/blog.html',
   '/faq.html',
-  '/core-buddy.html'
+  '/core-buddy.html',
+  '/app-store-badge.svg'
 ];
 
 self.addEventListener('install', function(event) {
