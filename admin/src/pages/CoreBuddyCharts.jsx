@@ -7,7 +7,8 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
+  BarChart, Bar, LineChart, Line, ComposedChart,
+  XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend, ReferenceLine
 } from 'recharts';
 import HabitSpiderChart from '../components/HabitSpiderChart';
@@ -521,7 +522,7 @@ export default function CoreBuddyCharts() {
               <h3 className="cht-card-title">Activity & Sessions</h3>
               <p className="cht-card-subtitle">Sessions count & duration per week</p>
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={activityData} barCategoryGap="20%">
+                <ComposedChart data={activityData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                   <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
@@ -530,7 +531,7 @@ export default function CoreBuddyCharts() {
                   <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'Inter' }} />
                   <Bar yAxisId="left" dataKey="sessions" name="Sessions" fill={barColor} radius={[4, 4, 0, 0]} />
                   <Line yAxisId="right" type="monotone" dataKey="duration" name="Minutes" stroke={lineColor} strokeWidth={2} dot={{ r: 3 }} />
-                </BarChart>
+                </ComposedChart>
               </ResponsiveContainer>
             </div>
 
