@@ -2376,14 +2376,14 @@
 
 .cb-metric-mini-track {
   fill: none;
-  stroke: rgba(76, 175, 80, 0.12);
+  stroke: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
   stroke-width: 10;
   stroke-linecap: round;
 }
 
 .cb-metric-mini-fill {
   fill: none;
-  stroke: #4CAF50;
+  stroke: var(--color-primary);
   stroke-width: 10;
   stroke-linecap: round;
   animation: ringFillIn 1.6s ease-out;
