@@ -355,7 +355,7 @@ export default function NutritionHub() {
               <div className="nhub-meals-grid">
                 {mealGroups.map(m => (
                   <button key={m.key} className={`nhub-meal-card ${m.entries.length > 0 ? 'nhub-meal-card--filled' : ''}`}
-                    onClick={() => navigate('/client/core-buddy/nutrition/manual')}
+                    onClick={(e) => { e.currentTarget.blur(); navigate('/client/core-buddy/nutrition/manual'); }}
                   >
                     <div className="nhub-meal-icon">{MEAL_ICONS[m.key]}</div>
                     <span className="nhub-meal-label">{m.label}</span>
@@ -396,7 +396,7 @@ export default function NutritionHub() {
 
             {/* Action cards */}
             <div className="nhub-actions-section">
-              <button className="nut-hub-card" onClick={() => navigate('/client/core-buddy/nutrition/manual')}>
+              <button className="nut-hub-card" onClick={(e) => { e.currentTarget.blur(); navigate('/client/core-buddy/nutrition/manual'); }}>
                 <div className="nut-hub-card-icon nut-hub-card-icon--manual">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
