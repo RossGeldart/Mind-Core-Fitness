@@ -85,6 +85,7 @@ export default function CoreBuddyCharts() {
   const [bodyMetricTargets, setBodyMetricTargets] = useState(null);
   const [selectedMetric, setSelectedMetric] = useState('chest');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Weekly summary overlay
   const [showWeeklySummary, setShowWeeklySummary] = useState(false);
@@ -100,6 +101,7 @@ export default function CoreBuddyCharts() {
   const loadData = useCallback(async () => {
     if (!clientData?.id) return;
     setLoading(true);
+    setError(null);
 
     try {
       const now = new Date();
@@ -125,9 +127,9 @@ export default function CoreBuddyCharts() {
       {
         const weeksBack = isMonthly ? 12 : 8;
         const weekData = [];
-        for (let w = weeksBack - 1; w >= 0; w--) {
+        for (let wk = weeksBack - 1; wk >= 0; wk--) {
           const weekStart = new Date(now);
-          weekStart.setDate(weekStart.getDate() - (w * 7));
+          weekStart.setDate(weekStart.getDate() - (wk * 7));
           const monday = getMonday(weekStart);
           const mondayStr = formatDate(monday);
           const sunday = new Date(monday);
@@ -135,13 +137,13 @@ export default function CoreBuddyCharts() {
           const sundayStr = formatDate(sunday);
 
           const sessions = activityDocs.filter(a => a.date >= mondayStr && a.date < sundayStr).length
-            + workoutDocs.filter(w => w.date >= mondayStr && w.date < sundayStr).length;
+            + workoutDocs.filter(doc => doc.date >= mondayStr && doc.date < sundayStr).length;
           const totalDuration = activityDocs
             .filter(a => a.date >= mondayStr && a.date < sundayStr)
             .reduce((sum, a) => sum + (a.duration || 0), 0);
 
           weekData.push({
-            label: `Wk ${weeksBack - w}`,
+            label: `Wk ${weeksBack - wk}`,
             sessions,
             duration: totalDuration,
           });
@@ -155,9 +157,9 @@ export default function CoreBuddyCharts() {
           // Group by week for monthly view
           const weeksBack = 4;
           const volData = [];
-          for (let w = weeksBack - 1; w >= 0; w--) {
+          for (let wk = weeksBack - 1; wk >= 0; wk--) {
             const weekStart = new Date(now);
-            weekStart.setDate(weekStart.getDate() - (w * 7));
+            weekStart.setDate(weekStart.getDate() - (wk * 7));
             const monday = getMonday(weekStart);
             const mondayStr = formatDate(monday);
             const sunday = new Date(monday);
@@ -165,17 +167,17 @@ export default function CoreBuddyCharts() {
             const sundayStr = formatDate(sunday);
 
             const weekWorkouts = workoutDocs.filter(
-              w => w.type === 'custom_sets' && w.date >= mondayStr && w.date < sundayStr
+              doc => doc.type === 'custom_sets' && doc.date >= mondayStr && doc.date < sundayStr
             );
             let totalVol = 0;
-            weekWorkouts.forEach(w => {
-              (w.exercises || []).forEach(ex => {
+            weekWorkouts.forEach(doc => {
+              (doc.exercises || []).forEach(ex => {
                 (ex.sets || []).forEach(s => {
                   totalVol += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0);
                 });
               });
             });
-            volData.push({ label: `Wk ${weeksBack - w}`, volume: Math.round(totalVol) });
+            volData.push({ label: `Wk ${weeksBack - wk}`, volume: Math.round(totalVol) });
           }
           setVolumeData(volData);
         } else {
@@ -186,10 +188,10 @@ export default function CoreBuddyCharts() {
             const day = new Date(monday);
             day.setDate(monday.getDate() + d);
             const dayStr = formatDate(day);
-            const dayWorkouts = workoutDocs.filter(w => w.type === 'custom_sets' && w.date === dayStr);
+            const dayWorkouts = workoutDocs.filter(doc => doc.type === 'custom_sets' && doc.date === dayStr);
             let dayVol = 0;
-            dayWorkouts.forEach(w => {
-              (w.exercises || []).forEach(ex => {
+            dayWorkouts.forEach(doc => {
+              (doc.exercises || []).forEach(ex => {
                 (ex.sets || []).forEach(s => {
                   dayVol += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0);
                 });
@@ -205,9 +207,9 @@ export default function CoreBuddyCharts() {
       {
         const weeksBack = isMonthly ? 12 : 8;
         const minData = [];
-        for (let w = weeksBack - 1; w >= 0; w--) {
+        for (let wk = weeksBack - 1; wk >= 0; wk--) {
           const weekStart = new Date(now);
-          weekStart.setDate(weekStart.getDate() - (w * 7));
+          weekStart.setDate(weekStart.getDate() - (wk * 7));
           const monday = getMonday(weekStart);
           const mondayStr = formatDate(monday);
           const sunday = new Date(monday);
@@ -218,7 +220,7 @@ export default function CoreBuddyCharts() {
             .filter(a => a.date >= mondayStr && a.date < sundayStr)
             .reduce((sum, a) => sum + (a.duration || 0), 0);
 
-          minData.push({ label: `Wk ${weeksBack - w}`, minutes: totalMin });
+          minData.push({ label: `Wk ${weeksBack - wk}`, minutes: totalMin });
         }
         setMinutesData(minData);
       }
@@ -278,6 +280,7 @@ export default function CoreBuddyCharts() {
 
     } catch (err) {
       console.error('Error loading charts data:', err);
+      setError('Failed to load chart data. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -496,6 +499,11 @@ export default function CoreBuddyCharts() {
 
         {loading ? (
           <div className="cht-loading-inline"><div className="cht-spinner" /></div>
+        ) : error ? (
+          <div className="cht-empty-chart">
+            <p>{error}</p>
+            <button className="cht-empty-cta" onClick={loadData}>Retry</button>
+          </div>
         ) : (
           <>
             {/* Weekly Summary Card */}
