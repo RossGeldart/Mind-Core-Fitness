@@ -297,7 +297,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    background: url('mobilehero.PNG') center/cover no-repeat;
+    background: url('mobilehero.PNG') top center/cover no-repeat;
     text-align: center;
 }
 
@@ -1864,7 +1864,7 @@ body {
 @media (max-width: 600px) {
     .hero {
         min-height: 100svh;
-        background: url('mobilehero.PNG') center/cover no-repeat;
+        background: url('mobilehero.PNG') top center/cover no-repeat;
     }
 
     .logo {
