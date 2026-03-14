@@ -67,14 +67,17 @@ export default function NutritionHub() {
       setDataLoading(true);
       const todayKey = getTodayKey();
       try {
-        // Fetch targets, today's log, favourites, and last 7 days in parallel
-        const dayKeys = Array.from({ length: 7 }, (_, i) => getDateKey(i));
-        const [targetsDoc, todayDoc, favsDoc, ...weekDocs] = await Promise.all([
+        // Fetch targets, today's log, favourites, and last 30 days in parallel
+        // 7 days for week view, up to 30 for streak calculation
+        const streakDayKeys = Array.from({ length: 30 }, (_, i) => getDateKey(i));
+        const dayKeys = streakDayKeys.slice(0, 7);
+        const [targetsDoc, todayDoc, favsDoc, ...allDayDocs] = await Promise.all([
           getDoc(doc(db, 'nutritionTargets', clientData.id)),
           getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${todayKey}`)),
           getDoc(doc(db, 'favouriteFoods', clientData.id)),
-          ...dayKeys.map(k => getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${k}`))),
+          ...streakDayKeys.map(k => getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${k}`))),
         ]);
+        const weekDocs = allDayDocs.slice(0, 7);
 
         // Targets
         const t = targetsDoc.exists() ? targetsDoc.data() : null;
@@ -108,11 +111,14 @@ export default function NutritionHub() {
         }).reverse(); // oldest first
         setWeekData(week);
 
-        // Calculate protein streak
+        // Calculate protein streak (up to 30 days)
+        // If today hasn't hit target yet, skip it (don't break streak mid-day)
         if (t?.protein) {
           let s = 0;
-          for (let i = 0; i < 7; i++) {
-            const d = weekDocs[i];
+          const todayProtein = todayEntries.reduce((acc, e) => acc + (e.protein || 0), 0);
+          const startIdx = todayProtein >= t.protein ? 0 : 1;
+          for (let i = startIdx; i < 30; i++) {
+            const d = allDayDocs[i];
             if (!d.exists()) break;
             const dayProtein = (d.data().entries || []).reduce((acc, e) => acc + (e.protein || 0), 0);
             if (dayProtein >= t.protein) { s++; } else { break; }
