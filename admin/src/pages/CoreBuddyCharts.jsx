@@ -153,7 +153,10 @@ export default function CoreBuddyCharts() {
             + workoutDocs.filter(doc => doc.date >= mondayStr && doc.date < sundayStr).length;
           const totalDuration = activityDocs
             .filter(a => a.date >= mondayStr && a.date < sundayStr)
-            .reduce((sum, a) => sum + (a.duration || 0), 0);
+            .reduce((sum, a) => sum + (a.duration || 0), 0)
+            + workoutDocs
+              .filter(doc => doc.date >= mondayStr && doc.date < sundayStr)
+              .reduce((sum, doc) => sum + (doc.duration || 0), 0);
 
           weekData.push({
             label: shortDateLabel(monday),
@@ -231,7 +234,10 @@ export default function CoreBuddyCharts() {
 
           const totalMin = activityDocs
             .filter(a => a.date >= mondayStr && a.date < sundayStr)
-            .reduce((sum, a) => sum + (a.duration || 0), 0);
+            .reduce((sum, a) => sum + (a.duration || 0), 0)
+            + workoutDocs
+              .filter(doc => doc.date >= mondayStr && doc.date < sundayStr)
+              .reduce((sum, doc) => sum + (doc.duration || 0), 0);
 
           minData.push({ label: shortDateLabel(monday), minutes: totalMin });
         }
