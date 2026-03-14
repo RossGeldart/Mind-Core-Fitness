@@ -970,64 +970,24 @@
             line-height: 1.7;
         }
 
-        /* Footer */
-        footer {
-            background: var(--dark-bg);
-            color: #ffffff;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .footer-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .footer-text {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: #aaa;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .footer-links a:focus {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        .footer-links a:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        .footer-copyright {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .footer-copyright a {
-            color: #ffffff;
-            text-decoration: none;
-        }
+                /* Footer */
+        .site-footer { background: #1a1a1a; padding: 60px 0 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .site-footer__inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .site-footer__brand img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 14px; display: block; object-fit: cover; }
+        .site-footer__brand p { color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+        .site-footer__tagline { font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 16px; }
+        .site-footer__badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .site-footer__badges img { height: 36px; display: block; }
+        .site-footer__badges .store-badge-coming { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.45); font-family: 'Inter', sans-serif; font-size: 0.7rem; white-space: nowrap; }
+        .site-footer__col h4 { font-family: 'Anton', sans-serif; font-weight: 600; font-size: 0.75rem; margin-bottom: 18px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .site-footer__col ul { list-style: none; padding: 0; margin: 0; }
+        .site-footer__col li { margin-bottom: 10px; }
+        .site-footer__col a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; }
+        .site-footer__col a:hover { color: #99313c; }
+        .site-footer__bottom { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 0.8rem; font-family: 'Inter', sans-serif; }
+        @media (max-width: 900px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 500px) { .site-footer__grid { grid-template-columns: 1fr; } }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -1546,18 +1506,48 @@
     </script>
 
     <!-- Footer -->
-    <footer>
-        <picture>
-            <source srcset="../Logo.webp" type="image/webp">
-            <img loading="lazy" src="../Logo.PNG" alt="Mind Core Fitness" class="footer-logo" width="60" height="60" decoding="async">
-        </picture>
-        <p class="footer-text">Strength. Mindset. Support.</p>
-        <div class="footer-links">
-            <a href="../personal-training.html">Personal Training</a>
-            <a href="../12-week-core-programme.html">12-Week Programme</a>
-            <a href="../blog.html">Blog</a>
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__grid">
+                <div class="site-footer__brand">
+                    <picture>
+                        <source srcset="../Logo.webp" type="image/webp">
+                        <img loading="lazy" src="../Logo.PNG" alt="Mind Core Fitness" width="44" height="44" decoding="async">
+                    </picture>
+                    <p>Home of Core Buddy — the fitness app for busy people. Plus expert coaching and personal training in Elgin.</p>
+                    <div class="site-footer__tagline">Strength &bull; Mindset &bull; Support</div>
+                    <div class="site-footer__badges">
+                        <a href="https://apps.apple.com/gb/app/core-buddy/id6760010886" target="_blank" rel="noopener noreferrer"><img src="../app-store-badge.svg" alt="Download on the App Store"></a>
+                        <span class="store-badge-coming">Google Play — Coming Soon</span>
+                    </div>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="../core-buddy.html">Core Buddy App</a></li>
+                        <li><a href="../coaching.html">Coaching</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="../blog.html">Blog</a></li>
+                        <li><a href="../about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="site-footer__col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="../privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="../terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="mailto:ross@mindcorefitness.com">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="site-footer__bottom">
+                <p>&copy; 2026 Mind Core Fitness. All rights reserved.</p>
+            </div>
         </div>
-        <p class="footer-copyright">&copy; 2026 Mind Core Fitness. All rights reserved. | <a href="../privacy-policy.html">Privacy Policy</a> | <a href="../terms.html">Terms & Conditions</a></p>
     </footer>
     <script defer src="blog-views.js"></script>
 </body>
