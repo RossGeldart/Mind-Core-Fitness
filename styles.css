@@ -1064,6 +1064,70 @@ body {
     color: #2d8a4e;
 }
 
+/* Service Showcase - matches Core Buddy app-showcase layout */
+.service-showcase {
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.service-showcase-inner {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.service-showcase .service-title {
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.service-showcase .service-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    max-width: 600px;
+}
+
+.service-showcase-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 48px;
+    text-align: left;
+}
+
+.service-showcase-features li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.service-showcase-features li:last-child {
+    border-bottom: none;
+}
+
+.service-showcase .service-cta {
+    font-size: 1rem;
+    padding: 14px 32px;
+}
+
+@media (max-width: 768px) {
+    .service-showcase {
+        padding: 70px 20px;
+    }
+
+    .service-showcase-features li {
+        font-size: 1rem;
+        padding: 12px 0;
+    }
+}
+
 /* CTA Button */
 .service-cta {
     display: inline-flex;
