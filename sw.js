@@ -1,4 +1,4 @@
-var CACHE_NAME = 'mcf-v9';
+var CACHE_NAME = 'mcf-v10';
 var ASSETS_TO_CACHE = [
   '/',
   '/styles.css',

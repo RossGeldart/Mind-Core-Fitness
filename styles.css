@@ -396,8 +396,7 @@ body {
     width: 100%;
     line-height: 0;
     font-size: 0;
-    padding: 2px 0;
-    margin: -2px 0;
+    margin: -1px 0;
     overflow: hidden;
     position: relative;
     z-index: 1;
@@ -405,9 +404,10 @@ body {
 
 .section-divider svg {
     display: block;
-    width: calc(100% + 4px);
-    margin: -2px;
+    width: 100%;
     height: auto;
+    vertical-align: bottom;
+    transform: scale(1.01);
 }
 
 .section-divider--hero {
