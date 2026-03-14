@@ -378,7 +378,7 @@ export default function Onboarding() {
       // Stripe payment link for monthly/annual
       const STRIPE_PAYMENT_LINKS = {
         monthly: 'https://buy.stripe.com/5kQ8wP98F9qwdgbcJx8IU05',
-        annual: 'https://buy.stripe.com/4gM14nbgNbyEfoj38X8IU06',
+        annual: 'https://buy.stripe.com/8x228r84BgSYa3Z8th8IU07',
       };
       try { localStorage.setItem('mcf_clientId', clientData.id); } catch {};
       const url = new URL(STRIPE_PAYMENT_LINKS[plan]);
