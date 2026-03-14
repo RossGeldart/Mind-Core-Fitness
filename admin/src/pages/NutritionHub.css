@@ -245,12 +245,12 @@
 }
 
 .nhub-nudge--complete {
-  background: rgba(20, 184, 166, 0.08);
+  background: var(--color-success-bg, rgba(20, 184, 166, 0.08));
   border-color: rgba(20, 184, 166, 0.2);
 }
 
 .nhub-nudge--complete svg {
-  color: #14b8a6;
+  color: var(--color-success, #14b8a6);
 }
 
 /* ===== SECTION HEADERS ===== */
@@ -364,6 +364,12 @@
 }
 
 .nhub-meal-card:active { transform: scale(0.96); }
+.nhub-meal-card:focus { outline: none; }
+.nhub-meal-card:focus:not(:focus-visible) {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+  transform: none;
+}
 
 @media (hover: hover) {
   .nhub-meal-card:hover {
@@ -372,6 +378,11 @@
 }
 
 .nhub-meal-card--filled {
+  border-color: rgba(20, 184, 166, 0.25);
+  background: rgba(20, 184, 166, 0.04);
+}
+
+.nhub-meal-card--filled:focus:not(:focus-visible) {
   border-color: rgba(20, 184, 166, 0.25);
   background: rgba(20, 184, 166, 0.04);
 }
@@ -388,7 +399,7 @@
 }
 
 .nhub-meal-card--filled .nhub-meal-icon {
-  color: #14b8a6;
+  color: var(--color-success, #14b8a6);
 }
 
 .nhub-meal-label {
@@ -403,7 +414,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
-  color: #14b8a6;
+  color: var(--color-success, #14b8a6);
 }
 
 .nhub-meal-empty {
@@ -454,8 +465,8 @@
   min-height: 0;
 }
 
-.nhub-bar-good { background: #14b8a6; }
-.nhub-bar-mid { background: #f59e0b; }
+.nhub-bar-good { background: var(--color-success, #14b8a6); }
+.nhub-bar-mid { background: var(--color-warning, #f59e0b); }
 .nhub-bar-low { background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.5); }
 .nhub-bar-empty { background: transparent; }
 
@@ -499,6 +510,11 @@
 }
 .nut-hub-card:active {
   transform: scale(0.98);
+}
+.nut-hub-card:focus { outline: none; }
+.nut-hub-card:focus:not(:focus-visible) {
+  border-color: var(--border-color);
+  transform: none;
 }
 @media (hover: hover) {
   .nut-hub-card:hover {
@@ -615,7 +631,7 @@
   gap: 8px;
   padding: 10px 20px;
   background: var(--color-success, #14b8a6);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
@@ -660,6 +676,20 @@
   background: rgba(45, 212, 191, 0.06);
 }
 
+[data-theme="dark"] .nhub-meal-card--filled:focus:not(:focus-visible) {
+  border-color: rgba(45, 212, 191, 0.2);
+  background: rgba(45, 212, 191, 0.06);
+}
+
+[data-theme="dark"] .nhub-meal-card:focus:not(:focus-visible) {
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(30, 30, 30, 0.8);
+}
+
+[data-theme="dark"] .nut-hub-card:focus:not(:focus-visible) {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
 [data-theme="dark"] .nhub-meal-card--filled .nhub-meal-icon {
   color: #2dd4bf;
 }
@@ -690,7 +720,7 @@
 }
 
 [data-theme="dark"] .nhub-bar-good {
-  background: #2dd4bf;
+  background: var(--color-success, #2dd4bf);
 }
 
 /* ===== RESPONSIVE ===== */
