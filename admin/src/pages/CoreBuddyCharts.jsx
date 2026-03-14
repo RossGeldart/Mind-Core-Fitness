@@ -288,14 +288,44 @@ export default function CoreBuddyCharts() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // Auto-open weekly summary when navigated from Sunday trigger
-  useEffect(() => {
-    if (location.state?.autoSummary && !loading && clientData?.id) {
-      generateWeeklySummary();
-      // Clear the state so it doesn't re-trigger on re-render
-      window.history.replaceState({}, document.title);
+  // Rule-based advice generation
+  const generateAdvice = (data) => {
+    const tips = [];
+
+    if (data.totalSessions === 0) {
+      tips.push('No sessions logged this week. Try to get at least 2-3 sessions in next week to build momentum.');
+    } else if (data.sessionDiff < -20 && data.prevSessions > 0) {
+      tips.push(`Sessions dropped ${Math.abs(data.sessionDiff)}% from last week. Aim to match or beat ${data.prevSessions} sessions next week.`);
+    } else if (data.sessionDiff > 20) {
+      tips.push(`Great progress — sessions up ${data.sessionDiff}% from last week! Keep this momentum going.`);
+    } else if (data.totalSessions >= 4) {
+      tips.push('Solid session count this week. Consistency is key — keep it up.');
     }
-  }, [location.state?.autoSummary, loading, clientData?.id, generateWeeklySummary]);
+
+    if (data.totalMinutes > 0 && data.minutesDiff < -20 && data.minutesDiff !== 0) {
+      tips.push('Training minutes dropped — try adding 10 minutes to each session next week.');
+    } else if (data.totalMinutes > 200) {
+      tips.push('Strong training volume. Make sure you are balancing intensity with recovery.');
+    }
+
+    if (data.habitPct >= 90) {
+      tips.push('Outstanding habit consistency! You are building a strong foundation.');
+    } else if (data.habitPct >= 70) {
+      tips.push('Good habit compliance. Focus on the habits you missed to push towards 90%+.');
+    } else if (data.habitPct < 50 && data.habitPct > 0) {
+      tips.push('Habits need attention — try focusing on just 2-3 key habits next week and build from there.');
+    }
+
+    if (data.totalVolume > 0 && data.totalVolume < 5000) {
+      tips.push('Consider progressively increasing your training volume by adding an extra set or small weight increase.');
+    }
+
+    if (tips.length === 0) {
+      tips.push('Keep up the good work and stay consistent with your training and habits.');
+    }
+
+    return tips.join(' ');
+  };
 
   // --- Weekly Summary ---
   const generateWeeklySummary = useCallback(async () => {
@@ -402,44 +432,14 @@ export default function CoreBuddyCharts() {
     }
   }, [clientData?.id]);
 
-  // Rule-based advice generation
-  const generateAdvice = (data) => {
-    const tips = [];
-
-    if (data.totalSessions === 0) {
-      tips.push('No sessions logged this week. Try to get at least 2-3 sessions in next week to build momentum.');
-    } else if (data.sessionDiff < -20 && data.prevSessions > 0) {
-      tips.push(`Sessions dropped ${Math.abs(data.sessionDiff)}% from last week. Aim to match or beat ${data.prevSessions} sessions next week.`);
-    } else if (data.sessionDiff > 20) {
-      tips.push(`Great progress — sessions up ${data.sessionDiff}% from last week! Keep this momentum going.`);
-    } else if (data.totalSessions >= 4) {
-      tips.push('Solid session count this week. Consistency is key — keep it up.');
+  // Auto-open weekly summary when navigated from Sunday trigger
+  useEffect(() => {
+    if (location.state?.autoSummary && !loading && clientData?.id) {
+      generateWeeklySummary();
+      // Clear the state so it doesn't re-trigger on re-render
+      window.history.replaceState({}, document.title);
     }
-
-    if (data.totalMinutes > 0 && data.minutesDiff < -20 && data.minutesDiff !== 0) {
-      tips.push('Training minutes dropped — try adding 10 minutes to each session next week.');
-    } else if (data.totalMinutes > 200) {
-      tips.push('Strong training volume. Make sure you are balancing intensity with recovery.');
-    }
-
-    if (data.habitPct >= 90) {
-      tips.push('Outstanding habit consistency! You are building a strong foundation.');
-    } else if (data.habitPct >= 70) {
-      tips.push('Good habit compliance. Focus on the habits you missed to push towards 90%+.');
-    } else if (data.habitPct < 50 && data.habitPct > 0) {
-      tips.push('Habits need attention — try focusing on just 2-3 key habits next week and build from there.');
-    }
-
-    if (data.totalVolume > 0 && data.totalVolume < 5000) {
-      tips.push('Consider progressively increasing your training volume by adding an extra set or small weight increase.');
-    }
-
-    if (tips.length === 0) {
-      tips.push('Keep up the good work and stay consistent with your training and habits.');
-    }
-
-    return tips.join(' ');
-  };
+  }, [location.state?.autoSummary, loading, clientData?.id, generateWeeklySummary]);
 
   if (authLoading || !clientData) {
     return <div className="cht-loading"><div className="cht-spinner" /></div>;
