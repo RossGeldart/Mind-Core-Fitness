@@ -117,7 +117,7 @@ export default function UpgradePage() {
 
   const STRIPE_PAYMENT_LINKS = {
     monthly: 'https://buy.stripe.com/5kQ8wP98F9qwdgbcJx8IU05',
-    annual: 'https://buy.stripe.com/4gM14nbgNbyEfoj38X8IU06',
+    annual: 'https://buy.stripe.com/8x228r84BgSYa3Z8th8IU07',
   };
 
   function handleSelectPlan(plan) {
