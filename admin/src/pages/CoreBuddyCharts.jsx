@@ -204,10 +204,7 @@ export default function CoreBuddyCharts() {
                 .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            const label = weekStart.getDate() === clippedEnd.getDate()
-              ? shortDateLabel(weekStart)
-              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
-            weekData.push({ label, sessions, duration: totalDuration });
+            weekData.push({ label: String(weekStart.getDate()), sessions, duration: totalDuration });
             weekStart = new Date(clippedEnd);
             weekStart.setDate(weekStart.getDate() + 1);
           }
@@ -256,10 +253,7 @@ export default function CoreBuddyCharts() {
                 });
               });
             });
-            const label = weekStart.getDate() === clippedEnd.getDate()
-              ? shortDateLabel(weekStart)
-              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
-            volData.push({ label, volume: Math.round(totalVol) });
+            volData.push({ label: String(weekStart.getDate()), volume: Math.round(totalVol) });
             weekStart = new Date(clippedEnd);
             weekStart.setDate(weekStart.getDate() + 1);
           }
@@ -307,10 +301,7 @@ export default function CoreBuddyCharts() {
                 .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            const label = weekStart.getDate() === clippedEnd.getDate()
-              ? shortDateLabel(weekStart)
-              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
-            minData.push({ label, minutes: totalMin });
+            minData.push({ label: String(weekStart.getDate()), minutes: totalMin });
             weekStart = new Date(clippedEnd);
             weekStart.setDate(weekStart.getDate() + 1);
           }
