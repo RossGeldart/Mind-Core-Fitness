@@ -2,9 +2,10 @@ import { lazy, Suspense, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { TierProvider } from './contexts/TierContext';
+import mixpanel from './config/mixpanel';
 import Login from './pages/Login';
 import LoginPortal from './pages/LoginPortal';
 import NativeLogin from './pages/NativeLogin';
@@ -106,6 +107,33 @@ function AndroidBackButton() {
   return null;
 }
 
+// Track page views + identify user in Mixpanel
+function MixpanelTracker() {
+  const { pathname } = useLocation();
+  const { currentUser, clientData } = useAuth();
+
+  // Identify user when they log in
+  useEffect(() => {
+    if (currentUser) {
+      mixpanel.identify(currentUser.uid);
+      mixpanel.people.set({
+        $email: currentUser.email || '',
+        $name: clientData?.name || currentUser.displayName || '',
+        platform: isNative ? Capacitor.getPlatform() : 'web',
+      });
+    } else {
+      mixpanel.reset();
+    }
+  }, [currentUser, clientData]);
+
+  // Track page views on route change
+  useEffect(() => {
+    mixpanel.track('Page View', { path: pathname });
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <ThemeProvider>
@@ -114,6 +142,7 @@ function App() {
         <BrowserRouter basename={basename}>
           <RedirectHandler />
           <AndroidBackButton />
+          <MixpanelTracker />
           <ScrollToTop>
           <Suspense fallback={<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-body)' }}><img src="/Logo.webp" alt="" style={{ width: 140, height: 140, objectFit: 'cover', borderRadius: '50%', border: '3px solid var(--color-primary)', animation: 'app-fade-in 1s ease-out both' }} /></div>}>
           <Routes>
