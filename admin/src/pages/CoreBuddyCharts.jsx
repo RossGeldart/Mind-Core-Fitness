@@ -337,12 +337,12 @@ export default function CoreBuddyCharts() {
                 fats: acc.fats + (e.fats || 0),
                 calories: acc.calories + (e.calories || 0),
               }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
-              macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, ...totals });
+              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, ...totals });
             } else {
-              macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
             }
           } catch {
-            macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+            macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
           }
           current.setDate(current.getDate() + 1);
         }
@@ -735,7 +735,7 @@ export default function CoreBuddyCharts() {
                   <XAxis
                     dataKey="label"
                     tick={{ fill: textColor, fontSize: 9, fontFamily: 'Inter' }}
-                    interval={isMonthly ? 4 : 0}
+                    interval={isMonthly ? 6 : 0}
                   />
                   <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: currentMacro?.unit || '', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} ${currentMacro?.unit}`, currentMacro?.label]} />
