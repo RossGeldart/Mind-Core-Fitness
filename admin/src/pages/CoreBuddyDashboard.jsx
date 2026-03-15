@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc,
-  addDoc, deleteDoc, increment, serverTimestamp, onSnapshot,
+  addDoc, deleteDoc, increment, serverTimestamp,
   writeBatch
 } from 'firebase/firestore';
+import useFirestoreListener from '../hooks/useFirestoreListener';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -184,7 +185,7 @@ export default function CoreBuddyDashboard() {
   const commentFileRefs = useRef({});
 
   // Notifications
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotificationsRaw] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
 
@@ -357,29 +358,27 @@ export default function CoreBuddyDashboard() {
     }
   }, [clientData]);
 
-  // Real-time notification listener
-  useEffect(() => {
-    if (!clientData) return;
-    const q = query(
-      collection(db, 'notifications'),
-      where('toId', '==', clientData.id)
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const notifs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      notifs.sort((a, b) => {
+  // Real-time notification listener (via shared hook)
+  const notifQuery = useMemo(
+    () => clientData ? query(collection(db, 'notifications'), where('toId', '==', clientData.id)) : null,
+    [clientData]
+  );
+  const { data: rawNotifications } = useFirestoreListener(notifQuery, {
+    transform: (docs) => {
+      const sorted = [...docs].sort((a, b) => {
         const aTime = a.createdAt?.toMillis?.() || 0;
         const bTime = b.createdAt?.toMillis?.() || 0;
         return bTime - aTime;
       });
-      setNotifications(notifs.slice(0, 50));
-    }, (err) => {
-      console.error('Notification listener error:', err);
+      return sorted.slice(0, 50);
+    },
+    onError: (err) => {
       if (err.code === 'permission-denied') {
-        console.warn('Firestore rules may be missing for the notifications collection. Please update your Firestore rules in the Firebase Console.');
+        console.warn('Firestore rules may be missing for the notifications collection.');
       }
-    });
-    return () => unsub();
-  }, [clientData]);
+    },
+  });
+  useEffect(() => { setNotificationsRaw(rawNotifications); }, [rawNotifications]);
 
   // Close notification panel on outside click
   useEffect(() => {

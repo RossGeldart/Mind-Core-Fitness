@@ -15,12 +15,21 @@ const QUOTES = [
   'Stronger every session.',
 ];
 
-export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, userName, buttonLabel = 'Done', holdLabel = 'Hold To Complete Session', shareType = 'workout', hideShare = false }) {
+const FEELINGS = [
+  { value: 1, label: 'Tough', icon: '😵' },
+  { value: 2, label: 'Hard', icon: '😤' },
+  { value: 3, label: 'Good', icon: '😊' },
+  { value: 4, label: 'Great', icon: '💪' },
+  { value: 5, label: 'Amazing', icon: '🔥' },
+];
+
+export default function WorkoutCelebration({ title, subtitle, stats, onDone, onDismissStart, onShareJourney, onRate, userName, buttonLabel = 'Done', holdLabel = 'Hold To Complete Session', shareType = 'workout', hideShare = false }) {
   const [phase, setPhase] = useState('hold');       // 'hold' | 'celebrate'
   const [holding, setHolding] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0); // 0-1 for logo reveal
   const [dismissing, setDismissing] = useState(false);
   const [journeyPosted, setJourneyPosted] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(null);
   const [shareToast, setShareToast] = useState(null);
 
   const feedback = useFeedback();
@@ -267,6 +276,26 @@ export default function WorkoutCelebration({ title, subtitle, stats, onDone, onD
                 <span className="wc-celeb-stat-label">{s.label}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* How did it feel? rating */}
+        {onRate && (
+          <div className="wc-feeling-section">
+            <p className="wc-feeling-label">How did it feel?</p>
+            <div className="wc-feeling-row">
+              {FEELINGS.map(f => (
+                <button
+                  key={f.value}
+                  className={`wc-feeling-btn ${selectedRating === f.value ? 'wc-feeling-selected' : ''}`}
+                  onClick={() => { setSelectedRating(f.value); onRate(f.value); }}
+                  aria-label={f.label}
+                >
+                  <span className="wc-feeling-icon">{f.icon}</span>
+                  <span className="wc-feeling-text">{f.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
