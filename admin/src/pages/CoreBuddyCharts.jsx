@@ -182,27 +182,34 @@ export default function CoreBuddyCharts() {
       // --- Activity & Sessions ---
       {
         if (isMonthly) {
-          // Weekly bars for the selected month
-          const firstMonday = getMonday(range.start);
+          // Weekly bars for the selected calendar month (1st to last day)
           const weekData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            // Clip week end to month boundary
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
-            const sessions = activityDocs.filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr).length
-              + workoutDocs.filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr).length;
+            const sessions = activityDocs.filter(a => a.date >= wStartStr && a.date < wEndExclStr).length
+              + workoutDocs.filter(d => d.date >= wStartStr && d.date < wEndExclStr).length;
             const totalDuration = activityDocs
-              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .filter(a => a.date >= wStartStr && a.date < wEndExclStr)
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
-                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            weekData.push({ label: shortDateLabel(monday), sessions, duration: totalDuration });
-            monday = nextMon;
+            const label = weekStart.getDate() === clippedEnd.getDate()
+              ? shortDateLabel(weekStart)
+              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
+            weekData.push({ label, sessions, duration: totalDuration });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setActivityData(weekData);
         } else {
@@ -227,17 +234,19 @@ export default function CoreBuddyCharts() {
       // --- Training Volume (BYO workouts only) ---
       {
         if (isMonthly) {
-          const firstMonday = getMonday(range.start);
           const volData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
             const weekWorkouts = workoutDocs.filter(
-              d => d.type === 'custom_sets' && d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr
+              d => d.type === 'custom_sets' && d.date >= wStartStr && d.date < wEndExclStr
             );
             let totalVol = 0;
             weekWorkouts.forEach(d => {
@@ -247,8 +256,12 @@ export default function CoreBuddyCharts() {
                 });
               });
             });
-            volData.push({ label: shortDateLabel(monday), volume: Math.round(totalVol) });
-            monday = nextMon;
+            const label = weekStart.getDate() === clippedEnd.getDate()
+              ? shortDateLabel(weekStart)
+              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
+            volData.push({ label, volume: Math.round(totalVol) });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setVolumeData(volData);
         } else {
@@ -276,24 +289,30 @@ export default function CoreBuddyCharts() {
       // --- Minutes Trained ---
       {
         if (isMonthly) {
-          const firstMonday = getMonday(range.start);
           const minData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
             const totalMin = activityDocs
-              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .filter(a => a.date >= wStartStr && a.date < wEndExclStr)
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
-                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            minData.push({ label: shortDateLabel(monday), minutes: totalMin });
-            monday = nextMon;
+            const label = weekStart.getDate() === clippedEnd.getDate()
+              ? shortDateLabel(weekStart)
+              : `${weekStart.getDate()}-${clippedEnd.getDate()} ${shortMonths[weekStart.getMonth()]}`;
+            minData.push({ label, minutes: totalMin });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setMinutesData(minData);
         } else {
