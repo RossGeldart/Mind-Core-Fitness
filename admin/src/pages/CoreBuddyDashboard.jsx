@@ -296,19 +296,6 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, clientData, navigate]);
 
-  // Sunday auto-trigger: navigate to charts page for weekly summary
-  useEffect(() => {
-    if (!isPremium || !clientData?.id || !statsLoaded) return;
-    const now = new Date();
-    if (now.getDay() !== 0) return; // 0 = Sunday
-    const key = `weeklySummary_${clientData.id}_${formatDate(now)}`;
-    try {
-      if (localStorage.getItem(key)) return;
-      localStorage.setItem(key, '1');
-    } catch { return; }
-    const t = setTimeout(() => navigate('/client/core-buddy/charts', { state: { autoSummary: true } }), 1200);
-    return () => clearTimeout(t);
-  }, [isPremium, clientData?.id, statsLoaded, navigate]);
 
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)

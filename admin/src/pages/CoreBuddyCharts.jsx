@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc
 } from 'firebase/firestore';
@@ -103,7 +103,6 @@ export default function CoreBuddyCharts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Global period toggle
   const [period, setPeriod] = useState('weekly'); // 'weekly' | 'monthly'
@@ -127,6 +126,7 @@ export default function CoreBuddyCharts() {
   const [summaryData, setSummaryData] = useState(null);
   const [summaryAdvice, setSummaryAdvice] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   // Reset offset when period changes
   const handlePeriodChange = (newPeriod) => {
@@ -417,6 +417,8 @@ export default function CoreBuddyCharts() {
   const generateWeeklySummary = useCallback(async () => {
     if (!clientData?.id) return;
     setSummaryLoading(true);
+    setSummaryError(null);
+    setSummaryData(null);
     setShowWeeklySummary(true);
 
     try {
@@ -538,19 +540,12 @@ export default function CoreBuddyCharts() {
 
     } catch (err) {
       console.error('Error generating weekly summary:', err);
+      setSummaryError(err.message || 'Something went wrong');
     } finally {
       setSummaryLoading(false);
     }
   }, [clientData?.id]);
 
-  // Auto-open weekly summary when navigated from Sunday trigger
-  useEffect(() => {
-    if (location.state?.autoSummary && !loading && clientData?.id) {
-      generateWeeklySummary();
-      // Clear the state so it doesn't re-trigger on re-render
-      window.history.replaceState({}, document.title);
-    }
-  }, [location.state?.autoSummary, loading, clientData?.id, generateWeeklySummary]);
 
   if (authLoading || !clientData) {
     return <div className="cht-loading"><div className="cht-spinner" /></div>;
@@ -833,7 +828,10 @@ export default function CoreBuddyCharts() {
               </div>
             </>
           ) : (
-            <p className="cht-summary-error">Could not load summary data</p>
+            <div className="cht-summary-error">
+              <p>{summaryError || 'Could not load summary data'}</p>
+              <button className="cht-retry-btn" onClick={generateWeeklySummary}>Retry</button>
+            </div>
           )}
         </div>
       </div>
