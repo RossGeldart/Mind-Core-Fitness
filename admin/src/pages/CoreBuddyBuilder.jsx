@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
 import { TICKS_85_96 } from '../utils/ringTicks';
+import { trackWidgetToggled, trackProfilePhotoUploaded } from '../utils/analytics';
 import './CoreBuddyBuilder.css';
 
 const TAGLINES = [
@@ -112,6 +113,7 @@ export default function CoreBuddyBuilder() {
       await updateDoc(doc(db, 'clients', clientData.id), { photoURL: url });
       setPhotoURL(url);
       updateClientData({ photoURL: url });
+      trackProfilePhotoUploaded();
     } catch (err) {
       console.error('Photo upload error:', err);
     } finally {
@@ -122,6 +124,8 @@ export default function CoreBuddyBuilder() {
   // Toggle widget
   const toggleWidget = (id) => {
     setSaved(false);
+    const willBeEnabled = !widgets.includes(id);
+    trackWidgetToggled({ widget: id, enabled: willBeEnabled });
     setWidgets(prev =>
       prev.includes(id) ? prev.filter(w => w !== id) : [...prev, id]
     );

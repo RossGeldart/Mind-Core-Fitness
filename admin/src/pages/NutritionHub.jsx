@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { trackFavouriteQuickAdded } from '../utils/analytics';
 import './NutritionHub.css';
 
 const BETA_EMAILS = ['testy@test123.com'];
@@ -168,6 +169,7 @@ export default function NutritionHub() {
         entries: updatedEntries,
         updatedAt: Timestamp.now(),
       });
+      trackFavouriteQuickAdded(fav.name);
     } catch (err) {
       console.error('Error quick-adding favourite:', err);
     }

@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, Time
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { trackCircuitBooked } from '../utils/analytics';
 import './CircuitBooking.css';
 import './CircuitDashboard.css';
 
@@ -230,6 +231,7 @@ export default function CircuitBooking() {
 
       await updateDoc(doc(db, 'circuitSessions', session.id), updateData);
       setSession(prev => ({ ...prev, ...updateData }));
+      trackCircuitBooked({ type: clientData.clientType || 'block' });
       showToast('Slot booked!', 'success');
     } catch (error) {
       console.error('Error booking slot:', error);

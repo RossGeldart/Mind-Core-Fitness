@@ -11,6 +11,7 @@ import useBarcodeScanner from '../hooks/useBarcodeScanner';
 import useFoodSearch from '../hooks/useFoodSearch';
 import ScannerView from '../components/ScannerView';
 import ProductResult from '../components/ProductResult';
+import { trackMealLogged, trackFoodSearched, trackBarcodeScanned, trackFavouriteSaved, trackDayCopied } from '../utils/analytics';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -471,6 +472,7 @@ export default function CoreBuddyNutrition() {
         servingUnit: entry.servingUnit || 'g',
         portion: entry.portion || null,
       });
+      trackFavouriteSaved(entry.name);
     }
     localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
     // Persist to Firestore for cross-session reliability
@@ -487,6 +489,7 @@ export default function CoreBuddyNutrition() {
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
     saveLog(newLog);
+    trackMealLogged({ meal: selectedMeal, items: newEntries.length, calories: entry.calories || 0, protein: entry.protein || 0 });
     setAddMode(null);
     setScannedProduct(null);
     setServingInput('100');
@@ -604,6 +607,7 @@ export default function CoreBuddyNutrition() {
       setTodayLog(newLog);
       saveLog(newLog);
       setCopyFromOpen(false);
+      trackDayCopied();
       showToast(`Copied ${srcEntries.length} items from ${formatDisplayDate(sourceDate)}`, 'success');
     } catch (err) {
       console.error('Error copying day:', err);
@@ -622,6 +626,7 @@ export default function CoreBuddyNutrition() {
       const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeout);
       if (res.status === 404) {
+        trackBarcodeScanned(false);
         showToast('Product not found. Try search or manual entry.', 'error');
         setBarcodeLooking(false);
         return;
@@ -631,8 +636,10 @@ export default function CoreBuddyNutrition() {
       if (data.status === 'success' || data.status === 1 || data.product) {
         const product = parseProduct(data.product);
         if (product.calories === 0 && product.protein === 0 && product.carbs === 0) {
+          trackBarcodeScanned(false);
           showToast('Product found but no nutrition data available.', 'error');
         } else {
+          trackBarcodeScanned(true);
           setScannedProduct(product);
           if (product.portion) {
             setPortionCount(1);
@@ -646,10 +653,12 @@ export default function CoreBuddyNutrition() {
           setManualBarcode('');
         }
       } else {
+        trackBarcodeScanned(false);
         showToast('Product not found. Try search or manual entry.', 'error');
       }
     } catch (err) {
       console.error('Barcode lookup error:', err);
+      trackBarcodeScanned(false);
       if (err.name === 'AbortError') {
         showToast('Lookup timed out. Check your connection and try again.', 'error');
       } else {
@@ -1280,10 +1289,10 @@ export default function CoreBuddyNutrition() {
               <div className="nut-search-area">
                 <div className="nut-search-bar">
                   <input type="text" ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { searchFood(searchQuery); } }}
+                    onKeyDown={e => { if (e.key === 'Enter') { trackFoodSearched(searchQuery); searchFood(searchQuery); } }}
                     onFocus={() => setTimeout(() => searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)}
                     placeholder="Search food or product..." autoFocus />
-                  <button onClick={() => searchFood(searchQuery)} disabled={searchLoading}>
+                  <button onClick={() => { trackFoodSearched(searchQuery); searchFood(searchQuery); }} disabled={searchLoading}>
                     {searchLoading ? '...' : 'Search'}
                   </button>
                 </div>

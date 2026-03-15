@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
+import { trackLogin, trackSignup } from '../utils/analytics';
 import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
 import './Login.css';
@@ -96,6 +97,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password, rememberMe);
+      trackLogin('email');
     } catch (err) {
       setError(err.message || 'Failed to log in');
       setLoading(false);
@@ -107,6 +109,7 @@ export default function Login() {
     setGoogleLoading(true);
     try {
       await loginWithGoogle();
+      trackLogin('google');
       if (mode === 'signup') {
         if (typeof fbq === 'function') {
           fbq('track', 'CompleteRegistration', {
@@ -130,6 +133,7 @@ export default function Login() {
     setAppleLoading(true);
     try {
       await loginWithApple();
+      trackLogin('apple');
       if (mode === 'signup') {
         if (typeof fbq === 'function') {
           fbq('track', 'CompleteRegistration', {
@@ -161,6 +165,7 @@ export default function Login() {
     try {
       const cred = await signup(name, email, password);
       await sendEmailVerification(cred.user);
+      trackSignup('email');
       if (typeof fbq === 'function') {
         fbq('track', 'CompleteRegistration', {
           content_name: 'Core Buddy Signup',
