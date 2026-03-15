@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  collection, query, where, getDocs, doc, getDoc
+  collection, query, where, getDocs, doc, getDoc, setDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -423,6 +423,18 @@ export default function CoreBuddyCharts() {
       const now = new Date();
       const monday = getMonday(now);
       const mondayStr = formatDate(monday);
+      const cacheId = `${clientData.id}_${mondayStr}`;
+
+      // Check Firestore cache first — only generate once per week
+      const cacheSnap = await getDoc(doc(db, 'weeklySummaries', cacheId));
+      if (cacheSnap.exists()) {
+        const cached = cacheSnap.data();
+        setSummaryData(cached.summaryData);
+        setSummaryAdvice(cached.advice);
+        setSummaryLoading(false);
+        return;
+      }
+
       const sunday = new Date(monday);
       sunday.setDate(sunday.getDate() + 7);
       const sundayStr = formatDate(sunday);
@@ -507,9 +519,22 @@ export default function CoreBuddyCharts() {
 
       setSummaryData(summary);
 
-      // Generate rule-based advice
+      // Generate rule-based advice (will be replaced by Claude AI later)
       const advice = generateAdvice(summary);
       setSummaryAdvice(advice);
+
+      // Cache to Firestore — won't regenerate until next week's Monday
+      try {
+        await setDoc(doc(db, 'weeklySummaries', cacheId), {
+          clientId: clientData.id,
+          weekStart: mondayStr,
+          summaryData: summary,
+          advice,
+          generatedAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error('Failed to cache weekly summary:', e);
+      }
 
     } catch (err) {
       console.error('Error generating weekly summary:', err);
