@@ -76,6 +76,69 @@
   margin: 0 0 16px;
 }
 
+/* Workout Ratings Section */
+.acb-ratings-section {
+  margin-bottom: 32px;
+}
+
+.acb-ratings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.acb-rating-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.acb-rating-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.acb-rating-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acb-rating-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acb-rating-detail {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.acb-rating-detail strong {
+  color: var(--text-primary);
+}
+
+.acb-rating-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* Create Section */
 .acb-create {
   margin-bottom: 32px;
