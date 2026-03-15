@@ -11,6 +11,7 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import WorkoutCelebration from '../components/WorkoutCelebration';
 import { awardBadge } from '../utils/awardBadge';
 import BadgeCelebration from '../components/BadgeCelebration';
+import { trackHabitCompleted, trackHabitUndone, trackCustomHabitCreated, trackCustomHabitDeleted, trackAllHabitsComplete } from '../utils/analytics';
 
 
 const DEFAULT_HABITS = [
@@ -234,6 +235,7 @@ export default function CoreBuddyConsistency() {
         date: todayStr,
         habits: updated,
       });
+      trackHabitCompleted(habitKey);
 
       // All habits complete — trigger celebration
       const completedCount = Object.values(updated).filter(Boolean).length;
@@ -250,6 +252,7 @@ export default function CoreBuddyConsistency() {
           height: 4 + Math.random() * 8,
           shape: i % 3, // 0=rect, 1=circle, 2=strip
         }));
+        trackAllHabitsComplete(trackableCount);
         setTimeout(() => {
           setShowCelebration(true);
           setCelebrationShownToday(true);
@@ -302,6 +305,7 @@ export default function CoreBuddyConsistency() {
         date: todayStr,
         habits: updated,
       });
+      trackHabitUndone(habitKey);
 
       setHabitLogs(prev => ({
         ...prev,
@@ -429,6 +433,7 @@ export default function CoreBuddyConsistency() {
       setCustomHabits(updated);
       setNewHabitName('');
       setShowAddModal(false);
+      trackCustomHabitCreated(name);
       showToast(`Added "${name}"`, 'success');
     } catch (err) {
       console.error('Error adding custom habit:', err);
@@ -456,6 +461,7 @@ export default function CoreBuddyConsistency() {
       setCustomHabits(updated);
       setSavedHabits(updatedSaved);
       setDeleteConfirm(null);
+      trackCustomHabitDeleted(removed.label);
       showToast('Habit saved for later', 'success');
     } catch (err) {
       console.error('Error deleting habit:', err);

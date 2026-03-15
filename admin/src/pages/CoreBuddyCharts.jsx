@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import HabitSpiderChart from '../components/HabitSpiderChart';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { trackChartViewed, trackChartPeriodChanged } from '../utils/analytics';
 import './CoreBuddyCharts.css';
 
 const DEFAULT_HABITS = [
@@ -130,6 +131,7 @@ export default function CoreBuddyCharts() {
 
   // Reset offset when period changes
   const handlePeriodChange = (newPeriod) => {
+    trackChartPeriodChanged({ chart: 'all', period: newPeriod });
     setPeriod(newPeriod);
     setOffset(0);
   };
@@ -383,6 +385,11 @@ export default function CoreBuddyCharts() {
   }, [clientData?.id, period, offset]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Track chart viewed on mount
+  useEffect(() => {
+    trackChartViewed({ chart: 'activity' });
+  }, []);
 
   // Rule-based advice generation
   const generateAdvice = (data) => {

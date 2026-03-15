@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { awardBadge } from '../utils/awardBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { trackLeaderboardViewed, trackLeaderboardTabChanged } from '../utils/analytics';
 import './Leaderboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -192,6 +193,7 @@ export default function Leaderboard() {
   useEffect(() => {
     if (!clientData || !optedIn) return;
     setShowAll(false);
+    trackLeaderboardViewed({ period, metric: activeTab });
     fetchLeaderboard();
   }, [clientData, optedIn, activeTab, period]);
 
@@ -520,7 +522,7 @@ export default function Leaderboard() {
             <button
               key={tab.key}
               className={`lb-tab ${activeTab === tab.key ? 'lb-tab-active' : ''}`}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => { trackLeaderboardTabChanged(tab.key); setActiveTab(tab.key); }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d={tab.icon}/></svg>
               <span>{tab.label}</span>
@@ -537,19 +539,19 @@ export default function Leaderboard() {
             <div className="lb-period-toggle">
               <button
                 className={`lb-period-btn ${period === 'week' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('week')}
+                onClick={() => { trackLeaderboardTabChanged('week'); setPeriod('week'); }}
               >
                 This Week
               </button>
               <button
                 className={`lb-period-btn ${period === 'month' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('month')}
+                onClick={() => { trackLeaderboardTabChanged('month'); setPeriod('month'); }}
               >
                 This Month
               </button>
               <button
                 className={`lb-period-btn ${period === 'year' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('year')}
+                onClick={() => { trackLeaderboardTabChanged('year'); setPeriod('year'); }}
               >
                 This Year
               </button>

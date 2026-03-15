@@ -13,6 +13,7 @@ import WorkoutCelebration from '../components/WorkoutCelebration';
 import BUDDY_EXERCISES, { PROGRAMMABLE_EXERCISES } from '../config/buddyExercises';
 import { awardBadge } from '../utils/awardBadge';
 import BadgeCelebration from '../components/BadgeCelebration';
+import { trackWorkoutStarted, trackWorkoutCompleted, trackWorkoutShared, trackExerciseSwapped, trackBYOWorkoutBuilt } from '../utils/analytics';
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
@@ -406,6 +407,7 @@ export default function CoreBuddyWorkouts() {
       commentCount: 0,
       ...(isStructured ? { metadata: { title: data.title || '', subtitle: data.subtitle || '', stats: data.stats || [], quote: data.quote || '', badges: data.badges || [] } } : {}),
     });
+    trackWorkoutShared();
   }, [clientData]);
 
 
@@ -904,12 +906,14 @@ export default function CoreBuddyWorkouts() {
     setByoLoading(false);
     previewTimers.current.forEach(clearTimeout);
     previewTimers.current = [];
+    trackBYOWorkoutBuilt({ exerciseCount: byoSelected.length, equipment: equipmentUsed });
     setView('countdown');
     setStartCountdown(3);
   };
 
   const byoStartSets = () => {
     if (byoSelected.length === 0) return;
+    trackBYOWorkoutBuilt({ exerciseCount: byoSelected.length, equipment: [...new Set(byoSelected.map(e => e.equipment))] });
     byoInitSetsData(byoSelected);
     setView('byo_sets');
   };
@@ -942,6 +946,7 @@ export default function CoreBuddyWorkouts() {
         completedAt: Timestamp.now(),
       });
 
+      trackWorkoutCompleted({ focus: 'custom_sets', level: 'custom', duration: 0, equipment: [...new Set(byoSelected.map(e => e.equipment))], exerciseCount: exercises.length });
       setWeeklyCount(c => c + 1);
       const newTotal = totalCount + 1;
       setTotalCount(newTotal);
@@ -1352,6 +1357,7 @@ export default function CoreBuddyWorkouts() {
       setTimeLeft(levelConfig.work);
       setIsPaused(false);
       playGo();
+      trackWorkoutStarted({ focus: focusArea, level, duration, equipment: selectedEquipment });
       return;
     }
     playBeep();
@@ -1416,6 +1422,7 @@ export default function CoreBuddyWorkouts() {
         date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
+      trackWorkoutCompleted({ focus: focusArea, level, duration, equipment: selectedEquipment, exerciseCount: workout.length });
       if (typeof fbq === 'function') {
         fbq('trackCustom', 'WorkoutCompleted', {
           duration: duration,

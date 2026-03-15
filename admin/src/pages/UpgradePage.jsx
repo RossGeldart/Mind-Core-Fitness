@@ -6,6 +6,7 @@ import { STRIPE_PRICES } from '../config/stripe';
 import { Capacitor } from '@capacitor/core';
 import { openExternal } from '../utils/openExternal';
 import ThemeToggle from '../components/ThemeToggle';
+import { trackUpgradeViewed, trackUpgradeStarted } from '../utils/analytics';
 import './UpgradePage.css';
 
 const isNative = Capacitor.isNativePlatform();
@@ -49,6 +50,11 @@ export default function UpgradePage() {
   const [rcLoading, setRcLoading] = useState(isNative);
   const [tierTab, setTierTab] = useState('premium');
   const [selectedPlan, setSelectedPlan] = useState('annual');
+
+  // Track page view
+  useEffect(() => {
+    trackUpgradeViewed({ isPremium, subscriptionStatus });
+  }, []);
 
   // Load RevenueCat offerings on native (with 20s timeout)
   const [rcRetry, setRcRetry] = useState(0);
@@ -139,6 +145,8 @@ export default function UpgradePage() {
       });
     }
 
+    trackUpgradeStarted({ plan, platform: 'web' });
+
     const url = new URL(STRIPE_PAYMENT_LINKS[plan]);
     url.searchParams.set('prefilled_email', currentUser.email);
     if (clientData?.id) url.searchParams.set('client_reference_id', clientData.id);
@@ -198,6 +206,7 @@ export default function UpgradePage() {
 
     setLoading(plan);
     setError(null);
+    trackUpgradeStarted({ plan, platform: isAndroid ? 'android' : 'ios' });
 
     try {
       const { purchasePackage } = await import('../services/revenueCatService');

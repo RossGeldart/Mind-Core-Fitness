@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import ActivityLogger from '../components/ActivityLogger';
 
+import { trackActivityLogged, trackActivityDeleted } from '../utils/analytics';
 import './ActivityHistory.css';
 
 const ACTIVITY_ICONS = {
@@ -100,7 +101,9 @@ export default function ActivityHistory() {
   const handleDelete = async (activityId) => {
     if (!window.confirm('Delete this activity?')) return;
     try {
+      const deletedActivity = activities.find(a => a.id === activityId);
       await deleteDoc(doc(db, 'activityLogs', activityId));
+      trackActivityDeleted(deletedActivity?.activityType || 'unknown');
       await fetchActivities();
       showToast('Activity deleted', 'info');
     } catch (err) {
@@ -109,7 +112,8 @@ export default function ActivityHistory() {
     }
   };
 
-  const handleLogged = () => {
+  const handleLogged = (loggedActivity) => {
+    trackActivityLogged({ type: loggedActivity?.activityType || 'unknown', duration: loggedActivity?.duration || 0 });
     fetchActivities();
     showToast('Activity logged!', 'success');
   };
