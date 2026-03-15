@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy, writeBatch
+  collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, limit, writeBatch
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -14,6 +14,9 @@ export default function AdminCoreBuddy() {
 
   const [announcements, setAnnouncements] = useState([]);
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [ratedWorkouts, setRatedWorkouts] = useState([]);
+  const [loadingRatings, setLoadingRatings] = useState(true);
+  const [clientNames, setClientNames] = useState({});
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState(null);
@@ -53,9 +56,53 @@ export default function AdminCoreBuddy() {
     }
   }, []);
 
+  const fetchRatedWorkouts = useCallback(async () => {
+    setLoadingRatings(true);
+    try {
+      const q = query(
+        collection(db, 'workoutLogs'),
+        where('feelingRating', '>', 0),
+        orderBy('feelingRating'),
+        orderBy('completedAt', 'desc'),
+        limit(30)
+      );
+      const snap = await getDocs(q);
+      const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Sort by completedAt desc (since Firestore requires feelingRating as first orderBy)
+      logs.sort((a, b) => {
+        const aT = a.completedAt?.toMillis?.() || 0;
+        const bT = b.completedAt?.toMillis?.() || 0;
+        return bT - aT;
+      });
+      setRatedWorkouts(logs);
+
+      // Fetch client names for all unique clientIds
+      const ids = [...new Set(logs.map(l => l.clientId).filter(Boolean))];
+      if (ids.length > 0) {
+        const names = {};
+        // Batch fetch in groups of 10 (Firestore 'in' query limit)
+        for (let i = 0; i < ids.length; i += 10) {
+          const batch = ids.slice(i, i + 10);
+          const clientSnap = await getDocs(
+            query(collection(db, 'clients'), where('__name__', 'in', batch))
+          );
+          clientSnap.docs.forEach(d => { names[d.id] = d.data().name || d.data().email || d.id; });
+        }
+        setClientNames(prev => ({ ...prev, ...names }));
+      }
+    } catch (err) {
+      console.error('Error fetching rated workouts:', err);
+    } finally {
+      setLoadingRatings(false);
+    }
+  }, []);
+
   useEffect(() => {
-    if (currentUser && isAdmin) fetchAnnouncements();
-  }, [currentUser, isAdmin, fetchAnnouncements]);
+    if (currentUser && isAdmin) {
+      fetchAnnouncements();
+      fetchRatedWorkouts();
+    }
+  }, [currentUser, isAdmin, fetchAnnouncements, fetchRatedWorkouts]);
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -168,6 +215,41 @@ export default function AdminCoreBuddy() {
       </header>
 
       <main className="acb-main">
+        {/* Workout Ratings */}
+        <section className="acb-ratings-section">
+          <h2>Recent Workout Ratings</h2>
+          {loadingRatings ? (
+            <div className="acb-content-loading"><div className="acb-spinner" /></div>
+          ) : ratedWorkouts.length === 0 ? (
+            <div className="acb-empty">
+              <p>No rated workouts yet</p>
+            </div>
+          ) : (
+            <div className="acb-ratings-list">
+              {ratedWorkouts.map(w => {
+                const feeling = ['', '\u{1F635}', '\u{1F624}', '\u{1F60A}', '\u{1F4AA}', '\u{1F525}'][w.feelingRating] || '';
+                const feelingLabel = ['', 'Tough', 'Hard', 'Good', 'Great', 'Amazing'][w.feelingRating] || '';
+                const date = w.completedAt?.toDate ? w.completedAt.toDate() : null;
+                const workoutType = w.type === 'custom_sets' ? 'Build Your Own' : `${(w.focus || '').replace(/^\w/, c => c.toUpperCase())} ${w.duration || ''}min`;
+                return (
+                  <div key={w.id} className="acb-rating-card">
+                    <span className="acb-rating-emoji">{feeling}</span>
+                    <div className="acb-rating-info">
+                      <span className="acb-rating-name">{clientNames[w.clientId] || 'Client'}</span>
+                      <span className="acb-rating-detail">
+                        {workoutType} &mdash; felt <strong>{feelingLabel}</strong>
+                      </span>
+                    </div>
+                    <span className="acb-rating-date">
+                      {date ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         {/* Create Announcement */}
         <section className="acb-create">
           <h2>New Announcement</h2>
