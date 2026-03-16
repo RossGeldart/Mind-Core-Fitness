@@ -108,15 +108,15 @@ exports.sendPushNotification = onDocumentCreated({ document: 'notifications/{not
 
     if (!title || !body) return;
 
+    // Data-only message — no top-level `notification` key.
+    // This ensures the service worker's `push` event always fires on
+    // iOS Safari PWAs (a top-level `notification` can cause the browser
+    // to auto-handle it without waking the SW when the app is closed).
+    // Native iOS uses the `apns` section for display; web uses the SW.
     const message = {
-      notification: { title, body },
-      data: { type, notifId: event.params.notifId },
+      data: { type, notifId: event.params.notifId, title, body },
       webpush: {
-        notification: {
-          icon: 'https://www.mindcorefitness.com/login/Logo.webp',
-          badge: 'https://www.mindcorefitness.com/login/Logo.webp',
-          tag: type,
-        },
+        headers: { Urgency: 'high' },
       },
       apns: {
         headers: {
