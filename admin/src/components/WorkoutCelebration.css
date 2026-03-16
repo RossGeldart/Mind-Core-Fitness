@@ -377,6 +377,68 @@
 .wc-celeb-btn:active { transform: scale(0.97); }
 .wc-celeb-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
+/* ─── How Did It Feel? Rating ─── */
+.wc-feeling-section {
+  margin-top: 20px;
+  opacity: 0;
+  animation: wcTextIn 0.4s ease-out 0.92s forwards;
+}
+
+.wc-feeling-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.wc-feeling-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.wc-feeling-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wc-feeling-btn:active {
+  transform: scale(0.92);
+}
+
+.wc-feeling-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.wc-feeling-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.wc-feeling-selected {
+  background: rgba(var(--color-primary-rgb), 0.25);
+  border-color: var(--color-primary);
+}
+
+.wc-feeling-selected .wc-feeling-text {
+  color: #fff;
+}
+
 /* ─── Share Buttons ─── */
 .wc-share-row {
   display: flex;

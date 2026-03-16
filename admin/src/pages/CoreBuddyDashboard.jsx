@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc,
-  addDoc, deleteDoc, increment, serverTimestamp, onSnapshot,
+  addDoc, deleteDoc, increment, serverTimestamp,
   writeBatch
 } from 'firebase/firestore';
+import useFirestoreListener from '../hooks/useFirestoreListener';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -184,7 +185,7 @@ export default function CoreBuddyDashboard() {
   const commentFileRefs = useRef({});
 
   // Notifications
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotificationsRaw] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
 
@@ -296,19 +297,6 @@ export default function CoreBuddyDashboard() {
     }
   }, [authLoading, clientData, navigate]);
 
-  // Sunday auto-trigger: navigate to charts page for weekly summary
-  useEffect(() => {
-    if (!isPremium || !clientData?.id || !statsLoaded) return;
-    const now = new Date();
-    if (now.getDay() !== 0) return; // 0 = Sunday
-    const key = `weeklySummary_${clientData.id}_${formatDate(now)}`;
-    try {
-      if (localStorage.getItem(key)) return;
-      localStorage.setItem(key, '1');
-    } catch { return; }
-    const t = setTimeout(() => navigate('/client/core-buddy/charts', { state: { autoSummary: true } }), 1200);
-    return () => clearTimeout(t);
-  }, [isPremium, clientData?.id, statsLoaded, navigate]);
 
   // Start guided tour once for new users (after stats have loaded so all
   // target elements are in the DOM)
@@ -370,29 +358,27 @@ export default function CoreBuddyDashboard() {
     }
   }, [clientData]);
 
-  // Real-time notification listener
-  useEffect(() => {
-    if (!clientData) return;
-    const q = query(
-      collection(db, 'notifications'),
-      where('toId', '==', clientData.id)
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const notifs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      notifs.sort((a, b) => {
+  // Real-time notification listener (via shared hook)
+  const notifQuery = useMemo(
+    () => clientData ? query(collection(db, 'notifications'), where('toId', '==', clientData.id)) : null,
+    [clientData]
+  );
+  const { data: rawNotifications } = useFirestoreListener(notifQuery, {
+    transform: (docs) => {
+      const sorted = [...docs].sort((a, b) => {
         const aTime = a.createdAt?.toMillis?.() || 0;
         const bTime = b.createdAt?.toMillis?.() || 0;
         return bTime - aTime;
       });
-      setNotifications(notifs.slice(0, 50));
-    }, (err) => {
-      console.error('Notification listener error:', err);
+      return sorted.slice(0, 50);
+    },
+    onError: (err) => {
       if (err.code === 'permission-denied') {
-        console.warn('Firestore rules may be missing for the notifications collection. Please update your Firestore rules in the Firebase Console.');
+        console.warn('Firestore rules may be missing for the notifications collection.');
       }
-    });
-    return () => unsub();
-  }, [clientData]);
+    },
+  });
+  useEffect(() => { setNotificationsRaw(rawNotifications); }, [rawNotifications]);
 
   // Close notification panel on outside click
   useEffect(() => {
@@ -1467,7 +1453,7 @@ export default function CoreBuddyDashboard() {
           <div className="cb-spider-section">
             <h3 className="cb-spider-title">Habit Consistency</h3>
             <p className="cb-spider-subtitle">30-day completion rate</p>
-            <HabitSpiderChart period={30} compact />
+            <HabitSpiderChart period={30} compact interactive={false} />
             <button className="cb-charts-cta" onClick={() => navigate('/client/core-buddy/charts')}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
               My Charts

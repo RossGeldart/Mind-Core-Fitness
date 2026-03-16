@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
-  collection, query, where, getDocs, doc, getDoc
+  collection, query, where, getDocs, doc, getDoc, setDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import HabitSpiderChart from '../components/HabitSpiderChart';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { trackChartViewed, trackChartPeriodChanged } from '../utils/analytics';
 import './CoreBuddyCharts.css';
 
 const DEFAULT_HABITS = [
@@ -103,7 +104,6 @@ export default function CoreBuddyCharts() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Global period toggle
   const [period, setPeriod] = useState('weekly'); // 'weekly' | 'monthly'
@@ -127,9 +127,11 @@ export default function CoreBuddyCharts() {
   const [summaryData, setSummaryData] = useState(null);
   const [summaryAdvice, setSummaryAdvice] = useState('');
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   // Reset offset when period changes
   const handlePeriodChange = (newPeriod) => {
+    trackChartPeriodChanged({ chart: 'all', period: newPeriod });
     setPeriod(newPeriod);
     setOffset(0);
   };
@@ -182,27 +184,31 @@ export default function CoreBuddyCharts() {
       // --- Activity & Sessions ---
       {
         if (isMonthly) {
-          // Weekly bars for the selected month
-          const firstMonday = getMonday(range.start);
+          // Weekly bars for the selected calendar month (1st to last day)
           const weekData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            // Clip week end to month boundary
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
-            const sessions = activityDocs.filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr).length
-              + workoutDocs.filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr).length;
+            const sessions = activityDocs.filter(a => a.date >= wStartStr && a.date < wEndExclStr).length
+              + workoutDocs.filter(d => d.date >= wStartStr && d.date < wEndExclStr).length;
             const totalDuration = activityDocs
-              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .filter(a => a.date >= wStartStr && a.date < wEndExclStr)
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
-                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            weekData.push({ label: shortDateLabel(monday), sessions, duration: totalDuration });
-            monday = nextMon;
+            weekData.push({ label: String(weekStart.getDate()), sessions, duration: totalDuration });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setActivityData(weekData);
         } else {
@@ -227,17 +233,19 @@ export default function CoreBuddyCharts() {
       // --- Training Volume (BYO workouts only) ---
       {
         if (isMonthly) {
-          const firstMonday = getMonday(range.start);
           const volData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
             const weekWorkouts = workoutDocs.filter(
-              d => d.type === 'custom_sets' && d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr
+              d => d.type === 'custom_sets' && d.date >= wStartStr && d.date < wEndExclStr
             );
             let totalVol = 0;
             weekWorkouts.forEach(d => {
@@ -247,8 +255,9 @@ export default function CoreBuddyCharts() {
                 });
               });
             });
-            volData.push({ label: shortDateLabel(monday), volume: Math.round(totalVol) });
-            monday = nextMon;
+            volData.push({ label: String(weekStart.getDate()), volume: Math.round(totalVol) });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setVolumeData(volData);
         } else {
@@ -276,24 +285,27 @@ export default function CoreBuddyCharts() {
       // --- Minutes Trained ---
       {
         if (isMonthly) {
-          const firstMonday = getMonday(range.start);
           const minData = [];
-          let monday = new Date(firstMonday);
-          while (monday <= range.end) {
-            const mondayStr = formatDate(monday);
-            const nextMon = new Date(monday);
-            nextMon.setDate(nextMon.getDate() + 7);
-            const nextMonStr = formatDate(nextMon);
+          let weekStart = new Date(range.start);
+          while (weekStart <= range.end) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            const clippedEnd = weekEnd > range.end ? new Date(range.end) : weekEnd;
+            const wStartStr = formatDate(weekStart);
+            const nextDay = new Date(clippedEnd);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const wEndExclStr = formatDate(nextDay);
 
             const totalMin = activityDocs
-              .filter(a => a.date >= mondayStr && a.date < nextMonStr && a.date >= rangeStartStr && a.date < rangeEndStr)
+              .filter(a => a.date >= wStartStr && a.date < wEndExclStr)
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
-                .filter(d => d.date >= mondayStr && d.date < nextMonStr && d.date >= rangeStartStr && d.date < rangeEndStr)
+                .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
                 .reduce((sum, d) => sum + (d.duration || 0), 0);
 
-            minData.push({ label: shortDateLabel(monday), minutes: totalMin });
-            monday = nextMon;
+            minData.push({ label: String(weekStart.getDate()), minutes: totalMin });
+            weekStart = new Date(clippedEnd);
+            weekStart.setDate(weekStart.getDate() + 1);
           }
           setMinutesData(minData);
         } else {
@@ -327,12 +339,12 @@ export default function CoreBuddyCharts() {
                 fats: acc.fats + (e.fats || 0),
                 calories: acc.calories + (e.calories || 0),
               }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
-              macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, ...totals });
+              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, ...totals });
             } else {
-              macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
             }
           } catch {
-            macData.push({ label: isMonthly ? shortDate(dayStr) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+            macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
           }
           current.setDate(current.getDate() + 1);
         }
@@ -373,6 +385,11 @@ export default function CoreBuddyCharts() {
   }, [clientData?.id, period, offset]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Track chart viewed on mount
+  useEffect(() => {
+    trackChartViewed({ chart: 'activity' });
+  }, []);
 
   // Rule-based advice generation
   const generateAdvice = (data) => {
@@ -417,12 +434,26 @@ export default function CoreBuddyCharts() {
   const generateWeeklySummary = useCallback(async () => {
     if (!clientData?.id) return;
     setSummaryLoading(true);
+    setSummaryError(null);
+    setSummaryData(null);
     setShowWeeklySummary(true);
 
     try {
       const now = new Date();
       const monday = getMonday(now);
       const mondayStr = formatDate(monday);
+      const cacheId = `${clientData.id}_${mondayStr}`;
+
+      // Check Firestore cache first — only generate once per week
+      const cacheSnap = await getDoc(doc(db, 'weeklySummaries', cacheId));
+      if (cacheSnap.exists()) {
+        const cached = cacheSnap.data();
+        setSummaryData(cached.summaryData);
+        setSummaryAdvice(cached.advice);
+        setSummaryLoading(false);
+        return;
+      }
+
       const sunday = new Date(monday);
       sunday.setDate(sunday.getDate() + 7);
       const sundayStr = formatDate(sunday);
@@ -507,25 +538,31 @@ export default function CoreBuddyCharts() {
 
       setSummaryData(summary);
 
-      // Generate rule-based advice
+      // Generate rule-based advice (will be replaced by Claude AI later)
       const advice = generateAdvice(summary);
       setSummaryAdvice(advice);
 
+      // Cache to Firestore — won't regenerate until next week's Monday
+      try {
+        await setDoc(doc(db, 'weeklySummaries', cacheId), {
+          clientId: clientData.id,
+          weekStart: mondayStr,
+          summaryData: summary,
+          advice,
+          generatedAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error('Failed to cache weekly summary:', e);
+      }
+
     } catch (err) {
       console.error('Error generating weekly summary:', err);
+      setSummaryError(err.message || 'Something went wrong');
     } finally {
       setSummaryLoading(false);
     }
   }, [clientData?.id]);
 
-  // Auto-open weekly summary when navigated from Sunday trigger
-  useEffect(() => {
-    if (location.state?.autoSummary && !loading && clientData?.id) {
-      generateWeeklySummary();
-      // Clear the state so it doesn't re-trigger on re-render
-      window.history.replaceState({}, document.title);
-    }
-  }, [location.state?.autoSummary, loading, clientData?.id, generateWeeklySummary]);
 
   if (authLoading || !clientData) {
     return <div className="cht-loading"><div className="cht-spinner" /></div>;
@@ -635,8 +672,8 @@ export default function CoreBuddyCharts() {
                 <ComposedChart data={activityData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} allowDecimals={false} label={{ value: 'Sessions', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Minutes', angle: 90, position: 'insideRight', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: 5 }} />
                   <Tooltip contentStyle={tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'Inter' }} />
                   <Bar yAxisId="left" dataKey="sessions" name="Sessions" fill={barColor} radius={[4, 4, 0, 0]} />
@@ -653,7 +690,7 @@ export default function CoreBuddyCharts() {
                 <BarChart data={volumeData} barCategoryGap="20%">
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Volume', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v.toLocaleString()}`, 'Volume']} />
                   <Bar dataKey="volume" name="Volume" fill={barColor} radius={[4, 4, 0, 0]}>
                   </Bar>
@@ -666,13 +703,21 @@ export default function CoreBuddyCharts() {
               <h3 className="cht-card-title">Minutes Trained</h3>
               <p className="cht-card-subtitle">{isMonthly ? 'Weekly training minutes' : 'Daily training minutes'}</p>
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={minutesData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, 'Minutes']} />
-                  <Line type="monotone" dataKey="minutes" name="Minutes" stroke={primaryColor} strokeWidth={2} dot={{ r: 3, fill: primaryColor }} />
-                </LineChart>
+                {(() => {
+                  const maxMin = Math.max(0, ...minutesData.map(d => d.minutes || 0));
+                  const topTick = Math.ceil(maxMin / 5) * 5 || 5;
+                  const ticks = [];
+                  for (let i = 0; i <= topTick; i += 5) ticks.push(i);
+                  return (
+                    <LineChart data={minutesData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                      <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                      <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={[0, topTick]} ticks={ticks} label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
+                      <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, 'Minutes']} />
+                      <Line type="monotone" dataKey="minutes" name="Minutes" stroke={primaryColor} strokeWidth={2} dot={{ r: 3, fill: primaryColor }} />
+                    </LineChart>
+                  );
+                })()}
               </ResponsiveContainer>
             </div>
 
@@ -697,9 +742,9 @@ export default function CoreBuddyCharts() {
                   <XAxis
                     dataKey="label"
                     tick={{ fill: textColor, fontSize: 9, fontFamily: 'Inter' }}
-                    interval={isMonthly ? 4 : 0}
+                    interval={isMonthly ? 6 : 0}
                   />
-                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
+                  <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: currentMacro?.unit || '', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} ${currentMacro?.unit}`, currentMacro?.label]} />
                   {macroTargetValue && (
                     <ReferenceLine y={macroTargetValue} stroke={isDark ? '#4CAF50' : '#2e7d32'} strokeDasharray="5 5" label={{ value: 'Target', fill: isDark ? '#4CAF50' : '#2e7d32', fontSize: 10, fontFamily: 'Inter' }} />
@@ -729,7 +774,7 @@ export default function CoreBuddyCharts() {
                   <LineChart data={bodyMetricsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                     <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
-                    <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={['dataMin - 2', 'dataMax + 2']} />
+                    <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={['dataMin - 2', 'dataMax + 2']} label={{ value: 'cm', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
                     <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} cm`, BODY_METRICS.find(m => m.key === selectedMetric)?.name]} />
                     {bodyMetricTargets?.targets?.[selectedMetric] && (
                       <ReferenceLine y={bodyMetricTargets.targets[selectedMetric]} stroke={isDark ? '#4CAF50' : '#2e7d32'} strokeDasharray="5 5" label={{ value: 'Target', fill: isDark ? '#4CAF50' : '#2e7d32', fontSize: 10, fontFamily: 'Inter' }} />
@@ -800,7 +845,10 @@ export default function CoreBuddyCharts() {
               </div>
             </>
           ) : (
-            <p className="cht-summary-error">Could not load summary data</p>
+            <div className="cht-summary-error">
+              <p>{summaryError || 'Could not load summary data'}</p>
+              <button className="cht-retry-btn" onClick={generateWeeklySummary}>Retry</button>
+            </div>
           )}
         </div>
       </div>

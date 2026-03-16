@@ -7,6 +7,7 @@ import { db, storage, functions } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { trackAIScanStarted, trackAIScanCompleted, trackAIScanSaved } from '../utils/analytics';
 import './AIMealScanner.css';
 
 function getTodayKey() {
@@ -129,6 +130,7 @@ export default function AIMealScanner() {
     if (!imageFile) return;
     setStage('analysing');
     setError(null);
+    trackAIScanStarted();
 
     try {
       const compressed = await compressImage(imageFile, 512);
@@ -137,6 +139,7 @@ export default function AIMealScanner() {
       const response = await analyseMeal({ imageBase64: base64, mimeType: 'image/jpeg' });
       setResult(response.data);
       setStage('results');
+      trackAIScanCompleted({ itemCount: response.data.items.length, confidence: response.data.confidence });
     } catch (err) {
       console.error('Analysis failed:', err);
       // Firebase callable errors: err.message contains the server message,
@@ -190,6 +193,7 @@ export default function AIMealScanner() {
         updatedAt: Timestamp.now(),
       });
 
+      trackAIScanSaved({ meal: selectedMeal, itemCount: newEntries.length });
       showToast(`${newEntries.length} item${newEntries.length > 1 ? 's' : ''} added to ${selectedMeal}`, 'success');
 
       // Reset for next scan

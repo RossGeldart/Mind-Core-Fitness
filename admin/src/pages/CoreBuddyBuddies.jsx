@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
 import BADGE_DEFS from '../utils/badgeConfig';
+import { trackBuddyRequestSent, trackBuddyRequestAccepted, trackBuddyRemoved, trackPostLiked, trackPostCommented, trackBuddyTabChanged } from '../utils/analytics';
 import './CoreBuddyBuddies.css';
 
 function getInitials(name) {
@@ -240,6 +241,7 @@ export default function CoreBuddyBuddies() {
         createdAt: serverTimestamp()
       });
       await createNotification(toId, 'buddy_request');
+      trackBuddyRequestSent();
       showToast('Buddy request sent!', 'success');
       await fetchData();
     } catch (err) {
@@ -263,6 +265,7 @@ export default function CoreBuddyBuddies() {
       // Delete the request
       await deleteDoc(doc(db, 'buddyRequests', req.reqId));
       await createNotification(req.fromId, 'buddy_accept');
+      trackBuddyRequestAccepted();
       showToast('Buddy added!', 'success');
       await fetchData();
     } catch (err) {
@@ -306,6 +309,7 @@ export default function CoreBuddyBuddies() {
     try {
       const pid = pairId(clientData.id, buddyId);
       await deleteDoc(doc(db, 'buddies', pid));
+      trackBuddyRemoved();
       showToast('Buddy removed', 'info');
       await fetchData();
     } catch (err) {
@@ -396,6 +400,7 @@ export default function CoreBuddyBuddies() {
       } else {
         await setDoc(doc(db, 'postLikes', likeId), { postId, userId: myId, createdAt: serverTimestamp() });
         await updateDoc(doc(db, 'posts', postId), { likeCount: increment(1) });
+        trackPostLiked();
         const post = feedPosts.find(p => p.id === postId);
         if (post) createNotification(post.authorId, 'like');
       }
@@ -465,6 +470,7 @@ export default function CoreBuddyBuddies() {
       }
       await addDoc(collection(db, 'postComments'), commentData);
       await updateDoc(doc(db, 'posts', postId), { commentCount: increment(1) });
+      trackPostCommented();
       // Notify post author
       const post = feedPosts.find(p => p.id === postId);
       if (post) createNotification(post.authorId, 'comment');
@@ -573,15 +579,15 @@ export default function CoreBuddyBuddies() {
 
         {/* Tabs */}
         <div className="bdy-tabs">
-          <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
+          <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => { setTab('feed'); trackBuddyTabChanged('feed'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
             <span>Feed</span>
           </button>
-          <button className={`bdy-tab${tab === 'buddies' ? ' active' : ''}`} onClick={() => setTab('buddies')}>
+          <button className={`bdy-tab${tab === 'buddies' ? ' active' : ''}`} onClick={() => { setTab('buddies'); trackBuddyTabChanged('buddies'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span>Buddies</span>
           </button>
-          <button className={`bdy-tab${tab === 'requests' ? ' active' : ''}`} onClick={() => setTab('requests')}>
+          <button className={`bdy-tab${tab === 'requests' ? ' active' : ''}`} onClick={() => { setTab('requests'); trackBuddyTabChanged('requests'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
             <span>Requests</span>
             {pendingCount > 0 && <span className="bdy-tab-badge">{pendingCount}</span>}
@@ -601,7 +607,7 @@ export default function CoreBuddyBuddies() {
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
                     <h3>No buddies yet</h3>
                     <p>Add buddies to see their posts here!</p>
-                    <button className="bdy-empty-btn" onClick={() => setTab('search')}>Find Buddies</button>
+                    <button className="bdy-empty-btn" onClick={() => { setTab('search'); trackBuddyTabChanged('search'); }}>Find Buddies</button>
                   </div>
                 ) : feedLoading ? (
                   <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
@@ -802,7 +808,7 @@ export default function CoreBuddyBuddies() {
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <h3>No buddies yet</h3>
                     <p>Find members and send buddy requests to connect!</p>
-                    <button className="bdy-empty-btn" onClick={() => setTab('search')}>Find Buddies</button>
+                    <button className="bdy-empty-btn" onClick={() => { setTab('search'); trackBuddyTabChanged('search'); }}>Find Buddies</button>
                   </div>
                 ) : (
                   <div className="bdy-list">
@@ -1022,7 +1028,7 @@ export default function CoreBuddyBuddies() {
               </button>
             </div>
             <div className="bdy-fab-grid">
-              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); setTab('search'); }}>
+              <button className="bdy-fab-item" onClick={() => { setFabOpen(false); setTab('search'); trackBuddyTabChanged('search'); }}>
                 <span className="bdy-fab-item-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </span>

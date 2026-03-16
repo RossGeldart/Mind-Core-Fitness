@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import BADGE_DEFS from '../utils/badgeConfig';
 import CoreBuddyNav from '../components/CoreBuddyNav';
+import { trackBadgeViewed } from '../utils/analytics';
 import './CoreBuddyBadges.css';
 
 const CATEGORY_LABELS = {
@@ -103,7 +104,7 @@ export default function CoreBuddyBadges() {
                     <button
                       key={badge.id}
                       className={`bdg-item${earned ? ' earned' : ' locked'}`}
-                      onClick={() => setSelectedBadge(badge)}
+                      onClick={() => { trackBadgeViewed(badge.id); setSelectedBadge(badge); }}
                     >
                       <div className="bdg-img-wrap">
                         {badge.img ? (

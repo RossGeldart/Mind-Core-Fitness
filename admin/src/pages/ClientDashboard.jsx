@@ -14,6 +14,7 @@ import {
   getDayName
 } from '../utils/scheduleUtils';
 import { TICKS_85_96 } from '../utils/ringTicks';
+import { trackSessionRescheduled, trackSessionCancelled } from '../utils/analytics';
 import './ClientDashboard.css';
 
 export default function ClientDashboard() {
@@ -384,6 +385,7 @@ export default function ClientDashboard() {
         try {
           await deleteDoc(doc(db, 'sessions', session.id));
           setSessions(sessions.filter(s => s.id !== session.id));
+          trackSessionCancelled();
           showToast('Session cancelled', 'success');
         } catch (error) {
           console.error('Error cancelling session:', error);
@@ -505,6 +507,7 @@ export default function ClientDashboard() {
       });
 
       closeRescheduleModal();
+      trackSessionRescheduled();
       showToast('Reschedule request submitted! You\'ll be notified when your trainer responds.', 'success');
       fetchAllData(); // Refresh to show pending request
     } catch (error) {

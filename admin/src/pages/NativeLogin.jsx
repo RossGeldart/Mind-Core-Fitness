@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
+import { trackLogin } from '../utils/analytics';
 import getClientHomePath from '../utils/getClientHomePath';
 import ThemeToggle from '../components/ThemeToggle';
 import './NativeLogin.css';
@@ -91,6 +92,7 @@ export default function NativeLogin() {
     setAppleLoading(true);
     try {
       await loginWithApple();
+      trackLogin('apple');
       if (mode === 'signup') navigate('/onboarding');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
@@ -105,6 +107,7 @@ export default function NativeLogin() {
     setGoogleLoading(true);
     try {
       await loginWithGoogle();
+      trackLogin('google');
       if (mode === 'signup') navigate('/onboarding');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {

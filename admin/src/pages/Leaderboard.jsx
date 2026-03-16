@@ -5,6 +5,7 @@ import { db } from '../config/firebase';
 import { awardBadge } from '../utils/awardBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { trackLeaderboardViewed, trackLeaderboardTabChanged } from '../utils/analytics';
 import './Leaderboard.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -57,6 +58,12 @@ function formatMinutes(mins) {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+function formatVolume(vol) {
+  if (vol >= 1000000) return `${(vol / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (vol >= 1000) return `${(vol / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  return vol.toLocaleString();
 }
 
 function getMondayOf(date) {
@@ -116,6 +123,7 @@ function calculateWeekStreak(workoutDates) {
 const TABS = [
   { key: 'workouts', label: 'Workouts', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
   { key: 'minutes', label: 'Minutes', icon: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z' },
+  { key: 'volume', label: 'Volume', icon: 'M6.5 2C5.12 2 4 3.12 4 4.5v15C4 20.88 5.12 22 6.5 22h11c1.38 0 2.5-1.12 2.5-2.5v-15C20 3.12 18.88 2 17.5 2h-11zM12 18c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z' },
   { key: 'streak', label: 'Streak', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
 ];
 
@@ -124,6 +132,7 @@ const MEDAL_COLORS = ['#FFD700', '#A8B4C0', '#CD7F32'];
 const TAB_DESCRIPTIONS = {
   workouts: 'Total completed workouts across randomiser, muscle group and programme sessions',
   minutes: 'Active minutes from randomiser workouts only',
+  volume: 'Total weight lifted from BYO Reps & Sets workouts (weight \u00d7 reps)',
   streak: 'Consecutive weeks with at least one workout completed (Mon\u2013Sun)',
 };
 
@@ -184,6 +193,7 @@ export default function Leaderboard() {
   useEffect(() => {
     if (!clientData || !optedIn) return;
     setShowAll(false);
+    trackLeaderboardViewed({ period, metric: activeTab });
     fetchLeaderboard();
   }, [clientData, optedIn, activeTab, period]);
 
@@ -277,6 +287,7 @@ export default function Leaderboard() {
           photoURL: c.photoURL || null,
           workouts: 0,
           minutes: 0,
+          volume: 0,
           workoutDates: new Set(),
         };
       });
@@ -293,6 +304,17 @@ export default function Leaderboard() {
         // Minutes: only randomiser workouts (no type field = randomiser)
         if (!data.type) {
           s.minutes += data.duration || 0;
+        }
+
+        // Volume: BYO Reps & Sets workouts (type = custom_sets)
+        if (data.type === 'custom_sets' && data.exercises) {
+          data.exercises.forEach(ex => {
+            (ex.sets || []).forEach(set => {
+              const reps = parseInt(set.reps) || 0;
+              const weight = parseFloat(set.weight) || 0;
+              s.volume += reps * weight;
+            });
+          });
         }
 
         // Streak dates: all workout types count
@@ -328,6 +350,8 @@ export default function Leaderboard() {
         sorted.sort((a, b) => b.workouts - a.workouts || a.name.localeCompare(b.name));
       } else if (activeTab === 'minutes') {
         sorted.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
+      } else if (activeTab === 'volume') {
+        sorted.sort((a, b) => b.volume - a.volume || a.name.localeCompare(b.name));
       } else {
         sorted.sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name));
       }
@@ -345,18 +369,21 @@ export default function Leaderboard() {
   const getValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return entry.minutes;
+    if (activeTab === 'volume') return entry.volume;
     return entry.streak;
   };
 
   const formatValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return formatMinutes(entry.minutes);
+    if (activeTab === 'volume') return formatVolume(entry.volume);
     return entry.streak;
   };
 
   const getUnit = () => {
     if (activeTab === 'workouts') return '';
     if (activeTab === 'minutes') return '';
+    if (activeTab === 'volume') return 'kg';
     return 'wk';
   };
 
@@ -445,6 +472,7 @@ export default function Leaderboard() {
                     <span className="lb-optin-category-desc">
                       {tab.key === 'workouts' && 'Randomiser, muscle group & programme workouts'}
                       {tab.key === 'minutes' && 'Total minutes from randomiser workouts'}
+                      {tab.key === 'volume' && 'Total weight lifted from BYO Reps & Sets'}
                       {tab.key === 'streak' && 'Consecutive weeks with at least one workout'}
                     </span>
                   </div>
@@ -494,7 +522,7 @@ export default function Leaderboard() {
             <button
               key={tab.key}
               className={`lb-tab ${activeTab === tab.key ? 'lb-tab-active' : ''}`}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => { trackLeaderboardTabChanged(tab.key); setActiveTab(tab.key); }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d={tab.icon}/></svg>
               <span>{tab.label}</span>
@@ -511,19 +539,19 @@ export default function Leaderboard() {
             <div className="lb-period-toggle">
               <button
                 className={`lb-period-btn ${period === 'week' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('week')}
+                onClick={() => { trackLeaderboardTabChanged('week'); setPeriod('week'); }}
               >
                 This Week
               </button>
               <button
                 className={`lb-period-btn ${period === 'month' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('month')}
+                onClick={() => { trackLeaderboardTabChanged('month'); setPeriod('month'); }}
               >
                 This Month
               </button>
               <button
                 className={`lb-period-btn ${period === 'year' ? 'lb-period-active' : ''}`}
-                onClick={() => setPeriod('year')}
+                onClick={() => { trackLeaderboardTabChanged('year'); setPeriod('year'); }}
               >
                 This Year
               </button>

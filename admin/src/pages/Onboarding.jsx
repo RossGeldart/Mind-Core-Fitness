@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { STRIPE_PRICES } from '../config/stripe';
 import { Capacitor } from '@capacitor/core';
+import { trackOnboardingStep, trackOnboardingComplete } from '../utils/analytics';
 import './Onboarding.css';
 
 const isNative = Capacitor.isNativePlatform();
@@ -261,7 +262,11 @@ export default function Onboarding() {
     const el = scrollRef.current;
     const slideWidth = el.firstChild?.offsetWidth || 1;
     const idx = Math.round(el.scrollLeft / slideWidth);
-    setActiveSlide(Math.min(idx, FEATURES.length - 1));
+    const newSlide = Math.min(idx, FEATURES.length - 1);
+    if (newSlide !== activeSlide) {
+      trackOnboardingStep(newSlide, FEATURES[newSlide].title);
+    }
+    setActiveSlide(newSlide);
   };
 
   const scrollToSlide = (index) => {
@@ -527,6 +532,7 @@ export default function Onboarding() {
         localUpdates.subscriptionStatus = 'trialing';
       }
       updateClientData(localUpdates);
+      trackOnboardingComplete(localUpdates.tier || client.tier || 'free');
       navigate('/client/core-buddy');
     } catch (err) {
       console.error('Onboarding submit error:', err);

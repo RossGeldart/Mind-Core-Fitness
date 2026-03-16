@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateMacros } from '../utils/macroCalculations';
+import { trackMacroCalculated } from '../utils/analytics';
 import './ClientTools.css';
 import './ClientDashboard.css';
 
@@ -42,6 +43,7 @@ export default function MacroCalculator() {
   const handleCalculate = () => {
     setResults(calculateMacros(formData));
     setShowResults(true);
+    trackMacroCalculated(formData.goal);
   };
 
   const isFormValid = () => {

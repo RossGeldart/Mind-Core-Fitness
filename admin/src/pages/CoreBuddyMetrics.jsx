@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTier } from '../contexts/TierContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
+import { trackMeasurementLogged, trackProgressPhotoUploaded, trackGoalUpdated } from '../utils/analytics';
 import './CoreBuddyMetrics.css';
 
 const BODY_METRICS = [
@@ -349,6 +350,7 @@ export default function CoreBuddyMetrics() {
         updatedAt: serverTimestamp(),
       });
 
+      BODY_METRICS.forEach(m => trackMeasurementLogged(m.key));
       showToast('Measurements logged!', 'success');
       setShowMeasure(false);
       setFormValues({});
@@ -382,6 +384,7 @@ export default function CoreBuddyMetrics() {
         updatedAt: serverTimestamp(),
       });
 
+      Object.keys(newTargets).forEach(key => trackGoalUpdated(key));
       showToast('Targets updated!', 'success');
       setShowEditTargets(false);
       setTargetValues({});
@@ -425,6 +428,7 @@ export default function CoreBuddyMetrics() {
       });
 
       setPhotos(prev => ({ ...prev, [photoUploadPeriod]: newPhotos }));
+      trackProgressPhotoUploaded();
       showToast('Photo uploaded!', 'success');
     } catch (err) {
       console.error('Photo upload error:', err);

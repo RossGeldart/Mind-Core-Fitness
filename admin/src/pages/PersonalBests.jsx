@@ -9,6 +9,7 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 
 import { TICKS_85_96, TICKS_TINY } from '../utils/ringTicks';
 import BUDDY_EXERCISES from '../config/buddyExercises';
+import { trackPersonalBestLogged, trackPBExerciseAdded } from '../utils/analytics';
 import './PersonalBests.css';
 import './ClientDashboard.css';
 
@@ -517,6 +518,16 @@ export default function PersonalBests() {
         updatedAt: Timestamp.now(),
       });
       await checkAndSaveAchievements('strength', benchmarkForm);
+      activeExercises.forEach(ex => {
+        const bench = benchmarkForm[ex.key];
+        if (bench) {
+          trackPersonalBestLogged({
+            exercise: ex.name,
+            value: ex.unit === 'time' ? (bench.time || 0) : (bench.weight || 0),
+            unit: ex.unit === 'time' ? 's' : 'kg',
+          });
+        }
+      });
       showToast('Benchmarks saved!', 'success');
       setEditingBenchmarks(false);
       await fetchRecords();
@@ -699,6 +710,7 @@ export default function PersonalBests() {
     if (!ex) return;
     const newList = [...activeExercises, ex];
     setCustomExercises(newList);
+    trackPBExerciseAdded(ex.name);
     try {
       await setDoc(doc(db, 'personalBestExercises', clientData.id), {
         clientId: clientData.id,

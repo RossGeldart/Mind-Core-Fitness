@@ -12,6 +12,7 @@ import { CHALLENGES } from '../config/challengeConfig';
 import BADGE_DEFS from '../utils/badgeConfig';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import BadgeCelebration from '../components/BadgeCelebration';
+import { trackChallengeStarted, trackChallengeCompleted } from '../utils/analytics';
 import './Challenges.css';
 
 /* ── Icon map ── */
@@ -233,6 +234,7 @@ export default function Challenges() {
                 }
               }
 
+              trackChallengeCompleted({ name: def.name, difficulty: def.difficulty });
               if (typeof fbq === 'function') {
                 fbq('trackCustom', 'ChallengeCompleted', {
                   challenge_name: def.name,
@@ -296,6 +298,7 @@ export default function Challenges() {
         createdAt: serverTimestamp(),
       });
       setConfirmModal(null);
+      trackChallengeStarted({ name: challenge.name, difficulty: challenge.difficulty });
       showToast(`${challenge.name} started — let's go!`, 'success');
       await loadData();
     } catch (err) {

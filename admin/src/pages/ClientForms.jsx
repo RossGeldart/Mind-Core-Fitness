@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { trackFormSubmitted } from '../utils/analytics';
 import './ClientForms.css';
 import './ClientDashboard.css';
 
@@ -79,6 +80,7 @@ export default function ClientForms() {
           completedAt: Timestamp.now()
         }
       });
+      trackFormSubmitted('welcome');
       alert('Welcome form saved successfully!');
       setActiveForm(null);
     } catch (error) {
@@ -108,6 +110,7 @@ export default function ClientForms() {
           completedAt: Timestamp.now()
         }
       });
+      trackFormSubmitted('parq');
       alert('PAR-Q form saved successfully!');
       setActiveForm(null);
     } catch (error) {

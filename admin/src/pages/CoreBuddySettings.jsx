@@ -18,6 +18,7 @@ import {
   revokeNativePushToken,
 } from '../utils/nativePushNotifications';
 import { openExternal } from '../utils/openExternal';
+import { trackLogout, trackThemeChanged, trackNotificationToggled, trackSubscriptionManaged } from '../utils/analytics';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import './CoreBuddySettings.css';
 
@@ -87,6 +88,7 @@ export default function CoreBuddySettings() {
       });
       const data = await res.json();
       if (data.url) {
+        trackSubscriptionManaged();
         window.location.href = data.url;
       } else {
         showToast(data.error || 'Something went wrong', 'error');
@@ -257,6 +259,7 @@ export default function CoreBuddySettings() {
         notificationPrefs: newPrefs,
       });
       updateClientData({ notificationPrefs: newPrefs });
+      trackNotificationToggled({ key, enabled: newPrefs[key] });
     } catch (err) {
       console.error('Failed to save pref:', err);
       setNotifPrefs(prev => ({ ...prev, [key]: !prev[key] }));
@@ -289,7 +292,7 @@ export default function CoreBuddySettings() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
               )}
             </button>
-            <button onClick={logout} aria-label="Log out">
+            <button onClick={() => { trackLogout(); logout(); }} aria-label="Log out">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             </button>
           </div>
@@ -437,7 +440,7 @@ export default function CoreBuddySettings() {
             </div>
             <button
               className={`settings-toggle${isDark ? ' on' : ''}`}
-              onClick={toggleTheme}
+              onClick={() => { trackThemeChanged(isDark ? 'light' : 'dark'); toggleTheme(); }}
               aria-label="Toggle dark mode"
             >
               <span className="settings-toggle-knob" />
