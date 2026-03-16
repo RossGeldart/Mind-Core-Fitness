@@ -8,7 +8,6 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 import { trackFavouriteQuickAdded } from '../utils/analytics';
 import './NutritionHub.css';
 
-const BETA_EMAILS = ['testy@test123.com'];
 
 function getTodayKey() {
   return new Date().toISOString().split('T')[0];
@@ -59,7 +58,6 @@ export default function NutritionHub() {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
 
-  const isBetaUser = BETA_EMAILS.includes(currentUser?.email?.toLowerCase());
 
   // Load all hub data in parallel
   useEffect(() => {
@@ -418,10 +416,10 @@ export default function NutritionHub() {
                 <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
               </button>
 
-              <div className={`nut-hub-card nut-hub-card--ai${!isBetaUser ? ' nut-hub-card--locked' : ''}`}
-                onClick={() => { if (isBetaUser) navigate('/client/core-buddy/nutrition/ai-scanner'); }}
-                role={isBetaUser ? 'button' : undefined}
-                tabIndex={isBetaUser ? 0 : undefined}
+              <div className="nut-hub-card nut-hub-card--ai"
+                onClick={() => navigate('/client/core-buddy/nutrition/ai-scanner')}
+                role="button"
+                tabIndex={0}
               >
                 <div className="nut-hub-card-icon nut-hub-card-icon--ai">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -436,16 +434,8 @@ export default function NutritionHub() {
                     <span className="nut-hub-badge nut-hub-badge--beta">BETA</span>
                   </div>
                   <p>Upload photos of your meals for automatic macro analysis</p>
-                  {!isBetaUser && <span className="nut-hub-coming-soon">Coming Soon</span>}
-                  {isBetaUser && <span className="nut-hub-beta-access">You have early access</span>}
                 </div>
-                {isBetaUser ? (
-                  <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-                ) : (
-                  <svg className="nut-hub-card-lock" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                )}
+                <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
               </div>
             </div>
           </>
