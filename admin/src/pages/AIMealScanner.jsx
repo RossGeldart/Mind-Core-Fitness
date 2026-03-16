@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp, arrayUnion } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { httpsCallable } from 'firebase/functions';
 import { db, storage, functions } from '../config/firebase';
@@ -9,6 +9,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import { trackAIScanStarted, trackAIScanCompleted, trackAIScanSaved } from '../utils/analytics';
 import './AIMealScanner.css';
+
+const MAX_SAVED_MEALS = 20;
 
 function getTodayKey() {
   return new Date().toISOString().split('T')[0];
@@ -91,6 +93,8 @@ export default function AIMealScanner() {
   const [selectedMeal, setSelectedMeal] = useState(getDefaultMeal);
   const [toast, setToast] = useState(null);
   const [analysingMsg, setAnalysingMsg] = useState(0);
+  const [savedMeals, setSavedMeals] = useState([]);
+  const [savedMealsLoaded, setSavedMealsLoaded] = useState(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -101,6 +105,18 @@ export default function AIMealScanner() {
   useEffect(() => {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
+
+  // Load saved meals
+  useEffect(() => {
+    if (!clientData?.id) return;
+    getDoc(doc(db, 'savedMeals', clientData.id)).then((snap) => {
+      if (snap.exists()) {
+        const meals = snap.data().meals || [];
+        setSavedMeals(meals.sort((a, b) => (b.usedAt || 0) - (a.usedAt || 0)));
+      }
+      setSavedMealsLoaded(true);
+    }).catch(() => setSavedMealsLoaded(true));
+  }, [clientData?.id]);
 
   // Rotate analysing messages
   useEffect(() => {
@@ -196,7 +212,84 @@ export default function AIMealScanner() {
       trackAIScanSaved({ meal: selectedMeal, itemCount: newEntries.length });
       showToast(`${newEntries.length} item${newEntries.length > 1 ? 's' : ''} added to ${selectedMeal}`, 'success');
 
+      // Save to savedMeals for future reuse (skip if reusing — already saved)
+      if (imageFile) {
+        const mealLabel = result.items.map((i) => i.name).join(', ');
+        const savedEntry = {
+          id: imageId,
+          label: mealLabel.length > 60 ? mealLabel.slice(0, 57) + '...' : mealLabel,
+          items: result.items,
+          totals: result.totals,
+          confidence: result.confidence,
+          photoUrl,
+          usedAt: Date.now(),
+        };
+        const mealsRef = doc(db, 'savedMeals', clientData.id);
+        const existingMeals = [...savedMeals];
+        // Prepend new meal, cap at MAX_SAVED_MEALS
+        const updatedMeals = [savedEntry, ...existingMeals].slice(0, MAX_SAVED_MEALS);
+        setSavedMeals(updatedMeals);
+        setDoc(mealsRef, { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
+      }
+
       // Reset for next scan
+      setTimeout(() => {
+        setStage('idle');
+        setImageFile(null);
+        setImagePreview(null);
+        setResult(null);
+      }, 1500);
+    } catch (err) {
+      console.error('Save failed:', err);
+      showToast('Failed to save. Please try again.', 'error');
+      setStage('results');
+    }
+  };
+
+  const handleReuse = (meal) => {
+    setResult({ items: meal.items, totals: meal.totals, confidence: meal.confidence });
+    setImagePreview(meal.photoUrl);
+    setImageFile(null); // null signals this is a reuse — skip photo upload on save
+    setStage('results');
+  };
+
+  const handleSaveReuse = async () => {
+    if (!result || !clientData?.id) return;
+    setStage('saving');
+
+    try {
+      const today = getTodayKey();
+      const newEntries = result.items.map((item) => ({
+        name: item.name,
+        protein: item.protein || 0,
+        carbs: item.carbs || 0,
+        fats: item.fats || 0,
+        calories: item.calories || 0,
+        serving: `${item.estimatedGrams || 0}g (AI estimate)`,
+        mealType: selectedMeal,
+        source: 'ai_scanner_reuse',
+        aiConfidence: result.confidence,
+      }));
+
+      const logRef = doc(db, 'nutritionLogs', `${clientData.id}_${today}`);
+      const existingDoc = await getDoc(logRef);
+      const existingEntries = existingDoc.exists() ? existingDoc.data().entries || [] : [];
+
+      await setDoc(logRef, {
+        clientId: clientData.id,
+        date: today,
+        entries: [...existingEntries, ...newEntries],
+        updatedAt: Timestamp.now(),
+      });
+
+      // Update usedAt timestamp in savedMeals
+      const updatedMeals = savedMeals.map((m) =>
+        m.items === result.items ? { ...m, usedAt: Date.now() } : m
+      );
+      setSavedMeals(updatedMeals);
+      setDoc(doc(db, 'savedMeals', clientData.id), { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
+
+      showToast(`${newEntries.length} item${newEntries.length > 1 ? 's' : ''} added to ${selectedMeal}`, 'success');
       setTimeout(() => {
         setStage('idle');
         setImageFile(null);
@@ -284,6 +377,30 @@ export default function AIMealScanner() {
               onChange={handleFileSelect}
               style={{ display: 'none' }}
             />
+
+            {/* Recent scans for reuse */}
+            {savedMealsLoaded && savedMeals.length > 0 && (
+              <div className="ais-recent-section">
+                <h3 className="ais-recent-title">Recent Scans</h3>
+                <p className="ais-recent-hint">Tap to re-log without scanning</p>
+                <div className="ais-recent-list">
+                  {savedMeals.map((meal) => (
+                    <button key={meal.id} className="ais-recent-card" onClick={() => handleReuse(meal)}>
+                      {meal.photoUrl && (
+                        <img src={meal.photoUrl} alt="" className="ais-recent-thumb" loading="lazy" />
+                      )}
+                      <div className="ais-recent-info">
+                        <span className="ais-recent-label">{meal.label}</span>
+                        <span className="ais-recent-macros">
+                          {meal.totals.calories} cal &middot; {meal.totals.protein}p &middot; {meal.totals.carbs}c &middot; {meal.totals.fats}f
+                        </span>
+                      </div>
+                      <svg className="ais-recent-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -393,7 +510,7 @@ export default function AIMealScanner() {
 
             {/* Actions */}
             <div className="ais-result-actions">
-              <button className="ais-btn ais-btn-primary" onClick={handleSave} disabled={stage === 'saving'}>
+              <button className="ais-btn ais-btn-primary" onClick={imageFile ? handleSave : handleSaveReuse} disabled={stage === 'saving'}>
                 {stage === 'saving' ? 'Saving...' : `Add to ${MEALS.find((m) => m.key === selectedMeal)?.label}`}
               </button>
               <button className="ais-btn ais-btn-secondary" onClick={handleReset} disabled={stage === 'saving'}>
