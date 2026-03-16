@@ -151,6 +151,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
     }
+    // Saved Meals - AI scan results cached for reuse (doc ID = clientId)
+    match /savedMeals/{docId} {
+      allow read, write: if isAdmin();
+      allow read, write: if isClientOwner(docId);
+    }
     // Nutrition Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
     match /nutritionLogs/{docId} {
       allow read, write: if isAdmin();
