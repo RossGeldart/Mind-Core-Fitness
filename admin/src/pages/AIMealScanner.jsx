@@ -382,7 +382,6 @@ export default function AIMealScanner() {
       <main className="ais-main">
         <div className="ais-heading">
           <h2>AI Food Scanner</h2>
-          <span className="ais-beta-badge">BETA</span>
         </div>
         <p className="ais-subtitle">Take a photo of your meal and let AI estimate the macros</p>
 

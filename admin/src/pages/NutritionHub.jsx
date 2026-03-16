@@ -429,10 +429,7 @@ export default function NutritionHub() {
                   </svg>
                 </div>
                 <div className="nut-hub-card-body">
-                  <div className="nut-hub-card-title-row">
-                    <h3>AI Food Scanner</h3>
-                    <span className="nut-hub-badge nut-hub-badge--beta">BETA</span>
-                  </div>
+                  <h3>AI Food Scanner</h3>
                   <p>Upload photos of your meals for automatic macro analysis</p>
                 </div>
                 <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
