@@ -131,7 +131,7 @@ export default function AIMealScanner() {
     setError(null);
 
     try {
-      const compressed = await compressImage(imageFile, 1024);
+      const compressed = await compressImage(imageFile, 512);
       const base64 = await fileToBase64(compressed);
       const analyseMeal = httpsCallable(functions, 'analyseMeal');
       const response = await analyseMeal({ imageBase64: base64, mimeType: 'image/jpeg' });
