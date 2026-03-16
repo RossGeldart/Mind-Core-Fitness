@@ -669,7 +669,7 @@ export default function CoreBuddyCharts() {
               <h3 className="cht-card-title">Activity & Sessions</h3>
               <p className="cht-card-subtitle">{isMonthly ? 'Sessions per week' : 'Daily sessions & duration'}</p>
               <ResponsiveContainer width="100%" height={220}>
-                <ComposedChart data={activityData} barCategoryGap="20%">
+                <ComposedChart data={activityData} barCategoryGap="20%" margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                   <YAxis yAxisId="left" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} allowDecimals={false} label={{ value: 'Sessions', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
@@ -687,7 +687,7 @@ export default function CoreBuddyCharts() {
               <h3 className="cht-card-title">Training Volume</h3>
               <p className="cht-card-subtitle">BYO workout volume (reps x weight)</p>
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={volumeData} barCategoryGap="20%">
+                <BarChart data={volumeData} barCategoryGap="20%" margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                   <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} label={{ value: 'Volume', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
@@ -709,7 +709,7 @@ export default function CoreBuddyCharts() {
                   const ticks = [];
                   for (let i = 0; i <= topTick; i += 5) ticks.push(i);
                   return (
-                    <LineChart data={minutesData}>
+                    <LineChart data={minutesData} margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                       <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                       <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={[0, topTick]} ticks={ticks} label={{ value: 'Minutes', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />
@@ -737,7 +737,7 @@ export default function CoreBuddyCharts() {
                 ))}
               </div>
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={macroData} barCategoryGap="15%">
+                <BarChart data={macroData} barCategoryGap="15%" margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis
                     dataKey="label"
@@ -771,7 +771,7 @@ export default function CoreBuddyCharts() {
               </div>
               {bodyMetricsData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={bodyMetricsData}>
+                  <LineChart data={bodyMetricsData} margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                     <XAxis dataKey="label" tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} />
                     <YAxis tick={{ fill: textColor, fontSize: 10, fontFamily: 'Inter' }} domain={['dataMin - 2', 'dataMax + 2']} label={{ value: 'cm', angle: -90, position: 'insideLeft', fill: textColor, fontSize: 11, fontFamily: 'Inter', dx: -5 }} />

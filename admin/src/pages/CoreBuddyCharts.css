@@ -219,6 +219,8 @@
   margin-bottom: 16px;
   box-shadow: var(--shadow-glow);
   overflow: hidden;
+  position: relative;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 [data-theme="dark"] .cht-card {
