@@ -320,6 +320,7 @@
             <li><strong>Personal Data:</strong> When you contact us, sign up for our programmes, or create a Core Buddy account, we may collect your name, email address, phone number, and other contact details you provide.</li>
             <li><strong>Health and Fitness Information:</strong> To provide personalised training services, we may collect information about your fitness goals, health conditions, and exercise preferences.</li>
             <li><strong>Usage Data:</strong> We automatically collect certain information when you visit our website, including your IP address, browser type, operating system, access times, and the pages you have viewed.</li>
+            <li><strong>Analytics Data:</strong> We collect anonymised usage analytics within the Core Buddy app via Mixpanel, including feature usage, screen views, and user interactions. This data is linked to your user ID to help us understand how the app is used and improve our services.</li>
         </ul>
 
         <h2>Core Buddy App Data</h2>
@@ -328,6 +329,7 @@
             <li><strong>Account Information:</strong> Your email address and display name used to create your Core Buddy account via Firebase Authentication.</li>
             <li><strong>Workout Data:</strong> Information about workouts you generate, complete, and save, including exercise selections, focus areas, durations, and completion history.</li>
             <li><strong>Nutrition Data:</strong> Food items you log, including meal names, calorie counts, macronutrient breakdowns (protein, carbs, fats), and barcode scan data. Barcode scanning uses your device camera locally and does not store images.</li>
+            <li><strong>AI Meal Scanner Data:</strong> If you use the AI meal scanner, photos of your meals are sent to our servers for analysis by an AI model (Anthropic Claude) to estimate nutritional content. Meal photos are processed in real time and are not permanently stored on our servers. The estimated nutritional data (calories, protein, carbs, fats) is saved to your account.</li>
             <li><strong>Habit Tracking Data:</strong> Daily habit completions (such as training, protein intake, steps, and water) and streak information.</li>
             <li><strong>Body Stats:</strong> Any body measurements or stats you choose to record within the app.</li>
             <li><strong>Social/Buddy Data:</strong> If you use the Buddies feature, we store your buddy connections, buddy requests, posts, comments, likes, and mentions.</li>
@@ -347,6 +349,8 @@
             <li>Process payments and manage subscriptions through Stripe (web), Apple In-App Purchase (iOS), or Google Play Billing (Android)</li>
             <li>Communicate with you about your account, programmes, or inquiries</li>
             <li>Send you marketing communications (with your consent)</li>
+            <li>Analyse app usage patterns via Mixpanel to improve features and user experience</li>
+            <li>Provide AI-powered meal analysis to estimate nutritional content from photos</li>
             <li>Improve our website, app, and services</li>
             <li>Comply with legal obligations</li>
         </ul>
@@ -373,6 +377,9 @@
             <li><strong>Vercel:</strong> For website hosting and analytics</li>
             <li><strong>Google Analytics:</strong> For website analytics and understanding how visitors use our site</li>
             <li><strong>Meta (Facebook) Pixel:</strong> For advertising analytics and conversion tracking</li>
+            <li><strong>Mixpanel:</strong> For in-app analytics within Core Buddy, including feature usage tracking and user behaviour analysis to improve the app experience</li>
+            <li><strong>Anthropic (Claude AI):</strong> For AI-powered meal photo analysis in the meal scanner feature. Meal photos are sent to Anthropic's API for nutritional estimation and are not retained by Anthropic beyond processing</li>
+            <li><strong>RevenueCat:</strong> For managing in-app subscriptions and purchase validation across platforms (iOS and web)</li>
         </ul>
         <p>These third parties have their own privacy policies addressing how they use such information.</p>
 
