@@ -11,16 +11,17 @@ import { trackAIScanStarted, trackAIScanCompleted, trackAIScanSaved } from '../u
 import './AIMealScanner.css';
 
 const MAX_SAVED_MEALS = 20;
+const DAILY_SCAN_LIMIT = 10;
 
 function getTodayKey() {
   return new Date().toISOString().split('T')[0];
 }
 
 const MEALS = [
-  { key: 'breakfast', label: 'Breakfast' },
-  { key: 'lunch', label: 'Lunch' },
-  { key: 'dinner', label: 'Dinner' },
-  { key: 'snacks', label: 'Snacks' },
+  { key: 'breakfast', label: 'Breakfast', icon: '\u2615' },
+  { key: 'lunch', label: 'Lunch', icon: '\uD83C\uDF5C' },
+  { key: 'dinner', label: 'Dinner', icon: '\uD83C\uDF7D\uFE0F' },
+  { key: 'snacks', label: 'Snacks', icon: '\uD83C\uDF4E' },
 ];
 
 function getDefaultMeal() {
@@ -95,6 +96,12 @@ export default function AIMealScanner() {
   const [analysingMsg, setAnalysingMsg] = useState(0);
   const [savedMeals, setSavedMeals] = useState([]);
   const [savedMealsLoaded, setSavedMealsLoaded] = useState(false);
+  const [scansUsedToday, setScansUsedToday] = useState(0);
+  const [scansLoaded, setScansLoaded] = useState(false);
+  const [recentFilter, setRecentFilter] = useState('all');
+
+  const scansRemaining = DAILY_SCAN_LIMIT - scansUsedToday;
+  const scanLimitReached = scansRemaining <= 0;
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -106,9 +113,11 @@ export default function AIMealScanner() {
     if (!authLoading && (!currentUser || !isClient)) navigate('/');
   }, [currentUser, isClient, authLoading, navigate]);
 
-  // Load saved meals
+  // Load saved meals + today's scan count
   useEffect(() => {
     if (!clientData?.id) return;
+
+    // Load saved meals
     getDoc(doc(db, 'savedMeals', clientData.id)).then((snap) => {
       if (snap.exists()) {
         const meals = snap.data().meals || [];
@@ -116,6 +125,15 @@ export default function AIMealScanner() {
       }
       setSavedMealsLoaded(true);
     }).catch(() => setSavedMealsLoaded(true));
+
+    // Load today's scan usage
+    const today = getTodayKey();
+    getDoc(doc(db, 'scanUsage', `${clientData.id}_${today}`)).then((snap) => {
+      if (snap.exists()) {
+        setScansUsedToday(snap.data().count || 0);
+      }
+      setScansLoaded(true);
+    }).catch(() => setScansLoaded(true));
   }, [clientData?.id]);
 
   // Rotate analysing messages
@@ -144,6 +162,10 @@ export default function AIMealScanner() {
 
   const handleAnalyse = async () => {
     if (!imageFile) return;
+    if (scanLimitReached) {
+      showToast('Daily scan limit reached. Re-log a previous scan instead!', 'error');
+      return;
+    }
     setStage('analysing');
     setError(null);
     trackAIScanStarted();
@@ -156,11 +178,19 @@ export default function AIMealScanner() {
       setResult(response.data);
       setStage('results');
       trackAIScanCompleted({ itemCount: response.data.items.length, confidence: response.data.confidence });
+
+      // Increment scan usage counter
+      const today = getTodayKey();
+      const newCount = scansUsedToday + 1;
+      setScansUsedToday(newCount);
+      setDoc(doc(db, 'scanUsage', `${clientData.id}_${today}`), {
+        clientId: clientData.id,
+        date: today,
+        count: newCount,
+        updatedAt: Timestamp.now(),
+      }).catch(() => {});
     } catch (err) {
       console.error('Analysis failed:', err);
-      // Firebase callable errors: err.message contains the server message,
-      // but for generic codes like "internal" it may just show the code.
-      // err.details may contain extra info. Prefer the descriptive message.
       const msg = (err.message && err.message !== 'internal' && err.message !== 'INTERNAL')
         ? err.message
         : 'Failed to analyse meal. Please try again.';
@@ -222,6 +252,7 @@ export default function AIMealScanner() {
           totals: result.totals,
           confidence: result.confidence,
           photoUrl,
+          mealType: selectedMeal,
           usedAt: Date.now(),
         };
         const mealsRef = doc(db, 'savedMeals', clientData.id);
@@ -355,20 +386,53 @@ export default function AIMealScanner() {
         </div>
         <p className="ais-subtitle">Take a photo of your meal and let AI estimate the macros</p>
 
+        {/* ── Usage Banner ── */}
+        {scansLoaded && stage === 'idle' && (
+          <div className={`ais-usage-banner${scanLimitReached ? ' ais-usage-banner--locked' : scansRemaining <= 3 ? ' ais-usage-banner--low' : ''}`}>
+            <div className="ais-usage-top">
+              <span className="ais-usage-count">
+                {scanLimitReached
+                  ? 'Daily scan limit reached'
+                  : `${scansRemaining} scan${scansRemaining !== 1 ? 's' : ''} remaining today`}
+              </span>
+              <span className="ais-usage-total">{scansUsedToday}/{DAILY_SCAN_LIMIT} used</span>
+            </div>
+            <div className="ais-usage-bar">
+              <div className="ais-usage-bar-fill" style={{ width: `${Math.min(100, (scansUsedToday / DAILY_SCAN_LIMIT) * 100)}%` }} />
+            </div>
+            {savedMeals.length > 0 && (
+              <p className="ais-usage-hint">Save credits by re-logging a previous scan below</p>
+            )}
+          </div>
+        )}
+
         {/* ── IDLE: Upload prompt ── */}
         {stage === 'idle' && (
           <div className="ais-upload-section">
-            <button className="ais-upload-btn" onClick={() => fileInputRef.current?.click()}>
-              <div className="ais-upload-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
+            {scanLimitReached ? (
+              <div className="ais-upload-btn ais-upload-btn--locked">
+                <div className="ais-upload-icon ais-upload-icon--locked">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <span className="ais-upload-text">Scanner locked for today</span>
+                <span className="ais-upload-hint">Re-log a previous scan below, or come back tomorrow</span>
               </div>
-              <span className="ais-upload-text">Tap to take or upload a photo</span>
-              <span className="ais-upload-hint">JPEG, PNG or WEBP</span>
-            </button>
+            ) : (
+              <button className="ais-upload-btn" onClick={() => fileInputRef.current?.click()}>
+                <div className="ais-upload-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                </div>
+                <span className="ais-upload-text">Tap to take or upload a photo</span>
+                <span className="ais-upload-hint">JPEG, PNG or WEBP</span>
+              </button>
+            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -378,26 +442,77 @@ export default function AIMealScanner() {
               style={{ display: 'none' }}
             />
 
-            {/* Recent scans for reuse */}
+            {/* Recent scans grouped by meal type */}
             {savedMealsLoaded && savedMeals.length > 0 && (
               <div className="ais-recent-section">
                 <h3 className="ais-recent-title">Recent Scans</h3>
-                <p className="ais-recent-hint">Tap to re-log without scanning</p>
-                <div className="ais-recent-list">
-                  {savedMeals.map((meal) => (
-                    <button key={meal.id} className="ais-recent-card" onClick={() => handleReuse(meal)}>
-                      {meal.photoUrl && (
-                        <img src={meal.photoUrl} alt="" className="ais-recent-thumb" loading="lazy" />
-                      )}
-                      <div className="ais-recent-info">
-                        <span className="ais-recent-label">{meal.label}</span>
-                        <span className="ais-recent-macros">
-                          {meal.totals.calories} cal &middot; {meal.totals.protein}p &middot; {meal.totals.carbs}c &middot; {meal.totals.fats}f
-                        </span>
-                      </div>
-                      <svg className="ais-recent-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                <p className="ais-recent-hint">Tap to re-log without using a scan credit</p>
+
+                {/* Category filter tabs */}
+                <div className="ais-category-tabs">
+                  <button
+                    className={`ais-category-tab${recentFilter === 'all' ? ' ais-category-tab--active' : ''}`}
+                    onClick={() => setRecentFilter('all')}
+                  >
+                    All
+                  </button>
+                  {MEALS.map((m) => {
+                    const count = savedMeals.filter((s) => s.mealType === m.key).length;
+                    if (count === 0) return null;
+                    return (
+                      <button
+                        key={m.key}
+                        className={`ais-category-tab${recentFilter === m.key ? ' ais-category-tab--active' : ''}`}
+                        onClick={() => setRecentFilter(m.key)}
+                      >
+                        {m.icon} {m.label} <span className="ais-category-count">{count}</span>
+                      </button>
+                    );
+                  })}
+                  {/* Show uncategorized tab if any meals lack mealType */}
+                  {savedMeals.some((s) => !s.mealType) && (
+                    <button
+                      className={`ais-category-tab${recentFilter === 'uncategorized' ? ' ais-category-tab--active' : ''}`}
+                      onClick={() => setRecentFilter('uncategorized')}
+                    >
+                      Other
                     </button>
-                  ))}
+                  )}
+                </div>
+
+                <div className="ais-recent-list">
+                  {savedMeals
+                    .filter((meal) => {
+                      if (recentFilter === 'all') return true;
+                      if (recentFilter === 'uncategorized') return !meal.mealType;
+                      return meal.mealType === recentFilter;
+                    })
+                    .map((meal) => (
+                      <button key={meal.id} className="ais-recent-card" onClick={() => handleReuse(meal)}>
+                        {meal.photoUrl && (
+                          <img src={meal.photoUrl} alt="" className="ais-recent-thumb" loading="lazy" />
+                        )}
+                        <div className="ais-recent-info">
+                          <span className="ais-recent-label">{meal.label}</span>
+                          <span className="ais-recent-macros">
+                            {meal.totals.calories} cal &middot; {meal.totals.protein}p &middot; {meal.totals.carbs}c &middot; {meal.totals.fats}f
+                          </span>
+                          {meal.mealType && (
+                            <span className="ais-recent-meal-tag">
+                              {MEALS.find((m) => m.key === meal.mealType)?.icon} {MEALS.find((m) => m.key === meal.mealType)?.label}
+                            </span>
+                          )}
+                        </div>
+                        <svg className="ais-recent-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                      </button>
+                    ))}
+                  {savedMeals.filter((meal) => {
+                    if (recentFilter === 'all') return true;
+                    if (recentFilter === 'uncategorized') return !meal.mealType;
+                    return meal.mealType === recentFilter;
+                  }).length === 0 && (
+                    <p className="ais-recent-empty">No scans in this category yet</p>
+                  )}
                 </div>
               </div>
             )}
