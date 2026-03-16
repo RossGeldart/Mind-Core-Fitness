@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -373,6 +373,7 @@ export default function CoreBuddyWorkouts() {
 
   // Hold-to-finish overlay
   const [showFinish, setShowFinish] = useState(false);
+  const [lastWorkoutLogId, setLastWorkoutLogId] = useState(null);
 
   // Quick-preview modal for exercise thumbnails
   const [previewEx, setPreviewEx] = useState(null);
@@ -935,7 +936,7 @@ export default function CoreBuddyWorkouts() {
 
     const totalSets = exercises.reduce((sum, e) => sum + e.sets.length, 0);
     try {
-      await addDoc(collection(db, 'workoutLogs'), {
+      const logRef = await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         type: 'custom_sets',
         weightUnit: byoWeightUnit,
@@ -945,7 +946,7 @@ export default function CoreBuddyWorkouts() {
         date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
-
+      setLastWorkoutLogId(logRef.id);
       trackWorkoutCompleted({ focus: 'custom_sets', level: 'custom', duration: 0, equipment: [...new Set(byoSelected.map(e => e.equipment))], exerciseCount: exercises.length });
       setWeeklyCount(c => c + 1);
       const newTotal = totalCount + 1;
@@ -1410,7 +1411,7 @@ export default function CoreBuddyWorkouts() {
   const saveWorkoutLog = async () => {
     if (!currentUser) return;
     try {
-      await addDoc(collection(db, 'workoutLogs'), {
+      const logRef = await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         level,
         duration,
@@ -1422,6 +1423,7 @@ export default function CoreBuddyWorkouts() {
         date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
+      setLastWorkoutLogId(logRef.id);
       trackWorkoutCompleted({ focus: focusArea, level, duration, equipment: selectedEquipment, exerciseCount: workout.length });
       if (typeof fbq === 'function') {
         fbq('trackCustom', 'WorkoutCompleted', {
@@ -2498,6 +2500,9 @@ export default function CoreBuddyWorkouts() {
                 userName={clientData?.name}
                 onDismissStart={() => setView('byo_hub')}
                 onDone={() => { setShowByoFinish(false); setByoSelected([]); setByoSetsData({}); }}
+                onRate={lastWorkoutLogId ? (rating) => {
+                  updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});
+                } : undefined}
               />
               <button className="wk-complete-save-btn" onClick={() => setShowByoSaveModal(true)} disabled={savingWorkout}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -3545,6 +3550,9 @@ export default function CoreBuddyWorkouts() {
               userName={clientData?.name}
               onDismissStart={() => setView('randomiser_hub')}
               onDone={() => setShowFinish(false)}
+              onRate={lastWorkoutLogId ? (rating) => {
+                updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});
+              } : undefined}
             />
             {/* Save workout prompt on completion */}
             <button className="wk-complete-save-btn" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>

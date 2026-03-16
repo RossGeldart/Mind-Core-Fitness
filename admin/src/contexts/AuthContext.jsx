@@ -139,8 +139,13 @@ export function AuthProvider({ children }) {
   // server-side as stale are automatically re-registered on next app open.
   useEffect(() => {
     if (!clientData?.id) return;
-    // Only refresh if user explicitly opted in to push notifications
-    if (clientData.pushEnabled !== true) return;
+    // Only refresh if user opted in to push notifications.
+    // Backwards compat: if pushEnabled is undefined (old users), fall back
+    // to checking whether they have tokens stored.
+    const tokens_ = clientData.fcmTokens || [];
+    const shouldRefresh = clientData.pushEnabled === true
+      || (clientData.pushEnabled === undefined && tokens_.length > 0);
+    if (!shouldRefresh) return;
 
     const tokens = clientData.fcmTokens || [];
     let nativeUnsub = () => {};

@@ -137,11 +137,13 @@ export default function CoreBuddySettings() {
       setNotifPrefs(prev => ({ ...prev, ...prefs }));
     }
     // Check if user has push enabled — use the explicit flag so the toggle
-    // stays on even when stale tokens have been cleaned up server-side
-    if (clientData.pushEnabled === true) {
+    // stays on even when stale tokens have been cleaned up server-side.
+    // Backwards compat: if pushEnabled is undefined (old users), fall back
+    // to checking whether they have tokens stored.
+    const tokens = clientData.fcmTokens || [];
+    if (clientData.pushEnabled === true || (clientData.pushEnabled === undefined && tokens.length > 0)) {
       setPushEnabled(true);
     }
-    const tokens = clientData.fcmTokens || [];
     if (tokens.length > 0) {
       setPushToken(tokens[tokens.length - 1]);
     }
