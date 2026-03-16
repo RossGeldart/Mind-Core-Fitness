@@ -286,10 +286,17 @@ exports.analyseMeal = onCall(
       throw new HttpsError('unauthenticated', 'You must be signed in.');
     }
 
+    // Look up the client doc ID from the auth uid
+    const clientSnap = await db.collection('clients').where('uid', '==', request.auth.uid).limit(1).get();
+    if (clientSnap.empty) {
+      throw new HttpsError('not-found', 'Client profile not found.');
+    }
+    const clientId = clientSnap.docs[0].id;
+
     // Enforce daily scan limit (10 per user per day)
     const DAILY_SCAN_LIMIT = 10;
     const today = new Date().toISOString().split('T')[0];
-    const usageRef = db.collection('scanUsage').doc(`${request.auth.uid}_${today}`);
+    const usageRef = db.collection('scanUsage').doc(`${clientId}_${today}`);
     const usageSnap = await usageRef.get();
     const currentCount = usageSnap.exists ? (usageSnap.data().count || 0) : 0;
     if (currentCount >= DAILY_SCAN_LIMIT) {
