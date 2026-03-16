@@ -286,6 +286,16 @@ exports.analyseMeal = onCall(
       throw new HttpsError('unauthenticated', 'You must be signed in.');
     }
 
+    // Enforce daily scan limit (10 per user per day)
+    const DAILY_SCAN_LIMIT = 10;
+    const today = new Date().toISOString().split('T')[0];
+    const usageRef = db.collection('scanUsage').doc(`${request.auth.uid}_${today}`);
+    const usageSnap = await usageRef.get();
+    const currentCount = usageSnap.exists ? (usageSnap.data().count || 0) : 0;
+    if (currentCount >= DAILY_SCAN_LIMIT) {
+      throw new HttpsError('resource-exhausted', 'Daily scan limit reached (10/day). Re-log a previous scan to save credits.');
+    }
+
     const { imageBase64, mimeType } = request.data;
     if (!imageBase64 || !mimeType) {
       throw new HttpsError('invalid-argument', 'imageBase64 and mimeType are required.');
