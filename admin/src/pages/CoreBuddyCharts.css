@@ -218,6 +218,7 @@
   padding: 16px 12px;
   margin-bottom: 16px;
   box-shadow: var(--shadow-glow);
+  overflow: hidden;
 }
 
 [data-theme="dark"] .cht-card {
