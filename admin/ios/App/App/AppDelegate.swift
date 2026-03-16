@@ -14,10 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // Forward APNs token to Capacitor plugins (required for @capacitor-firebase/messaging)
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let hexToken = deviceToken.map { String(format: "%02x", $0) }.joined()
+        print("📱 APNs device token: \(hexToken)")
         NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("❌ APNs registration failed: \(error)")
         NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
     }
 
