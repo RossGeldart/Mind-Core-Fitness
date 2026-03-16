@@ -185,7 +185,8 @@ export async function revokePushToken(clientId, token) {
 /**
  * Re-fetch the current FCM token and update Firestore if it changed.
  * Call this on every app open so expired/rotated tokens are replaced.
- * Only runs if the user previously granted permission and has tokens stored.
+ * Runs if the user previously granted permission — even when storedTokens
+ * is empty (tokens may have been cleaned up server-side as stale).
  *
  * @param {string} clientId - Firestore client document ID
  * @param {string[]} storedTokens - Current fcmTokens array from Firestore
@@ -193,7 +194,6 @@ export async function revokePushToken(clientId, token) {
  */
 export async function refreshPushToken(clientId, storedTokens) {
   if (!isPushSupported() || !clientId) return null;
-  if (!storedTokens || storedTokens.length === 0) return null;
 
   // Only refresh if user previously granted permission
   const permission = getPermissionState();
@@ -217,8 +217,9 @@ export async function refreshPushToken(clientId, storedTokens) {
 
     if (!currentToken) return null;
 
-    // If the token changed (rotated), update Firestore
-    if (!storedTokens.includes(currentToken)) {
+    // If the token is new or changed (rotated), update Firestore
+    const tokens = storedTokens || [];
+    if (!tokens.includes(currentToken)) {
       await updateDoc(doc(db, 'clients', clientId), {
         fcmTokens: arrayUnion(currentToken),
       });

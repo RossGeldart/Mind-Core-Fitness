@@ -136,10 +136,13 @@ export default function CoreBuddySettings() {
     if (prefs) {
       setNotifPrefs(prev => ({ ...prev, ...prefs }));
     }
-    // Check if user has push enabled (has fcm tokens stored)
+    // Check if user has push enabled — use the explicit flag so the toggle
+    // stays on even when stale tokens have been cleaned up server-side
+    if (clientData.pushEnabled === true) {
+      setPushEnabled(true);
+    }
     const tokens = clientData.fcmTokens || [];
     if (tokens.length > 0) {
-      setPushEnabled(true);
       setPushToken(tokens[tokens.length - 1]);
     }
     // Check permission state (async on native, sync on web)
@@ -165,9 +168,11 @@ export default function CoreBuddySettings() {
             await revokePushToken(clientData.id, pushToken);
           }
         }
+        // Write pushEnabled: false so the system knows user explicitly disabled
+        await updateDoc(doc(db, 'clients', clientData.id), { pushEnabled: false });
         setPushEnabled(false);
         setPushToken(null);
-        updateClientData({ fcmTokens: [] });
+        updateClientData({ fcmTokens: [], pushEnabled: false });
         showToast('Push notifications disabled', 'info');
       } else if (isNative) {
         // Native iOS push via @capacitor-firebase/messaging
@@ -181,10 +186,12 @@ export default function CoreBuddySettings() {
             ? existingPrefs
             : notifPrefs;
           await updateDoc(doc(db, 'clients', clientData.id), {
+            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           updateClientData({
             fcmTokens: [...(clientData.fcmTokens || []), result.token],
+            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           showToast('Push notifications enabled!', 'success');
@@ -217,10 +224,12 @@ export default function CoreBuddySettings() {
             ? existingPrefs
             : notifPrefs;
           await updateDoc(doc(db, 'clients', clientData.id), {
+            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           updateClientData({
             fcmTokens: [...(clientData.fcmTokens || []), token],
+            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           showToast('Push notifications enabled!', 'success');

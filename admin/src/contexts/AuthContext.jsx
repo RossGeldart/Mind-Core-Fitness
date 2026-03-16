@@ -134,17 +134,20 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Refresh FCM push token on every app open so expired tokens are replaced
+  // Refresh FCM push token on every app open so expired tokens are replaced.
+  // Uses the pushEnabled flag (not token count) so that tokens cleaned up
+  // server-side as stale are automatically re-registered on next app open.
   useEffect(() => {
     if (!clientData?.id) return;
-    const tokens = clientData.fcmTokens || [];
-    if (tokens.length === 0) return;
+    // Only refresh if user explicitly opted in to push notifications
+    if (clientData.pushEnabled !== true) return;
 
+    const tokens = clientData.fcmTokens || [];
     let nativeUnsub = () => {};
 
     if (isNative) {
-      refreshNativePushToken(clientData.id, tokens).then(({ unsubscribe }) => {
-        nativeUnsub = unsubscribe;
+      refreshNativePushToken(clientData.id, tokens).then((result) => {
+        if (result?.unsubscribe) nativeUnsub = result.unsubscribe;
       });
     } else {
       refreshPushToken(clientData.id, tokens);
