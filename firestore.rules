@@ -25,7 +25,7 @@ service cloud.firestore {
         && request.resource.data.signupSource in ['self_signup', 'google', 'apple'];
       // Clients can update their own profile fields
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'dashboardWidgets', 'tourComplete', 'fcmTokens', 'notificationPrefs', 'pushEnabled', 'weeklyWorkoutTarget']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'leaderboardOptIn', 'welcomeForm', 'parqForm', 'dailyQuote', 'quoteUsedIndices', 'photoURL', 'onboardingComplete', 'fitnessGoal', 'fitnessGoals', 'experienceLevel', 'dob', 'dashboardWidgets', 'tourComplete', 'fcmTokens', 'notificationPrefs', 'weeklyWorkoutTarget']);
     }
     // Onboarding Drafts - clients read/write/delete own (doc ID = clientId)
     match /onboardingDrafts/{docId} {
