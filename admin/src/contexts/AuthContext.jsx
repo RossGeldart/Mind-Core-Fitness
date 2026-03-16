@@ -140,11 +140,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!clientData?.id) return;
     // Only refresh if user opted in to push notifications.
-    // Backwards compat: if pushEnabled is undefined (old users), fall back
-    // to checking whether they have tokens stored.
+    // The flag lives inside notificationPrefs._pushEnabled (no extra Firestore field).
+    // Backwards compat: if the flag is undefined (old users), fall back to token count.
     const tokens_ = clientData.fcmTokens || [];
-    const shouldRefresh = clientData.pushEnabled === true
-      || (clientData.pushEnabled === undefined && tokens_.length > 0);
+    const pushFlag = clientData.notificationPrefs?._pushEnabled;
+    const shouldRefresh = pushFlag === true
+      || (pushFlag === undefined && tokens_.length > 0);
     if (!shouldRefresh) return;
 
     const tokens = clientData.fcmTokens || [];

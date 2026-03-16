@@ -136,12 +136,12 @@ export default function CoreBuddySettings() {
     if (prefs) {
       setNotifPrefs(prev => ({ ...prev, ...prefs }));
     }
-    // Check if user has push enabled — use the explicit flag so the toggle
-    // stays on even when stale tokens have been cleaned up server-side.
-    // Backwards compat: if pushEnabled is undefined (old users), fall back
-    // to checking whether they have tokens stored.
+    // Check if user has push enabled — use the flag inside notificationPrefs
+    // so it stays on even when stale tokens have been cleaned up server-side.
+    // Backwards compat: if the flag is undefined (old users), fall back to token count.
     const tokens = clientData.fcmTokens || [];
-    if (clientData.pushEnabled === true || (clientData.pushEnabled === undefined && tokens.length > 0)) {
+    const pushFlag = prefs?._pushEnabled;
+    if (pushFlag === true || (pushFlag === undefined && tokens.length > 0)) {
       setPushEnabled(true);
     }
     if (tokens.length > 0) {
@@ -170,11 +170,15 @@ export default function CoreBuddySettings() {
             await revokePushToken(clientData.id, pushToken);
           }
         }
-        // Write pushEnabled: false so the system knows user explicitly disabled
-        await updateDoc(doc(db, 'clients', clientData.id), { pushEnabled: false });
+        // Store the flag inside notificationPrefs (already allowed by rules)
+        const disabledPrefs = { ...notifPrefs, _pushEnabled: false };
+        await updateDoc(doc(db, 'clients', clientData.id), {
+          notificationPrefs: disabledPrefs,
+        });
         setPushEnabled(false);
         setPushToken(null);
-        updateClientData({ fcmTokens: [], pushEnabled: false });
+        setNotifPrefs(disabledPrefs);
+        updateClientData({ fcmTokens: [], notificationPrefs: disabledPrefs });
         showToast('Push notifications disabled', 'info');
       } else if (isNative) {
         // Native iOS push via @capacitor-firebase/messaging
@@ -185,15 +189,14 @@ export default function CoreBuddySettings() {
           // Write default notificationPrefs if not already stored
           const existingPrefs = clientData.notificationPrefs;
           const prefsToWrite = existingPrefs && Object.keys(existingPrefs).length > 0
-            ? existingPrefs
-            : notifPrefs;
+            ? { ...existingPrefs, _pushEnabled: true }
+            : { ...notifPrefs, _pushEnabled: true };
           await updateDoc(doc(db, 'clients', clientData.id), {
-            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
+          setNotifPrefs(prefsToWrite);
           updateClientData({
             fcmTokens: [...(clientData.fcmTokens || []), result.token],
-            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           showToast('Push notifications enabled!', 'success');
@@ -223,15 +226,14 @@ export default function CoreBuddySettings() {
           // Write default notificationPrefs if not already stored
           const existingPrefs = clientData.notificationPrefs;
           const prefsToWrite = existingPrefs && Object.keys(existingPrefs).length > 0
-            ? existingPrefs
-            : notifPrefs;
+            ? { ...existingPrefs, _pushEnabled: true }
+            : { ...notifPrefs, _pushEnabled: true };
           await updateDoc(doc(db, 'clients', clientData.id), {
-            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
+          setNotifPrefs(prefsToWrite);
           updateClientData({
             fcmTokens: [...(clientData.fcmTokens || []), token],
-            pushEnabled: true,
             notificationPrefs: prefsToWrite,
           });
           showToast('Push notifications enabled!', 'success');
