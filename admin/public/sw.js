@@ -15,16 +15,19 @@ self.addEventListener('push', (e) => {
     return;
   }
 
-  // If Firebase already showed a notification (via the notification payload),
-  // the data will be under fcmOptions. We still show our own to ensure iOS works.
+  // We send data-only FCM messages (no top-level `notification` key) so
+  // the SW push event always fires — especially on iOS Safari PWAs where
+  // a notification-type message can be swallowed without waking the SW.
+  // Read title/body from data first, fall back to notification for compat.
+  const data = payload.data || {};
   const notif = payload.notification || {};
-  const notifTitle = notif.title || 'Core Buddy';
+  const notifTitle = data.title || notif.title || 'Core Buddy';
   const notifOptions = {
-    body: notif.body || 'You have a new notification',
+    body: data.body || notif.body || 'You have a new notification',
     icon: notif.icon || '/login/Logo.webp',
     badge: '/login/Logo.webp',
-    data: payload.data || {},
-    tag: (payload.data && payload.data.type) || 'general',
+    data: data,
+    tag: data.type || 'general',
   };
 
   e.waitUntil(self.registration.showNotification(notifTitle, notifOptions));

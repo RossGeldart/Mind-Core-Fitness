@@ -129,9 +129,12 @@ export default function CoreBuddySettings() {
     if (!authLoading && !currentUser) navigate('/');
   }, [authLoading, currentUser, navigate]);
 
-  // Load existing preferences from clientData
+  // Load existing preferences from clientData.
+  // Skip while a toggle operation is in progress — the toggle handler
+  // manages its own state updates and a Firestore listener firing
+  // mid-flow with stale data would overwrite the toggle.
   useEffect(() => {
-    if (!clientData) return;
+    if (!clientData || pushLoading) return;
     const prefs = clientData.notificationPrefs;
     if (prefs) {
       setNotifPrefs(prev => ({ ...prev, ...prefs }));
@@ -143,6 +146,8 @@ export default function CoreBuddySettings() {
     const pushFlag = prefs?._pushEnabled;
     if (pushFlag === true || (pushFlag === undefined && tokens.length > 0)) {
       setPushEnabled(true);
+    } else if (pushFlag === false) {
+      setPushEnabled(false);
     }
     if (tokens.length > 0) {
       setPushToken(tokens[tokens.length - 1]);
@@ -153,7 +158,7 @@ export default function CoreBuddySettings() {
     } else {
       setPermissionState(getPermissionState());
     }
-  }, [clientData]);
+  }, [clientData, pushLoading]);
 
   // Toggle master push notifications
   const handlePushToggle = async () => {
@@ -218,8 +223,10 @@ export default function CoreBuddySettings() {
         const result = await requestPushPermission(clientData.id);
         const token = result?.token ?? result; // backwards compat
         const pushError = result?.error ?? null;
-        const state = getPermissionState();
-        setPermissionState(state);
+        // Re-check permission state immediately — on iOS Safari this can
+        // lag behind the actual OS state, so update it now for the UI.
+        const freshState = getPermissionState();
+        setPermissionState(freshState);
         if (token) {
           setPushEnabled(true);
           setPushToken(token);
@@ -243,12 +250,12 @@ export default function CoreBuddySettings() {
           showToast('Could not start notification service — close and reopen the app', 'error');
         } else if (pushError?.startsWith('token-failed:')) {
           const detail = pushError.replace('token-failed:', '');
-          if (state === 'denied') {
+          if (freshState === 'denied') {
             showToast('Notifications blocked — enable in Settings > Notifications, then remove and re-add the app', 'error');
           } else {
             showToast(`Permission OK but registration failed (${detail}) — close app fully, reopen and try again`, 'error');
           }
-        } else if (state === 'denied') {
+        } else if (freshState === 'denied') {
           showToast('Notifications blocked — enable them in your device settings, remove the app from your home screen and re-add it', 'error');
         } else {
           showToast('Could not enable notifications — please try again', 'error');
