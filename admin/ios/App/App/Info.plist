@@ -64,5 +64,7 @@
 	</array>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Mind Core Fitness reads your health data (sleep, steps, and active calories) to personalise your coaching experience and track your recovery.</string>
 </dict>
 </plist>

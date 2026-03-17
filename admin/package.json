@@ -26,6 +26,7 @@
     "@capacitor/ios": "^8.1.0",
     "@capacitor/push-notifications": "^8.0.1",
     "@capacitor/status-bar": "^8.0.1",
+    "@capgo/capacitor-health": "^8.4.1",
     "@ericblade/quagga2": "^1.12.1",
     "@revenuecat/purchases-capacitor": "^12.2.1",
     "firebase": "^12.8.0",

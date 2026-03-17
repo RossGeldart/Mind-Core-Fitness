@@ -20,6 +20,7 @@ import { collection, query, where, getDocs, getDoc, onSnapshot, doc, setDoc, upd
 import { auth, db, ADMIN_UID, googleProvider, appleProvider } from '../config/firebase';
 import { refreshPushToken } from '../utils/pushNotifications';
 import { refreshNativePushToken } from '../utils/nativePushNotifications';
+import { syncHealthData } from '../services/healthDataService';
 
 const isNative = Capacitor.isNativePlatform();
 
@@ -160,6 +161,32 @@ export function AuthProvider({ children }) {
     }
 
     return () => nativeUnsub();
+  }, [clientData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync health data (HealthKit / Health Connect) on app open and resume.
+  // Native only — does nothing on web.
+  useEffect(() => {
+    if (!clientData?.id) return;
+    if (!isNative) return;
+
+    // Sync on initial mount (app open)
+    syncHealthData(clientData.id).catch((err) => {
+      console.warn('Health data sync failed:', err);
+    });
+
+    // Sync again when user returns to the app (resume from background)
+    let listener;
+    import('@capacitor/app').then(({ App: CapApp }) => {
+      listener = CapApp.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) {
+          syncHealthData(clientData.id).catch((err) => {
+            console.warn('Health data sync on resume failed:', err);
+          });
+        }
+      });
+    });
+
+    return () => { if (listener) listener.then(l => l.remove()); };
   }, [clientData?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (email, password, rememberMe = true) => {
