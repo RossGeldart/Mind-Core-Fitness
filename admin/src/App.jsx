@@ -179,8 +179,8 @@ function App() {
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
             <Route path="/client/core-buddy/activity" element={<ActivityHistory />} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
-            <Route path="/client/core-buddy/check-in" element={<DailyCheckIn />} />
-            <Route path="/client/core-buddy/coaching" element={<CoachingPlan />} />
+            {isNative && <Route path="/client/core-buddy/check-in" element={<DailyCheckIn />} />}
+            {isNative && <Route path="/client/core-buddy/coaching" element={<CoachingPlan />} />}
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
