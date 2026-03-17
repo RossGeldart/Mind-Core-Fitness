@@ -221,7 +221,7 @@ export default function AIMealScanner() {
         fats: item.fats || 0,
         calories: item.calories || 0,
         serving: `${item.estimatedGrams || 0}g (AI estimate)`,
-        mealType: selectedMeal,
+        meal: selectedMeal,
         source: 'ai_scanner',
         aiConfidence: result.confidence,
         aiPhotoUrl: photoUrl,
@@ -297,7 +297,7 @@ export default function AIMealScanner() {
         fats: item.fats || 0,
         calories: item.calories || 0,
         serving: `${item.estimatedGrams || 0}g (AI estimate)`,
-        mealType: selectedMeal,
+        meal: selectedMeal,
         source: 'ai_scanner_reuse',
         aiConfidence: result.confidence,
       }));

@@ -1063,7 +1063,7 @@ export default function CoreBuddyNutrition() {
           <div className="nut-log-section">
             <div className="nut-meals-list">
               {MEALS.map(m => {
-                const items = todayLog.entries.filter(e => (e.meal || 'snacks') === m.key);
+                const items = todayLog.entries.filter(e => (e.meal || e.mealType || 'snacks') === m.key);
                 const mealTotals = items.reduce((acc, e) => ({
                   protein: acc.protein + (e.protein || 0),
                   carbs: acc.carbs + (e.carbs || 0),
