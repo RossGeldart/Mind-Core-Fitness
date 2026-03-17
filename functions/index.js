@@ -452,119 +452,133 @@ exports.calculateRecoveryScore = onCall(
       throw new HttpsError('unauthenticated', 'You must be signed in.');
     }
 
-    const clientId = await getClientId(request.auth.uid);
+    let clientId;
+    try {
+      clientId = await getClientId(request.auth.uid);
+    } catch (err) {
+      console.error('calculateRecoveryScore: getClientId failed', err);
+      throw new HttpsError('internal', 'Could not look up your profile. Please try again.');
+    }
     if (!clientId) throw new HttpsError('not-found', 'Client profile not found.');
 
-    const data = request.data;
-    const components = {};
+    try {
+      const data = request.data || {};
+      const components = {};
 
-    // ── Sleep component (30%) ──
-    // 7-9 hours = optimal, <5 or >10 = poor
-    const sleepHours = data.sleepHours ?? 7;
-    const sleepQuality = data.sleepQuality ?? 3;
-    let sleepScore;
-    if (sleepHours >= 7 && sleepHours <= 9) {
-      sleepScore = 85 + (sleepQuality / 5) * 15; // 85-100
-    } else if (sleepHours >= 6) {
-      sleepScore = 60 + (sleepQuality / 5) * 15; // 60-75
-    } else if (sleepHours >= 5) {
-      sleepScore = 35 + (sleepQuality / 5) * 15; // 35-50
-    } else {
-      sleepScore = 10 + (sleepQuality / 5) * 15; // 10-25
+      // ── Sleep component (30%) ──
+      // 7-9 hours = optimal, <5 or >10 = poor
+      const sleepHours = data.sleepHours ?? 7;
+      const sleepQuality = data.sleepQuality ?? 3;
+      let sleepScore;
+      if (sleepHours >= 7 && sleepHours <= 9) {
+        sleepScore = 85 + (sleepQuality / 5) * 15; // 85-100
+      } else if (sleepHours >= 6) {
+        sleepScore = 60 + (sleepQuality / 5) * 15; // 60-75
+      } else if (sleepHours >= 5) {
+        sleepScore = 35 + (sleepQuality / 5) * 15; // 35-50
+      } else {
+        sleepScore = 10 + (sleepQuality / 5) * 15; // 10-25
+      }
+      components.sleep = { score: Math.round(sleepScore), weight: 0.3, hours: sleepHours, quality: sleepQuality };
+
+      // ── HRV component (25%) ──
+      // Compare to personal baseline: above = good, below = stressed/fatigued
+      let hrvScore = 70; // default if no data
+      if (data.hrvCurrent && data.hrvBaseline) {
+        const hrvRatio = data.hrvCurrent / data.hrvBaseline;
+        if (hrvRatio >= 1.1) hrvScore = 95;
+        else if (hrvRatio >= 1.0) hrvScore = 85;
+        else if (hrvRatio >= 0.9) hrvScore = 70;
+        else if (hrvRatio >= 0.8) hrvScore = 50;
+        else if (hrvRatio >= 0.7) hrvScore = 30;
+        else hrvScore = 15;
+      }
+      components.hrv = { score: Math.round(hrvScore), weight: 0.25, current: data.hrvCurrent, baseline: data.hrvBaseline };
+
+      // ── Resting HR component (15%) ──
+      // Lower than baseline = well recovered, higher = fatigued
+      let restingHRScore = 70; // default
+      if (data.restingHR && data.restingHRBaseline) {
+        const hrDiff = data.restingHR - data.restingHRBaseline;
+        if (hrDiff <= -3) restingHRScore = 95;
+        else if (hrDiff <= 0) restingHRScore = 85;
+        else if (hrDiff <= 3) restingHRScore = 65;
+        else if (hrDiff <= 6) restingHRScore = 40;
+        else restingHRScore = 20;
+      }
+      components.restingHR = { score: Math.round(restingHRScore), weight: 0.15, current: data.restingHR, baseline: data.restingHRBaseline };
+
+      // ── Training load component (15%) ──
+      // Moderate is good, too much in 48h = needs rest
+      let trainingScore = 75; // default
+      const load48h = data.trainingLoadLast48h ?? 60;
+      if (load48h <= 30) trainingScore = 95;       // very light — fully rested
+      else if (load48h <= 60) trainingScore = 85;   // light
+      else if (load48h <= 90) trainingScore = 70;   // moderate
+      else if (load48h <= 120) trainingScore = 55;  // heavy
+      else if (load48h <= 150) trainingScore = 35;  // very heavy
+      else trainingScore = 20;                       // extreme
+      components.trainingLoad = { score: Math.round(trainingScore), weight: 0.15, minutesLast48h: load48h };
+
+      // ── Nutrition compliance component (10%) ──
+      const nutritionAdherence = data.nutritionAdherence ?? 0.7;
+      const nutritionScore = Math.round(nutritionAdherence * 100);
+      components.nutrition = { score: Math.min(100, nutritionScore), weight: 0.1, adherence: nutritionAdherence };
+
+      // ── Soreness component (5%) ──
+      const soreness = data.sorenessLevel ?? 2;
+      const sorenessScore = Math.round(((5 - soreness) / 4) * 100); // 1→100, 5→0
+      components.soreness = { score: sorenessScore, weight: 0.05, level: soreness };
+
+      // ── Weighted total ──
+      const totalScore = Math.round(
+        components.sleep.score * 0.3 +
+        components.hrv.score * 0.25 +
+        components.restingHR.score * 0.15 +
+        components.trainingLoad.score * 0.15 +
+        components.nutrition.score * 0.1 +
+        components.soreness.score * 0.05
+      );
+
+      // Grade
+      let grade, recommendation;
+      if (totalScore >= 85) {
+        grade = 'Excellent';
+        recommendation = 'You\'re fully recovered. Great day for a high-intensity session or hitting a new PB.';
+      } else if (totalScore >= 70) {
+        grade = 'Good';
+        recommendation = 'Recovery is solid. You can train normally — just listen to your body during heavy sets.';
+      } else if (totalScore >= 55) {
+        grade = 'Moderate';
+        recommendation = 'Recovery is okay but not optimal. Consider a lighter session or focus on technique work today.';
+      } else if (totalScore >= 40) {
+        grade = 'Low';
+        recommendation = 'Your body needs more recovery. Active rest (walking, stretching, mobility) is your best move today.';
+      } else {
+        grade = 'Very Low';
+        recommendation = 'Rest IS training. Take a full rest day, prioritise sleep, hydration, and nutrition. You\'ll come back stronger.';
+      }
+
+      // Store the score in dailyCheckIns
+      const today = todayString();
+      const checkInRef = db.collection('dailyCheckIns').doc(`${clientId}_${today}`);
+      await checkInRef.set({
+        clientId,
+        date: today,
+        recoveryScore: totalScore,
+        recoveryGrade: grade,
+        recoveryRecommendation: recommendation,
+        recoveryComponents: components,
+        updatedAt: FieldValue.serverTimestamp(),
+      }, { merge: true });
+
+      return { score: totalScore, grade, components, recommendation };
+    } catch (err) {
+      // Re-throw HttpsError as-is, wrap anything else
+      if (err instanceof HttpsError) throw err;
+      console.error('calculateRecoveryScore failed:', err);
+      throw new HttpsError('internal', 'Recovery score calculation failed. Please try again.');
     }
-    components.sleep = { score: Math.round(sleepScore), weight: 0.3, hours: sleepHours, quality: sleepQuality };
-
-    // ── HRV component (25%) ──
-    // Compare to personal baseline: above = good, below = stressed/fatigued
-    let hrvScore = 70; // default if no data
-    if (data.hrvCurrent && data.hrvBaseline) {
-      const hrvRatio = data.hrvCurrent / data.hrvBaseline;
-      if (hrvRatio >= 1.1) hrvScore = 95;
-      else if (hrvRatio >= 1.0) hrvScore = 85;
-      else if (hrvRatio >= 0.9) hrvScore = 70;
-      else if (hrvRatio >= 0.8) hrvScore = 50;
-      else if (hrvRatio >= 0.7) hrvScore = 30;
-      else hrvScore = 15;
-    }
-    components.hrv = { score: Math.round(hrvScore), weight: 0.25, current: data.hrvCurrent, baseline: data.hrvBaseline };
-
-    // ── Resting HR component (15%) ──
-    // Lower than baseline = well recovered, higher = fatigued
-    let restingHRScore = 70; // default
-    if (data.restingHR && data.restingHRBaseline) {
-      const hrDiff = data.restingHR - data.restingHRBaseline;
-      if (hrDiff <= -3) restingHRScore = 95;
-      else if (hrDiff <= 0) restingHRScore = 85;
-      else if (hrDiff <= 3) restingHRScore = 65;
-      else if (hrDiff <= 6) restingHRScore = 40;
-      else restingHRScore = 20;
-    }
-    components.restingHR = { score: Math.round(restingHRScore), weight: 0.15, current: data.restingHR, baseline: data.restingHRBaseline };
-
-    // ── Training load component (15%) ──
-    // Moderate is good, too much in 48h = needs rest
-    let trainingScore = 75; // default
-    const load48h = data.trainingLoadLast48h ?? 60;
-    if (load48h <= 30) trainingScore = 95;       // very light — fully rested
-    else if (load48h <= 60) trainingScore = 85;   // light
-    else if (load48h <= 90) trainingScore = 70;   // moderate
-    else if (load48h <= 120) trainingScore = 55;  // heavy
-    else if (load48h <= 150) trainingScore = 35;  // very heavy
-    else trainingScore = 20;                       // extreme
-    components.trainingLoad = { score: Math.round(trainingScore), weight: 0.15, minutesLast48h: load48h };
-
-    // ── Nutrition compliance component (10%) ──
-    const nutritionAdherence = data.nutritionAdherence ?? 0.7;
-    const nutritionScore = Math.round(nutritionAdherence * 100);
-    components.nutrition = { score: Math.min(100, nutritionScore), weight: 0.1, adherence: nutritionAdherence };
-
-    // ── Soreness component (5%) ──
-    const soreness = data.sorenessLevel ?? 2;
-    const sorenessScore = Math.round(((5 - soreness) / 4) * 100); // 1→100, 5→0
-    components.soreness = { score: sorenessScore, weight: 0.05, level: soreness };
-
-    // ── Weighted total ──
-    const totalScore = Math.round(
-      components.sleep.score * 0.3 +
-      components.hrv.score * 0.25 +
-      components.restingHR.score * 0.15 +
-      components.trainingLoad.score * 0.15 +
-      components.nutrition.score * 0.1 +
-      components.soreness.score * 0.05
-    );
-
-    // Grade
-    let grade, recommendation;
-    if (totalScore >= 85) {
-      grade = 'Excellent';
-      recommendation = 'You\'re fully recovered. Great day for a high-intensity session or hitting a new PB.';
-    } else if (totalScore >= 70) {
-      grade = 'Good';
-      recommendation = 'Recovery is solid. You can train normally — just listen to your body during heavy sets.';
-    } else if (totalScore >= 55) {
-      grade = 'Moderate';
-      recommendation = 'Recovery is okay but not optimal. Consider a lighter session or focus on technique work today.';
-    } else if (totalScore >= 40) {
-      grade = 'Low';
-      recommendation = 'Your body needs more recovery. Active rest (walking, stretching, mobility) is your best move today.';
-    } else {
-      grade = 'Very Low';
-      recommendation = 'Rest IS training. Take a full rest day, prioritise sleep, hydration, and nutrition. You\'ll come back stronger.';
-    }
-
-    // Store the score in dailyCheckIns
-    const today = todayString();
-    const checkInRef = db.collection('dailyCheckIns').doc(`${clientId}_${today}`);
-    await checkInRef.set({
-      clientId,
-      date: today,
-      recoveryScore: totalScore,
-      recoveryGrade: grade,
-      recoveryComponents: components,
-      updatedAt: FieldValue.serverTimestamp(),
-    }, { merge: true });
-
-    return { score: totalScore, grade, components, recommendation };
   }
 );
 
