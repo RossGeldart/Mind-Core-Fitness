@@ -1,0 +1,406 @@
+/* ═══════════════════════════════════════════════════
+   COACHING PLAN — personalised daily AI coaching view
+   ═══════════════════════════════════════════════════ */
+
+.cp-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-main {
+  flex: 1;
+  padding: 0 16px calc(80px + var(--safe-area-bottom, 0px));
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 12px;
+}
+
+.cp-header h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cp-back {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Stats bar */
+.cp-stats-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.cp-stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  min-width: fit-content;
+}
+
+.cp-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cp-stat-val {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Loading */
+.cp-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.cp-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: cpSpin 0.8s linear infinite;
+}
+
+@keyframes cpSpin {
+  to { transform: rotate(360deg); }
+}
+
+.cp-loading p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+/* Overview card */
+.cp-overview-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+}
+
+.cp-overview-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Training advice card */
+.cp-training-card {
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.cp-train-yes {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+}
+
+.cp-train-rest {
+  background: var(--color-info-bg);
+  border: 1px solid var(--info-border);
+}
+
+.cp-training-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.cp-training-card p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Macros card */
+.cp-macros-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 12px;
+}
+
+.cp-macros-card h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.cp-macros-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cp-macro {
+  text-align: center;
+}
+
+.cp-macro-val {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.cp-macro-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.cp-macros-reason {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Blocks title */
+.cp-blocks-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 20px 0 12px;
+}
+
+/* 4-hour coaching blocks */
+.cp-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cp-block-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.cp-block-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cp-block-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cp-block-time {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cp-block-focus {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cp-block-advice {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+  margin: 0 0 6px;
+}
+
+.cp-block-nutrition {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--color-primary);
+  line-height: 1.3;
+  margin: 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-primary);
+}
+
+/* Insights card */
+.cp-insights-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+}
+
+.cp-insights-card h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.cp-insight {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0 0 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-color);
+}
+
+.cp-insight:last-child { margin-bottom: 0; }
+
+/* Regenerate button */
+.cp-regen-btn {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: 16px;
+}
+
+.cp-regen-btn:disabled { opacity: 0.5; }
+
+/* Empty state */
+.cp-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.cp-empty-icon {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.cp-empty h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.cp-empty p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.cp-error {
+  color: var(--color-error);
+  font-size: 0.82rem;
+}
+
+.cp-empty-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cp-btn-primary {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cp-btn-secondary {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cp-btn-secondary:disabled { opacity: 0.5; }

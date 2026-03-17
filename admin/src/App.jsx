@@ -32,6 +32,8 @@ import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 import ActivityHistory from './pages/ActivityHistory';
 import AIMealScanner from './pages/AIMealScanner';
 import CoreBuddyCharts from './pages/CoreBuddyCharts';
+import DailyCheckIn from './pages/DailyCheckIn';
+import CoachingPlan from './pages/CoachingPlan';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -177,6 +179,8 @@ function App() {
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
             <Route path="/client/core-buddy/activity" element={<ActivityHistory />} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
+            <Route path="/client/core-buddy/check-in" element={<DailyCheckIn />} />
+            <Route path="/client/core-buddy/coaching" element={<CoachingPlan />} />
             <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
