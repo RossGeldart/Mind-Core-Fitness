@@ -210,7 +210,7 @@ export default function NutritionHub() {
 
   // Today's meals grouped
   const mealGroups = MEALS.map(m => {
-    const entries = (todayLog || []).filter(e => e.meal === m.key);
+    const entries = (todayLog || []).filter(e => (e.meal || e.mealType || 'snacks') === m.key);
     const cal = entries.reduce((s, e) => s + (e.calories || 0), 0);
     return { ...m, entries, cal };
   });
