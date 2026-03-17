@@ -1577,31 +1577,6 @@ export default function CoreBuddyDashboard() {
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
-        {/* Recovery / Check-In Card — native app only */}
-        {Capacitor.isNativePlatform() && (todayCheckIn?.recoveryScore ? (
-          <button className="cb-feature-card cb-card-unified cb-card-recovery ripple-btn" onClick={() => navigate('/client/core-buddy/coaching')}>
-            <div className="cb-card-icon" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-            <div className="cb-card-content">
-              <h3>Recovery: {todayCheckIn.recoveryScore}/100</h3>
-              <p>{todayCheckIn.recoveryGrade} — View today's coaching plan</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        ) : (
-          <button className="cb-feature-card cb-card-unified cb-card-checkin ripple-btn" onClick={() => navigate('/client/core-buddy/check-in')}>
-            <div className="cb-card-icon" style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <div className="cb-card-content">
-              <h3>{new Date().getHours() < 12 ? 'Morning Check-In' : 'Evening Check-In'}</h3>
-              <p>Quick tap check-in &middot; Get your recovery score{todayHealthData?.sleep?.totalHours > 0 ? ` &middot; ${todayHealthData.sleep.totalHours}h sleep synced` : ''}</p>
-            </div>
-            <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        ))}
-
         {/* Milestone approaching — return trigger */}
         {milestoneText && (
           <div className="cb-milestone-hint">
@@ -1612,6 +1587,31 @@ export default function CoreBuddyDashboard() {
 
         {/* Feature Cards */}
         <div className="cb-features">
+
+          {/* Recovery / Check-In Card — native app only */}
+          {Capacitor.isNativePlatform() && (todayCheckIn?.recoveryScore ? (
+            <button className="cb-feature-card cb-card-unified cb-card-recovery ripple-btn" onClick={() => navigate('/client/core-buddy/coaching')}>
+              <div className="cb-card-icon" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div className="cb-card-content">
+                <h3>Recovery: {todayCheckIn.recoveryScore}/100</h3>
+                <p>{todayCheckIn.recoveryGrade} — View today's coaching plan</p>
+              </div>
+              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          ) : (
+            <button className="cb-feature-card cb-card-unified cb-card-checkin ripple-btn" onClick={() => navigate('/client/core-buddy/check-in')}>
+              <div className="cb-card-icon" style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div className="cb-card-content">
+                <h3>{new Date().getHours() < 12 ? 'Morning Check-In' : 'Evening Check-In'}</h3>
+                <p>Quick tap check-in &middot; Get your recovery score{todayHealthData?.sleep?.totalHours > 0 ? ` &middot; ${todayHealthData.sleep.totalHours}h sleep synced` : ''}</p>
+              </div>
+              <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          ))}
 
           {/* Smart Nudge Card */}
           {nudge && (

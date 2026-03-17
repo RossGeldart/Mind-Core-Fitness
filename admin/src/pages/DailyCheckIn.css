@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0 8px;
+  padding: calc(16px + var(--safe-area-top, 0px)) 0 8px;
 }
 
 .dci-header h1 {
