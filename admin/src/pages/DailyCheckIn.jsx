@@ -35,6 +35,7 @@ export default function DailyCheckIn() {
   const [recoveryResult, setRecoveryResult] = useState(null);
   const [alreadyCheckedIn, setAlreadyCheckedIn] = useState(false);
   const [healthData, setHealthData] = useState(null);
+  const [error, setError] = useState(null);
 
   const today = todayString();
 
@@ -78,6 +79,7 @@ export default function DailyCheckIn() {
   const handleSubmit = async () => {
     if (!clientId || saving) return;
     setSaving(true);
+    setError(null);
 
     try {
       const checkInData = {
@@ -103,6 +105,7 @@ export default function DailyCheckIn() {
       setAlreadyCheckedIn(true);
     } catch (err) {
       console.error('Check-in failed:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -267,6 +270,12 @@ export default function DailyCheckIn() {
           <button className="dci-submit" onClick={handleSubmit} disabled={saving}>
             {saving ? 'Calculating...' : alreadyCheckedIn ? 'Update Check-In' : 'Get My Recovery Score'}
           </button>
+
+          {error && (
+            <div style={{ color: '#ff6b6b', textAlign: 'center', marginTop: '12px', fontSize: '14px' }}>
+              {error}
+            </div>
+          )}
         </div>
       </div>
       <CoreBuddyNav active="home" />
