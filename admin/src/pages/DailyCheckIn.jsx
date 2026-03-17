@@ -105,7 +105,13 @@ export default function DailyCheckIn() {
       setAlreadyCheckedIn(true);
     } catch (err) {
       console.error('Check-in failed:', err);
-      setError(err.message || 'Something went wrong. Please try again.');
+      // Firebase HttpsError has .code like "functions/internal" and a generic .message.
+      // Surface the Cloud Function's custom message when available, else show a friendly fallback.
+      const msg = err?.customData?.message        // v2 callable custom message
+        || (err?.code === 'functions/internal' ? 'Something went wrong calculating your score. Please try again.' : null)
+        || err?.message
+        || 'Something went wrong. Please try again.';
+      setError(msg);
     } finally {
       setSaving(false);
     }
