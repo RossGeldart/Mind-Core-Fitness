@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import {
   collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc,
   addDoc, deleteDoc, increment, serverTimestamp,
@@ -594,9 +595,9 @@ export default function CoreBuddyDashboard() {
     return () => clearInterval(taglineInterval);
   }, []);
 
-  // Load today's check-in + health data for coaching card
+  // Load today's check-in + health data for coaching card (native only)
   useEffect(() => {
-    if (!clientData?.id) return;
+    if (!clientData?.id || !Capacitor.isNativePlatform()) return;
     const todayStr = formatDate(new Date());
     Promise.all([
       getDoc(doc(db, 'dailyCheckIns', `${clientData.id}_${todayStr}`)),
@@ -1576,8 +1577,8 @@ export default function CoreBuddyDashboard() {
         {/* Coach Message */}
         <p className="cb-coach-msg">{coachLine.main} <strong>{firstName}</strong> — {coachLine.sub}</p>
 
-        {/* Recovery / Check-In Card */}
-        {todayCheckIn?.recoveryScore ? (
+        {/* Recovery / Check-In Card — native app only */}
+        {Capacitor.isNativePlatform() && (todayCheckIn?.recoveryScore ? (
           <button className="cb-feature-card cb-card-unified cb-card-recovery ripple-btn" onClick={() => navigate('/client/core-buddy/coaching')}>
             <div className="cb-card-icon" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -1599,7 +1600,7 @@ export default function CoreBuddyDashboard() {
             </div>
             <svg className="cb-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-        )}
+        ))}
 
         {/* Milestone approaching — return trigger */}
         {milestoneText && (
