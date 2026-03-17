@@ -1,0 +1,326 @@
+/* ═══════════════════════════════════════════════════
+   DAILY CHECK-IN — quick tap-based morning/evening flow
+   ═══════════════════════════════════════════════════ */
+
+.dci-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+}
+
+.dci-main {
+  flex: 1;
+  padding: 0 16px calc(80px + var(--safe-area-bottom, 0px));
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.dci-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 8px;
+}
+
+.dci-header h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dci-back {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Watch data banner */
+.dci-watch-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-info-bg);
+  border: 1px solid var(--info-border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  color: var(--info-text);
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Form sections */
+.dci-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dci-section {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.dci-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.dci-label-value {
+  font-weight: 500;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Tap button row */
+.dci-tap-row {
+  display: flex;
+  gap: 8px;
+}
+
+.dci-tap-btn {
+  flex: 1;
+  height: 40px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dci-tap-btn.active {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-primary);
+  transform: scale(1.05);
+}
+
+.dci-tap-btn.dci-tap-lg {
+  height: 48px;
+  font-size: 1rem;
+}
+
+/* Sleep section */
+.dci-sleep-row {
+  display: flex;
+  gap: 16px;
+}
+
+.dci-sleep-input {
+  flex: 1;
+}
+
+.dci-sleep-input > label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.dci-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dci-stepper button {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dci-stepper button:active {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border-color: var(--color-primary);
+}
+
+.dci-stepper span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 48px;
+  text-align: center;
+}
+
+/* Submit button */
+.dci-submit {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 4px;
+}
+
+.dci-submit:active { transform: scale(0.97); }
+.dci-submit:disabled { opacity: 0.6; }
+
+/* ═══════ RECOVERY RESULT SCREEN ═══════ */
+
+.dci-result-card {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+
+.dci-score-ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+}
+
+.dci-score-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+
+.dci-score-ring circle:last-child {
+  transition: stroke-dasharray 1s ease-out;
+}
+
+.dci-score-ring.dci-score-excellent { color: var(--color-success); }
+.dci-score-ring.dci-score-good { color: #4caf50; }
+.dci-score-ring.dci-score-moderate { color: #ff9800; }
+.dci-score-ring.dci-score-low { color: #f44336; }
+.dci-score-ring.dci-score-very-low { color: #d32f2f; }
+
+.dci-score-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.dci-grade {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.dci-recommendation {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Health data summary chips */
+.dci-health-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.dci-health-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+}
+
+.dci-health-icon {
+  display: flex;
+  color: var(--color-primary);
+}
+
+/* Result action buttons */
+.dci-result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dci-btn-primary {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dci-btn-primary:active { transform: scale(0.97); }
+
+.dci-btn-secondary {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
