@@ -70,6 +70,30 @@ const BYO_GROUPS = [
   { key: 'core', label: 'Core', groups: ['core'] },
 ];
 
+const BYO_MUSCLE_FILTERS = {
+  upper: [
+    { key: 'all', label: 'All' },
+    { key: 'back', label: 'Back' },
+    { key: 'biceps', label: 'Biceps' },
+    { key: 'shoulders', label: 'Shoulders' },
+    { key: 'chest', label: 'Chest' },
+    { key: 'triceps', label: 'Triceps' },
+  ],
+  lower: [
+    { key: 'all', label: 'All' },
+    { key: 'quads', label: 'Squats' },
+    { key: 'lunges', label: 'Lunges' },
+    { key: 'glutes', label: 'Glutes' },
+    { key: 'calves', label: 'Calves' },
+  ],
+  core: [
+    { key: 'all', label: 'All' },
+    { key: 'planks_holds', label: 'Planks & Holds' },
+    { key: 'twists', label: 'Twists' },
+    { key: 'crunches_raises', label: 'Crunches & Raises' },
+  ],
+};
+
 const BYO_EQUIPMENT_ORDER = ['bodyweight', 'dumbbells', 'kettlebell'];
 const BYO_EQUIPMENT_LABELS = { bodyweight: 'Bodyweight', dumbbells: 'Dumbbells', kettlebell: 'Kettlebells' };
 
@@ -456,6 +480,7 @@ export default function CoreBuddyWorkouts() {
   const [byoCustomType, setByoCustomType] = useState('weighted');
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
+  const [byoMuscleFilter, setByoMuscleFilter] = useState({});
   const [byoVideoUrls, setByoVideoUrls] = useState({}); // { storagePath: url }
   const [byoPreviewEx, setByoPreviewEx] = useState(null); // exercise for preview modal
   const [byoLevel, setByoLevel] = useState('intermediate');
@@ -2117,10 +2142,17 @@ export default function CoreBuddyWorkouts() {
 
           {/* Group/subgroup browsing — hidden when searching */}
           {!byoSearch.trim() && BYO_GROUPS.map(group => {
-            const groupExercises = exercisePool.filter(e => group.groups.includes(e.group));
-            if (groupExercises.length === 0) return null;
+            const allGroupExercises = exercisePool.filter(e => group.groups.includes(e.group));
+            if (allGroupExercises.length === 0) return null;
             const isGroupOpen = byoExpandedGroups[group.key];
-            const selectedInGroup = groupExercises.filter(e => byoSelected.find(s => s.name === e.name)).length;
+            const selectedInGroup = allGroupExercises.filter(e => byoSelected.find(s => s.name === e.name)).length;
+
+            // Muscle filter
+            const muscleFilters = BYO_MUSCLE_FILTERS[group.key] || [];
+            const activeMuscle = byoMuscleFilter[group.key] || 'all';
+            const groupExercises = activeMuscle === 'all'
+              ? allGroupExercises
+              : allGroupExercises.filter(e => e.muscle === activeMuscle);
 
             // Sub-group by equipment
             const equipmentSubgroups = BYO_EQUIPMENT_ORDER
@@ -2140,6 +2172,17 @@ export default function CoreBuddyWorkouts() {
                 </button>
                 {isGroupOpen && (
                   <div className="byo-subgroups">
+                    {muscleFilters.length > 1 && (
+                      <div className="byo-muscle-filters">
+                        {muscleFilters.map(mf => (
+                          <button
+                            key={mf.key}
+                            className={`byo-muscle-chip${activeMuscle === mf.key ? ' byo-muscle-chip-active' : ''}`}
+                            onClick={() => setByoMuscleFilter(prev => ({ ...prev, [group.key]: mf.key }))}
+                          >{mf.label}</button>
+                        ))}
+                      </div>
+                    )}
                     {equipmentSubgroups.map(sg => {
                       const subKey = `${group.key}_${sg.key}`;
                       const isSubOpen = byoExpandedGroups[subKey];

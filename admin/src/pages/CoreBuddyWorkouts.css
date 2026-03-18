@@ -4002,6 +4002,38 @@
   transform: rotate(180deg);
 }
 
+/* ── Muscle filter chips ── */
+.byo-muscle-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.byo-muscle-chip {
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.byo-muscle-chip-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+[data-mono="true"][data-theme="dark"] .byo-muscle-chip-active {
+  color: var(--text-on-primary);
+}
+
 /* ── Subgroups (equipment level) ── */
 .byo-subgroups {
   border-top: 1px solid var(--border-color);
