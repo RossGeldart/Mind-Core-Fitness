@@ -161,6 +161,10 @@ const BUDDY_EXERCISES = [
   { name: 'Kettlebell Side Bends', type: 'weighted', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kettlebell side bends.mp4' },
   { name: 'Kneeling Kettlebell Halo', type: 'weighted', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kneeling kettlebell halo.mp4' },
   { name: 'Kettlebell Bird Dog Drag', type: 'reps', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kettlebell bird dog drag.mp4' },
+  { name: 'Glute Bridge Kettlebell Pulse', type: 'reps', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/glute bridge kettlebell pulse.mp4' },
+  { name: 'Kettlebell Bottoms Up Side Plank', type: 'timed', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kettlebell bottoms up side plank.mp4' },
+  { name: 'Kettlebell Farmers Walk', type: 'timed', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kettlebell farmers walk.mp4' },
+  { name: 'Kettlebell Waiters Walk', type: 'timed', equipment: 'kettlebell', group: 'core', storagePath: 'exercises/kettlebells/core/kettlebell waiters walk.mp4' },
   // Core — no video (browse only)
   { name: 'Back Extension Hold', type: 'timed', equipment: 'bodyweight', group: 'core', storagePath: null },
   { name: 'Dumbbell Plank Pull Through', type: 'weighted', equipment: 'dumbbells', group: 'core', storagePath: null },
