@@ -148,6 +148,7 @@ export default function NutritionHub() {
   const [hubFavourites, setHubFavourites] = useState([]);
   const [quickAddToast, setQuickAddToast] = useState(null);
   const [fabOpen, setFabOpen] = useState(false);
+  const [pendingQuickAdd, setPendingQuickAdd] = useState(null); // favourite waiting for meal selection
 
   // Setup form (macro calculator)
   const [formData, setFormData] = useState({
@@ -785,15 +786,16 @@ export default function NutritionHub() {
     }).catch(() => {});
   }, [clientData?.id, favTick]);
 
-  // Hub: Quick-add a favourite to today's log
-  const quickAddFavourite = useCallback(async (fav) => {
+  // Hub: Quick-add a favourite to today's log (with meal selection)
+  const quickAddFavourite = useCallback(async (fav, mealKey) => {
     if (!clientData?.id) return;
+    setPendingQuickAdd(null);
     const todayKey = getTodayKey();
     const entry = {
       id: Date.now(), name: fav.name,
       protein: fav.protein || 0, carbs: fav.carbs || 0,
       fats: fav.fats || 0, calories: fav.calories || 0,
-      serving: fav.serving || '', meal: 'snacks',
+      serving: fav.serving || '', meal: mealKey,
       addedAt: new Date().toISOString(),
       per100g: fav.per100g || null, servingUnit: fav.servingUnit || 'g',
       portion: fav.portion || null,
@@ -804,9 +806,7 @@ export default function NutritionHub() {
       setTodayLog(newLog);
       saveLog(newLog);
     } else {
-      // Switch to today first
       setSelectedDate(todayKey);
-      // Will reload, but add entry after
       const logRef = doc(db, 'nutritionLogs', `${clientData.id}_${todayKey}`);
       const existingDoc = await getDoc(logRef);
       const existingEntries = existingDoc.exists() ? existingDoc.data().entries || [] : [];
@@ -1249,7 +1249,7 @@ export default function NutritionHub() {
             </div>
             <div className="nhub-favs-scroll">
               {hubFavourites.map((fav, i) => (
-                <button key={i} className="nhub-fav-chip" onClick={() => quickAddFavourite(fav)}>
+                <button key={i} className="nhub-fav-chip" onClick={() => setPendingQuickAdd(fav)}>
                   <span className="nhub-fav-name">{fav.name}</span>
                   <span className="nhub-fav-cal">{Math.round(fav.calories)} cal</span>
                 </button>
@@ -1823,6 +1823,24 @@ export default function NutritionHub() {
         <div className={`toast-notification ${toast.type}`}>
           {toast.message}
         </div>
+      )}
+
+      {/* Quick-add meal picker */}
+      {pendingQuickAdd && (
+        <>
+          <div className="nhub-qa-overlay" onClick={() => setPendingQuickAdd(null)} />
+          <div className="nhub-qa-picker">
+            <p className="nhub-qa-picker-label">Add <strong>{pendingQuickAdd.name}</strong> to:</p>
+            <div className="nhub-qa-picker-options">
+              {MEALS.map(m => (
+                <button key={m.key} className="nhub-qa-picker-btn" onClick={() => quickAddFavourite(pendingQuickAdd, m.key)}>
+                  <span className="nhub-qa-picker-icon">{MEAL_ICONS[m.key]}</span>
+                  <span>{m.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
       {/* Quick-add toast */}
