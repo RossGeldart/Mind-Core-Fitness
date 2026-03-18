@@ -44,6 +44,15 @@ const BUDDY_EXERCISES = [
   { name: 'Straight Side Raise', type: 'weighted', equipment: 'dumbbells', group: 'upper', storagePath: 'exercises/dumbbells/upper/straight side raise.GIF' },
   { name: 'Wide Arm Shoulder Press', type: 'weighted', equipment: 'dumbbells', group: 'upper', storagePath: 'exercises/dumbbells/upper/wide arm shoulder press.GIF' },
   { name: 'Farmers Walk', type: 'timed', equipment: 'dumbbells', group: 'upper', storagePath: 'exercises/dumbbells/upper/Farmers Walk.GIF' },
+  // Kettlebells — upper (with video)
+  { name: 'Alternating Bent Over Kettlebell Row', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/alternating bent over kettlebell row.mp4' },
+  { name: 'Kettlebell Anti Rotation Hold', type: 'timed', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell anti rotation hold.mp4' },
+  { name: 'Kettlebell Bottoms Up Hold', type: 'timed', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell bottoms up hold.mp4' },
+  { name: 'Kettlebell Good Morning', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell good morning.mp4' },
+  { name: 'Kettlebell Half Kneeling Press', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell half kneeling press.mp4' },
+  { name: 'Kettlebell Hinge To Upright Row', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell hinge to upright row.mp4' },
+  { name: 'Kettlebell Swing', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell swing.mp4' },
+  { name: 'Kettlebell Upright Row', type: 'weighted', equipment: 'kettlebell', group: 'upper', storagePath: 'exercises/kettlebells/upper/kettlebell upright row.mp4' },
   // Bodyweight — upper (with video)
   { name: 'Press Up', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/press up.mp4' },
   { name: 'Press Up Pulse', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/press up pulse.GIF' },
