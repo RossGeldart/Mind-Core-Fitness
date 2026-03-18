@@ -1,49 +1,42 @@
-# Project: Mind Core Fitness
+# Mind Core Fitness
 
-## Workflow
+## Rules
 
-- **Single-branch workflow**: All development (web + iOS) happens on `main`. There is NO separate iOS branch.
-- iOS-specific code is guarded with `Capacitor.isNativePlatform()` checks, so it's safe on `main`.
-- Every session that makes source changes should run both builds before committing (see Build section).
+### Workflow
+- **Single-branch workflow**: All development happens on `main`. No separate feature branches for platforms.
+- iOS-specific code is guarded with `Capacitor.isNativePlatform()` — safe on `main`.
 
-## Build
+### Build (required after ANY source changes in `admin/`)
+Run both builds from `admin/`, in this order:
+1. `VITE_CAPACITOR=true npm run build && npx cap sync ios` — iOS build to `dist/`
+2. `npm run build` — web build to `login/`
 
-- After ANY source changes in `admin/`, always run BOTH builds from `admin/`:
-  1. **iOS build:** `VITE_CAPACITOR=true npm run build && npx cap sync ios` — outputs to `dist/` and syncs to iOS
-  2. **Web build:** `npm run build` — outputs to `login/` folder
-- The `VITE_CAPACITOR=true` flag sets `base: '/'` and `outDir: 'dist'` (see `admin/vite.config.js`). Without it, assets use `/login/` paths which break on native.
-- Always run the web build LAST so `login/` has the correct output for commit
-- Always commit the `login/` build output alongside source changes
+- Web build MUST run last so `login/` has correct output
+- Always commit `login/` build output alongside source changes
 
-## Auth / Native iOS
+### Tests & Lint
+- Run `npm test` from `admin/` before committing
+- Run `npm run lint` from `admin/` to check for lint errors
 
-- The app runs as a web app AND as a Capacitor iOS app. All auth changes MUST preserve both flows.
-- **Web**: Uses `signInWithPopup` (Google/Apple providers) — do NOT change this path.
-- **iOS native**: Uses `@capacitor-firebase/authentication` with `skipNativeAuth: true`. The plugin handles the OAuth UI natively, then returns a credential which is bridged to the JS Firebase SDK via `signInWithCredential`. This keeps the JS SDK's `onAuthStateChanged` in sync.
-- Apple/Google sign-in users do NOT need email verification — that gate only applies to `signupSource: 'self_signup'`.
-- Always guard native-only code with `Capacitor.isNativePlatform()` checks to avoid breaking the web flow.
+### Auth — DO NOT break either flow
+- **Web**: `signInWithPopup` (Google/Apple) — do NOT change
+- **iOS native**: `@capacitor-firebase/authentication` with `skipNativeAuth: true` → `signInWithCredential` bridge
+- Apple/Google sign-in users skip email verification (only `signupSource: 'self_signup'` needs it)
+- Always guard native code with `Capacitor.isNativePlatform()`
 
-## AI Meal Scanner — DONE ✅
-- AI meal scanner fully functional: `AIMealScanner.jsx` + `analyseMeal` Cloud Function (Claude Haiku)
-- Photo capture → Claude analysis → macro breakdown → logged to Firestore `nutritionLogs`
-- Saved meals library for quick re-logging, 10 scans/day limit, source tracking
+### Off-limits
+- `admin/ios/` — managed by Xcode, do not edit directly
+- `admin/android/` — managed by Android Studio, do not edit directly
+- `.env*` files — never commit secrets
 
-## Apple Health / Health Connect Integration
-- Uses `@capgo/capacitor-health` plugin for iOS HealthKit and Android Health Connect
-- Health data sync service: `admin/src/services/healthDataService.js`
-- Reads: steps, sleep (with stages), active calories
-- Syncs on app open and app resume (via AuthContext)
-- Writes to Firestore `healthData/{clientId}_{date}`
-- Guarded with `Capacitor.isNativePlatform()` — web gets no health data (manual-only)
-- **iOS and Android only** — no web smartwatch support
+## Key Architecture
 
-### Data Architecture (Firestore Collections)
-- `nutritionLogs/{clientId}_{date}` — daily meal entries with macros
-- `nutritionTargets/{clientId}` — daily macro targets
-- `savedMeals/{clientId}` — AI scanner cached meals
-- `scanUsage/{clientId}_{date}` — daily AI scan counter
-- `healthData/{userId}_{date}` — raw HealthKit/Health Connect data synced from device
+See `.claude/architecture.md` for full details. Quick reference:
 
-### Technical Notes
-- Claude API integrated for meal scanning (`analyseMeal`) — uses Claude Haiku
-- HealthKit/Health Connect data is on-device — read and sync to Firestore, don't depend on cloud for access
+- **App**: React 19 + Vite, runs as web app and Capacitor iOS/Android app
+- **Backend**: Firebase Cloud Functions (`functions/`), Stripe API routes (`api/`)
+- **Auth**: Firebase Auth — web popup + native credential bridge
+- **Data**: Firestore — see architecture doc for collection schemas
+- **AI**: Claude Haiku via `analyseMeal` Cloud Function for meal scanning
+- **Health**: `@capgo/capacitor-health` for HealthKit/Health Connect, synced to Firestore
+- **Payments**: RevenueCat for IAP, Stripe for web
