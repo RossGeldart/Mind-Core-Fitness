@@ -38,5 +38,5 @@ See `.claude/architecture.md` for full details. Quick reference:
 - **Auth**: Firebase Auth — web popup + native credential bridge
 - **Data**: Firestore — see architecture doc for collection schemas
 - **AI**: Claude Haiku via `analyseMeal` Cloud Function for meal scanning
-- **Health**: `@capgo/capacitor-health` for HealthKit/Health Connect, synced to Firestore
+
 - **Payments**: RevenueCat for IAP, Stripe for web

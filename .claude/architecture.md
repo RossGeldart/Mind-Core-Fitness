@@ -27,7 +27,7 @@ api/                    # Stripe webhook/API routes
 - **AI**: Anthropic Claude Haiku SDK (`@anthropic-ai/sdk`) in Cloud Functions
 - **Analytics**: Mixpanel
 - **Payments**: RevenueCat (native IAP), Stripe (web)
-- **Health**: `@capgo/capacitor-health` (HealthKit + Health Connect)
+
 - **Testing**: Vitest + React Testing Library (jsdom)
 - **Linting**: ESLint 9 flat config with React plugins
 
@@ -36,7 +36,7 @@ api/                    # Stripe webhook/API routes
 - `nutritionTargets/{clientId}` — daily macro targets
 - `savedMeals/{clientId}` — AI scanner cached meals
 - `scanUsage/{clientId}_{date}` — daily AI scan counter
-- `healthData/{userId}_{date}` — raw HealthKit/Health Connect data synced from device
+
 
 ## Key Integrations
 
@@ -45,13 +45,6 @@ api/                    # Stripe webhook/API routes
 - `functions/index.js` → `analyseMeal` — Claude Haiku processes food photos
 - Flow: photo → Claude analysis → macro breakdown → logged to `nutritionLogs`
 - Saved meals library for quick re-logging, 10 scans/day limit
-
-### Health Data Sync
-- Service: `admin/src/services/healthDataService.js`
-- Reads: steps, sleep (with stages), active calories
-- Syncs on app open and resume (via AuthContext)
-- Writes to `healthData/{clientId}_{date}`
-- Native only — web has no health data (manual entry only)
 
 ### Build System
 - `VITE_CAPACITOR=true` sets `base: '/'` and `outDir: 'dist'` (native build)

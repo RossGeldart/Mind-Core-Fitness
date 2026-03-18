@@ -263,13 +263,6 @@ service cloud.firestore {
       allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
         && request.resource.data.count == resource.data.count + 1;
     }
-    // ── HEALTH DATA ──
-    // Health Data — raw HealthKit/Health Connect data synced from device (doc ID = {clientId}_{date})
-    match /healthData/{docId} {
-      allow read, write: if isAdmin();
-      allow read: if resource == null || isClientOwner(resource.data.clientId);
-      allow create, update: if isClientOwner(request.resource.data.clientId);
-    }
     // ── ANNOUNCEMENTS ──
     // Announcements - admin posts visible to all authenticated users
     // Doc ID = auto-generated
