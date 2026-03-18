@@ -93,6 +93,19 @@ const BUDDY_EXERCISES = [
   { name: 'Walking Lunges', type: 'reps', equipment: 'bodyweight', group: 'lower', storagePath: 'exercises/bodyweight/lower/walking lunges.GIF' },
   { name: 'Jump Squat', type: 'reps', equipment: 'bodyweight', group: 'lower', storagePath: 'exercises/bodyweight/lower/Jump Squat.GIF' },
 
+  // ─── UPPER ───────────────────────────────────────
+  { name: 'Press Up', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/press up.mp4' },
+  { name: 'Press Up Pulse', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/press up pulse.GIF' },
+  { name: 'Pike Push Ups', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/pike push ups.GIF' },
+  { name: 'Slow Tempo Push Ups', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/slow tempo push ups.GIF' },
+  { name: 'Tricep Dips', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/tricep dips.mp4' },
+  { name: 'Slow Tricep Dips', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/slow tricep dips.GIF' },
+  { name: 'Tabletop Hold', type: 'timed', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/Tabletop Hold.GIF' },
+  { name: 'Reverse Plank', type: 'timed', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/reverse plank.GIF' },
+  { name: 'Superman Swimmers', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/superman swimmers.GIF' },
+  { name: 'Wide Arm Shoulder Press', type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: 'exercises/bodyweight/upper/wide arm shoulder press.GIF' },
+  { name: "YTW's", type: 'reps', equipment: 'bodyweight', group: 'upper', storagePath: "exercises/bodyweight/upper/ytw's.GIF" },
+
   // ─── CORE ────────────────────────────────────────
   { name: 'Forearm Plank', type: 'timed', equipment: 'bodyweight', group: 'core', pbKey: 'plank', storagePath: 'exercises/bodyweight/core/Forearm Plank.mp4' },
   { name: 'Side Plank', type: 'timed', equipment: 'bodyweight', group: 'core', storagePath: 'exercises/bodyweight/core/Side Plank.mp4' },

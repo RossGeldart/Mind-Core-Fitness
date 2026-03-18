@@ -65,7 +65,7 @@ const LEVELS = [
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
 const BYO_GROUPS = [
-  { key: 'upper', label: 'Upper Body', groups: ['push', 'pull'] },
+  { key: 'upper', label: 'Upper Body', groups: ['push', 'pull', 'upper'] },
   { key: 'lower', label: 'Lower Body', groups: ['lower'] },
   { key: 'core', label: 'Core', groups: ['core'] },
 ];
