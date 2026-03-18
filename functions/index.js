@@ -34,7 +34,6 @@ const NOTIF_MESSAGES = {
   announcement: () => null, // handled by title/body on the notification doc
   daily_morning: () => null, // handled by rotating messages below
   daily_evening: () => null,
-  coaching_nudge: () => null, // handled by title/body from coaching system
 };
 
 // Rotating daily messages — picks one based on day of year so everyone gets the same one
