@@ -2159,7 +2159,7 @@ export default function CoreBuddyWorkouts() {
               .map(eqKey => ({
                 key: eqKey,
                 label: BYO_EQUIPMENT_LABELS[eqKey],
-                exercises: groupExercises.filter(e => e.equipment === eqKey),
+                exercises: groupExercises.filter(e => e.equipment === eqKey).sort((a, b) => a.name.localeCompare(b.name)),
               }))
               .filter(sg => sg.exercises.length > 0);
 
