@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { httpsCallable } from 'firebase/functions';
+import { db, storage, functions } from '../config/firebase';
 import { awardBadge } from '../utils/awardBadge';
 import { parseProduct } from '../utils/productParser';
 import { getCountryLabel } from '../utils/countryDetect';
@@ -11,7 +13,7 @@ import useBarcodeScanner from '../hooks/useBarcodeScanner';
 import useFoodSearch from '../hooks/useFoodSearch';
 import ScannerView from '../components/ScannerView';
 import ProductResult from '../components/ProductResult';
-import { trackMealLogged, trackFoodSearched, trackBarcodeScanned, trackFavouriteSaved, trackDayCopied } from '../utils/analytics';
+import { trackMealLogged, trackFoodSearched, trackBarcodeScanned, trackFavouriteSaved, trackDayCopied, trackAIScanStarted, trackAIScanCompleted, trackAIScanSaved } from '../utils/analytics';
 import './CoreBuddyNutrition.css';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -57,6 +59,47 @@ function getDefaultMeal() {
   if (h < 14) return 'lunch';
   if (h < 17) return 'snacks';
   return 'dinner';
+}
+
+// AI Scanner constants
+const MAX_SAVED_MEALS = 20;
+const DAILY_SCAN_LIMIT = 10;
+const AI_ANALYSING_MESSAGES = [
+  'Identifying foods in your photo...',
+  'Estimating portion sizes...',
+  'Calculating macronutrients...',
+  'Almost done, crunching the numbers...',
+];
+const AI_MEAL_EMOJIS = { breakfast: '\u2615', lunch: '\uD83C\uDF5C', dinner: '\uD83C\uDF7D\uFE0F', snacks: '\uD83C\uDF4E' };
+
+function compressImage(file, maxSize = 800) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const canvas = document.createElement('canvas');
+      const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(
+        (blob) => { if (blob) resolve(blob); else reject(new Error('Failed to compress image.')); },
+        'image/jpeg', 0.8
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image.')); };
+    img.src = objectUrl;
+  });
+}
+
+function fileToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 const SEARCH_TIPS = [
@@ -120,6 +163,7 @@ export default function CoreBuddyNutrition() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Views: 'loading' | 'setup' | 'dashboard'
   const [view, setView] = useState('loading');
@@ -183,6 +227,23 @@ export default function CoreBuddyNutrition() {
 
   // Toast
   const [toast, setToast] = useState(null);
+
+  // AI Scanner state
+  const [aiStage, setAiStage] = useState('idle'); // idle|preview|analysing|results|saving
+  const [aiImageFile, setAiImageFile] = useState(null);
+  const [aiImagePreview, setAiImagePreview] = useState(null);
+  const [aiResult, setAiResult] = useState(null);
+  const [aiError, setAiError] = useState(null);
+  const [aiAnalysingMsg, setAiAnalysingMsg] = useState(0);
+  const [aiSavedMeals, setAiSavedMeals] = useState([]);
+  const [aiSavedMealsLoaded, setAiSavedMealsLoaded] = useState(false);
+  const [aiScansUsedToday, setAiScansUsedToday] = useState(0);
+  const [aiScansLoaded, setAiScansLoaded] = useState(false);
+  const [aiRecentFilter, setAiRecentFilter] = useState('all');
+  const aiFileInputRef = useRef(null);
+
+  const aiScansRemaining = DAILY_SCAN_LIMIT - aiScansUsedToday;
+  const aiScanLimitReached = aiScansRemaining <= 0;
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -715,6 +776,183 @@ export default function CoreBuddyNutrition() {
     return () => clearTimeout(timer);
   }, [scanDetected]);
 
+  // ==================== AI SCANNER EFFECTS ====================
+  // Load saved meals + scan usage when AI scanner mode is opened
+  useEffect(() => {
+    if (!clientData?.id || addMode !== 'ai-scan') return;
+    if (aiSavedMealsLoaded && aiScansLoaded) return;
+    getDoc(doc(db, 'savedMeals', clientData.id)).then((snap) => {
+      if (snap.exists()) {
+        const meals = snap.data().meals || [];
+        setAiSavedMeals(meals.sort((a, b) => (b.usedAt || 0) - (a.usedAt || 0)));
+      }
+      setAiSavedMealsLoaded(true);
+    }).catch(() => setAiSavedMealsLoaded(true));
+
+    const today = getTodayKey();
+    getDoc(doc(db, 'scanUsage', `${clientData.id}_${today}`)).then((snap) => {
+      if (snap.exists()) setAiScansUsedToday(snap.data().count || 0);
+      setAiScansLoaded(true);
+    }).catch(() => setAiScansLoaded(true));
+  }, [clientData?.id, addMode]);
+
+  // Rotate analysing messages
+  useEffect(() => {
+    if (aiStage !== 'analysing') return;
+    setAiAnalysingMsg(0);
+    const interval = setInterval(() => {
+      setAiAnalysingMsg((i) => (i + 1) % AI_ANALYSING_MESSAGES.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [aiStage]);
+
+  // Auto-open AI scanner from URL param (?ai=1)
+  useEffect(() => {
+    if (view === 'dashboard' && searchParams.get('ai') === '1') {
+      setSelectedMeal(getDefaultMeal());
+      setAddMode('ai-scan');
+      setAiStage('idle');
+      // Remove the param so refreshing doesn't re-open
+      searchParams.delete('ai');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [view, searchParams]);
+
+  // ==================== AI SCANNER HANDLERS ====================
+  const resetAiScanner = () => {
+    setAiStage('idle');
+    setAiImageFile(null);
+    setAiImagePreview(null);
+    setAiResult(null);
+    setAiError(null);
+    if (aiFileInputRef.current) aiFileInputRef.current.value = '';
+  };
+
+  const handleAiFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
+    setAiImageFile(file);
+    setAiImagePreview(URL.createObjectURL(file));
+    setAiStage('preview');
+    setAiResult(null);
+    setAiError(null);
+  };
+
+  const handleAiAnalyse = async () => {
+    if (!aiImageFile) return;
+    if (aiScanLimitReached) { showToast('Daily scan limit reached. Re-log a previous scan instead!', 'error'); return; }
+    setAiStage('analysing');
+    setAiError(null);
+    trackAIScanStarted();
+    try {
+      const compressed = await compressImage(aiImageFile, 512);
+      const base64 = await fileToBase64(compressed);
+      const analyseMeal = httpsCallable(functions, 'analyseMeal');
+      const response = await analyseMeal({ imageBase64: base64, mimeType: 'image/jpeg' });
+      setAiResult(response.data);
+      setAiStage('results');
+      trackAIScanCompleted({ itemCount: response.data.items.length, confidence: response.data.confidence });
+      // Increment scan usage
+      const today = getTodayKey();
+      const newCount = aiScansUsedToday + 1;
+      setAiScansUsedToday(newCount);
+      setDoc(doc(db, 'scanUsage', `${clientData.id}_${today}`), {
+        clientId: clientData.id, date: today, count: newCount, updatedAt: Timestamp.now(),
+      }).catch(() => {});
+    } catch (err) {
+      console.error('AI analysis failed:', err);
+      const msg = (err.message && err.message !== 'internal' && err.message !== 'INTERNAL')
+        ? err.message : 'Failed to analyse meal. Please try again.';
+      setAiError(msg);
+      setAiStage('preview');
+    }
+  };
+
+  const handleAiSave = async () => {
+    if (!aiResult || !clientData?.id) return;
+    setAiStage('saving');
+    try {
+      const today = getTodayKey();
+      let photoUrl = null;
+      // Upload photo if this is a new scan (not reuse)
+      if (aiImageFile) {
+        const imageId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const storageRef = ref(storage, `mealPhotos/${clientData.id}/${imageId}`);
+        const compressed = await compressImage(aiImageFile, 800);
+        await uploadBytes(storageRef, compressed);
+        photoUrl = await getDownloadURL(storageRef);
+
+        // Save to savedMeals for reuse
+        const mealLabel = aiResult.items.map((i) => i.name).join(', ');
+        const savedEntry = {
+          id: imageId,
+          label: mealLabel.length > 60 ? mealLabel.slice(0, 57) + '...' : mealLabel,
+          items: aiResult.items, totals: aiResult.totals, confidence: aiResult.confidence,
+          photoUrl, mealType: selectedMeal, usedAt: Date.now(),
+        };
+        const updatedMeals = [savedEntry, ...aiSavedMeals].slice(0, MAX_SAVED_MEALS);
+        setAiSavedMeals(updatedMeals);
+        setDoc(doc(db, 'savedMeals', clientData.id), { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
+      } else {
+        // Reuse — update usedAt
+        const updatedMeals = aiSavedMeals.map((m) =>
+          m.items === aiResult.items ? { ...m, usedAt: Date.now() } : m
+        );
+        setAiSavedMeals(updatedMeals);
+        setDoc(doc(db, 'savedMeals', clientData.id), { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
+      }
+
+      // Build entries
+      const newEntries = aiResult.items.map((item) => ({
+        id: Date.now() + Math.random(),
+        name: item.name,
+        protein: item.protein || 0, carbs: item.carbs || 0,
+        fats: item.fats || 0, calories: item.calories || 0,
+        serving: `${item.estimatedGrams || 0}g (AI estimate)`,
+        meal: selectedMeal,
+        source: aiImageFile ? 'ai_scanner' : 'ai_scanner_reuse',
+        aiConfidence: aiResult.confidence,
+        ...(photoUrl ? { aiPhotoUrl: photoUrl } : {}),
+        addedAt: new Date().toISOString(),
+      }));
+
+      // Add to local log immediately
+      const mergedEntries = [...todayLog.entries, ...newEntries];
+      const newLog = { entries: mergedEntries };
+      setTodayLog(newLog);
+
+      // Save to Firestore (only for today)
+      if (selectedDate === today) {
+        await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${today}`), {
+          clientId: clientData.id, date: today, entries: mergedEntries, updatedAt: Timestamp.now(),
+        });
+      } else {
+        await saveLog(newLog);
+      }
+
+      trackAIScanSaved({ meal: selectedMeal, itemCount: newEntries.length });
+      showToast(`${newEntries.length} item${newEntries.length > 1 ? 's' : ''} added to ${MEALS.find(m => m.key === selectedMeal)?.label}`, 'success');
+
+      // Close modal and reset
+      setTimeout(() => {
+        setAddMode(null);
+        resetAiScanner();
+      }, 800);
+    } catch (err) {
+      console.error('AI save failed:', err);
+      showToast('Failed to save. Please try again.', 'error');
+      setAiStage('results');
+    }
+  };
+
+  const handleAiReuse = (meal) => {
+    setAiResult({ items: meal.items, totals: meal.totals, confidence: meal.confidence });
+    setAiImagePreview(meal.photoUrl);
+    setAiImageFile(null);
+    setAiStage('results');
+  };
+
   if (authLoading || view === 'loading') {
     return (
       <div className="nut-page">
@@ -925,6 +1163,7 @@ export default function CoreBuddyNutrition() {
     if (mode === 'scan') { setAddMode('scan'); setScannedProduct(null); }
     else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }
     else if (mode === 'favourites') { setAddMode('favourites'); }
+    else if (mode === 'ai-scan') { setAddMode('ai-scan'); resetAiScanner(); }
     else { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }
   };
 
@@ -1172,6 +1411,10 @@ export default function CoreBuddyNutrition() {
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 <span>Favourites</span>
               </button>
+              <button onClick={() => { const k = addPickerMeal; setAddPickerMeal(null); openAddForMeal(k, 'ai-scan'); }} className="nut-add-picker-ai">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>AI Meal Scan</span>
+              </button>
             </div>
           </div>
         </>
@@ -1243,11 +1486,11 @@ export default function CoreBuddyNutrition() {
 
       {/* ==================== ADD FOOD MODAL ==================== */}
       {addMode && (
-        <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
-          <div className="nut-modal" onClick={e => e.stopPropagation()}>
+        <div className="nut-modal-overlay" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); resetAiScanner(); }}>
+          <div className={`nut-modal${addMode === 'ai-scan' ? ' nut-modal--ai' : ''}`} onClick={e => e.stopPropagation()}>
             <div className="nut-modal-header">
-              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : addMode === 'favourites' ? 'Favourites' : 'Manual Entry'}</h3>
-              <button className="nut-modal-close" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); }}>
+              <h3>{addMode === 'scan' ? 'Scan Barcode' : addMode === 'search' ? 'Search Food' : addMode === 'favourites' ? 'Favourites' : addMode === 'ai-scan' ? 'AI Meal Scanner' : 'Manual Entry'}</h3>
+              <button className="nut-modal-close" onClick={() => { stopScanner(); setScanDetected(null); setAddMode(null); setScannedProduct(null); resetAiScanner(); }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
@@ -1462,6 +1705,200 @@ export default function CoreBuddyNutrition() {
                 onBack={() => setScannedProduct(null)}
                 backLabel="Back to Favourites"
               />
+            )}
+
+            {/* ==================== AI SCAN MODE ==================== */}
+            {addMode === 'ai-scan' && (
+              <div className="nut-ai-scan-area">
+                <input ref={aiFileInputRef} type="file" accept="image/*" capture="environment"
+                  onChange={handleAiFileSelect} style={{ display: 'none' }} />
+
+                {/* IDLE: Upload + Recent Scans */}
+                {aiStage === 'idle' && (
+                  <>
+                    {aiScansLoaded && (
+                      <div className={`nut-ai-usage${aiScanLimitReached ? ' nut-ai-usage--locked' : aiScansRemaining <= 3 ? ' nut-ai-usage--low' : ''}`}>
+                        <span>{aiScanLimitReached ? 'Daily limit reached' : `${aiScansRemaining} scan${aiScansRemaining !== 1 ? 's' : ''} left today`}</span>
+                        <span className="nut-ai-usage-count">{aiScansUsedToday}/{DAILY_SCAN_LIMIT}</span>
+                      </div>
+                    )}
+                    {aiScanLimitReached ? (
+                      <div className="nut-ai-upload nut-ai-upload--locked">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>Scanner locked for today</span>
+                        <small>Re-log a previous scan below</small>
+                      </div>
+                    ) : (
+                      <button className="nut-ai-upload" onClick={() => aiFileInputRef.current?.click()}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>Take or upload a photo</span>
+                        <small>JPEG, PNG or WEBP</small>
+                      </button>
+                    )}
+                    {aiSavedMealsLoaded && aiSavedMeals.length > 0 && (
+                      <div className="nut-ai-recent">
+                        <h4>Recent Scans</h4>
+                        <p className="nut-ai-recent-hint">Tap to re-log without using a credit</p>
+                        <div className="nut-ai-filter-tabs">
+                          <button className={aiRecentFilter === 'all' ? 'active' : ''} onClick={() => setAiRecentFilter('all')}>All</button>
+                          {MEALS.map((m) => {
+                            const count = aiSavedMeals.filter((s) => s.mealType === m.key).length;
+                            if (count === 0) return null;
+                            return <button key={m.key} className={aiRecentFilter === m.key ? 'active' : ''} onClick={() => setAiRecentFilter(m.key)}>{AI_MEAL_EMOJIS[m.key]} {m.label}</button>;
+                          })}
+                        </div>
+                        <div className="nut-ai-recent-list">
+                          {aiSavedMeals
+                            .filter((meal) => aiRecentFilter === 'all' ? true : meal.mealType === aiRecentFilter)
+                            .map((meal) => (
+                              <button key={meal.id} className="nut-ai-recent-card" onClick={() => handleAiReuse(meal)}>
+                                {meal.photoUrl && <img src={meal.photoUrl} alt="" className="nut-ai-recent-thumb" loading="lazy" />}
+                                <div className="nut-ai-recent-info">
+                                  <span className="nut-ai-recent-label">{meal.label}</span>
+                                  <span className="nut-ai-recent-macros">{meal.totals.calories} cal &middot; {meal.totals.protein}p &middot; {meal.totals.carbs}c &middot; {meal.totals.fats}f</span>
+                                </div>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                              </button>
+                            ))}
+                          {aiSavedMeals.filter((meal) => aiRecentFilter === 'all' ? true : meal.mealType === aiRecentFilter).length === 0 && (
+                            <p className="nut-ai-empty">No scans in this category yet</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* PREVIEW */}
+                {aiStage === 'preview' && aiImagePreview && (
+                  <div className="nut-ai-preview">
+                    <div className="nut-ai-img-wrap">
+                      <img src={aiImagePreview} alt="Meal preview" />
+                    </div>
+                    {aiError && (
+                      <div className="nut-ai-error">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        <span>{aiError}</span>
+                      </div>
+                    )}
+                    <div className="nut-ai-preview-actions">
+                      <button className="nut-btn-primary" onClick={handleAiAnalyse}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Analyse Meal
+                      </button>
+                      <button className="nut-btn-secondary" onClick={resetAiScanner}>Choose Different Photo</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ANALYSING */}
+                {aiStage === 'analysing' && (
+                  <div className="nut-ai-analysing">
+                    <div className="nut-ai-img-wrap nut-ai-img-wrap--dim">
+                      <img src={aiImagePreview} alt="Analysing..." />
+                      <div className="nut-ai-spinner-overlay"><div className="nut-ai-spinner" /></div>
+                    </div>
+                    <p className="nut-ai-analysing-msg">{AI_ANALYSING_MESSAGES[aiAnalysingMsg]}</p>
+                  </div>
+                )}
+
+                {/* RESULTS + IMPACT PREVIEW */}
+                {(aiStage === 'results' || aiStage === 'saving') && aiResult && (
+                  <div className="nut-ai-results">
+                    {aiImagePreview && (
+                      <div className="nut-ai-img-wrap nut-ai-img-wrap--small">
+                        <img src={aiImagePreview} alt="Meal" />
+                      </div>
+                    )}
+
+                    {/* Confidence */}
+                    <div className={`nut-ai-confidence nut-ai-confidence--${aiResult.confidence}`}>
+                      {aiResult.confidence === 'high' && 'High confidence'}
+                      {aiResult.confidence === 'medium' && 'Medium confidence'}
+                      {aiResult.confidence === 'low' && 'Low confidence — consider adjusting'}
+                    </div>
+
+                    {/* Impact Preview — before vs after */}
+                    {targets && (
+                      <div className="nut-ai-impact">
+                        <h4>Daily Impact</h4>
+                        <div className="nut-ai-impact-grid">
+                          {[
+                            { label: 'Calories', key: 'calories', unit: '', color: 'var(--color-primary)' },
+                            { label: 'Protein', key: 'protein', unit: 'g', color: isDark ? '#2dd4bf' : '#14b8a6' },
+                            { label: 'Carbs', key: 'carbs', unit: 'g', color: isDark ? '#fbbf24' : '#f59e0b' },
+                            { label: 'Fats', key: 'fats', unit: 'g', color: isDark ? '#a78bfa' : '#8b5cf6' },
+                          ].map(({ label, key, unit, color }) => {
+                            const current = totals[key] || 0;
+                            const add = aiResult.totals[key] || 0;
+                            const after = current + add;
+                            const target = targets[key] || 1;
+                            const pctAfter = Math.min(100, Math.round((after / target) * 100));
+                            return (
+                              <div key={key} className="nut-ai-impact-row">
+                                <span className="nut-ai-impact-label">{label}</span>
+                                <div className="nut-ai-impact-bar-track">
+                                  <div className="nut-ai-impact-bar-current" style={{ width: `${Math.min(100, (current / target) * 100)}%`, background: color, opacity: 0.4 }} />
+                                  <div className="nut-ai-impact-bar-new" style={{ width: `${pctAfter}%`, background: color }} />
+                                </div>
+                                <span className="nut-ai-impact-val" style={{ color }}>
+                                  {Math.round(after)}{unit} <small>/ {target}{unit}</small>
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Totals card */}
+                    <div className="nut-ai-totals">
+                      <div className="nut-ai-total-item"><span className="nut-ai-total-val">{aiResult.totals.calories}</span><span>Calories</span></div>
+                      <div className="nut-ai-total-item"><span className="nut-ai-total-val">{aiResult.totals.protein}g</span><span>Protein</span></div>
+                      <div className="nut-ai-total-item"><span className="nut-ai-total-val">{aiResult.totals.carbs}g</span><span>Carbs</span></div>
+                      <div className="nut-ai-total-item"><span className="nut-ai-total-val">{aiResult.totals.fats}g</span><span>Fats</span></div>
+                    </div>
+
+                    {/* Items */}
+                    <div className="nut-ai-items">
+                      <h4>Items Detected</h4>
+                      {aiResult.items.map((item, i) => (
+                        <div key={i} className="nut-ai-item-row">
+                          <div className="nut-ai-item-info">
+                            <span className="nut-ai-item-name">{item.name}</span>
+                            <span className="nut-ai-item-serving">{item.estimatedGrams}g (estimate)</span>
+                          </div>
+                          <div className="nut-ai-item-macros">
+                            <span>{item.calories} cal</span>
+                            <span>{item.protein}p</span>
+                            <span>{item.carbs}c</span>
+                            <span>{item.fats}f</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Meal picker */}
+                    <div className="nut-ai-meal-picker">
+                      <h4>Add to</h4>
+                      <div className="nut-ai-meal-options">
+                        {MEALS.map((m) => (
+                          <button key={m.key} className={`nut-ai-meal-btn${selectedMeal === m.key ? ' active' : ''}`}
+                            onClick={() => setSelectedMeal(m.key)}>{m.label}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="nut-ai-result-actions">
+                      <button className="nut-btn-primary" onClick={handleAiSave} disabled={aiStage === 'saving'}>
+                        {aiStage === 'saving' ? 'Saving...' : `Add to ${MEALS.find((m) => m.key === selectedMeal)?.label}`}
+                      </button>
+                      <button className="nut-btn-secondary" onClick={resetAiScanner} disabled={aiStage === 'saving'}>Scan Another</button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
