@@ -214,7 +214,8 @@ export default function AIMealScanner() {
       const photoUrl = await getDownloadURL(storageRef);
 
       // Build entries from AI result
-      const newEntries = result.items.map((item) => ({
+      const newEntries = result.items.map((item, idx) => ({
+        id: Date.now() + idx,
         name: item.name,
         protein: item.protein || 0,
         carbs: item.carbs || 0,
@@ -225,6 +226,7 @@ export default function AIMealScanner() {
         source: 'ai_scanner',
         aiConfidence: result.confidence,
         aiPhotoUrl: photoUrl,
+        addedAt: new Date().toISOString(),
       }));
 
       // Load existing log and merge
@@ -287,7 +289,8 @@ export default function AIMealScanner() {
 
     try {
       const today = getTodayKey();
-      const newEntries = result.items.map((item) => ({
+      const newEntries = result.items.map((item, idx) => ({
+        id: Date.now() + idx,
         name: item.name,
         protein: item.protein || 0,
         carbs: item.carbs || 0,
@@ -297,6 +300,7 @@ export default function AIMealScanner() {
         meal: selectedMeal,
         source: 'ai_scanner_reuse',
         aiConfidence: result.confidence,
+        addedAt: new Date().toISOString(),
       }));
 
       const logRef = doc(db, 'nutritionLogs', `${clientData.id}_${today}`);
