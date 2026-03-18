@@ -25,15 +25,15 @@ const WEEKLY_TARGET = 5;
 
 // Exercise group mapping for badge categorisation
 const EXERCISE_GROUPS = {
-  'Dumbbell Floor Press': 'push', 'Seated Dumbbell Shoulder Press': 'push', 'Seated Dumbbell Arnold Press': 'push',
-  'Dumbbell Overhead Tricep Extension': 'push', 'Skullcrushers': 'push', 'Dumbbell Lateral Raise': 'push',
-  'Dumbbell Front Raise': 'push', 'Dumbbell Squeeze Press': 'push', 'Incline Dumbbell Press': 'push',
-  'Dumbbell Fly': 'push', 'Dumbbell Pullover': 'push', 'Tricep Kickback': 'push',
-  'Dumbbell Shrug': 'push', 'Dumbbell Y-Raise': 'push',
-  'Dumbbell Bent Over Row': 'pull', 'Single Arm Bent Over Row': 'pull', 'Bicep Curl': 'pull',
-  'Hammer Curl': 'pull', 'Dumbbell Bent Over Rear Delt Fly': 'pull', 'Renegade Row': 'pull',
-  'Wide Dumbbell Bent Over Row': 'pull', 'Reverse Fly': 'pull', 'Concentration Curl': 'pull',
-  'Wide Grip Bicep Curl': 'pull', 'Wrist Curl': 'pull',
+  'Dumbbell Floor Press': 'upper', 'Seated Dumbbell Shoulder Press': 'upper', 'Seated Dumbbell Arnold Press': 'upper',
+  'Dumbbell Overhead Tricep Extension': 'upper', 'Skullcrushers': 'upper', 'Dumbbell Lateral Raise': 'upper',
+  'Dumbbell Front Raise': 'upper', 'Dumbbell Squeeze Press': 'upper', 'Incline Dumbbell Press': 'upper',
+  'Dumbbell Fly': 'upper', 'Dumbbell Pullover': 'upper', 'Tricep Kickback': 'upper',
+  'Dumbbell Shrug': 'upper', 'Dumbbell Y-Raise': 'upper',
+  'Dumbbell Bent Over Row': 'upper', 'Single Arm Bent Over Row': 'upper', 'Bicep Curl': 'upper',
+  'Hammer Curl': 'upper', 'Dumbbell Bent Over Rear Delt Fly': 'upper', 'Renegade Row': 'upper',
+  'Wide Dumbbell Bent Over Row': 'upper', 'Reverse Fly': 'upper', 'Concentration Curl': 'upper',
+  'Wide Grip Bicep Curl': 'upper', 'Wrist Curl': 'upper',
   'Dumbbell Goblet Squats': 'lower', 'Romanian Deadlifts': 'lower', 'Forward Dumbbell Lunges': 'lower',
   'Dumbbell Sumo Squats': 'lower', 'Weighted Calf Raises': 'lower', '1 Legged RDL': 'lower',
   'Dumbbell Box Step Ups': 'lower', 'Dumbbell Squat Pulses': 'lower', 'Dumbbell Reverse Lunges': 'lower',
@@ -65,7 +65,7 @@ const LEVELS = [
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
 const BYO_GROUPS = [
-  { key: 'upper', label: 'Upper Body', groups: ['push', 'pull'] },
+  { key: 'upper', label: 'Upper Body', groups: ['upper'] },
   { key: 'lower', label: 'Lower Body', groups: ['lower'] },
   { key: 'core', label: 'Core', groups: ['core'] },
 ];
