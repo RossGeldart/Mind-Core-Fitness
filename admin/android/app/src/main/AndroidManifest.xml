@@ -32,6 +32,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera access for barcode scanner and AI meal scanner -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- Push notifications (required for Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Health Connect (smartwatch/health data integration) -->
