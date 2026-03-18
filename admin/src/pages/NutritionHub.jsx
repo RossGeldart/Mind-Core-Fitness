@@ -417,7 +417,7 @@ export default function NutritionHub() {
               </button>
 
               <div className="nut-hub-card nut-hub-card--ai"
-                onClick={() => navigate('/client/core-buddy/nutrition/manual?ai=1')}
+                onClick={() => navigate('/client/core-buddy/nutrition/ai-scanner')}
                 role="button"
                 tabIndex={0}
               >
