@@ -263,13 +263,10 @@ export default function AIMealScanner() {
         setDoc(mealsRef, { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
       }
 
-      // Reset for next scan
+      // Navigate back to nutrition hub to show updated log
       setTimeout(() => {
-        setStage('idle');
-        setImageFile(null);
-        setImagePreview(null);
-        setResult(null);
-      }, 1500);
+        navigate('/client/core-buddy/nutrition');
+      }, 1200);
     } catch (err) {
       console.error('Save failed:', err);
       showToast('Failed to save. Please try again.', 'error');
@@ -321,12 +318,10 @@ export default function AIMealScanner() {
       setDoc(doc(db, 'savedMeals', clientData.id), { meals: updatedMeals, updatedAt: Timestamp.now() }).catch(() => {});
 
       showToast(`${newEntries.length} item${newEntries.length > 1 ? 's' : ''} added to ${selectedMeal}`, 'success');
+      // Navigate back to nutrition hub to show updated log
       setTimeout(() => {
-        setStage('idle');
-        setImageFile(null);
-        setImagePreview(null);
-        setResult(null);
-      }, 1500);
+        navigate('/client/core-buddy/nutrition');
+      }, 1200);
     } catch (err) {
       console.error('Save failed:', err);
       showToast('Failed to save. Please try again.', 'error');
