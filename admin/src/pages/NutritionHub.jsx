@@ -522,6 +522,7 @@ export default function NutritionHub() {
   };
 
   const removeEntry = (id) => {
+    if (id == null) return; // safety: never delete with undefined id
     const newEntries = todayLog.entries.filter(e => e.id !== id);
     const newLog = { ...todayLog, entries: newEntries };
     setTodayLog(newLog);
