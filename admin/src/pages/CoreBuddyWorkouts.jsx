@@ -812,7 +812,9 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== BUILD YOUR OWN ====================
 
-  // Resolve video URLs for a batch of exercises (lazy, on expand)
+  // Resolve video URLs for a batch of exercises (lazy, on expand).
+  // Uses listAll to discover actual files in Storage (case-insensitive match)
+  // so hardcoded storagePath casing differences don't cause silent failures.
   const byoResolveUrls = async (exercises) => {
     const urlCache = readUrlCache();
     const toResolve = exercises.filter(ex => ex.storagePath && !byoVideoUrls[ex.storagePath] && !urlCache[ex.storagePath]);
@@ -825,14 +827,45 @@ export default function CoreBuddyWorkouts() {
       if (Object.keys(fromCache).length > 0) setByoVideoUrls(prev => ({ ...prev, ...fromCache }));
       return;
     }
+
+    // Group exercises by folder so we can listAll once per folder
+    const folderMap = {};
+    for (const ex of toResolve) {
+      const lastSlash = ex.storagePath.lastIndexOf('/');
+      const folder = ex.storagePath.substring(0, lastSlash);
+      if (!folderMap[folder]) folderMap[folder] = [];
+      folderMap[folder].push(ex);
+    }
+
     const newUrls = {};
-    await Promise.all(toResolve.map(async (ex) => {
+    for (const [folder, exs] of Object.entries(folderMap)) {
       try {
-        const url = await getDownloadURL(ref(storage, ex.storagePath));
-        urlCache[ex.storagePath] = url;
-        newUrls[ex.storagePath] = url;
-      } catch { /* skip */ }
-    }));
+        const folderRef = ref(storage, folder);
+        const result = await listAll(folderRef);
+
+        // Build map of normalised filename → storage item
+        const fileMap = {};
+        for (const item of result.items) {
+          const norm = item.name.toLowerCase().replace(/\.(mp4|gif)$/i, '');
+          fileMap[norm] = item;
+        }
+
+        // Match exercises to actual files by normalised name
+        await Promise.all(exs.map(async (ex) => {
+          const fileName = ex.storagePath.substring(ex.storagePath.lastIndexOf('/') + 1);
+          const norm = fileName.toLowerCase().replace(/\.(mp4|gif)$/i, '');
+          const item = fileMap[norm];
+          if (item) {
+            try {
+              const url = await getDownloadURL(item);
+              urlCache[ex.storagePath] = url;
+              newUrls[ex.storagePath] = url;
+            } catch { /* skip */ }
+          }
+        }));
+      } catch { /* folder not found, skip */ }
+    }
+
     // Also pull any cached ones
     exercises.forEach(ex => {
       if (ex.storagePath && urlCache[ex.storagePath]) newUrls[ex.storagePath] = urlCache[ex.storagePath];
