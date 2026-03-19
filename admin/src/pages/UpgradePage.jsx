@@ -13,30 +13,30 @@ const isNative = Capacitor.isNativePlatform();
 const isAndroid = isNative && Capacitor.getPlatform() === 'android';
 
 const FREE_FEATURES = [
-  { text: '2 workouts per week', included: true },
+  { text: '3 workouts per week', included: true },
   { text: '5 & 10 min durations only', included: true },
   { text: '1 habit tracker', included: true },
   { text: 'Basic workout library', included: true },
+  { text: '3 buddies', included: true },
+  { text: 'Leaderboard access', included: true },
   { text: 'Unlimited workouts', included: false },
-  { text: 'All workout durations', included: false },
+  { text: 'All workout durations (5–30 min)', included: false },
   { text: 'Unlimited habits', included: false },
-  { text: '2 activity logs per week', included: true },
   { text: 'Unlimited activity logging', included: false },
-  { text: 'Nutrition tracking', included: false },
-  { text: 'Save & replay workouts', included: false },
-  { text: 'Buddies & social', included: false },
-  { text: 'Advanced metrics', included: false },
+  { text: 'Nutrition tracking & AI meal scanner', included: false },
+  { text: 'Unlimited buddies & social feed', included: false },
+  { text: 'Advanced metrics & charts', included: false },
 ];
 
 const PREMIUM_FEATURES_LIST = [
   { text: 'Unlimited workouts per week', included: true },
-  { text: 'All workout durations', included: true },
+  { text: 'All workout durations (5–30 min)', included: true },
   { text: 'Unlimited habit tracking', included: true },
-  { text: 'Activity logging', included: true },
-  { text: 'Nutrition tracking', included: true },
-  { text: 'Save & replay workouts', included: true },
-  { text: 'Buddies & social', included: true },
-  { text: 'Advanced metrics', included: true },
+  { text: 'Unlimited activity logging', included: true },
+  { text: 'Nutrition tracking & AI meal scanner', included: true },
+  { text: 'Unlimited buddies & social feed', included: true },
+  { text: 'Leaderboard & competitions', included: true },
+  { text: 'Advanced metrics & charts', included: true },
   { text: 'Cancel anytime', included: true },
 ];
 
@@ -417,11 +417,11 @@ export default function UpgradePage() {
           </div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>Unlimited workout durations</li>
-            <li>Unlimited weekly workouts</li>
-            <li>Save & replay workouts</li>
-            <li>Nutrition tracking</li>
-            <li>Buddies & social</li>
+            <li>Unlimited workouts & durations</li>
+            <li>Nutrition tracking & AI scanner</li>
+            <li>Unlimited buddies & social</li>
+            <li>Advanced metrics & charts</li>
+            <li>Unlimited habits</li>
             <li>Cancel anytime</li>
           </ul>
           <button className="plan-cta" onClick={() => handleSelectPlan('monthly')} disabled={!!loading}>
@@ -439,11 +439,11 @@ export default function UpgradePage() {
           <div className="plan-price-sub">That's just £9.99/month</div>
           <ul className="plan-features">
             <li>7-day free trial</li>
-            <li>Unlimited workout durations</li>
-            <li>Unlimited weekly workouts</li>
-            <li>Save & replay workouts</li>
-            <li>Nutrition tracking</li>
-            <li>Buddies & social</li>
+            <li>Unlimited workouts & durations</li>
+            <li>Nutrition tracking & AI scanner</li>
+            <li>Unlimited buddies & social</li>
+            <li>Advanced metrics & charts</li>
+            <li>Unlimited habits</li>
             <li>Best value</li>
           </ul>
           <button className="plan-cta plan-cta-featured" onClick={() => handleSelectPlan('annual')} disabled={!!loading}>

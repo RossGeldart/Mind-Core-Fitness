@@ -1966,26 +1966,23 @@ export default function CoreBuddyDashboard() {
               </span>
               <span className="cb-fab-item-label">Badges</span>
             </button>
-            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/challenges' : '/upgrade'); }}>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/challenges'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </span>
               <span className="cb-fab-item-label">Challenges</span>
-              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
-            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/buddies' : '/upgrade'); }}>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/buddies'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </span>
               <span className="cb-fab-item-label">Buddies</span>
-              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
-            <button className={`cb-fab-item${!isPremium ? ' cb-fab-item-locked' : ''}`} onClick={() => { setFabOpen(false); navigate(isPremium ? '/client/core-buddy/metrics' : '/upgrade'); }}>
+            <button className="cb-fab-item" onClick={() => { setFabOpen(false); navigate('/client/core-buddy/metrics'); }}>
               <span className="cb-fab-item-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
               </span>
               <span className="cb-fab-item-label">Body Metrics</span>
-              {!isPremium && <svg className="cb-fab-item-lock" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>}
             </button>
             </div>
           </div>

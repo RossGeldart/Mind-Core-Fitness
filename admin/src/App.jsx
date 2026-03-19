@@ -168,7 +168,7 @@ function App() {
             <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><AIMealScanner /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
-            <Route path="/client/core-buddy/buddies" element={<LockedFeature feature="buddies"><CoreBuddyBuddies /></LockedFeature>} />
+            <Route path="/client/core-buddy/buddies" element={<CoreBuddyBuddies />} />
             <Route path="/client/core-buddy/builder" element={<CoreBuddyBuilder />} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/core-buddy/settings" element={<CoreBuddySettings />} />
@@ -177,7 +177,7 @@ function App() {
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
             <Route path="/client/core-buddy/activity" element={<ActivityHistory />} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
-            <Route path="/client/leaderboard" element={<LockedFeature feature="leaderboard"><Leaderboard /></LockedFeature>} />
+            <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />

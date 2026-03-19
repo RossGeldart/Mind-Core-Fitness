@@ -1180,6 +1180,25 @@
   }
 }
 
+/* Free tier buddy limit nudge */
+.bdy-free-limit-msg {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+  line-height: 1.4;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.bdy-upgrade-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* Dark mode */
 [data-theme="dark"] .bdy-fab-sheet {
   background: #1e1e1e;
