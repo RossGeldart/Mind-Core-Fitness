@@ -432,14 +432,14 @@
   color: #0a0a0a !important;
 }
 [data-mono="true"][data-theme="dark"] .nut-week-day.selected .nut-week-day-letter {
-  color: rgba(10, 10, 10, 0.7) !important;
+  color: #f0f0f0 !important;
 }
 [data-mono="true"][data-theme="light"] .nut-week-day.selected .nut-week-day-num,
 [data-mono="true"][data-theme="light"] .nut-cal-day.selected {
   color: #ffffff !important;
 }
 [data-mono="true"][data-theme="light"] .nut-week-day.selected .nut-week-day-letter {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: #111111 !important;
 }
 
 /* Smooth theme transition — scoped to theme toggle only */

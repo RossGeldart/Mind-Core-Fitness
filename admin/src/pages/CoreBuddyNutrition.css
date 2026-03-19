@@ -193,7 +193,7 @@
 }
 
 .nut-week-day.selected .nut-week-day-letter {
-  color: var(--text-on-primary);
+  color: var(--color-primary);
 }
 
 .nut-week-day.today:not(.selected) .nut-week-day-num {
