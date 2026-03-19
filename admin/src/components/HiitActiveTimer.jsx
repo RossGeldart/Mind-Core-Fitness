@@ -1,4 +1,5 @@
 import { useHiit } from '../contexts/HiitContext';
+import { TICKS_HIIT } from '../utils/ringTicks';
 import './HiitActiveTimer.css';
 
 const PHASE_LABELS = {
@@ -28,7 +29,7 @@ export default function HiitActiveTimer() {
 
   const { work, rest, exercises, rounds } = timerConfig;
 
-  // Calculate progress for ring
+  // Calculate phase duration
   let phaseDuration = 3; // countdown
   if (currentPhase === 'warmup') phaseDuration = timerConfig.warmUpTime || 1;
   else if (currentPhase === 'work') phaseDuration = work;
@@ -36,10 +37,11 @@ export default function HiitActiveTimer() {
   else if (currentPhase === 'roundReset') phaseDuration = timerConfig.roundReset;
   else if (currentPhase === 'done') phaseDuration = 1;
 
-  const progress = currentPhase === 'done' ? 1 : 1 - (timeLeft / phaseDuration);
-  const ringRadius = 120;
-  const circumference = 2 * Math.PI * ringRadius;
-  const strokeDashoffset = circumference * (1 - progress);
+  // Calculate how many ticks have elapsed (out of 60)
+  const elapsed = phaseDuration - timeLeft;
+  const ticksElapsed = currentPhase === 'done'
+    ? 60
+    : Math.min(60, Math.round((elapsed / phaseDuration) * 60));
 
   // Format time display
   const minutes = Math.floor(timeLeft / 60);
@@ -68,49 +70,46 @@ export default function HiitActiveTimer() {
         </div>
       )}
 
-      {/* Circular progress ring */}
+      {/* Tick-based countdown ring */}
       <div className="hiit-active-ring-container">
         <svg className="hiit-active-ring" viewBox="0 0 280 280">
-          {/* Background circle */}
-          <circle
-            cx="140" cy="140" r={ringRadius}
-            fill="none"
-            stroke="var(--border-color)"
-            strokeWidth="10"
-          />
-          {/* Progress arc */}
-          <circle
-            cx="140" cy="140" r={ringRadius}
-            fill="none"
-            stroke="var(--phase-color)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 140 140)"
-            style={{ transition: 'stroke-dashoffset 0.3s linear' }}
-          />
+          {TICKS_HIIT.map((t, i) => {
+            const isElapsed = i < ticksElapsed;
+            return (
+              <line
+                key={i}
+                x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                className={`hiit-tick ${isElapsed ? 'elapsed' : 'remaining'}`}
+                strokeWidth={t.thick ? '3' : '2'}
+              />
+            );
+          })}
         </svg>
 
-        {/* Center content */}
+        {/* Center content — logo + countdown overlay */}
         <div className="hiit-active-center">
-          {currentPhase === 'done' ? (
-            <div className="hiit-active-done-check">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-          ) : (
-            <>
-              <span className="hiit-active-time-digits">
-                {String(minutes).padStart(2, '0')}
-              </span>
-              <span className="hiit-active-time-colon">:</span>
-              <span className="hiit-active-time-digits">
-                {String(seconds).padStart(2, '0')}
-              </span>
-            </>
-          )}
+          <div className="hiit-center-logo">
+            <img src="/Logo.webp" alt="MCF" />
+          </div>
+          <div className="hiit-center-overlay">
+            {currentPhase === 'done' ? (
+              <div className="hiit-active-done-check">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            ) : (
+              <div className="hiit-center-time">
+                <span className="hiit-active-time-digits">
+                  {String(minutes).padStart(2, '0')}
+                </span>
+                <span className="hiit-active-time-colon">:</span>
+                <span className="hiit-active-time-digits">
+                  {String(seconds).padStart(2, '0')}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

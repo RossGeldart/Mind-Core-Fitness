@@ -36,13 +36,69 @@
 }
 
 .hiit-active-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  transform: scaleX(-1);
 }
 
+/* Tick marks — matching profile ring style */
+.hiit-tick.remaining {
+  stroke: var(--phase-color);
+  transition: stroke 0.3s;
+}
+
+.hiit-tick.elapsed {
+  stroke: #ffffff;
+  transition: stroke 0.3s;
+}
+
+[data-theme="light"] .hiit-tick.elapsed {
+  stroke: #2d2d2d;
+}
+
+/* Center content */
 .hiit-active-center {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo circle in center */
+.hiit-center-logo {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.hiit-center-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Countdown overlay on top of logo */
+.hiit-center-overlay {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+/* Time display with lift effect */
+.hiit-center-time {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,20 +107,33 @@
 
 .hiit-active-time-digits {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 3.5rem;
+  font-size: 2.4rem;
   font-weight: 900;
-  color: var(--text-primary);
+  color: #ffffff;
   line-height: 1;
   min-width: 2ch;
   text-align: center;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px var(--phase-color),
+    0 0 40px var(--phase-color);
+  animation: hiitDigitLift 1s ease-in-out infinite;
+}
+
+@keyframes hiitDigitLift {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 .hiit-active-time-colon {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 3.5rem;
+  font-size: 2.4rem;
   font-weight: 900;
-  color: var(--text-primary);
+  color: #ffffff;
   line-height: 1;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px var(--phase-color);
   animation: hiitColonBlink 1s step-start infinite;
 }
 
@@ -72,6 +141,7 @@
   50% { opacity: 0.3; }
 }
 
+/* Done checkmark */
 .hiit-active-done-check {
   display: flex;
   align-items: center;

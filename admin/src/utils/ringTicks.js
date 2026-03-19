@@ -28,3 +28,6 @@ export const TICKS_MINI   = buildTicks(60, 50, 50, 38, 46);
 
 // Tiny rings (viewBox 80x80)
 export const TICKS_TINY   = buildTicks(60, 40, 40, 30, 37);
+
+// HIIT timer ring (viewBox 280x280)
+export const TICKS_HIIT   = buildTicks(60, 140, 140, 119, 134);
