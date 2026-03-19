@@ -194,7 +194,6 @@
 
 .nut-week-day.selected .nut-week-day-letter {
   color: var(--text-on-primary);
-  opacity: 0.8;
 }
 
 .nut-week-day.today:not(.selected) .nut-week-day-num {
