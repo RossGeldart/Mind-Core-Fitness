@@ -108,7 +108,38 @@ export function HiitProvider({ children }) {
       gain.connect(ctx.destination);
       gain.gain.value = (settings.audioVolume / 100) * 0.3;
 
-      if (type === 'countdown') {
+      if (type === 'halfway') {
+        // Distinct double-chirp for halfway mark
+        osc.frequency.value = 550;
+        osc.type = 'square';
+        gain.gain.value = (settings.audioVolume / 100) * 0.25;
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+        // Second chirp
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        gain2.gain.value = (settings.audioVolume / 100) * 0.25;
+        osc2.frequency.value = 700;
+        osc2.type = 'square';
+        osc2.start(ctx.currentTime + 0.12);
+        osc2.stop(ctx.currentTime + 0.2);
+        setTimeout(() => ctx.close(), 500);
+        return;
+      } else if (type === 'countdown3') {
+        osc.frequency.value = 660;
+        osc.type = 'sine';
+        gain.gain.value = (settings.audioVolume / 100) * 0.5;
+      } else if (type === 'countdown2') {
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.value = (settings.audioVolume / 100) * 0.5;
+      } else if (type === 'countdown1') {
+        osc.frequency.value = 1100;
+        osc.type = 'sine';
+        gain.gain.value = (settings.audioVolume / 100) * 0.6;
+      } else if (type === 'countdown') {
         osc.frequency.value = 880;
         osc.type = 'sine';
         gain.gain.value = (settings.audioVolume / 100) * 0.5;
@@ -295,12 +326,22 @@ export function HiitProvider({ children }) {
           advancePhase();
           return prev; // advancePhase sets new timeLeft
         }
-        // Countdown beeps for last 3 seconds
-        if (prev <= 4 && prev > 1 && currentPhase !== 'countdown') {
-          playBeep('countdown');
-          vibrate([30]);
+        const next = prev - 1;
+        // 3-2-1 countdown with ascending pitch
+        if (currentPhase !== 'countdown') {
+          if (next === 3) { playBeep('countdown3'); vibrate([30]); }
+          else if (next === 2) { playBeep('countdown2'); vibrate([30]); }
+          else if (next === 1) { playBeep('countdown1'); vibrate([30]); }
         }
-        return prev - 1;
+        // Halfway chirp during work phase
+        if (currentPhase === 'work' && timerConfig.work >= 10) {
+          const half = Math.floor(timerConfig.work / 2);
+          if (next === half) {
+            playBeep('halfway');
+            vibrate([20, 40, 20]);
+          }
+        }
+        return next;
       });
       if (currentPhase !== 'countdown') {
         setTotalElapsed(prev => prev + 1);
@@ -313,7 +354,7 @@ export function HiitProvider({ children }) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate]);
+  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate, timerConfig]);
 
   // Handle page visibility for pause-on-leave
   useEffect(() => {
