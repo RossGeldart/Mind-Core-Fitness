@@ -123,11 +123,16 @@ export default function HiitTimer() {
           <span className="hiit-total-value">{totalDisplay}</span>
         </div>
 
-        {/* Start button */}
+        {/* Start button — logo with play overlay */}
         <button className="hiit-start-btn" onClick={startTimer}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" stroke="none">
-            <polygon points="5 3 19 12 5 21 5 3"/>
-          </svg>
+          <div className="hiit-start-logo">
+            <img src="/Logo.webp" alt="MCF" />
+          </div>
+          <div className="hiit-start-overlay">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff" stroke="none">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
         </button>
 
         {/* Load previous */}
