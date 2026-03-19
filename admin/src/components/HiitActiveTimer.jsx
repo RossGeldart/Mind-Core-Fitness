@@ -20,6 +20,19 @@ const PHASE_COLORS = {
   done: '#4CAF50',
 };
 
+function getUpNext(currentPhase, currentExercise, currentRound, exercises, rounds) {
+  if (currentPhase === 'countdown') return 'Warm Up';
+  if (currentPhase === 'warmup') return 'Work';
+  if (currentPhase === 'work') {
+    if (currentExercise >= exercises && currentRound >= rounds) return 'Finish';
+    if (currentExercise >= exercises) return 'Round Break';
+    return 'Rest';
+  }
+  if (currentPhase === 'rest') return 'Work';
+  if (currentPhase === 'roundReset') return 'Work';
+  return '';
+}
+
 export default function HiitActiveTimer() {
   const {
     timerConfig, currentPhase, timeLeft, currentExercise, currentRound,
@@ -51,26 +64,54 @@ export default function HiitActiveTimer() {
   const elMin = Math.floor(totalElapsed / 60);
   const elSec = totalElapsed % 60;
 
+  // Up next
+  const upNext = getUpNext(currentPhase, currentExercise, currentRound, exercises, rounds);
+
   // Exercise dots
   const exerciseDots = Array.from({ length: exercises }, (_, i) => i + 1);
   // Round dots
   const roundDots = Array.from({ length: rounds }, (_, i) => i + 1);
 
+  const showTracker = currentPhase !== 'countdown' && currentPhase !== 'done';
+
   return (
     <div className="hiit-active" style={{ '--phase-color': PHASE_COLORS[currentPhase] || 'var(--color-primary)' }}>
-      {/* Phase label */}
+      {/* Phase label at top */}
       <div className="hiit-active-phase">
         {PHASE_LABELS[currentPhase] || ''}
       </div>
 
-      {/* Round indicator */}
-      {currentPhase !== 'countdown' && currentPhase !== 'done' && (
-        <div className="hiit-active-round-label">
-          Round {currentRound} of {rounds}
+      {/* Tracker cards at top */}
+      {showTracker && (
+        <div className="hiit-tracker-cards">
+          {exercises > 1 && (
+            <div className="hiit-tracker-card">
+              <span className="hiit-tracker-label">Exercise</span>
+              <div className="hiit-tracker-dots">
+                {exerciseDots.map(dot => (
+                  <span
+                    key={`e-${dot}`}
+                    className={`hiit-tracker-dot${dot === currentExercise ? ' active' : ''}${dot < currentExercise ? ' completed' : ''}`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="hiit-tracker-card">
+            <span className="hiit-tracker-label">Round</span>
+            <div className="hiit-tracker-dots">
+              {roundDots.map(dot => (
+                <span
+                  key={`r-${dot}`}
+                  className={`hiit-tracker-dot${dot === currentRound ? ' active' : ''}${dot < currentRound ? ' completed' : ''}`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Tick-based countdown ring */}
+      {/* Large tick ring */}
       <div className="hiit-active-ring-container">
         <svg className="hiit-active-ring" viewBox="0 0 280 280">
           {TICKS_HIIT.map((t, i) => {
@@ -86,7 +127,7 @@ export default function HiitActiveTimer() {
           })}
         </svg>
 
-        {/* Center content — logo + countdown overlay */}
+        {/* Center content — logo + overlay */}
         <div className="hiit-active-center">
           <div className="hiit-center-logo">
             <img src="/Logo.webp" alt="MCF" />
@@ -94,53 +135,51 @@ export default function HiitActiveTimer() {
           <div className="hiit-center-overlay">
             {currentPhase === 'done' ? (
               <div className="hiit-active-done-check">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               </div>
             ) : (
-              <div className="hiit-center-time">
-                <span className="hiit-active-time-digits">
-                  {String(minutes).padStart(2, '0')}
-                </span>
-                <span className="hiit-active-time-colon">:</span>
-                <span className="hiit-active-time-digits">
-                  {String(seconds).padStart(2, '0')}
-                </span>
+              <div className="hiit-center-info">
+                <div className="hiit-center-phase-label">
+                  {PHASE_LABELS[currentPhase] || ''}
+                </div>
+                <div className="hiit-center-time">
+                  <span className="hiit-active-time-digits">
+                    {String(minutes).padStart(2, '0')}
+                  </span>
+                  <span className="hiit-active-time-colon">:</span>
+                  <span className="hiit-active-time-digits">
+                    {String(seconds).padStart(2, '0')}
+                  </span>
+                </div>
+                {currentPhase !== 'countdown' && (
+                  <div className="hiit-center-elapsed">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    {String(elMin).padStart(2, '0')}:{String(elSec).padStart(2, '0')}
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Exercise dots */}
-      {currentPhase !== 'countdown' && currentPhase !== 'done' && exercises > 1 && (
-        <div className="hiit-active-dots">
-          {exerciseDots.map(dot => (
-            <span
-              key={`e-${dot}`}
-              className={`hiit-dot${dot === currentExercise ? ' active' : ''}${dot < currentExercise ? ' completed' : ''}`}
-            />
-          ))}
+      {/* Exercise label + up next */}
+      {showTracker && (
+        <div className="hiit-active-info-row">
+          <div className="hiit-active-exercise-label">
+            EXERCISE {currentExercise}
+          </div>
+          {upNext && (
+            <div className="hiit-active-upnext">
+              Up Next: <strong>{upNext}</strong>
+            </div>
+          )}
         </div>
       )}
-
-      {/* Round dots */}
-      {currentPhase !== 'countdown' && currentPhase !== 'done' && rounds > 1 && (
-        <div className="hiit-active-dots round-dots">
-          {roundDots.map(dot => (
-            <span
-              key={`r-${dot}`}
-              className={`hiit-dot round${dot === currentRound ? ' active' : ''}${dot < currentRound ? ' completed' : ''}`}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Total elapsed */}
-      <div className="hiit-active-elapsed">
-        Total: {String(elMin).padStart(2, '0')}:{String(elSec).padStart(2, '0')}
-      </div>
 
       {/* Controls */}
       <div className="hiit-active-controls">
@@ -192,7 +231,7 @@ export default function HiitActiveTimer() {
         )}
       </div>
 
-      {/* Stop button (always visible during active, except done) */}
+      {/* Stop button */}
       {currentPhase !== 'done' && (
         <button className="hiit-stop-btn" onClick={stopTimer}>
           Stop Workout
