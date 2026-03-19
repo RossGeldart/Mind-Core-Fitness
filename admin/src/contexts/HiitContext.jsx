@@ -60,6 +60,8 @@ export function HiitProvider({ children }) {
 
   const intervalRef = useRef(null);
   const startTimeRef = useRef(null);
+  const currentExerciseRef = useRef(1);
+  const currentRoundRef = useRef(1);
 
   // Persist
   useEffect(() => {
@@ -73,6 +75,10 @@ export function HiitProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   }, [history]);
+
+  // Keep refs in sync with state so advancePhase always reads latest values
+  useEffect(() => { currentExerciseRef.current = currentExercise; }, [currentExercise]);
+  useEffect(() => { currentRoundRef.current = currentRound; }, [currentRound]);
 
   const updateSetting = useCallback((key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -145,6 +151,10 @@ export function HiitProvider({ children }) {
     const { work, rest, exercises, rounds, roundReset } = timerConfig;
 
     setCurrentPhase(prev => {
+      // Read latest values from refs to avoid stale closure
+      const exNow = currentExerciseRef.current;
+      const rdNow = currentRoundRef.current;
+
       if (prev === 'countdown') {
         playBeep('go');
         vibrate([100, 50, 100]);
@@ -161,13 +171,15 @@ export function HiitProvider({ children }) {
         vibrate([100, 50, 100]);
         setTimeLeft(work);
         setCurrentExercise(1);
+        currentExerciseRef.current = 1;
         setCurrentRound(1);
+        currentRoundRef.current = 1;
         return 'work';
       }
 
       if (prev === 'work') {
         // Check if last exercise in last round
-        if (currentExercise >= exercises && currentRound >= rounds) {
+        if (exNow >= exercises && rdNow >= rounds) {
           playBeep('done');
           vibrate([200, 100, 200, 100, 200]);
           setTimeLeft(0);
@@ -175,7 +187,7 @@ export function HiitProvider({ children }) {
         }
 
         // Check if last exercise in current round
-        if (currentExercise >= exercises) {
+        if (exNow >= exercises) {
           playBeep('rest');
           vibrate([50]);
           setTimeLeft(roundReset);
@@ -192,7 +204,9 @@ export function HiitProvider({ children }) {
       if (prev === 'rest') {
         playBeep('go');
         vibrate([100]);
-        setCurrentExercise(e => e + 1);
+        const nextEx = exNow + 1;
+        setCurrentExercise(nextEx);
+        currentExerciseRef.current = nextEx;
         setTimeLeft(work);
         return 'work';
       }
@@ -200,15 +214,18 @@ export function HiitProvider({ children }) {
       if (prev === 'roundReset') {
         playBeep('go');
         vibrate([100, 50, 100]);
-        setCurrentRound(r => r + 1);
+        const nextRd = rdNow + 1;
+        setCurrentRound(nextRd);
+        currentRoundRef.current = nextRd;
         setCurrentExercise(1);
+        currentExerciseRef.current = 1;
         setTimeLeft(work);
         return 'work';
       }
 
       return prev;
     });
-  }, [timerConfig, currentExercise, currentRound, settings.warmUpTime, playBeep, vibrate]);
+  }, [timerConfig, settings.warmUpTime, playBeep, vibrate]);
 
   // Start timer
   const startTimer = useCallback(() => {
@@ -217,7 +234,9 @@ export function HiitProvider({ children }) {
     setCurrentPhase('countdown');
     setTimeLeft(3); // 3-2-1 countdown
     setCurrentExercise(1);
+    currentExerciseRef.current = 1;
     setCurrentRound(1);
+    currentRoundRef.current = 1;
     setTotalElapsed(0);
     startTimeRef.current = Date.now();
   }, []);
@@ -249,7 +268,9 @@ export function HiitProvider({ children }) {
     setCurrentPhase('idle');
     setTimeLeft(0);
     setCurrentExercise(1);
+    currentExerciseRef.current = 1;
     setCurrentRound(1);
+    currentRoundRef.current = 1;
     setTotalElapsed(0);
   }, [totalElapsed, timerConfig, currentPhase]);
 
