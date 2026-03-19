@@ -959,12 +959,12 @@
 }
 
 [data-theme="dark"] .nhub-fab-item {
-  border-color: rgba(218, 63, 79, 0.2);
-  background: rgba(218, 63, 79, 0.06);
+  border-color: rgba(var(--color-primary-rgb, 218, 63, 79), 0.25);
+  background: rgba(var(--color-primary-rgb, 218, 63, 79), 0.08);
 }
 
 [data-theme="dark"] .nhub-fab-item-icon {
-  background: rgba(218, 63, 79, 0.12);
+  background: rgba(var(--color-primary-rgb, 218, 63, 79), 0.15);
 }
 
 [data-theme="dark"] .nhub-fab-meal-btn {
