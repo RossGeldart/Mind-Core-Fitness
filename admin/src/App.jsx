@@ -175,7 +175,7 @@ function App() {
             <Route path="/client/core-buddy/challenges" element={<Challenges />} />
             <Route path="/client/core-buddy/badges" element={<CoreBuddyBadges />} />
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
-            <Route path="/client/core-buddy/activity" element={<ActivityHistory />} />
+            <Route path="/client/core-buddy/activity" element={<LockedFeature feature="activity"><ActivityHistory /></LockedFeature>} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="/signup" element={<SignUp />} />

@@ -7,6 +7,7 @@ const FEATURE_MESSAGES = {
   metrics: 'See your detailed fitness insights',
   charts: 'Visualise your progress over time',
   consistency: 'Track your daily habits',
+  activity: 'Log walks, runs, cycles and more',
 };
 
 export default function LockedFeature({ feature, children }) {
