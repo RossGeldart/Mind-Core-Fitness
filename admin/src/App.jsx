@@ -32,6 +32,11 @@ import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 import ActivityHistory from './pages/ActivityHistory';
 import AIMealScanner from './pages/AIMealScanner';
 import CoreBuddyCharts from './pages/CoreBuddyCharts';
+import HiitTimer from './pages/HiitTimer';
+import HiitHistory from './pages/HiitHistory';
+import HiitSettings from './pages/HiitSettings';
+import HiitStatistics from './pages/HiitStatistics';
+import { HiitProvider } from './contexts/HiitContext';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -138,6 +143,7 @@ function MixpanelTracker() {
 function App() {
   return (
     <ThemeProvider>
+      <HiitProvider>
       <AuthProvider>
         <TierProvider>
         <BrowserRouter basename={basename}>
@@ -178,6 +184,11 @@ function App() {
             <Route path="/client/core-buddy/activity" element={<LockedFeature feature="activity"><ActivityHistory /></LockedFeature>} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
             <Route path="/client/leaderboard" element={<Leaderboard />} />
+            {/* Core HIIT — standalone app section */}
+            <Route path="/hiit" element={<HiitTimer />} />
+            <Route path="/hiit/history" element={<HiitHistory />} />
+            <Route path="/hiit/settings" element={<HiitSettings />} />
+            <Route path="/hiit/statistics" element={<HiitStatistics />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />
@@ -189,6 +200,7 @@ function App() {
         </BrowserRouter>
         </TierProvider>
       </AuthProvider>
+      </HiitProvider>
     </ThemeProvider>
   );
 }

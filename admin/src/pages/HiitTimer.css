@@ -1,0 +1,151 @@
+/* ====== HIIT Timer Page ====== */
+.hiit-page {
+  min-height: 100vh;
+  background: var(--bg-body);
+}
+
+.hiit-timer-content {
+  padding: 20px 16px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Config rows */
+.hiit-config-list {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.hiit-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 20px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.hiit-config-row:last-child {
+  border-bottom: none;
+}
+
+.hiit-config-row:active {
+  background: var(--color-primary-light);
+}
+
+.hiit-config-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hiit-config-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-body);
+}
+
+.hiit-config-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.hiit-config-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hiit-config-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Total time */
+.hiit-total-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 32px;
+  gap: 4px;
+}
+
+.hiit-total-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hiit-total-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+/* Start button */
+.hiit-start-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  box-shadow: var(--shadow-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hiit-start-btn svg {
+  margin-left: 4px; /* visual centering for play icon */
+}
+
+.hiit-start-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+/* Load previous */
+.hiit-load-prev {
+  margin-top: 24px;
+  padding: 12px 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hiit-load-prev:active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
