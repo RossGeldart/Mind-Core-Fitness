@@ -1,0 +1,119 @@
+/* ====== HIIT Scroll Picker ====== */
+.hiit-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: hiitPickerFadeIn 0.2s ease-out;
+}
+
+@keyframes hiitPickerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hiit-picker-panel {
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  background: var(--bg-card);
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: hiitPickerSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes hiitPickerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.hiit-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.hiit-picker-header h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.hiit-picker-close {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+}
+
+.hiit-picker-body {
+  position: relative;
+  height: 392px; /* 7 items visible */
+  overflow: hidden;
+}
+
+/* Center highlight band */
+.hiit-picker-highlight {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  right: 16px;
+  height: 56px;
+  transform: translateY(-50%);
+  background: var(--color-primary-light);
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hiit-picker-list {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  z-index: 2;
+}
+
+/* Hide scrollbar */
+.hiit-picker-list::-webkit-scrollbar {
+  display: none;
+}
+.hiit-picker-list {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hiit-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  scroll-snap-align: center;
+  transition: color 0.15s, font-size 0.15s;
+}
+
+.hiit-picker-item.selected {
+  color: var(--color-primary);
+  font-size: 1.8rem;
+  font-weight: 800;
+}

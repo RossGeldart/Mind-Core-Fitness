@@ -32,6 +32,11 @@ import CoreBuddyMetrics from './pages/CoreBuddyMetrics';
 import ActivityHistory from './pages/ActivityHistory';
 import AIMealScanner from './pages/AIMealScanner';
 import CoreBuddyCharts from './pages/CoreBuddyCharts';
+import HiitTimer from './pages/HiitTimer';
+import HiitHistory from './pages/HiitHistory';
+import HiitSettings from './pages/HiitSettings';
+import HiitStatistics from './pages/HiitStatistics';
+import { HiitProvider } from './contexts/HiitContext';
 
 // Lazy-load pages outside the CoreBuddy nav group
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -140,6 +145,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <TierProvider>
+        <HiitProvider>
         <BrowserRouter basename={basename}>
           <RedirectHandler />
           <AndroidBackButton />
@@ -177,6 +183,10 @@ function App() {
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
             <Route path="/client/core-buddy/activity" element={<LockedFeature feature="activity"><ActivityHistory /></LockedFeature>} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
+            <Route path="/client/core-buddy/hiit" element={<HiitTimer />} />
+            <Route path="/client/core-buddy/hiit/history" element={<HiitHistory />} />
+            <Route path="/client/core-buddy/hiit/settings" element={<HiitSettings />} />
+            <Route path="/client/core-buddy/hiit/statistics" element={<HiitStatistics />} />
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
@@ -187,6 +197,7 @@ function App() {
           </ErrorBoundary>
           </ScrollToTop>
         </BrowserRouter>
+        </HiitProvider>
         </TierProvider>
       </AuthProvider>
     </ThemeProvider>

@@ -1,0 +1,83 @@
+/* ====== HIIT Statistics ====== */
+.hiit-stats-content {
+  padding: 20px 16px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.hiit-stats-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+/* Stats grid */
+.hiit-stats-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+  justify-content: center;
+}
+
+.hiit-stat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 8px;
+}
+
+.hiit-stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hiit-stat-icon.green {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.hiit-stat-icon.red {
+  background: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+}
+
+.hiit-stat-icon.blue {
+  background: rgba(33, 150, 243, 0.15);
+  color: #5C6BC0;
+}
+
+.hiit-stat-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.hiit-stat-value.green {
+  color: #4CAF50;
+}
+
+.hiit-stat-value.red {
+  color: var(--color-primary);
+}
+
+.hiit-stat-value.blue {
+  color: var(--color-primary);
+}
+
+.hiit-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  line-height: 1.3;
+}

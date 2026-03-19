@@ -1,0 +1,259 @@
+/* ====== HIIT Settings ====== */
+.hiit-settings-content {
+  padding: 20px 16px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.hiit-settings-section {
+  margin-bottom: 24px;
+}
+
+.hiit-settings-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.hiit-settings-hint {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin: 2px 0 0;
+}
+
+.hiit-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hiit-settings-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Segmented control */
+.hiit-seg-control {
+  display: flex;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.hiit-seg-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hiit-seg-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Slider */
+.hiit-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border-color);
+  border-radius: 3px;
+  outline: none;
+}
+
+.hiit-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(var(--color-primary-rgb), 0.4);
+}
+
+.hiit-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.hiit-slider::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 0%,
+    var(--color-primary) var(--val, 100%),
+    var(--border-color) var(--val, 100%),
+    var(--border-color) 100%
+  );
+  border-radius: 3px;
+  height: 6px;
+}
+
+/* Toggle row */
+.hiit-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hiit-toggle-row .hiit-settings-label {
+  margin: 0;
+  flex: 1;
+}
+
+/* Switch */
+.hiit-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.hiit-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hiit-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--border-color);
+  border-radius: 15px;
+  transition: background 0.2s;
+}
+
+.hiit-switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 24px;
+  width: 24px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.hiit-switch input:checked + .hiit-switch-slider {
+  background: var(--color-primary);
+}
+
+.hiit-switch input:checked + .hiit-switch-slider::before {
+  transform: translateX(22px);
+}
+
+/* Day picker */
+.hiit-day-picker {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.hiit-day-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hiit-day-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* Time row */
+.hiit-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-top: 1px solid var(--border-light);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.hiit-time-input {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  cursor: pointer;
+  text-align: right;
+}
+
+.hiit-time-input::-webkit-calendar-picker-indicator {
+  filter: opacity(0.5);
+}
+
+/* Links section */
+.hiit-settings-links {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.hiit-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 0;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  background: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+
+.hiit-link-row:last-child {
+  border-bottom: none;
+}
+
+.hiit-link-row:active {
+  opacity: 0.6;
+}
