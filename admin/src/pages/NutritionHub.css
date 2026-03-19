@@ -150,6 +150,30 @@
   margin-bottom: 14px;
 }
 
+.nhub-macro-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nhub-macro-cta:active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
 .nhub-ring-wrap {
   display: flex;
   flex-direction: column;
