@@ -7,6 +7,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTier } from '../contexts/TierContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 
@@ -38,6 +39,7 @@ function timeAgo(date) {
 
 export default function CoreBuddyBuddies() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
+  const { isPremium, FREE_BUDDY_LIMIT } = useTier();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -193,10 +195,6 @@ export default function CoreBuddyBuddies() {
       if (c.id === myId) return false;
       if (!c.name) return false;
       if (!c.coreBuddyAccess && c.clientType !== 'core_buddy') return false;
-      // Exclude free-tier users — buddies is a premium feature
-      const selfSignupSources = ['self_signup', 'google', 'apple'];
-      const isClientPremium = c.tier === 'premium' || !selfSignupSources.includes(c.signupSource);
-      if (!isClientPremium) return false;
       return c.name.toLowerCase().includes(q);
     }).map(c => ({
       ...c,
@@ -230,6 +228,9 @@ export default function CoreBuddyBuddies() {
   };
 
   // Actions
+  // Free users: cap at FREE_BUDDY_LIMIT total buddies (confirmed + pending outgoing)
+  const freeBuddyLimitReached = !isPremium && (buddies.length + outgoing.length) >= FREE_BUDDY_LIMIT;
+
   const sendRequest = async (toId) => {
     setActionLoading(toId);
     try {
@@ -941,6 +942,12 @@ export default function CoreBuddyBuddies() {
                   )}
                 </div>
 
+                {freeBuddyLimitReached && (
+                  <p className="bdy-free-limit-msg">
+                    You've reached your free buddy limit ({FREE_BUDDY_LIMIT}). <span className="bdy-upgrade-link" onClick={() => navigate('/upgrade')}>Upgrade for unlimited buddies</span>
+                  </p>
+                )}
+
                 {searchTerm.trim() && searchResults.length === 0 && (
                   <div className="bdy-empty bdy-empty-sm">
                     <p>No members found for "{searchTerm}"</p>
@@ -984,7 +991,7 @@ export default function CoreBuddyBuddies() {
                           <button
                             className="bdy-add-btn"
                             onClick={(e) => { e.stopPropagation(); sendRequest(c.id); }}
-                            disabled={actionLoading === c.id}
+                            disabled={actionLoading === c.id || freeBuddyLimitReached}
                           >
                             {actionLoading === c.id ? <div className="bdy-btn-spinner" /> : (
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>

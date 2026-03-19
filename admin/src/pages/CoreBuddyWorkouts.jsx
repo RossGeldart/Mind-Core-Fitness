@@ -3315,7 +3315,7 @@ export default function CoreBuddyWorkouts() {
         {/* Sticky GO button */}
         <div className="wk-go-sticky">
           {freeRandomiserLimitReached && (
-            <p className="wk-free-limit-msg">You've used your free workout this week. Upgrade for unlimited access.</p>
+            <p className="wk-free-limit-msg">You've used your {FREE_RANDOMISER_WEEKLY_LIMIT} free workouts this week. Upgrade for unlimited access.</p>
           )}
           <button className="wk-randomise-btn" onClick={generateWorkout} disabled={loadingExercises || freeRandomiserLimitReached}>
             {loadingExercises ? 'Loading exercises...' : freeRandomiserLimitReached ? 'Limit Reached' : 'Randomise Workout'}

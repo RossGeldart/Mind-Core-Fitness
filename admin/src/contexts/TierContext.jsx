@@ -14,15 +14,16 @@ export function useTier() {
 // Features that require premium access
 const PREMIUM_FEATURES = [
   'nutrition',
-  'buddies',
   'metrics',
   'charts',
+  'consistency',
 ];
 
-// Free users: only 5 & 10 min, 2 per week, 1 habit
+// Free users: only 5 & 10 min, 3 per week, 1 habit, 3 buddies
 const FREE_RANDOMISER_DURATIONS = [5, 10];
-const FREE_RANDOMISER_WEEKLY_LIMIT = 2;
+const FREE_RANDOMISER_WEEKLY_LIMIT = 3;
 const FREE_HABIT_LIMIT = 1;
+const FREE_BUDDY_LIMIT = 3;
 
 export function TierProvider({ children }) {
   const { clientData, currentUser, loading } = useAuth();
@@ -78,6 +79,7 @@ export function TierProvider({ children }) {
       FREE_RANDOMISER_DURATIONS,
       FREE_RANDOMISER_WEEKLY_LIMIT,
       FREE_HABIT_LIMIT,
+      FREE_BUDDY_LIMIT,
       refreshEntitlement: async () => {
         if (!isNative) return;
         const hasPremium = await checkEntitlement();
