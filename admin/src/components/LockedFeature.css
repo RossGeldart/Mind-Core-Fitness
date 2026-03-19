@@ -63,6 +63,29 @@
   color: var(--text-secondary);
 }
 
+.locked-back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 901;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+
+.locked-back-btn:active {
+  transform: scale(0.93);
+  opacity: 0.8;
+}
+
 .locked-upgrade-btn {
   display: inline-block;
   width: 100%;
