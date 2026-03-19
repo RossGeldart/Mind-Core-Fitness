@@ -1451,19 +1451,26 @@ export default function CoreBuddyDashboard() {
           })}
         </div>
 
-        {/* Habit Spider Chart — premium only */}
-        {isPremium && (
-          <div className="cb-spider-section">
+        {/* Habit Spider Chart — shown to all, locked overlay for free */}
+        <div className={`cb-spider-section${!isPremium ? ' cb-section-locked-wrap' : ''}`}>
+          {!isPremium && (
+            <div className="cb-section-locked-overlay">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Unlock charts with Premium</span>
+              <button className="cb-section-locked-btn" onClick={() => navigate('/upgrade')}>Upgrade</button>
+            </div>
+          )}
+          <div className={!isPremium ? 'cb-section-locked-content' : undefined}>
             <h3 className="cb-spider-title">Habit Consistency</h3>
             <p className="cb-spider-subtitle">30-day completion rate</p>
             <HabitSpiderChart period={30} compact interactive={false} />
-            <button className="cb-charts-cta" onClick={() => navigate('/client/core-buddy/charts')}>
+            <button className="cb-charts-cta" onClick={isPremium ? () => navigate('/client/core-buddy/charts') : undefined} disabled={!isPremium}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
               My Charts
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
           </div>
-        )}
+        </div>
 
         {/* Weekly target picker */}
         {showTargetPicker && (
@@ -1648,12 +1655,18 @@ export default function CoreBuddyDashboard() {
 
           {/* Cards moved to FAB menu: Habits, Leaderboard, Challenges, Badges, Buddies, Body Metrics */}
 
-          {/* My Journey — hidden for free tier */}
-          {isPremium && (
-          <div className="cb-journey-section">
+          {/* My Journey — shown to all, locked overlay for free */}
+          <div className={`cb-journey-section${!isPremium ? ' cb-section-locked-wrap' : ''}`}>
             <h3 className="cb-journey-title">My Journey</h3>
+            {!isPremium && (
+              <div className="cb-section-locked-overlay">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Share your journey with Premium</span>
+                <button className="cb-section-locked-btn" onClick={() => navigate('/upgrade')}>Upgrade</button>
+              </div>
+            )}
 
-            <>
+            {isPremium && <>
             {/* Compose */}
             <div className="journey-compose">
               <div className="journey-compose-avatar">
@@ -1908,9 +1921,26 @@ export default function CoreBuddyDashboard() {
                 ))}
               </div>
             )}
-            </>
+            </>}
+
+            {/* Free user teaser content behind blur */}
+            {!isPremium && (
+              <div className="cb-section-locked-content">
+                <div className="journey-compose" style={{ pointerEvents: 'none' }}>
+                  <div className="journey-compose-avatar"><span>?</span></div>
+                  <div className="journey-compose-body">
+                    <textarea placeholder="Share your progress..." disabled rows={1} />
+                  </div>
+                </div>
+                <div className="journey-empty">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                  <p>Start sharing your fitness journey!</p>
+                </div>
+              </div>
+            )}
           </div>
-          )}
 
           {/* Single upgrade CTA for free tier */}
           {!isPremium && (
