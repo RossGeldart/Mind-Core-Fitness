@@ -143,9 +143,9 @@ function MixpanelTracker() {
 function App() {
   return (
     <ThemeProvider>
+      <HiitProvider>
       <AuthProvider>
         <TierProvider>
-        <HiitProvider>
         <BrowserRouter basename={basename}>
           <RedirectHandler />
           <AndroidBackButton />
@@ -183,11 +183,12 @@ function App() {
             <Route path="/client/core-buddy/metrics" element={<LockedFeature feature="metrics"><CoreBuddyMetrics /></LockedFeature>} />
             <Route path="/client/core-buddy/activity" element={<LockedFeature feature="activity"><ActivityHistory /></LockedFeature>} />
             <Route path="/client/core-buddy/charts" element={<LockedFeature feature="charts"><CoreBuddyCharts /></LockedFeature>} />
-            <Route path="/client/core-buddy/hiit" element={<HiitTimer />} />
-            <Route path="/client/core-buddy/hiit/history" element={<HiitHistory />} />
-            <Route path="/client/core-buddy/hiit/settings" element={<HiitSettings />} />
-            <Route path="/client/core-buddy/hiit/statistics" element={<HiitStatistics />} />
             <Route path="/client/leaderboard" element={<Leaderboard />} />
+            {/* Core HIIT — standalone app section */}
+            <Route path="/hiit" element={<HiitTimer />} />
+            <Route path="/hiit/history" element={<HiitHistory />} />
+            <Route path="/hiit/settings" element={<HiitSettings />} />
+            <Route path="/hiit/statistics" element={<HiitStatistics />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />
@@ -197,9 +198,9 @@ function App() {
           </ErrorBoundary>
           </ScrollToTop>
         </BrowserRouter>
-        </HiitProvider>
         </TierProvider>
       </AuthProvider>
+      </HiitProvider>
     </ThemeProvider>
   );
 }

@@ -3,10 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './HiitNav.css';
 
 const NAV_ITEMS = [
-  { path: '/client/core-buddy/hiit', label: 'Timer', icon: 'timer' },
-  { path: '/client/core-buddy/hiit/history', label: 'History', icon: 'history' },
-  { path: '/client/core-buddy/hiit/settings', label: 'Settings', icon: 'settings' },
-  { path: '/client/core-buddy/hiit/statistics', label: 'Statistics', icon: 'statistics' },
+  { path: '/hiit', label: 'Timer', icon: 'timer' },
+  { path: '/hiit/history', label: 'History', icon: 'history' },
+  { path: '/hiit/settings', label: 'Settings', icon: 'settings' },
+  { path: '/hiit/statistics', label: 'Statistics', icon: 'statistics' },
 ];
 
 const icons = {
@@ -83,12 +83,7 @@ export default function HiitNav({ title }) {
           ))}
         </ul>
         <div className="hiit-sidebar-footer">
-          <button className="hiit-sidebar-item" onClick={() => navigate('/client/core-buddy')}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>Back to Core Buddy</span>
-          </button>
+          <div className="hiit-sidebar-brand">Core HIIT</div>
         </div>
       </nav>
     </>

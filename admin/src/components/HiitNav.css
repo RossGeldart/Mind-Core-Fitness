@@ -142,6 +142,14 @@
 
 .hiit-sidebar-footer {
   border-top: 1px solid var(--border-color);
-  padding: 8px 0;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.hiit-sidebar-brand {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
 }
