@@ -900,7 +900,7 @@ export default function NutritionHub() {
       <div className="nut-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => navigate('/client/core-buddy')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => targets ? setView('dashboard') : navigate('/client/core-buddy')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -1178,6 +1178,23 @@ export default function NutritionHub() {
           )}
         </div>
 
+        {/* ===== AI SCANNER CARD ===== */}
+        <div className="nhub-actions-section">
+          <div className="nut-hub-card nut-hub-card--ai"
+            onClick={() => navigate('/client/core-buddy/nutrition/ai-scanner')}
+            role="button" tabIndex={0}
+          >
+            <div className="nut-hub-card-icon nut-hub-card-icon--ai">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div className="nut-hub-card-body">
+              <h3>AI Food Scanner</h3>
+              <p>Upload photos of your meals for automatic macro analysis</p>
+            </div>
+            <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+
         {/* ===== WEEK CALENDAR STRIP ===== */}
         <div className="nut-week-strip">
             <div className="nut-week-header">
@@ -1389,22 +1406,6 @@ export default function NutritionHub() {
           </div>
         )}
 
-        {/* ===== AI SCANNER CARD ===== */}
-        <div className="nhub-actions-section">
-          <div className="nut-hub-card nut-hub-card--ai"
-            onClick={() => navigate('/client/core-buddy/nutrition/ai-scanner')}
-            role="button" tabIndex={0}
-          >
-            <div className="nut-hub-card-icon nut-hub-card-icon--ai">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-            <div className="nut-hub-card-body">
-              <h3>AI Food Scanner</h3>
-              <p>Upload photos of your meals for automatic macro analysis</p>
-            </div>
-            <svg className="nut-hub-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-          </div>
-        </div>
       </main>
 
       {/* ===== FAB (Floating Action Button) ===== */}
