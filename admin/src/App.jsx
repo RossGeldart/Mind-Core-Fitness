@@ -167,7 +167,7 @@ function App() {
             <Route path="/client/core-buddy/nutrition/manual" element={<Navigate to="/client/core-buddy/nutrition" replace />} />
             <Route path="/client/core-buddy/nutrition/ai-scanner" element={<LockedFeature feature="nutrition"><AIMealScanner /></LockedFeature>} />
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
-            <Route path="/client/core-buddy/consistency" element={<LockedFeature feature="consistency"><CoreBuddyConsistency /></LockedFeature>} />
+            <Route path="/client/core-buddy/consistency" element={<CoreBuddyConsistency />} />
             <Route path="/client/core-buddy/buddies" element={<CoreBuddyBuddies />} />
             <Route path="/client/core-buddy/builder" element={<CoreBuddyBuilder />} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />

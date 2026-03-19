@@ -65,8 +65,8 @@
 
 .locked-back-btn {
   position: fixed;
-  top: 16px;
-  left: 16px;
+  top: calc(16px + var(--safe-area-top));
+  left: calc(16px + env(safe-area-inset-left, 0px));
   z-index: 901;
   width: 40px;
   height: 40px;
