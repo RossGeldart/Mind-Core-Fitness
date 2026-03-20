@@ -55,6 +55,12 @@ export function HiitProvider({ children }) {
     } catch { return []; }
   });
 
+  const [hiitTheme, setHiitTheme] = useState(() => {
+    try {
+      return localStorage.getItem('hiit_theme') || 'red';
+    } catch { return 'red'; }
+  });
+
   // Active timer state
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -83,6 +89,10 @@ export function HiitProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('hiit_theme', hiitTheme);
+  }, [hiitTheme]);
 
   // Keep refs in sync with state so advancePhase always reads latest values
   useEffect(() => { currentExerciseRef.current = currentExercise; }, [currentExercise]);
@@ -562,6 +572,8 @@ export function HiitProvider({ children }) {
       history, loadPreviousWorkout, clearHistory,
       // Stats
       getStats,
+      // Theme
+      hiitTheme, setHiitTheme,
       // Computed
       totalWorkoutTime, getWorkForExercise, getRestForExercise,
     }}>

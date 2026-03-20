@@ -18,12 +18,12 @@ const formatTime = (secs) => {
 
 export default function HiitStatistics() {
   const [period, setPeriod] = useState('all');
-  const { getStats } = useHiit();
+  const { getStats, hiitTheme } = useHiit();
 
   const stats = getStats(period);
 
   return (
-    <div className="hiit-page">
+    <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="Statistics" />
       <div className="hiit-stats-content">
         {/* Period selector */}

@@ -10,19 +10,19 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--hiit-text);
   margin: 0 0 12px;
 }
 
 /* Segmented control (period pills) */
 .hiit-seg-control {
   display: flex;
-  background: rgba(255, 255, 255, 0.93);
+  background: var(--hiit-card);
   border-radius: 14px;
   overflow: hidden;
   margin-bottom: 8px;
   padding: 5px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-seg-btn {
@@ -33,7 +33,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #999;
+  color: var(--hiit-card-text-secondary);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.2s, color 0.2s;
@@ -59,9 +59,9 @@
   align-items: center;
   gap: 16px;
   padding: 18px 20px;
-  background: rgba(255, 255, 255, 0.93);
+  background: var(--hiit-card);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-stat-icon {
@@ -98,7 +98,7 @@
 .hiit-stat-label {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
-  color: #999;
+  color: var(--hiit-card-text-secondary);
   line-height: 1.2;
 }
 
@@ -106,6 +106,6 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
-  color: #333;
+  color: var(--hiit-card-text);
   line-height: 1;
 }
