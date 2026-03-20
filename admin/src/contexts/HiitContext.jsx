@@ -464,17 +464,7 @@ export function HiitProvider({ children }) {
             }
           }
         }
-        // Halfway chirp during rest phase
-        if (currentPhase === 'rest') {
-          const curRestDur = getRestForExercise(currentExerciseRef.current);
-          if (curRestDur >= 10) {
-            const half = Math.floor(curRestDur / 2);
-            if (next === half) {
-              playBeep('halfway');
-              vibrate([20, 40, 20]);
-            }
-          }
-        }
+        // No halfway chirp during rest or round breaks
         return next;
       });
       if (currentPhase !== 'countdown') {
@@ -488,7 +478,7 @@ export function HiitProvider({ children }) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate, timerConfig, getWorkForExercise, getRestForExercise]);
+  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate, timerConfig, getWorkForExercise]);
 
   // Handle page visibility for pause-on-leave
   useEffect(() => {
