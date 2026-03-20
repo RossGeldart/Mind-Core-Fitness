@@ -16,6 +16,8 @@ const DEFAULT_SETTINGS = {
   loudOverMusic: true,
   vibration: false,
   speakExerciseName: false,
+  screenWakeLock: true,
+  countdownLength: 3,
 };
 
 const DEFAULT_TIMER = {
@@ -177,6 +179,22 @@ export function HiitProvider({ children }) {
     }
   }, [settings.vibration]);
 
+  // Speak phase name (Voice mode or exercise announce)
+  const speak = useCallback((text) => {
+    if (isMuted || settings.audioGuide === 'muted') return;
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.1;
+      utterance.volume = settings.audioVolume / 100;
+      utterance.lang = 'en-GB';
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      // Speech not available
+    }
+  }, [isMuted, settings.audioGuide, settings.audioVolume]);
+
   // Advance to next phase
   const advancePhase = useCallback(() => {
     const { work, rest, exercises, rounds, roundReset } = timerConfig;
@@ -190,9 +208,12 @@ export function HiitProvider({ children }) {
         playBeep('go');
         vibrate([100, 50, 100]);
         if (settings.warmUpTime > 0) {
+          if (settings.audioGuide === 'en') speak('Warm up');
           setTimeLeft(settings.warmUpTime);
           return 'warmup';
         }
+        if (settings.audioGuide === 'en') speak('Work');
+        else if (settings.speakExerciseName) speak('Exercise 1');
         setTimeLeft(work);
         return 'work';
       }
@@ -200,6 +221,8 @@ export function HiitProvider({ children }) {
       if (prev === 'warmup') {
         playBeep('go');
         vibrate([100, 50, 100]);
+        if (settings.audioGuide === 'en') speak('Work');
+        else if (settings.speakExerciseName) speak('Exercise 1');
         setTimeLeft(work);
         setCurrentExercise(1);
         currentExerciseRef.current = 1;
@@ -213,6 +236,7 @@ export function HiitProvider({ children }) {
         if (exNow >= exercises && rdNow >= rounds) {
           playBeep('done');
           vibrate([200, 100, 200, 100, 200]);
+          if (settings.audioGuide === 'en') speak('Workout complete. Well done!');
           setTimeLeft(0);
           return 'done';
         }
@@ -221,6 +245,7 @@ export function HiitProvider({ children }) {
         if (exNow >= exercises) {
           playBeep('rest');
           vibrate([50]);
+          if (settings.audioGuide === 'en') speak('Round rest');
           setTimeLeft(roundReset);
           return 'roundReset';
         }
@@ -228,6 +253,7 @@ export function HiitProvider({ children }) {
         // Move to rest between exercises
         playBeep('rest');
         vibrate([50]);
+        if (settings.audioGuide === 'en') speak('Rest');
         setTimeLeft(rest);
         return 'rest';
       }
@@ -238,6 +264,8 @@ export function HiitProvider({ children }) {
         const nextEx = exNow + 1;
         setCurrentExercise(nextEx);
         currentExerciseRef.current = nextEx;
+        if (settings.audioGuide === 'en') speak('Work');
+        else if (settings.speakExerciseName) speak(`Exercise ${nextEx}`);
         setTimeLeft(work);
         return 'work';
       }
@@ -250,13 +278,15 @@ export function HiitProvider({ children }) {
         currentRoundRef.current = nextRd;
         setCurrentExercise(1);
         currentExerciseRef.current = 1;
+        if (settings.audioGuide === 'en') speak(`Round ${nextRd}. Work!`);
+        else if (settings.speakExerciseName) speak('Exercise 1');
         setTimeLeft(work);
         return 'work';
       }
 
       return prev;
     });
-  }, [timerConfig, settings.warmUpTime, playBeep, vibrate]);
+  }, [timerConfig, settings.warmUpTime, settings.audioGuide, settings.speakExerciseName, playBeep, vibrate, speak]);
 
   // Start timer
   const startTimer = useCallback(() => {
@@ -367,6 +397,31 @@ export function HiitProvider({ children }) {
     document.addEventListener('visibilitychange', handler);
     return () => document.removeEventListener('visibilitychange', handler);
   }, [settings.pauseOnLeave, isRunning, isPaused]);
+
+  // Screen wake lock — keep screen on during workout
+  useEffect(() => {
+    if (!isRunning || !settings.screenWakeLock) return;
+    let wakeLock = null;
+    const request = async () => {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch {
+        // Wake lock not available or denied
+      }
+    };
+    request();
+    // Re-acquire on visibility change (browsers release on tab switch)
+    const reacquire = () => {
+      if (document.visibilityState === 'visible' && isRunning) request();
+    };
+    document.addEventListener('visibilitychange', reacquire);
+    return () => {
+      document.removeEventListener('visibilitychange', reacquire);
+      if (wakeLock) wakeLock.release().catch(() => {});
+    };
+  }, [isRunning, settings.screenWakeLock]);
 
   // Load previous workout config
   const loadPreviousWorkout = useCallback(() => {
