@@ -14,9 +14,9 @@ const PHASE_LABELS = {
 const PHASE_COLORS = {
   countdown: 'var(--text-tertiary)',
   warmup: '#FF9800',
-  work: 'var(--color-primary)',
-  rest: '#4CAF50',
-  roundReset: '#2196F3',
+  work: '#4CAF50',
+  rest: '#3B82F6',
+  roundReset: '#3B82F6',
   done: '#4CAF50',
 };
 
