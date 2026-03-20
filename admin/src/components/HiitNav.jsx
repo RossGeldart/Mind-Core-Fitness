@@ -107,7 +107,7 @@ export default function HiitNav({ title }) {
                   className="hiit-theme-swatch"
                   style={{
                     background: t.color,
-                    border: t.key === 'light' ? '2px solid #ddd' : t.key === 'dark' ? '2px solid #444' : 'none',
+                    border: t.key === 'light' ? '2px solid #ddd' : t.key === 'dark' ? '2px solid #444' : '2px solid rgba(255,255,255,0.4)',
                   }}
                 />
                 <span className="hiit-theme-name">{t.label}</span>
