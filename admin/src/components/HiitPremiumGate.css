@@ -1,0 +1,82 @@
+/* HIIT Premium Gate */
+.hpg-overlay {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.hpg-card {
+  background: var(--hiit-card);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: var(--hiit-card-shadow);
+  border: var(--hiit-card-border);
+}
+
+.hpg-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--hiit-input-bg);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.hpg-title {
+  margin: 0 0 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--hiit-card-text);
+}
+
+.hpg-message {
+  margin: 0 0 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--hiit-card-text-secondary);
+  line-height: 1.5;
+}
+
+.hpg-cta {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 30px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(var(--color-primary-rgb), 0.35);
+  transition: transform 0.1s;
+  margin-bottom: 12px;
+}
+
+.hpg-cta:active {
+  transform: scale(0.97);
+}
+
+.hpg-back {
+  background: none;
+  border: none;
+  color: var(--hiit-card-text-secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.hpg-back:active {
+  opacity: 0.6;
+}

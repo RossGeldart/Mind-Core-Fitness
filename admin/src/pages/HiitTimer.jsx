@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useTier } from '../contexts/TierContext';
 import { useHiit, CATEGORIES } from '../contexts/HiitContext';
 import HiitNav from '../components/HiitNav';
 import HiitScrollPicker from '../components/HiitScrollPicker';
@@ -74,7 +77,12 @@ const ChevronRight = () => (
   </svg>
 );
 
+const PREMIUM_MODES = ['ascending', 'descending', 'pyramid'];
+
 export default function HiitTimer() {
+  const { currentUser } = useAuth();
+  const { isHiitPremium } = useTier();
+  const navigate = useNavigate();
   const { timerConfig, updateTimerConfig, isRunning, loadPreviousWorkout, history, totalWorkoutTime, startTimer, getWorkForExercise, getRestForExercise, hiitTheme, saveToLibrary } = useHiit();
   const [pickerOpen, setPickerOpen] = useState(null);
   const [showSave, setShowSave] = useState(false);
@@ -149,15 +157,29 @@ export default function HiitTimer() {
 
         {/* Mode pills */}
         <div className="hiit-mode-pills">
-          {MODES.map(m => (
-            <button
-              key={m.value}
-              className={`hiit-mode-pill${mode === m.value ? ' active' : ''}`}
-              onClick={() => updateTimerConfig('mode', m.value)}
-            >
-              {m.label}
-            </button>
-          ))}
+          {MODES.map(m => {
+            const locked = !isHiitPremium && PREMIUM_MODES.includes(m.value);
+            return (
+              <button
+                key={m.value}
+                className={`hiit-mode-pill${mode === m.value ? ' active' : ''}${locked ? ' locked' : ''}`}
+                onClick={() => {
+                  if (locked) {
+                    navigate(!currentUser ? '/signup' : '/hiit/premium');
+                  } else {
+                    updateTimerConfig('mode', m.value);
+                  }
+                }}
+              >
+                {locked && (
+                  <svg className="hiit-mode-lock" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                )}
+                {m.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Config rows */}
@@ -239,7 +261,21 @@ export default function HiitTimer() {
               Load Previous
             </button>
           )}
-          <button className={`hiit-action-btn${saved ? ' saved' : ''}`} onClick={() => setShowSave(true)}>
+          <button
+            className={`hiit-action-btn${saved ? ' saved' : ''}${!isHiitPremium ? ' locked' : ''}`}
+            onClick={() => {
+              if (!isHiitPremium) {
+                navigate(!currentUser ? '/signup' : '/hiit/premium');
+              } else {
+                setShowSave(true);
+              }
+            }}
+          >
+            {!isHiitPremium && (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            )}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
             </svg>

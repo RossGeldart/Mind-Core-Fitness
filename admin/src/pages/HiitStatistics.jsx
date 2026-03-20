@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useHiit } from '../contexts/HiitContext';
 import HiitNav from '../components/HiitNav';
+import HiitPremiumGate from '../components/HiitPremiumGate';
 import './HiitStatistics.css';
 
 const PERIODS = [
@@ -23,6 +24,7 @@ export default function HiitStatistics() {
   const stats = getStats(period);
 
   return (
+    <HiitPremiumGate feature="Statistics">
     <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="Stats" />
       <div className="hiit-stats-content">
@@ -80,5 +82,6 @@ export default function HiitStatistics() {
         </div>
       </div>
     </div>
+    </HiitPremiumGate>
   );
 }
