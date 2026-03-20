@@ -44,6 +44,15 @@
   box-shadow: var(--hiit-pill-active-shadow);
 }
 
+.hiit-mode-pill.locked {
+  opacity: 0.5;
+}
+
+.hiit-mode-lock {
+  margin-right: 3px;
+  vertical-align: -1px;
+}
+
 .hiit-mode-pill:active {
   transform: scale(0.96);
 }

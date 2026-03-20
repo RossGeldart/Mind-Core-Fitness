@@ -215,6 +215,20 @@
   margin: 0 0 16px;
 }
 
+/* Account required banner */
+.hp-account-banner {
+  width: 100%;
+  text-align: center;
+}
+
+.hp-account-banner p {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--hiit-text);
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
 /* Maybe later link */
 .hp-back-link {
   background: none;

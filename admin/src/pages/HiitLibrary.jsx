@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHiit, CATEGORIES } from '../contexts/HiitContext';
 import HiitNav from '../components/HiitNav';
+import HiitPremiumGate from '../components/HiitPremiumGate';
 import './HiitLibrary.css';
 
 const formatTime = (secs) => {
@@ -36,6 +37,7 @@ export default function HiitLibrary() {
   };
 
   return (
+    <HiitPremiumGate feature="Workout Library">
     <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="Library" />
       <div className="hlib-content">
@@ -162,5 +164,6 @@ export default function HiitLibrary() {
             )}
       </div>
     </div>
+    </HiitPremiumGate>
   );
 }

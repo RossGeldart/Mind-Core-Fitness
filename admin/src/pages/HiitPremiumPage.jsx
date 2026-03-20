@@ -1,19 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { useHiit } from '../contexts/HiitContext';
 import HiitNav from '../components/HiitNav';
 import './HiitPremiumPage.css';
 
 const FEATURES = [
+  { text: 'Ascending, Descending & Pyramid modes', icon: 'modes' },
   { text: 'Save unlimited workout presets', icon: 'library' },
-  { text: 'Organise by category', icon: 'folder' },
+  { text: 'Organise workouts by category', icon: 'folder' },
   { text: 'Quick-load saved workouts', icon: 'load' },
-  { text: 'Full workout history', icon: 'history' },
   { text: 'Detailed statistics & streaks', icon: 'stats' },
-  { text: 'Priority support', icon: 'support' },
+  { text: 'Full workout history', icon: 'history' },
 ];
 
 const ICONS = {
+  modes: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  ),
   library: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -37,11 +43,6 @@ const ICONS = {
   stats: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 20V10M12 20V4M6 20v-6"/>
-    </svg>
-  ),
-  support: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
   ),
 };
@@ -75,9 +76,12 @@ const PLANS = [
 ];
 
 export default function HiitPremiumPage() {
+  const { currentUser } = useAuth();
   const { hiitTheme } = useHiit();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState('annual');
+
+  const needsAccount = !currentUser;
 
   return (
     <div className="hiit-page" data-hiit-theme={hiitTheme}>
@@ -92,7 +96,7 @@ export default function HiitPremiumPage() {
             </svg>
           </div>
           <h2 className="hp-hero-title">Core HIIT Premium</h2>
-          <p className="hp-hero-sub">Unlock your full workout library</p>
+          <p className="hp-hero-sub">Unlock advanced modes, library & stats</p>
         </div>
 
         {/* Features */}
@@ -105,43 +109,60 @@ export default function HiitPremiumPage() {
           ))}
         </div>
 
-        {/* Pricing cards */}
-        <div className="hp-plans">
-          {PLANS.map(plan => (
-            <button
-              key={plan.key}
-              className={`hp-plan-card${selectedPlan === plan.key ? ' selected' : ''}${plan.featured ? ' featured' : ''}`}
-              onClick={() => setSelectedPlan(plan.key)}
-            >
-              {plan.badge && <span className="hp-plan-badge">{plan.badge}</span>}
-              <div className="hp-plan-info">
-                <span className="hp-plan-label">{plan.label}</span>
-                <span className="hp-plan-price">
-                  {plan.price}<span className="hp-plan-period">{plan.period}</span>
-                </span>
-                <span className="hp-plan-sub">{plan.sub}</span>
-              </div>
-              <div className={`hp-plan-radio${selectedPlan === plan.key ? ' active' : ''}`} />
+        {/* Account required banner */}
+        {needsAccount && (
+          <div className="hp-account-banner">
+            <p>Create a free account to unlock Premium</p>
+            <button className="hp-cta-btn" onClick={() => navigate('/signup')}>
+              Create Free Account
             </button>
-          ))}
-        </div>
+            <button className="hp-back-link" onClick={() => navigate('/hiit')}>
+              Maybe later
+            </button>
+          </div>
+        )}
 
-        {/* CTA */}
-        <button className="hp-cta-btn" onClick={() => {/* payment integration TBD */}}>
-          {selectedPlan === 'lifetime' ? 'Buy Lifetime Access' : 'Subscribe Now'}
-        </button>
+        {/* Pricing cards — only show if user has an account */}
+        {!needsAccount && (
+          <>
+            <div className="hp-plans">
+              {PLANS.map(plan => (
+                <button
+                  key={plan.key}
+                  className={`hp-plan-card${selectedPlan === plan.key ? ' selected' : ''}${plan.featured ? ' featured' : ''}`}
+                  onClick={() => setSelectedPlan(plan.key)}
+                >
+                  {plan.badge && <span className="hp-plan-badge">{plan.badge}</span>}
+                  <div className="hp-plan-info">
+                    <span className="hp-plan-label">{plan.label}</span>
+                    <span className="hp-plan-price">
+                      {plan.price}<span className="hp-plan-period">{plan.period}</span>
+                    </span>
+                    <span className="hp-plan-sub">{plan.sub}</span>
+                  </div>
+                  <div className={`hp-plan-radio${selectedPlan === plan.key ? ' active' : ''}`} />
+                </button>
+              ))}
+            </div>
 
-        <p className="hp-disclaimer">
-          {selectedPlan === 'lifetime'
-            ? 'One-time payment of £39.99. Lifetime access to all Core HIIT Premium features.'
-            : selectedPlan === 'annual'
-              ? 'Core HIIT Premium — £19.99/year (~£1.67/mo). Cancel anytime.'
-              : 'Core HIIT Premium — £2.99/month. Cancel anytime.'}
-        </p>
+            {/* CTA */}
+            <button className="hp-cta-btn" onClick={() => {/* payment integration TBD */}}>
+              {selectedPlan === 'lifetime' ? 'Buy Lifetime Access' : 'Subscribe Now'}
+            </button>
 
-        <button className="hp-back-link" onClick={() => navigate('/hiit')}>
-          Maybe later
-        </button>
+            <p className="hp-disclaimer">
+              {selectedPlan === 'lifetime'
+                ? 'One-time payment of £39.99. Lifetime access to all Core HIIT Premium features.'
+                : selectedPlan === 'annual'
+                  ? 'Core HIIT Premium — £19.99/year (~£1.67/mo). Cancel anytime.'
+                  : 'Core HIIT Premium — £2.99/month. Cancel anytime.'}
+            </p>
+
+            <button className="hp-back-link" onClick={() => navigate('/hiit')}>
+              Maybe later
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
