@@ -65,9 +65,9 @@ export function TierProvider({ children }) {
     // On native, also grant premium if RevenueCat says so
     const isPremium = tier === 'premium' || !!isAdminGranted || (isNative && rcPremium);
 
-    // Core HIIT Premium — separate from Core Buddy
+    // Core HIIT Premium — separate product, not bundled with Core Buddy
     const hiitTier = clientData?.hiitTier || 'free';
-    const isHiitPremium = hiitTier === 'premium' || !!isAdminGranted || (isNative && rcPremium);
+    const isHiitPremium = hiitTier === 'premium';
 
     function canAccess(feature) {
       if (isPremium) return true;
