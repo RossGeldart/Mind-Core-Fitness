@@ -91,7 +91,7 @@ export function TierProvider({ children }) {
         setRcPremium(hasPremium);
       },
     };
-  }, [clientData?.tier, clientData?.subscriptionStatus, clientData?.signupSource, loading, rcPremium]);
+  }, [clientData?.tier, clientData?.hiitTier, clientData?.subscriptionStatus, clientData?.signupSource, loading, rcPremium]);
 
   return (
     <TierContext.Provider value={value}>
