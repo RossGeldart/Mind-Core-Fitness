@@ -4,6 +4,15 @@ const HiitContext = createContext();
 
 const STORAGE_KEY = 'hiit_settings';
 const HISTORY_KEY = 'hiit_history';
+const LIBRARY_KEY = 'hiit_library';
+
+const CATEGORIES = [
+  { key: 'hiit', label: 'HIIT' },
+  { key: 'pyramid', label: 'Pyramids' },
+  { key: 'ascending', label: 'Ascending' },
+  { key: 'descending', label: 'Descending' },
+  { key: 'custom', label: 'Custom' },
+];
 
 const DEFAULT_SETTINGS = {
   warmUpTime: 0,
@@ -61,6 +70,13 @@ export function HiitProvider({ children }) {
     } catch { return 'red'; }
   });
 
+  const [library, setLibrary] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LIBRARY_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
   // Active timer state
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -93,6 +109,10 @@ export function HiitProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('hiit_theme', hiitTheme);
   }, [hiitTheme]);
+
+  useEffect(() => {
+    localStorage.setItem(LIBRARY_KEY, JSON.stringify(library));
+  }, [library]);
 
   // Keep refs in sync with state so advancePhase always reads latest values
   useEffect(() => { currentExerciseRef.current = currentExercise; }, [currentExercise]);
@@ -519,6 +539,27 @@ export function HiitProvider({ children }) {
     setHistory([]);
   }, []);
 
+  // Library — save/load/delete workout presets
+  const saveToLibrary = useCallback((name, category = 'custom') => {
+    const entry = {
+      id: Date.now().toString(),
+      name,
+      category,
+      config: { ...timerConfig },
+      createdAt: new Date().toISOString(),
+    };
+    setLibrary(prev => [entry, ...prev]);
+  }, [timerConfig]);
+
+  const loadFromLibrary = useCallback((id) => {
+    const entry = library.find(e => e.id === id);
+    if (entry) setTimerConfig(entry.config);
+  }, [library]);
+
+  const deleteFromLibrary = useCallback((id) => {
+    setLibrary(prev => prev.filter(e => e.id !== id));
+  }, []);
+
   // Statistics calculations
   const getStats = useCallback((period = 'all') => {
     let filtered = history;
@@ -574,6 +615,8 @@ export function HiitProvider({ children }) {
       getStats,
       // Theme
       hiitTheme, setHiitTheme,
+      // Library
+      library, saveToLibrary, loadFromLibrary, deleteFromLibrary,
       // Computed
       totalWorkoutTime, getWorkForExercise, getRestForExercise,
     }}>
@@ -581,6 +624,8 @@ export function HiitProvider({ children }) {
     </HiitContext.Provider>
   );
 }
+
+export { CATEGORIES };
 
 export function useHiit() {
   const ctx = useContext(HiitContext);

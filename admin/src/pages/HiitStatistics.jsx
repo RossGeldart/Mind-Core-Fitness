@@ -24,7 +24,7 @@ export default function HiitStatistics() {
 
   return (
     <div className="hiit-page" data-hiit-theme={hiitTheme}>
-      <HiitNav title="Statistics" />
+      <HiitNav title="Stats" />
       <div className="hiit-stats-content">
         {/* Period selector */}
         <h3 className="hiit-stats-heading">Select Time</h3>

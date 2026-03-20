@@ -33,7 +33,7 @@ import ActivityHistory from './pages/ActivityHistory';
 import AIMealScanner from './pages/AIMealScanner';
 import CoreBuddyCharts from './pages/CoreBuddyCharts';
 import HiitTimer from './pages/HiitTimer';
-import HiitHistory from './pages/HiitHistory';
+import HiitLibrary from './pages/HiitLibrary';
 import HiitSettings from './pages/HiitSettings';
 import HiitStatistics from './pages/HiitStatistics';
 import { HiitProvider } from './contexts/HiitContext';
@@ -186,9 +186,9 @@ function App() {
             <Route path="/client/leaderboard" element={<Leaderboard />} />
             {/* Core HIIT — standalone app section */}
             <Route path="/hiit" element={<HiitTimer />} />
-            <Route path="/hiit/history" element={<HiitHistory />} />
+            <Route path="/hiit/library" element={<HiitLibrary />} />
             <Route path="/hiit/settings" element={<HiitSettings />} />
-            <Route path="/hiit/statistics" element={<HiitStatistics />} />
+            <Route path="/hiit/stats" element={<HiitStatistics />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />
