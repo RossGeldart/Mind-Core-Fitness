@@ -52,7 +52,7 @@
   pointer-events: auto;
 }
 
-/* ====== Sidebar ====== */
+/* ====== Sidebar — Red background, white text ====== */
 .hiit-sidebar {
   position: fixed;
   top: 0;
@@ -60,7 +60,7 @@
   bottom: 0;
   width: 280px;
   max-width: 80vw;
-  background: var(--bg-card);
+  background: var(--color-primary);
   z-index: 100;
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,21 +78,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .hiit-sidebar-header h2 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--color-primary);
+  color: #fff;
   margin: 0;
 }
 
 .hiit-sidebar-close {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   padding: 8px;
   margin: -8px;
@@ -101,11 +101,18 @@
   align-items: center;
 }
 
+.hiit-sidebar-close:hover {
+  color: #fff;
+}
+
 .hiit-sidebar-list {
   list-style: none;
   margin: 0;
-  padding: 12px 0;
+  padding: 16px 14px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .hiit-sidebar-item {
@@ -113,35 +120,67 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 14px 20px;
-  background: none;
+  padding: 14px 16px;
+  background: #fff;
   border: none;
-  color: var(--text-secondary);
+  border-radius: 14px;
+  color: var(--color-primary);
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
   text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .hiit-sidebar-item:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.hiit-sidebar-item:active {
+  transform: scale(0.98);
 }
 
 .hiit-sidebar-item.active {
+  background: rgba(255, 255, 255, 0.95);
   color: var(--color-primary);
-  font-weight: 600;
-  background: var(--color-primary-light);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
 .hiit-sidebar-item svg {
   flex-shrink: 0;
+  color: var(--color-primary);
+  opacity: 0.7;
 }
 
+.hiit-sidebar-item.active svg {
+  opacity: 1;
+}
+
+/* ====== Logo in circular frame ====== */
+.hiit-sidebar-logo-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px 20px 8px;
+}
+
+.hiit-sidebar-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+/* ====== Footer ====== */
 .hiit-sidebar-footer {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px 20px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
@@ -150,6 +189,6 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5px;
 }

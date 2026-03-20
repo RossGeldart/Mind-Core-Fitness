@@ -82,6 +82,9 @@ export default function HiitNav({ title }) {
             </li>
           ))}
         </ul>
+        <div className="hiit-sidebar-logo-wrap">
+          <img src="/Logo.PNG" alt="Mind Core Fitness" className="hiit-sidebar-logo" />
+        </div>
         <div className="hiit-sidebar-footer">
           <div className="hiit-sidebar-brand">Core HIIT</div>
         </div>
