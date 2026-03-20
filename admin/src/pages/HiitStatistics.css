@@ -10,7 +10,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #fff;
   margin: 0 0 12px;
 }
 
@@ -18,15 +18,16 @@
 .hiit-seg-control {
   display: flex;
   background: rgba(255, 255, 255, 0.93);
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   margin-bottom: 8px;
+  padding: 5px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .hiit-seg-btn {
   flex: 1;
-  padding: 10px 8px;
+  padding: 12px 8px;
   border: none;
   background: none;
   font-family: 'Inter', sans-serif;
