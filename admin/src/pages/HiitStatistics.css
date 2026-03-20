@@ -14,6 +14,37 @@
   margin: 0 0 12px;
 }
 
+/* Segmented control (period pills) */
+.hiit-seg-control {
+  display: flex;
+  background: rgba(255, 255, 255, 0.93);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.hiit-seg-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #999;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hiit-seg-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
 /* Stats stack */
 .hiit-stats-stack {
   display: flex;
