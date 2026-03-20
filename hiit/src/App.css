@@ -15,21 +15,14 @@
   text-align: center;
 }
 
-.hiit-home-icon {
+.hiit-home-logo {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
+  border: 3px solid var(--color-primary);
   margin: 0 auto 16px;
-}
-
-.hiit-home-icon svg {
-  width: 36px;
-  height: 36px;
+  display: block;
 }
 
 .hiit-home-header h1 {
