@@ -25,7 +25,7 @@ const ExternalIcon = () => (
 );
 
 export default function HiitSettings() {
-  const { settings, updateSetting } = useHiit();
+  const { settings, updateSetting, hiitTheme } = useHiit();
 
   const toggleDay = (day) => {
     const days = settings.scheduledDays || [];
@@ -37,7 +37,7 @@ export default function HiitSettings() {
   };
 
   return (
-    <div className="hiit-page">
+    <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="Settings" />
       <div className="hs-content">
 

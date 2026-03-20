@@ -75,7 +75,7 @@ const ChevronRight = () => (
 );
 
 export default function HiitTimer() {
-  const { timerConfig, updateTimerConfig, isRunning, loadPreviousWorkout, history, totalWorkoutTime, startTimer, getWorkForExercise, getRestForExercise } = useHiit();
+  const { timerConfig, updateTimerConfig, isRunning, loadPreviousWorkout, history, totalWorkoutTime, startTimer, getWorkForExercise, getRestForExercise, hiitTheme } = useHiit();
   const [pickerOpen, setPickerOpen] = useState(null);
 
   if (isRunning) {
@@ -130,7 +130,7 @@ export default function HiitTimer() {
   ) : null;
 
   return (
-    <div className="hiit-page">
+    <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="Timer" />
       <div className="hiit-timer-content">
 

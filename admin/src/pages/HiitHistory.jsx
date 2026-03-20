@@ -30,10 +30,10 @@ const formatTime = (secs) => {
 };
 
 export default function HiitHistory() {
-  const { history, clearHistory } = useHiit();
+  const { history, clearHistory, hiitTheme } = useHiit();
 
   return (
-    <div className="hiit-page">
+    <div className="hiit-page" data-hiit-theme={hiitTheme}>
       <HiitNav title="History" />
       <div className="hiit-history-content">
         {history.length === 0 ? (

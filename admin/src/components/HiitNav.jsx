@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useHiit } from '../contexts/HiitContext';
+import '../styles/hiit-themes.css';
 import './HiitNav.css';
 
 const NAV_ITEMS = [
@@ -32,10 +34,17 @@ const icons = {
   ),
 };
 
+const THEMES = [
+  { key: 'red', label: 'Red', color: '#B8313D' },
+  { key: 'dark', label: 'Dark', color: '#1a1a1f' },
+  { key: 'light', label: 'Light', color: '#f5f5f5' },
+];
+
 export default function HiitNav({ title }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { hiitTheme, setHiitTheme } = useHiit();
 
   const handleNav = (path) => {
     navigate(path);
@@ -82,6 +91,31 @@ export default function HiitNav({ title }) {
             </li>
           ))}
         </ul>
+
+        {/* Theme picker */}
+        <div className="hiit-theme-picker">
+          <span className="hiit-theme-label">Theme</span>
+          <div className="hiit-theme-options">
+            {THEMES.map(t => (
+              <button
+                key={t.key}
+                className={`hiit-theme-btn${hiitTheme === t.key ? ' active' : ''}`}
+                onClick={() => setHiitTheme(t.key)}
+                aria-label={t.label}
+              >
+                <span
+                  className="hiit-theme-swatch"
+                  style={{
+                    background: t.color,
+                    border: t.key === 'light' ? '2px solid #ddd' : t.key === 'dark' ? '2px solid #444' : 'none',
+                  }}
+                />
+                <span className="hiit-theme-name">{t.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="hiit-sidebar-footer">
           <img src="/Logo.PNG" alt="Mind Core Fitness" className="hiit-sidebar-logo" />
           <div className="hiit-sidebar-brand">Core HIIT</div>

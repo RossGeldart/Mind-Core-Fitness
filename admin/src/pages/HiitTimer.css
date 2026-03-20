@@ -1,7 +1,7 @@
-/* ====== HIIT Timer Page — red background ====== */
+/* ====== HIIT Timer Page ====== */
 .hiit-page {
   min-height: 100vh;
-  background: var(--color-primary);
+  background: var(--hiit-bg);
 }
 
 .hiit-timer-content {
@@ -26,8 +26,8 @@
   padding: 10px 4px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--hiit-pill-bg);
+  color: var(--hiit-pill-text);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
@@ -38,10 +38,10 @@
 }
 
 .hiit-mode-pill.active {
-  background: #fff;
-  color: var(--color-primary);
+  background: var(--hiit-pill-active-bg);
+  color: var(--hiit-pill-active-text);
   font-weight: 700;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--hiit-pill-active-shadow);
 }
 
 .hiit-mode-pill:active {
@@ -52,10 +52,10 @@
 .hiit-config-list {
   width: 100%;
   max-width: 500px;
-  background: #fff;
+  background: var(--hiit-card);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-config-row {
@@ -66,7 +66,7 @@
   padding: 18px 20px;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--hiit-card-divider);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s;
@@ -76,12 +76,8 @@
   border-bottom: none;
 }
 
-.hiit-config-row {
-  border-bottom-color: #f0f0f0;
-}
-
 .hiit-config-row:active {
-  background: #fef2f2;
+  background: var(--hiit-config-active-bg);
 }
 
 .hiit-config-left {
@@ -97,14 +93,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: var(--hiit-input-bg);
 }
 
 .hiit-config-label {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--hiit-card-text);
 }
 
 .hiit-config-right {
@@ -147,7 +143,7 @@
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: #ddd;
+  background: var(--hiit-toggle-off);
   border-radius: 13px;
   transition: background 0.25s;
 }
@@ -178,7 +174,7 @@
   width: 100%;
   max-width: 500px;
   margin-top: 16px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--hiit-breakdown-bg);
   border-radius: 14px;
   padding: 14px 16px;
 }
@@ -187,7 +183,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hiit-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: block;
@@ -204,7 +200,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--hiit-breakdown-item-bg);
   border-radius: 8px;
   padding: 6px 10px;
 }
@@ -213,7 +209,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--hiit-breakdown-num);
   min-width: 14px;
 }
 
@@ -221,13 +217,13 @@
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--hiit-breakdown-work);
 }
 
 .hiit-breakdown-rest {
   font-family: 'Inter', sans-serif;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--hiit-breakdown-rest);
 }
 
 /* Total time */
@@ -242,7 +238,7 @@
 .hiit-total-label {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hiit-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -251,7 +247,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.2rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--hiit-text);
 }
 
 /* Start button */
@@ -260,7 +256,7 @@
   height: 100px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.93);
+  background: var(--hiit-card);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -289,17 +285,17 @@
   padding: 12px 24px;
   border: none;
   border-radius: 12px;
-  background: #fff;
-  color: #666;
+  background: var(--hiit-card);
+  color: var(--hiit-card-text-secondary);
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, color 0.15s;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-load-prev:active {
-  background: #fef2f2;
+  background: var(--hiit-config-active-bg);
   color: var(--color-primary);
 }
