@@ -26,6 +26,11 @@ const DEFAULT_TIMER = {
   exercises: 1,
   rounds: 8,
   roundReset: 30,
+  mode: 'hiit',       // hiit | ascending | descending | pyramid
+  workStep: 5,         // seconds added/removed per exercise
+  restStep: 0,         // seconds added/removed per exercise (0 = fixed rest)
+  scaleRest: false,    // whether rest also scales
+  peakWork: 60,        // pyramid peak work time
 };
 
 export function HiitProvider({ children }) {
@@ -90,14 +95,48 @@ export function HiitProvider({ children }) {
     setTimerConfig(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  // Get work duration for a specific exercise number (1-indexed)
+  const getWorkForExercise = useCallback((exerciseNum) => {
+    const { mode, work, workStep, peakWork, exercises } = timerConfig;
+    if (mode === 'hiit' || exercises <= 1) return work;
+    if (mode === 'ascending') return work + (exerciseNum - 1) * workStep;
+    if (mode === 'descending') return Math.max(workStep, work - (exerciseNum - 1) * workStep);
+    if (mode === 'pyramid') {
+      const mid = Math.ceil(exercises / 2);
+      const stepSize = mid > 1 ? (peakWork - work) / (mid - 1) : 0;
+      if (exerciseNum <= mid) return Math.round(work + (exerciseNum - 1) * stepSize);
+      return Math.round(work + (exercises - exerciseNum) * stepSize);
+    }
+    return work;
+  }, [timerConfig]);
+
+  // Get rest duration for a specific exercise number (1-indexed)
+  const getRestForExercise = useCallback((exerciseNum) => {
+    const { mode, rest, restStep, scaleRest, exercises } = timerConfig;
+    if (!scaleRest || mode === 'hiit' || exercises <= 1) return rest;
+    if (mode === 'ascending') return rest + (exerciseNum - 1) * restStep;
+    if (mode === 'descending') return Math.max(restStep || 5, rest - (exerciseNum - 1) * restStep);
+    if (mode === 'pyramid') {
+      const mid = Math.ceil(exercises / 2);
+      const stepSize = mid > 1 ? restStep : 0;
+      if (exerciseNum <= mid) return rest + (exerciseNum - 1) * stepSize;
+      return rest + (exercises - exerciseNum) * stepSize;
+    }
+    return rest;
+  }, [timerConfig]);
+
   // Calculate total workout time
   const totalWorkoutTime = useCallback(() => {
-    const { work, rest, exercises, rounds, roundReset } = timerConfig;
-    const exerciseTime = (work + rest) * exercises - rest; // no rest after last exercise
+    const { exercises, rounds, roundReset } = timerConfig;
+    let exerciseTime = 0;
+    for (let i = 1; i <= exercises; i++) {
+      exerciseTime += getWorkForExercise(i);
+      if (i < exercises) exerciseTime += getRestForExercise(i);
+    }
     const roundTime = exerciseTime + roundReset;
-    const total = roundTime * rounds - roundReset; // no reset after last round
+    const total = roundTime * rounds - roundReset;
     return Math.max(0, total + settings.warmUpTime);
-  }, [timerConfig, settings.warmUpTime]);
+  }, [timerConfig, settings.warmUpTime, getWorkForExercise, getRestForExercise]);
 
   // Play beep sound
   const playBeep = useCallback((type = 'tick') => {
@@ -197,7 +236,7 @@ export function HiitProvider({ children }) {
 
   // Advance to next phase
   const advancePhase = useCallback(() => {
-    const { work, rest, exercises, rounds, roundReset } = timerConfig;
+    const { exercises, rounds, roundReset } = timerConfig;
 
     setCurrentPhase(prev => {
       // Read latest values from refs to avoid stale closure
@@ -214,7 +253,7 @@ export function HiitProvider({ children }) {
         }
         if (settings.audioGuide === 'en') speak('Work');
         else if (settings.speakExerciseName) speak('Exercise 1');
-        setTimeLeft(work);
+        setTimeLeft(getWorkForExercise(1));
         return 'work';
       }
 
@@ -223,7 +262,7 @@ export function HiitProvider({ children }) {
         vibrate([100, 50, 100]);
         if (settings.audioGuide === 'en') speak('Work');
         else if (settings.speakExerciseName) speak('Exercise 1');
-        setTimeLeft(work);
+        setTimeLeft(getWorkForExercise(1));
         setCurrentExercise(1);
         currentExerciseRef.current = 1;
         setCurrentRound(1);
@@ -254,7 +293,7 @@ export function HiitProvider({ children }) {
         playBeep('rest');
         vibrate([50]);
         if (settings.audioGuide === 'en') speak('Rest');
-        setTimeLeft(rest);
+        setTimeLeft(getRestForExercise(exNow));
         return 'rest';
       }
 
@@ -266,7 +305,7 @@ export function HiitProvider({ children }) {
         currentExerciseRef.current = nextEx;
         if (settings.audioGuide === 'en') speak('Work');
         else if (settings.speakExerciseName) speak(`Exercise ${nextEx}`);
-        setTimeLeft(work);
+        setTimeLeft(getWorkForExercise(nextEx));
         return 'work';
       }
 
@@ -280,13 +319,13 @@ export function HiitProvider({ children }) {
         currentExerciseRef.current = 1;
         if (settings.audioGuide === 'en') speak(`Round ${nextRd}. Work!`);
         else if (settings.speakExerciseName) speak('Exercise 1');
-        setTimeLeft(work);
+        setTimeLeft(getWorkForExercise(1));
         return 'work';
       }
 
       return prev;
     });
-  }, [timerConfig, settings.warmUpTime, settings.audioGuide, settings.speakExerciseName, playBeep, vibrate, speak]);
+  }, [timerConfig, settings.warmUpTime, settings.audioGuide, settings.speakExerciseName, playBeep, vibrate, speak, getWorkForExercise, getRestForExercise]);
 
   // Start timer
   const startTimer = useCallback(() => {
@@ -364,8 +403,9 @@ export function HiitProvider({ children }) {
           else if (next === 1) { playBeep('countdown1'); vibrate([30]); }
         }
         // Halfway chirp during work phase
-        if (currentPhase === 'work' && timerConfig.work >= 10) {
-          const half = Math.floor(timerConfig.work / 2);
+        const curWorkDur = getWorkForExercise(currentExerciseRef.current);
+        if (currentPhase === 'work' && curWorkDur >= 10) {
+          const half = Math.floor(curWorkDur / 2);
           if (next === half) {
             playBeep('halfway');
             vibrate([20, 40, 20]);
@@ -384,7 +424,7 @@ export function HiitProvider({ children }) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate, timerConfig]);
+  }, [isRunning, isPaused, currentPhase, advancePhase, playBeep, vibrate, timerConfig, getWorkForExercise]);
 
   // Handle page visibility for pause-on-leave
   useEffect(() => {
@@ -489,7 +529,7 @@ export function HiitProvider({ children }) {
       // Stats
       getStats,
       // Computed
-      totalWorkoutTime,
+      totalWorkoutTime, getWorkForExercise, getRestForExercise,
     }}>
       {children}
     </HiitContext.Provider>
