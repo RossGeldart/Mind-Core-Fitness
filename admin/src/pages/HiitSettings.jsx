@@ -276,7 +276,7 @@ export default function HiitSettings() {
             Support
           </h2>
 
-          <button type="button" className="hs-link-row" onClick={() => openExternal('https://www.mindcorefitness.com/faq.html')}>
+          <button type="button" className="hs-link-row" onClick={() => openExternal('https://www.mindcorefitness.com/faq.html#core-hiit')}>
             <div className="hs-row-text">
               <span className="hs-row-label">Help & FAQs</span>
             </div>
