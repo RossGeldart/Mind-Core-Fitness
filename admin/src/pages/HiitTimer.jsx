@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHiit } from '../contexts/HiitContext';
+import { useHiit, CATEGORIES } from '../contexts/HiitContext';
 import HiitNav from '../components/HiitNav';
 import HiitScrollPicker from '../components/HiitScrollPicker';
 import HiitActiveTimer from '../components/HiitActiveTimer';
@@ -75,8 +75,21 @@ const ChevronRight = () => (
 );
 
 export default function HiitTimer() {
-  const { timerConfig, updateTimerConfig, isRunning, loadPreviousWorkout, history, totalWorkoutTime, startTimer, getWorkForExercise, getRestForExercise, hiitTheme } = useHiit();
+  const { timerConfig, updateTimerConfig, isRunning, loadPreviousWorkout, history, totalWorkoutTime, startTimer, getWorkForExercise, getRestForExercise, hiitTheme, saveToLibrary } = useHiit();
   const [pickerOpen, setPickerOpen] = useState(null);
+  const [showSave, setShowSave] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const [saveCategory, setSaveCategory] = useState('custom');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    if (!saveName.trim()) return;
+    saveToLibrary(saveName.trim(), saveCategory);
+    setSaveName('');
+    setShowSave(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   if (isRunning) {
     return <HiitActiveTimer />;
@@ -211,16 +224,66 @@ export default function HiitTimer() {
 
         {/* Start button */}
         <button className="hiit-start-btn" onClick={startTimer}>
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none">
             <polygon points="6 3 20 12 6 21 6 3"/>
           </svg>
         </button>
 
-        {/* Load previous */}
-        {history.length > 0 && (
-          <button className="hiit-load-prev" onClick={loadPreviousWorkout}>
-            Load Previous Workout
+        {/* Save / Load row */}
+        <div className="hiit-bottom-actions">
+          {history.length > 0 && (
+            <button className="hiit-action-btn" onClick={loadPreviousWorkout}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+              </svg>
+              Load Previous
+            </button>
+          )}
+          <button className={`hiit-action-btn${saved ? ' saved' : ''}`} onClick={() => setShowSave(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            {saved ? 'Saved!' : 'Save Workout'}
           </button>
+        </div>
+
+        {/* Save form overlay */}
+        {showSave && (
+          <div className="hiit-save-overlay" onClick={() => setShowSave(false)}>
+            <div className="hiit-save-sheet" onClick={(e) => e.stopPropagation()}>
+              <h3 className="hiit-save-title">Save Workout</h3>
+              <input
+                type="text"
+                className="hiit-save-input"
+                placeholder="Workout name..."
+                value={saveName}
+                onChange={(e) => setSaveName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                autoFocus
+              />
+              <div className="hiit-save-cats">
+                {CATEGORIES.map(c => (
+                  <button
+                    key={c.key}
+                    className={`hiit-save-cat${saveCategory === c.key ? ' active' : ''}`}
+                    onClick={() => setSaveCategory(c.key)}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+              <div className="hiit-save-preview">
+                <span>{formatTime(timerConfig.work)} work</span>
+                <span>{formatTime(timerConfig.rest)} rest</span>
+                <span>{timerConfig.exercises} ex.</span>
+                <span>{timerConfig.rounds} rds</span>
+              </div>
+              <div className="hiit-save-btns">
+                <button className="hiit-save-cancel" onClick={() => { setShowSave(false); setSaveName(''); }}>Cancel</button>
+                <button className="hiit-save-confirm" onClick={handleSave} disabled={!saveName.trim()}>Save</button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
