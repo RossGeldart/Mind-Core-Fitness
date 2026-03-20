@@ -161,34 +161,42 @@
   opacity: 1;
 }
 
-/* ====== Logo in circular frame ====== */
-.hiit-sidebar-logo-wrap {
+/* ====== Footer — logo + branding centred ====== */
+.hiit-sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 24px 20px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   display: flex;
-  justify-content: center;
-  padding: 24px 20px 8px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .hiit-sidebar-logo {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   background: #fff;
-}
-
-/* ====== Footer ====== */
-.hiit-sidebar-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 16px 20px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  margin-bottom: 6px;
 }
 
 .hiit-sidebar-brand {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
   letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.hiit-sidebar-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.3px;
+  text-align: center;
 }

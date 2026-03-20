@@ -1,7 +1,7 @@
-/* ====== HIIT Timer Page ====== */
+/* ====== HIIT Timer Page — red background ====== */
 .hiit-page {
   min-height: 100vh;
-  background: var(--bg-body);
+  background: var(--color-primary);
 }
 
 .hiit-timer-content {
@@ -16,10 +16,10 @@
 .hiit-config-list {
   width: 100%;
   max-width: 500px;
-  background: var(--bg-card);
+  background: #fff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .hiit-config-row {
@@ -40,8 +40,12 @@
   border-bottom: none;
 }
 
+.hiit-config-row {
+  border-bottom-color: #f0f0f0;
+}
+
 .hiit-config-row:active {
-  background: var(--color-primary-light);
+  background: #fef2f2;
 }
 
 .hiit-config-left {
@@ -57,14 +61,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-body);
+  background: #f5f5f5;
 }
 
 .hiit-config-label {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #333;
 }
 
 .hiit-config-right {
@@ -92,7 +96,7 @@
 .hiit-total-label {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -101,7 +105,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.2rem;
   font-weight: 900;
-  color: var(--text-primary);
+  color: #fff;
 }
 
 /* Start button — logo with play overlay */
@@ -166,18 +170,19 @@
 .hiit-load-prev {
   margin-top: 24px;
   padding: 12px 24px;
-  border: 1px solid var(--border-color);
+  border: none;
   border-radius: 12px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  background: #fff;
+  color: #666;
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, color 0.15s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .hiit-load-prev:active {
-  background: var(--color-primary-light);
+  background: #fef2f2;
   color: var(--color-primary);
 }
