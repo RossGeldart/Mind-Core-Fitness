@@ -1,7 +1,7 @@
 /* ====== HIIT Active Timer ====== */
 .hiit-active {
   min-height: 100vh;
-  background: var(--bg-body);
+  background: var(--hiit-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,16 +35,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--hiit-card);
+  border: var(--hiit-card-border);
   border-radius: 14px;
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-tracker-label {
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--hiit-card-text);
 }
 
 .hiit-tracker-dots {
@@ -57,23 +58,18 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--border-color);
+  background: var(--hiit-card-divider);
   transition: background 0.2s, transform 0.2s;
 }
 
 .hiit-tracker-dot.active {
-  background: #ffffff;
+  background: var(--hiit-card-text);
   transform: scale(1.2);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 }
 
 .hiit-tracker-dot.completed {
   background: var(--phase-color);
-}
-
-[data-theme="light"] .hiit-tracker-dot.active {
-  background: var(--text-primary);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 /* ====== Ring — large, dominant ====== */
@@ -100,12 +96,8 @@
 }
 
 .hiit-tick.elapsed {
-  stroke: #ffffff;
+  stroke: var(--hiit-text-secondary);
   transition: stroke 0.3s;
-}
-
-[data-theme="light"] .hiit-tick.elapsed {
-  stroke: #2d2d2d;
 }
 
 /* Center positioning */
@@ -243,7 +235,7 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--hiit-text);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -251,7 +243,7 @@
 .hiit-active-upnext {
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
-  color: var(--text-tertiary);
+  color: var(--hiit-text-secondary);
 }
 
 .hiit-active-upnext strong {
@@ -271,15 +263,16 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  border: var(--hiit-card-border);
+  background: var(--hiit-card);
+  color: var(--hiit-card-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.15s, transform 0.15s;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--hiit-card-shadow);
 }
 
 .hiit-ctrl-btn:active {
@@ -290,7 +283,7 @@
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #fff;
-  box-shadow: var(--shadow-primary);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4);
 }
 
 .hiit-ctrl-btn.large {

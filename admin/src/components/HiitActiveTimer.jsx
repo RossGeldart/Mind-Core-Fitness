@@ -37,7 +37,7 @@ export default function HiitActiveTimer() {
   const {
     timerConfig, currentPhase, timeLeft, currentExercise, currentRound,
     totalElapsed, isPaused, isMuted, setIsMuted,
-    togglePause, stopTimer, skipPhase,
+    togglePause, stopTimer, skipPhase, hiitTheme,
   } = useHiit();
 
   const { work, rest, exercises, rounds } = timerConfig;
@@ -75,7 +75,7 @@ export default function HiitActiveTimer() {
   const showTracker = currentPhase !== 'countdown' && currentPhase !== 'done';
 
   return (
-    <div className="hiit-active" style={{ '--phase-color': PHASE_COLORS[currentPhase] || 'var(--color-primary)' }}>
+    <div className="hiit-active" data-hiit-theme={hiitTheme} style={{ '--phase-color': PHASE_COLORS[currentPhase] || 'var(--color-primary)' }}>
       {/* Phase label at top */}
       <div className="hiit-active-phase">
         {PHASE_LABELS[currentPhase] || ''}
