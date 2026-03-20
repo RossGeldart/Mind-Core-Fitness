@@ -36,6 +36,7 @@ import HiitTimer from './pages/HiitTimer';
 import HiitLibrary from './pages/HiitLibrary';
 import HiitSettings from './pages/HiitSettings';
 import HiitStatistics from './pages/HiitStatistics';
+import HiitPremiumPage from './pages/HiitPremiumPage';
 import { HiitProvider } from './contexts/HiitContext';
 
 // Lazy-load pages outside the CoreBuddy nav group
@@ -189,6 +190,7 @@ function App() {
             <Route path="/hiit/library" element={<HiitLibrary />} />
             <Route path="/hiit/settings" element={<HiitSettings />} />
             <Route path="/hiit/stats" element={<HiitStatistics />} />
+            <Route path="/hiit/premium" element={<HiitPremiumPage />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/upgrade" element={<UpgradePage />} />

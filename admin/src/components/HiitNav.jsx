@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { path: '/hiit/library', label: 'Library', icon: 'library' },
   { path: '/hiit/settings', label: 'Settings', icon: 'settings' },
   { path: '/hiit/stats', label: 'Stats', icon: 'statistics' },
+  { path: '/hiit/premium', label: 'Premium', icon: 'premium' },
 ];
 
 const icons = {
@@ -30,6 +31,11 @@ const icons = {
   statistics: (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 20V10M12 20V4M6 20v-6"/>
+    </svg>
+  ),
+  premium: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
     </svg>
   ),
 };
