@@ -52,7 +52,7 @@
   pointer-events: auto;
 }
 
-/* ====== Sidebar ====== */
+/* ====== Sidebar — Red background, white text ====== */
 .hiit-sidebar {
   position: fixed;
   top: 0;
@@ -60,7 +60,7 @@
   bottom: 0;
   width: 280px;
   max-width: 80vw;
-  background: var(--bg-card);
+  background: var(--color-primary);
   z-index: 100;
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,27 +78,31 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .hiit-sidebar-header h2 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--color-primary);
+  color: #fff;
   margin: 0;
 }
 
 .hiit-sidebar-close {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   padding: 8px;
   margin: -8px;
   -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
+}
+
+.hiit-sidebar-close:hover {
+  color: #fff;
 }
 
 .hiit-sidebar-list {
@@ -116,7 +120,7 @@
   padding: 14px 20px;
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8);
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
@@ -126,22 +130,40 @@
 }
 
 .hiit-sidebar-item:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .hiit-sidebar-item.active {
-  color: var(--color-primary);
+  color: #fff;
   font-weight: 600;
-  background: var(--color-primary-light);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .hiit-sidebar-item svg {
   flex-shrink: 0;
 }
 
+/* ====== Logo in circular frame ====== */
+.hiit-sidebar-logo-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px 20px 8px;
+}
+
+.hiit-sidebar-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+/* ====== Footer ====== */
 .hiit-sidebar-footer {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px 20px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
@@ -150,6 +172,6 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5px;
 }
