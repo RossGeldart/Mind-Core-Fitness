@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHiit, CATEGORIES } from '../contexts/HiitContext';
-import { useTier } from '../contexts/TierContext';
 import HiitNav from '../components/HiitNav';
 import './HiitLibrary.css';
 
@@ -14,7 +13,6 @@ const formatTime = (secs) => {
 
 export default function HiitLibrary() {
   const { library, saveToLibrary, loadFromLibrary, deleteFromLibrary, timerConfig, hiitTheme } = useHiit();
-  const { isPremium } = useTier();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('all');
   const [showSave, setShowSave] = useState(false);
@@ -42,23 +40,8 @@ export default function HiitLibrary() {
       <HiitNav title="Library" />
       <div className="hlib-content">
 
-        {!isPremium ? (
-          <div className="hlib-locked">
-            <div className="hlib-locked-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-            <h3>Premium Feature</h3>
-            <p>Save your favourite workout configurations and access them anytime.</p>
-            <button className="hlib-upgrade-btn" onClick={() => navigate('/upgrade')}>
-              Upgrade to Premium
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Save current workout */}
-            {!showSave ? (
+        {/* Save current workout */}
+        {!showSave ? (
               <button className="hlib-save-btn" onClick={() => setShowSave(true)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -177,8 +160,6 @@ export default function HiitLibrary() {
                 ))}
               </div>
             )}
-          </>
-        )}
       </div>
     </div>
   );
