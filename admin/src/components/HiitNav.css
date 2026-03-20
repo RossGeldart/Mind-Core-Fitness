@@ -8,7 +8,7 @@
   padding: 0 16px;
   min-height: calc(60px + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: var(--color-primary);
   color: #fff;
 }
 
