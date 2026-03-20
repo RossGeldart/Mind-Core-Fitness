@@ -41,35 +41,41 @@ export default function HiitStatistics() {
         </div>
 
         {/* Stats cards */}
-        <div className="hiit-stats-grid">
+        <div className="hiit-stats-stack">
           <div className="hiit-stat-card">
             <div className="hiit-stat-icon green">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
             </div>
-            <span className="hiit-stat-value green">{stats.streak}</span>
-            <span className="hiit-stat-label">Days<br/>in a row</span>
+            <div className="hiit-stat-text">
+              <span className="hiit-stat-label">Days in a row</span>
+              <span className="hiit-stat-value">{stats.streak}</span>
+            </div>
           </div>
 
           <div className="hiit-stat-card">
             <div className="hiit-stat-icon red">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
             </div>
-            <span className="hiit-stat-value red">{stats.completed}</span>
-            <span className="hiit-stat-label">Workouts<br/>completed</span>
+            <div className="hiit-stat-text">
+              <span className="hiit-stat-label">Workouts completed</span>
+              <span className="hiit-stat-value">{stats.completed}</span>
+            </div>
           </div>
 
           <div className="hiit-stat-card">
             <div className="hiit-stat-icon blue">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/><path d="M12 2v2"/>
               </svg>
             </div>
-            <span className="hiit-stat-value blue">{formatTime(stats.totalTime)}</span>
-            <span className="hiit-stat-label">Workouts<br/>time</span>
+            <div className="hiit-stat-text">
+              <span className="hiit-stat-label">Workouts time</span>
+              <span className="hiit-stat-value">{formatTime(stats.totalTime)}</span>
+            </div>
           </div>
         </div>
       </div>
