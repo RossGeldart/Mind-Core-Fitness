@@ -520,16 +520,15 @@ export default function CoreBuddyWorkouts() {
         const docs = snap.docs.map(d => d.data());
         const actDocs = actSnap.docs.map(d => d.data());
 
-        const randomiserDocs = docs.filter(d => d.type !== 'programme');
-        setTotalCount(randomiserDocs.length);
+        setTotalCount(docs.length);
 
-        // Total minutes (randomiser only)
-        const mins = randomiserDocs.reduce((sum, d) => sum + (d.duration || 0), 0);
+        // Total minutes
+        const mins = docs.reduce((sum, d) => sum + (d.duration || 0), 0);
         setTotalMinutes(mins);
 
-        // Level breakdown (randomiser only)
+        // Level breakdown
         const levels = { beginner: 0, intermediate: 0, advanced: 0 };
-        randomiserDocs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
+        docs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
         setLevelBreakdown(levels);
 
         // Weekly count (Monday-based)
@@ -551,7 +550,7 @@ export default function CoreBuddyWorkouts() {
           const ms = getMs(d.completedAt);
           return ms >= mondayMs;
         });
-        setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
+        setWeeklyCount(weekly.length);
 
         // Combined weekly count (all workout types + activities)
         const weeklyActs = actDocs.filter(d => getMs(d.completedAt) >= mondayMs);
@@ -583,7 +582,7 @@ export default function CoreBuddyWorkouts() {
 
         // All recent workouts (last 4, any type including activities)
         const allWithType = [
-          ...docs.map(d => ({ ...d, _kind: d.type === 'custom_sets' ? 'byo' : d.type === 'programme' ? 'programme' : 'randomiser' })),
+          ...docs.map(d => ({ ...d, _kind: d.type === 'custom_sets' ? 'byo' : 'randomiser' })),
           ...actDocs.map(d => ({ ...d, _kind: 'activity' })),
         ].sort((a, b) => getMs(b.completedAt) - getMs(a.completedAt)).slice(0, 4);
         setAllRecentWorkouts(allWithType);
@@ -702,7 +701,7 @@ export default function CoreBuddyWorkouts() {
           })
           .slice(0, 20);
         // Recent randomiser-only for hub display
-        const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
+        const randomiser = all.filter(d => d.type !== 'muscle_group');
         setRecentWorkouts(randomiser.slice(0, 3));
 
         // Compute hub stats
@@ -2669,7 +2668,6 @@ export default function CoreBuddyWorkouts() {
     const getWorkoutLabel = (w) => {
       if (w._kind === 'byo') return 'BYO Sets';
       if (w._kind === 'activity') return w.activityType || 'Activity';
-      if (w._kind === 'programme') return 'Programme';
       return w.focus ? `${w.focus.charAt(0).toUpperCase() + w.focus.slice(1)} HIIT` : 'Randomiser';
     };
 

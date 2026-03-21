@@ -890,7 +890,7 @@ export default function PersonalBests() {
           <h2>Personal Bests</h2>
           <p>{isBlockClient
             ? 'Track your strength benchmarks and body measurements each month.'
-            : 'Your all-time best lifts from programme workouts.'
+            : 'Your all-time best lifts across your workouts.'
           }</p>
         </div>
 

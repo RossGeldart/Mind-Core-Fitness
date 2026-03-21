@@ -1,6 +1,6 @@
 /**
  * Complete exercise library for AI Buddy.
- * Only exercises with a storagePath (video demo) should be used in generated programmes.
+ * Only exercises with a storagePath (video demo) should be used in generated workouts.
  */
 
 const BUDDY_EXERCISES = [
@@ -231,7 +231,7 @@ const BUDDY_EXERCISES = [
   { name: 'Dumbbell Plank Pull Through', type: 'weighted', equipment: 'dumbbells', group: 'core', muscle: 'planks_holds', storagePath: null },
 ];
 
-/** Exercises that have video demos — use these for AI-generated programmes */
+/** Exercises that have video demos — use these for AI-generated workouts */
 export const PROGRAMMABLE_EXERCISES = BUDDY_EXERCISES.filter(e => e.storagePath !== null);
 
 /** All exercises including browse-only */

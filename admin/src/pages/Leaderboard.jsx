@@ -130,7 +130,7 @@ const TABS = [
 const MEDAL_COLORS = ['#FFD700', '#A8B4C0', '#CD7F32'];
 
 const TAB_DESCRIPTIONS = {
-  workouts: 'Total completed workouts across randomiser, muscle group and programme sessions',
+  workouts: 'Total completed workouts across randomiser and muscle group sessions',
   minutes: 'Active minutes from randomiser workouts only',
   volume: 'Total weight lifted from BYO Reps & Sets workouts (weight \u00d7 reps)',
   streak: 'Consecutive weeks with at least one workout completed (Mon\u2013Sun)',
@@ -470,7 +470,7 @@ export default function Leaderboard() {
                   <div className="lb-optin-category-text">
                     <span className="lb-optin-category-name">{tab.label}</span>
                     <span className="lb-optin-category-desc">
-                      {tab.key === 'workouts' && 'Randomiser, muscle group & programme workouts'}
+                      {tab.key === 'workouts' && 'Randomiser & muscle group workouts'}
                       {tab.key === 'minutes' && 'Total minutes from randomiser workouts'}
                       {tab.key === 'volume' && 'Total weight lifted from BYO Reps & Sets'}
                       {tab.key === 'streak' && 'Consecutive weeks with at least one workout'}
