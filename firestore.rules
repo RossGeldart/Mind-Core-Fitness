@@ -243,6 +243,12 @@ service cloud.firestore {
       allow read, delete: if isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
+    // Weekly Summaries - cached weekly performance summaries (doc ID = {clientId}_{mondayDate})
+    match /weeklySummaries/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
     // ── CHALLENGES ──
     // User Challenges - one doc per challenge attempt
     // Doc ID = auto-generated
