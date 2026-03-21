@@ -1,0 +1,322 @@
+/* ====== HIIT Active Timer ====== */
+.hiit-active {
+  min-height: 100vh;
+  background: var(--hiit-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 20px;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  gap: 16px;
+}
+
+/* Phase label — top of page */
+.hiit-active-phase {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--phase-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ====== Tracker cards (Exercise / Round) at top ====== */
+.hiit-tracker-cards {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hiit-tracker-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--hiit-card);
+  border: var(--hiit-card-border);
+  border-radius: 14px;
+  box-shadow: var(--hiit-card-shadow);
+}
+
+.hiit-tracker-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--hiit-card-text);
+}
+
+.hiit-tracker-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hiit-tracker-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--hiit-card-divider);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.hiit-tracker-dot.active {
+  background: var(--hiit-card-text);
+  transform: scale(1.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+.hiit-tracker-dot.completed {
+  background: var(--phase-color);
+}
+
+/* ====== Ring — large, dominant ====== */
+.hiit-active-ring-container {
+  position: relative;
+  width: min(85vw, 360px);
+  height: min(85vw, 360px);
+  flex-shrink: 0;
+}
+
+.hiit-active-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+/* Tick marks */
+.hiit-tick.remaining {
+  stroke: var(--phase-color);
+  transition: stroke 0.3s;
+}
+
+.hiit-tick.elapsed {
+  stroke: var(--hiit-text-secondary);
+  transition: stroke 0.3s;
+}
+
+/* Center positioning */
+.hiit-active-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo — large, fills ring center */
+.hiit-center-logo {
+  position: absolute;
+  width: 65%;
+  height: 65%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.hiit-center-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay on top of logo */
+.hiit-center-overlay {
+  position: absolute;
+  width: 65%;
+  height: 65%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+/* Stacked info inside ring: phase label, time, elapsed */
+.hiit-center-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hiit-center-phase-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Time display with lift effect */
+.hiit-center-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hiit-active-time-digits {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  min-width: 2ch;
+  text-align: center;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px var(--phase-color),
+    0 0 40px var(--phase-color);
+  animation: hiitDigitLift 1s ease-in-out infinite;
+}
+
+@keyframes hiitDigitLift {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.hiit-active-time-colon {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px var(--phase-color);
+  animation: hiitColonBlink 1s step-start infinite;
+}
+
+@keyframes hiitColonBlink {
+  50% { opacity: 0.3; }
+}
+
+/* Total elapsed inside ring */
+.hiit-center-elapsed {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 2px;
+}
+
+/* Done checkmark */
+.hiit-active-done-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hiitCheckPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes hiitCheckPop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* ====== Exercise label + Up Next below ring ====== */
+.hiit-active-info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hiit-active-exercise-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--hiit-text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hiit-active-upnext {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: var(--hiit-text-secondary);
+}
+
+.hiit-active-upnext strong {
+  color: var(--phase-color);
+  font-weight: 600;
+}
+
+/* ====== Controls ====== */
+.hiit-active-controls {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.hiit-ctrl-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: var(--hiit-card-border);
+  background: var(--hiit-card);
+  color: var(--hiit-card-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--hiit-card-shadow);
+}
+
+.hiit-ctrl-btn:active {
+  transform: scale(0.9);
+}
+
+.hiit-ctrl-btn.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4);
+}
+
+.hiit-ctrl-btn.large {
+  width: 72px;
+  height: 72px;
+}
+
+.hiit-ctrl-btn.primary svg {
+  margin-left: 2px;
+}
+
+/* Stop button */
+.hiit-stop-btn {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--hiit-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-hiit-theme="red"] .hiit-stop-btn,
+[data-hiit-theme="dark"] .hiit-stop-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hiit-stop-btn:active {
+  opacity: 0.7;
+}
