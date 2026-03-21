@@ -1,0 +1,363 @@
+/* ====== HIIT Library ====== */
+.hlib-content {
+  padding: 20px 16px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ====== Locked state ====== */
+.hlib-locked {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.hlib-locked-icon {
+  color: var(--hiit-text-secondary);
+  margin-bottom: 16px;
+}
+
+.hlib-locked h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--hiit-text);
+  margin: 0 0 8px;
+}
+
+.hlib-locked p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--hiit-text-secondary);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.hlib-upgrade-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 14px;
+  background: var(--hiit-card);
+  color: var(--color-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--hiit-card-shadow);
+  transition: transform 0.15s;
+}
+
+.hlib-upgrade-btn:active {
+  transform: scale(0.96);
+}
+
+/* ====== Save current workout button ====== */
+.hlib-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border: 2px dashed var(--hiit-text-secondary);
+  border-radius: 14px;
+  background: none;
+  color: var(--hiit-text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s, opacity 0.2s;
+  opacity: 0.7;
+}
+
+.hlib-save-btn:hover {
+  opacity: 1;
+}
+
+.hlib-save-btn:active {
+  opacity: 0.5;
+}
+
+/* ====== Save form ====== */
+.hlib-save-form {
+  background: var(--hiit-card);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--hiit-card-shadow);
+  border: var(--hiit-card-border);
+}
+
+.hlib-save-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--hiit-card-divider);
+  border-radius: 10px;
+  background: var(--hiit-input-bg);
+  color: var(--hiit-card-text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.hlib-save-input:focus {
+  border-color: var(--color-primary);
+}
+
+.hlib-save-input::placeholder {
+  color: var(--hiit-card-text-secondary);
+}
+
+.hlib-save-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hlib-cat-pill {
+  padding: 6px 14px;
+  border: 1.5px solid var(--hiit-card-divider);
+  border-radius: 20px;
+  background: none;
+  color: var(--hiit-card-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.hlib-cat-pill.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.hlib-save-preview {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--hiit-input-bg);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--hiit-card-text-secondary);
+}
+
+.hlib-save-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.hlib-cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--hiit-input-bg);
+  color: var(--hiit-card-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hlib-confirm-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.hlib-confirm-btn:disabled {
+  opacity: 0.4;
+}
+
+/* ====== Category filter ====== */
+.hlib-filter {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hlib-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.hlib-filter-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: var(--hiit-pill-bg);
+  color: var(--hiit-pill-text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hlib-filter-pill.active {
+  background: var(--hiit-pill-active-bg);
+  color: var(--hiit-pill-active-text);
+}
+
+/* ====== Empty state ====== */
+.hlib-empty {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.hlib-empty svg {
+  margin-bottom: 16px;
+  opacity: 0.4;
+  color: var(--hiit-text-secondary);
+}
+
+.hlib-empty h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--hiit-text);
+  margin: 0 0 6px;
+}
+
+.hlib-empty p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--hiit-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ====== Workout cards ====== */
+.hlib-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hlib-card {
+  background: var(--hiit-card);
+  border-radius: 14px;
+  border: var(--hiit-card-border);
+  padding: 16px;
+  box-shadow: var(--hiit-card-shadow);
+}
+
+.hlib-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.hlib-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hlib-card-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--hiit-card-text);
+}
+
+.hlib-card-category {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.hlib-card-delete {
+  background: none;
+  border: none;
+  color: var(--hiit-card-text-secondary);
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.5;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.hlib-card-delete:hover {
+  opacity: 1;
+  color: var(--color-error);
+}
+
+.hlib-card-details {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.hlib-card-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.hlib-card-stat-val {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.hlib-card-stat-lbl {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: var(--hiit-card-text-secondary);
+  margin-top: 2px;
+}
+
+.hlib-load-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.hlib-load-btn:active {
+  transform: scale(0.97);
+}

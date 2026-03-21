@@ -1,5 +1,11 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
+import HiitTimer from './pages/HiitTimer';
+import HiitSettings from './pages/HiitSettings';
+import HiitLibrary from './pages/HiitLibrary';
+import HiitStatistics from './pages/HiitStatistics';
+import HiitPremiumPage from './pages/HiitPremiumPage';
 import './App.css';
 
 function App() {
@@ -17,18 +23,15 @@ function App() {
     return <Login />;
   }
 
-  // Authenticated — placeholder home screen
   return (
-    <div className="hiit-home">
-      <div className="hiit-home-header">
-        <img src="/Logo.webp" alt="Mind Core Fitness" className="hiit-home-logo" />
-        <h1>Core HIIT</h1>
-        <p>Welcome, {currentUser.displayName || currentUser.email}</p>
-      </div>
-      <button className="hiit-logout-btn" onClick={logout}>
-        Sign Out
-      </button>
-    </div>
+    <Routes>
+      <Route path="/hiit" element={<HiitTimer />} />
+      <Route path="/hiit/settings" element={<HiitSettings />} />
+      <Route path="/hiit/library" element={<HiitLibrary />} />
+      <Route path="/hiit/stats" element={<HiitStatistics />} />
+      <Route path="/hiit/premium" element={<HiitPremiumPage />} />
+      <Route path="*" element={<Navigate to="/hiit" replace />} />
+    </Routes>
   );
 }
 

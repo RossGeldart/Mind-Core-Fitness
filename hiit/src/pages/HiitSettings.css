@@ -1,0 +1,343 @@
+/* ====== HIIT Settings ====== */
+.hs-content {
+  padding: 20px 16px;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ====== Section card ====== */
+.hs-section {
+  background: var(--hiit-card);
+  border-radius: 14px;
+  border: var(--hiit-card-border);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--hiit-card-shadow);
+}
+
+.hs-section-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hs-section-title svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.hs-divider {
+  height: 1px;
+  background: var(--hiit-card-divider);
+  margin: 14px 0;
+}
+
+/* ====== Row ====== */
+.hs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hs-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.hs-row-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--hiit-card-text);
+}
+
+.hs-row-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: var(--hiit-card-text-secondary);
+  line-height: 1.3;
+}
+
+.hs-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ====== Segmented control ====== */
+.hs-seg-control {
+  display: flex;
+  background: var(--hiit-input-bg-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.hs-seg-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--hiit-card-text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hs-seg-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* ====== Slider ====== */
+.hs-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--hiit-input-bg-subtle);
+  border-radius: 2px;
+  outline: none;
+  margin-top: 10px;
+}
+
+.hs-slider::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 0%,
+    var(--color-primary) var(--val, 100%),
+    var(--hiit-input-bg-subtle) var(--val, 100%),
+    var(--hiit-input-bg-subtle) 100%
+  );
+  border-radius: 2px;
+  height: 4px;
+}
+
+.hs-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  margin-top: -9px;
+}
+
+.hs-slider::-moz-range-track {
+  background: var(--hiit-input-bg-subtle);
+  border-radius: 2px;
+  height: 4px;
+}
+
+.hs-slider::-moz-range-progress {
+  background: var(--color-primary);
+  border-radius: 2px;
+  height: 4px;
+}
+
+.hs-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ====== Toggle switch ====== */
+.hs-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.hs-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.hs-switch-track {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--hiit-toggle-off);
+  border-radius: 14px;
+  transition: background 0.25s;
+}
+
+.hs-switch-track::before {
+  content: '';
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hs-switch input:checked + .hs-switch-track {
+  background: var(--color-primary);
+}
+
+.hs-switch input:checked + .hs-switch-track::before {
+  transform: translateX(20px);
+}
+
+/* ====== Day picker ====== */
+.hs-day-picker {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+.hs-day-btn {
+  flex: 1;
+  aspect-ratio: 1;
+  max-width: 42px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hiit-card-divider);
+  background: var(--hiit-input-bg);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--hiit-card-text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hs-day-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ====== Time row ====== */
+.hs-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--hiit-card-divider);
+}
+
+.hs-time-input {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: right;
+}
+
+.hs-time-input::-webkit-calendar-picker-indicator {
+  filter: opacity(0.4);
+}
+
+[data-hiit-theme="dark"] .hs-time-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.4);
+}
+
+/* ====== Link rows ====== */
+.hs-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+  transition: opacity 0.15s;
+}
+
+.hs-link-row:hover {
+  opacity: 0.75;
+}
+
+.hs-link-row:active {
+  opacity: 0.5;
+}
+
+.hs-link-row svg {
+  color: var(--hiit-chevron);
+  flex-shrink: 0;
+}
+
+/* ====== About section ====== */
+.hs-about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+  gap: 4px;
+}
+
+.hs-about-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 2px solid var(--hiit-card-divider);
+  background: #fff;
+}
+
+.hs-about-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--hiit-card-text);
+}
+
+.hs-about-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--hiit-card-text-secondary);
+  font-weight: 500;
+}
+
+.hs-about-version {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: var(--hiit-card-text-secondary);
+  margin-top: 4px;
+  opacity: 0.6;
+}
