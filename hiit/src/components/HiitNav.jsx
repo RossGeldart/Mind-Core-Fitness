@@ -123,7 +123,7 @@ export default function HiitNav({ title }) {
         </div>
 
         <div className="hiit-sidebar-footer">
-          <img src="/Logo.PNG" alt="Mind Core Fitness" className="hiit-sidebar-logo" />
+          <img src={`${import.meta.env.BASE_URL}Logo.PNG`} alt="Mind Core Fitness" className="hiit-sidebar-logo" />
           <div className="hiit-sidebar-brand">Core HIIT</div>
           <div className="hiit-sidebar-sub">Mind Core Fitness</div>
         </div>

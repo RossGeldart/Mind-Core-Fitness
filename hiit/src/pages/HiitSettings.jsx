@@ -320,7 +320,7 @@ export default function HiitSettings() {
 
         {/* ====== ABOUT ====== */}
         <div className="hs-section hs-about">
-          <img src="/Logo.PNG" alt="Core HIIT" className="hs-about-logo" />
+          <img src={`${import.meta.env.BASE_URL}Logo.PNG`} alt="Core HIIT" className="hs-about-logo" />
           <span className="hs-about-name">Core HIIT</span>
           <span className="hs-about-tagline">Train. Rest. Repeat.</span>
           <span className="hs-about-version">Version 1.0.0</span>
