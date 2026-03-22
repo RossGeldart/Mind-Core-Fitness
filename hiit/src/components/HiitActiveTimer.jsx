@@ -130,7 +130,7 @@ export default function HiitActiveTimer() {
         {/* Center content — logo + overlay */}
         <div className="hiit-active-center">
           <div className="hiit-center-logo">
-            <img src="/Logo.webp" alt="MCF" />
+            <img src={`${import.meta.env.BASE_URL}Logo.webp`} alt="MCF" />
           </div>
           <div className="hiit-center-overlay">
             {currentPhase === 'done' ? (

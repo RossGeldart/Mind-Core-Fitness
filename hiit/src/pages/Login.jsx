@@ -108,7 +108,7 @@ export default function Login() {
   return (
     <div className="hiit-login">
       <div className="hiit-login-brand">
-        <img src="/Logo.webp" alt="Mind Core Fitness" className="hiit-login-logo" />
+        <img src={`${import.meta.env.BASE_URL}Logo.webp`} alt="Mind Core Fitness" className="hiit-login-logo" />
         <h1 className="hiit-login-title">Core HIIT</h1>
         <p className="hiit-login-subtitle">
           {mode === 'login' ? 'High intensity interval training' : 'Create your free account'}
