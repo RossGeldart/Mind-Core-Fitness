@@ -3125,13 +3125,13 @@ export default function CoreBuddyWorkouts() {
                   <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
 
-                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); setView('challenges_hub'); }}>
+                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); isPremium ? setView('challenges_hub') : navigate('/upgrade'); }}>
                   <div className="wk-landing-card-icon wk-landing-card-icon--challenges">
                     <img src={challengeThumbImg} alt="Challenges" className="wk-landing-card-thumb" />
                   </div>
                   <div className="wk-landing-card-body">
-                    <h3>Challenges</h3>
-                    <p>Work your way through progressive HIIT challenges</p>
+                    <h3>Challenges{!isPremium && <svg className="wk-landing-card-lock" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>}</h3>
+                    <p>{isPremium ? 'Work your way through progressive HIIT challenges' : 'Upgrade to unlock challenges'}</p>
                   </div>
                   <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                 </button>

@@ -5378,6 +5378,13 @@
   flex-shrink: 0;
   color: var(--text-tertiary);
 }
+.wk-landing-card-lock {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
 
 .wk-landing-card:focus { outline: none; }
 .wk-landing-card:focus:not(:focus-visible) {
