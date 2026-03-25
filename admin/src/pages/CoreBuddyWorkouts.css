@@ -1822,7 +1822,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
-  width: 36px;
+  min-width: 42px;
   text-align: right;
   flex-shrink: 0;
 }

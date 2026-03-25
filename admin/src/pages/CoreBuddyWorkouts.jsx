@@ -65,6 +65,8 @@ const LEVELS = [
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
 
+const fmtSec = s => s >= 60 ? `${Math.floor(s / 60)}m${s % 60 ? s % 60 + 's' : ''}` : s + 's';
+
 const BYO_GROUPS = [
   { key: 'upper', label: 'Upper Body', groups: ['upper'] },
   { key: 'lower', label: 'Lower Body', groups: ['lower'] },
@@ -3048,7 +3050,7 @@ export default function CoreBuddyWorkouts() {
               </div>
               <div className="wk-hub-card-body">
                 <h3>Quick Start</h3>
-                <p>{lastFocusLabel} &middot; {lastSettings.level === 'custom' ? `${lastSettings.customWork || 30}s/${lastSettings.customRest || 30}s` : lastLevelLabel} &middot; {lastSettings.duration}min</p>
+                <p>{lastFocusLabel} &middot; {lastSettings.level === 'custom' ? `${fmtSec(lastSettings.customWork || 30)}/${fmtSec(lastSettings.customRest || 30)}` : lastLevelLabel} &middot; {lastSettings.duration}min</p>
               </div>
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
@@ -3281,7 +3283,7 @@ export default function CoreBuddyWorkouts() {
                 {LEVELS.map(l => (
                   <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
-                    <span className="wk-level-desc">{l.key === 'custom' ? `${customWork}s work / ${customRest}s rest` : l.desc}</span>
+                    <span className="wk-level-desc">{l.key === 'custom' ? `${fmtSec(customWork)} work / ${fmtSec(customRest)} rest` : l.desc}</span>
                   </button>
                 ))}
               </div>
@@ -3289,13 +3291,13 @@ export default function CoreBuddyWorkouts() {
                 <div className="wk-custom-intervals">
                   <div className="wk-custom-row">
                     <label className="wk-custom-label">Work</label>
-                    <input type="range" className="wk-custom-slider" min={10} max={60} step={5} value={customWork} onChange={e => setCustomWork(Number(e.target.value))} />
-                    <span className="wk-custom-value">{customWork}s</span>
+                    <input type="range" className="wk-custom-slider" min={10} max={120} step={5} value={customWork} onChange={e => setCustomWork(Number(e.target.value))} />
+                    <span className="wk-custom-value">{fmtSec(customWork)}</span>
                   </div>
                   <div className="wk-custom-row">
                     <label className="wk-custom-label">Rest</label>
-                    <input type="range" className="wk-custom-slider" min={5} max={60} step={5} value={customRest} onChange={e => setCustomRest(Number(e.target.value))} />
-                    <span className="wk-custom-value">{customRest}s</span>
+                    <input type="range" className="wk-custom-slider" min={5} max={120} step={5} value={customRest} onChange={e => setCustomRest(Number(e.target.value))} />
+                    <span className="wk-custom-value">{fmtSec(customRest)}</span>
                   </div>
                 </div>
               )}
