@@ -60,6 +60,7 @@ const LEVELS = [
   { key: 'beginner', label: 'Beginner', work: 30, rest: 30, desc: '30s work / 30s rest' },
   { key: 'intermediate', label: 'Intermediate', work: 40, rest: 20, desc: '40s work / 20s rest' },
   { key: 'advanced', label: 'Advanced', work: 40, rest: 15, desc: '40s work / 15s rest' },
+  { key: 'custom', label: 'Custom', work: 30, rest: 30, desc: 'Choose your own' },
 ];
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
@@ -354,6 +355,8 @@ export default function CoreBuddyWorkouts() {
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
   const [focusArea, setFocusArea] = useState('core');
   const [level, setLevel] = useState('intermediate');
+  const [customWork, setCustomWork] = useState(30);
+  const [customRest, setCustomRest] = useState(30);
   const [duration, setDuration] = useState(isPremium ? 15 : 5);
 
   // Exercises from Firebase Storage
@@ -1171,6 +1174,8 @@ export default function CoreBuddyWorkouts() {
     setFocusArea(last?.focus || 'core');
     setLevel(last?.level || 'intermediate');
     setDuration(last?.duration || 15);
+    if (last?.customWork) setCustomWork(last.customWork);
+    if (last?.customRest) setCustomRest(last.customRest);
     pendingQuickStartRef.current = true;
   };
 
@@ -1189,6 +1194,8 @@ export default function CoreBuddyWorkouts() {
       focus: focusArea,
       level,
       duration,
+      customWork,
+      customRest,
     }));
   };
 
@@ -1340,7 +1347,8 @@ export default function CoreBuddyWorkouts() {
       return;
     }
 
-    const config = LEVELS.find(l => l.key === level);
+    const baseConfig = LEVELS.find(l => l.key === level);
+    const config = level === 'custom' ? { ...baseConfig, work: customWork, rest: customRest } : baseConfig;
     setLevelConfig(config);
     const intervalTime = config.work + config.rest;
     const totalSeconds = duration * 60;
@@ -3040,7 +3048,7 @@ export default function CoreBuddyWorkouts() {
               </div>
               <div className="wk-hub-card-body">
                 <h3>Quick Start</h3>
-                <p>{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</p>
+                <p>{lastFocusLabel} &middot; {lastSettings.level === 'custom' ? `${lastSettings.customWork || 30}s/${lastSettings.customRest || 30}s` : lastLevelLabel} &middot; {lastSettings.duration}min</p>
               </div>
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
@@ -3273,10 +3281,24 @@ export default function CoreBuddyWorkouts() {
                 {LEVELS.map(l => (
                   <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
-                    <span className="wk-level-desc">{l.desc}</span>
+                    <span className="wk-level-desc">{l.key === 'custom' ? `${customWork}s work / ${customRest}s rest` : l.desc}</span>
                   </button>
                 ))}
               </div>
+              {level === 'custom' && (
+                <div className="wk-custom-intervals">
+                  <div className="wk-custom-row">
+                    <label className="wk-custom-label">Work</label>
+                    <input type="range" className="wk-custom-slider" min={10} max={60} step={5} value={customWork} onChange={e => setCustomWork(Number(e.target.value))} />
+                    <span className="wk-custom-value">{customWork}s</span>
+                  </div>
+                  <div className="wk-custom-row">
+                    <label className="wk-custom-label">Rest</label>
+                    <input type="range" className="wk-custom-slider" min={5} max={60} step={5} value={customRest} onChange={e => setCustomRest(Number(e.target.value))} />
+                    <span className="wk-custom-value">{customRest}s</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Time */}
@@ -3367,7 +3389,8 @@ export default function CoreBuddyWorkouts() {
   // ==================== PREVIEW VIEW (with optional spinner overlay while thumbs load) ====================
   if (view === 'preview_loading' || view === 'preview') {
     const isLoading = view === 'preview_loading';
-    const previewConfig = LEVELS.find(l => l.key === level);
+    const previewBase = LEVELS.find(l => l.key === level);
+    const previewConfig = level === 'custom' ? { ...previewBase, work: customWork, rest: customRest } : previewBase;
     const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
       <>
