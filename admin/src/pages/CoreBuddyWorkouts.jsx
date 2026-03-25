@@ -17,8 +17,9 @@ import { trackWorkoutStarted, trackWorkoutCompleted, trackWorkoutShared, trackEx
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
-import challengeThumbImg from '../assets/core-obliques-rotation.png';
-import challengeHeroImg from '../assets/core-lower-abs.png';
+import challengeThumbImg from '../assets/mobilehero.PNG';
+import challengeHeroImg from '../assets/images/cards/circuit-3.jpg';
+import challengeHubImg from '../assets/images/cards/circuit-3.jpg';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -3173,7 +3174,7 @@ export default function CoreBuddyWorkouts() {
           {/* 4 Week Core Challenge card */}
           <button className="ch-hub-card" onClick={() => setView('challenge_calendar')}>
             <div className="ch-hub-card-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c1 3 5 5 5 10a5 5 0 0 1-10 0c0-5 4-7 5-10z"/></svg>
+              <img src={challengeHubImg} alt="4 Week Core Challenge" className="ch-hub-card-img" />
             </div>
             <div className="ch-hub-card-body">
               <div className="ch-hub-card-top">
