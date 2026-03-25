@@ -5266,6 +5266,48 @@
   letter-spacing: 0.03em;
 }
 
+/* Locked day pill */
+.ch-day-locked {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+.ch-day-locked .ch-day-num {
+  color: var(--text-tertiary);
+}
+.ch-day-lock {
+  color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+/* Active (unlocked) rest day — green highlight */
+.ch-day-rest--active {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1.5px solid rgba(76, 175, 80, 0.4);
+  opacity: 1;
+}
+.ch-day-rest--active .ch-day-num {
+  color: #4caf50;
+}
+.ch-day-rest--active .ch-day-rest-label {
+  color: #4caf50;
+}
+
+/* Past rest day — green tick */
+.ch-day-rest--past {
+  background: rgba(76, 175, 80, 0.08);
+  border-color: rgba(76, 175, 80, 0.3);
+  opacity: 1;
+}
+.ch-day-rest--past .ch-day-num {
+  color: #4caf50;
+}
+.ch-day-rest--past .ch-day-check {
+  color: #4caf50;
+}
+
 /* Challenge day detail */
 .ch-day-header {
   display: flex;
