@@ -2933,6 +2933,17 @@ export default function CoreBuddyWorkouts() {
                   </div>
                   <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
+
+                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); setView('challenges_hub'); }}>
+                  <div className="wk-landing-card-icon wk-landing-card-icon--challenges">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c1 3 5 5 5 10a5 5 0 0 1-10 0c0-5 4-7 5-10z"/><path d="M12 22v-4"/><path d="M10 18h4"/></svg>
+                  </div>
+                  <div className="wk-landing-card-body">
+                    <h3>Challenges</h3>
+                    <p>Work your way through progressive HIIT challenges</p>
+                  </div>
+                  <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
               </div>
             </>
           )}
