@@ -121,8 +121,8 @@ const ADVANCED_CORE_EXERCISES = new Set([
   'seated v hold',
 ]);
 
-// ==================== 30 DAY CORE CHALLENGE ====================
-// 4 weeks, Mon–Fri (20 workout days). Progression: exercises, rounds, and intervals increase.
+// ==================== 4 WEEK CORE CHALLENGE ====================
+// 28 calendar days (4 weeks). 5 workout days + 2 rest days per week.
 const CHALLENGE_WEEKS = [
   { work: 30, rest: 20, label: 'Week 1' },
   { work: 30, rest: 15, label: 'Week 2' },
@@ -137,24 +137,32 @@ const CHALLENGE_DAYS = [
   { day: 3,  week: 0, rounds: 2, exercises: ['Dead Bug Single Leg Drop', 'Sit Up', 'Glute Bridge Hold', 'Leg Circles', 'Superman Pulses', 'Forearm Plank'] },
   { day: 4,  week: 0, rounds: 2, exercises: ['Dead Bug Leg Extensions', 'Heel Touches', 'Crunch', 'Bird Dog', 'Glute Bridge Pulse', 'Flutter Kicks'] },
   { day: 5,  week: 0, rounds: 2, exercises: ['Superman Hold', 'Knee Tucks', 'Toe Reaches', 'Forearm Plank', 'Reverse Crunch', 'Dead Bug'] },
+  { day: 6,  week: 0, rest: true },
+  { day: 7,  week: 0, rest: true },
   // Week 2 — 30s work / 15s rest — 7 exercises x 3 rounds ≈ 15:45 (Building)
-  { day: 6,  week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Russian Twist', 'Bicycle Crunch', 'High Plank Shoulder Taps', 'Forearm Plank Reach', 'Dead Bug', 'Glute Bridge March'] },
-  { day: 7,  week: 1, rounds: 3, exercises: ['Leg Raises', 'Plank Climb', 'Alternating Plank Reach', 'Knee Tucks', 'Heel Touches', 'Crunch', 'Superman Hold'] },
-  { day: 8,  week: 1, rounds: 3, exercises: ['Forearm Plank Jacks', 'Up Down Plank', 'Reverse Crunch', 'Side Lying Leg Lifts', 'Forearm Plank Shoulder Taps', 'Flutter Kicks', 'Bird Dog'] },
-  { day: 9,  week: 1, rounds: 3, exercises: ['Bear Crawl Linear', 'Russian Twist', 'Plank Toe Taps', 'Leg Raises', 'Dead Bug Single Leg Drop', 'Bicycle Crunch', 'Glute Bridge Pulse'] },
-  { day: 10, week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Plank Leg Lifts', 'High Plank Shoulder Taps', 'Superman Pulses', 'Forearm Plank Reach', 'Sit Up', 'Forearm Plank'] },
+  { day: 8,  week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Russian Twist', 'Bicycle Crunch', 'High Plank Shoulder Taps', 'Forearm Plank Reach', 'Dead Bug', 'Glute Bridge March'] },
+  { day: 9,  week: 1, rounds: 3, exercises: ['Leg Raises', 'Plank Climb', 'Alternating Plank Reach', 'Knee Tucks', 'Heel Touches', 'Crunch', 'Superman Hold'] },
+  { day: 10, week: 1, rounds: 3, exercises: ['Forearm Plank Jacks', 'Up Down Plank', 'Reverse Crunch', 'Side Lying Leg Lifts', 'Forearm Plank Shoulder Taps', 'Flutter Kicks', 'Bird Dog'] },
+  { day: 11, week: 1, rounds: 3, exercises: ['Bear Crawl Linear', 'Russian Twist', 'Plank Toe Taps', 'Leg Raises', 'Dead Bug Single Leg Drop', 'Bicycle Crunch', 'Glute Bridge Pulse'] },
+  { day: 12, week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Plank Leg Lifts', 'High Plank Shoulder Taps', 'Superman Pulses', 'Forearm Plank Reach', 'Sit Up', 'Forearm Plank'] },
+  { day: 13, week: 1, rest: true },
+  { day: 14, week: 1, rest: true },
   // Week 3 — 35s work / 15s rest — 8 exercises x 3 rounds ≈ 20 min (Intermediate)
-  { day: 11, week: 2, rounds: 3, exercises: ['Hollow Body Hold', 'Hip Dips Plank', 'Side Plank Rotation', 'Plank Walkout', 'Reverse Crunch To Leg Raise', 'Mountain Climbers', 'Russian Twist', 'Dead Bug'] },
-  { day: 12, week: 2, rounds: 3, exercises: ['Hollow Hold Flutter Kicks', 'Bear Crawl Shoulder Taps', 'Side Plank Hip Drops', 'Bicycle Crunch', 'Forearm Plank Jacks', 'Leg Raises', 'Bird Dog', 'Plank Climb'] },
-  { day: 13, week: 2, rounds: 3, exercises: ['Single Leg V-Up', 'Crab Toe Touch', 'Alternating Plank Reach', 'Up Down Plank', 'Flutter Kicks', 'High Plank Shoulder Taps', 'Glute Bridge March', 'Reverse Crunch'] },
-  { day: 14, week: 2, rounds: 3, exercises: ['Scorpion Kicks', 'Plank To Push Up', 'Side Plank Clams', 'Hollow Body Hold', 'Mountain Climbers', 'Heel Touches', 'Superman Hold', 'Plank Leg Lifts'] },
-  { day: 15, week: 2, rounds: 3, exercises: ['Push Up Shoulder Tap', 'Side Plank Leg Lift', 'Bear Crawl Linear', 'Hip Dips Plank', 'Straight Legged Hip Raise', 'Russian Twist', 'Knee Tucks', 'Forearm Plank'] },
+  { day: 15, week: 2, rounds: 3, exercises: ['Hollow Body Hold', 'Hip Dips Plank', 'Side Plank Rotation', 'Plank Walkout', 'Reverse Crunch To Leg Raise', 'Mountain Climbers', 'Russian Twist', 'Dead Bug'] },
+  { day: 16, week: 2, rounds: 3, exercises: ['Hollow Hold Flutter Kicks', 'Bear Crawl Shoulder Taps', 'Side Plank Hip Drops', 'Bicycle Crunch', 'Forearm Plank Jacks', 'Leg Raises', 'Bird Dog', 'Plank Climb'] },
+  { day: 17, week: 2, rounds: 3, exercises: ['Single Leg V-Up', 'Crab Toe Touch', 'Alternating Plank Reach', 'Up Down Plank', 'Flutter Kicks', 'High Plank Shoulder Taps', 'Glute Bridge March', 'Reverse Crunch'] },
+  { day: 18, week: 2, rounds: 3, exercises: ['Scorpion Kicks', 'Plank To Push Up', 'Side Plank Clams', 'Hollow Body Hold', 'Mountain Climbers', 'Heel Touches', 'Superman Hold', 'Plank Leg Lifts'] },
+  { day: 19, week: 2, rounds: 3, exercises: ['Push Up Shoulder Tap', 'Side Plank Leg Lift', 'Bear Crawl Linear', 'Hip Dips Plank', 'Straight Legged Hip Raise', 'Russian Twist', 'Knee Tucks', 'Forearm Plank'] },
+  { day: 20, week: 2, rest: true },
+  { day: 21, week: 2, rest: true },
   // Week 4 — 40s work / 15s rest — 9 exercises x 3 rounds ≈ 24:45 (Advanced + Weights)
-  { day: 16, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell Reach', 'Russian Twists Dumbbell', 'Side Plank Rotation', 'Bear Crawl Shoulder Taps', 'Plank Walkout', 'Mountain Climbers', 'Crab Toe Touch', 'Leg Raises', 'Dead Bug'] },
-  { day: 17, week: 3, rounds: 3, exercises: ['Sit Up Dumbbell Press', 'Side Plank Dumbbell Hold', 'Hollow Hold Flutter Kicks', 'Bear Crawl Dumbbell Pass', 'Hip Dips Plank', 'Bicycle Crunch', 'Reverse Crunch To Leg Raise', 'Forearm Plank', 'Superman Hold'] },
-  { day: 18, week: 3, rounds: 3, exercises: ['Elevated Dumbbell Glute Bridge', 'Single Leg V-Up', 'Scorpion Kicks', 'Plank To Push Up', 'Side Plank Hip Drops', 'Russian Twist', 'High Plank Shoulder Taps', 'Flutter Kicks', 'Glute Bridge Pulse'] },
-  { day: 19, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell', 'Glute Bridge Dumbbell Pulse', 'Side Plank Reach Through', 'Push Up To Side Plank', 'Reverse Crunch To Leg Raise', 'Alternating Plank Reach', 'Bear Crawl Linear', 'Plank Climb', 'Knee Tucks'] },
-  { day: 20, week: 3, rounds: 3, exercises: ['Sit Up Chest Press', 'Wall Sit Dumbbell Hold', 'Alternating Cross Body V-Up', 'Hollow Hold To V-Sit', 'Side Plank Leg Lift', 'Push Up Shoulder Tap', 'Forearm Plank Jacks', 'Up Down Plank', 'Heel Touches'] },
+  { day: 22, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell Reach', 'Russian Twists Dumbbell', 'Side Plank Rotation', 'Bear Crawl Shoulder Taps', 'Plank Walkout', 'Mountain Climbers', 'Crab Toe Touch', 'Leg Raises', 'Dead Bug'] },
+  { day: 23, week: 3, rounds: 3, exercises: ['Sit Up Dumbbell Press', 'Side Plank Dumbbell Hold', 'Hollow Hold Flutter Kicks', 'Bear Crawl Dumbbell Pass', 'Hip Dips Plank', 'Bicycle Crunch', 'Reverse Crunch To Leg Raise', 'Forearm Plank', 'Superman Hold'] },
+  { day: 24, week: 3, rounds: 3, exercises: ['Elevated Dumbbell Glute Bridge', 'Single Leg V-Up', 'Scorpion Kicks', 'Plank To Push Up', 'Side Plank Hip Drops', 'Russian Twist', 'High Plank Shoulder Taps', 'Flutter Kicks', 'Glute Bridge Pulse'] },
+  { day: 25, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell', 'Glute Bridge Dumbbell Pulse', 'Side Plank Reach Through', 'Push Up To Side Plank', 'Reverse Crunch To Leg Raise', 'Alternating Plank Reach', 'Bear Crawl Linear', 'Plank Climb', 'Knee Tucks'] },
+  { day: 26, week: 3, rounds: 3, exercises: ['Sit Up Chest Press', 'Wall Sit Dumbbell Hold', 'Alternating Cross Body V-Up', 'Hollow Hold To V-Sit', 'Side Plank Leg Lift', 'Push Up Shoulder Tap', 'Forearm Plank Jacks', 'Up Down Plank', 'Heel Touches'] },
+  { day: 27, week: 3, rest: true },
+  { day: 28, week: 3, rest: true },
 ];
 
 const FOCUS_COLORS = {
@@ -838,21 +846,14 @@ export default function CoreBuddyWorkouts() {
     setChallengeExercises([]);
     try {
       const urlCache = readUrlCache();
-      const resolved = [];
-      for (const name of dayObj.exercises) {
+      const resolved = await Promise.all(dayObj.exercises.map(async (name) => {
         const buddyEx = BUDDY_EXERCISES.find(e => e.name === name);
-        if (!buddyEx || !buddyEx.storagePath) {
-          resolved.push({ name, videoUrl: null, isGif: false });
-          continue;
-        }
+        if (!buddyEx || !buddyEx.storagePath) return { name, videoUrl: null, isGif: false };
         let url = urlCache[buddyEx.storagePath];
         if (!url) {
           try {
-            // Try exact path first
-            const fileRef = ref(storage, buddyEx.storagePath);
-            url = await getDownloadURL(fileRef);
+            url = await getDownloadURL(ref(storage, buddyEx.storagePath));
           } catch {
-            // Case-insensitive fallback: list the folder and find a match
             try {
               const lastSlash = buddyEx.storagePath.lastIndexOf('/');
               const folder = buddyEx.storagePath.substring(0, lastSlash);
@@ -865,9 +866,8 @@ export default function CoreBuddyWorkouts() {
           }
           if (url) { urlCache[buddyEx.storagePath] = url; }
         }
-        const isGif = /\.gif$/i.test(buddyEx.storagePath);
-        resolved.push({ name, videoUrl: url || null, isGif });
-      }
+        return { name, videoUrl: url || null, isGif: /\.gif$/i.test(buddyEx.storagePath) };
+      }));
       writeUrlCache(urlCache);
       setChallengeExercises(resolved);
     } catch (err) {
@@ -3111,8 +3111,17 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== CHALLENGES HUB VIEW ====================
   if (view === 'challenges_hub') {
-    const completedCount = Object.keys(challengeProgress).filter(k => challengeProgress[k]).length;
-    const progressPct = Math.round((completedCount / 20) * 100);
+    const workoutDays = CHALLENGE_DAYS.filter(d => !d.rest);
+    const completedCount = workoutDays.filter(d => challengeProgress[d.day]).length;
+    const started = completedCount > 0;
+    // Compute total minutes from completed challenge days
+    const totalMins = workoutDays.reduce((sum, d) => {
+      if (!challengeProgress[d.day]) return sum;
+      const wk = CHALLENGE_WEEKS[d.week];
+      return sum + Math.ceil(d.exercises.length * d.rounds * (wk.work + wk.rest) / 60);
+    }, 0);
+    const progressPct = Math.round((completedCount / workoutDays.length) * 100);
+
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -3133,13 +3142,105 @@ export default function CoreBuddyWorkouts() {
           </div>
         </header>
         <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
+          {/* Hub title */}
+          <div className="ch-hub-title">
+            <h1>Challenges</h1>
+            <p>Progressive programmes to test your limits</p>
+          </div>
+
+          {/* Stats row */}
+          <div className="ch-hub-stats">
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{started ? 1 : 0}</span>
+              <span className="ch-hub-stat-label">Started</span>
+            </div>
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{completedCount}</span>
+              <span className="ch-hub-stat-label">Workouts</span>
+            </div>
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{totalMins}</span>
+              <span className="ch-hub-stat-label">Minutes</span>
+            </div>
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{progressPct}%</span>
+              <span className="ch-hub-stat-label">Complete</span>
+            </div>
+          </div>
+
+          {/* 4 Week Core Challenge card */}
+          <button className="ch-hub-card" onClick={() => setView('challenge_calendar')}>
+            <div className="ch-hub-card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c1 3 5 5 5 10a5 5 0 0 1-10 0c0-5 4-7 5-10z"/></svg>
+            </div>
+            <div className="ch-hub-card-body">
+              <div className="ch-hub-card-top">
+                <h3>4 Week Core Challenge</h3>
+                <span className="ch-hub-card-badge">Beginner → Advanced</span>
+              </div>
+              <p>4 weeks of progressive core HIIT with built-in rest days. Build strength, endurance and discipline.</p>
+              {started && (
+                <div className="ch-hub-card-progress">
+                  <div className="ch-hub-card-progress-bar">
+                    <div className="ch-hub-card-progress-fill" style={{ width: `${progressPct}%` }} />
+                  </div>
+                  <span className="ch-hub-card-progress-label">{completedCount}/{workoutDays.length} days</span>
+                </div>
+              )}
+              {!started && <span className="ch-hub-card-cta">Start Challenge</span>}
+            </div>
+            <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* Coming soon card */}
+          <div className="ch-hub-card ch-hub-card--soon">
+            <div className="ch-hub-card-icon ch-hub-card-icon--soon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div className="ch-hub-card-body">
+              <h3>More Challenges Coming Soon</h3>
+              <p>New challenge added every month — stay tuned!</p>
+            </div>
+          </div>
+        </main>
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== CHALLENGE CALENDAR VIEW ====================
+  if (view === 'challenge_calendar') {
+    const workoutDays = CHALLENGE_DAYS.filter(d => !d.rest);
+    const completedCount = workoutDays.filter(d => challengeProgress[d.day]).length;
+    const progressPct = Math.round((completedCount / workoutDays.length) * 100);
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('challenges_hub')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
           {/* Hero */}
           <div className="ch-hero">
             <div className="ch-hero-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c1 3 5 5 5 10a5 5 0 0 1-10 0c0-5 4-7 5-10z"/></svg>
             </div>
-            <h1 className="ch-hero-title">30 Day Core Challenge</h1>
-            <p className="ch-hero-sub">4 weeks of progressive HIIT — build strength, endurance and discipline</p>
+            <h1 className="ch-hero-title">4 Week Core Challenge</h1>
+            <p className="ch-hero-sub">4 weeks of progressive core HIIT — build strength, endurance and discipline</p>
           </div>
 
           {/* Progress bar */}
@@ -3147,7 +3248,7 @@ export default function CoreBuddyWorkouts() {
             <div className="ch-progress-bar">
               <div className="ch-progress-fill" style={{ width: `${progressPct}%` }} />
             </div>
-            <span className="ch-progress-label">{completedCount}/20 days complete</span>
+            <span className="ch-progress-label">{completedCount}/{workoutDays.length} days complete</span>
           </div>
 
           {/* Week grid */}
@@ -3161,6 +3262,14 @@ export default function CoreBuddyWorkouts() {
                 </div>
                 <div className="ch-day-grid">
                   {weekDays.map(d => {
+                    if (d.rest) {
+                      return (
+                        <div key={d.day} className="ch-day-pill ch-day-rest">
+                          <span className="ch-day-num">{d.day}</span>
+                          <span className="ch-day-rest-label">Rest</span>
+                        </div>
+                      );
+                    }
                     const done = challengeProgress[d.day];
                     return (
                       <button key={d.day} className={`ch-day-pill${done ? ' ch-day-done' : ''}`} onClick={() => { loadChallengeDay(d); setView('challenge_day'); }}>
@@ -3189,7 +3298,7 @@ export default function CoreBuddyWorkouts() {
       <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('challenges_hub')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => setView('challenge_calendar')} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -3917,7 +4026,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Back button */}
         <div className="wk-back-row">
-          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView(level === 'challenge' ? 'challenges_hub' : 'randomiser_hub'); }}>
+          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             Back
           </button>
@@ -3956,7 +4065,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Controls */}
         <div className="wk-controls">
-          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView(level === 'challenge' ? 'challenges_hub' : 'randomiser_hub'); }}>
+          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
           </button>
           <button className="wk-ctrl-btn wk-ctrl-pause" onClick={() => setIsPaused(!isPaused)}>
@@ -3992,7 +4101,7 @@ export default function CoreBuddyWorkouts() {
               hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDismissStart={() => setView(level === 'challenge' ? 'challenges_hub' : 'randomiser_hub')}
+              onDismissStart={() => setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub')}
               onDone={() => setShowFinish(false)}
               onRate={lastWorkoutLogId ? (rating) => {
                 updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});
