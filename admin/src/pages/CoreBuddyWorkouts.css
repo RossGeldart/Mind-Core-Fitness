@@ -4945,6 +4945,170 @@
 }
 
 /* ==================== CHALLENGES HUB ==================== */
+.ch-hub-title {
+  text-align: center;
+  padding: 24px 16px 4px;
+}
+.ch-hub-title h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.ch-hub-title p {
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* Hub stats row */
+.ch-hub-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 16px 16px 8px;
+}
+.ch-hub-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.ch-hub-stat-val {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+.ch-hub-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* Hub challenge cards */
+.ch-hub-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 8px 16px 0;
+  width: calc(100% - 32px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.ch-hub-card:active {
+  transform: scale(0.98);
+}
+.ch-hub-card-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 14px;
+  background: rgba(255, 152, 0, 0.12);
+  color: #f57c00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ch-hub-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.ch-hub-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.ch-hub-card-body h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.ch-hub-card-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.ch-hub-card-body p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+.ch-hub-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ch-hub-card-progress-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.12);
+  overflow: hidden;
+}
+.ch-hub-card-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-primary);
+  transition: width 0.4s ease;
+}
+.ch-hub-card-progress-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.ch-hub-card-cta {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Coming soon card */
+.ch-hub-card--soon {
+  cursor: default;
+  border-style: dashed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+.ch-hub-card--soon:active {
+  transform: none;
+}
+.ch-hub-card-icon--soon {
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  color: var(--text-tertiary);
+}
+.ch-hub-card--soon h3 {
+  color: var(--text-secondary);
+}
+.ch-hub-card--soon p {
+  margin-bottom: 0;
+}
+
+/* ==================== CHALLENGE CALENDAR ==================== */
 .ch-hero {
   text-align: center;
   padding: 24px 16px 8px;
@@ -5025,7 +5189,7 @@
 /* Day pills grid */
 .ch-day-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 8px;
 }
 .ch-day-pill {
@@ -5061,6 +5225,23 @@
 }
 .ch-day-check {
   color: var(--color-primary);
+}
+.ch-day-rest {
+  background: transparent;
+  border: 1.5px dashed var(--border-color);
+  cursor: default;
+  opacity: 0.6;
+}
+.ch-day-rest .ch-day-num {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+.ch-day-rest-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 /* Challenge day detail */
