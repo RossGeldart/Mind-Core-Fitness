@@ -2884,7 +2884,7 @@ export default function CoreBuddyWorkouts() {
                     <span className="nhub-section-title">Recent</span>
                   </div>
                   <div className="wkl-recent-list">
-                    {allRecentWorkouts.map((w, i) => (
+                    {(recentOpen ? allRecentWorkouts : allRecentWorkouts.slice(0, 3)).map((w, i) => (
                       <div key={i} className="wkl-recent-item">
                         <div className={`wkl-recent-icon wkl-recent-icon--${w._kind}`}>
                           {w._kind === 'byo' ? (
@@ -2903,6 +2903,12 @@ export default function CoreBuddyWorkouts() {
                       </div>
                     ))}
                   </div>
+                  {allRecentWorkouts.length > 3 && (
+                    <button className="wkl-recent-toggle" onClick={() => setRecentOpen(prev => !prev)}>
+                      {recentOpen ? 'Show less' : `Show more (${allRecentWorkouts.length - 3})`}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={recentOpen ? 'wkl-recent-toggle-flip' : ''}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  )}
                 </div>
               )}
 
