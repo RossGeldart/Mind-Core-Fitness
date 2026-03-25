@@ -522,6 +522,7 @@ export default function CoreBuddyWorkouts() {
 
   // Challenge state
   const [challengeProgress, setChallengeProgress] = useState({}); // { 1: true, 2: true, ... }
+  const [challengeStartedAt, setChallengeStartedAt] = useState(null); // Date when Day 1 was completed (triggers daily unlock schedule)
   const [challengeDay, setChallengeDay] = useState(null); // selected day object from CHALLENGE_DAYS
   const [challengeExercises, setChallengeExercises] = useState([]); // loaded exercises with videoUrls
   const [challengeLoading, setChallengeLoading] = useState(false);
@@ -833,7 +834,11 @@ export default function CoreBuddyWorkouts() {
         const docRef = doc(db, 'challengeProgress', clientData.id);
         const snap = await getDoc(docRef);
         if (snap.exists()) {
-          setChallengeProgress(snap.data().completedDays || {});
+          const data = snap.data();
+          setChallengeProgress(data.completedDays || {});
+          if (data.startedAt) {
+            setChallengeStartedAt(data.startedAt.toDate());
+          }
         }
       } catch (err) {
         console.error('Error loading challenge progress:', err);
@@ -893,16 +898,45 @@ export default function CoreBuddyWorkouts() {
     startWorkout();
   };
 
+  // Determine if a challenge day is unlocked based on startedAt schedule
+  // Day 1: always unlocked. Days 2+: unlocked if startedAt exists and enough midnights have passed.
+  const isDayUnlocked = (dayNum) => {
+    if (dayNum === 1) return true;
+    if (!challengeStartedAt) return false;
+    // Day N unlocks after (N-1) midnights from startedAt
+    const now = new Date();
+    const start = new Date(challengeStartedAt);
+    // Set start to midnight of the start date (local time)
+    start.setHours(0, 0, 0, 0);
+    const midnightToday = new Date(now);
+    midnightToday.setHours(0, 0, 0, 0);
+    const daysSinceStart = Math.floor((midnightToday - start) / (1000 * 60 * 60 * 24));
+    // Day N unlocks when daysSinceStart >= (N-1)
+    return daysSinceStart >= (dayNum - 1);
+  };
+
+  // Check if a rest day's period has passed (i.e. the day after it is unlocked)
+  const isRestDayPast = (dayNum) => {
+    return isDayUnlocked(dayNum + 1);
+  };
+
   // Save challenge day completion
   const saveChallengeCompletion = async (dayNum) => {
     if (!currentUser || !clientData) return;
     try {
       const newProgress = { ...challengeProgress, [dayNum]: true };
       setChallengeProgress(newProgress);
-      await setDoc(doc(db, 'challengeProgress', clientData.id), {
+      const updateData = {
         completedDays: newProgress,
         lastUpdated: Timestamp.now(),
-      }, { merge: true });
+      };
+      // If completing Day 1, set startedAt to trigger the daily unlock schedule
+      if (dayNum === 1 && !challengeStartedAt) {
+        const now = new Date();
+        updateData.startedAt = Timestamp.fromDate(now);
+        setChallengeStartedAt(now);
+      }
+      await setDoc(doc(db, 'challengeProgress', clientData.id), updateData, { merge: true });
     } catch (err) {
       console.error('Error saving challenge progress:', err);
     }
@@ -3116,7 +3150,7 @@ export default function CoreBuddyWorkouts() {
   if (view === 'challenges_hub') {
     const workoutDays = CHALLENGE_DAYS.filter(d => !d.rest);
     const completedCount = workoutDays.filter(d => challengeProgress[d.day]).length;
-    const started = completedCount > 0;
+    const started = !!challengeStartedAt;
     // Compute total minutes from completed challenge days
     const totalMins = workoutDays.reduce((sum, d) => {
       if (!challengeProgress[d.day]) return sum;
@@ -3265,15 +3299,27 @@ export default function CoreBuddyWorkouts() {
                 </div>
                 <div className="ch-day-grid">
                   {weekDays.map(d => {
+                    const unlocked = isDayUnlocked(d.day);
                     if (d.rest) {
+                      const past = isRestDayPast(d.day);
                       return (
-                        <div key={d.day} className="ch-day-pill ch-day-rest">
+                        <div key={d.day} className={`ch-day-pill ch-day-rest${unlocked ? ' ch-day-rest--active' : ''}${!unlocked ? ' ch-day-locked' : ''}${past ? ' ch-day-rest--past' : ''}`}>
                           <span className="ch-day-num">{d.day}</span>
-                          <span className="ch-day-rest-label">Rest</span>
+                          {!unlocked && <svg className="ch-day-lock" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>}
+                          {unlocked && !past && <span className="ch-day-rest-label">Rest</span>}
+                          {past && <svg className="ch-day-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                         </div>
                       );
                     }
                     const done = challengeProgress[d.day];
+                    if (!unlocked) {
+                      return (
+                        <div key={d.day} className="ch-day-pill ch-day-locked">
+                          <span className="ch-day-num">{d.day}</span>
+                          <svg className="ch-day-lock" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                        </div>
+                      );
+                    }
                     return (
                       <button key={d.day} className={`ch-day-pill${done ? ' ch-day-done' : ''}`} onClick={() => { loadChallengeDay(d); setView('challenge_day'); }}>
                         <span className="ch-day-num">{d.day}</span>
