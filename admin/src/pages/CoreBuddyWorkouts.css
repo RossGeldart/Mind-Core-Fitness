@@ -4940,8 +4940,13 @@
   overflow: hidden;
 }
 .wk-landing-card-icon--challenges {
-  background: rgba(255, 152, 0, 0.12);
-  color: #f57c00;
+  background: transparent;
+  overflow: hidden;
+}
+.wk-landing-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* ==================== CHALLENGES HUB ==================== */
@@ -5109,31 +5114,41 @@
 }
 
 /* ==================== CHALLENGE CALENDAR ==================== */
-.ch-hero {
-  text-align: center;
-  padding: 24px 16px 8px;
+/* Challenge hero image (full-width like video container) */
+.ch-hero-img-container {
+  position: relative;
+  width: calc(100% - 24px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 12px 12px 0;
+  background: #000;
 }
-.ch-hero-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: rgba(255, 152, 0, 0.12);
-  color: #f57c00;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 14px;
+.ch-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ch-hero-img-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 16px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  text-align: left;
 }
 .ch-hero-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 800;
-  color: var(--text-primary);
-  margin: 0 0 6px;
+  color: #fff;
+  margin: 0 0 4px;
 }
 .ch-hero-sub {
-  font-size: 0.82rem;
-  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.85);
   margin: 0;
   line-height: 1.4;
 }
