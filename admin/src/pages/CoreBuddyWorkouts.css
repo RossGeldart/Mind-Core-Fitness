@@ -5213,6 +5213,30 @@
   color: var(--color-primary);
   flex-shrink: 0;
 }
+.wkl-recent-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 0 2px;
+  border: none;
+  background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.wkl-recent-toggle:active {
+  opacity: 0.6;
+}
+.wkl-recent-toggle svg {
+  transition: transform 0.2s ease;
+}
+.wkl-recent-toggle-flip {
+  transform: rotate(180deg);
+}
 
 /* Dark mode overrides */
 [data-theme="dark"] .wkl-recent-item {
