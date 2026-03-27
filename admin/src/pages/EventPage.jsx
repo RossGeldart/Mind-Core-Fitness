@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc,
-  serverTimestamp, Timestamp, orderBy
+  serverTimestamp, Timestamp, orderBy, updateDoc, setDoc, increment
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -92,6 +92,13 @@ export default function EventPage() {
   const fileRef = useRef(null);
   const textRef = useRef(null);
 
+  // Feed interactions
+  const [likedPosts, setLikedPosts] = useState(new Set());
+  const [expandedComments, setExpandedComments] = useState(new Set());
+  const [comments, setComments] = useState({});
+  const [commentText, setCommentText] = useState({});
+  const [commentLoading, setCommentLoading] = useState({});
+
   // My progress
   const [myProgress, setMyProgress] = useState(null);
 
@@ -166,16 +173,39 @@ export default function EventPage() {
         batches.push(participantIds.slice(i, i + 10));
       }
 
+      // Helper: run query with composite-index fallback (fetch all by clientId, filter dates client-side)
+      const safeQuery = async (col, batch, dateField, startVal, endVal, isTimestamp) => {
+        try {
+          const q = query(
+            collection(db, col),
+            where('clientId', 'in', batch),
+            where(dateField, '>=', startVal),
+            where(dateField, '<=', endVal)
+          );
+          return (await getDocs(q)).docs;
+        } catch (err) {
+          // Composite index likely missing — fallback to client-side date filtering
+          console.warn(`Index missing for ${col}, using fallback:`, err.message);
+          const q = query(collection(db, col), where('clientId', 'in', batch));
+          const snap = await getDocs(q);
+          return snap.docs.filter(d => {
+            const val = d.data()[dateField];
+            if (isTimestamp) {
+              const ts = val?.toDate?.() ? val.toDate().getTime() : 0;
+              return ts >= startVal.toDate().getTime() && ts <= endVal.toDate().getTime();
+            }
+            return val >= startVal && val <= endVal;
+          });
+        }
+      };
+
+      const startDateStr = event.startDate.toISOString().split('T')[0];
+      const endDateStr = event.endDate.toISOString().split('T')[0];
+
       for (const batch of batches) {
         if (config.sources.includes('workoutLogs')) {
-          const q = query(
-            collection(db, 'workoutLogs'),
-            where('clientId', 'in', batch),
-            where('completedAt', '>=', startTs),
-            where('completedAt', '<=', endTs)
-          );
-          const snap = await getDocs(q);
-          snap.docs.forEach(d => {
+          const docs = await safeQuery('workoutLogs', batch, 'completedAt', startTs, endTs, true);
+          docs.forEach(d => {
             const data = d.data();
             const s = stats[data.clientId];
             if (!s) return;
@@ -192,14 +222,8 @@ export default function EventPage() {
         }
 
         if (config.sources.includes('activityLogs')) {
-          const q = query(
-            collection(db, 'activityLogs'),
-            where('clientId', 'in', batch),
-            where('completedAt', '>=', startTs),
-            where('completedAt', '<=', endTs)
-          );
-          const snap = await getDocs(q);
-          snap.docs.forEach(d => {
+          const docs = await safeQuery('activityLogs', batch, 'completedAt', startTs, endTs, true);
+          docs.forEach(d => {
             const data = d.data();
             const s = stats[data.clientId];
             if (!s) return;
@@ -209,14 +233,8 @@ export default function EventPage() {
         }
 
         if (config.sources.includes('habitLogs')) {
-          const q = query(
-            collection(db, 'habitLogs'),
-            where('clientId', 'in', batch),
-            where('date', '>=', event.startDate.toISOString().split('T')[0]),
-            where('date', '<=', event.endDate.toISOString().split('T')[0])
-          );
-          const snap = await getDocs(q);
-          snap.docs.forEach(d => {
+          const docs = await safeQuery('habitLogs', batch, 'date', startDateStr, endDateStr, false);
+          docs.forEach(d => {
             const data = d.data();
             const s = stats[data.clientId];
             if (!s) return;
@@ -226,14 +244,8 @@ export default function EventPage() {
         }
 
         if (config.sources.includes('nutritionLogs')) {
-          const q = query(
-            collection(db, 'nutritionLogs'),
-            where('clientId', 'in', batch),
-            where('date', '>=', event.startDate.toISOString().split('T')[0]),
-            where('date', '<=', event.endDate.toISOString().split('T')[0])
-          );
-          const snap = await getDocs(q);
-          snap.docs.forEach(d => {
+          const docs = await safeQuery('nutritionLogs', batch, 'date', startDateStr, endDateStr, false);
+          docs.forEach(d => {
             const data = d.data();
             const s = stats[data.clientId];
             if (!s) return;
@@ -259,7 +271,7 @@ export default function EventPage() {
     }
   }, [event, participants, lbTab, myId]);
 
-  // Fetch event feed
+  // Fetch event feed + liked status
   const fetchPosts = useCallback(async () => {
     setPostsLoading(true);
     try {
@@ -269,12 +281,22 @@ export default function EventPage() {
       );
       const snap = await getDocs(q);
       setPosts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+      // Load which posts the current user has liked
+      if (myId) {
+        const likesSnap = await getDocs(
+          query(collection(db, 'events', eventId, 'feedLikes'), where('userId', '==', myId))
+        );
+        const liked = new Set();
+        likesSnap.docs.forEach(d => liked.add(d.data().postId));
+        setLikedPosts(liked);
+      }
     } catch (err) {
       console.error('Error loading event feed:', err);
     } finally {
       setPostsLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, myId]);
 
   // Handle posting to event feed
   const handlePost = async () => {
@@ -294,6 +316,8 @@ export default function EventPage() {
         authorPhotoURL: clientData?.photoURL || '',
         content: postText.trim(),
         imageURL,
+        likeCount: 0,
+        commentCount: 0,
         createdAt: serverTimestamp(),
       });
       setPostText('');
@@ -323,6 +347,104 @@ export default function EventPage() {
       setPosts(prev => prev.filter(p => p.id !== postId));
     } catch (err) {
       console.error('Error deleting post:', err);
+    }
+  };
+
+  // Toggle like on a feed post
+  const toggleLike = async (postId) => {
+    if (!myId) return;
+    const likeDocId = `${postId}_${myId}`;
+    const isLiked = likedPosts.has(postId);
+    const newLiked = new Set(likedPosts);
+    if (isLiked) newLiked.delete(postId); else newLiked.add(postId);
+    setLikedPosts(newLiked);
+    setPosts(prev => prev.map(p =>
+      p.id === postId ? { ...p, likeCount: Math.max(0, (p.likeCount || 0) + (isLiked ? -1 : 1)) } : p
+    ));
+    try {
+      if (isLiked) {
+        await deleteDoc(doc(db, 'events', eventId, 'feedLikes', likeDocId));
+        await updateDoc(doc(db, 'events', eventId, 'feed', postId), { likeCount: increment(-1) });
+      } else {
+        await setDoc(doc(db, 'events', eventId, 'feedLikes', likeDocId), {
+          postId, userId: myId, createdAt: serverTimestamp(),
+        });
+        await updateDoc(doc(db, 'events', eventId, 'feed', postId), { likeCount: increment(1) });
+      }
+    } catch (err) {
+      console.error('Like error:', err);
+      fetchPosts();
+    }
+  };
+
+  // Load comments for a post
+  const loadComments = async (postId) => {
+    try {
+      const q = query(
+        collection(db, 'events', eventId, 'feedComments'),
+        where('postId', '==', postId),
+        orderBy('createdAt', 'asc')
+      );
+      const snap = await getDocs(q);
+      setComments(prev => ({ ...prev, [postId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+    } catch {
+      // Index may be missing — fallback without orderBy
+      const q = query(
+        collection(db, 'events', eventId, 'feedComments'),
+        where('postId', '==', postId)
+      );
+      const snap = await getDocs(q);
+      const sorted = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+      setComments(prev => ({ ...prev, [postId]: sorted }));
+    }
+  };
+
+  // Toggle comment section
+  const toggleComments = (postId) => {
+    const next = new Set(expandedComments);
+    if (next.has(postId)) { next.delete(postId); } else { next.add(postId); loadComments(postId); }
+    setExpandedComments(next);
+  };
+
+  // Post a comment
+  const handleComment = async (postId) => {
+    const text = (commentText[postId] || '').trim();
+    if (!text || !myId) return;
+    setCommentLoading(prev => ({ ...prev, [postId]: true }));
+    try {
+      await addDoc(collection(db, 'events', eventId, 'feedComments'), {
+        postId,
+        authorId: myId,
+        authorName: clientData?.name || 'Unknown',
+        authorPhotoURL: clientData?.photoURL || '',
+        content: text,
+        createdAt: serverTimestamp(),
+      });
+      await updateDoc(doc(db, 'events', eventId, 'feed', postId), { commentCount: increment(1) });
+      setCommentText(prev => ({ ...prev, [postId]: '' }));
+      setPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
+      ));
+      await loadComments(postId);
+    } catch (err) {
+      console.error('Comment error:', err);
+    } finally {
+      setCommentLoading(prev => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  // Delete a comment
+  const deleteComment = async (postId, commentId) => {
+    try {
+      await deleteDoc(doc(db, 'events', eventId, 'feedComments', commentId));
+      await updateDoc(doc(db, 'events', eventId, 'feed', postId), { commentCount: increment(-1) });
+      setPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, commentCount: Math.max(0, (p.commentCount || 0) - 1) } : p
+      ));
+      setComments(prev => ({ ...prev, [postId]: (prev[postId] || []).filter(c => c.id !== commentId) }));
+    } catch (err) {
+      console.error('Delete comment error:', err);
     }
   };
 
@@ -674,6 +796,68 @@ export default function EventPage() {
                     </div>
                     {post.content && <p className="evp-feed-content">{post.content}</p>}
                     {post.imageURL && <img className="evp-feed-image" src={post.imageURL} alt="" />}
+
+                    {/* Like & Comment actions */}
+                    <div className="evp-feed-actions">
+                      <button
+                        className={`evp-feed-action-btn${likedPosts.has(post.id) ? ' evp-liked' : ''}`}
+                        onClick={() => toggleLike(post.id)}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>{post.likeCount || 0}</span>
+                      </button>
+                      <button
+                        className={`evp-feed-action-btn${expandedComments.has(post.id) ? ' evp-active' : ''}`}
+                        onClick={() => toggleComments(post.id)}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>{post.commentCount || 0}</span>
+                      </button>
+                    </div>
+
+                    {/* Comments section */}
+                    {expandedComments.has(post.id) && (
+                      <div className="evp-comments">
+                        {(comments[post.id] || []).map(c => (
+                          <div key={c.id} className="evp-comment">
+                            <div className="evp-comment-avatar">
+                              {c.authorPhotoURL ? <img src={c.authorPhotoURL} alt="" /> : <span>{getInitials(c.authorName)}</span>}
+                            </div>
+                            <div className="evp-comment-body">
+                              <span className="evp-comment-name">{c.authorName}</span>
+                              <span className="evp-comment-text">{c.content}</span>
+                              {c.authorId === myId && (
+                                <button className="evp-comment-delete" onClick={() => deleteComment(post.id, c.id)}>Delete</button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {isParticipant && (
+                          <div className="evp-comment-input">
+                            <input
+                              type="text"
+                              value={commentText[post.id] || ''}
+                              onChange={e => setCommentText(prev => ({ ...prev, [post.id]: e.target.value }))}
+                              onKeyDown={e => e.key === 'Enter' && handleComment(post.id)}
+                              placeholder="Write a comment..."
+                            />
+                            <button
+                              className="evp-comment-send"
+                              onClick={() => handleComment(post.id)}
+                              disabled={commentLoading[post.id] || !(commentText[post.id] || '').trim()}
+                            >
+                              {commentLoading[post.id] ? <span className="evp-btn-spinner" /> : (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                              )}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
