@@ -942,6 +942,25 @@ export default function CoreBuddyWorkouts() {
     }
   };
 
+  // Restart the 4-week challenge (reset all progress)
+  const restartChallenge = async () => {
+    if (!currentUser || !clientData) return;
+    if (!window.confirm('Restart the 4-Week Core Challenge? All progress will be reset.')) return;
+    try {
+      await setDoc(doc(db, 'challengeProgress', clientData.id), {
+        completedDays: {},
+        startedAt: null,
+        lastUpdated: Timestamp.now(),
+      });
+      setChallengeProgress({});
+      setChallengeStartedAt(null);
+      showToast('Challenge restarted — good luck!', 'success');
+    } catch (err) {
+      console.error('Error restarting challenge:', err);
+      showToast('Failed to restart challenge', 'error');
+    }
+  };
+
   // Save workout to favourites
   const saveWorkoutToFavourites = async (name) => {
     if (!currentUser || !clientData || workout.length === 0) return;
@@ -3331,6 +3350,14 @@ export default function CoreBuddyWorkouts() {
               </div>
             );
           })}
+
+          {/* Restart button */}
+          {!!challengeStartedAt && (
+            <button className="ch-restart-btn" onClick={restartChallenge}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Restart Challenge
+            </button>
+          )}
         </main>
         <CoreBuddyNav active="workouts" />
         {toastEl}
