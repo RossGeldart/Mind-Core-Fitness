@@ -699,12 +699,14 @@ export default function CoreBuddyBuddies() {
       setEvents(evts);
 
       // Check which events user has joined
-      const joined = new Set();
-      for (const evt of evts) {
-        const partDoc = await getDoc(doc(db, 'events', evt.id, 'participants', clientId));
-        if (partDoc.exists()) joined.add(evt.id);
+      if (clientId) {
+        const joined = new Set();
+        for (const evt of evts) {
+          const partDoc = await getDoc(doc(db, 'events', evt.id, 'participants', clientId));
+          if (partDoc.exists()) joined.add(evt.id);
+        }
+        setJoinedEvents(joined);
       }
-      setJoinedEvents(joined);
     } catch (err) {
       console.error('Error loading events:', err);
     } finally {
