@@ -3,6 +3,7 @@ import {
   collection, getDocs, doc, addDoc, deleteDoc, updateDoc, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { CHALLENGES } from '../config/challengeConfig';
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -18,6 +19,7 @@ export default function AdminEvents() {
     category: 'fitness',
     startDate: '',
     endDate: '',
+    linkedChallenge: '',
   });
 
   const showToast = useCallback((message, type = 'info') => {
@@ -54,7 +56,7 @@ export default function AdminEvents() {
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: 'fitness', startDate: '', endDate: '' });
+    setForm({ title: '', description: '', category: 'fitness', startDate: '', endDate: '', linkedChallenge: '' });
     setEditingEvent(null);
     setShowForm(false);
   };
@@ -77,6 +79,7 @@ export default function AdminEvents() {
         category: form.category,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
+        linkedChallenge: form.linkedChallenge || null,
         participantCount: 0,
       };
 
@@ -105,6 +108,7 @@ export default function AdminEvents() {
       category: evt.category || 'fitness',
       startDate: evt.startDate.toISOString().split('T')[0],
       endDate: evt.endDate.toISOString().split('T')[0],
+      linkedChallenge: evt.linkedChallenge || '',
     });
     setEditingEvent(evt);
     setShowForm(true);
@@ -189,6 +193,22 @@ export default function AdminEvents() {
           </div>
           <div className="admin-events-form-row">
             <div className="admin-events-form-group">
+              <label>Link Challenge (optional)</label>
+              <select
+                value={form.linkedChallenge}
+                onChange={e => setForm(f => ({ ...f, linkedChallenge: e.target.value }))}
+              >
+                <option value="">None — no challenge linked</option>
+                {CHALLENGES.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} — {c.description}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="admin-events-form-row">
+            <div className="admin-events-form-group">
               <label>Start Date</label>
               <input
                 type="date"
@@ -236,6 +256,11 @@ export default function AdminEvents() {
               </div>
               <h4 className="admin-event-title">{evt.title}</h4>
               {evt.description && <p className="admin-event-desc">{evt.description}</p>}
+              {evt.linkedChallenge && (
+                <p className="admin-event-linked">
+                  🔗 {CHALLENGES.find(c => c.id === evt.linkedChallenge)?.name || evt.linkedChallenge}
+                </p>
+              )}
               <div className="admin-event-dates">
                 {formatDate(evt.startDate)} — {formatDate(evt.endDate)}
                 {evt.participantCount > 0 && (

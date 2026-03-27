@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc,
-  updateDoc, increment, serverTimestamp, Timestamp, orderBy
+  serverTimestamp, Timestamp, orderBy
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -68,8 +68,9 @@ function compressImage(file, maxW = 800, quality = 0.7) {
 export default function EventPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { clientId, clientDoc } = useAuth();
+  const { clientData } = useAuth();
   const { theme } = useTheme();
+  const myId = clientData?.id;
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +79,7 @@ export default function EventPage() {
   // Leaderboard
   const [leaderboard, setLeaderboard] = useState([]);
   const [lbLoading, setLbLoading] = useState(false);
-  const [lbTab, setLbTab] = useState(null); // set after event loads
+  const [lbTab, setLbTab] = useState(null);
   const [participants, setParticipants] = useState([]);
 
   // Feed
@@ -110,7 +111,6 @@ export default function EventPage() {
       const evt = { id: snap.id, ...data, startDate: start, endDate: end, status };
       setEvent(evt);
 
-      // Set default leaderboard tab based on category
       const config = CATEGORY_CONFIG[evt.category] || CATEGORY_CONFIG.fitness;
       setLbTab(config.tabs[0]);
     } catch (err) {
@@ -133,7 +133,11 @@ export default function EventPage() {
 
   // Fetch leaderboard stats from real data
   const fetchLeaderboard = useCallback(async () => {
-    if (!event || participants.length === 0) return;
+    if (!event || participants.length === 0) {
+      setLeaderboard([]);
+      setLbLoading(false);
+      return;
+    }
     setLbLoading(true);
     try {
       const config = CATEGORY_CONFIG[event.category] || CATEGORY_CONFIG.fitness;
@@ -216,7 +220,6 @@ export default function EventPage() {
             const data = d.data();
             const s = stats[data.clientId];
             if (!s) return;
-            // Count days with at least some habits completed
             const completed = Object.values(data.habits || {}).filter(Boolean).length;
             if (completed > 0) s.completion++;
           });
@@ -246,16 +249,15 @@ export default function EventPage() {
 
       setLeaderboard(sorted);
 
-      // Set my progress
-      if (stats[clientId]) {
-        setMyProgress(stats[clientId]);
+      if (myId && stats[myId]) {
+        setMyProgress(stats[myId]);
       }
     } catch (err) {
       console.error('Error building leaderboard:', err);
     } finally {
       setLbLoading(false);
     }
-  }, [event, participants, lbTab, clientId]);
+  }, [event, participants, lbTab, myId]);
 
   // Fetch event feed
   const fetchPosts = useCallback(async () => {
@@ -282,14 +284,14 @@ export default function EventPage() {
       let imageURL = '';
       if (postImage) {
         const compressed = await compressImage(postImage);
-        const storageRef = ref(storage, `events/${eventId}/feed/${clientId}_${Date.now()}.jpg`);
+        const storageRef = ref(storage, `events/${eventId}/feed/${myId}_${Date.now()}.jpg`);
         await uploadBytes(storageRef, compressed);
         imageURL = await getDownloadURL(storageRef);
       }
       await addDoc(collection(db, 'events', eventId, 'feed'), {
-        authorId: clientId,
-        authorName: clientDoc?.name || 'Unknown',
-        authorPhotoURL: clientDoc?.photoURL || '',
+        authorId: myId,
+        authorName: clientData?.name || 'Unknown',
+        authorPhotoURL: clientData?.photoURL || '',
         content: postText.trim(),
         imageURL,
         createdAt: serverTimestamp(),
@@ -327,8 +329,9 @@ export default function EventPage() {
   // Initial load
   useEffect(() => { fetchEvent(); }, [fetchEvent]);
   useEffect(() => { if (event) fetchParticipants(); }, [event, fetchParticipants]);
+  // Fetch leaderboard on overview and leaderboard tabs
   useEffect(() => {
-    if (activeTab === 'leaderboard' && event && participants.length > 0) fetchLeaderboard();
+    if ((activeTab === 'leaderboard' || activeTab === 'overview') && event && participants.length > 0) fetchLeaderboard();
   }, [activeTab, event, participants, lbTab, fetchLeaderboard]);
   useEffect(() => {
     if (activeTab === 'feed' && event) fetchPosts();
@@ -336,9 +339,8 @@ export default function EventPage() {
 
   const formatDate = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
-  const isParticipant = participants.some(p => p.id === clientId);
+  const isParticipant = participants.some(p => p.id === myId);
 
-  // Calculate days progress
   const getDaysInfo = () => {
     if (!event) return { total: 0, elapsed: 0, remaining: 0, pct: 0 };
     const now = new Date();
@@ -380,6 +382,32 @@ export default function EventPage() {
   const config = CATEGORY_CONFIG[event.category] || CATEGORY_CONFIG.fitness;
   const days = getDaysInfo();
 
+  // Render leaderboard rankings (reused in both simple list and below podium)
+  const renderRankings = (entries, startRank) => (
+    <div className="evp-rankings">
+      {entries.map((entry, i) => {
+        const rank = startRank + i;
+        return (
+          <div key={entry.id} className={`evp-rank-item ${entry.id === myId ? 'evp-rank-you' : ''}`}>
+            <span className="evp-rank-num">{rank}</span>
+            <div className="evp-rank-avatar">
+              {entry.photoURL ? (
+                <img src={entry.photoURL} alt="" />
+              ) : (
+                <span>{getInitials(entry.name)}</span>
+              )}
+            </div>
+            <span className="evp-rank-name">
+              {entry.name}
+              {entry.id === myId && <span className="evp-you-badge">You</span>}
+            </span>
+            <span className="evp-rank-stat">{getStatValue(entry, lbTab)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div className={`evp-page ${theme}`}>
       {/* Header */}
@@ -408,283 +436,251 @@ export default function EventPage() {
         ))}
       </div>
 
-      {/* ── Overview Tab ── */}
-      {activeTab === 'overview' && (
-        <div className="evp-content">
-          <div className="evp-overview-card">
-            <p className="evp-desc">{event.description}</p>
-            <div className="evp-overview-meta">
-              <span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                {formatDate(event.startDate)} — {formatDate(event.endDate)}
-              </span>
-              <span className="evp-category-badge">{event.category}</span>
-              <span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                {participants.length} joined
-              </span>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          {event.status === 'active' && (
-            <div className="evp-progress-section">
-              <h3>Event Progress</h3>
-              <div className="evp-progress-bar-track">
-                <div className="evp-progress-bar-fill" style={{ width: `${days.pct}%` }} />
-              </div>
-              <div className="evp-progress-labels">
-                <span>Day {days.elapsed} of {days.total}</span>
-                <span>{days.remaining} days left</span>
+      <div className="evp-main">
+        {/* ── Overview Tab ── */}
+        {activeTab === 'overview' && (
+          <div className="evp-content">
+            <div className="evp-overview-card">
+              <p className="evp-desc">{event.description}</p>
+              <div className="evp-overview-meta">
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  {formatDate(event.startDate)} — {formatDate(event.endDate)}
+                </span>
+                <span className="evp-category-badge">{event.category}</span>
+                <span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                  {participants.length} joined
+                </span>
               </div>
             </div>
-          )}
 
-          {event.status === 'upcoming' && (
-            <div className="evp-countdown">
-              <h3>Starts In</h3>
-              <p className="evp-countdown-value">
-                {Math.max(0, Math.ceil((event.startDate - new Date()) / (1000 * 60 * 60 * 24)))} days
-              </p>
-            </div>
-          )}
-
-          {/* My progress (if participating and event active/completed) */}
-          {isParticipant && myProgress && event.status !== 'upcoming' && (
-            <div className="evp-my-progress">
-              <h3>My Stats</h3>
-              <div className="evp-my-stats-grid">
-                {config.tabs.map(key => (
-                  <div key={key} className="evp-my-stat">
-                    <span className="evp-my-stat-value">{getStatValue(myProgress, key)}</span>
-                    <span className="evp-my-stat-label">{getStatLabel(key)}</span>
-                  </div>
-                ))}
+            {/* Progress bar */}
+            {event.status === 'active' && (
+              <div className="evp-progress-section">
+                <h3>Event Progress</h3>
+                <div className="evp-progress-bar-track">
+                  <div className="evp-progress-bar-fill" style={{ width: `${days.pct}%` }} />
+                </div>
+                <div className="evp-progress-labels">
+                  <span>Day {days.elapsed} of {days.total}</span>
+                  <span>{days.remaining} days left</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Day-by-day tracker */}
-          {isParticipant && event.status === 'active' && (
-            <div className="evp-day-tracker">
-              <h3>Daily Tracker</h3>
-              <div className="evp-day-grid">
-                {Array.from({ length: days.total }, (_, i) => {
-                  const dayNum = i + 1;
-                  const isToday = dayNum === days.elapsed;
-                  const isPast = dayNum < days.elapsed;
-                  return (
-                    <div
-                      key={i}
-                      className={`evp-day-cell ${isPast ? 'evp-day-past' : ''} ${isToday ? 'evp-day-today' : ''}`}
-                    >
-                      {dayNum}
+            {event.status === 'upcoming' && (
+              <div className="evp-countdown">
+                <h3>Starts In</h3>
+                <p className="evp-countdown-value">
+                  {Math.max(0, Math.ceil((event.startDate - new Date()) / (1000 * 60 * 60 * 24)))} days
+                </p>
+              </div>
+            )}
+
+            {/* My progress */}
+            {isParticipant && myProgress && event.status !== 'upcoming' && (
+              <div className="evp-my-progress">
+                <h3>My Stats</h3>
+                <div className="evp-my-stats-grid">
+                  {config.tabs.map(key => (
+                    <div key={key} className="evp-my-stat">
+                      <span className="evp-my-stat-value">{getStatValue(myProgress, key)}</span>
+                      <span className="evp-my-stat-label">{getStatLabel(key)}</span>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
 
-      {/* ── Leaderboard Tab ── */}
-      {activeTab === 'leaderboard' && (
-        <div className="evp-content">
-          {/* Leaderboard stat tabs */}
-          {config.tabs.length > 1 && (
-            <div className="evp-lb-tabs">
-              {config.tabs.map(t => (
-                <button
-                  key={t}
-                  className={`evp-lb-tab ${lbTab === t ? 'evp-lb-tab-active' : ''}`}
-                  onClick={() => setLbTab(t)}
-                >
-                  {getStatLabel(t)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {lbLoading ? (
-            <div className="evp-content-loading"><div className="evp-spinner" /></div>
-          ) : leaderboard.length === 0 ? (
-            <div className="evp-empty">
-              <p>No activity yet. Start logging to climb the leaderboard!</p>
-            </div>
-          ) : (
-            <>
-              {/* Podium - top 3 */}
-              {leaderboard.length >= 3 && (
-                <div className="evp-podium">
-                  {[1, 0, 2].map(idx => {
-                    const entry = leaderboard[idx];
-                    if (!entry) return null;
-                    const rank = idx + 1;
+            {/* Day-by-day tracker */}
+            {isParticipant && event.status === 'active' && (
+              <div className="evp-day-tracker">
+                <h3>Daily Tracker</h3>
+                <div className="evp-day-grid">
+                  {Array.from({ length: days.total }, (_, i) => {
+                    const dayNum = i + 1;
+                    const isToday = dayNum === days.elapsed;
+                    const isPast = dayNum < days.elapsed;
                     return (
-                      <div key={entry.id} className={`evp-podium-card evp-podium-${rank}`}>
-                        <div className="evp-podium-avatar" style={{ borderColor: MEDAL_COLORS[idx] }}>
-                          {entry.photoURL ? (
-                            <img src={entry.photoURL} alt="" />
-                          ) : (
-                            <span>{getInitials(entry.name)}</span>
-                          )}
-                        </div>
-                        <span className="evp-podium-name">
-                          {entry.name.split(' ')[0]}
-                          {entry.id === clientId && <span className="evp-you-badge">You</span>}
-                        </span>
-                        <span className="evp-podium-stat">{getStatValue(entry, lbTab)}</span>
-                        <div className="evp-podium-rank" style={{ background: MEDAL_COLORS[idx] }}>
-                          {rank === 1 && (
-                            <svg className="evp-crown" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700"><path d="M2 20h20L19 9l-5 4-2-6-2 6-5-4-3 11z"/></svg>
-                          )}
-                          {rank}
-                        </div>
+                      <div
+                        key={i}
+                        className={`evp-day-cell ${isPast ? 'evp-day-past' : ''} ${isToday ? 'evp-day-today' : ''}`}
+                      >
+                        {dayNum}
                       </div>
                     );
                   })}
                 </div>
-              )}
-
-              {/* Rankings list */}
-              <div className="evp-rankings">
-                {leaderboard.slice(leaderboard.length >= 3 ? 3 : 0).map((entry, i) => {
-                  const rank = (leaderboard.length >= 3 ? 3 : 0) + i + 1;
-                  return (
-                    <div key={entry.id} className={`evp-rank-item ${entry.id === clientId ? 'evp-rank-you' : ''}`}>
-                      <span className="evp-rank-num">{rank}</span>
-                      <div className="evp-rank-avatar">
-                        {entry.photoURL ? (
-                          <img src={entry.photoURL} alt="" />
-                        ) : (
-                          <span>{getInitials(entry.name)}</span>
-                        )}
-                      </div>
-                      <span className="evp-rank-name">
-                        {entry.name}
-                        {entry.id === clientId && <span className="evp-you-badge">You</span>}
-                      </span>
-                      <span className="evp-rank-stat">{getStatValue(entry, lbTab)}</span>
-                    </div>
-                  );
-                })}
               </div>
+            )}
+          </div>
+        )}
 
-              {/* If less than 3 participants, show simple list */}
-              {leaderboard.length < 3 && leaderboard.length > 0 && (
-                <div className="evp-rankings">
-                  {leaderboard.map((entry, i) => (
-                    <div key={entry.id} className={`evp-rank-item ${entry.id === clientId ? 'evp-rank-you' : ''}`}>
-                      <span className="evp-rank-num">{i + 1}</span>
-                      <div className="evp-rank-avatar">
-                        {entry.photoURL ? (
-                          <img src={entry.photoURL} alt="" />
-                        ) : (
-                          <span>{getInitials(entry.name)}</span>
-                        )}
-                      </div>
-                      <span className="evp-rank-name">
-                        {entry.name}
-                        {entry.id === clientId && <span className="evp-you-badge">You</span>}
-                      </span>
-                      <span className="evp-rank-stat">{getStatValue(entry, lbTab)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
+        {/* ── Leaderboard Tab ── */}
+        {activeTab === 'leaderboard' && (
+          <div className="evp-content">
+            {/* Leaderboard stat tabs */}
+            {config.tabs.length > 1 && (
+              <div className="evp-lb-tabs">
+                {config.tabs.map(t => (
+                  <button
+                    key={t}
+                    className={`evp-lb-tab ${lbTab === t ? 'evp-lb-tab-active' : ''}`}
+                    onClick={() => setLbTab(t)}
+                  >
+                    {getStatLabel(t)}
+                  </button>
+                ))}
+              </div>
+            )}
 
-      {/* ── Feed Tab ── */}
-      {activeTab === 'feed' && (
-        <div className="evp-content">
-          {/* Compose */}
-          {isParticipant && event.status === 'active' && (
-            <div className="evp-compose">
-              <div className="evp-compose-avatar">
-                {clientDoc?.photoURL ? (
-                  <img src={clientDoc.photoURL} alt="" />
-                ) : (
-                  <span>{getInitials(clientDoc?.name)}</span>
+            {lbLoading ? (
+              <div className="evp-content-loading"><div className="evp-spinner" /></div>
+            ) : leaderboard.length === 0 ? (
+              <div className="evp-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <p>No participants yet. Be the first to join!</p>
+              </div>
+            ) : (
+              <>
+                {/* Podium - top 3 */}
+                {leaderboard.length >= 3 && (
+                  <div className="evp-podium">
+                    {[1, 0, 2].map(idx => {
+                      const entry = leaderboard[idx];
+                      if (!entry) return null;
+                      const rank = idx + 1;
+                      return (
+                        <div key={entry.id} className={`evp-podium-card evp-podium-${rank}`}>
+                          <div className="evp-podium-avatar" style={{ borderColor: MEDAL_COLORS[idx] }}>
+                            {entry.photoURL ? (
+                              <img src={entry.photoURL} alt="" />
+                            ) : (
+                              <span>{getInitials(entry.name)}</span>
+                            )}
+                          </div>
+                          <span className="evp-podium-name">
+                            {entry.name.split(' ')[0]}
+                            {entry.id === myId && <span className="evp-you-badge">You</span>}
+                          </span>
+                          <span className="evp-podium-stat">{getStatValue(entry, lbTab)}</span>
+                          <div className="evp-podium-rank" style={{ background: MEDAL_COLORS[idx] }}>
+                            {rank === 1 && (
+                              <svg className="evp-crown" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700"><path d="M2 20h20L19 9l-5 4-2-6-2 6-5-4-3 11z"/></svg>
+                            )}
+                            {rank}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
-              </div>
-              <div className="evp-compose-body">
-                <textarea
-                  ref={textRef}
-                  value={postText}
-                  onChange={e => setPostText(e.target.value)}
-                  placeholder="Share your progress..."
-                  rows={2}
-                  maxLength={500}
-                />
-                {postImagePreview && (
-                  <div className="evp-compose-preview">
-                    <img src={postImagePreview} alt="" />
-                    <button onClick={() => { setPostImage(null); setPostImagePreview(null); }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+
+                {/* Rankings list */}
+                {leaderboard.length >= 3
+                  ? renderRankings(leaderboard.slice(3), 4)
+                  : renderRankings(leaderboard, 1)
+                }
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── Feed Tab ── */}
+        {activeTab === 'feed' && (
+          <div className="evp-content">
+            {/* Compose */}
+            {isParticipant && event.status === 'active' && (
+              <div className="evp-compose">
+                <div className="evp-compose-avatar">
+                  {clientData?.photoURL ? (
+                    <img src={clientData.photoURL} alt="" />
+                  ) : (
+                    <span>{getInitials(clientData?.name)}</span>
+                  )}
+                </div>
+                <div className="evp-compose-body">
+                  <textarea
+                    ref={textRef}
+                    value={postText}
+                    onChange={e => setPostText(e.target.value)}
+                    placeholder="Share your progress..."
+                    rows={2}
+                    maxLength={500}
+                  />
+                  {postImagePreview && (
+                    <div className="evp-compose-preview">
+                      <img src={postImagePreview} alt="" />
+                      <button onClick={() => { setPostImage(null); setPostImagePreview(null); }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+                  )}
+                  <div className="evp-compose-actions">
+                    <button onClick={() => fileRef.current?.click()}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </button>
+                    <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleImageSelect} />
+                    <button
+                      className="evp-post-btn"
+                      onClick={handlePost}
+                      disabled={posting || (!postText.trim() && !postImage)}
+                    >
+                      {posting ? <span className="evp-btn-spinner" /> : 'Post'}
                     </button>
                   </div>
-                )}
-                <div className="evp-compose-actions">
-                  <button onClick={() => fileRef.current?.click()}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  </button>
-                  <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleImageSelect} />
-                  <button
-                    className="evp-post-btn"
-                    onClick={handlePost}
-                    disabled={posting || (!postText.trim() && !postImage)}
-                  >
-                    {posting ? <span className="evp-btn-spinner" /> : 'Post'}
-                  </button>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {postsLoading ? (
-            <div className="evp-content-loading"><div className="evp-spinner" /></div>
-          ) : posts.length === 0 ? (
-            <div className="evp-empty">
-              <p>No posts yet. Be the first to share your progress!</p>
-            </div>
-          ) : (
-            <div className="evp-feed">
-              {posts.map(post => (
-                <div key={post.id} className="evp-feed-post">
-                  <div className="evp-feed-post-header">
-                    <div className="evp-feed-avatar">
-                      {post.authorPhotoURL ? (
-                        <img src={post.authorPhotoURL} alt="" />
-                      ) : (
-                        <span>{getInitials(post.authorName)}</span>
+            {postsLoading ? (
+              <div className="evp-content-loading"><div className="evp-spinner" /></div>
+            ) : posts.length === 0 ? (
+              <div className="evp-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <p>No posts yet. Be the first to share your progress!</p>
+              </div>
+            ) : (
+              <div className="evp-feed">
+                {posts.map(post => (
+                  <div key={post.id} className="evp-feed-post">
+                    <div className="evp-feed-post-header">
+                      <div className="evp-feed-avatar">
+                        {post.authorPhotoURL ? (
+                          <img src={post.authorPhotoURL} alt="" />
+                        ) : (
+                          <span>{getInitials(post.authorName)}</span>
+                        )}
+                      </div>
+                      <div className="evp-feed-post-info">
+                        <span className="evp-feed-name">{post.authorName}</span>
+                        <span className="evp-feed-time">
+                          {post.createdAt?.toDate?.()
+                            ? timeAgo(post.createdAt.toDate())
+                            : ''}
+                        </span>
+                      </div>
+                      {post.authorId === myId && (
+                        <button className="evp-feed-delete" onClick={() => deletePost(post.id)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
                       )}
                     </div>
-                    <div className="evp-feed-post-info">
-                      <span className="evp-feed-name">{post.authorName}</span>
-                      <span className="evp-feed-time">
-                        {post.createdAt?.toDate?.()
-                          ? timeAgo(post.createdAt.toDate())
-                          : ''}
-                      </span>
-                    </div>
-                    {post.authorId === clientId && (
-                      <button className="evp-feed-delete" onClick={() => deletePost(post.id)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                      </button>
-                    )}
+                    {post.content && <p className="evp-feed-content">{post.content}</p>}
+                    {post.imageURL && <img className="evp-feed-image" src={post.imageURL} alt="" />}
                   </div>
-                  {post.content && <p className="evp-feed-content">{post.content}</p>}
-                  {post.imageURL && <img className="evp-feed-image" src={post.imageURL} alt="" />}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <CoreBuddyNav active="community" />
     </div>
