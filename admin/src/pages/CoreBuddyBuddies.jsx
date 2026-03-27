@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
   updateDoc, increment, serverTimestamp, Timestamp, orderBy
@@ -37,13 +37,32 @@ function timeAgo(date) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
+function compressImage(file, maxSize = 800) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width;
+      let h = img.height;
+      if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; } }
+      else { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; } }
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export default function CoreBuddyBuddies() {
   const { currentUser, isClient, clientData, loading: authLoading } = useAuth();
   const { isPremium, FREE_BUDDY_LIMIT } = useTier();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [tab, setTab] = useState('feed');            // feed | buddies | requests | search
+  const [tab, setTab] = useState('feed');            // feed | buddies | events | requests | search
   const [buddies, setBuddies] = useState([]);       // confirmed buddy client objects
   const [incoming, setIncoming] = useState([]);      // pending incoming requests
   const [outgoing, setOutgoing] = useState([]);      // pending outgoing requests
@@ -75,6 +94,18 @@ export default function CoreBuddyBuddies() {
   const [mentionActive, setMentionActive] = useState(false);
   const [mentionTarget, setMentionTarget] = useState(null);
   const [mentionResults, setMentionResults] = useState([]);
+
+  // Compose state
+  const [composeText, setComposeText] = useState('');
+  const [composeImage, setComposeImage] = useState(null);
+  const [composeImagePreview, setComposeImagePreview] = useState(null);
+  const [composePosting, setComposePosting] = useState(false);
+  const composeTextRef = useRef(null);
+  const composeFileRef = useRef(null);
+
+  // Events state
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -547,6 +578,146 @@ export default function CoreBuddyBuddies() {
     if (commentFileRefs.current[postId]) commentFileRefs.current[postId].value = '';
   };
 
+  // ── Compose functions ──
+  const handleComposeImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (composeFileRef.current) composeFileRef.current.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please select an image file', 'error'); return; }
+    setComposeImage(file);
+    setComposeImagePreview(URL.createObjectURL(file));
+  };
+
+  const clearComposeImage = () => {
+    setComposeImage(null);
+    if (composeImagePreview) URL.revokeObjectURL(composeImagePreview);
+    setComposeImagePreview(null);
+    if (composeFileRef.current) composeFileRef.current.value = '';
+  };
+
+  const handleComposeTextInput = (e) => {
+    setComposeText(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+    handleMentionInput(e.target.value, 'compose');
+  };
+
+  const handleComposePost = async () => {
+    if ((!composeText.trim() && !composeImage) || composePosting || !clientData) return;
+    setComposePosting(true);
+    try {
+      let imageURL = null;
+      if (composeImage) {
+        const compressed = await compressImage(composeImage);
+        const imgId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const storageRef = ref(storage, `postImages/${clientData.id}/${imgId}`);
+        await uploadBytes(storageRef, compressed);
+        imageURL = await getDownloadURL(storageRef);
+      }
+      await addDoc(collection(db, 'posts'), {
+        authorId: clientData.id,
+        authorName: clientData.name || currentUser?.displayName || clientData.email || 'Unknown',
+        authorPhotoURL: clientData.photoURL || null,
+        content: composeText.trim(),
+        type: imageURL ? 'image' : 'text',
+        imageURL: imageURL || null,
+        createdAt: serverTimestamp(),
+        likeCount: 0,
+        commentCount: 0
+      });
+      // Notify @mentioned users
+      const postText = composeText.trim();
+      const notified = new Set();
+      const hasEveryone = /(?:^|\s)@everyone(?:\s|$|[.,!?])/.test(postText) || postText === '@everyone';
+      if (hasEveryone) {
+        buddies.forEach(c => {
+          if (c.id && !notified.has(c.id)) {
+            notified.add(c.id);
+            createNotification(c.id, 'mention');
+          }
+        });
+      }
+      const mentionMatches = postText.match(/@[\w\s]+?(?=\s@|\s*$|[.,!?])/g);
+      if (mentionMatches) {
+        mentionMatches.forEach(m => {
+          const name = m.slice(1).trim();
+          if (name.toLowerCase() === 'everyone') return;
+          const client = buddies.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+          if (client && !notified.has(client.id)) {
+            notified.add(client.id);
+            createNotification(client.id, 'mention');
+          }
+        });
+      }
+      setComposeText('');
+      clearComposeImage();
+      if (composeTextRef.current) composeTextRef.current.style.height = 'auto';
+      await fetchFeed();
+      showToast('Posted!', 'success');
+    } catch (err) {
+      console.error('Error posting:', err);
+      showToast(err?.message || 'Failed to post', 'error');
+    } finally {
+      setComposePosting(false);
+    }
+  };
+
+  // Update insertMention to handle 'compose' target
+  const insertComposeMention = (client) => {
+    const el = composeTextRef.current;
+    const text = composeText;
+    const cursorPos = el?.selectionStart ?? text.length;
+    const before = text.slice(0, cursorPos);
+    const after = text.slice(cursorPos);
+    const replaced = before.replace(/@\w*$/, `@${client.name} `);
+    setComposeText(replaced + after);
+    setTimeout(() => { el?.focus(); el.selectionStart = el.selectionEnd = replaced.length; }, 0);
+    setMentionActive(false);
+    setMentionResults([]);
+  };
+
+  // ── Events functions ──
+  const fetchEvents = useCallback(async () => {
+    setEventsLoading(true);
+    try {
+      const snap = await getDocs(collection(db, 'events'));
+      const now = new Date();
+      const evts = snap.docs.map(d => {
+        const data = d.data();
+        const start = data.startDate?.toDate?.() || new Date(data.startDate);
+        const end = data.endDate?.toDate?.() || new Date(data.endDate);
+        let status = 'upcoming';
+        if (now >= start && now <= end) status = 'active';
+        else if (now > end) status = 'completed';
+        return { id: d.id, ...data, startDate: start, endDate: end, status };
+      }).sort((a, b) => {
+        const order = { active: 0, upcoming: 1, completed: 2 };
+        return (order[a.status] ?? 3) - (order[b.status] ?? 3) || a.startDate - b.startDate;
+      });
+      setEvents(evts);
+    } catch (err) {
+      console.error('Error loading events:', err);
+    } finally {
+      setEventsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'events') fetchEvents();
+  }, [tab, fetchEvents]);
+
+  // Handle scrollToPost from notification navigation
+  useEffect(() => {
+    const scrollToPost = location.state?.scrollToPost;
+    if (scrollToPost) {
+      setTab('feed');
+      setTimeout(() => {
+        const el = document.getElementById(`post-${scrollToPost}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [location.state]);
+
   const pendingCount = incoming.length;
 
   if (authLoading) {
@@ -576,13 +747,17 @@ export default function CoreBuddyBuddies() {
       </header>
 
       <main className="bdy-main">
-        <h1 className="bdy-title">Buddies</h1>
+        <h1 className="bdy-title">Community</h1>
 
         {/* Tabs */}
         <div className="bdy-tabs">
           <button className={`bdy-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => { setTab('feed'); trackBuddyTabChanged('feed'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
             <span>Feed</span>
+          </button>
+          <button className={`bdy-tab${tab === 'events' ? ' active' : ''}`} onClick={() => { setTab('events'); trackBuddyTabChanged('events'); }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Events</span>
           </button>
           <button className={`bdy-tab${tab === 'buddies' ? ' active' : ''}`} onClick={() => { setTab('buddies'); trackBuddyTabChanged('buddies'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -603,7 +778,59 @@ export default function CoreBuddyBuddies() {
             {tab === 'feed' && (
               <div className="bdy-section">
 
-                {buddies.length === 0 ? (
+                {/* Compose box — premium only */}
+                {isPremium && (
+                  <div className="bdy-compose">
+                    <div className="bdy-compose-avatar">
+                      {clientData?.photoURL ? (
+                        <img src={clientData.photoURL} alt="" />
+                      ) : (
+                        <span>{getInitials(clientData?.name)}</span>
+                      )}
+                    </div>
+                    <div className="bdy-compose-body" style={{ position: 'relative' }}>
+                      <textarea
+                        ref={composeTextRef}
+                        placeholder="Share your progress... (use @ to mention)"
+                        value={composeText}
+                        onChange={handleComposeTextInput}
+                        rows={1}
+                        maxLength={2000}
+                      />
+                      {mentionActive && mentionTarget === 'compose' && mentionResults.length > 0 && (
+                        <div className="bdy-feed-mention-dropdown">
+                          {mentionResults.map(c => (
+                            <button key={c.id} className="mention-option" onClick={() => insertComposeMention(c)}>
+                              <div className="mention-option-avatar">
+                                {c.id === '__everyone__' ? <span>@</span> : c.photoURL ? <img src={c.photoURL} alt="" /> : <span>{getInitials(c.name)}</span>}
+                              </div>
+                              <span>{c.id === '__everyone__' ? 'everyone — notify all buddies' : c.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {composeImagePreview && (
+                        <div className="bdy-compose-img-preview">
+                          <img src={composeImagePreview} alt="Preview" />
+                          <button className="bdy-compose-img-remove" onClick={clearComposeImage} aria-label="Remove image">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" /></svg>
+                          </button>
+                        </div>
+                      )}
+                      <div className="bdy-compose-actions">
+                        <button className="bdy-compose-img-btn" onClick={() => composeFileRef.current?.click()} aria-label="Add image">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </button>
+                        <input ref={composeFileRef} type="file" accept="image/*" onChange={handleComposeImageSelect} hidden />
+                        <button className="bdy-compose-post-btn" onClick={handleComposePost} disabled={composePosting || (!composeText.trim() && !composeImage)}>
+                          {composePosting ? <div className="bdy-btn-spinner" /> : 'Post'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {buddies.length === 0 && !isPremium ? (
                   <div className="bdy-empty">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
                     <h3>No buddies yet</h3>
@@ -794,6 +1021,55 @@ export default function CoreBuddyBuddies() {
                             </div>
                           </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Events ── */}
+            {tab === 'events' && (
+              <div className="bdy-section">
+                {eventsLoading ? (
+                  <div className="bdy-content-loading"><div className="bdy-spinner" /></div>
+                ) : events.length === 0 ? (
+                  <div className="bdy-events-empty">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                      <path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>
+                      <path d="M8 18h.01"/><path d="M12 18h.01"/>
+                    </svg>
+                    <h3>Community Events</h3>
+                    <p>Monthly fitness events to keep you motivated with your community. From 30-day challenges to habit-building programmes — check back soon for upcoming events!</p>
+                  </div>
+                ) : (
+                  <div className="bdy-events-list">
+                    {events.map(evt => (
+                      <div key={evt.id} className={`bdy-event-card bdy-event-${evt.status}`}>
+                        <div className="bdy-event-status-badge">
+                          {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+                        </div>
+                        <h3 className="bdy-event-title">{evt.title}</h3>
+                        <p className="bdy-event-desc">{evt.description}</p>
+                        <div className="bdy-event-meta">
+                          <span className="bdy-event-date">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {evt.startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} — {evt.endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                          </span>
+                          {evt.category && (
+                            <span className="bdy-event-category">{evt.category}</span>
+                          )}
+                          {evt.participantCount > 0 && (
+                            <span className="bdy-event-participants">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                              {evt.participantCount} joined
+                            </span>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1008,7 +1284,7 @@ export default function CoreBuddyBuddies() {
         )}
       </main>
 
-      <CoreBuddyNav active="buddies" />
+      <CoreBuddyNav active="community" />
 
       {/* FAB Button */}
       <button
