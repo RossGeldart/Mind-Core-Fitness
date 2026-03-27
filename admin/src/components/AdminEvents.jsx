@@ -3,7 +3,12 @@ import {
   collection, getDocs, doc, addDoc, deleteDoc, updateDoc, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { CHALLENGES } from '../config/challengeConfig';
+
+const WORKOUT_FEATURES = [
+  { id: 'randomiser', name: 'Randomiser', description: 'Generate random HIIT workouts' },
+  { id: 'byo', name: 'Build Your Own', description: 'Pick exercises and build custom workouts' },
+  { id: 'challenges', name: '4-Week Core Challenge', description: '28-day progressive HIIT challenge' },
+];
 
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -193,15 +198,15 @@ export default function AdminEvents() {
           </div>
           <div className="admin-events-form-row">
             <div className="admin-events-form-group">
-              <label>Link Challenge (optional)</label>
+              <label>Link Workout Feature (optional)</label>
               <select
                 value={form.linkedChallenge}
                 onChange={e => setForm(f => ({ ...f, linkedChallenge: e.target.value }))}
               >
-                <option value="">None — no challenge linked</option>
-                {CHALLENGES.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} — {c.description}
+                <option value="">None — no feature linked</option>
+                {WORKOUT_FEATURES.map(f => (
+                  <option key={f.id} value={f.id}>
+                    {f.name} — {f.description}
                   </option>
                 ))}
               </select>
@@ -258,7 +263,7 @@ export default function AdminEvents() {
               {evt.description && <p className="admin-event-desc">{evt.description}</p>}
               {evt.linkedChallenge && (
                 <p className="admin-event-linked">
-                  🔗 {CHALLENGES.find(c => c.id === evt.linkedChallenge)?.name || evt.linkedChallenge}
+                  🔗 {WORKOUT_FEATURES.find(f => f.id === evt.linkedChallenge)?.name || evt.linkedChallenge}
                 </p>
               )}
               <div className="admin-event-dates">
