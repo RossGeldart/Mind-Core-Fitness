@@ -31,6 +31,10 @@ const NOTIF_MESSAGES = {
   like: (name) => ({ title: 'Post Liked', body: `${name} liked your post` }),
   comment: (name) => ({ title: 'New Comment', body: `${name} commented on your post` }),
   mention: (name) => ({ title: 'You Were Mentioned', body: `${name} mentioned you in a comment` }),
+  event_like: (name) => ({ title: 'Event Post Liked', body: `${name} liked your event post` }),
+  event_comment: (name) => ({ title: 'New Event Comment', body: `${name} commented on your event post` }),
+  event_join: (name) => ({ title: 'New Participant', body: `${name} joined your event` }),
+  event_reminder: () => null, // handled by title/body on the notification doc
   announcement: () => null, // handled by title/body on the notification doc
   daily_morning: () => null, // handled by rotating messages below
   daily_evening: () => null,
@@ -256,6 +260,78 @@ exports.dailyEveningNotification = onSchedule(
 
     if (count > 0) await batch.commit();
     console.log(`Evening notification created for ${count} clients`);
+  }
+);
+
+/**
+ * Event reminders — runs every morning at 8 AM UK time.
+ * - "Starting today" for events whose startDate is today
+ * - "Starting tomorrow" for events whose startDate is tomorrow
+ * - "Ending today" for events whose endDate is today
+ * Sends to all participants of the event who have event_reminder enabled.
+ */
+exports.eventReminders = onSchedule(
+  { schedule: '0 8 * * *', timeZone: 'Europe/London', region: 'europe-west2' },
+  async () => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    // Helper to get date string from Firestore Timestamp
+    const toDateStr = (ts) => {
+      if (!ts) return '';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toISOString().split('T')[0];
+    };
+
+    const eventsSnap = await db.collection('events').get();
+    let count = 0;
+    const batch = db.batch();
+
+    for (const eventDoc of eventsSnap.docs) {
+      const evt = eventDoc.data();
+      const startStr = toDateStr(evt.startDate);
+      const endStr = toDateStr(evt.endDate);
+
+      let title = '';
+      let body = '';
+
+      if (startStr === todayStr) {
+        title = 'Event Starting Today!';
+        body = `"${evt.title}" kicks off today — let's go!`;
+      } else if (startStr === tomorrowStr) {
+        title = 'Event Starts Tomorrow';
+        body = `"${evt.title}" begins tomorrow — get ready!`;
+      } else if (endStr === todayStr) {
+        title = 'Event Ends Today';
+        body = `"${evt.title}" finishes today — give it one last push!`;
+      }
+
+      if (!title) continue;
+
+      // Get all participants for this event
+      const partsSnap = await db.collection('events').doc(eventDoc.id).collection('participants').get();
+
+      for (const partDoc of partsSnap.docs) {
+        const notifRef = db.collection('notifications').doc();
+        batch.set(notifRef, {
+          toId: partDoc.id,
+          fromId: 'system',
+          fromName: 'Core Buddy',
+          type: 'event_reminder',
+          title,
+          body,
+          read: false,
+          createdAt: new Date(),
+        });
+        count++;
+      }
+    }
+
+    if (count > 0) await batch.commit();
+    console.log(`Event reminders created: ${count}`);
   }
 );
 
