@@ -699,11 +699,11 @@ export default function CoreBuddyBuddies() {
       setEvents(evts);
 
       // Check which events user has joined
-      if (clientId) {
+      if (clientData?.id) {
         const joined = new Set();
         for (const evt of evts) {
-          const partDoc = await getDoc(doc(db, 'events', evt.id, 'participants', clientId));
-          if (partDoc.exists()) joined.add(evt.id);
+          const partSnap = await getDoc(doc(db, 'events', evt.id, 'participants', clientData.id));
+          if (partSnap.exists()) joined.add(evt.id);
         }
         setJoinedEvents(joined);
       }
@@ -712,15 +712,15 @@ export default function CoreBuddyBuddies() {
     } finally {
       setEventsLoading(false);
     }
-  }, [clientId]);
+  }, [clientData?.id]);
 
   const handleJoinEvent = async (evt) => {
     if (joiningEvent) return;
     setJoiningEvent(evt.id);
     try {
-      await setDoc(doc(db, 'events', evt.id, 'participants', clientId), {
-        name: clientDoc?.name || 'Unknown',
-        photoURL: clientDoc?.photoURL || '',
+      await setDoc(doc(db, 'events', evt.id, 'participants', clientData.id), {
+        name: clientData?.name || 'Unknown',
+        photoURL: clientData?.photoURL || '',
         joinedAt: serverTimestamp(),
       });
       await updateDoc(doc(db, 'events', evt.id), { participantCount: increment(1) });
