@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  collection, query, where, getDocs, doc, setDoc, deleteDoc, addDoc,
+  collection, query, where, getDocs, getDoc, doc, setDoc, deleteDoc, addDoc,
   updateDoc, increment, serverTimestamp, Timestamp, orderBy
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -106,6 +106,8 @@ export default function CoreBuddyBuddies() {
   // Events state
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(false);
+  const [joinedEvents, setJoinedEvents] = useState(new Set());
+  const [joiningEvent, setJoiningEvent] = useState(null);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -695,26 +697,56 @@ export default function CoreBuddyBuddies() {
         return (order[a.status] ?? 3) - (order[b.status] ?? 3) || a.startDate - b.startDate;
       });
       setEvents(evts);
+
+      // Check which events user has joined
+      const joined = new Set();
+      for (const evt of evts) {
+        const partDoc = await getDoc(doc(db, 'events', evt.id, 'participants', clientId));
+        if (partDoc.exists()) joined.add(evt.id);
+      }
+      setJoinedEvents(joined);
     } catch (err) {
       console.error('Error loading events:', err);
     } finally {
       setEventsLoading(false);
     }
-  }, []);
+  }, [clientId]);
+
+  const handleJoinEvent = async (evt) => {
+    if (joiningEvent) return;
+    setJoiningEvent(evt.id);
+    try {
+      await setDoc(doc(db, 'events', evt.id, 'participants', clientId), {
+        name: clientDoc?.name || 'Unknown',
+        photoURL: clientDoc?.photoURL || '',
+        joinedAt: serverTimestamp(),
+      });
+      await updateDoc(doc(db, 'events', evt.id), { participantCount: increment(1) });
+      setJoinedEvents(prev => new Set([...prev, evt.id]));
+      setEvents(prev => prev.map(e => e.id === evt.id ? { ...e, participantCount: (e.participantCount || 0) + 1 } : e));
+      showToast('Joined event!', 'success');
+    } catch (err) {
+      console.error('Error joining event:', err);
+      showToast('Failed to join event', 'error');
+    } finally {
+      setJoiningEvent(null);
+    }
+  };
 
   useEffect(() => {
     if (tab === 'events') fetchEvents();
   }, [tab, fetchEvents]);
 
-  // Handle scrollToPost from notification navigation
+  // Handle navigation state (scrollToPost, tab selection)
   useEffect(() => {
-    const scrollToPost = location.state?.scrollToPost;
-    if (scrollToPost) {
+    if (location.state?.scrollToPost) {
       setTab('feed');
       setTimeout(() => {
-        const el = document.getElementById(`post-${scrollToPost}`);
+        const el = document.getElementById(`post-${location.state.scrollToPost}`);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 300);
+    } else if (location.state?.tab) {
+      setTab(location.state.tab);
     }
   }, [location.state]);
 
@@ -1048,30 +1080,51 @@ export default function CoreBuddyBuddies() {
                   </div>
                 ) : (
                   <div className="bdy-events-list">
-                    {events.map(evt => (
-                      <div key={evt.id} className={`bdy-event-card bdy-event-${evt.status}`}>
-                        <div className="bdy-event-status-badge">
-                          {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}
-                        </div>
-                        <h3 className="bdy-event-title">{evt.title}</h3>
-                        <p className="bdy-event-desc">{evt.description}</p>
-                        <div className="bdy-event-meta">
-                          <span className="bdy-event-date">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            {evt.startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} — {evt.endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                          </span>
-                          {evt.category && (
-                            <span className="bdy-event-category">{evt.category}</span>
-                          )}
-                          {evt.participantCount > 0 && (
+                    {events.map(evt => {
+                      const hasJoined = joinedEvents.has(evt.id);
+                      return (
+                        <div key={evt.id} className={`bdy-event-card bdy-event-${evt.status}`}>
+                          <div className="bdy-event-status-badge">
+                            {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}
+                          </div>
+                          <h3 className="bdy-event-title">{evt.title}</h3>
+                          <p className="bdy-event-desc">{evt.description}</p>
+                          <div className="bdy-event-meta">
+                            <span className="bdy-event-date">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                              {evt.startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} — {evt.endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                            </span>
+                            {evt.category && (
+                              <span className="bdy-event-category">{evt.category}</span>
+                            )}
                             <span className="bdy-event-participants">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                              {evt.participantCount} joined
+                              {evt.participantCount || 0} joined
                             </span>
-                          )}
+                          </div>
+                          <div className="bdy-event-action">
+                            {hasJoined ? (
+                              <button
+                                className="bdy-event-view-btn"
+                                onClick={() => navigate(`/client/core-buddy/event/${evt.id}`)}
+                              >
+                                View Event
+                              </button>
+                            ) : evt.status === 'upcoming' ? (
+                              <button
+                                className="bdy-event-join-btn"
+                                onClick={() => handleJoinEvent(evt)}
+                                disabled={joiningEvent === evt.id}
+                              >
+                                {joiningEvent === evt.id ? 'Joining...' : 'Join Event'}
+                              </button>
+                            ) : evt.status === 'active' && !hasJoined ? (
+                              <span className="bdy-event-locked">Event in progress</span>
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

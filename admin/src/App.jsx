@@ -23,6 +23,7 @@ import CoreBuddyNutrition from './pages/CoreBuddyNutrition';
 import CoreBuddyWorkouts from './pages/CoreBuddyWorkouts';
 import CoreBuddyConsistency from './pages/CoreBuddyConsistency';
 import CoreBuddyBuddies from './pages/CoreBuddyBuddies';
+import EventPage from './pages/EventPage';
 import CoreBuddyProfile from './pages/CoreBuddyProfile';
 import CoreBuddyBuilder from './pages/CoreBuddyBuilder';
 import CoreBuddySettings from './pages/CoreBuddySettings';
@@ -176,6 +177,7 @@ function App() {
             <Route path="/client/core-buddy/workouts" element={<CoreBuddyWorkouts />} />
             <Route path="/client/core-buddy/consistency" element={<CoreBuddyConsistency />} />
             <Route path="/client/core-buddy/buddies" element={<CoreBuddyBuddies />} />
+            <Route path="/client/core-buddy/event/:eventId" element={<EventPage />} />
             <Route path="/client/core-buddy/builder" element={<CoreBuddyBuilder />} />
             <Route path="/client/core-buddy/profile/:userId" element={<CoreBuddyProfile />} />
             <Route path="/client/core-buddy/settings" element={<CoreBuddySettings />} />
