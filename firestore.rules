@@ -282,10 +282,11 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount']);
       // Event Participants - users join events, subcollection of events
+      // Doc ID = clientData.id (Firestore client doc ID, not auth UID)
       match /participants/{participantId} {
         allow read, write: if isAdmin();
         allow read: if isAuthenticated();
-        allow create: if isAuthenticated() && participantId == request.auth.uid;
+        allow create: if isAuthenticated();
       }
       // Event Feed - event-specific posts, subcollection of events
       match /feed/{postId} {
