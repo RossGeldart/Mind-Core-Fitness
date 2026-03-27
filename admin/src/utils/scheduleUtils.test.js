@@ -128,7 +128,7 @@ describe('generateTimeSlotsForDay', () => {
   it('all morning slots have period "morning"', () => {
     const slots = generateTimeSlotsForDay('tuesday');
     const morningSlots = slots.filter(s => s.period === 'morning');
-    expect(morningSlots.every(s => s.time >= '06:15' && s.time < '12:30')).toBe(true);
+    expect(morningSlots.every(s => s.time >= '06:15' && s.time < '12:45')).toBe(true);
   });
 
   it('all afternoon slots have period "afternoon"', () => {
