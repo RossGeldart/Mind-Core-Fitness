@@ -73,6 +73,24 @@ export default function EventPage() {
   const { theme } = useTheme();
   const myId = clientData?.id;
 
+  // Create in-app + push notification
+  const createNotification = async (toId, type) => {
+    if (!clientData || toId === myId) return;
+    try {
+      await addDoc(collection(db, 'notifications'), {
+        toId,
+        fromId: myId,
+        fromName: clientData.name || 'Someone',
+        fromPhotoURL: clientData.photoURL || null,
+        type,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Notification error:', err);
+    }
+  };
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -371,6 +389,8 @@ export default function EventPage() {
           postId, userId: myId, createdAt: serverTimestamp(),
         });
         await updateDoc(doc(db, 'events', eventId, 'feed', postId), { likeCount: increment(1) });
+        const post = posts.find(p => p.id === postId);
+        if (post) createNotification(post.authorId, 'event_like');
       }
     } catch (err) {
       console.error('Like error:', err);
@@ -423,6 +443,8 @@ export default function EventPage() {
         createdAt: serverTimestamp(),
       });
       await updateDoc(doc(db, 'events', eventId, 'feed', postId), { commentCount: increment(1) });
+      const post = posts.find(p => p.id === postId);
+      if (post) createNotification(post.authorId, 'event_comment');
       setCommentText(prev => ({ ...prev, [postId]: '' }));
       setPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p

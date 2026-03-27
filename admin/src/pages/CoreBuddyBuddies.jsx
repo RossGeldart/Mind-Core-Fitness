@@ -724,6 +724,13 @@ export default function CoreBuddyBuddies() {
         joinedAt: serverTimestamp(),
       });
       await updateDoc(doc(db, 'events', evt.id), { participantCount: increment(1) });
+      // Notify existing participants that someone joined
+      try {
+        const partsSnap = await getDocs(collection(db, 'events', evt.id, 'participants'));
+        partsSnap.docs.forEach(p => {
+          if (p.id !== clientData.id) createNotification(p.id, 'event_join');
+        });
+      } catch { /* non-critical */ }
       setJoinedEvents(prev => new Set([...prev, evt.id]));
       setEvents(prev => prev.map(e => e.id === evt.id ? { ...e, participantCount: (e.participantCount || 0) + 1 } : e));
       showToast('Joined event!', 'success');
