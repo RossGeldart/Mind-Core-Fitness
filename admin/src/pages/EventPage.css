@@ -128,9 +128,16 @@
   border-radius: 2px;
 }
 
+/* Main wrapper — matches app-wide layout */
+.evp-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
 /* Content */
 .evp-content {
-  padding: 16px;
+  padding: 16px 0;
 }
 
 /* Overview */
