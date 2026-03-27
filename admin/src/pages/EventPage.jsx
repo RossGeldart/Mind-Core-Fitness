@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CoreBuddyNav from '../components/CoreBuddyNav';
 import './EventPage.css';
+import './Leaderboard.css';
 
 function getInitials(name) {
   if (!name) return '?';
@@ -504,32 +505,6 @@ export default function EventPage() {
   const config = CATEGORY_CONFIG[event.category] || CATEGORY_CONFIG.fitness;
   const days = getDaysInfo();
 
-  // Render leaderboard rankings (reused in both simple list and below podium)
-  const renderRankings = (entries, startRank) => (
-    <div className="evp-rankings">
-      {entries.map((entry, i) => {
-        const rank = startRank + i;
-        return (
-          <div key={entry.id} className={`evp-rank-item ${entry.id === myId ? 'evp-rank-you' : ''}`}>
-            <span className="evp-rank-num">{rank}</span>
-            <div className="evp-rank-avatar">
-              {entry.photoURL ? (
-                <img src={entry.photoURL} alt="" />
-              ) : (
-                <span>{getInitials(entry.name)}</span>
-              )}
-            </div>
-            <span className="evp-rank-name">
-              {entry.name}
-              {entry.id === myId && <span className="evp-you-badge">You</span>}
-            </span>
-            <span className="evp-rank-stat">{getStatValue(entry, lbTab)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-
   return (
     <div className={`evp-page ${theme}`}>
       {/* Header */}
@@ -669,44 +644,84 @@ export default function EventPage() {
               </div>
             ) : (
               <>
-                {/* Podium - top 3 */}
-                {leaderboard.length >= 3 && (
-                  <div className="evp-podium">
-                    {[1, 0, 2].map(idx => {
-                      const entry = leaderboard[idx];
-                      if (!entry) return null;
-                      const rank = idx + 1;
-                      return (
-                        <div key={entry.id} className={`evp-podium-card evp-podium-${rank}`}>
-                          <div className="evp-podium-avatar" style={{ borderColor: MEDAL_COLORS[idx] }}>
-                            {entry.photoURL ? (
-                              <img src={entry.photoURL} alt="" />
-                            ) : (
-                              <span>{getInitials(entry.name)}</span>
-                            )}
+                {/* Podium — same bar style as main leaderboard */}
+                {leaderboard.length > 0 && (
+                  <div className="lb-podium">
+                    {/* 2nd place */}
+                    <div className="lb-podium-place lb-podium-2nd">
+                      {leaderboard[1] ? (
+                        <>
+                          <div className={`lb-podium-avatar ${leaderboard[1].id === myId ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[1] }}>
+                            {leaderboard[1].photoURL ? <img src={leaderboard[1].photoURL} alt="" className="lb-avatar-img" /> : getInitials(leaderboard[1].name)}
                           </div>
-                          <span className="evp-podium-name">
-                            {entry.name.split(' ')[0]}
-                            {entry.id === myId && <span className="evp-you-badge">You</span>}
-                          </span>
-                          <span className="evp-podium-stat">{getStatValue(entry, lbTab)}</span>
-                          <div className="evp-podium-rank" style={{ background: MEDAL_COLORS[idx] }}>
-                            {rank === 1 && (
-                              <svg className="evp-crown" width="16" height="16" viewBox="0 0 24 24" fill="#FFD700"><path d="M2 20h20L19 9l-5 4-2-6-2 6-5-4-3 11z"/></svg>
-                            )}
-                            {rank}
+                          <div className="lb-podium-name">{leaderboard[1].name.split(' ')[0]}</div>
+                          <div className="lb-podium-stat">{getStatValue(leaderboard[1], lbTab)}</div>
+                          <div className="lb-podium-bar lb-bar-2nd">
+                            <span className="lb-podium-rank">2</span>
                           </div>
-                        </div>
-                      );
-                    })}
+                        </>
+                      ) : <div className="lb-podium-spacer" />}
+                    </div>
+
+                    {/* 1st place */}
+                    <div className="lb-podium-place lb-podium-1st">
+                      <div className="lb-podium-crown">
+                        <svg viewBox="0 0 24 24" fill="#FFD700" stroke="none">
+                          <path d="M2.5 18.5l3-7 4 4 3-9 3 9 4-4 3 7z"/>
+                          <rect x="3" y="18" width="18" height="2" rx="1"/>
+                        </svg>
+                      </div>
+                      <div className={`lb-podium-avatar lb-avatar-1st ${leaderboard[0].id === myId ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[0] }}>
+                        {leaderboard[0].photoURL ? <img src={leaderboard[0].photoURL} alt="" className="lb-avatar-img" /> : getInitials(leaderboard[0].name)}
+                      </div>
+                      <div className="lb-podium-name">{leaderboard[0].name.split(' ')[0]}</div>
+                      <div className="lb-podium-stat">{getStatValue(leaderboard[0], lbTab)}</div>
+                      <div className="lb-podium-bar lb-bar-1st">
+                        <span className="lb-podium-rank">1</span>
+                      </div>
+                    </div>
+
+                    {/* 3rd place */}
+                    <div className="lb-podium-place lb-podium-3rd">
+                      {leaderboard[2] ? (
+                        <>
+                          <div className={`lb-podium-avatar ${leaderboard[2].id === myId ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[2] }}>
+                            {leaderboard[2].photoURL ? <img src={leaderboard[2].photoURL} alt="" className="lb-avatar-img" /> : getInitials(leaderboard[2].name)}
+                          </div>
+                          <div className="lb-podium-name">{leaderboard[2].name.split(' ')[0]}</div>
+                          <div className="lb-podium-stat">{getStatValue(leaderboard[2], lbTab)}</div>
+                          <div className="lb-podium-bar lb-bar-3rd">
+                            <span className="lb-podium-rank">3</span>
+                          </div>
+                        </>
+                      ) : <div className="lb-podium-spacer" />}
+                    </div>
                   </div>
                 )}
 
-                {/* Rankings list */}
-                {leaderboard.length >= 3
-                  ? renderRankings(leaderboard.slice(3), 4)
-                  : renderRankings(leaderboard, 1)
-                }
+                {/* Rankings list (4th onwards, or all if < 3) */}
+                {leaderboard.length > 3 && (
+                  <div className="lb-rankings">
+                    {leaderboard.slice(3).map((entry, i) => (
+                      <div
+                        key={entry.id}
+                        className={`lb-rank-item ${entry.id === myId ? 'lb-rank-you' : ''}`}
+                      >
+                        <span className="lb-rank-number">{i + 4}</span>
+                        <div className={`lb-rank-avatar ${entry.id === myId ? 'lb-avatar-you' : ''}`}>
+                          {entry.photoURL ? <img src={entry.photoURL} alt="" className="lb-avatar-img" /> : getInitials(entry.name)}
+                        </div>
+                        <div className="lb-rank-info">
+                          <span className="lb-rank-name">
+                            {entry.name}
+                            {entry.id === myId && <span className="lb-you-badge">You</span>}
+                          </span>
+                        </div>
+                        <span className="lb-rank-stat">{getStatValue(entry, lbTab)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
