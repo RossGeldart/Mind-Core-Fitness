@@ -1112,7 +1112,7 @@ export default function CoreBuddyBuddies() {
                               >
                                 View Event
                               </button>
-                            ) : evt.status === 'upcoming' ? (
+                            ) : evt.status === 'upcoming' || evt.status === 'active' ? (
                               <button
                                 className="bdy-event-join-btn"
                                 onClick={() => handleJoinEvent(evt)}
@@ -1120,8 +1120,6 @@ export default function CoreBuddyBuddies() {
                               >
                                 {joiningEvent === evt.id ? 'Joining...' : 'Join Event'}
                               </button>
-                            ) : evt.status === 'active' && !hasJoined ? (
-                              <span className="bdy-event-locked">Event in progress</span>
                             ) : null}
                           </div>
                         </div>
