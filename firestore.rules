@@ -272,6 +272,14 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated();
     }
+    // ── EVENTS ──
+    // Events - admin-created community events visible to all authenticated users
+    // Doc ID = auto-generated
+    // Fields: title, description, category, startDate, endDate, participantCount, createdAt
+    match /events/{eventId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+    }
     // ── NOTIFICATIONS (Phase 4) ──
     // Notifications - in-app notifications for each user
     // Doc ID = auto-generated
