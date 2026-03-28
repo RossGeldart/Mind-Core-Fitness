@@ -3365,7 +3365,7 @@ export default function CoreBuddyWorkouts() {
             return (
               <button key={chal.id} className="ch-hub-card" onClick={() => { setActiveChallenge(chal.id); setView('challenge_calendar'); }}>
                 <div className="ch-hub-card-icon">
-                  <img src={chal.hubImg} alt={chal.title} className="ch-hub-card-img" />
+                  <img src={chal.hubImg} alt={chal.title} className="ch-hub-card-img" loading="eager" />
                 </div>
                 <div className="ch-hub-card-body">
                   <div className="ch-hub-card-top">
@@ -3435,7 +3435,7 @@ export default function CoreBuddyWorkouts() {
         <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
           {/* Hero image */}
           <div className="ch-hero-img-container">
-            <img src={chalDef.heroImg} alt={chalDef.title} className="ch-hero-img" />
+            <img src={chalDef.heroImg} alt={chalDef.title} className="ch-hero-img" loading="eager" fetchpriority="high" />
             <div className="ch-hero-img-overlay">
               <h1 className="ch-hero-title">{chalDef.title}</h1>
               <p className="ch-hero-sub">{chalDef.subtitle}</p>
@@ -3512,7 +3512,7 @@ export default function CoreBuddyWorkouts() {
           })}
 
           {/* Restart button */}
-          {!!chalStartedAt && (
+          {(!!chalStartedAt || completedCount > 0) && (
             <button className="ch-restart-btn" onClick={restartChallenge}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
               Restart Challenge
