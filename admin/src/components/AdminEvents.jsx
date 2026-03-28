@@ -10,6 +10,45 @@ const WORKOUT_FEATURES = [
   { id: 'challenges', name: '4-Week Core Challenge', description: '28-day progressive HIIT challenge' },
 ];
 
+const STAT_OPTIONS = {
+  fitness:     [
+    { value: 'workouts', label: 'Total Workouts' },
+    { value: 'minutes',  label: 'Total Minutes' },
+    { value: 'volume',   label: 'Total Volume (weight × reps)' },
+  ],
+  strength:    [
+    { value: 'workouts', label: 'Total Workouts' },
+    { value: 'volume',   label: 'Total Volume (weight × reps)' },
+  ],
+  cardio:      [
+    { value: 'workouts', label: 'Total Workouts' },
+    { value: 'minutes',  label: 'Total Minutes' },
+  ],
+  habits:      [
+    { value: 'completion', label: 'Days Completed' },
+  ],
+  nutrition:   [
+    { value: 'daysTracked', label: 'Days Tracked' },
+  ],
+  flexibility: [
+    { value: 'workouts', label: 'Total Sessions' },
+    { value: 'minutes',  label: 'Total Minutes' },
+  ],
+  mindset:     [
+    { value: 'completion', label: 'Days Completed' },
+  ],
+  wellness:    [
+    { value: 'completion', label: 'Days Completed' },
+  ],
+  recovery:    [
+    { value: 'completion', label: 'Days Completed' },
+  ],
+  community:   [
+    { value: 'workouts', label: 'Total Workouts' },
+    { value: 'minutes',  label: 'Total Minutes' },
+  ],
+};
+
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +61,7 @@ export default function AdminEvents() {
     title: '',
     description: '',
     category: 'fitness',
+    leaderboardStat: 'workouts',
     startDate: '',
     endDate: '',
     linkedChallenge: '',
@@ -61,7 +101,7 @@ export default function AdminEvents() {
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: 'fitness', startDate: '', endDate: '', linkedChallenge: '' });
+    setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '' });
     setEditingEvent(null);
     setShowForm(false);
   };
@@ -82,6 +122,7 @@ export default function AdminEvents() {
         title: form.title.trim(),
         description: form.description.trim(),
         category: form.category,
+        leaderboardStat: form.leaderboardStat,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
         linkedChallenge: form.linkedChallenge || null,
@@ -107,10 +148,13 @@ export default function AdminEvents() {
   };
 
   const handleEdit = (evt) => {
+    const cat = evt.category || 'fitness';
+    const statOpts = STAT_OPTIONS[cat] || STAT_OPTIONS.fitness;
     setForm({
       title: evt.title || '',
       description: evt.description || '',
-      category: evt.category || 'fitness',
+      category: cat,
+      leaderboardStat: evt.leaderboardStat || statOpts[0].value,
       startDate: evt.startDate.toISOString().split('T')[0],
       endDate: evt.endDate.toISOString().split('T')[0],
       linkedChallenge: evt.linkedChallenge || '',
@@ -188,10 +232,25 @@ export default function AdminEvents() {
               <label>Category</label>
               <select
                 value={form.category}
-                onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                onChange={e => {
+                  const cat = e.target.value;
+                  const opts = STAT_OPTIONS[cat] || STAT_OPTIONS.fitness;
+                  setForm(f => ({ ...f, category: cat, leaderboardStat: opts[0].value }));
+                }}
               >
                 {categories.map(c => (
                   <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-events-form-group">
+              <label>Leaderboard Stat</label>
+              <select
+                value={form.leaderboardStat}
+                onChange={e => setForm(f => ({ ...f, leaderboardStat: e.target.value }))}
+              >
+                {(STAT_OPTIONS[form.category] || STAT_OPTIONS.fitness).map(s => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
             </div>
@@ -258,6 +317,9 @@ export default function AdminEvents() {
                   {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}
                 </span>
                 <span className="admin-event-category">{evt.category}</span>
+                {evt.leaderboardStat && (
+                  <span className="admin-event-category">{(STAT_OPTIONS[evt.category] || []).find(s => s.value === evt.leaderboardStat)?.label || evt.leaderboardStat}</span>
+                )}
               </div>
               <h4 className="admin-event-title">{evt.title}</h4>
               {evt.description && <p className="admin-event-desc">{evt.description}</p>}
