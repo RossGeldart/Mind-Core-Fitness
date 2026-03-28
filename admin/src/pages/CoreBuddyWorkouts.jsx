@@ -20,7 +20,8 @@ import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import challengeThumbImg from '../assets/mobilehero.PNG';
 import challengeHeroImg from '../assets/images/cards/circuit-3.jpg';
 import challengeHubImg from '../assets/images/cards/circuit-3.jpg';
-import upperBodyHeroImg from '../assets/images/cards/mg-arms.jpg';
+import upperBodyHeroImg from '../assets/images/cards/4weekupperheader.png';
+import upperBodyThumbImg from '../assets/images/cards/4weekuppercardthumbnail.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -235,7 +236,7 @@ const CHALLENGES = {
     days: UPPER_BODY_DAYS,
     focusArea: 'upper',
     heroImg: upperBodyHeroImg,
-    hubImg: upperBodyHeroImg,
+    hubImg: upperBodyThumbImg,
     firestoreSuffix: '_upper_body',
   },
 };
