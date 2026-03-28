@@ -5177,6 +5177,69 @@
   line-height: 1.4;
 }
 
+/* Challenge summary */
+.ch-summary {
+  padding: 16px 16px 0;
+}
+.ch-summary-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+.ch-summary-advice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.18);
+  border-radius: 12px;
+}
+.ch-summary-advice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-primary, #b8313d);
+}
+.ch-summary-advice span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.ch-summary-equipment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ch-summary-equipment-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+}
+.ch-summary-equipment-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ch-summary-equipment-tag {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-card, rgba(255,255,255,0.06));
+  border: 1px solid var(--border-color);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
 /* Progress bar */
 .ch-progress {
   padding: 16px 16px 8px;
