@@ -398,7 +398,7 @@
 
 .cm-attend-yes:hover:not(:disabled) {
   background: var(--color-success);
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .cm-attend-no {

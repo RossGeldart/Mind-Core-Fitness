@@ -510,7 +510,7 @@
 
 .pb-exercise-add-btn {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   padding: 10px 16px;
@@ -734,7 +734,7 @@
 
 .pb-unit-btn.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .pb-edit-row {
@@ -1825,7 +1825,7 @@
 .pb-cb-target-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -1916,7 +1916,7 @@
 .pb-celebration-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;

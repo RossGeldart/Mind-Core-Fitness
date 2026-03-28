@@ -650,7 +650,7 @@
 
 .ais-btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .ais-btn-secondary {

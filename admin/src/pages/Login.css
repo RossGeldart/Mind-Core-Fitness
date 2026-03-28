@@ -137,7 +137,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 12px;
   font-size: 1rem;
@@ -341,7 +341,7 @@
   inset: 0;
   z-index: 3;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -666,7 +666,7 @@
 /* Primary action (Log In, Create Account, Reset) */
 .native-login-btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   box-shadow: var(--shadow-primary);
 }
 
