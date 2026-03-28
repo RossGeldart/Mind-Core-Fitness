@@ -8,6 +8,5 @@ export default function getClientHomePath(clientData) {
   }
   const type = clientData?.clientType;
   if (type === 'core_buddy') return '/client/core-buddy';
-  if (type === 'circuit_vip' || type === 'circuit_dropin') return '/client/circuit';
   return '/client';
 }

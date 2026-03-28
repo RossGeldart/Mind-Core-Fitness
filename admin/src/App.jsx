@@ -50,8 +50,6 @@ const ClientTools = lazy(() => import('./pages/ClientTools'));
 const MacroCalculator = lazy(() => import('./pages/MacroCalculator'));
 const ProteinSnacks = lazy(() => import('./pages/ProteinSnacks'));
 const DailyMotivation = lazy(() => import('./pages/DailyMotivation'));
-const CircuitDashboard = lazy(() => import('./pages/CircuitDashboard'));
-const CircuitBooking = lazy(() => import('./pages/CircuitBooking'));
 const PersonalBests = lazy(() => import('./pages/PersonalBests'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 const UpgradePage = lazy(() => import('./pages/UpgradePage'));
@@ -168,8 +166,6 @@ function App() {
             <Route path="/client/tools/snacks" element={<ProteinSnacks />} />
             <Route path="/client/tools/motivation" element={<DailyMotivation />} />
             <Route path="/client/personal-bests" element={<PersonalBests />} />
-            <Route path="/client/circuit" element={<CircuitDashboard />} />
-            <Route path="/client/circuit/booking" element={<CircuitBooking />} />
             <Route path="/client/core-buddy" element={<CoreBuddyDashboard />} />
             <Route path="/client/core-buddy/nutrition" element={<LockedFeature feature="nutrition"><NutritionHub /></LockedFeature>} />
             <Route path="/client/core-buddy/nutrition/manual" element={<Navigate to="/client/core-buddy/nutrition" replace />} />

@@ -10,7 +10,6 @@ import './Login.css';
 const TYPE_LABELS = {
   admin: 'Admin Login',
   block: '1-2-1 Client Login',
-  circuit: 'Circuit Login',
   core_buddy: 'Core Buddy Login',
 };
 
@@ -395,7 +394,7 @@ export default function Login() {
     );
   }
 
-  // ── Admin / Block / Circuit: Card-based layout (no social login) ──
+  // ── Admin / Block: Card-based layout (no social login) ──
   return (
     <div className="login-container">
       <ThemeToggle className="login-theme-toggle" />

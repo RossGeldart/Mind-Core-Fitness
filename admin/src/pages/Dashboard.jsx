@@ -8,7 +8,6 @@ import ClientList from '../components/ClientList';
 import Calendar from '../components/Calendar';
 import Schedule from '../components/Schedule';
 import FormSubmissions from '../components/FormSubmissions';
-import CircuitManagement from '../components/CircuitManagement';
 import AdminClientPBs from '../components/AdminClientPBs';
 import AdminEvents from '../components/AdminEvents';
 import './Dashboard.css';
@@ -410,12 +409,6 @@ export default function Dashboard() {
             Forms
           </button>
           <button
-            className={`nav-btn ${activeView === 'circuits' ? 'active' : ''}`}
-            onClick={() => setActiveView('circuits')}
-          >
-            Circuits
-          </button>
-          <button
             className={`nav-btn ${activeView === 'pbs' ? 'active' : ''}`}
             onClick={() => setActiveView('pbs')}
           >
@@ -742,15 +735,6 @@ export default function Dashboard() {
               <h2>Client Forms</h2>
             </div>
             <FormSubmissions />
-          </div>
-        )}
-
-        {activeView === 'circuits' && (
-          <div className="circuits-view">
-            <div className="view-header">
-              <h2>Circuit Management</h2>
-            </div>
-            <CircuitManagement />
           </div>
         )}
 
