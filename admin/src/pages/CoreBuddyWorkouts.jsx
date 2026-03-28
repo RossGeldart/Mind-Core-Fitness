@@ -3462,12 +3462,15 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
-          {/* Progress bar */}
+          {/* Progress */}
           <div className="ch-progress">
+            <div className="ch-progress-stats">
+              <span className="ch-progress-pct">{progressPct}%</span>
+              <span className="ch-progress-label">{completedCount}/{workoutDays.length} days complete</span>
+            </div>
             <div className="ch-progress-bar">
               <div className="ch-progress-fill" style={{ width: `${progressPct}%` }} />
             </div>
-            <span className="ch-progress-label">{completedCount}/{workoutDays.length} days complete</span>
           </div>
 
           {/* Week grid */}
