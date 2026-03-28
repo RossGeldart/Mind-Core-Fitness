@@ -4987,9 +4987,11 @@
 /* Hub stats row */
 .ch-hub-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   padding: 16px 16px 8px;
+  max-width: 340px;
+  margin: 0 auto;
 }
 .ch-hub-stat {
   display: flex;
@@ -5240,9 +5242,21 @@
   border-radius: 8px;
 }
 
-/* Progress bar */
+/* Progress */
 .ch-progress {
   padding: 16px 16px 8px;
+}
+.ch-progress-stats {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ch-progress-pct {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary);
 }
 .ch-progress-bar {
   height: 8px;
@@ -5257,13 +5271,10 @@
   transition: width 0.4s ease;
 }
 .ch-progress-label {
-  display: block;
-  text-align: center;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
-  margin-top: 8px;
 }
 
 /* Week sections */
