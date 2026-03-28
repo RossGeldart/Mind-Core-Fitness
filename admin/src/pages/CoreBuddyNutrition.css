@@ -1532,7 +1532,7 @@
 .nut-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   z-index: 1000;
   display: flex;
   align-items: flex-start;
@@ -1687,7 +1687,7 @@
 .nut-scan-detected-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   display: flex;
   flex-direction: column;
   align-items: center;

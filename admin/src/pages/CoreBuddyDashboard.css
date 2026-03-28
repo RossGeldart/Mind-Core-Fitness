@@ -447,7 +447,7 @@
 .cb-target-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   display: flex;
@@ -1164,14 +1164,14 @@
 
 .journey-post-btn {
   padding: 8px 20px; border-radius: 20px; border: none; background: var(--color-primary);
-  color: #fff; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem;
+  color: var(--text-on-primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem;
   cursor: pointer; transition: opacity 0.2s, transform 0.15s; -webkit-tap-highlight-color: transparent;
   display: flex; align-items: center; justify-content: center; min-width: 70px;
 }
 .journey-post-btn:active { transform: scale(0.95); }
 .journey-post-btn:disabled { opacity: 0.5; cursor: default; }
 
-.journey-btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+.journey-btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: var(--text-on-primary); border-radius: 50%; animation: spin 0.6s linear infinite; }
 .journey-btn-spinner-sm { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.6s linear infinite; }
 
 .journey-loading { display: flex; align-items: center; justify-content: center; padding: 40px 0; }
@@ -1862,7 +1862,7 @@
 .cb-celebration-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--overlay-bg-heavy);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -2470,7 +2470,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
@@ -2485,7 +2485,7 @@
 
 /* ── FAB Bottom Sheet ── */
 .cb-fab-sheet {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;

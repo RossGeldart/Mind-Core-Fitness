@@ -102,7 +102,7 @@
 .form-card button {
   padding: 10px 20px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 6px;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -269,7 +269,7 @@
 
 .parq-yn-btn.no {
   background: var(--color-success);
-  color: #fff;
+  color: var(--text-on-primary);
   border-color: var(--color-success);
 }
 
@@ -316,7 +316,7 @@
 .parq-declare-box.checked {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .parq-declare-label span:last-child {
@@ -355,7 +355,7 @@
 .save-btn {
   padding: 12px 24px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 6px;
   font-family: 'Plus Jakarta Sans', sans-serif;

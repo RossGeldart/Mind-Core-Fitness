@@ -53,7 +53,7 @@
   border: none;
   border-radius: 30px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;

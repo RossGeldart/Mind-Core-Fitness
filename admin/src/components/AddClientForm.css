@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
@@ -112,7 +112,7 @@ form {
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
   transition: border-color 0.2s;
-  background: white;
+  background: var(--bg-input);
   cursor: pointer;
 }
 
@@ -233,7 +233,7 @@ form {
     left: 0;
     right: 0;
     bottom: 0;
-    background: white;
+    background: var(--bg-body);
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     padding: 0;
@@ -241,7 +241,7 @@ form {
   }
 
   .modal-content {
-    background: white;
+    background: var(--bg-card);
     min-height: auto;
     max-width: 100%;
     max-height: none;
@@ -250,10 +250,10 @@ form {
 
   .modal-header {
     padding: 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    background: white;
+    background: var(--bg-card);
     z-index: 10;
   }
 
