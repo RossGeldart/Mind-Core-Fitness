@@ -6,8 +6,6 @@ import './AddClientForm.css';
 
 const CLIENT_TYPES = [
   { value: 'block', label: 'Block (1-2-1)' },
-  { value: 'circuit_vip', label: 'Circuit VIP' },
-  { value: 'circuit_dropin', label: 'Circuit Drop-in' },
   { value: 'core_buddy', label: 'Core Buddy' },
 ];
 
@@ -17,7 +15,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
     email: '',
     password: '',
     clientType: 'block',
-    circuitAccess: false,
     coreBuddyPlan: 'free',
     weeksInBlock: '',
     numberOfSessions: '',
@@ -95,7 +92,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
       };
 
       if (isBlock) {
-        clientDoc.circuitAccess = formData.circuitAccess;
         clientDoc.weeksInBlock = parseInt(formData.weeksInBlock);
         clientDoc.totalSessions = parseInt(formData.numberOfSessions);
         clientDoc.sessionsRemaining = parseInt(formData.numberOfSessions);
@@ -105,10 +101,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
       } else if (formData.clientType === 'core_buddy') {
         clientDoc.coreBuddyAccess = true;
         clientDoc.coreBuddyPlan = formData.coreBuddyPlan || 'free';
-      } else {
-        // Circuit members get strike tracking
-        clientDoc.circuitStrikes = 0;
-        clientDoc.circuitBanUntil = null;
       }
 
       await addDoc(collection(db, 'clients'), clientDoc);
@@ -213,20 +205,6 @@ export default function AddClientForm({ onClose, onClientAdded }) {
           {/* Block-specific fields */}
           {isBlock && (
             <>
-              <div className="form-row">
-                <div className="form-group full-width">
-                  <label className="circuit-toggle-label">
-                    <input
-                      type="checkbox"
-                      name="circuitAccess"
-                      checked={formData.circuitAccess}
-                      onChange={handleChange}
-                    />
-                    <span>Also allow Circuit Class access</span>
-                  </label>
-                </div>
-              </div>
-
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="weeksInBlock">Weeks in Block</label>

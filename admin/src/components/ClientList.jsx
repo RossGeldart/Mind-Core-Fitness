@@ -126,7 +126,7 @@ export default function ClientList() {
       : `Are you sure you want to delete ${clientName}? This will also delete all their booked sessions.`;
     if (window.confirm(confirmMsg)) {
       try {
-        // First, delete all sessions for this client (block/circuit clients)
+        // First, delete all sessions for this client
         const clientSessions = sessions.filter(s => s.clientId === clientId);
         const deletePromises = clientSessions.map(session =>
           deleteDoc(doc(db, 'sessions', session.id))
@@ -171,7 +171,6 @@ export default function ClientList() {
       endDate: formatDateForInput(client.endDate),
       status: client.status,
       hasPortalAccess: !!client.uid,
-      circuitAccess: !!client.circuitAccess,
       coreBuddyAccess: !!client.coreBuddyAccess,
       coreBuddyPlan: client.tier === 'premium' ? 'premium' : (client.coreBuddyPlan || 'free'),
       isJunior: !!client.isJunior
@@ -248,18 +247,12 @@ export default function ClientList() {
         updateData.weeksInBlock = parseInt(editForm.weeksInBlock) || 0;
         updateData.totalSessions = parseInt(editForm.totalSessions) || 0;
         updateData.sessionDuration = parseInt(editForm.sessionDuration);
-        updateData.circuitAccess = editForm.circuitAccess;
         if (editForm.startDate) updateData.startDate = Timestamp.fromDate(new Date(editForm.startDate));
         if (editForm.endDate) updateData.endDate = Timestamp.fromDate(new Date(editForm.endDate));
       } else if (editForm.clientType === 'core_buddy') {
         updateData.coreBuddyPlan = editForm.coreBuddyPlan || 'free';
         updateData.tier = editForm.coreBuddyPlan || 'free';
         updateData.coreBuddyAccess = true;
-      } else {
-        // Switching to circuit — ensure circuit fields exist
-        const client = clients.find(c => c.id === clientId);
-        if (client?.circuitStrikes === undefined) updateData.circuitStrikes = 0;
-        if (client?.circuitBanUntil === undefined) updateData.circuitBanUntil = null;
       }
 
       // Add UID if we created a new account
@@ -427,8 +420,6 @@ export default function ClientList() {
   }
 
   const getTypeLabel = (client) => {
-    if (client.clientType === 'circuit_vip') return 'VIP';
-    if (client.clientType === 'circuit_dropin') return 'Drop-in';
     if (client.clientType === 'core_buddy') return 'Core Buddy';
     return 'Block';
   };
@@ -443,7 +434,6 @@ export default function ClientList() {
     const exportClients = typeFilter === 'all' ? activeSearched : filtered;
     const label = typeFilter === 'all' ? 'all-clients'
       : typeFilter === 'block' ? 'block-members'
-      : typeFilter === 'circuit' ? 'circuit-members'
       : typeFilter === 'core_buddy' ? 'core-buddy'
       : 'archived';
 
@@ -451,7 +441,7 @@ export default function ClientList() {
       'Name', 'Email', 'Type', 'Status',
       'Total Sessions', 'Sessions Remaining', 'Session Duration (min)',
       'Weeks in Block', 'Start Date', 'End Date',
-      'Portal Access', 'Circuit Access', 'Core Buddy Access',
+      'Portal Access', 'Core Buddy Access',
       'Core Buddy Plan', 'Is Junior', 'Created At'
     ];
 
@@ -467,7 +457,6 @@ export default function ClientList() {
       toDate(c.startDate),
       toDate(c.endDate),
       c.uid ? 'Yes' : 'No',
-      c.circuitAccess ? 'Yes' : 'No',
       c.coreBuddyAccess ? 'Yes' : 'No',
       (c.tier === 'premium' || c.coreBuddyPlan === 'premium') ? 'premium' : (c.coreBuddyPlan || c.tier || ''),
       c.isJunior ? 'Yes' : 'No',
@@ -495,19 +484,16 @@ export default function ClientList() {
     c.email?.toLowerCase().includes(search.toLowerCase())
   ).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-  const isCircuit = (c) => c.clientType === 'circuit_vip' || c.clientType === 'circuit_dropin';
   const isCoreBuddy = (c) => c.clientType === 'core_buddy';
   const isArchived = (c) => c.status === 'archived';
 
   // For non-archived filters, exclude archived clients
   const activeSearched = searched.filter(c => !isArchived(c));
-  const blockClients = activeSearched.filter(c => !isCircuit(c) && !isCoreBuddy(c));
-  const circuitClients = activeSearched.filter(c => isCircuit(c));
+  const blockClients = activeSearched.filter(c => !isCoreBuddy(c));
   const coreBuddyClients = activeSearched.filter(c => isCoreBuddy(c));
   const archivedClients = searched.filter(c => isArchived(c));
 
   const filtered = typeFilter === 'block' ? blockClients
-    : typeFilter === 'circuit' ? circuitClients
     : typeFilter === 'core_buddy' ? coreBuddyClients
     : typeFilter === 'archived' ? archivedClients
     : activeSearched;
@@ -566,8 +552,8 @@ export default function ClientList() {
                     {expiryBadge.text}
                   </span>
                 )}
-                {(client.clientType === 'circuit_vip' || client.clientType === 'circuit_dropin' || client.clientType === 'core_buddy') && (
-                  <span className={`client-type-badge ${client.clientType === 'circuit_vip' ? 'vip' : client.clientType === 'core_buddy' ? 'core-buddy' : 'dropin'}`}>
+                {client.clientType === 'core_buddy' && (
+                  <span className="client-type-badge core-buddy">
                     {getTypeLabel(client)}
                   </span>
                 )}
@@ -587,8 +573,6 @@ export default function ClientList() {
                     <div className="edit-type-toggle">
                       {[
                         { value: 'block', label: 'Block' },
-                        { value: 'circuit_vip', label: 'VIP' },
-                        { value: 'circuit_dropin', label: 'Drop-in' },
                         { value: 'core_buddy', label: 'Core Buddy' },
                       ].map(t => (
                         <button
@@ -643,15 +627,6 @@ export default function ClientList() {
                         </>
                       )}
                     </div>
-
-                    {editForm.clientType === 'block' && (
-                      <div className="edit-row circuit-row">
-                        <label className="circuit-access-toggle">
-                          <input type="checkbox" checked={editForm.circuitAccess} onChange={(e) => setEditForm(prev => ({ ...prev, circuitAccess: e.target.checked }))} />
-                          <span>Circuit Class Access</span>
-                        </label>
-                      </div>
-                    )}
 
                     {editForm.clientType !== 'core_buddy' && (
                       <div className="edit-row circuit-row">
@@ -710,26 +685,11 @@ export default function ClientList() {
                           <span className="detail-value">{formatDate(client.endDate)}</span>
                         </div>
                       </div>
-                    ) : client.clientType === 'core_buddy' ? (
-                      <div className="client-details circuit-details">
+                    ) : (
+                      <div className="client-details">
                         <div className="detail-item">
                           <span className="detail-label">Plan</span>
                           <span className="detail-value">{(client.tier === 'premium' || client.coreBuddyPlan === 'premium') ? 'Premium' : 'Free'}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Joined</span>
-                          <span className="detail-value">{formatDate(client.createdAt)}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="client-details circuit-details">
-                        <div className="detail-item">
-                          <span className="detail-label">Type</span>
-                          <span className="detail-value">{client.clientType === 'circuit_vip' ? 'Monthly VIP' : 'Drop-in'}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Strikes</span>
-                          <span className="detail-value">{client.circuitStrikes || 0}/3</span>
                         </div>
                         <div className="detail-item">
                           <span className="detail-label">Joined</span>
@@ -796,7 +756,6 @@ export default function ClientList() {
         >
           <option value="all">All Clients ({activeSearched.length})</option>
           <option value="block">Block Members ({blockClients.length})</option>
-          <option value="circuit">Circuit Members ({circuitClients.length})</option>
           <option value="core_buddy">Core Buddy ({coreBuddyClients.length})</option>
           <option value="archived">Archived ({archivedClients.length})</option>
         </select>
@@ -817,12 +776,6 @@ export default function ClientList() {
             <>
               <div className="client-section-header">Block Members <span>{blockClients.length}</span></div>
               {blockClients.map(renderClientRow)}
-            </>
-          )}
-          {circuitClients.length > 0 && (
-            <>
-              <div className="client-section-header">Circuit Members <span>{circuitClients.length}</span></div>
-              {circuitClients.map(renderClientRow)}
             </>
           )}
           {coreBuddyClients.length > 0 && (

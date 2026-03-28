@@ -1180,12 +1180,6 @@ export default function ClientDashboard() {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
           <span>PBs</span>
         </button>
-        {clientData?.circuitAccess && (
-          <button className="block-nav-tab" onClick={() => navigate('/client/circuit')}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            <span>Circuit</span>
-          </button>
-        )}
       </nav>
     </div>
   );

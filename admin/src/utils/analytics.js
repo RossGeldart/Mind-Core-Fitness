@@ -99,9 +99,6 @@ export const trackFormSubmitted = (form) => track('Form Submitted', { form });
 export const trackMacroCalculated = (goal) => track('Macro Calculated', { goal });
 export const trackSnackViewed = (name) => track('Snack Viewed', { name });
 
-// ── Circuit ──
-export const trackCircuitBooked = (props) => track('Circuit Booked', props);
-
 // ── Upgrade ──
 export const trackUpgradeViewed = (props) => track('Upgrade Page Viewed', props);
 export const trackUpgradeStarted = (props) => track('Upgrade Started', props);

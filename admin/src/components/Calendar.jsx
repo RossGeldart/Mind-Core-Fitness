@@ -930,8 +930,6 @@ export default function Calendar() {
                 const TYPE_LABELS = {
                   block: 'Block',
                   core_buddy: 'Core Buddy',
-                  circuit_vip: 'Circuit VIP',
-                  circuit_dropin: 'Circuit Drop-in',
                 };
                 const filtered = clients.filter(c =>
                   c.name.toLowerCase().includes(clientSearch.toLowerCase())

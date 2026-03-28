@@ -8,8 +8,6 @@ import './AddClient.css';
 
 const CLIENT_TYPES = [
   { value: 'block', label: 'Block (1-2-1)' },
-  { value: 'circuit_vip', label: 'Circuit VIP' },
-  { value: 'circuit_dropin', label: 'Circuit Drop-in' },
   { value: 'core_buddy', label: 'Core Buddy' },
 ];
 
@@ -19,7 +17,6 @@ export default function AddClient() {
     email: '',
     password: '',
     clientType: 'block',
-    circuitAccess: false,
     coreBuddyAccess: false,
     coreBuddyPlan: 'free',
     weeksInBlock: '',
@@ -95,7 +92,6 @@ export default function AddClient() {
       };
 
       if (isBlock) {
-        clientDoc.circuitAccess = formData.circuitAccess;
         clientDoc.coreBuddyAccess = formData.coreBuddyAccess;
         clientDoc.weeksInBlock = parseInt(formData.weeksInBlock);
         clientDoc.totalSessions = parseInt(formData.numberOfSessions);
@@ -106,9 +102,6 @@ export default function AddClient() {
       } else if (formData.clientType === 'core_buddy') {
         clientDoc.coreBuddyAccess = true;
         clientDoc.coreBuddyPlan = formData.coreBuddyPlan || 'free';
-      } else {
-        clientDoc.circuitStrikes = 0;
-        clientDoc.circuitBanUntil = null;
       }
 
       await addDoc(collection(db, 'clients'), clientDoc);
@@ -210,21 +203,6 @@ export default function AddClient() {
             />
             <span className="helper-text">Minimum 6 characters. Share this with your client.</span>
           </div>
-
-          {/* Circuit access toggle for block clients */}
-          {isBlock && (
-            <div className="form-group">
-              <label className="circuit-toggle-label">
-                <input
-                  type="checkbox"
-                  name="circuitAccess"
-                  checked={formData.circuitAccess}
-                  onChange={handleChange}
-                />
-                <span>Also allow Circuit Class access</span>
-              </label>
-            </div>
-          )}
 
           {/* Core Buddy access toggle for block clients */}
           {isBlock && (

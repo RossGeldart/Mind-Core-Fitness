@@ -17,16 +17,6 @@ describe('getClientHomePath', () => {
     expect(getClientHomePath(clientData)).toBe('/client/core-buddy');
   });
 
-  it('sends circuit_vip client to /client/circuit', () => {
-    const clientData = { clientType: 'circuit_vip' };
-    expect(getClientHomePath(clientData)).toBe('/client/circuit');
-  });
-
-  it('sends circuit_dropin client to /client/circuit', () => {
-    const clientData = { clientType: 'circuit_dropin' };
-    expect(getClientHomePath(clientData)).toBe('/client/circuit');
-  });
-
   it('sends a standard client to /client', () => {
     const clientData = { clientType: 'standard' };
     expect(getClientHomePath(clientData)).toBe('/client');
