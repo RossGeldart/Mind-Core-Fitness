@@ -176,7 +176,7 @@
 .ch-upgrade-link {
   margin-left: auto;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 8px;
   padding: 6px 14px;
@@ -447,7 +447,7 @@
 
 .ch-btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .ch-btn-secondary {
@@ -464,7 +464,7 @@
 .ch-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   display: flex;

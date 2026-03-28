@@ -10,6 +10,7 @@ import Schedule from '../components/Schedule';
 import FormSubmissions from '../components/FormSubmissions';
 import CircuitManagement from '../components/CircuitManagement';
 import AdminClientPBs from '../components/AdminClientPBs';
+import AdminEvents from '../components/AdminEvents';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -420,6 +421,12 @@ export default function Dashboard() {
           >
             PBs
           </button>
+          <button
+            className={`nav-btn ${activeView === 'events' ? 'active' : ''}`}
+            onClick={() => setActiveView('events')}
+          >
+            Events
+          </button>
         </nav>
         <div className="header-actions">
           <button
@@ -753,6 +760,15 @@ export default function Dashboard() {
               <h2>Client PB History</h2>
             </div>
             <AdminClientPBs />
+          </div>
+        )}
+
+        {activeView === 'events' && (
+          <div className="events-view">
+            <div className="view-header">
+              <h2>Community Events</h2>
+            </div>
+            <AdminEvents />
           </div>
         )}
       </main>

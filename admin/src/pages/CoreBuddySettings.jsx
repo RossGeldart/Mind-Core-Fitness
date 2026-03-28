@@ -33,6 +33,9 @@ const NOTIF_PREFS = [
   { key: 'comment', label: 'Comments', desc: 'When someone comments on your post' },
   { key: 'mention', label: 'Mentions', desc: 'When someone @mentions you' },
   { key: 'announcement', label: 'Announcements', desc: 'When Mind Core Fitness posts a new announcement' },
+  { key: 'event_like', label: 'Event likes', desc: 'When someone likes your event post' },
+  { key: 'event_comment', label: 'Event comments', desc: 'When someone comments on your event post' },
+  { key: 'event_reminder', label: 'Event reminders', desc: 'Reminders when events are starting soon or ending' },
 ];
 
 export default function CoreBuddySettings() {

@@ -230,7 +230,7 @@
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.35);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   cursor: pointer;
   display: flex;
   align-items: center;

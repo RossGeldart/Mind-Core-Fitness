@@ -17,6 +17,11 @@ import { trackWorkoutStarted, trackWorkoutCompleted, trackWorkoutShared, trackEx
 
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
+import challengeThumbImg from '../assets/mobilehero.PNG';
+import challengeHeroImg from '../assets/images/cards/circuit-3.jpg';
+import challengeHubImg from '../assets/images/cards/circuit-3.jpg';
+import upperBodyHeroImg from '../assets/images/cards/4weekupperheader.png';
+import upperBodyThumbImg from '../assets/images/cards/4weekuppercardthumbnail.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
 
 const TICK_COUNT = 60;
@@ -60,9 +65,12 @@ const LEVELS = [
   { key: 'beginner', label: 'Beginner', work: 30, rest: 30, desc: '30s work / 30s rest' },
   { key: 'intermediate', label: 'Intermediate', work: 40, rest: 20, desc: '40s work / 20s rest' },
   { key: 'advanced', label: 'Advanced', work: 40, rest: 15, desc: '40s work / 15s rest' },
+  { key: 'custom', label: 'Custom', work: 30, rest: 30, desc: 'Choose your own' },
 ];
 
 const TIME_OPTIONS = [5, 10, 15, 20, 30];
+
+const fmtSec = s => s >= 60 ? `${Math.floor(s / 60)}m${s % 60 ? s % 60 + 's' : ''}` : s + 's';
 
 const BYO_GROUPS = [
   { key: 'upper', label: 'Upper Body', groups: ['upper'] },
@@ -117,6 +125,158 @@ const ADVANCED_CORE_EXERCISES = new Set([
   'scorpion kicks',
   'seated v hold',
 ]);
+
+// ==================== 4 WEEK CORE CHALLENGE ====================
+// 28 calendar days (4 weeks). 5 workout days + 2 rest days per week.
+const CHALLENGE_WEEKS = [
+  { work: 30, rest: 20, label: 'Week 1' },
+  { work: 30, rest: 15, label: 'Week 2' },
+  { work: 35, rest: 15, label: 'Week 3' },
+  { work: 40, rest: 15, label: 'Week 4' },
+];
+
+const CHALLENGE_DAYS = [
+  // Week 1 — 30s work / 20s rest — 6 exercises x 2 rounds ≈ 10 min (Beginner)
+  { day: 1,  week: 0, rounds: 2, exercises: ['Forearm Plank', 'Dead Bug', 'Crunch', 'Glute Bridge Pulse', 'Superman Hold', 'Heel Touches'] },
+  { day: 2,  week: 0, rounds: 2, exercises: ['Bird Dog', 'Flutter Kicks', 'Glute Bridge March', 'Knee Tucks', 'Reverse Crunch', 'Toe Reaches'] },
+  { day: 3,  week: 0, rounds: 2, exercises: ['Dead Bug Single Leg Drop', 'Sit Up', 'Glute Bridge Hold', 'Leg Circles', 'Superman Pulses', 'Forearm Plank'] },
+  { day: 4,  week: 0, rounds: 2, exercises: ['Dead Bug Leg Extensions', 'Heel Touches', 'Crunch', 'Bird Dog', 'Glute Bridge Pulse', 'Flutter Kicks'] },
+  { day: 5,  week: 0, rounds: 2, exercises: ['Superman Hold', 'Knee Tucks', 'Toe Reaches', 'Forearm Plank', 'Reverse Crunch', 'Dead Bug'] },
+  { day: 6,  week: 0, rest: true },
+  { day: 7,  week: 0, rest: true },
+  // Week 2 — 30s work / 15s rest — 7 exercises x 3 rounds ≈ 15:45 (Building)
+  { day: 8,  week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Russian Twist', 'Bicycle Crunch', 'High Plank Shoulder Taps', 'Forearm Plank Reach', 'Dead Bug', 'Glute Bridge March'] },
+  { day: 9,  week: 1, rounds: 3, exercises: ['Leg Raises', 'Plank Climb', 'Alternating Plank Reach', 'Knee Tucks', 'Heel Touches', 'Crunch', 'Superman Hold'] },
+  { day: 10, week: 1, rounds: 3, exercises: ['Forearm Plank Jacks', 'Up Down Plank', 'Reverse Crunch', 'Side Lying Leg Lifts', 'Forearm Plank Shoulder Taps', 'Flutter Kicks', 'Bird Dog'] },
+  { day: 11, week: 1, rounds: 3, exercises: ['Bear Crawl Linear', 'Russian Twist', 'Plank Toe Taps', 'Leg Raises', 'Dead Bug Single Leg Drop', 'Bicycle Crunch', 'Glute Bridge Pulse'] },
+  { day: 12, week: 1, rounds: 3, exercises: ['Mountain Climbers', 'Plank Leg Lifts', 'High Plank Shoulder Taps', 'Superman Pulses', 'Forearm Plank Reach', 'Sit Up', 'Forearm Plank'] },
+  { day: 13, week: 1, rest: true },
+  { day: 14, week: 1, rest: true },
+  // Week 3 — 35s work / 15s rest — 8 exercises x 3 rounds ≈ 20 min (Intermediate)
+  { day: 15, week: 2, rounds: 3, exercises: ['Hollow Body Hold', 'Hip Dips Plank', 'Side Plank Rotation', 'Plank Walkout', 'Reverse Crunch To Leg Raise', 'Mountain Climbers', 'Russian Twist', 'Dead Bug'] },
+  { day: 16, week: 2, rounds: 3, exercises: ['Hollow Hold Flutter Kicks', 'Bear Crawl Shoulder Taps', 'Side Plank Hip Drops', 'Bicycle Crunch', 'Forearm Plank Jacks', 'Leg Raises', 'Bird Dog', 'Plank Climb'] },
+  { day: 17, week: 2, rounds: 3, exercises: ['Single Leg V-Up', 'Crab Toe Touch', 'Alternating Plank Reach', 'Up Down Plank', 'Flutter Kicks', 'High Plank Shoulder Taps', 'Glute Bridge March', 'Reverse Crunch'] },
+  { day: 18, week: 2, rounds: 3, exercises: ['Scorpion Kicks', 'Plank To Push Up', 'Side Plank Clams', 'Hollow Body Hold', 'Mountain Climbers', 'Heel Touches', 'Superman Hold', 'Plank Leg Lifts'] },
+  { day: 19, week: 2, rounds: 3, exercises: ['Push Up Shoulder Tap', 'Side Plank Leg Lift', 'Bear Crawl Linear', 'Hip Dips Plank', 'Straight Legged Hip Raise', 'Russian Twist', 'Knee Tucks', 'Forearm Plank'] },
+  { day: 20, week: 2, rest: true },
+  { day: 21, week: 2, rest: true },
+  // Week 4 — 40s work / 15s rest — 9 exercises x 3 rounds ≈ 24:45 (Advanced + Weights)
+  { day: 22, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell Reach', 'Russian Twists Dumbbell', 'Side Plank Rotation', 'Bear Crawl Shoulder Taps', 'Plank Walkout', 'Mountain Climbers', 'Crab Toe Touch', 'Leg Raises', 'Dead Bug'] },
+  { day: 23, week: 3, rounds: 3, exercises: ['Sit Up Dumbbell Press', 'Side Plank Dumbbell Hold', 'Hollow Hold Flutter Kicks', 'Bear Crawl Dumbbell Pass', 'Hip Dips Plank', 'Bicycle Crunch', 'Reverse Crunch To Leg Raise', 'Forearm Plank', 'Superman Hold'] },
+  { day: 24, week: 3, rounds: 3, exercises: ['Elevated Dumbbell Glute Bridge', 'Single Leg V-Up', 'Scorpion Kicks', 'Plank To Push Up', 'Side Plank Hip Drops', 'Russian Twist', 'High Plank Shoulder Taps', 'Flutter Kicks', 'Glute Bridge Pulse'] },
+  { day: 25, week: 3, rounds: 3, exercises: ['Hollow Hold Dumbbell', 'Glute Bridge Dumbbell Pulse', 'Side Plank Reach Through', 'Push Up To Side Plank', 'Reverse Crunch To Leg Raise', 'Alternating Plank Reach', 'Bear Crawl Linear', 'Plank Climb', 'Knee Tucks'] },
+  { day: 26, week: 3, rounds: 3, exercises: ['Sit Up Chest Press', 'Wall Sit Dumbbell Hold', 'Alternating Cross Body V-Up', 'Hollow Hold To V-Sit', 'Side Plank Leg Lift', 'Push Up Shoulder Tap', 'Forearm Plank Jacks', 'Up Down Plank', 'Heel Touches'] },
+  { day: 27, week: 3, rest: true },
+  { day: 28, week: 3, rest: true },
+];
+
+// ==================== 4 WEEK UPPER BODY HIIT CHALLENGE ====================
+const UPPER_BODY_WEEKS = [
+  { work: 30, rest: 20, label: 'Week 1' },
+  { work: 30, rest: 15, label: 'Week 2' },
+  { work: 35, rest: 15, label: 'Week 3' },
+  { work: 40, rest: 15, label: 'Week 4' },
+];
+
+const UPPER_BODY_DAYS = [
+  // Week 1 — Bodyweight Foundation — 30s work / 20s rest — 6 exercises x 2 rounds ≈ 10 min
+  { day: 1,  week: 0, rounds: 2, exercises: ['Press Up', 'High Plank Shoulder Taps', 'Superman Swimmers', 'Tabletop Hold', 'Tricep Dips', 'Wide Arm Shoulder Press'] },
+  { day: 2,  week: 0, rounds: 2, exercises: ["YTW's", 'Mountain Climbers', 'Forearm Plank', 'Press Up', 'Alternating Plank Reach', 'Tricep Dips'] },
+  { day: 3,  week: 0, rounds: 2, exercises: ['Superman Swimmers', 'High Plank Shoulder Taps', 'Wide Arm Shoulder Press', 'Tabletop Hold', 'Press Up', "YTW's"] },
+  { day: 4,  week: 0, rounds: 2, exercises: ['Tricep Dips', 'Mountain Climbers', 'Forearm Plank', 'Superman Swimmers', 'Alternating Plank Reach', 'Wide Arm Shoulder Press'] },
+  { day: 5,  week: 0, rounds: 2, exercises: ['Press Up', "YTW's", 'High Plank Shoulder Taps', 'Tricep Dips', 'Tabletop Hold', 'Mountain Climbers'] },
+  { day: 6,  week: 0, rest: true },
+  { day: 7,  week: 0, rest: true },
+  // Week 2 — Introduce Dumbbells — 30s work / 15s rest — 7 exercises x 2 rounds ≈ 10.5 min
+  { day: 8,  week: 1, rounds: 2, exercises: ['Dumbbell Floor Press', 'Bicep Curl', 'Superman Swimmers', 'Dumbbell Lateral Raise', 'Tricep Dips', 'Up Down Plank', 'High Plank Shoulder Taps'] },
+  { day: 9,  week: 1, rounds: 2, exercises: ['Dumbbell Bent Over Row', 'Dumbbell Front Raise', 'Press Up', 'Dumbbell Tricep Kickbacks', "YTW's", 'Forearm Plank Shoulder Taps', 'Mountain Climbers'] },
+  { day: 10, week: 1, rounds: 2, exercises: ['Bicep Curl', 'Dumbbell Floor Press', 'Wide Arm Shoulder Press', 'Dumbbell Bent Over Row', 'Tricep Dips', 'Alternating Plank Reach', 'Forearm Plank'] },
+  { day: 11, week: 1, rounds: 2, exercises: ['Dumbbell Lateral Raise', 'Dumbbell Tricep Kickbacks', 'Superman Swimmers', 'Press Up', 'Dumbbell Front Raise', 'Up Down Plank', 'High Plank Shoulder Taps'] },
+  { day: 12, week: 1, rounds: 2, exercises: ['Dumbbell Bent Over Row', 'Bicep Curl', 'Dumbbell Floor Press', 'Wide Arm Shoulder Press', "YTW's", 'Forearm Plank Shoulder Taps', 'Mountain Climbers'] },
+  { day: 13, week: 1, rest: true },
+  { day: 14, week: 1, rest: true },
+  // Week 3 — More Variety + 3 Rounds — 35s work / 15s rest — 7 exercises x 3 rounds ≈ 17.5 min
+  { day: 15, week: 2, rounds: 3, exercises: ['Seated Dumbbell Shoulder Press', 'Press Up Pulse', 'Dumbbell Bent Over Row', 'Hammer Curl', 'Dumbbell Tricep Kickbacks', 'Plank Walkout', 'Superman Swimmers'] },
+  { day: 16, week: 2, rounds: 3, exercises: ['Dumbbell Floor Press', 'Pulsing Rows', 'Bent Arm Pulse', 'Tricep Dips', 'Bicep Curl', 'Bear Crawl Linear', 'High Plank Shoulder Taps'] },
+  { day: 17, week: 2, rounds: 3, exercises: ['Shoulder Shrugs', 'Slow Tempo Push Ups', 'Dumbbell Pullbacks', 'Hammer Curl', 'Dumbbell Lateral Raise', 'Up Down Plank', "YTW's"] },
+  { day: 18, week: 2, rounds: 3, exercises: ['Seated Dumbbell Shoulder Press', 'Press Up Pulse', 'Pulsing Rows', 'Dumbbell Tricep Kickbacks', 'Bicep Curl', 'Plank Walkout', 'Mountain Climbers'] },
+  { day: 19, week: 2, rounds: 3, exercises: ['Dumbbell Floor Press', 'Bent Arm Pulse', 'Dumbbell Pullbacks', 'Slow Tempo Push Ups', 'Hammer Curl', 'Bear Crawl Linear', 'Forearm Plank'] },
+  { day: 20, week: 2, rest: true },
+  { day: 21, week: 2, rest: true },
+  // Week 4 — Push It — 40s work / 15s rest — 8 exercises x 3 rounds ≈ 22 min
+  { day: 22, week: 3, rounds: 3, exercises: ['Dumbbell High Pulls', 'Press Up', 'Single Arm Bent Over Row', 'Bicep Curl Pulse', 'Dumbbell Overhead Tricep Extension', 'Chest Press Hold', 'Bear Crawl Shoulder Taps', 'Superman Swimmers'] },
+  { day: 23, week: 3, rounds: 3, exercises: ['Dumbbell Floor Press', 'Straight Side Raise', 'Reverse Grip Dumbbell Row', 'Concentration Curl', 'Slow Tricep Dips', 'Reverse Plank', 'Push Up Shoulder Tap', "YTW's"] },
+  { day: 24, week: 3, rounds: 3, exercises: ['Seated Dumbbell Shoulder Press', 'Slow Tempo Push Ups', 'Dumbbell Pullbacks', 'Bicep Curl Hold', 'Dumbbell Tricep Kickbacks', 'Chest Press Holds To Side Raise', 'Plank Walkout', 'Mountain Climbers'] },
+  { day: 25, week: 3, rounds: 3, exercises: ['Dumbbell High Pulls', 'Press Up Pulse', 'Single Arm Bent Over Row', 'Hammer Curl', 'Dumbbell Overhead Tricep Extension', 'Reverse Plank', 'Bear Crawl Shoulder Taps', 'High Plank Shoulder Taps'] },
+  { day: 26, week: 3, rounds: 3, exercises: ['Straight Side Raise', 'Dumbbell Floor Press', 'Pulsing Rows', 'Concentration Curl', 'Slow Tricep Dips', 'Bicep Curl Hold', 'Push Up Shoulder Tap', 'Up Down Plank'] },
+  { day: 27, week: 3, rest: true },
+  { day: 28, week: 3, rest: true },
+];
+
+// ==================== CHALLENGE DEFINITIONS ====================
+const CHALLENGES = {
+  core: {
+    id: 'core',
+    title: '4 Week Core Challenge',
+    subtitle: '4 weeks of progressive core HIIT — build strength, endurance and discipline',
+    badge: 'Beginner → Advanced',
+    weeks: CHALLENGE_WEEKS,
+    days: CHALLENGE_DAYS,
+    focusArea: 'core',
+    heroImg: challengeHeroImg,
+    hubImg: challengeHubImg,
+    firestoreSuffix: '',
+    equipment: ['Bodyweight', 'Dumbbells (Week 4)'],
+    description: 'This challenge targets your entire core — abs, obliques, lower back and glutes — across 4 progressive weeks. Week 1 builds your foundation with bodyweight-only moves and generous rest. Each week layers in more volume, tighter rest and new exercises. Week 4 introduces light dumbbells for an extra challenge. 5 workout days per week with 2 built-in rest days to recover.',
+    weightAdvice: null,
+    weekMetaFn: (wi) => wi === 3 ? ' + weights' : '',
+  },
+  upper_body: {
+    id: 'upper_body',
+    title: '4 Week Upper Body HIIT',
+    subtitle: '4 weeks of progressive upper body HIIT — bodyweight to dumbbells',
+    badge: 'Beginner → Intermediate',
+    weeks: UPPER_BODY_WEEKS,
+    days: UPPER_BODY_DAYS,
+    focusArea: 'upper',
+    heroImg: upperBodyHeroImg,
+    hubImg: upperBodyThumbImg,
+    firestoreSuffix: '_upper_body',
+    equipment: ['Bodyweight', 'Dumbbells (Week 2+)'],
+    description: 'Build upper body strength and endurance through chest, back, shoulders, biceps and triceps. Week 1 is entirely bodyweight so you can nail the movement patterns. From Week 2 you\'ll add dumbbells — start lighter than you think. The goal is to keep moving through every interval, not to go heavy.',
+    weightAdvice: 'HIIT and heavy weights don\'t mix. Pick a weight that lets you maintain good form for the full interval — if you\'re grinding to a halt halfway through, go lighter. If you cruise through every set, go heavier. As you get stronger across the 4 weeks you\'ll naturally be ready to step up.',
+    weekMetaFn: (wi) => wi >= 1 ? ' + dumbbells' : '',
+  },
+};
+
+// ==================== BEGINNER MODIFIER TIPS ====================
+const BEGINNER_TIPS = {
+  'Press Up': 'Drop to knees for an easier option',
+  'Press Up Pulse': 'Drop to knees for an easier option',
+  'Slow Tempo Push Ups': 'Drop to knees for an easier option',
+  'Push Up Shoulder Tap': 'Drop to knees between taps',
+  'Plank To Push Up': 'Drop to knees for an easier option',
+  'Forearm Plank': 'Drop to knees to reduce intensity',
+  'High Plank Shoulder Taps': 'Drop to knees if needed',
+  'Forearm Plank Shoulder Taps': 'Drop to knees if needed',
+  'Forearm Plank Reach': 'Drop to knees if needed',
+  'Forearm Plank Jacks': 'Drop to knees and do shoulder taps instead',
+  'Up Down Plank': 'Drop to knees for an easier option',
+  'Alternating Plank Reach': 'Drop to knees if needed',
+  'Plank Walkout': 'Drop to knees for the plank position',
+  'Plank Leg Lifts': 'Drop to knees between reps',
+  'Plank Toe Taps': 'Drop to knees if needed',
+  'Hip Dips Plank': 'Drop to knees between reps',
+  'Side Plank Rotation': 'Use your knee as support',
+  'Side Plank Hip Drops': 'Use your knee as support',
+  'Side Plank Clams': 'Use your knee as support',
+  'Side Plank Leg Lift': 'Use your knee as support',
+  'Side Plank Reach Through': 'Use your knee as support',
+  'Push Up To Side Plank': 'Drop to knees for an easier option',
+  'Bear Crawl Linear': 'Keep knees closer to the ground',
+  'Bear Crawl Shoulder Taps': 'Keep knees closer to the ground',
+  'Mountain Climbers': 'Slow the pace or step feet in instead of jumping',
+};
 
 const FOCUS_COLORS = {
   core: '#e85d04',
@@ -354,6 +514,8 @@ export default function CoreBuddyWorkouts() {
   const [selectedEquipment, setSelectedEquipment] = useState(['bodyweight']);
   const [focusArea, setFocusArea] = useState('core');
   const [level, setLevel] = useState('intermediate');
+  const [customWork, setCustomWork] = useState(30);
+  const [customRest, setCustomRest] = useState(30);
   const [duration, setDuration] = useState(isPremium ? 15 : 5);
 
   // Exercises from Firebase Storage
@@ -401,6 +563,9 @@ export default function CoreBuddyWorkouts() {
 
   // Quick-preview modal for exercise thumbnails
   const [previewEx, setPreviewEx] = useState(null);
+
+  // Scroll to top on view change
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
 
   // GIF looping
   const gifRef = useRef(null);
@@ -468,6 +633,22 @@ export default function CoreBuddyWorkouts() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveWorkoutName, setSaveWorkoutName] = useState('');
 
+  // Challenge state
+  const [activeChallenge, setActiveChallenge] = useState('core'); // 'core' | 'upper_body'
+  const [challengeProgress, setChallengeProgress] = useState({}); // { 1: true, 2: true, ... }
+  const [challengeStartedAt, setChallengeStartedAt] = useState(null); // Date when Day 1 was completed (triggers daily unlock schedule)
+  const [challengeProgressUB, setChallengeProgressUB] = useState({}); // upper body progress
+  const [challengeStartedAtUB, setChallengeStartedAtUB] = useState(null);
+  const [challengeDay, setChallengeDay] = useState(null); // selected day object
+  const [challengeExercises, setChallengeExercises] = useState([]); // loaded exercises with videoUrls
+  const [challengeLoading, setChallengeLoading] = useState(false);
+
+  // Helpers to get progress/startedAt for the active challenge
+  const getProgress = (id) => id === 'upper_body' ? challengeProgressUB : challengeProgress;
+  const getStartedAt = (id) => id === 'upper_body' ? challengeStartedAtUB : challengeStartedAt;
+  const setProgressFor = (id, val) => id === 'upper_body' ? setChallengeProgressUB(val) : setChallengeProgress(val);
+  const setStartedAtFor = (id, val) => id === 'upper_body' ? setChallengeStartedAtUB(val) : setChallengeStartedAt(val);
+
   // Smart suggestion
   const [smartSuggestion, setSmartSuggestion] = useState(null);
 
@@ -520,16 +701,15 @@ export default function CoreBuddyWorkouts() {
         const docs = snap.docs.map(d => d.data());
         const actDocs = actSnap.docs.map(d => d.data());
 
-        const randomiserDocs = docs.filter(d => d.type !== 'programme');
-        setTotalCount(randomiserDocs.length);
+        setTotalCount(docs.length);
 
-        // Total minutes (randomiser only)
-        const mins = randomiserDocs.reduce((sum, d) => sum + (d.duration || 0), 0);
+        // Total minutes
+        const mins = docs.reduce((sum, d) => sum + (d.duration || 0), 0);
         setTotalMinutes(mins);
 
-        // Level breakdown (randomiser only)
+        // Level breakdown
         const levels = { beginner: 0, intermediate: 0, advanced: 0 };
-        randomiserDocs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
+        docs.forEach(d => { if (d.level && levels[d.level] !== undefined) levels[d.level]++; });
         setLevelBreakdown(levels);
 
         // Weekly count (Monday-based)
@@ -551,7 +731,7 @@ export default function CoreBuddyWorkouts() {
           const ms = getMs(d.completedAt);
           return ms >= mondayMs;
         });
-        setWeeklyCount(weekly.filter(d => d.type !== 'programme').length);
+        setWeeklyCount(weekly.length);
 
         // Combined weekly count (all workout types + activities)
         const weeklyActs = actDocs.filter(d => getMs(d.completedAt) >= mondayMs);
@@ -583,7 +763,7 @@ export default function CoreBuddyWorkouts() {
 
         // All recent workouts (last 4, any type including activities)
         const allWithType = [
-          ...docs.map(d => ({ ...d, _kind: d.type === 'custom_sets' ? 'byo' : d.type === 'programme' ? 'programme' : 'randomiser' })),
+          ...docs.map(d => ({ ...d, _kind: d.type === 'custom_sets' ? 'byo' : 'randomiser' })),
           ...actDocs.map(d => ({ ...d, _kind: 'activity' })),
         ].sort((a, b) => getMs(b.completedAt) - getMs(a.completedAt)).slice(0, 4);
         setAllRecentWorkouts(allWithType);
@@ -702,7 +882,7 @@ export default function CoreBuddyWorkouts() {
           })
           .slice(0, 20);
         // Recent randomiser-only for hub display
-        const randomiser = all.filter(d => d.type !== 'programme' && d.type !== 'muscle_group');
+        const randomiser = all.filter(d => d.type !== 'muscle_group');
         setRecentWorkouts(randomiser.slice(0, 3));
 
         // Compute hub stats
@@ -767,6 +947,154 @@ export default function CoreBuddyWorkouts() {
     };
     loadRecent();
   }, [currentUser, clientData, view]);
+
+  // Load challenge progress from Firestore
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadChallengeProgress = async () => {
+      try {
+        // Load core challenge progress (original document)
+        const coreSnap = await getDoc(doc(db, 'challengeProgress', clientData.id));
+        if (coreSnap.exists()) {
+          const data = coreSnap.data();
+          setChallengeProgress(data.completedDays || {});
+          if (data.startedAt) setChallengeStartedAt(data.startedAt.toDate());
+        }
+        // Load upper body challenge progress (separate document)
+        const ubSnap = await getDoc(doc(db, 'challengeProgress', `${clientData.id}_upper_body`));
+        if (ubSnap.exists()) {
+          const data = ubSnap.data();
+          setChallengeProgressUB(data.completedDays || {});
+          if (data.startedAt) setChallengeStartedAtUB(data.startedAt.toDate());
+        }
+      } catch (err) {
+        console.error('Error loading challenge progress:', err);
+      }
+    };
+    loadChallengeProgress();
+  }, [currentUser, clientData]);
+
+  // Load exercises for a challenge day (resolve video URLs from BUDDY_EXERCISES storagePaths)
+  const loadChallengeDay = async (dayObj) => {
+    setChallengeDay(dayObj);
+    setChallengeLoading(true);
+    setChallengeExercises([]);
+    try {
+      const urlCache = readUrlCache();
+      const resolved = await Promise.all(dayObj.exercises.map(async (name) => {
+        const buddyEx = BUDDY_EXERCISES.find(e => e.name === name);
+        if (!buddyEx || !buddyEx.storagePath) return { name, videoUrl: null, isGif: false };
+        let url = urlCache[buddyEx.storagePath];
+        if (!url) {
+          try {
+            url = await getDownloadURL(ref(storage, buddyEx.storagePath));
+          } catch {
+            try {
+              const lastSlash = buddyEx.storagePath.lastIndexOf('/');
+              const folder = buddyEx.storagePath.substring(0, lastSlash);
+              const fileName = buddyEx.storagePath.substring(lastSlash + 1).toLowerCase();
+              const folderRef = ref(storage, folder);
+              const result = await listAll(folderRef);
+              const match = result.items.find(item => item.name.toLowerCase() === fileName);
+              if (match) url = await getDownloadURL(match);
+            } catch { /* skip */ }
+          }
+          if (url) { urlCache[buddyEx.storagePath] = url; }
+        }
+        return { name, videoUrl: url || null, isGif: /\.gif$/i.test(buddyEx.storagePath) };
+      }));
+      writeUrlCache(urlCache);
+      setChallengeExercises(resolved);
+    } catch (err) {
+      console.error('Error loading challenge exercises:', err);
+    } finally {
+      setChallengeLoading(false);
+    }
+  };
+
+  // Start a challenge workout — sets up state for existing workout engine
+  const startChallengeWorkout = () => {
+    const chalDef = CHALLENGES[activeChallenge];
+    const weekConfig = chalDef.weeks[challengeDay.week];
+    const config = { key: 'challenge', label: 'Challenge', work: weekConfig.work, rest: weekConfig.rest, desc: `${weekConfig.work}s/${weekConfig.rest}s` };
+    setLevelConfig(config);
+    setWorkout(challengeExercises.filter(e => e.videoUrl));
+    setRounds(challengeDay.rounds);
+    setLevel('challenge');
+    setDuration(Math.ceil(challengeExercises.length * challengeDay.rounds * (weekConfig.work + weekConfig.rest) / 60));
+    setFocusArea(chalDef.focusArea);
+    startWorkout();
+  };
+
+  // Determine if a challenge day is unlocked based on startedAt schedule
+  // Day 1: always unlocked. Days 2+: unlocked if startedAt exists and enough midnights have passed.
+  const isDayUnlocked = (dayNum) => {
+    if (dayNum === 1) return true;
+    const startedAt = getStartedAt(activeChallenge);
+    if (!startedAt) return false;
+    // Day N unlocks after (N-1) midnights from startedAt
+    const now = new Date();
+    const start = new Date(startedAt);
+    // Set start to midnight of the start date (local time)
+    start.setHours(0, 0, 0, 0);
+    const midnightToday = new Date(now);
+    midnightToday.setHours(0, 0, 0, 0);
+    const daysSinceStart = Math.floor((midnightToday - start) / (1000 * 60 * 60 * 24));
+    // Day N unlocks when daysSinceStart >= (N-1)
+    return daysSinceStart >= (dayNum - 1);
+  };
+
+  // Check if a rest day's period has passed (i.e. the day after it is unlocked)
+  const isRestDayPast = (dayNum) => {
+    return isDayUnlocked(dayNum + 1);
+  };
+
+  // Save challenge day completion
+  const saveChallengeCompletion = async (dayNum) => {
+    if (!currentUser || !clientData) return;
+    try {
+      const chalDef = CHALLENGES[activeChallenge];
+      const progress = getProgress(activeChallenge);
+      const startedAt = getStartedAt(activeChallenge);
+      const newProgress = { ...progress, [dayNum]: true };
+      setProgressFor(activeChallenge, newProgress);
+      const updateData = {
+        completedDays: newProgress,
+        lastUpdated: Timestamp.now(),
+      };
+      // If completing Day 1, set startedAt to trigger the daily unlock schedule
+      if (dayNum === 1 && !startedAt) {
+        const now = new Date();
+        updateData.startedAt = Timestamp.fromDate(now);
+        setStartedAtFor(activeChallenge, now);
+      }
+      const docId = `${clientData.id}${chalDef.firestoreSuffix}`;
+      await setDoc(doc(db, 'challengeProgress', docId), updateData, { merge: true });
+    } catch (err) {
+      console.error('Error saving challenge progress:', err);
+    }
+  };
+
+  // Restart the active challenge (reset all progress)
+  const restartChallenge = async () => {
+    if (!currentUser || !clientData) return;
+    const chalDef = CHALLENGES[activeChallenge];
+    if (!window.confirm(`Restart the ${chalDef.title}? All progress will be reset.`)) return;
+    try {
+      const docId = `${clientData.id}${chalDef.firestoreSuffix}`;
+      await setDoc(doc(db, 'challengeProgress', docId), {
+        completedDays: {},
+        startedAt: null,
+        lastUpdated: Timestamp.now(),
+      });
+      setProgressFor(activeChallenge, {});
+      setStartedAtFor(activeChallenge, null);
+      showToast('Challenge restarted — good luck!', 'success');
+    } catch (err) {
+      console.error('Error restarting challenge:', err);
+      showToast('Failed to restart challenge', 'error');
+    }
+  };
 
   // Save workout to favourites
   const saveWorkoutToFavourites = async (name) => {
@@ -1172,6 +1500,8 @@ export default function CoreBuddyWorkouts() {
     setFocusArea(last?.focus || 'core');
     setLevel(last?.level || 'intermediate');
     setDuration(last?.duration || 15);
+    if (last?.customWork) setCustomWork(last.customWork);
+    if (last?.customRest) setCustomRest(last.customRest);
     pendingQuickStartRef.current = true;
   };
 
@@ -1190,6 +1520,8 @@ export default function CoreBuddyWorkouts() {
       focus: focusArea,
       level,
       duration,
+      customWork,
+      customRest,
     }));
   };
 
@@ -1341,7 +1673,8 @@ export default function CoreBuddyWorkouts() {
       return;
     }
 
-    const config = LEVELS.find(l => l.key === level);
+    const baseConfig = LEVELS.find(l => l.key === level);
+    const config = level === 'custom' ? { ...baseConfig, work: customWork, rest: customRest } : baseConfig;
     setLevelConfig(config);
     const intervalTime = config.work + config.rest;
     const totalSeconds = duration * 60;
@@ -1531,6 +1864,11 @@ export default function CoreBuddyWorkouts() {
       }
 
       if (celebrationBadge) setBadgeCelebration(celebrationBadge);
+
+      // If this was a challenge workout, mark the day complete
+      if (level === 'challenge' && challengeDay) {
+        await saveChallengeCompletion(challengeDay.day);
+      }
     } catch (err) {
       console.error('Error saving workout log:', err);
     }
@@ -2669,7 +3007,6 @@ export default function CoreBuddyWorkouts() {
     const getWorkoutLabel = (w) => {
       if (w._kind === 'byo') return 'BYO Sets';
       if (w._kind === 'activity') return w.activityType || 'Activity';
-      if (w._kind === 'programme') return 'Programme';
       return w.focus ? `${w.focus.charAt(0).toUpperCase() + w.focus.slice(1)} HIIT` : 'Randomiser';
     };
 
@@ -2886,7 +3223,7 @@ export default function CoreBuddyWorkouts() {
                     <span className="nhub-section-title">Recent</span>
                   </div>
                   <div className="wkl-recent-list">
-                    {allRecentWorkouts.map((w, i) => (
+                    {(recentOpen ? allRecentWorkouts : allRecentWorkouts.slice(0, 3)).map((w, i) => (
                       <div key={i} className="wkl-recent-item">
                         <div className={`wkl-recent-icon wkl-recent-icon--${w._kind}`}>
                           {w._kind === 'byo' ? (
@@ -2905,6 +3242,12 @@ export default function CoreBuddyWorkouts() {
                       </div>
                     ))}
                   </div>
+                  {allRecentWorkouts.length > 3 && (
+                    <button className="wkl-recent-toggle" onClick={() => setRecentOpen(prev => !prev)}>
+                      {recentOpen ? 'Show less' : `Show more (${allRecentWorkouts.length - 3})`}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={recentOpen ? 'wkl-recent-toggle-flip' : ''}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -2935,6 +3278,17 @@ export default function CoreBuddyWorkouts() {
                   </div>
                   <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
+
+                <button className="wk-landing-card" onClick={(e) => { e.currentTarget.blur(); isPremium ? setView('challenges_hub') : navigate('/upgrade'); }}>
+                  <div className="wk-landing-card-icon wk-landing-card-icon--challenges">
+                    <img src={challengeThumbImg} alt="Challenges" className="wk-landing-card-thumb" />
+                  </div>
+                  <div className="wk-landing-card-body">
+                    <h3>Challenges{!isPremium && <svg className="wk-landing-card-lock" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>}</h3>
+                    <p>{isPremium ? 'Work your way through progressive HIIT challenges' : 'Upgrade to unlock challenges'}</p>
+                  </div>
+                  <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
               </div>
             </>
           )}
@@ -2942,6 +3296,370 @@ export default function CoreBuddyWorkouts() {
         <CoreBuddyNav active="workouts" />
         {toastEl}
         <BadgeCelebration badge={badgeCelebration} onDismiss={() => setBadgeCelebration(null)} />
+      </div>
+    );
+  }
+
+  // ==================== CHALLENGES HUB VIEW ====================
+  if (view === 'challenges_hub') {
+    // Compute stats across all challenges
+    const allChallengeStats = Object.values(CHALLENGES).reduce((acc, chal) => {
+      const prog = getProgress(chal.id);
+      const started = !!getStartedAt(chal.id);
+      const wDays = chal.days.filter(d => !d.rest);
+      const completed = wDays.filter(d => prog[d.day]).length;
+      const mins = wDays.reduce((sum, d) => {
+        if (!prog[d.day]) return sum;
+        const wk = chal.weeks[d.week];
+        return sum + Math.ceil(d.exercises.length * d.rounds * (wk.work + wk.rest) / 60);
+      }, 0);
+      return { started: acc.started + (started ? 1 : 0), completed: acc.completed + completed, mins: acc.mins + mins };
+    }, { started: 0, completed: 0, mins: 0 });
+
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('landing')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
+          {/* Hub title */}
+          <div className="ch-hub-title">
+            <h1>Challenges</h1>
+            <p>Progressive programmes to test your limits</p>
+          </div>
+
+          {/* Stats row */}
+          <div className="ch-hub-stats">
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{allChallengeStats.started}</span>
+              <span className="ch-hub-stat-label">Started</span>
+            </div>
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{allChallengeStats.completed}</span>
+              <span className="ch-hub-stat-label">Workouts</span>
+            </div>
+            <div className="ch-hub-stat">
+              <span className="ch-hub-stat-val">{allChallengeStats.mins}</span>
+              <span className="ch-hub-stat-label">Minutes</span>
+            </div>
+          </div>
+
+          {/* Challenge cards */}
+          {Object.values(CHALLENGES).map(chal => {
+            const prog = getProgress(chal.id);
+            const started = !!getStartedAt(chal.id);
+            const wDays = chal.days.filter(d => !d.rest);
+            const completedCount = wDays.filter(d => prog[d.day]).length;
+            const pct = Math.round((completedCount / wDays.length) * 100);
+            return (
+              <button key={chal.id} className="ch-hub-card" onClick={() => { setActiveChallenge(chal.id); setView('challenge_calendar'); }}>
+                <div className="ch-hub-card-icon">
+                  <img src={chal.hubImg} alt={chal.title} className="ch-hub-card-img" loading="eager" />
+                </div>
+                <div className="ch-hub-card-body">
+                  <div className="ch-hub-card-top">
+                    <h3>{chal.title}</h3>
+                    <span className="ch-hub-card-badge">{chal.badge}</span>
+                  </div>
+                  <p>{chal.subtitle}</p>
+                  {started && (
+                    <div className="ch-hub-card-progress">
+                      <div className="ch-hub-card-progress-bar">
+                        <div className="ch-hub-card-progress-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="ch-hub-card-progress-label">{completedCount}/{wDays.length} days</span>
+                    </div>
+                  )}
+                  {!started && <span className="ch-hub-card-cta">Start Challenge</span>}
+                </div>
+                <svg className="wk-landing-card-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            );
+          })}
+
+          {/* Coming soon card */}
+          <div className="ch-hub-card ch-hub-card--soon">
+            <div className="ch-hub-card-icon ch-hub-card-icon--soon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div className="ch-hub-card-body">
+              <h3>More Challenges Coming Soon</h3>
+              <p>New challenge added every month — stay tuned!</p>
+            </div>
+          </div>
+        </main>
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== CHALLENGE CALENDAR VIEW ====================
+  if (view === 'challenge_calendar') {
+    const chalDef = CHALLENGES[activeChallenge];
+    const chalProgress = getProgress(activeChallenge);
+    const chalStartedAt = getStartedAt(activeChallenge);
+    const workoutDays = chalDef.days.filter(d => !d.rest);
+    const completedCount = workoutDays.filter(d => chalProgress[d.day]).length;
+    const progressPct = Math.round((completedCount / workoutDays.length) * 100);
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('challenges_hub')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
+          {/* Hero image */}
+          <div className="ch-hero-img-container">
+            <img src={chalDef.heroImg} alt={chalDef.title} className="ch-hero-img" loading="eager" fetchpriority="high" />
+            <div className="ch-hero-img-overlay">
+              <h1 className="ch-hero-title">{chalDef.title}</h1>
+              <p className="ch-hero-sub">{chalDef.subtitle}</p>
+            </div>
+          </div>
+
+          {/* Challenge summary */}
+          <div className="ch-summary">
+            <p className="ch-summary-desc">{chalDef.description}</p>
+            {chalDef.weightAdvice && (
+              <div className="ch-summary-advice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>{chalDef.weightAdvice}</span>
+              </div>
+            )}
+            <div className="ch-summary-equipment">
+              <span className="ch-summary-equipment-label">Equipment</span>
+              <div className="ch-summary-equipment-tags">
+                {chalDef.equipment.map(eq => <span key={eq} className="ch-summary-equipment-tag">{eq}</span>)}
+              </div>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="ch-progress">
+            <div className="ch-progress-stats">
+              <span className="ch-progress-pct">{progressPct}%</span>
+              <span className="ch-progress-label">{completedCount}/{workoutDays.length} days complete</span>
+            </div>
+            <div className="ch-progress-bar">
+              <div className="ch-progress-fill" style={{ width: `${progressPct}%` }} />
+            </div>
+          </div>
+
+          {/* Week grid */}
+          {chalDef.weeks.map((week, wi) => {
+            const weekDays = chalDef.days.filter(d => d.week === wi);
+            return (
+              <div key={wi} className="ch-week">
+                <div className="ch-week-header">
+                  <span className="ch-week-title">{week.label}</span>
+                  <span className="ch-week-meta">{fmtSec(week.work)} work / {fmtSec(week.rest)} rest{chalDef.weekMetaFn(wi)}</span>
+                </div>
+                <div className="ch-day-grid">
+                  {weekDays.map(d => {
+                    const unlocked = isDayUnlocked(d.day);
+                    if (d.rest) {
+                      const past = isRestDayPast(d.day);
+                      return (
+                        <div key={d.day} className={`ch-day-pill ch-day-rest${unlocked ? ' ch-day-rest--active' : ''}${!unlocked ? ' ch-day-locked' : ''}${past ? ' ch-day-rest--past' : ''}`}>
+                          <span className="ch-day-num">{d.day}</span>
+                          {!unlocked && <svg className="ch-day-lock" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>}
+                          {unlocked && !past && <span className="ch-day-rest-label">Rest</span>}
+                          {past && <svg className="ch-day-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                        </div>
+                      );
+                    }
+                    const done = chalProgress[d.day];
+                    if (!unlocked) {
+                      return (
+                        <div key={d.day} className="ch-day-pill ch-day-locked">
+                          <span className="ch-day-num">{d.day}</span>
+                          <svg className="ch-day-lock" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                        </div>
+                      );
+                    }
+                    return (
+                      <button key={d.day} className={`ch-day-pill${done ? ' ch-day-done' : ''}`} onClick={() => { loadChallengeDay(d); setView('challenge_day'); }}>
+                        <span className="ch-day-num">{d.day}</span>
+                        {done && <svg className="ch-day-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Restart button */}
+          {(!!chalStartedAt || completedCount > 0) && (
+            <button className="ch-restart-btn" onClick={restartChallenge}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Restart Challenge
+            </button>
+          )}
+        </main>
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
+      </div>
+    );
+  }
+
+  // ==================== CHALLENGE DAY DETAIL VIEW ====================
+  if (view === 'challenge_day' && challengeDay) {
+    const chalDef = CHALLENGES[activeChallenge];
+    const chalProgress = getProgress(activeChallenge);
+    const weekConfig = chalDef.weeks[challengeDay.week];
+    const totalTime = Math.ceil(challengeDay.exercises.length * challengeDay.rounds * (weekConfig.work + weekConfig.rest) / 60);
+    const done = chalProgress[challengeDay.day];
+    const dayHasTips = challengeDay.exercises.some(name => BEGINNER_TIPS[name]);
+    return (
+      <div className="wk-page">
+        <header className="client-header">
+          <div className="header-content">
+            <button className="header-back-btn" onClick={() => setView('challenge_calendar')} aria-label="Go back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
+            <div className="header-actions">
+              <button onClick={toggleTheme} aria-label="Toggle theme">
+                {isDark ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
+          {/* Day header */}
+          <div className="ch-day-header">
+            <div className="ch-day-badge">
+              <span className="ch-day-badge-num">Day {challengeDay.day}</span>
+              <span className="ch-day-badge-week">{chalDef.weeks[challengeDay.week].label}</span>
+            </div>
+            {done && <span className="ch-day-completed-tag">Completed</span>}
+          </div>
+
+          {/* Beginner modifier banner */}
+          {dayHasTips && (
+            <div className="ch-modifier-banner">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>New to press ups or planks? Drop to your knees — same great workout, zero shame. Look for the tips below each exercise.</span>
+            </div>
+          )}
+
+          {/* Stats row */}
+          <div className="wk-preview-stats">
+            <div className="wk-stat">
+              <span className="wk-stat-val">{challengeDay.exercises.length}</span>
+              <span className="wk-stat-label">Exercises</span>
+            </div>
+            <div className="wk-stat">
+              <span className="wk-stat-val">{challengeDay.rounds}</span>
+              <span className="wk-stat-label">Rounds</span>
+            </div>
+            <div className="wk-stat">
+              <span className="wk-stat-val">{totalTime}</span>
+              <span className="wk-stat-label">Minutes</span>
+            </div>
+            <div className="wk-stat">
+              <span className="wk-stat-val">{weekConfig.work}/{weekConfig.rest}</span>
+              <span className="wk-stat-label">Work/Rest</span>
+            </div>
+          </div>
+
+          {/* Exercise list */}
+          {challengeLoading ? (
+            <div className="ch-loading">
+              <div className="wk-spin-ring" style={{ width: 60, height: 60 }}>
+                <svg className="wk-spin-svg" viewBox="0 0 200 200">
+                  {TICKS_78_94.map((t, i) => (
+                    <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} className="wk-spin-tick" strokeWidth={t.thick ? '3.5' : '2'} style={{ animationDelay: `${i * 0.03}s` }} />
+                  ))}
+                </svg>
+              </div>
+              <p style={{ color: 'var(--text-tertiary)', marginTop: 12 }}>Loading exercises...</p>
+            </div>
+          ) : (
+            <div className="wk-preview-list">
+              {challengeExercises.map((ex, i) => (
+                <div key={i} className="wk-preview-item" style={{ animationDelay: `${i * 0.06}s` }} onClick={() => ex.videoUrl && setPreviewEx(ex)}>
+                  <span className="wk-preview-num">{i + 1}</span>
+                  <div className="wk-preview-thumb">
+                    {ex.videoUrl ? (
+                      <StaticThumb src={ex.videoUrl} isGif={ex.isGif} onReady={() => {}} eager />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', background: 'var(--bg-card)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="8" cy="8" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="wk-preview-name-wrap">
+                    <span className="wk-preview-name">{ex.name}</span>
+                    {BEGINNER_TIPS[ex.name] && <span className="wk-preview-modifier">{BEGINNER_TIPS[ex.name]}</span>}
+                  </div>
+                  {ex.videoUrl && <svg className="wk-preview-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Quick-preview modal */}
+          {previewEx && (
+            <div className="wk-preview-modal-backdrop" onClick={() => setPreviewEx(null)}>
+              <div className="wk-preview-modal" onClick={e => e.stopPropagation()}>
+                <button className="wk-preview-modal-close" onClick={() => setPreviewEx(null)} aria-label="Close preview">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div className="wk-preview-modal-video">
+                  {previewEx.isGif ? (
+                    <img src={previewEx.videoUrl} alt={previewEx.name} />
+                  ) : (
+                    <video src={previewEx.videoUrl} autoPlay loop muted playsInline />
+                  )}
+                </div>
+                <h3 className="wk-preview-modal-title">{previewEx.name}</h3>
+              </div>
+            </div>
+          )}
+
+          {/* Start button */}
+          <div className="wk-preview-actions">
+            <button className="wk-btn-primary wk-btn-full" onClick={startChallengeWorkout} disabled={challengeLoading || challengeExercises.filter(e => e.videoUrl).length === 0}>
+              {done ? 'Redo Workout' : 'Start Workout'}
+            </button>
+          </div>
+        </main>
+        <CoreBuddyNav active="workouts" />
+        {toastEl}
       </div>
     );
   }
@@ -3025,7 +3743,7 @@ export default function CoreBuddyWorkouts() {
               </div>
               <div className="wk-hub-card-body">
                 <h3>Quick Start</h3>
-                <p>{lastFocusLabel} &middot; {lastLevelLabel} &middot; {lastSettings.duration}min</p>
+                <p>{lastFocusLabel} &middot; {lastSettings.level === 'custom' ? `${fmtSec(lastSettings.customWork || 30)}/${fmtSec(lastSettings.customRest || 30)}` : lastLevelLabel} &middot; {lastSettings.duration}min</p>
               </div>
               <svg className="wk-hub-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
             </button>
@@ -3258,10 +3976,24 @@ export default function CoreBuddyWorkouts() {
                 {LEVELS.map(l => (
                   <button key={l.key} className={`wk-level-card${level === l.key ? ' active' : ''}`} onClick={() => { playBeep(); setLevel(l.key); }}>
                     <span className="wk-level-name">{l.label}</span>
-                    <span className="wk-level-desc">{l.desc}</span>
+                    <span className="wk-level-desc">{l.key === 'custom' ? `${fmtSec(customWork)} work / ${fmtSec(customRest)} rest` : l.desc}</span>
                   </button>
                 ))}
               </div>
+              {level === 'custom' && (
+                <div className="wk-custom-intervals">
+                  <div className="wk-custom-row">
+                    <label className="wk-custom-label">Work</label>
+                    <input type="range" className="wk-custom-slider" min={10} max={120} step={5} value={customWork} onChange={e => setCustomWork(Number(e.target.value))} />
+                    <span className="wk-custom-value">{fmtSec(customWork)}</span>
+                  </div>
+                  <div className="wk-custom-row">
+                    <label className="wk-custom-label">Rest</label>
+                    <input type="range" className="wk-custom-slider" min={5} max={120} step={5} value={customRest} onChange={e => setCustomRest(Number(e.target.value))} />
+                    <span className="wk-custom-value">{fmtSec(customRest)}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Time */}
@@ -3352,7 +4084,8 @@ export default function CoreBuddyWorkouts() {
   // ==================== PREVIEW VIEW (with optional spinner overlay while thumbs load) ====================
   if (view === 'preview_loading' || view === 'preview') {
     const isLoading = view === 'preview_loading';
-    const previewConfig = LEVELS.find(l => l.key === level);
+    const previewBase = LEVELS.find(l => l.key === level);
+    const previewConfig = level === 'custom' ? { ...previewBase, work: customWork, rest: customRest } : previewBase;
     const totalTime = workout.length * rounds * (previewConfig.work + previewConfig.rest);
     return (
       <>
@@ -3549,7 +4282,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Back button */}
         <div className="wk-back-row">
-          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView('randomiser_hub'); }}>
+          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             Back
           </button>
@@ -3572,6 +4305,7 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-exercise-info">
           <span className="wk-exercise-counter">{currentExIndex + 1} / {workout.length}</span>
           <h2 className="wk-exercise-name">{currentEx.name}</h2>
+          {level === 'challenge' && BEGINNER_TIPS[currentEx.name] && <span className="wk-exercise-modifier">{BEGINNER_TIPS[currentEx.name]}</span>}
           <span className="wk-round-label">Round {currentRound} of {rounds}</span>
         </div>
 
@@ -3588,7 +4322,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Controls */}
         <div className="wk-controls">
-          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView('randomiser_hub'); }}>
+          <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
           </button>
           <button className="wk-ctrl-btn wk-ctrl-pause" onClick={() => setIsPaused(!isPaused)}>
@@ -3610,7 +4344,7 @@ export default function CoreBuddyWorkouts() {
 
         {/* Hold-to-finish overlay */}
         {showFinish && (() => {
-          const config = LEVELS.find(l => l.key === level);
+          const config = LEVELS.find(l => l.key === level) || levelConfig;
           const totalTime = workout.length * rounds * (config.work + config.rest);
           return (
             <>
@@ -3624,7 +4358,7 @@ export default function CoreBuddyWorkouts() {
               hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDismissStart={() => setView('randomiser_hub')}
+              onDismissStart={() => setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub')}
               onDone={() => setShowFinish(false)}
               onRate={lastWorkoutLogId ? (rating) => {
                 updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});

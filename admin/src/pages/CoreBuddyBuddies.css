@@ -1042,7 +1042,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
@@ -1057,7 +1057,7 @@
 
 /* Bottom Sheet */
 .bdy-fab-sheet {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -1202,4 +1202,309 @@
 /* Dark mode */
 [data-theme="dark"] .bdy-fab-sheet {
   background: #1e1e1e;
+}
+
+/* ===== COMPOSE BOX ===== */
+.bdy-compose {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-glow);
+}
+
+.bdy-compose-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bdy-compose-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bdy-compose-avatar span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.bdy-compose-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bdy-compose-body textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  resize: none;
+  outline: none;
+  min-height: 36px;
+  line-height: 1.5;
+}
+
+.bdy-compose-body textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.bdy-compose-img-preview {
+  position: relative;
+  margin-top: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 200px;
+}
+
+.bdy-compose-img-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.bdy-compose-img-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bdy-compose-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+.bdy-compose-img-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: color 0.2s;
+}
+
+.bdy-compose-img-btn:hover {
+  color: var(--color-primary);
+}
+
+.bdy-compose-post-btn {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bdy-compose-post-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bdy-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--text-on-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ===== EVENTS TAB ===== */
+.bdy-events-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-secondary);
+}
+
+.bdy-events-empty svg {
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.bdy-events-empty h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.bdy-events-empty p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.bdy-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bdy-event-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-glow);
+}
+
+.bdy-event-active {
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+  background: rgba(var(--color-primary-rgb), 0.03);
+}
+
+.bdy-event-completed {
+  opacity: 0.6;
+}
+
+.bdy-event-status-badge {
+  display: inline-block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.bdy-event-active .bdy-event-status-badge {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.bdy-event-upcoming .bdy-event-status-badge {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.bdy-event-completed .bdy-event-status-badge {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.bdy-event-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.bdy-event-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.bdy-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.bdy-event-date,
+.bdy-event-participants {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bdy-event-category {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(var(--color-primary-rgb), 0.08);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.68rem;
+  text-transform: capitalize;
+}
+
+.bdy-event-action {
+  margin-top: 12px;
+}
+
+.bdy-event-join-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bdy-event-join-btn:disabled {
+  opacity: 0.6;
+}
+
+.bdy-event-view-btn {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--color-primary);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bdy-event-locked {
+  display: block;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-style: italic;
 }

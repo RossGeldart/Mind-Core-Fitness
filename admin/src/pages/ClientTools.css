@@ -204,7 +204,7 @@
 
 .toggle-group button.active {
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .form-group input,
@@ -275,7 +275,7 @@
 
 .unit-toggle button.active {
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .goal-options {
@@ -374,7 +374,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -418,7 +418,7 @@
 .goal-badge {
   padding: 6px 12px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border-radius: 20px;
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
@@ -637,7 +637,7 @@
 .snack-filter-btn.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .snack-filter-btn:hover:not(.active) {
@@ -716,7 +716,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -973,7 +973,7 @@
   width: 100%;
   padding: 14px;
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   border-radius: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif;

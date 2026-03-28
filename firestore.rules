@@ -135,12 +135,7 @@ service cloud.firestore {
       allow create: if isClientOwner(request.resource.data.clientId);
       allow delete: if isClientOwner(resource.data.clientId);
     }
-    // Client Programmes - admin full, clients write own, all authenticated can read (for profiles)
-    match /clientProgrammes/{docId} {
-      allow read, write: if isAdmin();
-      allow read: if isAuthenticated(); // PROFILES: view buddy programme progress
-      allow write: if isClientOwner(docId);
-    }
+
     // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
     match /nutritionTargets/{docId} {
       allow read, write: if isAdmin();
@@ -243,6 +238,12 @@ service cloud.firestore {
       allow read, delete: if isClientOwner(resource.data.clientId);
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
+    // Weekly Summaries - cached weekly performance summaries (doc ID = {clientId}_{mondayDate})
+    match /weeklySummaries/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if resource == null || isClientOwner(resource.data.clientId);
+      allow create, update: if isClientOwner(request.resource.data.clientId);
+    }
     // ── CHALLENGES ──
     // User Challenges - one doc per challenge attempt
     // Doc ID = auto-generated
@@ -270,6 +271,30 @@ service cloud.firestore {
     match /announcements/{announcementId} {
       allow read, write: if isAdmin();
       allow read: if isAuthenticated();
+    }
+    // ── EVENTS ──
+    // Events - admin-created community events visible to all authenticated users
+    // Doc ID = auto-generated
+    // Fields: title, description, category, startDate, endDate, participantCount, createdAt
+    match /events/{eventId} {
+      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount']);
+      // Event Participants - users join events, subcollection of events
+      // Doc ID = clientData.id (Firestore client doc ID, not auth UID)
+      match /participants/{participantId} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+      // Event Feed - event-specific posts, subcollection of events
+      match /feed/{postId} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      }
     }
     // ── NOTIFICATIONS (Phase 4) ──
     // Notifications - in-app notifications for each user

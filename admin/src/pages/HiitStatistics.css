@@ -41,7 +41,7 @@
 
 .hiit-seg-btn.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 600;
   border-radius: 8px;
 }
