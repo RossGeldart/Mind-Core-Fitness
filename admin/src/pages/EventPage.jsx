@@ -138,7 +138,8 @@ export default function EventPage() {
       setEvent(evt);
 
       const config = CATEGORY_CONFIG[evt.category] || CATEGORY_CONFIG.fitness;
-      setLbTab(config.tabs[0]);
+      const savedStat = evt.leaderboardStat;
+      setLbTab(savedStat && config.tabs.includes(savedStat) ? savedStat : config.tabs[0]);
     } catch (err) {
       console.error('Error loading event:', err);
     } finally {
