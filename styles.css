@@ -134,6 +134,25 @@
     background: #7a2730;
 }
 
+.nav-link.nav-circuits {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #B8313D;
+    margin-left: 4px;
+}
+
+.nav-link.nav-circuits:hover {
+    background: #B8313D;
+    color: #ffffff;
+}
+
+.nav-circuits-icon {
+    flex-shrink: 0;
+}
+
 /* Hamburger Menu */
 .hamburger {
     display: none;
@@ -217,6 +236,15 @@
         border-bottom: none;
         border-radius: 6px;
         text-align: center;
+    }
+
+    .nav-link.nav-circuits {
+        margin-left: 0;
+        margin-top: 8px;
+        border-bottom: none;
+        border-radius: 6px;
+        text-align: center;
+        justify-content: center;
     }
 
     .mobile-social-links {
