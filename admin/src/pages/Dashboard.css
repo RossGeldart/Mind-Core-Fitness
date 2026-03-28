@@ -86,7 +86,7 @@
 
 .admin-badge {
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   font-size: 0.7rem;
   padding: 4px 8px;
   border-radius: 4px;
@@ -120,7 +120,7 @@
 }
 
 .nav-btn.active {
-  color: #fff;
+  color: var(--text-on-primary);
   background: var(--color-primary);
 }
 
@@ -195,7 +195,7 @@
 
 .add-btn {
   background: var(--color-primary);
-  color: white;
+  color: var(--text-on-primary);
   border: none;
   padding: 12px 20px;
   font-family: 'Plus Jakarta Sans', sans-serif;

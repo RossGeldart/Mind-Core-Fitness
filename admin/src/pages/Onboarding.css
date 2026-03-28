@@ -368,7 +368,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--text-on-primary);
   font-size: 0.7rem;
   font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -494,13 +494,13 @@
 
 .ob-plan-cta-outline:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .ob-plan-cta-featured {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--text-on-primary);
   box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.45);
 }
 
@@ -685,7 +685,7 @@
 
 .ob-parq-btn.no {
   background: var(--color-success);
-  color: #fff;
+  color: var(--text-on-primary);
   border-color: var(--color-success);
 }
 

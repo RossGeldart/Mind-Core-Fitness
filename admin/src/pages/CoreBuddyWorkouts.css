@@ -925,7 +925,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   padding: 3px 10px;
   border-radius: 20px;
 }
@@ -1390,7 +1390,7 @@
 .mg-badge-celebration {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -2220,7 +2220,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3529,7 +3529,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   animation: wkFabOverlayIn 0.2s ease;
@@ -3545,7 +3545,7 @@
 
 /* FAB Bottom Sheet – matches Activity Logger modal style */
 .wk-fab-sheet {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -3665,7 +3665,7 @@
 .wk-save-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--overlay-bg-heavy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3674,7 +3674,7 @@
 }
 
 .wk-save-modal {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 16px;
   padding: 24px;
   width: 100%;
@@ -4627,7 +4627,7 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -4635,7 +4635,7 @@
 }
 
 .reps-picker-sheet {
-  background: #fff;
+  background: var(--bg-card-elevated);
   border-radius: 18px 18px 0 0;
   width: 100%;
   max-width: 420px;
@@ -5909,7 +5909,7 @@
   position: fixed;
   inset: 0;
   z-index: 1001;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--overlay-bg-heavy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5918,7 +5918,7 @@
 }
 
 .wk-saved-overlay-card {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 18px;
   width: 100%;
   max-width: 400px;

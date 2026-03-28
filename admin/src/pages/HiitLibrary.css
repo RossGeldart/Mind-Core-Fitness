@@ -135,7 +135,7 @@
 .hlib-cat-pill.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 .hlib-save-preview {
@@ -176,7 +176,7 @@
   border: none;
   border-radius: 10px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
@@ -349,7 +349,7 @@
   border: none;
   border-radius: 10px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;

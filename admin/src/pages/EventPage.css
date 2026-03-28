@@ -175,7 +175,7 @@
 
 .evp-category-badge {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   padding: 2px 8px;
   border-radius: 8px;
   font-size: 0.72rem;
@@ -332,7 +332,7 @@
 
 .evp-day-today {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   box-shadow: 0 0 0 2px var(--color-primary), 0 0 0 4px rgba(var(--color-primary-rgb, 200, 40, 40), 0.2);
 }
 
@@ -359,7 +359,7 @@
 .evp-lb-tab-active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
 }
 
 /* Podium */
@@ -448,7 +448,7 @@
 
 .evp-you-badge {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-size: 0.6rem;
   padding: 1px 5px;
   border-radius: 6px;
@@ -631,7 +631,7 @@
 
 .evp-post-btn {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   border: none;
   padding: 6px 16px;
   border-radius: 8px;
@@ -649,7 +649,7 @@
   width: 14px;
   height: 14px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border-top-color: var(--text-on-primary);
   border-radius: 50%;
   animation: evp-spin 0.6s linear infinite;
 }
@@ -860,7 +860,7 @@
 .evp-comment-send {
   background: var(--color-primary);
   border: none;
-  color: #fff;
+  color: var(--text-on-primary);
   width: 32px;
   height: 32px;
   border-radius: 50%;

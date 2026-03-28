@@ -64,7 +64,7 @@
   border: none;
   border-radius: 14px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
@@ -806,7 +806,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--overlay-bg);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
@@ -822,7 +822,7 @@
 
 /* ── FAB Bottom Sheet ── */
 .nhub-fab-sheet {
-  background: #ffffff;
+  background: var(--bg-card-elevated);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -1018,7 +1018,7 @@
   position: fixed;
   inset: 0;
   z-index: 1099;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   animation: nhubFabOverlayIn 0.15s ease;

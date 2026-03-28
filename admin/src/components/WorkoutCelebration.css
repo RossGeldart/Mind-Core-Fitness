@@ -27,7 +27,7 @@
     -webkit-backdrop-filter: blur(0px);
   }
   to {
-    background: rgba(0, 0, 0, 0.85);
+    background: var(--overlay-bg-heavy);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
@@ -193,7 +193,7 @@
 
 @keyframes wcOverlayIn {
   from { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  to   { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  to   { background: var(--overlay-bg-heavy); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 }
 
 @keyframes wcOverlayOut {
@@ -538,7 +538,7 @@
   .wc-share-row,
   .wc-celeb-btn { animation: wcFadeOnly 0.3s ease-out 0.2s both; }
   .wc-holding { transform: none; }
-  .wc-hold-page { animation: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .wc-hold-page { animation: none; background: var(--overlay-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
   .wc-hold-glow,
   .wc-hold-ring-glow { animation: none; }
   .wc-hold-hint { animation: none; opacity: 0.7; }

@@ -532,7 +532,7 @@
 .cbc-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -1108,7 +1108,7 @@
 
 @keyframes celebOverlayIn {
   from { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  to   { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  to   { background: var(--overlay-bg-heavy); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 }
 
 @keyframes celebOverlayOut {

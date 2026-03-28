@@ -56,6 +56,7 @@
 
   /* Overlays */
   --overlay-bg: rgba(0, 0, 0, 0.6);
+  --overlay-bg-heavy: rgba(0, 0, 0, 0.85);
 
   /* Time slots */
   --time-morning: #fff8e1;
@@ -118,6 +119,7 @@
 
   /* Overlays */
   --overlay-bg: rgba(0, 0, 0, 0.8);
+  --overlay-bg-heavy: rgba(0, 0, 0, 0.85);
 
   /* Time slots */
   --time-morning: rgba(255, 248, 225, 0.1);
@@ -222,6 +224,9 @@
   --shadow-primary: 0 6px 20px rgba(0, 0, 0, 0.15);
   --shadow-glow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
 
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --overlay-bg-heavy: rgba(0, 0, 0, 0.85);
+
   --time-morning: rgba(0, 0, 0, 0.03);
   --time-afternoon: rgba(0, 0, 0, 0.03);
 }
@@ -273,6 +278,9 @@
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.4);
   --shadow-primary: 0 6px 20px rgba(255, 255, 255, 0.08);
   --shadow-glow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2);
+
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+  --overlay-bg-heavy: rgba(0, 0, 0, 0.92);
 
   --time-morning: rgba(255, 255, 255, 0.03);
   --time-afternoon: rgba(255, 255, 255, 0.03);
