@@ -564,6 +564,9 @@ export default function CoreBuddyWorkouts() {
   // Quick-preview modal for exercise thumbnails
   const [previewEx, setPreviewEx] = useState(null);
 
+  // Scroll to top on view change
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
+
   // GIF looping
   const gifRef = useRef(null);
 
