@@ -226,6 +226,10 @@ const CHALLENGES = {
     heroImg: challengeHeroImg,
     hubImg: challengeHubImg,
     firestoreSuffix: '',
+    equipment: ['Bodyweight', 'Dumbbells (Week 4)'],
+    description: 'This challenge targets your entire core — abs, obliques, lower back and glutes — across 4 progressive weeks. Week 1 builds your foundation with bodyweight-only moves and generous rest. Each week layers in more volume, tighter rest and new exercises. Week 4 introduces light dumbbells for an extra challenge. 5 workout days per week with 2 built-in rest days to recover.',
+    weightAdvice: null,
+    weekMetaFn: (wi) => wi === 3 ? ' + weights' : '',
   },
   upper_body: {
     id: 'upper_body',
@@ -238,6 +242,10 @@ const CHALLENGES = {
     heroImg: upperBodyHeroImg,
     hubImg: upperBodyThumbImg,
     firestoreSuffix: '_upper_body',
+    equipment: ['Bodyweight', 'Dumbbells (Week 2+)'],
+    description: 'Build upper body strength and endurance through chest, back, shoulders, biceps and triceps. Week 1 is entirely bodyweight so you can nail the movement patterns. From Week 2 you\'ll add dumbbells — start lighter than you think. The goal is to keep moving through every interval, not to go heavy.',
+    weightAdvice: 'HIIT and heavy weights don\'t mix. Pick a weight that lets you maintain good form for the full interval — if you\'re grinding to a halt halfway through, go lighter. If you cruise through every set, go heavier. As you get stronger across the 4 weeks you\'ll naturally be ready to step up.',
+    weekMetaFn: (wi) => wi >= 1 ? ' + dumbbells' : '',
   },
 };
 
@@ -3434,6 +3442,23 @@ export default function CoreBuddyWorkouts() {
             </div>
           </div>
 
+          {/* Challenge summary */}
+          <div className="ch-summary">
+            <p className="ch-summary-desc">{chalDef.description}</p>
+            {chalDef.weightAdvice && (
+              <div className="ch-summary-advice">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>{chalDef.weightAdvice}</span>
+              </div>
+            )}
+            <div className="ch-summary-equipment">
+              <span className="ch-summary-equipment-label">Equipment</span>
+              <div className="ch-summary-equipment-tags">
+                {chalDef.equipment.map(eq => <span key={eq} className="ch-summary-equipment-tag">{eq}</span>)}
+              </div>
+            </div>
+          </div>
+
           {/* Progress bar */}
           <div className="ch-progress">
             <div className="ch-progress-bar">
@@ -3449,7 +3474,7 @@ export default function CoreBuddyWorkouts() {
               <div key={wi} className="ch-week">
                 <div className="ch-week-header">
                   <span className="ch-week-title">{week.label}</span>
-                  <span className="ch-week-meta">{fmtSec(week.work)} work / {fmtSec(week.rest)} rest{wi === 3 ? ' + weights' : ''}</span>
+                  <span className="ch-week-meta">{fmtSec(week.work)} work / {fmtSec(week.rest)} rest{chalDef.weekMetaFn(wi)}</span>
                 </div>
                 <div className="ch-day-grid">
                   {weekDays.map(d => {
