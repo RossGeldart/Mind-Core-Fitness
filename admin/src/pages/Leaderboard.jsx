@@ -124,6 +124,7 @@ const TABS = [
   { key: 'workouts', label: 'Workouts', icon: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z' },
   { key: 'minutes', label: 'Minutes', icon: 'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z' },
   { key: 'volume', label: 'Volume', icon: 'M6.5 2C5.12 2 4 3.12 4 4.5v15C4 20.88 5.12 22 6.5 22h11c1.38 0 2.5-1.12 2.5-2.5v-15C20 3.12 18.88 2 17.5 2h-11zM12 18c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z' },
+  { key: 'activities', label: 'Activities', icon: 'M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z' },
   { key: 'streak', label: 'Streak', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
 ];
 
@@ -133,7 +134,8 @@ const TAB_DESCRIPTIONS = {
   workouts: 'Total completed workouts across randomiser and muscle group sessions',
   minutes: 'Active minutes from randomiser workouts only',
   volume: 'Total weight lifted from BYO Reps & Sets workouts (weight \u00d7 reps)',
-  streak: 'Consecutive weeks with at least one workout completed (Mon\u2013Sun)',
+  activities: 'Total minutes from logged activities like walking, running, cycling',
+  streak: 'Consecutive weeks with at least one workout or activity (Mon\u2013Sun)',
 };
 
 export default function Leaderboard() {
@@ -288,6 +290,7 @@ export default function Leaderboard() {
           workouts: 0,
           minutes: 0,
           volume: 0,
+          activityMinutes: 0,
           workoutDates: new Set(),
         };
       });
@@ -324,13 +327,12 @@ export default function Leaderboard() {
         }
       });
 
-      // Process activityLogs — activities count toward workouts, minutes, and streaks
+      // Process activityLogs — activities count toward their own tab and streaks only
       alSnap.docs.forEach(d => {
         const data = d.data();
         if (!clientIds.has(data.clientId)) return;
         const s = stats[data.clientId];
-        s.workouts++;
-        s.minutes += data.duration || 0;
+        s.activityMinutes += data.duration || 0;
         if (data.completedAt) {
           const date = data.completedAt.toDate();
           s.workoutDates.add(formatDateKey(date));
@@ -352,6 +354,8 @@ export default function Leaderboard() {
         sorted.sort((a, b) => b.minutes - a.minutes || a.name.localeCompare(b.name));
       } else if (activeTab === 'volume') {
         sorted.sort((a, b) => b.volume - a.volume || a.name.localeCompare(b.name));
+      } else if (activeTab === 'activities') {
+        sorted.sort((a, b) => b.activityMinutes - a.activityMinutes || a.name.localeCompare(b.name));
       } else {
         sorted.sort((a, b) => b.streak - a.streak || a.name.localeCompare(b.name));
       }
@@ -370,6 +374,7 @@ export default function Leaderboard() {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return entry.minutes;
     if (activeTab === 'volume') return entry.volume;
+    if (activeTab === 'activities') return entry.activityMinutes;
     return entry.streak;
   };
 
@@ -377,6 +382,7 @@ export default function Leaderboard() {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return formatMinutes(entry.minutes);
     if (activeTab === 'volume') return formatVolume(entry.volume);
+    if (activeTab === 'activities') return formatMinutes(entry.activityMinutes);
     return entry.streak;
   };
 
@@ -384,6 +390,7 @@ export default function Leaderboard() {
     if (activeTab === 'workouts') return '';
     if (activeTab === 'minutes') return '';
     if (activeTab === 'volume') return 'kg';
+    if (activeTab === 'activities') return '';
     return 'wk';
   };
 
@@ -473,7 +480,8 @@ export default function Leaderboard() {
                       {tab.key === 'workouts' && 'Randomiser & muscle group workouts'}
                       {tab.key === 'minutes' && 'Total minutes from randomiser workouts'}
                       {tab.key === 'volume' && 'Total weight lifted from BYO Reps & Sets'}
-                      {tab.key === 'streak' && 'Consecutive weeks with at least one workout'}
+                      {tab.key === 'activities' && 'Total minutes from logged activities'}
+                      {tab.key === 'streak' && 'Consecutive weeks with at least one workout or activity'}
                     </span>
                   </div>
                 </div>
