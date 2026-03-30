@@ -18,8 +18,8 @@ import { trackWorkoutStarted, trackWorkoutCompleted, trackWorkoutShared, trackEx
 
 import randomiserCardImg from '../assets/images/cards/randomiser.jpg';
 import challengeThumbImg from '../assets/mobilehero.PNG';
-import challengeHeroImg from '../assets/images/cards/workouts.jpg';
-import challengeHubImg from '../assets/images/cards/workouts.jpg';
+import challengeHeroImg from '../assets/images/cards/4 week core.PNG';
+import challengeHubImg from '../assets/images/cards/4 week core.PNG';
 import upperBodyHeroImg from '../assets/images/cards/4weekupperheader.png';
 import upperBodyThumbImg from '../assets/images/cards/4weekuppercardthumbnail.png';
 import { TICKS_78_94, TICKS_82_94 } from '../utils/ringTicks';
@@ -3368,7 +3368,7 @@ export default function CoreBuddyWorkouts() {
             return (
               <button key={chal.id} className="ch-hub-card" onClick={() => { setActiveChallenge(chal.id); setView('challenge_calendar'); }}>
                 <div className="ch-hub-card-icon">
-                  <img src={chal.hubImg} alt={chal.title} className="ch-hub-card-img" loading="eager" />
+                  <img src={chal.hubImg} alt={chal.title} className="ch-hub-card-img" loading="lazy" />
                 </div>
                 <div className="ch-hub-card-body">
                   <div className="ch-hub-card-top">
@@ -3438,7 +3438,7 @@ export default function CoreBuddyWorkouts() {
         <main className="wk-main" style={{ maxWidth: 500, margin: '0 auto' }}>
           {/* Hero image */}
           <div className="ch-hero-img-container">
-            <img src={chalDef.heroImg} alt={chalDef.title} className="ch-hero-img" loading="eager" fetchpriority="high" />
+            <img src={chalDef.heroImg} alt={chalDef.title} className="ch-hero-img" loading="lazy" />
             <div className="ch-hero-img-overlay">
               <h1 className="ch-hero-title">{chalDef.title}</h1>
               <p className="ch-hero-sub">{chalDef.subtitle}</p>
