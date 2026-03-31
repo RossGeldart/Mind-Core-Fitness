@@ -313,13 +313,13 @@
 .nhub-ring-track {
   fill: none;
   stroke: var(--border-color);
-  stroke-width: 10;
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
 .nhub-ring-fill {
   fill: none;
-  stroke-width: 10;
+  stroke-width: 12;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.6s ease-out;
 }

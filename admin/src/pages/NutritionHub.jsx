@@ -1250,7 +1250,7 @@ export default function NutritionHub() {
                   )}
                 </svg>
                 <div className="nhub-ring-center">
-                  <span className="nhub-ring-value" style={{ color: MACRO_COLORS_HUB.water }}>{waterMl}ml</span>
+                  <span className="nhub-ring-value" style={{ color: MACRO_COLORS_HUB.water }}>{waterMl >= 1000 ? `${(waterMl / 1000).toFixed(waterMl % 1000 === 0 ? 0 : 1)}L` : `${waterMl}ml`}</span>
                 </div>
                 <span className="nhub-ring-label">Water</span>
                 <span className="nhub-ring-pct" style={{ color: MACRO_COLORS_HUB.water }}>
