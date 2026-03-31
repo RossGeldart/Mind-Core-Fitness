@@ -322,57 +322,67 @@ export default function Leaderboard() {
 
       // For each client, load their nutritionTargets and nutritionLogs
       const results = await Promise.all(clients.map(async (c) => {
-        // Get protein target
-        const targetDoc = await getDoc(doc(db, 'nutritionTargets', c.id));
-        if (!targetDoc.exists() || !targetDoc.data().protein) return null;
-        const proteinTarget = targetDoc.data().protein;
+        try {
+          // Get protein target (show client with 0 if no target set)
+          const targetDoc = await getDoc(doc(db, 'nutritionTargets', c.id)).catch(() => null);
+          const proteinTarget = targetDoc?.exists() ? (targetDoc.data().protein || 0) : 0;
 
-        // Determine date range for logs to scan (last 365 days for streaks, or period for days_hit)
-        const lookbackDays = proteinTab === 'days_hit' ? 365 : 365;
-        const hitDays = [];
-        const batchSize = 30;
-        for (let batch = 0; batch < Math.ceil(lookbackDays / batchSize); batch++) {
-          const promises = [];
-          for (let i = batch * batchSize; i < Math.min((batch + 1) * batchSize, lookbackDays); i++) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const dateStr = getDateStr(d);
-            promises.push(
-              getDoc(doc(db, 'nutritionLogs', `${c.id}_${dateStr}`)).then(snap => {
-                if (!snap.exists()) return null;
-                const entries = snap.data().entries || [];
-                const totalProtein = entries.reduce((sum, e) => sum + (e.protein || 0), 0);
-                return totalProtein >= proteinTarget ? dateStr : null;
-              }).catch(() => null)
-            );
+          const hitDays = [];
+          if (proteinTarget > 0) {
+            // Scan last 365 days of nutrition logs
+            const lookbackDays = 365;
+            const batchSize = 30;
+            for (let batch = 0; batch < Math.ceil(lookbackDays / batchSize); batch++) {
+              const promises = [];
+              for (let i = batch * batchSize; i < Math.min((batch + 1) * batchSize, lookbackDays); i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = getDateStr(d);
+                promises.push(
+                  getDoc(doc(db, 'nutritionLogs', `${c.id}_${dateStr}`)).then(snap => {
+                    if (!snap.exists()) return null;
+                    const entries = snap.data().entries || [];
+                    const totalProtein = entries.reduce((sum, e) => sum + (e.protein || 0), 0);
+                    return totalProtein >= proteinTarget ? dateStr : null;
+                  }).catch(() => null)
+                );
+              }
+              const batchResults = await Promise.all(promises);
+              batchResults.forEach(r => { if (r) hitDays.push(r); });
+            }
           }
-          const batchResults = await Promise.all(promises);
-          batchResults.forEach(r => { if (r) hitDays.push(r); });
-        }
 
-        // Calculate metric based on active protein tab
-        let value = 0;
-        if (proteinTab === 'days_hit') {
-          const { startStr, endStr } = getDateRange(proteinPeriod);
-          value = hitDays.filter(d => d >= startStr && d <= endStr).length;
-        } else if (proteinTab === 'day_streak') {
-          value = calculateProteinDayStreak(hitDays);
-        } else {
-          value = calculateProteinWeekStreak(hitDays);
-        }
+          // Calculate metric based on active protein tab
+          let value = 0;
+          if (proteinTab === 'days_hit') {
+            const { startStr, endStr } = getDateRange(proteinPeriod);
+            value = hitDays.filter(d => d >= startStr && d <= endStr).length;
+          } else if (proteinTab === 'day_streak') {
+            value = calculateProteinDayStreak(hitDays);
+          } else {
+            value = calculateProteinWeekStreak(hitDays);
+          }
 
-        return {
-          id: c.id,
-          name: c.name || c.email?.split('@')[0] || 'Anonymous',
-          photoURL: c.photoURL || null,
-          value,
-        };
+          return {
+            id: c.id,
+            name: c.name || c.email?.split('@')[0] || 'Anonymous',
+            photoURL: c.photoURL || null,
+            value,
+          };
+        } catch {
+          // If any read fails for this client, still show them with 0
+          return {
+            id: c.id,
+            name: c.name || c.email?.split('@')[0] || 'Anonymous',
+            photoURL: c.photoURL || null,
+            value: 0,
+          };
+        }
       }));
 
-      const valid = results.filter(Boolean);
-      valid.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
-      valid.forEach((s, i) => { s.rank = i + 1; });
-      setProteinRankings(valid);
+      results.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+      results.forEach((s, i) => { s.rank = i + 1; });
+      setProteinRankings(results);
     } catch (err) {
       console.error('Error fetching protein leaderboard:', err);
       showToast('Failed to load protein leaderboard', 'error');
