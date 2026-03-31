@@ -1241,11 +1241,11 @@ export default function NutritionHub() {
                     strokeDasharray={RING_C}
                     strokeDashoffset={RING_C - (Math.min(100, Math.round((waterMl / WATER_TARGET) * 100)) / 100) * RING_C} />
                   {waterHolding && (
-                    <circle className="nhub-ring-hold-progress" cx="40" cy="40" r={RING_R + 6}
-                      style={{ stroke: MACRO_COLORS_HUB.water, opacity: 0.3 }}
-                      strokeDasharray={2 * Math.PI * (RING_R + 6)}
-                      strokeDashoffset={(2 * Math.PI * (RING_R + 6)) * (1 - waterHoldProgress)}
-                      fill="none" strokeWidth="4" strokeLinecap="round"
+                    <circle className="nhub-ring-hold-progress" cx="40" cy="40" r={RING_R + 4}
+                      style={{ stroke: MACRO_COLORS_HUB.water, opacity: 0.6 }}
+                      strokeDasharray={2 * Math.PI * (RING_R + 4)}
+                      strokeDashoffset={(2 * Math.PI * (RING_R + 4)) * (1 - waterHoldProgress)}
+                      fill="none" strokeWidth="6" strokeLinecap="round"
                       transform="rotate(-90 40 40)" />
                   )}
                 </svg>
