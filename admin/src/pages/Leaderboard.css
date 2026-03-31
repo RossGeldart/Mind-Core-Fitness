@@ -210,6 +210,44 @@
   margin: 12px 0 0;
 }
 
+/* ===== BOARD TOGGLE (Workouts | Protein King) ===== */
+.lb-board-toggle {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 0 4px;
+}
+
+.lb-board-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lb-board-active {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+}
+
+.lb-board-btn:active { transform: scale(0.97); }
+
+[data-theme="dark"] .lb-board-toggle {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
 /* ===== TABS ===== */
 .lb-tabs {
   display: flex;

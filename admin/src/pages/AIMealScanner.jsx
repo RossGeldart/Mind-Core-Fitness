@@ -218,8 +218,6 @@ export default function AIMealScanner() {
         id: Date.now() + idx,
         name: item.name,
         protein: item.protein || 0,
-        carbs: item.carbs || 0,
-        fats: item.fats || 0,
         calories: item.calories || 0,
         serving: `${item.estimatedGrams || 0}g (AI estimate)`,
         meal: selectedMeal,
@@ -293,8 +291,6 @@ export default function AIMealScanner() {
         id: Date.now() + idx,
         name: item.name,
         protein: item.protein || 0,
-        carbs: item.carbs || 0,
-        fats: item.fats || 0,
         calories: item.calories || 0,
         serving: `${item.estimatedGrams || 0}g (AI estimate)`,
         meal: selectedMeal,
@@ -493,7 +489,7 @@ export default function AIMealScanner() {
                         <div className="ais-recent-info">
                           <span className="ais-recent-label">{meal.label}</span>
                           <span className="ais-recent-macros">
-                            {meal.totals.calories} cal &middot; {meal.totals.protein}p &middot; {meal.totals.carbs}c &middot; {meal.totals.fats}f
+                            {meal.totals.calories} cal &middot; {meal.totals.protein}p
                           </span>
                           {meal.mealType && (
                             <span className="ais-recent-meal-tag">
@@ -576,14 +572,6 @@ export default function AIMealScanner() {
                 <span className="ais-total-val">{result.totals.protein}g</span>
                 <span className="ais-total-label">Protein</span>
               </div>
-              <div className="ais-total-item">
-                <span className="ais-total-val">{result.totals.carbs}g</span>
-                <span className="ais-total-label">Carbs</span>
-              </div>
-              <div className="ais-total-item">
-                <span className="ais-total-val">{result.totals.fats}g</span>
-                <span className="ais-total-label">Fats</span>
-              </div>
             </div>
 
             {/* Items breakdown */}
@@ -598,8 +586,6 @@ export default function AIMealScanner() {
                   <div className="ais-item-macros">
                     <span>{item.calories} cal</span>
                     <span>{item.protein}p</span>
-                    <span>{item.carbs}c</span>
-                    <span>{item.fats}f</span>
                   </div>
                 </div>
               ))}

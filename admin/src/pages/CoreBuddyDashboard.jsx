@@ -102,7 +102,7 @@ export default function CoreBuddyDashboard() {
   const [totalWorkouts, setTotalWorkouts] = useState(0);
   const [habitWeekPct, setHabitWeekPct] = useState(0);
   const [statsLoaded, setStatsLoaded] = useState(false);
-  const [nutritionTotals, setNutritionTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+  const [nutritionTotals, setNutritionTotals] = useState({ protein: 0, calories: 0 });
   const [nutritionTargetData, setNutritionTargetData] = useState(null);
   const [todayHabitsCount, setTodayHabitsCount] = useState(0);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
@@ -195,7 +195,7 @@ export default function CoreBuddyDashboard() {
         {
           selector: '.cb-nutrition-wrap',
           title: "Today's Nutrition",
-          body: 'Track your macros — protein, carbs, fats and calories. Tap to log meals and scan barcodes.',
+          body: 'Track your protein and calories. Tap to log meals and scan barcodes.',
         },
         {
           selector: '.cb-fab',
@@ -285,7 +285,7 @@ export default function CoreBuddyDashboard() {
         const c = JSON.parse(cached);
         setTotalWorkouts(c.totalWorkouts ?? 0);
         setHabitWeekPct(c.habitWeekPct ?? 0);
-        setNutritionTotals(c.nutritionTotals ?? { protein: 0, carbs: 0, fats: 0, calories: 0 });
+        setNutritionTotals(c.nutritionTotals ?? { protein: 0, calories: 0 });
         setNutritionTargetData(c.nutritionTargetData ?? null);
         setTodayHabitsCount(c.todayHabitsCount ?? 0);
         if (c.realHabitCount) setRealHabitCount(c.realHabitCount);
@@ -544,10 +544,8 @@ export default function CoreBuddyDashboard() {
           const entries = nutLogSnap.data().entries || [];
           const totals = entries.reduce((acc, e) => ({
             protein: acc.protein + (e.protein || 0),
-            carbs: acc.carbs + (e.carbs || 0),
-            fats: acc.fats + (e.fats || 0),
             calories: acc.calories + (e.calories || 0),
-          }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+          }), { protein: 0, calories: 0 });
           setNutritionTotals(totals);
         }
       } catch (err) {
@@ -1106,8 +1104,6 @@ export default function CoreBuddyDashboard() {
             <div className="cb-metric-rings-row">
               {[
                 { key: 'protein', label: 'Protein' },
-                { key: 'carbs', label: 'Carbs' },
-                { key: 'fats', label: 'Fats' },
                 { key: 'calories', label: 'Calories' },
               ].map((m) => {
                 const pct = nutPct(m.key);

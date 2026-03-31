@@ -77,8 +77,6 @@ export const parseProduct = (p) => {
     servingUnit: unit,
     portion,
     protein: Math.round(n.proteins_100g || n.proteins || 0),
-    carbs: Math.round(n.carbohydrates_100g || n.carbohydrates || 0),
-    fats: Math.round(n.fat_100g || n.fat || 0),
     calories: Math.round(n['energy-kcal_100g'] || n['energy-kcal'] || (n['energy_100g'] ? n['energy_100g'] / 4.184 : 0)),
     per100g: true
   };

@@ -11,6 +11,103 @@ import CoreBuddyNav from '../components/CoreBuddyNav';
 
 import BadgeCelebration from '../components/BadgeCelebration';
 
+// ==================== PROTEIN KING HELPERS ====================
+function getDateStr(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function getDateRange(period) {
+  const now = new Date();
+  if (period === 'week') {
+    const day = now.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { startStr: getDateStr(monday), endStr: getDateStr(sunday) };
+  }
+  if (period === 'month') {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { startStr: getDateStr(start), endStr: getDateStr(end) };
+  }
+  // year
+  return { startStr: `${now.getFullYear()}-01-01`, endStr: `${now.getFullYear()}-12-31` };
+}
+
+function calculateProteinDayStreak(hitDays) {
+  if (hitDays.length === 0) return 0;
+  const sorted = [...hitDays].sort().reverse();
+  const today = getDateStr(new Date());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = getDateStr(yesterday);
+
+  // Start counting from today or yesterday
+  let streak = 0;
+  let checkDate = sorted[0] === today ? today : (sorted[0] === yesterdayStr ? yesterdayStr : null);
+  if (!checkDate) return 0;
+
+  const dateSet = new Set(sorted);
+  const d = new Date(checkDate + 'T12:00:00');
+  while (dateSet.has(getDateStr(d))) {
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+function calculateProteinWeekStreak(hitDays) {
+  if (hitDays.length === 0) return 0;
+  const hitSet = new Set(hitDays);
+  const now = new Date();
+  const currentMonday = getMondayOf(now);
+  let streak = 0;
+  let checkMonday = new Date(currentMonday);
+
+  // Check if current week qualifies (may be incomplete)
+  const currentWeekHits = countWeekHits(checkMonday, hitSet);
+  if (currentWeekHits < 5) {
+    // Current week doesn't qualify yet, check from last week
+    checkMonday.setDate(checkMonday.getDate() - 7);
+  }
+
+  for (let i = 0; i < 52; i++) {
+    const hits = countWeekHits(checkMonday, hitSet);
+    if (hits >= 5) {
+      streak++;
+      checkMonday.setDate(checkMonday.getDate() - 7);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function countWeekHits(monday, hitSet) {
+  let count = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    if (hitSet.has(getDateStr(d))) count++;
+  }
+  return count;
+}
+
+const PROTEIN_TABS = [
+  { key: 'days_hit', label: 'Days Hit', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4' },
+  { key: 'day_streak', label: 'Day Streak', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
+  { key: 'week_streak', label: 'Week Streak', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z' },
+];
+
+const PROTEIN_TAB_DESCRIPTIONS = {
+  days_hit: 'Total days where logged protein met your daily target',
+  day_streak: 'Current consecutive days hitting your protein target',
+  week_streak: 'Consecutive weeks with 5+ days hitting your protein target (Mon\u2013Sun)',
+};
+
 function getWeekBounds() {
   const now = new Date();
   const day = now.getDay();
@@ -139,10 +236,14 @@ const TAB_DESCRIPTIONS = {
 };
 
 export default function Leaderboard() {
+  const [board, setBoard] = useState('workouts'); // 'workouts' | 'protein'
   const [activeTab, setActiveTab] = useState('workouts');
+  const [proteinTab, setProteinTab] = useState('days_hit');
   const [period, setPeriod] = useState('week');
+  const [proteinPeriod, setProteinPeriod] = useState('week');
   const [loading, setLoading] = useState(true);
   const [rankings, setRankings] = useState([]);
+  const [proteinRankings, setProteinRankings] = useState([]);
   const [optedIn, setOptedIn] = useState(null);
   const [togglingOptIn, setTogglingOptIn] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
@@ -194,10 +295,91 @@ export default function Leaderboard() {
 
   useEffect(() => {
     if (!clientData || !optedIn) return;
+    if (board !== 'workouts') return;
     setShowAll(false);
     trackLeaderboardViewed({ period, metric: activeTab });
     fetchLeaderboard();
-  }, [clientData, optedIn, activeTab, period]);
+  }, [clientData, optedIn, activeTab, period, board]);
+
+  // Protein King leaderboard fetch
+  useEffect(() => {
+    if (!clientData || !optedIn || board !== 'protein') return;
+    setShowAll(false);
+    fetchProteinLeaderboard();
+  }, [clientData, optedIn, proteinTab, proteinPeriod, board]);
+
+  const fetchProteinLeaderboard = async () => {
+    setLoading(true);
+    try {
+      // Get all opted-in Core Buddy clients
+      const clientsQ = query(collection(db, 'clients'), where('leaderboardOptIn', '==', true));
+      const clientsSnap = await getDocs(clientsQ);
+      const clients = clientsSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(c => c.clientType === 'core_buddy' || c.coreBuddyAccess === true);
+
+      if (clients.length === 0) { setProteinRankings([]); setLoading(false); return; }
+
+      // For each client, load their nutritionTargets and nutritionLogs
+      const results = await Promise.all(clients.map(async (c) => {
+        // Get protein target
+        const targetDoc = await getDoc(doc(db, 'nutritionTargets', c.id));
+        if (!targetDoc.exists() || !targetDoc.data().protein) return null;
+        const proteinTarget = targetDoc.data().protein;
+
+        // Determine date range for logs to scan (last 365 days for streaks, or period for days_hit)
+        const lookbackDays = proteinTab === 'days_hit' ? 365 : 365;
+        const hitDays = [];
+        const batchSize = 30;
+        for (let batch = 0; batch < Math.ceil(lookbackDays / batchSize); batch++) {
+          const promises = [];
+          for (let i = batch * batchSize; i < Math.min((batch + 1) * batchSize, lookbackDays); i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = getDateStr(d);
+            promises.push(
+              getDoc(doc(db, 'nutritionLogs', `${c.id}_${dateStr}`)).then(snap => {
+                if (!snap.exists()) return null;
+                const entries = snap.data().entries || [];
+                const totalProtein = entries.reduce((sum, e) => sum + (e.protein || 0), 0);
+                return totalProtein >= proteinTarget ? dateStr : null;
+              }).catch(() => null)
+            );
+          }
+          const batchResults = await Promise.all(promises);
+          batchResults.forEach(r => { if (r) hitDays.push(r); });
+        }
+
+        // Calculate metric based on active protein tab
+        let value = 0;
+        if (proteinTab === 'days_hit') {
+          const { startStr, endStr } = getDateRange(proteinPeriod);
+          value = hitDays.filter(d => d >= startStr && d <= endStr).length;
+        } else if (proteinTab === 'day_streak') {
+          value = calculateProteinDayStreak(hitDays);
+        } else {
+          value = calculateProteinWeekStreak(hitDays);
+        }
+
+        return {
+          id: c.id,
+          name: c.name || c.email?.split('@')[0] || 'Anonymous',
+          photoURL: c.photoURL || null,
+          value,
+        };
+      }));
+
+      const valid = results.filter(Boolean);
+      valid.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+      valid.forEach((s, i) => { s.rank = i + 1; });
+      setProteinRankings(valid);
+    } catch (err) {
+      console.error('Error fetching protein leaderboard:', err);
+      showToast('Failed to load protein leaderboard', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOptIn = async () => {
     setTogglingOptIn(true);
@@ -370,14 +552,6 @@ export default function Leaderboard() {
     }
   };
 
-  const getValue = (entry) => {
-    if (activeTab === 'workouts') return entry.workouts;
-    if (activeTab === 'minutes') return entry.minutes;
-    if (activeTab === 'volume') return entry.volume;
-    if (activeTab === 'activities') return entry.activityMinutes;
-    return entry.streak;
-  };
-
   const formatValue = (entry) => {
     if (activeTab === 'workouts') return entry.workouts;
     if (activeTab === 'minutes') return formatMinutes(entry.minutes);
@@ -386,12 +560,16 @@ export default function Leaderboard() {
     return entry.streak;
   };
 
-  const getUnit = () => {
-    if (activeTab === 'workouts') return '';
-    if (activeTab === 'minutes') return '';
-    if (activeTab === 'volume') return 'kg';
-    if (activeTab === 'activities') return '';
-    return 'wk';
+  const formatProteinValue = (entry) => {
+    if (proteinTab === 'days_hit') return entry.value;
+    if (proteinTab === 'day_streak') return entry.value;
+    return entry.value;
+  };
+
+  const getProteinUnit = () => {
+    if (proteinTab === 'days_hit') return 'days';
+    if (proteinTab === 'day_streak') return 'days';
+    return 'wks';
   };
 
   const getPeriodLabel = () => {
@@ -524,6 +702,19 @@ export default function Leaderboard() {
       </header>
 
       <main className="lb-main">
+        {/* Board Toggle: Workouts | Protein King */}
+        <div className="lb-board-toggle">
+          <button className={`lb-board-btn${board === 'workouts' ? ' lb-board-active' : ''}`} onClick={() => { setBoard('workouts'); setShowAll(false); }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z"/></svg>
+            <span>Workouts</span>
+          </button>
+          <button className={`lb-board-btn${board === 'protein' ? ' lb-board-active' : ''}`} onClick={() => { setBoard('protein'); setShowAll(false); }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-4h2v2h-2zm0-2h2V7h-2z"/></svg>
+            <span>Protein King</span>
+          </button>
+        </div>
+
+        {board === 'workouts' && (<>
         {/* Tab Switcher */}
         <div className="lb-tabs">
           {TABS.map(tab => (
@@ -701,6 +892,148 @@ export default function Leaderboard() {
             )}
           </>
         )}
+        </>)}
+
+        {/* ==================== PROTEIN KING BOARD ==================== */}
+        {board === 'protein' && (<>
+          {/* Protein Tabs */}
+          <div className="lb-tabs">
+            {PROTEIN_TABS.map(tab => (
+              <button key={tab.key} className={`lb-tab ${proteinTab === tab.key ? 'lb-tab-active' : ''}`}
+                onClick={() => { setProteinTab(tab.key); setShowAll(false); }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d={tab.icon}/></svg>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="lb-tab-desc">{PROTEIN_TAB_DESCRIPTIONS[proteinTab]}</div>
+
+          {/* Period toggle (only for days_hit) */}
+          {proteinTab === 'days_hit' && (
+            <div className="lb-period-row">
+              <div className="lb-period-toggle">
+                {['week', 'month', 'year'].map(p => (
+                  <button key={p} className={`lb-period-btn ${proteinPeriod === p ? 'lb-period-active' : ''}`}
+                    onClick={() => setProteinPeriod(p)}>
+                    This {p.charAt(0).toUpperCase() + p.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {proteinTab !== 'days_hit' && (
+            <div className="lb-period-label">All Time</div>
+          )}
+
+          {/* Buddy Filter */}
+          {buddyIds.size > 0 && (
+            <div className="lb-buddy-filter-row">
+              <button className={`lb-buddy-filter${buddyFilter ? ' active' : ''}`}
+                onClick={() => setBuddyFilter(!buddyFilter)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Buddies Only</span>
+              </button>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="lb-content-loading"><div className="lb-loading-spinner" /></div>
+          ) : (() => {
+            const pFiltered = buddyFilter
+              ? proteinRankings.filter(r => buddyIds.has(r.id) || r.id === clientData?.id).map((r, i) => ({ ...r, rank: i + 1 }))
+              : proteinRankings;
+            const pPodium = pFiltered.slice(0, 3);
+            const pRemaining = pFiltered.slice(3);
+            const pList = showAll ? pRemaining : pRemaining.slice(0, 7);
+            const pHasMore = pRemaining.length > 7;
+            const pCurrentUser = pFiltered.find(r => r.id === clientData?.id);
+
+            return pFiltered.length === 0 ? (
+              <div className="lb-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="lb-empty-icon">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                  <path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                </svg>
+                <h3>No protein data yet</h3>
+                <p>Set macro targets and start logging food to compete!</p>
+              </div>
+            ) : (
+              <>
+                {pPodium.length > 0 && (
+                  <div className="lb-podium">
+                    <div className="lb-podium-place lb-podium-2nd" onClick={() => pPodium[1] && navigate(`/client/core-buddy/profile/${pPodium[1].id}`)} role={pPodium[1] ? 'button' : undefined}>
+                      {pPodium[1] ? (<>
+                        <div className={`lb-podium-avatar ${pPodium[1].id === clientData?.id ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[1] }}>
+                          {pPodium[1].photoURL ? <img src={pPodium[1].photoURL} alt="" className="lb-avatar-img" /> : getInitials(pPodium[1].name)}
+                        </div>
+                        <div className="lb-podium-name">{pPodium[1].name.split(' ')[0]}</div>
+                        <div className="lb-podium-stat">{formatProteinValue(pPodium[1])} <small>{getProteinUnit()}</small></div>
+                        <div className="lb-podium-bar lb-bar-2nd"><span className="lb-podium-rank">2</span></div>
+                      </>) : <div className="lb-podium-spacer" />}
+                    </div>
+                    <div className="lb-podium-place lb-podium-1st" onClick={() => navigate(`/client/core-buddy/profile/${pPodium[0].id}`)} role="button">
+                      <div className="lb-podium-crown">
+                        <svg viewBox="0 0 24 24" fill="#FFD700" stroke="none"><path d="M2.5 18.5l3-7 4 4 3-9 3 9 4-4 3 7z"/><rect x="3" y="18" width="18" height="2" rx="1"/></svg>
+                      </div>
+                      <div className={`lb-podium-avatar lb-avatar-1st ${pPodium[0].id === clientData?.id ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[0] }}>
+                        {pPodium[0].photoURL ? <img src={pPodium[0].photoURL} alt="" className="lb-avatar-img" /> : getInitials(pPodium[0].name)}
+                      </div>
+                      <div className="lb-podium-name">{pPodium[0].name.split(' ')[0]}</div>
+                      <div className="lb-podium-stat">{formatProteinValue(pPodium[0])} <small>{getProteinUnit()}</small></div>
+                      <div className="lb-podium-bar lb-bar-1st"><span className="lb-podium-rank">1</span></div>
+                    </div>
+                    <div className="lb-podium-place lb-podium-3rd" onClick={() => pPodium[2] && navigate(`/client/core-buddy/profile/${pPodium[2].id}`)} role={pPodium[2] ? 'button' : undefined}>
+                      {pPodium[2] ? (<>
+                        <div className={`lb-podium-avatar ${pPodium[2].id === clientData?.id ? 'lb-avatar-you' : ''}`} style={{ borderColor: MEDAL_COLORS[2] }}>
+                          {pPodium[2].photoURL ? <img src={pPodium[2].photoURL} alt="" className="lb-avatar-img" /> : getInitials(pPodium[2].name)}
+                        </div>
+                        <div className="lb-podium-name">{pPodium[2].name.split(' ')[0]}</div>
+                        <div className="lb-podium-stat">{formatProteinValue(pPodium[2])} <small>{getProteinUnit()}</small></div>
+                        <div className="lb-podium-bar lb-bar-3rd"><span className="lb-podium-rank">3</span></div>
+                      </>) : <div className="lb-podium-spacer" />}
+                    </div>
+                  </div>
+                )}
+                {pList.length > 0 && (
+                  <div className="lb-rankings">
+                    {pList.map((entry, i) => (
+                      <div key={entry.id} className={`lb-rank-item ${entry.id === clientData?.id ? 'lb-rank-you' : ''}`}
+                        style={{ animationDelay: `${i * 0.04}s` }}
+                        onClick={() => navigate(`/client/core-buddy/profile/${entry.id}`)} role="button">
+                        <span className="lb-rank-number">{entry.rank}</span>
+                        <div className={`lb-rank-avatar ${entry.id === clientData?.id ? 'lb-avatar-you' : ''}`}>
+                          {entry.photoURL ? <img src={entry.photoURL} alt="" className="lb-avatar-img" /> : getInitials(entry.name)}
+                        </div>
+                        <div className="lb-rank-info">
+                          <span className="lb-rank-name">
+                            {entry.name}
+                            {entry.id === clientData?.id && <span className="lb-you-badge">You</span>}
+                          </span>
+                        </div>
+                        <span className="lb-rank-stat">{formatProteinValue(entry)} <small>{getProteinUnit()}</small></span>
+                      </div>
+                    ))}
+                    {pHasMore && (
+                      <button className="lb-view-all-btn" onClick={() => setShowAll(!showAll)}>
+                        <span>{showAll ? 'Show Less' : `View All (${pFiltered.length})`}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showAll ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M6 9l6 6 6-6"/></svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+                {pCurrentUser && pCurrentUser.rank > 5 && (
+                  <div className="lb-your-position">
+                    <span className="lb-your-rank">#{pCurrentUser.rank}</span>
+                    <span className="lb-your-label">Your Position</span>
+                    <span className="lb-your-stat">{formatProteinValue(pCurrentUser)} <small>{getProteinUnit()}</small></span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </>)}
       </main>
 
       {/* Leave Modal */}

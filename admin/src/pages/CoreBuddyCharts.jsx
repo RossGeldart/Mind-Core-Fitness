@@ -38,8 +38,6 @@ const BODY_METRICS = [
 
 const MACRO_TABS = [
   { key: 'protein', label: 'Protein', unit: 'g' },
-  { key: 'carbs', label: 'Carbs', unit: 'g' },
-  { key: 'fats', label: 'Fats', unit: 'g' },
   { key: 'calories', label: 'Calories', unit: 'kcal' },
 ];
 
@@ -335,16 +333,14 @@ export default function CoreBuddyCharts() {
               const entries = logSnap.data().entries || [];
               const totals = entries.reduce((acc, e) => ({
                 protein: acc.protein + (e.protein || 0),
-                carbs: acc.carbs + (e.carbs || 0),
-                fats: acc.fats + (e.fats || 0),
                 calories: acc.calories + (e.calories || 0),
-              }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+              }), { protein: 0, calories: 0 });
               macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, ...totals });
             } else {
-              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+              macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, calories: 0 });
             }
           } catch {
-            macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, carbs: 0, fats: 0, calories: 0 });
+            macData.push({ label: isMonthly ? String(current.getDate()) : shortDay(dayStr), date: dayStr, protein: 0, calories: 0 });
           }
           current.setDate(current.getDate() + 1);
         }
