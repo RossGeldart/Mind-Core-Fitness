@@ -555,6 +555,10 @@ export default function CoreBuddyWorkouts() {
   const [phase, setPhase] = useState('work'); // 'work' | 'rest'
   const [timeLeft, setTimeLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Actual elapsed time tracking (excludes paused time)
+  const activeStartTime = useRef(null);
+  const activeDuration = useRef(0);
   const [startCountdown, setStartCountdown] = useState(0);
 
   // Hold-to-finish overlay
@@ -1302,6 +1306,8 @@ export default function CoreBuddyWorkouts() {
     if (byoSelected.length === 0) return;
     trackBYOWorkoutBuilt({ exerciseCount: byoSelected.length, equipment: [...new Set(byoSelected.map(e => e.equipment))] });
     byoInitSetsData(byoSelected);
+    activeStartTime.current = Date.now();
+    activeDuration.current = 0;
     setView('byo_sets');
   };
 
@@ -1322,6 +1328,11 @@ export default function CoreBuddyWorkouts() {
 
     const totalSets = exercises.reduce((sum, e) => sum + e.sets.length, 0);
     try {
+      // Calculate actual active minutes
+      let elapsed = activeDuration.current;
+      if (activeStartTime.current) elapsed += Date.now() - activeStartTime.current;
+      const actualMinutes = Math.max(1, Math.round(elapsed / 60000));
+
       const logRef = await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         type: 'custom_sets',
@@ -1329,14 +1340,16 @@ export default function CoreBuddyWorkouts() {
         exercises,
         exerciseCount: exercises.length,
         totalSets,
+        actualMinutes,
         date: new Date().toISOString().split('T')[0],
         completedAt: Timestamp.now(),
       });
       setLastWorkoutLogId(logRef.id);
-      trackWorkoutCompleted({ focus: 'custom_sets', level: 'custom', duration: 0, equipment: [...new Set(byoSelected.map(e => e.equipment))], exerciseCount: exercises.length });
+      trackWorkoutCompleted({ focus: 'custom_sets', level: 'custom', duration: actualMinutes, equipment: [...new Set(byoSelected.map(e => e.equipment))], exerciseCount: exercises.length });
       setWeeklyCount(c => c + 1);
       const newTotal = totalCount + 1;
       setTotalCount(newTotal);
+      setTotalMinutes(m => m + actualMinutes);
       setLevelBreakdown(lb => ({ ...lb, custom: (lb.custom || 0) + 1 }));
 
       // Update BYO stats
@@ -1476,6 +1489,8 @@ export default function CoreBuddyWorkouts() {
       setByoMode('sets');
       setByoFromSaved(true);
       setFabOpen(false);
+      activeStartTime.current = Date.now();
+      activeDuration.current = 0;
       setView('byo_sets');
     }
   };
@@ -1747,6 +1762,8 @@ export default function CoreBuddyWorkouts() {
       setCurrentExIndex(0);
       setPhase('work');
       setTimeLeft(levelConfig.work);
+      activeStartTime.current = Date.now();
+      activeDuration.current = 0;
       setIsPaused(false);
       playGo();
       trackWorkoutStarted({ focus: focusArea, level, duration, equipment: selectedEquipment });
@@ -1802,10 +1819,16 @@ export default function CoreBuddyWorkouts() {
   const saveWorkoutLog = async () => {
     if (!currentUser) return;
     try {
+      // Calculate actual active minutes (excluding paused time)
+      let elapsed = activeDuration.current;
+      if (activeStartTime.current) elapsed += Date.now() - activeStartTime.current;
+      const actualMinutes = Math.max(1, Math.round(elapsed / 60000));
+
       const logRef = await addDoc(collection(db, 'workoutLogs'), {
         clientId: clientData.id,
         level,
         duration,
+        actualMinutes,
         equipment: selectedEquipment,
         focus: focusArea,
         exerciseCount: workout.length,
@@ -1827,7 +1850,7 @@ export default function CoreBuddyWorkouts() {
       setWeeklyCount(c => c + 1);
       const newTotal = totalCount + 1;
       setTotalCount(newTotal);
-      setTotalMinutes(m => m + duration);
+      setTotalMinutes(m => m + actualMinutes);
       setLevelBreakdown(lb => ({ ...lb, [level]: (lb[level] || 0) + 1 }));
 
       // Check workout count badges
@@ -4325,7 +4348,19 @@ export default function CoreBuddyWorkouts() {
           <button className="wk-ctrl-btn wk-ctrl-stop" onClick={() => { if (confirm('End workout early?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
           </button>
-          <button className="wk-ctrl-btn wk-ctrl-pause" onClick={() => setIsPaused(!isPaused)}>
+          <button className="wk-ctrl-btn wk-ctrl-pause" onClick={() => {
+            if (!isPaused) {
+              // Pausing — accumulate active time
+              if (activeStartTime.current) {
+                activeDuration.current += Date.now() - activeStartTime.current;
+                activeStartTime.current = null;
+              }
+            } else {
+              // Unpausing — restart active timer
+              activeStartTime.current = Date.now();
+            }
+            setIsPaused(!isPaused);
+          }}>
             {isPaused ? (
               <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             ) : (
