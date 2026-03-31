@@ -230,7 +230,7 @@ export default function EventPage() {
             const s = stats[data.clientId];
             if (!s) return;
             s.workouts++;
-            if (!data.type) s.minutes += data.duration || 0;
+            if (!data.type) s.minutes += data.actualMinutes ?? data.duration ?? 0;
             if (data.type === 'custom_sets' && data.exercises) {
               data.exercises.forEach(ex => {
                 (ex.sets || []).forEach(set => {

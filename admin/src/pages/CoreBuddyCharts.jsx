@@ -204,7 +204,7 @@ export default function CoreBuddyCharts() {
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
                 .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
-                .reduce((sum, d) => sum + (d.duration || 0), 0);
+                .reduce((sum, d) => sum + (d.actualMinutes ?? d.duration ?? 0), 0);
 
             weekData.push({ label: String(weekStart.getDate()), sessions, duration: totalDuration });
             weekStart = new Date(clippedEnd);
@@ -223,7 +223,7 @@ export default function CoreBuddyCharts() {
             const sessions = activityDocs.filter(a => a.date === dayStr).length
               + workoutDocs.filter(doc => doc.date === dayStr).length;
             const duration = activityDocs.filter(a => a.date === dayStr).reduce((sum, a) => sum + (a.duration || 0), 0)
-              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.duration || 0), 0);
+              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.actualMinutes ?? doc.duration ?? 0), 0);
             dayData.push({ label: dayNames[d], sessions, duration });
           }
           setActivityData(dayData);
@@ -301,7 +301,7 @@ export default function CoreBuddyCharts() {
               .reduce((sum, a) => sum + (a.duration || 0), 0)
               + workoutDocs
                 .filter(d => d.date >= wStartStr && d.date < wEndExclStr)
-                .reduce((sum, d) => sum + (d.duration || 0), 0);
+                .reduce((sum, d) => sum + (d.actualMinutes ?? d.duration ?? 0), 0);
 
             minData.push({ label: String(weekStart.getDate()), minutes: totalMin });
             weekStart = new Date(clippedEnd);
@@ -316,7 +316,7 @@ export default function CoreBuddyCharts() {
             day.setDate(monday.getDate() + d);
             const dayStr = formatDate(day);
             const totalMin = activityDocs.filter(a => a.date === dayStr).reduce((sum, a) => sum + (a.duration || 0), 0)
-              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.duration || 0), 0);
+              + workoutDocs.filter(doc => doc.date === dayStr).reduce((sum, doc) => sum + (doc.actualMinutes ?? doc.duration ?? 0), 0);
             minData.push({ label: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d], minutes: totalMin });
           }
           setMinutesData(minData);

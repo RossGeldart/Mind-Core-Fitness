@@ -707,8 +707,8 @@ export default function CoreBuddyWorkouts() {
 
         setTotalCount(docs.length);
 
-        // Total minutes
-        const mins = docs.reduce((sum, d) => sum + (d.duration || 0), 0);
+        // Total minutes (prefer actualMinutes for new logs, fall back to duration for old ones)
+        const mins = docs.reduce((sum, d) => sum + (d.actualMinutes ?? d.duration ?? 0), 0);
         setTotalMinutes(mins);
 
         // Level breakdown
@@ -3039,7 +3039,7 @@ export default function CoreBuddyWorkouts() {
         (w.exercises || []).forEach(ex => (ex.sets || []).forEach(s => { v += (parseInt(s.reps) || 0) * (parseFloat(s.weight) || 0); }));
         return v > 0 ? `${v >= 1000 ? (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : Math.round(v)} ${weightUnit}` : `${w.totalSets || 0} sets`;
       }
-      if (w.duration) return `${w.duration}m`;
+      if (w.actualMinutes || w.duration) return `${w.actualMinutes ?? w.duration}m`;
       return '';
     };
 

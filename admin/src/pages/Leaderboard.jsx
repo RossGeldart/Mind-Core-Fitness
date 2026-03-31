@@ -306,7 +306,7 @@ export default function Leaderboard() {
 
         // Minutes: only randomiser workouts (no type field = randomiser)
         if (!data.type) {
-          s.minutes += data.duration || 0;
+          s.minutes += data.actualMinutes ?? data.duration ?? 0;
         }
 
         // Volume: BYO Reps & Sets workouts (type = custom_sets)
