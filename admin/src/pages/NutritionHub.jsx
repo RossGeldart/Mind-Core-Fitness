@@ -1223,7 +1223,7 @@ export default function NutritionHub() {
             </div>
             <div className="nhub-rings-side">
               <div
-                className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}`}
+                className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}${waterHolding ? ' nhub-water-holding' : ''}`}
                 onMouseDown={onWaterHoldStart}
                 onMouseUp={onWaterHoldEnd}
                 onMouseLeave={onWaterHoldEnd}
