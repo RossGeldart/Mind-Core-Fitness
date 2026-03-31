@@ -181,68 +181,113 @@
   font-size: 1.15rem;
 }
 
-/* Water ring — hold-to-log interaction */
+/* ===== WATER RING — hold-to-log interaction ===== */
 .nhub-water-ring {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
   position: relative;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
 }
 
-.nhub-water-ring:active {
-  transform: scale(0.97);
-}
-
-/* Glow layer behind the ring — visible circle glow using box-shadow */
+/* Glow layer behind ring */
 .nhub-water-ring::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 54px;
-  height: 54px;
+  width: 56px;
+  height: 56px;
   transform: translate(-50%, calc(-50% - 8px));
   border-radius: 50%;
   pointer-events: none;
-  transition: box-shadow 0.4s ease, opacity 0.4s ease;
+  transition: box-shadow 0.3s ease, opacity 0.3s ease;
   box-shadow: none;
   opacity: 0;
   z-index: 0;
 }
 
-/* Glow when holding */
-.nhub-water-ring.nhub-water-holding::before {
-  box-shadow: 0 0 16px 6px rgba(59, 130, 246, 0.35), 0 0 32px 12px rgba(59, 130, 246, 0.15);
-  opacity: 1;
-}
-
-/* Glow when full/done */
-.nhub-water-ring.nhub-water-full::before {
-  box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.3), 0 0 24px 8px rgba(59, 130, 246, 0.1);
-  opacity: 1;
-}
-
-/* Pulse scale while holding */
+/* ── Holding state ── */
 .nhub-water-ring.nhub-water-holding {
-  animation: nhub-water-pulse 0.8s ease-in-out infinite;
+  animation: nhub-water-hold-scale 0.6s ease-in-out infinite alternate;
 }
 
-@keyframes nhub-water-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+.nhub-water-ring.nhub-water-holding::before {
+  box-shadow: 0 0 18px 8px rgba(59, 130, 246, 0.4), 0 0 36px 14px rgba(59, 130, 246, 0.15);
+  opacity: 1;
 }
 
+@keyframes nhub-water-hold-scale {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+/* Outer sweeping progress arc */
+.nhub-water-outer-sweep {
+  transition: none;
+  opacity: 0.7;
+}
+
+/* Water fill rect rising inside the ring */
+.nhub-water-fill-rect {
+  transition: none;
+}
+
+/* Wave wobble on top of the fill */
+.nhub-water-wave {
+  animation: nhub-wave-wobble 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes nhub-wave-wobble {
+  from { transform: translateX(-2px); }
+  to { transform: translateX(2px); }
+}
+
+/* ── Burst on success ── */
+.nhub-water-ring.nhub-water-burst {
+  animation: nhub-burst-pop 0.5s ease-out;
+}
+
+.nhub-water-ring.nhub-water-burst::before {
+  box-shadow: 0 0 24px 12px rgba(59, 130, 246, 0.5), 0 0 48px 20px rgba(59, 130, 246, 0.2);
+  opacity: 1;
+  animation: nhub-burst-glow 0.6s ease-out forwards;
+}
+
+@keyframes nhub-burst-pop {
+  0% { transform: scale(1.08); }
+  30% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes nhub-burst-glow {
+  0% { opacity: 1; box-shadow: 0 0 24px 12px rgba(59, 130, 246, 0.5), 0 0 48px 20px rgba(59, 130, 246, 0.2); }
+  100% { opacity: 0; box-shadow: 0 0 32px 20px rgba(59, 130, 246, 0), 0 0 60px 30px rgba(59, 130, 246, 0); }
+}
+
+/* SVG burst ring expanding outward */
+.nhub-water-burst-ring {
+  animation: nhub-burst-ring-expand 0.5s ease-out forwards;
+  opacity: 0.6;
+}
+
+@keyframes nhub-burst-ring-expand {
+  0% { r: 34; stroke-width: 3; opacity: 0.7; }
+  100% { r: 50; stroke-width: 0.5; opacity: 0; }
+}
+
+/* ── Full/done state ── */
 .nhub-water-full {
   pointer-events: none;
 }
 
-/* Hold progress ring — make it bold and visible */
-.nhub-ring-hold-progress {
-  transition: none;
+.nhub-water-full::before {
+  box-shadow: 0 0 10px 4px rgba(59, 130, 246, 0.25), 0 0 20px 8px rgba(59, 130, 246, 0.08);
+  opacity: 1;
 }
 
+/* ── Hint label ── */
 .nhub-water-hint {
   display: block;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -261,16 +306,21 @@
   50% { opacity: 0.4; }
 }
 
+/* ── Dark mode overrides ── */
 [data-theme="dark"] .nhub-water-hint {
   color: #60a5fa;
 }
 
 [data-theme="dark"] .nhub-water-ring.nhub-water-holding::before {
-  box-shadow: 0 0 20px 8px rgba(96, 165, 250, 0.4), 0 0 40px 16px rgba(96, 165, 250, 0.15);
+  box-shadow: 0 0 22px 10px rgba(96, 165, 250, 0.45), 0 0 44px 18px rgba(96, 165, 250, 0.15);
 }
 
-[data-theme="dark"] .nhub-water-ring.nhub-water-full::before {
-  box-shadow: 0 0 14px 5px rgba(96, 165, 250, 0.35), 0 0 28px 10px rgba(96, 165, 250, 0.12);
+[data-theme="dark"] .nhub-water-ring.nhub-water-burst::before {
+  box-shadow: 0 0 28px 14px rgba(96, 165, 250, 0.55), 0 0 56px 24px rgba(96, 165, 250, 0.2);
+}
+
+[data-theme="dark"] .nhub-water-full::before {
+  box-shadow: 0 0 12px 5px rgba(96, 165, 250, 0.3), 0 0 24px 10px rgba(96, 165, 250, 0.1);
 }
 
 .nhub-macro-cta {
@@ -897,8 +947,8 @@
   }
 
   .nhub-water-ring::before {
-    width: 60px;
-    height: 60px;
+    width: 62px;
+    height: 62px;
   }
 
   .nhub-ring-main .nhub-ring-value {
