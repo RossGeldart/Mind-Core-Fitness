@@ -95,7 +95,7 @@ async function computeProgress(challenge, clientId, startDate) {
     }
     case 'minutes': {
       const [workoutDocs, activityDocs] = await Promise.all([fetchWorkoutLogs(), fetchActivityLogs()]);
-      const workoutMins = workoutDocs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
+      const workoutMins = workoutDocs.reduce((sum, d) => { const data = d.data(); return sum + (data.actualMinutes ?? data.duration ?? 0); }, 0);
       const activityMins = activityDocs.reduce((sum, d) => sum + (d.data().duration || 0), 0);
       return workoutMins + activityMins;
     }
