@@ -162,7 +162,16 @@ export default function NutritionHub() {
   // Daily log
   const [selectedDate, setSelectedDate] = useState(getTodayKey());
   const [todayLog, setTodayLog] = useState({ entries: [] });
-  const [totals, setTotals] = useState({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+  const [totals, setTotals] = useState({ protein: 0, calories: 0 });
+
+  // Water tracking
+  const [waterMl, setWaterMl] = useState(0);
+  const WATER_TARGET = 2000;
+  const WATER_INCREMENT = 500;
+  const waterHoldTimer = useRef(null);
+  const waterHoldStart = useRef(null);
+  const [waterHolding, setWaterHolding] = useState(false);
+  const [waterHoldProgress, setWaterHoldProgress] = useState(0);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const d = new Date();
@@ -187,7 +196,7 @@ export default function NutritionHub() {
   const [addMode, setAddMode] = useState(null); // 'scan' | 'search' | 'manual' | null
   const [manualBarcode, setManualBarcode] = useState('');
   const [barcodeLooking, setBarcodeLooking] = useState(false);
-  const [manualForm, setManualForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
+  const [manualForm, setManualForm] = useState({ name: '', protein: '', calories: '', serving: '' });
   const [scannedProduct, setScannedProduct] = useState(null);
   const [servingInput, setServingInput] = useState('100');
   const [portionCount, setPortionCount] = useState(0);
@@ -196,7 +205,7 @@ export default function NutritionHub() {
 
   // Edit food entry
   const [editingEntry, setEditingEntry] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
+  const [editForm, setEditForm] = useState({ name: '', protein: '', calories: '', serving: '' });
   // Edit via amount picker (for entries with per100g data)
   const [editProduct, setEditProduct] = useState(null);
   const [editServingInput, setEditServingInput] = useState('100');
@@ -287,12 +296,81 @@ export default function NutritionHub() {
   useEffect(() => {
     const t = todayLog.entries.reduce((acc, e) => ({
       protein: acc.protein + (e.protein || 0),
-      carbs: acc.carbs + (e.carbs || 0),
-      fats: acc.fats + (e.fats || 0),
       calories: acc.calories + (e.calories || 0)
-    }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+    }), { protein: 0, calories: 0 });
     setTotals(t);
   }, [todayLog.entries]);
+
+  // Load water intake when selectedDate changes
+  useEffect(() => {
+    if (!clientData?.id) return;
+    const loadWater = async () => {
+      try {
+        const logDoc = await getDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`));
+        if (logDoc.exists()) {
+          setWaterMl(logDoc.data().waterMl || 0);
+        } else {
+          setWaterMl(0);
+        }
+      } catch { setWaterMl(0); }
+    };
+    loadWater();
+  }, [clientData?.id, selectedDate]);
+
+  // Water hold-to-log handlers
+  const waterHoldAnimFrame = useRef(null);
+  const animateWaterHold = useCallback(() => {
+    if (!waterHoldStart.current) return;
+    const elapsed = Date.now() - waterHoldStart.current;
+    const progress = Math.min(1, elapsed / 2000);
+    setWaterHoldProgress(progress);
+    if (progress < 1) {
+      waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
+    }
+  }, []);
+
+  const onWaterHoldStart = useCallback(() => {
+    if (waterMl >= WATER_TARGET) return;
+    waterHoldStart.current = Date.now();
+    setWaterHolding(true);
+    setWaterHoldProgress(0);
+    waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
+    waterHoldTimer.current = setTimeout(async () => {
+      // 2 seconds held — add 500ml
+      const newWater = Math.min(WATER_TARGET, waterMl + WATER_INCREMENT);
+      setWaterMl(newWater);
+      setWaterHolding(false);
+      setWaterHoldProgress(0);
+      waterHoldStart.current = null;
+      // Save to Firestore
+      if (clientData?.id) {
+        try {
+          await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`), {
+            clientId: clientData.id,
+            date: selectedDate,
+            waterMl: newWater,
+            updatedAt: Timestamp.now()
+          }, { merge: true });
+        } catch (err) {
+          console.error('Error saving water:', err);
+        }
+      }
+    }, 2000);
+  }, [waterMl, clientData?.id, selectedDate, animateWaterHold]);
+
+  const onWaterHoldEnd = useCallback(() => {
+    if (waterHoldTimer.current) {
+      clearTimeout(waterHoldTimer.current);
+      waterHoldTimer.current = null;
+    }
+    if (waterHoldAnimFrame.current) {
+      cancelAnimationFrame(waterHoldAnimFrame.current);
+      waterHoldAnimFrame.current = null;
+    }
+    waterHoldStart.current = null;
+    setWaterHolding(false);
+    setWaterHoldProgress(0);
+  }, []);
 
   // Save log to Firestore
   const saveLog = async (newLog) => {
@@ -381,24 +459,22 @@ export default function NutritionHub() {
     const exerciseAddOns = { low: 100, moderate: 200, high: 300, daily: 400 };
     const tdee = Math.round(neat + exerciseAddOns[formData.trainingFrequency]);
 
-    let targetCalories = tdee, proteinPerKg, fatPct;
+    let targetCalories = tdee, proteinPerKg;
     switch (formData.goal) {
       case 'lose':
         targetCalories = tdee * (1 - ({ light: 0.15, moderate: 0.20, harsh: 0.25 }[formData.deficitLevel]));
-        proteinPerKg = 2.2; fatPct = 0.30; break;
+        proteinPerKg = 2.2; break;
       case 'build':
-        targetCalories = tdee * 1.10; proteinPerKg = 2.0; fatPct = 0.22; break;
+        targetCalories = tdee * 1.10; proteinPerKg = 2.0; break;
       default:
-        proteinPerKg = 1.8; fatPct = 0.25;
+        proteinPerKg = 1.8;
     }
     targetCalories = Math.max(targetCalories, formData.gender === 'male' ? 1400 : 1100);
 
     const protein = Math.round(weightKg * proteinPerKg);
-    const fats = Math.round((targetCalories * fatPct) / 9);
-    const carbs = Math.max(0, Math.round((targetCalories - (protein * 4) - (fats * 9)) / 4));
 
     setCalcResults({
-      calories: Math.round(targetCalories), protein, carbs, fats,
+      calories: Math.round(targetCalories), protein,
       bmr: Math.round(bmr), neat: Math.round(neat),
       exerciseAdd: exerciseAddOns[formData.trainingFrequency],
       tdee: Math.round(tdee)
@@ -416,8 +492,6 @@ export default function NutritionHub() {
         clientId: clientData.id,
         calories: calcResults.calories,
         protein: calcResults.protein,
-        carbs: calcResults.carbs,
-        fats: calcResults.fats,
         goal: formData.goal,
         updatedAt: Timestamp.now()
       };
@@ -486,8 +560,6 @@ export default function NutritionHub() {
       favs.unshift({
         name: entry.name,
         protein: entry.protein,
-        carbs: entry.carbs,
-        fats: entry.fats,
         calories: entry.calories,
         serving: entry.serving,
         per100g: entry.per100g || null,
@@ -517,7 +589,7 @@ export default function NutritionHub() {
     setServingInput('100');
     setPortionCount(0);
     setServingMode('weight');
-    setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' });
+    setManualForm({ name: '', protein: '', calories: '', serving: '' });
     showToast('Food added!', 'success');
   };
 
@@ -538,8 +610,6 @@ export default function NutritionHub() {
         brand: entry.brand || '',
         image: entry.image || null,
         protein: p100.protein,
-        carbs: p100.carbs,
-        fats: p100.fats,
         calories: p100.calories,
         servingSize: entry.serving || '100g',
         servingUnit: entry.servingUnit || 'g',
@@ -568,8 +638,6 @@ export default function NutritionHub() {
       setEditForm({
         name: entry.name || '',
         protein: String(entry.protein || 0),
-        carbs: String(entry.carbs || 0),
-        fats: String(entry.fats || 0),
         calories: String(entry.calories || 0),
         serving: entry.serving || '',
       });
@@ -582,8 +650,6 @@ export default function NutritionHub() {
       ...editingEntry,
       name: editForm.name,
       protein: parseFloat(editForm.protein) || 0,
-      carbs: parseFloat(editForm.carbs) || 0,
-      fats: parseFloat(editForm.fats) || 0,
       calories: parseFloat(editForm.calories) || 0,
       serving: editForm.serving,
     };
@@ -658,7 +724,7 @@ export default function NutritionHub() {
       const data = await res.json();
       if (data.status === 'success' || data.status === 1 || data.product) {
         const product = parseProduct(data.product);
-        if (product.calories === 0 && product.protein === 0 && product.carbs === 0) {
+        if (product.calories === 0 && product.protein === 0) {
           trackBarcodeScanned(false);
           showToast('Product found but no nutrition data available.', 'error');
         } else {
@@ -697,9 +763,8 @@ export default function NutritionHub() {
   const isDarkMode = isDark;
   const MACRO_COLORS = {
     'ring-protein': isDarkMode ? '#2dd4bf' : '#14b8a6',
-    'ring-carbs':   isDarkMode ? '#fbbf24' : '#f59e0b',
-    'ring-fats':    isDarkMode ? '#a78bfa' : '#8b5cf6',
     'ring-cals':    'var(--color-primary)',
+    'ring-water':   isDarkMode ? '#60a5fa' : '#3b82f6',
   };
   const NUT_RING_RADIUS = 80;
   const NUT_RING_CIRC = 2 * Math.PI * NUT_RING_RADIUS;
@@ -794,8 +859,7 @@ export default function NutritionHub() {
     const todayKey = getTodayKey();
     const entry = {
       id: Date.now(), name: fav.name,
-      protein: fav.protein || 0, carbs: fav.carbs || 0,
-      fats: fav.fats || 0, calories: fav.calories || 0,
+      protein: fav.protein || 0, calories: fav.calories || 0,
       serving: fav.serving || '', meal: mealKey,
       addedAt: new Date().toISOString(),
       per100g: fav.per100g || null, servingUnit: fav.servingUnit || 'g',
@@ -842,26 +906,32 @@ export default function NutritionHub() {
   // Hub: Mini ring renderer
   const MACRO_COLORS_HUB = {
     protein: isDark ? '#2dd4bf' : '#14b8a6',
-    carbs: isDark ? '#fbbf24' : '#f59e0b',
-    fats: isDark ? '#a78bfa' : '#8b5cf6',
     cals: 'var(--color-primary)',
+    water: isDark ? '#60a5fa' : '#3b82f6',
   };
   const RING_R = 34;
+  const RING_R_MAIN = 50;
   const RING_C = 2 * Math.PI * RING_R;
-  const renderMiniRing = (label, current, target, colorKey) => {
+  const RING_C_MAIN = 2 * Math.PI * RING_R_MAIN;
+
+  const renderMiniRing = (label, current, target, colorKey, isMain = false) => {
     const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
-    const offset = RING_C - (pct / 100) * RING_C;
+    const r = isMain ? RING_R_MAIN : RING_R;
+    const c = isMain ? RING_C_MAIN : RING_C;
+    const vb = isMain ? '0 0 120 120' : '0 0 80 80';
+    const cx = isMain ? 60 : 40;
+    const offset = c - (pct / 100) * c;
     const color = MACRO_COLORS_HUB[colorKey];
     return (
-      <div className="nhub-ring-wrap">
-        <svg className="nhub-ring-svg" viewBox="0 0 80 80">
-          <circle className="nhub-ring-track" cx="40" cy="40" r={RING_R} />
-          <circle className="nhub-ring-fill" cx="40" cy="40" r={RING_R}
-            style={{ stroke: color }} strokeDasharray={RING_C} strokeDashoffset={offset} />
+      <div className={`nhub-ring-wrap${isMain ? ' nhub-ring-main' : ''}`}>
+        <svg className="nhub-ring-svg" viewBox={vb}>
+          <circle className="nhub-ring-track" cx={cx} cy={cx} r={r} />
+          <circle className="nhub-ring-fill" cx={cx} cy={cx} r={r}
+            style={{ stroke: color }} strokeDasharray={c} strokeDashoffset={offset} />
         </svg>
         <div className="nhub-ring-center">
-          <span className="nhub-ring-value" style={{ color }}>{Math.round(current)}</span>
-          <span className="nhub-ring-unit">{label === 'Cals' ? '' : 'g'}</span>
+          <span className="nhub-ring-value" style={{ color }}>{label === 'Water' ? `${current}ml` : Math.round(current)}</span>
+          <span className="nhub-ring-unit">{label === 'Cals' ? '' : label === 'Water' ? '' : 'g'}</span>
         </div>
         <span className="nhub-ring-label">{label}</span>
         <span className="nhub-ring-pct" style={{ color }}>{pct}%</span>
@@ -873,7 +943,7 @@ export default function NutritionHub() {
   const openFabAction = (mode) => {
     setFabOpen(false);
     if (mode === 'scan') { setAddMode('scan'); setScannedProduct(null); }
-    else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }
+    else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', calories: '', serving: '' }); }
     else if (mode === 'favourites') { setAddMode('favourites'); }
     else { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }
   };
@@ -1035,8 +1105,6 @@ export default function NutritionHub() {
               <h3>Your Daily Targets</h3>
               <div className="nut-calc-rings">
                 {renderMacroRing('Protein', 'Protein', calcResults.protein, calcResults.protein, 'ring-protein')}
-                {renderMacroRing('Carbs', 'Carbs', calcResults.carbs, calcResults.carbs, 'ring-carbs')}
-                {renderMacroRing('Fats', 'Fats', calcResults.fats, calcResults.fats, 'ring-fats')}
                 {renderMacroRing('Calories', 'Calories', calcResults.calories, calcResults.calories, 'ring-cals')}
               </div>
               <div className="nut-calc-info">
@@ -1086,7 +1154,7 @@ export default function NutritionHub() {
   const openAddForMeal = (mealKey, mode = 'search') => {
     setSelectedMeal(mealKey);
     if (mode === 'scan') { setAddMode('scan'); setScannedProduct(null); }
-    else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', carbs: '', fats: '', calories: '', serving: '' }); }
+    else if (mode === 'manual') { setAddMode('manual'); setManualForm({ name: '', protein: '', calories: '', serving: '' }); }
     else if (mode === 'favourites') { setAddMode('favourites'); }
     else { setAddMode('search'); setSearchResults([]); setSearchQuery(''); }
   };
@@ -1145,12 +1213,52 @@ export default function NutritionHub() {
             )}
           </div>
 
-          {/* Macro rings */}
-          <div className="nhub-rings-row">
-            {renderMiniRing('Protein', totals.protein, targets.protein, 'protein')}
-            {renderMiniRing('Carbs', totals.carbs, targets.carbs, 'carbs')}
-            {renderMiniRing('Fats', totals.fats, targets.fats, 'fats')}
-            {renderMiniRing('Cals', totals.calories, targets.calories, 'cals')}
+          {/* Macro rings — Protein (main/centre), Calories, Water */}
+          <div className="nhub-rings-row nhub-rings-3">
+            <div className="nhub-rings-side">
+              {renderMiniRing('Cals', totals.calories, targets.calories, 'cals')}
+            </div>
+            <div className="nhub-rings-center">
+              {renderMiniRing('Protein', totals.protein, targets.protein, 'protein', true)}
+            </div>
+            <div className="nhub-rings-side">
+              <div
+                className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}`}
+                onMouseDown={onWaterHoldStart}
+                onMouseUp={onWaterHoldEnd}
+                onMouseLeave={onWaterHoldEnd}
+                onTouchStart={onWaterHoldStart}
+                onTouchEnd={onWaterHoldEnd}
+                onTouchCancel={onWaterHoldEnd}
+                role="button"
+                tabIndex={0}
+                aria-label="Hold to log 500ml water"
+              >
+                <svg className="nhub-ring-svg" viewBox="0 0 80 80">
+                  <circle className="nhub-ring-track" cx="40" cy="40" r={RING_R} />
+                  <circle className="nhub-ring-fill" cx="40" cy="40" r={RING_R}
+                    style={{ stroke: MACRO_COLORS_HUB.water }}
+                    strokeDasharray={RING_C}
+                    strokeDashoffset={RING_C - (Math.min(100, Math.round((waterMl / WATER_TARGET) * 100)) / 100) * RING_C} />
+                  {waterHolding && (
+                    <circle className="nhub-ring-hold-progress" cx="40" cy="40" r={RING_R + 6}
+                      style={{ stroke: MACRO_COLORS_HUB.water, opacity: 0.3 }}
+                      strokeDasharray={2 * Math.PI * (RING_R + 6)}
+                      strokeDashoffset={(2 * Math.PI * (RING_R + 6)) * (1 - waterHoldProgress)}
+                      fill="none" strokeWidth="4" strokeLinecap="round"
+                      transform="rotate(-90 40 40)" />
+                  )}
+                </svg>
+                <div className="nhub-ring-center">
+                  <span className="nhub-ring-value" style={{ color: MACRO_COLORS_HUB.water }}>{waterMl}ml</span>
+                </div>
+                <span className="nhub-ring-label">Water</span>
+                <span className="nhub-ring-pct" style={{ color: MACRO_COLORS_HUB.water }}>
+                  {waterMl >= WATER_TARGET ? 'Done' : `${Math.round((waterMl / WATER_TARGET) * 100)}%`}
+                </span>
+                {waterMl < WATER_TARGET && <span className="nhub-water-hint">Hold +500ml</span>}
+              </div>
+            </div>
           </div>
 
           {/* Macro targets CTA */}
@@ -1167,8 +1275,8 @@ export default function NutritionHub() {
 
           {/* Remaining nudge */}
           {getNudgeText() && (
-            <div className={`nhub-nudge ${totals.protein >= (targets.protein || 0) && totals.calories >= (targets.calories || 0) ? 'nhub-nudge--complete' : ''}`}>
-              {totals.protein >= (targets.protein || 0) && totals.calories >= (targets.calories || 0) ? (
+            <div className={`nhub-nudge ${totals.protein >= (targets.protein || 0) ? 'nhub-nudge--complete' : ''}`}>
+              {totals.protein >= (targets.protein || 0) ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
               ) : (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
@@ -1302,10 +1410,8 @@ export default function NutritionHub() {
                 const items = todayLog.entries.filter(e => (e.meal || e.mealType || 'snacks') === m.key);
                 const mealTotals = items.reduce((acc, e) => ({
                   protein: acc.protein + (e.protein || 0),
-                  carbs: acc.carbs + (e.carbs || 0),
-                  fats: acc.fats + (e.fats || 0),
                   calories: acc.calories + (e.calories || 0)
-                }), { protein: 0, carbs: 0, fats: 0, calories: 0 });
+                }), { protein: 0, calories: 0 });
                 return (
                   <div key={m.key} className="nut-meal-card">
                     <div className="nut-meal-card-header">
@@ -1320,16 +1426,6 @@ export default function NutritionHub() {
                           <span className="nut-meal-bar-label nut-macro-p">P</span>
                           <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-protein" style={{ width: `${Math.min(100, targets.protein > 0 ? (mealTotals.protein / targets.protein) * 100 : 0)}%` }} /></div>
                           <span className="nut-meal-bar-val">{mealTotals.protein}g</span>
-                        </div>
-                        <div className="nut-meal-bar-row">
-                          <span className="nut-meal-bar-label nut-macro-c">C</span>
-                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-carbs" style={{ width: `${Math.min(100, targets.carbs > 0 ? (mealTotals.carbs / targets.carbs) * 100 : 0)}%` }} /></div>
-                          <span className="nut-meal-bar-val">{mealTotals.carbs}g</span>
-                        </div>
-                        <div className="nut-meal-bar-row">
-                          <span className="nut-meal-bar-label nut-macro-f">F</span>
-                          <div className="nut-meal-bar-track"><div className="nut-meal-bar-fill bar-fats" style={{ width: `${Math.min(100, targets.fats > 0 ? (mealTotals.fats / targets.fats) * 100 : 0)}%` }} /></div>
-                          <span className="nut-meal-bar-val">{mealTotals.fats}g</span>
                         </div>
                         <div className="nut-meal-bar-row">
                           <span className="nut-meal-bar-label nut-macro-cal">K</span>
@@ -1357,9 +1453,7 @@ export default function NutritionHub() {
                             </div>
                             <div className="nut-log-item-macros">
                               <span className="nut-macro-p">{entry.protein}p</span>
-                              <span className="nut-macro-c">{entry.carbs}c</span>
-                              <span className="nut-macro-f">{entry.fats}f</span>
-                              <span className="nut-macro-cal">{entry.calories}</span>
+                              <span className="nut-macro-cal">{entry.calories} cal</span>
                             </div>
                               <button className="nut-log-delete" onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }} aria-label="Remove">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1589,7 +1683,7 @@ export default function NutritionHub() {
                       <div className="nut-search-item-info">
                         <span className="nut-search-item-name">{item.name}</span>
                         {item.brand && <span className="nut-search-item-brand">{item.brand}</span>}
-                        <span className="nut-search-item-macros">{item.calories} cal · {item.protein}p · {item.carbs}c · {item.fats}f per 100{item.servingUnit || 'g'}</span>
+                        <span className="nut-search-item-macros">{item.calories} cal · {item.protein}p per 100{item.servingUnit || 'g'}</span>
                       </div>
                     </button>
                   ))}
@@ -1636,14 +1730,6 @@ export default function NutritionHub() {
                     <input type="number" value={manualForm.protein} onChange={e => setManualForm(p => ({ ...p, protein: e.target.value }))} min="0" />
                   </div>
                   <div className="nut-form-group">
-                    <label>Carbs (g)</label>
-                    <input type="number" value={manualForm.carbs} onChange={e => setManualForm(p => ({ ...p, carbs: e.target.value }))} min="0" />
-                  </div>
-                  <div className="nut-form-group">
-                    <label>Fats (g)</label>
-                    <input type="number" value={manualForm.fats} onChange={e => setManualForm(p => ({ ...p, fats: e.target.value }))} min="0" />
-                  </div>
-                  <div className="nut-form-group">
                     <label>Calories</label>
                     <input type="number" value={manualForm.calories} onChange={e => setManualForm(p => ({ ...p, calories: e.target.value }))} min="0" />
                   </div>
@@ -1651,8 +1737,6 @@ export default function NutritionHub() {
                 <button className="nut-btn-primary" disabled={!manualForm.name.trim()} onClick={() => addFoodEntry({
                   name: manualForm.name,
                   protein: parseFloat(manualForm.protein) || 0,
-                  carbs: parseFloat(manualForm.carbs) || 0,
-                  fats: parseFloat(manualForm.fats) || 0,
                   calories: parseFloat(manualForm.calories) || 0,
                   serving: manualForm.serving || ''
                 })}>Add Food</button>
@@ -1674,8 +1758,6 @@ export default function NutritionHub() {
                     servingUnit: item.servingUnit || 'g',
                     portion: item.portion || null,
                     protein: p100.protein,
-                    carbs: p100.carbs,
-                    fats: p100.fats,
                     calories: p100.calories,
                     per100g: true
                   });
@@ -1692,8 +1774,6 @@ export default function NutritionHub() {
                   addFoodEntry({
                     name: item.name,
                     protein: item.protein,
-                    carbs: item.carbs,
-                    fats: item.fats,
                     calories: item.calories,
                     serving: item.serving || ''
                   });
@@ -1803,14 +1883,6 @@ export default function NutritionHub() {
                 <div className="nut-form-group">
                   <label>Protein (g)</label>
                   <input type="number" inputMode="numeric" value={editForm.protein} onChange={e => setEditForm(p => ({ ...p, protein: e.target.value }))} min="0" />
-                </div>
-                <div className="nut-form-group">
-                  <label>Carbs (g)</label>
-                  <input type="number" inputMode="numeric" value={editForm.carbs} onChange={e => setEditForm(p => ({ ...p, carbs: e.target.value }))} min="0" />
-                </div>
-                <div className="nut-form-group">
-                  <label>Fats (g)</label>
-                  <input type="number" inputMode="numeric" value={editForm.fats} onChange={e => setEditForm(p => ({ ...p, fats: e.target.value }))} min="0" />
                 </div>
                 <div className="nut-form-group">
                   <label>Calories</label>

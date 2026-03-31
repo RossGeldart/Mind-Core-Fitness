@@ -22,7 +22,7 @@ const WIDGET_DEFS = [
   { id: 'workouts', label: 'Workouts', desc: 'Sessions this week and total count', icon: 'dumbbell', defaultOn: true },
   { id: 'habits', label: 'Habits', desc: 'Daily habit tracker dots', icon: 'check', defaultOn: true },
   { id: 'pbs', label: 'Personal Bests', desc: 'Your top lifts at a glance', icon: 'trophy' },
-  { id: 'nutrition', label: 'Nutrition', desc: 'Macro rings — protein, carbs, fats, cals', icon: 'apple' },
+  { id: 'nutrition', label: 'Nutrition', desc: 'Macro rings — protein, calories, water', icon: 'apple' },
   { id: 'leaderboard', label: 'Leaderboard', desc: 'See where you rank among buddies', icon: 'podium' },
 
   { id: 'journey', label: 'Journey', desc: 'Your posts, likes and comments feed', icon: 'feed' },

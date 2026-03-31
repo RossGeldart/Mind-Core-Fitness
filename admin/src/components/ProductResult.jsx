@@ -29,10 +29,10 @@ export default function ProductResult({
         <button className={`nut-fav-star confirm${isFavourite ? ' active' : ''}`}
           onClick={() => onToggleFavourite({
             name: product.name,
-            protein: product.protein, carbs: product.carbs,
-            fats: product.fats, calories: product.calories,
+            protein: product.protein,
+            calories: product.calories,
             serving: product.servingSize,
-            per100g: { protein: product.protein, carbs: product.carbs, fats: product.fats, calories: product.calories },
+            per100g: { protein: product.protein, calories: product.calories },
             servingUnit: product.servingUnit || 'g',
             portion: product.portion || null,
           })}>
@@ -45,8 +45,6 @@ export default function ProductResult({
       <p className="nut-product-per">Per 100{u}:</p>
       <div className="nut-product-macros">
         <span className="nut-macro-p">{product.protein}g P</span>
-        <span className="nut-macro-c">{product.carbs}g C</span>
-        <span className="nut-macro-f">{product.fats}g F</span>
         <span className="nut-macro-cal">{product.calories} cal</span>
       </div>
       {por && (
@@ -79,18 +77,16 @@ export default function ProductResult({
         </>
       )}
       <div className="nut-product-total">
-        <span>Total: {Math.round(product.protein * mult)}p / {Math.round(product.carbs * mult)}c / {Math.round(product.fats * mult)}f / {Math.round(product.calories * mult)} cal</span>
+        <span>Total: {Math.round(product.protein * mult)}p / {Math.round(product.calories * mult)} cal</span>
       </div>
       <div className="nut-product-actions">
         <button className="nut-btn-secondary" onClick={onBack}>{backLabel}</button>
         <button className="nut-btn-primary" onClick={() => onAdd({
           name: product.name,
           protein: Math.round(product.protein * mult),
-          carbs: Math.round(product.carbs * mult),
-          fats: Math.round(product.fats * mult),
           calories: Math.round(product.calories * mult),
           serving: servingLabel,
-          per100g: { protein: product.protein, carbs: product.carbs, fats: product.fats, calories: product.calories },
+          per100g: { protein: product.protein, calories: product.calories },
           servingUnit: product.servingUnit || 'g',
           portion: product.portion || null,
           brand: product.brand || '',

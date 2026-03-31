@@ -364,7 +364,7 @@ exports.imageProxy = onRequest({ region: 'europe-west2', cors: true }, async (re
 /**
  * AI Meal Scanner — analyses a meal photo and returns estimated macros.
  * Expects: { imageBase64: string, mimeType: string }
- * Returns: { items: [...], totals: { calories, protein, carbs, fats }, confidence: string }
+ * Returns: { items: [...], totals: { calories, protein }, confidence: string }
  */
 exports.analyseMeal = onCall(
   { region: 'europe-west2', secrets: [anthropicApiKey], timeoutSeconds: 60, memory: '512MiB' },
@@ -415,26 +415,24 @@ exports.analyseMeal = onCall(
       throw new HttpsError('failed-precondition', 'AI service is not configured. Please contact support.');
     }
 
-    const systemPrompt = `You are a nutrition analysis AI for a fitness app called Mind Core Fitness. Analyse the meal photo and estimate the macronutrients.
+    const systemPrompt = `You are a nutrition analysis AI for a fitness app called Mind Core Fitness. Analyse the meal photo and estimate the protein and calorie content.
 
 Rules:
 - Identify each distinct food item visible in the photo
 - Estimate portion sizes using visual cues (plate size, utensils, hands for scale)
 - If unsure about portion size, use conservative middle-ground estimates
-- Calculate macros per item, then sum for totals
+- Calculate protein and calories per item, then sum for totals
 - Round all numbers to whole integers
 - Return ONLY valid JSON — no markdown, no backticks, no explanation
 
 Response format:
 {
   "items": [
-    { "name": "Grilled chicken breast", "estimatedGrams": 150, "calories": 248, "protein": 46, "carbs": 0, "fats": 5 }
+    { "name": "Grilled chicken breast", "estimatedGrams": 150, "calories": 248, "protein": 46 }
   ],
   "totals": {
     "calories": 520,
-    "protein": 48,
-    "carbs": 62,
-    "fats": 8
+    "protein": 48
   },
   "confidence": "medium"
 }
