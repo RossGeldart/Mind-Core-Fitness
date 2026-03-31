@@ -705,12 +705,10 @@ export default function Leaderboard() {
         {/* Board Toggle: Workouts | Protein King */}
         <div className="lb-board-toggle">
           <button className={`lb-board-btn${board === 'workouts' ? ' lb-board-active' : ''}`} onClick={() => { setBoard('workouts'); setShowAll(false); }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2.71 7 4.14 8.43 7.71 4.86 16.29 13.43 12.71 17 14.14 18.43 15.57 17 17 18.43 14.14 21.29l1.43 1.43 1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43L22 20.57z"/></svg>
-            <span>Workouts</span>
+            Workouts
           </button>
           <button className={`lb-board-btn${board === 'protein' ? ' lb-board-active' : ''}`} onClick={() => { setBoard('protein'); setShowAll(false); }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-4h2v2h-2zm0-2h2V7h-2z"/></svg>
-            <span>Protein King</span>
+            Protein King
           </button>
         </div>
 

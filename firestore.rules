@@ -140,6 +140,7 @@ service cloud.firestore {
     match /nutritionTargets/{docId} {
       allow read, write: if isAdmin();
       allow read, write: if isClientOwner(docId);
+      allow read: if isAuthenticated(); // LEADERBOARD: read protein targets for Protein King
     }
     // Favourite Foods - admin full, clients read/write own (doc ID = clientId)
     match /favouriteFoods/{docId} {
@@ -161,6 +162,7 @@ service cloud.firestore {
     match /nutritionLogs/{docId} {
       allow read, write: if isAdmin();
       allow read: if resource == null || isClientOwner(resource.data.clientId);
+      allow read: if isAuthenticated(); // LEADERBOARD: read logs for Protein King aggregation
       allow create, update: if isClientOwner(request.resource.data.clientId);
     }
     // Habit Logs - admin full, clients read/write own (doc ID = {clientId}_{date})
