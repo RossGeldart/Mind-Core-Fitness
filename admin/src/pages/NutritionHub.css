@@ -188,30 +188,72 @@
   user-select: none;
   -webkit-user-select: none;
   position: relative;
+  transition: transform 0.15s ease;
 }
 
 .nhub-water-ring:active {
   transform: scale(0.96);
 }
 
+.nhub-water-ring .nhub-ring-svg {
+  filter: drop-shadow(0 0 0px transparent);
+  transition: filter 0.3s ease;
+}
+
+.nhub-water-ring.nhub-water-holding .nhub-ring-svg {
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+}
+
+.nhub-water-ring.nhub-water-holding {
+  animation: nhub-water-pulse 1s ease-in-out infinite;
+}
+
+@keyframes nhub-water-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
 .nhub-water-full {
   pointer-events: none;
-  opacity: 0.85;
+}
+
+.nhub-water-full .nhub-ring-svg {
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.25));
 }
 
 .nhub-water-hint {
   display: block;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  margin-top: 2px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-top: 3px;
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.8;
+  letter-spacing: 0.02em;
+  animation: nhub-hint-pulse 2s ease-in-out infinite;
+}
+
+@keyframes nhub-hint-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.4; }
+}
+
+[data-theme="dark"] .nhub-water-hint {
+  color: #60a5fa;
 }
 
 .nhub-ring-hold-progress {
   transition: none;
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
+}
+
+[data-theme="dark"] .nhub-water-ring.nhub-water-holding .nhub-ring-svg {
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.45));
+}
+
+[data-theme="dark"] .nhub-water-full .nhub-ring-svg {
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
 }
 
 .nhub-macro-cta {
