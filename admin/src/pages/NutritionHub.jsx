@@ -1227,6 +1227,10 @@ export default function NutritionHub() {
             <div className="nhub-rings-side">
               <div
                 className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}${waterHolding ? ' nhub-water-holding' : ''}${waterBurst ? ' nhub-water-burst' : ''}`}
+                style={waterHolding ? {
+                  '--hold-scale': 1 + waterHoldProgress * 0.12,
+                  '--hold-glow': waterHoldProgress,
+                } : undefined}
                 onMouseDown={onWaterHoldStart}
                 onMouseUp={onWaterHoldEnd}
                 onMouseLeave={onWaterHoldEnd}
@@ -1238,39 +1242,11 @@ export default function NutritionHub() {
                 aria-label="Hold to log 500ml water"
               >
                 <svg className="nhub-ring-svg" viewBox="0 0 80 80">
-                  {/* Outer glow ring while holding */}
-                  {waterHolding && (
-                    <circle className="nhub-water-outer-sweep" cx="40" cy="40" r={RING_R + 3}
-                      fill="none" strokeWidth="3" strokeLinecap="round"
-                      style={{ stroke: MACRO_COLORS_HUB.water }}
-                      strokeDasharray={2 * Math.PI * (RING_R + 3)}
-                      strokeDashoffset={(2 * Math.PI * (RING_R + 3)) * (1 - waterHoldProgress)}
-                      transform="rotate(-90 40 40)" />
-                  )}
                   <circle className="nhub-ring-track" cx="40" cy="40" r={RING_R} />
                   <circle className="nhub-ring-fill" cx="40" cy="40" r={RING_R}
                     style={{ stroke: MACRO_COLORS_HUB.water }}
                     strokeDasharray={RING_C}
                     strokeDashoffset={RING_C - (Math.min(100, Math.round((waterMl / WATER_TARGET) * 100)) / 100) * RING_C} />
-                  {/* Clip-path water fill inside the ring */}
-                  <defs>
-                    <clipPath id="waterFillClip">
-                      <circle cx="40" cy="40" r={RING_R - 7} />
-                    </clipPath>
-                  </defs>
-                  {waterHolding && (
-                    <g clipPath="url(#waterFillClip)">
-                      <rect className="nhub-water-fill-rect"
-                        x={40 - (RING_R - 7)} y={40 - (RING_R - 7)}
-                        width={(RING_R - 7) * 2} height={(RING_R - 7) * 2}
-                        fill={isDark ? 'rgba(96, 165, 250, 0.25)' : 'rgba(59, 130, 246, 0.18)'}
-                        style={{ transform: `translateY(${(1 - waterHoldProgress) * (RING_R - 7) * 2}px)` }} />
-                      {/* Wave effect */}
-                      <path className="nhub-water-wave"
-                        d={`M${40 - (RING_R - 7)} ${40 - (RING_R - 7) + (1 - waterHoldProgress) * (RING_R - 7) * 2} q${(RING_R - 7) * 0.5} -4 ${RING_R - 7} 0 t${RING_R - 7} 0 v4 h-${(RING_R - 7) * 2} z`}
-                        fill={isDark ? 'rgba(96, 165, 250, 0.15)' : 'rgba(59, 130, 246, 0.1)'} />
-                    </g>
-                  )}
                   {/* Burst ring on success */}
                   {waterBurst && (
                     <circle className="nhub-water-burst-ring" cx="40" cy="40" r={RING_R}
