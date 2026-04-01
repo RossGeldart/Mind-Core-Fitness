@@ -195,7 +195,7 @@
 .nhub-water-ring::before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 34px;
   left: 50%;
   width: 56px;
   height: 56px;
