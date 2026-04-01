@@ -208,40 +208,22 @@
   z-index: 0;
 }
 
-/* ── Holding state ── */
+/* ── Holding state: ring grows + pulses + glows ── */
 .nhub-water-ring.nhub-water-holding {
-  animation: nhub-water-hold-scale 0.6s ease-in-out infinite alternate;
+  transform: scale(var(--hold-scale, 1));
+  animation: nhub-water-hold-pulse 0.7s ease-in-out infinite alternate;
 }
 
 .nhub-water-ring.nhub-water-holding::before {
-  box-shadow: 0 0 18px 8px rgba(59, 130, 246, 0.4), 0 0 36px 14px rgba(59, 130, 246, 0.15);
-  opacity: 1;
+  opacity: var(--hold-glow, 0);
+  box-shadow:
+    0 0 calc(12px + 20px * var(--hold-glow, 0)) calc(4px + 10px * var(--hold-glow, 0)) rgba(59, 130, 246, calc(0.2 + 0.35 * var(--hold-glow, 0))),
+    0 0 calc(24px + 40px * var(--hold-glow, 0)) calc(10px + 16px * var(--hold-glow, 0)) rgba(59, 130, 246, calc(0.05 + 0.15 * var(--hold-glow, 0)));
 }
 
-@keyframes nhub-water-hold-scale {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
-}
-
-/* Outer sweeping progress arc */
-.nhub-water-outer-sweep {
-  transition: none;
-  opacity: 0.7;
-}
-
-/* Water fill rect rising inside the ring */
-.nhub-water-fill-rect {
-  transition: none;
-}
-
-/* Wave wobble on top of the fill */
-.nhub-water-wave {
-  animation: nhub-wave-wobble 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes nhub-wave-wobble {
-  from { transform: translateX(-2px); }
-  to { transform: translateX(2px); }
+@keyframes nhub-water-hold-pulse {
+  from { transform: scale(var(--hold-scale, 1)); }
+  to { transform: scale(calc(var(--hold-scale, 1) + 0.025)); }
 }
 
 /* ── Burst on success ── */
@@ -312,7 +294,9 @@
 }
 
 [data-theme="dark"] .nhub-water-ring.nhub-water-holding::before {
-  box-shadow: 0 0 22px 10px rgba(96, 165, 250, 0.45), 0 0 44px 18px rgba(96, 165, 250, 0.15);
+  box-shadow:
+    0 0 calc(14px + 24px * var(--hold-glow, 0)) calc(5px + 12px * var(--hold-glow, 0)) rgba(96, 165, 250, calc(0.25 + 0.35 * var(--hold-glow, 0))),
+    0 0 calc(28px + 44px * var(--hold-glow, 0)) calc(12px + 20px * var(--hold-glow, 0)) rgba(96, 165, 250, calc(0.08 + 0.15 * var(--hold-glow, 0)));
 }
 
 [data-theme="dark"] .nhub-water-ring.nhub-water-burst::before {
