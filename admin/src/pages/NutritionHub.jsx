@@ -320,21 +320,46 @@ export default function NutritionHub() {
 
   // Water hold-to-log handlers
   const waterHoldAnimFrame = useRef(null);
+  const waterDecayFrame = useRef(null);
+  const waterDecayValue = useRef(0);
+
   const animateWaterHold = useCallback(() => {
     if (!waterHoldStart.current) return;
     const elapsed = Date.now() - waterHoldStart.current;
-    const progress = Math.min(1, elapsed / 2000);
-    setWaterHoldProgress(progress);
-    if (progress < 1) {
+    const rawProgress = Math.min(1, elapsed / 2000);
+    // Cubic ease-in: early resistance, accelerates into completion
+    const eased = rawProgress * rawProgress * rawProgress;
+    setWaterHoldProgress(eased);
+    waterDecayValue.current = eased;
+    if (rawProgress < 1) {
       waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
     }
   }, []);
 
+  const animateDecay = useCallback(() => {
+    waterDecayValue.current *= 0.85;
+    if (waterDecayValue.current < 0.005) {
+      waterDecayValue.current = 0;
+      setWaterHoldProgress(0);
+      setWaterHolding(false);
+      waterDecayFrame.current = null;
+      return;
+    }
+    setWaterHoldProgress(waterDecayValue.current);
+    waterDecayFrame.current = requestAnimationFrame(animateDecay);
+  }, []);
+
   const onWaterHoldStart = useCallback(() => {
     if (waterMl >= WATER_TARGET) return;
+    // Cancel any in-progress decay
+    if (waterDecayFrame.current) {
+      cancelAnimationFrame(waterDecayFrame.current);
+      waterDecayFrame.current = null;
+    }
     waterHoldStart.current = Date.now();
     setWaterHolding(true);
     setWaterHoldProgress(0);
+    waterDecayValue.current = 0;
     waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
     waterHoldTimer.current = setTimeout(async () => {
       // 2 seconds held — add 500ml
@@ -342,6 +367,7 @@ export default function NutritionHub() {
       setWaterMl(newWater);
       setWaterHolding(false);
       setWaterHoldProgress(0);
+      waterDecayValue.current = 0;
       setWaterBurst(true);
       setTimeout(() => setWaterBurst(false), 600);
       waterHoldStart.current = null;
@@ -371,9 +397,14 @@ export default function NutritionHub() {
       waterHoldAnimFrame.current = null;
     }
     waterHoldStart.current = null;
-    setWaterHolding(false);
-    setWaterHoldProgress(0);
-  }, []);
+    // Spring-decay: unwind from current value instead of snapping to 0
+    if (waterDecayValue.current > 0.005) {
+      waterDecayFrame.current = requestAnimationFrame(animateDecay);
+    } else {
+      setWaterHolding(false);
+      setWaterHoldProgress(0);
+    }
+  }, [animateDecay]);
 
   // Save log to Firestore
   const saveLog = async (newLog) => {
