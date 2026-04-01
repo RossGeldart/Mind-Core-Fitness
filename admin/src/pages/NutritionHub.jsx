@@ -1296,7 +1296,17 @@ export default function NutritionHub() {
                 {waterMl > 0 && !waterHolding && (
                   <button
                     style={{ fontSize: '0.55rem', marginTop: 4, background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 600, opacity: 0.7 }}
-                    onClick={(e) => { e.stopPropagation(); setWaterMl(0); }}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setWaterMl(0);
+                      if (clientData?.id) {
+                        try {
+                          await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`), {
+                            clientId: clientData.id, date: selectedDate, waterMl: 0, updatedAt: Timestamp.now()
+                          }, { merge: true });
+                        } catch (err) { console.error('Error resetting water:', err); }
+                      }
+                    }}
                   >Reset</button>
                 )}
               </div>
