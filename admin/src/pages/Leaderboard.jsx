@@ -320,65 +320,69 @@ export default function Leaderboard() {
 
       if (clients.length === 0) { setProteinRankings([]); setLoading(false); return; }
 
-      // For each client, load their nutritionTargets and nutritionLogs
-      const results = await Promise.all(clients.map(async (c) => {
-        try {
-          // Get protein target (show client with 0 if no target set)
-          const targetDoc = await getDoc(doc(db, 'nutritionTargets', c.id)).catch(() => null);
-          const proteinTarget = targetDoc?.exists() ? (targetDoc.data().protein || 0) : 0;
+      const clientIds = clients.map(c => c.id);
 
-          const hitDays = [];
-          if (proteinTarget > 0) {
-            // Scan last 365 days of nutrition logs
-            const lookbackDays = 365;
-            const batchSize = 30;
-            for (let batch = 0; batch < Math.ceil(lookbackDays / batchSize); batch++) {
-              const promises = [];
-              for (let i = batch * batchSize; i < Math.min((batch + 1) * batchSize, lookbackDays); i++) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const dateStr = getDateStr(d);
-                promises.push(
-                  getDoc(doc(db, 'nutritionLogs', `${c.id}_${dateStr}`)).then(snap => {
-                    if (!snap.exists()) return null;
-                    const entries = snap.data().entries || [];
-                    const totalProtein = entries.reduce((sum, e) => sum + (e.protein || 0), 0);
-                    return totalProtein >= proteinTarget ? dateStr : null;
-                  }).catch(() => null)
-                );
-              }
-              const batchResults = await Promise.all(promises);
-              batchResults.forEach(r => { if (r) hitDays.push(r); });
-            }
-          }
+      // 1. Fetch all protein targets in parallel (one read per client)
+      const targetDocs = await Promise.all(
+        clients.map(c => getDoc(doc(db, 'nutritionTargets', c.id)).catch(() => null))
+      );
+      const targetMap = {};
+      clients.forEach((c, i) => {
+        const td = targetDocs[i];
+        targetMap[c.id] = td?.exists() ? (td.data().protein || 0) : 0;
+      });
 
-          // Calculate metric based on active protein tab
-          let value = 0;
-          if (proteinTab === 'days_hit') {
-            const { startStr, endStr } = getDateRange(proteinPeriod);
-            value = hitDays.filter(d => d >= startStr && d <= endStr).length;
-          } else if (proteinTab === 'day_streak') {
-            value = calculateProteinDayStreak(hitDays);
-          } else {
-            value = calculateProteinWeekStreak(hitDays);
-          }
+      // 2. Fetch ALL nutrition logs for all clients in one query (instead of 365 reads per client)
+      const allLogs = [];
+      for (let i = 0; i < clientIds.length; i += 30) {
+        const batch = clientIds.slice(i, i + 30);
+        const logsQ = query(collection(db, 'nutritionLogs'), where('clientId', 'in', batch));
+        const logsSnap = await getDocs(logsQ);
+        allLogs.push(...logsSnap.docs);
+      }
 
-          return {
-            id: c.id,
-            name: c.name || c.email?.split('@')[0] || 'Anonymous',
-            photoURL: c.photoURL || null,
-            value,
-          };
-        } catch {
-          // If any read fails for this client, still show them with 0
-          return {
-            id: c.id,
-            name: c.name || c.email?.split('@')[0] || 'Anonymous',
-            photoURL: c.photoURL || null,
-            value: 0,
-          };
+      // 3. Group logs by client and find protein hit days
+      const yearAgoStr = getDateStr(new Date(Date.now() - 365 * 86400000));
+      const hitDaysMap = {};
+      clients.forEach(c => { hitDaysMap[c.id] = []; });
+
+      allLogs.forEach(logDoc => {
+        const data = logDoc.data();
+        const cid = data.clientId;
+        if (!cid || !hitDaysMap[cid]) return;
+        const target = targetMap[cid];
+        if (!target || target <= 0) return;
+
+        // Get date from doc field or parse from doc ID
+        const dateStr = data.date || logDoc.id.split('_').slice(1).join('_');
+        if (dateStr < yearAgoStr) return;
+
+        const entries = data.entries || [];
+        const totalProtein = entries.reduce((sum, e) => sum + (e.protein || 0), 0);
+        if (totalProtein >= target) {
+          hitDaysMap[cid].push(dateStr);
         }
-      }));
+      });
+
+      // 4. Calculate values for each client
+      const results = clients.map(c => {
+        const hitDays = hitDaysMap[c.id];
+        let value = 0;
+        if (proteinTab === 'days_hit') {
+          const { startStr, endStr } = getDateRange(proteinPeriod);
+          value = hitDays.filter(d => d >= startStr && d <= endStr).length;
+        } else if (proteinTab === 'day_streak') {
+          value = calculateProteinDayStreak(hitDays);
+        } else {
+          value = calculateProteinWeekStreak(hitDays);
+        }
+        return {
+          id: c.id,
+          name: c.name || c.email?.split('@')[0] || 'Anonymous',
+          photoURL: c.photoURL || null,
+          value,
+        };
+      });
 
       results.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
       results.forEach((s, i) => { s.rank = i + 1; });
