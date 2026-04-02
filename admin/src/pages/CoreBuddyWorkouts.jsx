@@ -103,7 +103,7 @@ const BYO_MUSCLE_FILTERS = {
 };
 
 const BYO_EQUIPMENT_ORDER = ['bodyweight', 'dumbbells', 'kettlebell'];
-const BYO_EQUIPMENT_LABELS = { bodyweight: 'Bodyweight', dumbbells: 'Dumbbells', kettlebell: 'Kettlebells' };
+const BYO_EQUIPMENT_LABELS = { bodyweight: 'Bodyweight', dumbbells: 'Dumbbells', kettlebell: 'Kettlebells', custom: 'Custom' };
 
 // Advanced core exercises excluded from beginner-level randomiser.
 // Matched case-insensitively against exercise names loaded from Firebase Storage.
@@ -2425,9 +2425,6 @@ export default function CoreBuddyWorkouts() {
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
             <div className="header-actions">
-              {byoSelected.length > 0 && (
-                <span className="byo-pick-count">{byoSelected.length}</span>
-              )}
             </div>
           </div>
         </header>
@@ -2513,14 +2510,16 @@ export default function CoreBuddyWorkouts() {
                     const name = byoCustomName.trim();
                     if (!name) return;
                     const existsInSelected = byoSelected.find(s => s.name.toLowerCase() === name.toLowerCase());
+                    if (existsInSelected) { setByoShowCustom(false); return; }
                     const existsInCustom = userCustomExercises.find(s => s.name.toLowerCase() === name.toLowerCase());
-                    if (existsInSelected || existsInCustom) { setByoShowCustom(false); return; }
-                    const custom = { name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle, storagePath: '' };
+                    const custom = existsInCustom
+                      ? { name: existsInCustom.name, type: existsInCustom.type, equipment: existsInCustom.equipment || 'custom', group: existsInCustom.group || byoCustomGroup, muscle: existsInCustom.muscle || byoCustomMuscle, storagePath: '' }
+                      : { name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle, storagePath: '' };
                     setByoSelected(prev => [...prev, custom]);
                     setByoShowCustom(false);
                     setByoCustomName('');
-                    // Persist to Firestore
-                    if (clientData?.id) {
+                    // Persist to Firestore (only if truly new)
+                    if (!existsInCustom && clientData?.id) {
                       try {
                         const docRef = await addDoc(collection(db, 'userCustomExercises'), {
                           clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle, createdAt: Timestamp.now(),
@@ -2690,11 +2689,15 @@ export default function CoreBuddyWorkouts() {
             <div className="byo-selected-tray">
               <h3 className="byo-selected-title">Your Workout ({byoSelected.length})</h3>
               <div className="byo-selected-list">
-                {byoSelected.map(ex => (
-                  <div key={ex.name} className="byo-selected-chip">
-                    <span className="byo-selected-chip-name">{ex.name}</span>
-                    <button className="byo-selected-chip-remove" onClick={() => byoToggleExercise(ex)} aria-label={`Remove ${ex.name}`}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                {byoSelected.map((ex, i) => (
+                  <div key={ex.name} className="byo-selected-card">
+                    <span className="byo-selected-num">{i + 1}</span>
+                    <div className="byo-selected-info">
+                      <span className="byo-selected-name">{ex.name}</span>
+                      <span className="byo-selected-meta">{BYO_EQUIPMENT_LABELS[ex.equipment] || ex.equipment} &middot; {ex.type}</span>
+                    </div>
+                    <button className="byo-selected-remove" onClick={() => byoToggleExercise(ex)} aria-label={`Remove ${ex.name}`}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                   </div>
                 ))}

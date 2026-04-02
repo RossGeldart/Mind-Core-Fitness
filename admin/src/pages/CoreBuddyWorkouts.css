@@ -4365,7 +4365,7 @@
 /* ── Selected Exercises Tray ── */
 .byo-selected-tray {
   margin: 20px 16px 0;
-  padding: 14px;
+  padding: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 14px;
@@ -4376,47 +4376,91 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
 
 .byo-selected-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 0;
 }
 
-.byo-selected-chip {
+.byo-selected-card {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
-  border: 1px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
-  border-radius: 20px;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.byo-selected-chip-name {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
+.byo-selected-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
-.byo-selected-chip-remove {
+.byo-selected-card:first-child {
+  padding-top: 0;
+}
+
+.byo-selected-num {
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  color: var(--text-tertiary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  color: var(--color-primary);
+  border-radius: 50%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
-.byo-selected-chip-remove:active {
+.byo-selected-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.byo-selected-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.byo-selected-meta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  text-transform: capitalize;
+}
+
+.byo-selected-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.byo-selected-remove:active {
   color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.06);
 }
 
 /* ── Footer ── */
