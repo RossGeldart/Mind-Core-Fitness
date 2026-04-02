@@ -103,6 +103,18 @@
   flex-shrink: 0;
 }
 
+.acb-custom-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.1);
+  color: var(--color-primary);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
 .acb-rating-info {
   flex: 1;
   min-width: 0;
