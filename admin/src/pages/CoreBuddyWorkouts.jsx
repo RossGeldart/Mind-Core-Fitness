@@ -666,6 +666,7 @@ export default function CoreBuddyWorkouts() {
   const [byoCustomGroup, setByoCustomGroup] = useState('upper');
   const [byoCustomMuscle, setByoCustomMuscle] = useState('chest');
   const [userCustomExercises, setUserCustomExercises] = useState([]); // persisted custom exercises from Firestore
+  const [approvedExercises, setApprovedExercises] = useState([]); // admin-approved exercises for all users
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoMuscleFilter, setByoMuscleFilter] = useState({});
@@ -871,7 +872,7 @@ export default function CoreBuddyWorkouts() {
     loadSaved();
   }, [currentUser, clientData]);
 
-  // Load user custom exercises
+  // Load user custom exercises + approved exercises
   useEffect(() => {
     if (!currentUser || !clientData) return;
     const loadCustom = async () => {
@@ -883,7 +884,16 @@ export default function CoreBuddyWorkouts() {
         console.error('Error loading custom exercises:', err);
       }
     };
+    const loadApproved = async () => {
+      try {
+        const snap = await getDocs(collection(db, 'approvedExercises'));
+        setApprovedExercises(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error('Error loading approved exercises:', err);
+      }
+    };
     loadCustom();
+    loadApproved();
   }, [currentUser, clientData]);
 
   // Load recent randomiser workouts + compute smart suggestion
@@ -2415,7 +2425,11 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== BUILD YOUR OWN — EXERCISE PICKER ====================
   if (view === 'byo_pick') {
-    const exercisePool = [...PROGRAMMABLE_EXERCISES, ...userCustomExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'upper', muscle: e.muscle || 'chest', storagePath: '' }))];
+    const exercisePool = [
+      ...PROGRAMMABLE_EXERCISES,
+      ...approvedExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'upper', muscle: e.muscle || 'chest', storagePath: '' })),
+      ...userCustomExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'upper', muscle: e.muscle || 'chest', storagePath: '' })),
+    ];
     return (
       <div className="wk-page">
         <header className="client-header">
