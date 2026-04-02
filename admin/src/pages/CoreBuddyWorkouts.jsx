@@ -2685,6 +2685,23 @@ export default function CoreBuddyWorkouts() {
             );
           })}
 
+          {/* Selected exercises tray */}
+          {byoSelected.length > 0 && (
+            <div className="byo-selected-tray">
+              <h3 className="byo-selected-title">Your Workout ({byoSelected.length})</h3>
+              <div className="byo-selected-list">
+                {byoSelected.map(ex => (
+                  <div key={ex.name} className="byo-selected-chip">
+                    <span className="byo-selected-chip-name">{ex.name}</span>
+                    <button className="byo-selected-chip-remove" onClick={() => byoToggleExercise(ex)} aria-label={`Remove ${ex.name}`}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Exercise preview modal */}
           {byoPreviewEx && (
             <div className="wk-preview-modal-backdrop" onClick={() => setByoPreviewEx(null)}>
@@ -2915,19 +2932,8 @@ export default function CoreBuddyWorkouts() {
           {byoSelected.map(ex => {
             const sets = byoSetsData[ex.name] || [];
             const isWeighted = ex.type === 'weighted';
-            const demoUrl = byoVideoUrls[ex.storagePath];
-            const isDemoGif = /\.gif$/i.test(ex.storagePath || '');
             return (
               <div key={ex.name} className="byo-set-card">
-                {demoUrl && (
-                  <div className="byo-set-demo">
-                    {isDemoGif ? (
-                      <img src={demoUrl} alt={ex.name} loading="lazy" />
-                    ) : (
-                      <video src={demoUrl} autoPlay loop muted playsInline />
-                    )}
-                  </div>
-                )}
                 <div className="byo-set-header">
                   <h3>{ex.name}</h3>
                   <span className="byo-set-type">{ex.equipment}</span>

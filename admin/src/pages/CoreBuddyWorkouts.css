@@ -4362,6 +4362,63 @@
   flex-shrink: 0;
 }
 
+/* ── Selected Exercises Tray ── */
+.byo-selected-tray {
+  margin: 20px 16px 0;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.byo-selected-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.byo-selected-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.byo-selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(var(--color-primary-rgb, 184, 49, 61), 0.08);
+  border: 1px solid rgba(var(--color-primary-rgb, 184, 49, 61), 0.2);
+  border-radius: 20px;
+}
+
+.byo-selected-chip-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.byo-selected-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.byo-selected-chip-remove:active {
+  color: var(--color-primary);
+}
+
 /* ── Footer ── */
 .byo-pick-footer {
   position: fixed;
@@ -4531,22 +4588,6 @@
   border: 1px solid var(--border-color);
   background: var(--bg-card);
   overflow: hidden;
-}
-
-.byo-set-demo {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #000;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.byo-set-demo video,
-.byo-set-demo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .byo-set-header {
