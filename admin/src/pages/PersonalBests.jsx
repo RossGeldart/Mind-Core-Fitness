@@ -113,9 +113,9 @@ function formatMonthLabel(monthStr) {
 function formatPlankTime(seconds) {
   if (!seconds && seconds !== 0) return '-';
   const mins = Math.floor(seconds / 60);
-  const secs = (seconds % 60).toFixed(2);
-  if (mins > 0) return `${mins}m ${parseFloat(secs).toFixed(0)}s`;
-  return `${parseFloat(secs).toFixed(2)}s`;
+  const secs = Math.round(seconds % 60);
+  if (mins > 0) return `${mins}m ${secs}s`;
+  return `${secs}s`;
 }
 
 function formatWeight(weight, reps) {
@@ -509,17 +509,28 @@ export default function PersonalBests() {
     try {
       const docId = `${clientData.id}_${currentMonth}`;
       const existing = currentRecord || {};
+      // Strip out exercises where all fields are empty/zero to avoid storing blank entries
+      const cleanedBenchmarks = {};
+      Object.entries(benchmarkForm).forEach(([key, data]) => {
+        if (!data) return;
+        const hasWeight = data.weight != null && data.weight !== '' && data.weight !== 0;
+        const hasReps = data.reps != null && data.reps !== '' && data.reps !== 0;
+        const hasTime = data.time != null && data.time !== '' && data.time !== 0;
+        if (hasWeight || hasReps || hasTime) {
+          cleanedBenchmarks[key] = data;
+        }
+      });
       await setDoc(doc(db, 'personalBests', docId), {
         clientId: clientData.id,
         month: currentMonth,
-        benchmarks: benchmarkForm,
+        benchmarks: cleanedBenchmarks,
         bodyMetrics: existing.bodyMetrics || metricsForm || {},
         createdAt: existing.createdAt || Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
-      await checkAndSaveAchievements('strength', benchmarkForm);
+      await checkAndSaveAchievements('strength', cleanedBenchmarks);
       activeExercises.forEach(ex => {
-        const bench = benchmarkForm[ex.key];
+        const bench = cleanedBenchmarks[ex.key];
         if (bench) {
           trackPersonalBestLogged({
             exercise: ex.name,
@@ -823,6 +834,19 @@ export default function PersonalBests() {
     const previous = previousRecord?.bodyMetrics?.[metricKey];
     if (current == null || previous == null) return null;
     return parseFloat((current - previous).toFixed(2));
+  };
+
+  // Determine if a metric change is positive/negative relative to the client's goal direction
+  const getMetricChangeClass = (metricKey, change) => {
+    if (change === 0) return 'same';
+    const mTarget = metricTargets[metricKey];
+    if (mTarget && mTarget.startValue != null) {
+      const wantsDecrease = mTarget.targetValue < mTarget.startValue;
+      if (wantsDecrease) return change < 0 ? 'up' : 'down'; // decrease is good → green
+      return change > 0 ? 'up' : 'down'; // increase is good → green
+    }
+    // No target set — use raw direction
+    return change > 0 ? 'up' : 'down';
   };
 
   // Compare records
@@ -1676,7 +1700,7 @@ export default function PersonalBests() {
                                 {value != null ? `${value} ${metric.suffix}` : '-'}
                               </span>
                               {change !== null && (
-                                <span className={`pb-metric-change ${change > 0 ? 'up' : change < 0 ? 'down' : 'same'}`}>
+                                <span className={`pb-metric-change ${getMetricChangeClass(metric.key, change)}`}>
                                   {change > 0 ? '+' : ''}{change} {metric.suffix}
                                 </span>
                               )}
@@ -1896,8 +1920,7 @@ export default function PersonalBests() {
                   /* Timeline View */
                   <div className="pb-timeline">
                     {[...records].reverse().map((record, idx) => {
-                      const prevRecord = records.find(r => r.month < record.month && records.indexOf(r) === records.indexOf(record) - 1)
-                        || records.filter(r => r.month < record.month).pop();
+                      const prevRecord = records.filter(r => r.month < record.month).pop();
                       return (
                         <div key={record.id} className="pb-timeline-item" style={{ animationDelay: `${idx * 0.05}s` }}>
                           <div className="pb-timeline-dot"></div>
@@ -1925,6 +1948,9 @@ export default function PersonalBests() {
                                         {pct !== null && (
                                           <span className={`pb-timeline-change ${pct >= 0 ? 'positive' : 'negative'}`}>
                                             {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
+                                            {ex.unit !== 'time' && prevBench && (
+                                              <span className="pb-timeline-from"> from {prevBench.weight}kg×{prevBench.reps}</span>
+                                            )}
                                           </span>
                                         )}
                                       </div>
@@ -1948,11 +1974,15 @@ export default function PersonalBests() {
                                       <span className="pb-timeline-label">{m.name}</span>
                                       <div className="pb-timeline-values">
                                         <span className="pb-timeline-value">{val} {m.suffix}</span>
-                                        {diff !== null && (
-                                          <span className={`pb-timeline-change ${diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'neutral'}`}>
-                                            {diff > 0 ? '+' : ''}{diff} {m.suffix}
-                                          </span>
-                                        )}
+                                        {diff !== null && (() => {
+                                          const cls = getMetricChangeClass(m.key, diff);
+                                          const timelineCls = cls === 'up' ? 'positive' : cls === 'down' ? 'negative' : 'neutral';
+                                          return (
+                                            <span className={`pb-timeline-change ${timelineCls}`}>
+                                              {diff > 0 ? '+' : ''}{diff} {m.suffix}
+                                            </span>
+                                          );
+                                        })()}
                                       </div>
                                     </div>
                                   );
@@ -2009,10 +2039,10 @@ export default function PersonalBests() {
                                 <div key={ex.key} className="pb-compare-row">
                                   <span className="pb-compare-name">{ex.name}</span>
                                   <span className="pb-compare-val">
-                                    {benchA ? (ex.unit === 'time' ? formatPlankTime(benchA.time) : `${benchA.weight}x${benchA.reps}`) : '-'}
+                                    {benchA ? (ex.unit === 'time' ? formatPlankTime(benchA.time) : formatWeight(benchA.weight, benchA.reps)) : '-'}
                                   </span>
                                   <span className="pb-compare-val">
-                                    {benchB ? (ex.unit === 'time' ? formatPlankTime(benchB.time) : `${benchB.weight}x${benchB.reps}`) : '-'}
+                                    {benchB ? (ex.unit === 'time' ? formatPlankTime(benchB.time) : formatWeight(benchB.weight, benchB.reps)) : '-'}
                                   </span>
                                   <span className={`pb-compare-change ${pct !== null ? (pct >= 0 ? 'positive' : 'negative') : ''}`}>
                                     {pct !== null ? `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%` : '-'}
@@ -2037,12 +2067,13 @@ export default function PersonalBests() {
                               const valA = recordA.bodyMetrics?.[m.key];
                               const valB = recordB.bodyMetrics?.[m.key];
                               const diff = valA != null && valB != null ? parseFloat((valB - valA).toFixed(2)) : null;
+                              const cls = diff !== null ? (() => { const c = getMetricChangeClass(m.key, diff); return c === 'up' ? 'positive' : c === 'down' ? 'negative' : 'neutral'; })() : '';
                               return (
                                 <div key={m.key} className="pb-compare-row">
                                   <span className="pb-compare-name">{m.name}</span>
                                   <span className="pb-compare-val">{valA != null ? `${valA}` : '-'}</span>
                                   <span className="pb-compare-val">{valB != null ? `${valB}` : '-'}</span>
-                                  <span className={`pb-compare-change ${diff !== null ? (diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'neutral') : ''}`}>
+                                  <span className={`pb-compare-change ${cls}`}>
                                     {diff !== null ? `${diff > 0 ? '+' : ''}${diff} ${m.suffix}` : '-'}
                                   </span>
                                 </div>
