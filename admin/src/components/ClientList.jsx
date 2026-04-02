@@ -14,6 +14,11 @@ export default function ClientList() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
+  // Add Sessions state
+  const [addSessionsClient, setAddSessionsClient] = useState(null); // client id
+  const [addSessionsCount, setAddSessionsCount] = useState('');
+  const [addWeeks, setAddWeeks] = useState('');
+
   // Session Notes state
   const [notesModal, setNotesModal] = useState(null); // { clientId, clientName }
   const [notesForm, setNotesForm] = useState({ sessionNotes: '', whatWentWell: '', whatWentWrong: '', whatsNext: '' });
@@ -305,6 +310,43 @@ export default function ClientList() {
     } catch (error) {
       console.error('Error ending block:', error);
       alert('Failed to end block');
+    }
+  };
+
+  const handleAddSessions = async (clientId) => {
+    const extra = parseInt(addSessionsCount);
+    if (!extra || extra <= 0) {
+      alert('Enter a valid number of sessions to add');
+      return;
+    }
+    const client = clients.find(c => c.id === clientId);
+    if (!client) return;
+
+    const newTotal = (client.totalSessions || 0) + extra;
+    const updateData = { totalSessions: newTotal };
+
+    // Optionally extend end date
+    const weeks = parseInt(addWeeks);
+    if (weeks > 0 && client.endDate) {
+      const currentEnd = client.endDate.toDate ? client.endDate.toDate() : new Date(client.endDate);
+      const newEnd = new Date(currentEnd);
+      newEnd.setDate(newEnd.getDate() + (weeks * 7));
+      updateData.endDate = Timestamp.fromDate(newEnd);
+    }
+
+    try {
+      await updateDoc(doc(db, 'clients', clientId), updateData);
+      setClients(clients.map(c =>
+        c.id === clientId
+          ? { ...c, ...updateData }
+          : c
+      ));
+      setAddSessionsClient(null);
+      setAddSessionsCount('');
+      setAddWeeks('');
+    } catch (error) {
+      console.error('Error adding sessions:', error);
+      alert('Failed to add sessions');
     }
   };
 
@@ -698,6 +740,54 @@ export default function ClientList() {
                       </div>
                     )}
 
+                    {/* Add Sessions inline form */}
+                    {isBlock && addSessionsClient === client.id && (
+                      <div className="add-sessions-form" onClick={(e) => e.stopPropagation()}>
+                        <div className="add-sessions-header">
+                          <span>Add Sessions to Block</span>
+                          <span className="add-sessions-current">{getSessionsRemaining(client)}/{client.totalSessions} remaining</span>
+                        </div>
+                        <div className="add-sessions-row">
+                          <div className="add-sessions-field">
+                            <label>Sessions to add</label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={addSessionsCount}
+                              onChange={(e) => setAddSessionsCount(e.target.value)}
+                              placeholder="e.g. 16"
+                              autoFocus
+                            />
+                          </div>
+                          <div className="add-sessions-field">
+                            <label>Extend by (weeks)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={addWeeks}
+                              onChange={(e) => setAddWeeks(e.target.value)}
+                              placeholder="Optional"
+                            />
+                          </div>
+                        </div>
+                        {addSessionsCount && parseInt(addSessionsCount) > 0 && (
+                          <p className="add-sessions-preview">
+                            New total: {(client.totalSessions || 0) + parseInt(addSessionsCount)} sessions
+                            {addWeeks && parseInt(addWeeks) > 0 && client.endDate && (() => {
+                              const currentEnd = client.endDate.toDate ? client.endDate.toDate() : new Date(client.endDate);
+                              const newEnd = new Date(currentEnd);
+                              newEnd.setDate(newEnd.getDate() + (parseInt(addWeeks) * 7));
+                              return ` \u2022 End date: ${newEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+                            })()}
+                          </p>
+                        )}
+                        <div className="add-sessions-actions">
+                          <button className="add-sessions-save" onClick={() => handleAddSessions(client.id)}>Add Sessions</button>
+                          <button className="add-sessions-cancel" onClick={() => { setAddSessionsClient(null); setAddSessionsCount(''); setAddWeeks(''); }}>Cancel</button>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="client-actions">
                       {isBlock && (
                         <button className="action-btn notes" onClick={(e) => { e.stopPropagation(); openNotesModal(client); }}>
@@ -711,7 +801,15 @@ export default function ClientList() {
                       )}
                       <button className="action-btn edit" onClick={(e) => { e.stopPropagation(); handleEdit(client); }}>Edit</button>
                       {isBlock && client.status !== 'archived' && (
-                        <button className="action-btn end-block" onClick={(e) => { e.stopPropagation(); handleEndBlock(client); }}>End Block</button>
+                        <>
+                          <button className="action-btn add-sessions" onClick={(e) => {
+                            e.stopPropagation();
+                            setAddSessionsClient(addSessionsClient === client.id ? null : client.id);
+                            setAddSessionsCount('');
+                            setAddWeeks('');
+                          }}>Add Sessions</button>
+                          <button className="action-btn end-block" onClick={(e) => { e.stopPropagation(); handleEndBlock(client); }}>End Block</button>
+                        </>
                       )}
                       <button className="action-btn archive" onClick={(e) => { e.stopPropagation(); handleArchive(client.id); }}>
                         {client.status === 'archived' ? 'Reactivate' : 'Archive'}
