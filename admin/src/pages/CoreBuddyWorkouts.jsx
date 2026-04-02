@@ -663,6 +663,7 @@ export default function CoreBuddyWorkouts() {
   const [byoShowCustom, setByoShowCustom] = useState(false);
   const [byoCustomName, setByoCustomName] = useState('');
   const [byoCustomType, setByoCustomType] = useState('weighted');
+  const [userCustomExercises, setUserCustomExercises] = useState([]); // persisted custom exercises from Firestore
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
   const [byoMuscleFilter, setByoMuscleFilter] = useState({});
@@ -866,6 +867,21 @@ export default function CoreBuddyWorkouts() {
       }
     };
     loadSaved();
+  }, [currentUser, clientData]);
+
+  // Load user custom exercises
+  useEffect(() => {
+    if (!currentUser || !clientData) return;
+    const loadCustom = async () => {
+      try {
+        const q = query(collection(db, 'userCustomExercises'), where('clientId', '==', clientData.id));
+        const snap = await getDocs(q);
+        setUserCustomExercises(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error('Error loading custom exercises:', err);
+      }
+    };
+    loadCustom();
   }, [currentUser, clientData]);
 
   // Load recent randomiser workouts + compute smart suggestion
@@ -2395,7 +2411,7 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== BUILD YOUR OWN — EXERCISE PICKER ====================
   if (view === 'byo_pick') {
-    const exercisePool = PROGRAMMABLE_EXERCISES;
+    const exercisePool = [...PROGRAMMABLE_EXERCISES, ...userCustomExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'custom', storagePath: '' }))];
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -2465,14 +2481,25 @@ export default function CoreBuddyWorkouts() {
                 </div>
                 <div className="wk-save-modal-actions">
                   <button className="wk-btn-secondary" onClick={() => setByoShowCustom(false)}>Cancel</button>
-                  <button className="wk-btn-primary" disabled={!byoCustomName.trim()} onClick={() => {
+                  <button className="wk-btn-primary" disabled={!byoCustomName.trim()} onClick={async () => {
                     const name = byoCustomName.trim();
                     if (!name) return;
-                    const exists = byoSelected.find(s => s.name.toLowerCase() === name.toLowerCase());
-                    if (exists) { setByoShowCustom(false); return; }
+                    const existsInSelected = byoSelected.find(s => s.name.toLowerCase() === name.toLowerCase());
+                    const existsInCustom = userCustomExercises.find(s => s.name.toLowerCase() === name.toLowerCase());
+                    if (existsInSelected || existsInCustom) { setByoShowCustom(false); return; }
                     const custom = { name, type: byoCustomType, equipment: 'custom', group: 'custom', storagePath: '' };
                     setByoSelected(prev => [...prev, custom]);
                     setByoShowCustom(false);
+                    setByoCustomName('');
+                    // Persist to Firestore
+                    if (clientData?.id) {
+                      try {
+                        const docRef = await addDoc(collection(db, 'userCustomExercises'), {
+                          clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: 'custom', createdAt: Timestamp.now(),
+                        });
+                        setUserCustomExercises(prev => [...prev, { id: docRef.id, clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: 'custom' }]);
+                      } catch (err) { console.error('Error saving custom exercise:', err); }
+                    }
                   }}>
                     Add
                   </button>
