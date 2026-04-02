@@ -16,6 +16,8 @@ export default function AdminCoreBuddy() {
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
   const [ratedWorkouts, setRatedWorkouts] = useState([]);
   const [loadingRatings, setLoadingRatings] = useState(true);
+  const [customExercises, setCustomExercises] = useState([]);
+  const [loadingCustom, setLoadingCustom] = useState(true);
   const [clientNames, setClientNames] = useState({});
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -97,12 +99,53 @@ export default function AdminCoreBuddy() {
     }
   }, []);
 
+  const fetchCustomExercises = useCallback(async () => {
+    setLoadingCustom(true);
+    try {
+      const snap = await getDocs(
+        query(collection(db, 'userCustomExercises'), orderBy('createdAt', 'desc'))
+      );
+      const exercises = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setCustomExercises(exercises);
+      // Fetch client names for any new clientIds
+      const ids = [...new Set(exercises.map(e => e.clientId).filter(Boolean))];
+      if (ids.length > 0) {
+        const names = {};
+        for (let i = 0; i < ids.length; i += 10) {
+          const batch = ids.slice(i, i + 10);
+          const clientSnap = await getDocs(
+            query(collection(db, 'clients'), where('__name__', 'in', batch))
+          );
+          clientSnap.docs.forEach(d => { names[d.id] = d.data().name || d.data().email || d.id; });
+        }
+        setClientNames(prev => ({ ...prev, ...names }));
+      }
+    } catch (err) {
+      console.error('Error fetching custom exercises:', err);
+    } finally {
+      setLoadingCustom(false);
+    }
+  }, []);
+
+  const handleDeleteCustomExercise = async (id) => {
+    if (!window.confirm('Delete this custom exercise?')) return;
+    try {
+      await deleteDoc(doc(db, 'userCustomExercises', id));
+      setCustomExercises(prev => prev.filter(e => e.id !== id));
+      showToast('Custom exercise deleted', 'info');
+    } catch (err) {
+      console.error('Error deleting custom exercise:', err);
+      showToast('Failed to delete', 'error');
+    }
+  };
+
   useEffect(() => {
     if (currentUser && isAdmin) {
       fetchAnnouncements();
       fetchRatedWorkouts();
+      fetchCustomExercises();
     }
-  }, [currentUser, isAdmin, fetchAnnouncements, fetchRatedWorkouts]);
+  }, [currentUser, isAdmin, fetchAnnouncements, fetchRatedWorkouts, fetchCustomExercises]);
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -243,6 +286,54 @@ export default function AdminCoreBuddy() {
                     <span className="acb-rating-date">
                       {date ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}
                     </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* Custom Exercises */}
+        <section className="acb-ratings-section">
+          <h2>User Custom Exercises</h2>
+          {loadingCustom ? (
+            <div className="acb-content-loading"><div className="acb-spinner" /></div>
+          ) : customExercises.length === 0 ? (
+            <div className="acb-empty">
+              <p>No custom exercises created yet</p>
+            </div>
+          ) : (
+            <div className="acb-ratings-list">
+              {customExercises.map(ex => {
+                const muscleLabels = {
+                  chest: 'Chest', back: 'Back', biceps: 'Biceps', triceps: 'Triceps',
+                  shoulders: 'Shoulders', quads: 'Squats', lunges: 'Lunges', glutes: 'Glutes',
+                  calves: 'Calves', planks_holds: 'Planks & Holds', twists: 'Twists',
+                  crunches_raises: 'Crunches & Raises', custom: 'Uncategorised',
+                };
+                const groupLabels = { upper: 'Upper', lower: 'Lower', core: 'Core', custom: 'Custom' };
+                const date = ex.createdAt?.toDate ? ex.createdAt.toDate() : null;
+                return (
+                  <div key={ex.id} className="acb-rating-card">
+                    <div className="acb-custom-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <div className="acb-rating-info" style={{ flex: 1 }}>
+                      <span className="acb-rating-name">{ex.name}</span>
+                      <span className="acb-rating-detail">
+                        {clientNames[ex.clientId] || 'Client'} &mdash; {groupLabels[ex.group] || 'Custom'} &middot; {muscleLabels[ex.muscle] || muscleLabels[ex.group] || 'Custom'} &middot; {ex.type}
+                      </span>
+                    </div>
+                    <span className="acb-rating-date">
+                      {date ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}
+                    </span>
+                    <button
+                      className="acb-delete-btn"
+                      onClick={() => handleDeleteCustomExercise(ex.id)}
+                      aria-label="Delete custom exercise"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
                   </div>
                 );
               })}
