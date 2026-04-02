@@ -2935,11 +2935,23 @@ export default function CoreBuddyWorkouts() {
           {byoSelected.map(ex => {
             const sets = byoSetsData[ex.name] || [];
             const isWeighted = ex.type === 'weighted';
+            const videoUrl = byoVideoUrls[ex.storagePath];
+            const isGif = /\.gif$/i.test(ex.storagePath || '');
             return (
               <div key={ex.name} className="byo-set-card">
                 <div className="byo-set-header">
-                  <h3>{ex.name}</h3>
-                  <span className="byo-set-type">{ex.equipment}</span>
+                  <div className="byo-set-header-left" onClick={() => videoUrl && setByoPreviewEx({ name: ex.name, videoUrl, isGif })}>
+                    {videoUrl && (
+                      <div className="byo-set-thumb">
+                        <StaticThumb src={videoUrl} isGif={isGif} eager />
+                        <div className="byo-set-thumb-play">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                      </div>
+                    )}
+                    <h3>{ex.name}</h3>
+                  </div>
+                  <span className="byo-set-type">{BYO_EQUIPMENT_LABELS[ex.equipment] || ex.equipment}</span>
                 </div>
                 <div className="byo-set-rows">
                   <div className="byo-set-row byo-set-row-header">
@@ -2979,6 +2991,25 @@ export default function CoreBuddyWorkouts() {
               </div>
             );
           })}
+
+          {/* Exercise preview modal */}
+          {byoPreviewEx && (
+            <div className="wk-preview-modal-backdrop" onClick={() => setByoPreviewEx(null)}>
+              <div className="wk-preview-modal" onClick={e => e.stopPropagation()}>
+                <button className="wk-preview-modal-close" onClick={() => setByoPreviewEx(null)} aria-label="Close preview">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div className="wk-preview-modal-video">
+                  {byoPreviewEx.isGif ? (
+                    <img src={byoPreviewEx.videoUrl} alt={byoPreviewEx.name} />
+                  ) : (
+                    <video src={byoPreviewEx.videoUrl} autoPlay loop muted playsInline />
+                  )}
+                </div>
+                <h3 className="wk-preview-modal-title">{byoPreviewEx.name}</h3>
+              </div>
+            </div>
+          )}
         </main>
 
         {repsPicker && (
