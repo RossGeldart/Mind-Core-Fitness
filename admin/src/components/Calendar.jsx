@@ -121,7 +121,7 @@ export default function Calendar() {
   // Calculate remaining sessions for a client
   const getSessionsRemaining = (client) => {
     const completed = getCompletedSessionsCount(client);
-    return (client.totalSessions || 0) - completed;
+    return Math.max(0, (client.totalSessions || 0) - completed);
   };
 
   // Calculate booked (upcoming) sessions within the client's current block only
