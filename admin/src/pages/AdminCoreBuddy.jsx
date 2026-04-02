@@ -139,6 +139,27 @@ export default function AdminCoreBuddy() {
     }
   };
 
+  const handleApproveExercise = async (ex) => {
+    try {
+      await addDoc(collection(db, 'approvedExercises'), {
+        name: ex.name,
+        type: ex.type,
+        equipment: ex.equipment || 'custom',
+        group: ex.group || 'upper',
+        muscle: ex.muscle || 'chest',
+        approvedAt: serverTimestamp(),
+        submittedBy: ex.clientId || null,
+      });
+      // Remove from user custom exercises
+      await deleteDoc(doc(db, 'userCustomExercises', ex.id));
+      setCustomExercises(prev => prev.filter(e => e.id !== ex.id));
+      showToast(`"${ex.name}" approved and added to library`, 'success');
+    } catch (err) {
+      console.error('Error approving exercise:', err);
+      showToast('Failed to approve', 'error');
+    }
+  };
+
   useEffect(() => {
     if (currentUser && isAdmin) {
       fetchAnnouncements();
@@ -327,13 +348,23 @@ export default function AdminCoreBuddy() {
                     <span className="acb-rating-date">
                       {date ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}
                     </span>
-                    <button
-                      className="acb-delete-btn"
-                      onClick={() => handleDeleteCustomExercise(ex.id)}
-                      aria-label="Delete custom exercise"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
+                    <div className="acb-custom-actions">
+                      <button
+                        className="acb-approve-btn"
+                        onClick={() => handleApproveExercise(ex)}
+                        aria-label="Approve exercise"
+                        title="Approve for all users"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      </button>
+                      <button
+                        className="acb-delete-btn"
+                        onClick={() => handleDeleteCustomExercise(ex.id)}
+                        aria-label="Delete custom exercise"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </div>
                   </div>
                 );
               })}

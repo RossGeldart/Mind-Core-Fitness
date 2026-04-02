@@ -412,6 +412,32 @@
   cursor: not-allowed;
 }
 
+.acb-custom-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.acb-approve-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s, background 0.2s;
+}
+
+.acb-approve-btn:hover {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
 /* Toast */
 .acb-toast-container {
   position: fixed;
