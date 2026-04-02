@@ -135,6 +135,13 @@ service cloud.firestore {
       allow create: if isClientOwner(request.resource.data.clientId);
       allow delete: if isClientOwner(resource.data.clientId);
     }
+    // User Custom Exercises - admin full, clients read/create/delete own
+    match /userCustomExercises/{docId} {
+      allow read, write: if isAdmin();
+      allow read: if isClientOwner(resource.data.clientId);
+      allow create: if isClientOwner(request.resource.data.clientId);
+      allow delete: if isClientOwner(resource.data.clientId);
+    }
 
     // Nutrition Targets - admin full, clients read/write own (doc ID = clientId)
     match /nutritionTargets/{docId} {
