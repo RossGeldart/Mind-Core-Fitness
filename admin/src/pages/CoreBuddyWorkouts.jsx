@@ -1509,6 +1509,8 @@ export default function CoreBuddyWorkouts() {
       setFabOpen(false);
       activeStartTime.current = Date.now();
       activeDuration.current = 0;
+      // Resolve video URLs for set card previews
+      byoResolveUrls(exercises);
       setView('byo_sets');
     }
   };
