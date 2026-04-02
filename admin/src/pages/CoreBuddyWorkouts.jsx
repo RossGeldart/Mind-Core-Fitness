@@ -663,6 +663,8 @@ export default function CoreBuddyWorkouts() {
   const [byoShowCustom, setByoShowCustom] = useState(false);
   const [byoCustomName, setByoCustomName] = useState('');
   const [byoCustomType, setByoCustomType] = useState('weighted');
+  const [byoCustomGroup, setByoCustomGroup] = useState('upper');
+  const [byoCustomMuscle, setByoCustomMuscle] = useState('chest');
   const [userCustomExercises, setUserCustomExercises] = useState([]); // persisted custom exercises from Firestore
   const [byoSelected, setByoSelected] = useState([]); // array of exercise objects from BUDDY_EXERCISES
   const [byoExpandedGroups, setByoExpandedGroups] = useState({});
@@ -2411,7 +2413,7 @@ export default function CoreBuddyWorkouts() {
 
   // ==================== BUILD YOUR OWN — EXERCISE PICKER ====================
   if (view === 'byo_pick') {
-    const exercisePool = [...PROGRAMMABLE_EXERCISES, ...userCustomExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'custom', storagePath: '' }))];
+    const exercisePool = [...PROGRAMMABLE_EXERCISES, ...userCustomExercises.map(e => ({ name: e.name, type: e.type, equipment: e.equipment || 'custom', group: e.group || 'upper', muscle: e.muscle || 'chest', storagePath: '' }))];
     return (
       <div className="wk-page">
         <header className="client-header">
@@ -2449,7 +2451,7 @@ export default function CoreBuddyWorkouts() {
             )}
           </div>
 
-          <button className="byo-add-custom-btn" onClick={() => { setByoShowCustom(true); setByoCustomName(''); setByoCustomType('weighted'); }}>
+          <button className="byo-add-custom-btn" onClick={() => { setByoShowCustom(true); setByoCustomName(''); setByoCustomType('weighted'); setByoCustomGroup('upper'); setByoCustomMuscle('chest'); }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Your Own Exercise
           </button>
@@ -2458,7 +2460,7 @@ export default function CoreBuddyWorkouts() {
             <div className="wk-save-modal-backdrop" onClick={() => setByoShowCustom(false)}>
               <div className="wk-save-modal" onClick={e => e.stopPropagation()}>
                 <h3>Add Custom Exercise</h3>
-                <p>Enter a name and choose the type</p>
+                <p>Enter a name, type and category</p>
                 <input
                   type="text"
                   className="wk-save-input"
@@ -2479,6 +2481,30 @@ export default function CoreBuddyWorkouts() {
                     </button>
                   ))}
                 </div>
+                <label className="byo-custom-label">Body Area</label>
+                <div className="byo-custom-type-row">
+                  {[
+                    { key: 'upper', label: 'Upper Body' },
+                    { key: 'lower', label: 'Lower Body' },
+                    { key: 'core', label: 'Core' },
+                  ].map(g => (
+                    <button key={g.key} className={`byo-custom-type-btn${byoCustomGroup === g.key ? ' byo-custom-type-active' : ''}`} onClick={() => {
+                      setByoCustomGroup(g.key);
+                      const firstMuscle = { upper: 'chest', lower: 'quads', core: 'planks_holds' };
+                      setByoCustomMuscle(firstMuscle[g.key]);
+                    }}>
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="byo-custom-label">Muscle Group</label>
+                <div className="byo-custom-type-row byo-custom-muscle-row">
+                  {(BYO_MUSCLE_FILTERS[byoCustomGroup] || []).filter(m => m.key !== 'all').map(m => (
+                    <button key={m.key} className={`byo-custom-type-btn${byoCustomMuscle === m.key ? ' byo-custom-type-active' : ''}`} onClick={() => setByoCustomMuscle(m.key)}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
                 <div className="wk-save-modal-actions">
                   <button className="wk-btn-secondary" onClick={() => setByoShowCustom(false)}>Cancel</button>
                   <button className="wk-btn-primary" disabled={!byoCustomName.trim()} onClick={async () => {
@@ -2487,7 +2513,7 @@ export default function CoreBuddyWorkouts() {
                     const existsInSelected = byoSelected.find(s => s.name.toLowerCase() === name.toLowerCase());
                     const existsInCustom = userCustomExercises.find(s => s.name.toLowerCase() === name.toLowerCase());
                     if (existsInSelected || existsInCustom) { setByoShowCustom(false); return; }
-                    const custom = { name, type: byoCustomType, equipment: 'custom', group: 'custom', storagePath: '' };
+                    const custom = { name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle, storagePath: '' };
                     setByoSelected(prev => [...prev, custom]);
                     setByoShowCustom(false);
                     setByoCustomName('');
@@ -2495,9 +2521,9 @@ export default function CoreBuddyWorkouts() {
                     if (clientData?.id) {
                       try {
                         const docRef = await addDoc(collection(db, 'userCustomExercises'), {
-                          clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: 'custom', createdAt: Timestamp.now(),
+                          clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle, createdAt: Timestamp.now(),
                         });
-                        setUserCustomExercises(prev => [...prev, { id: docRef.id, clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: 'custom' }]);
+                        setUserCustomExercises(prev => [...prev, { id: docRef.id, clientId: clientData.id, name, type: byoCustomType, equipment: 'custom', group: byoCustomGroup, muscle: byoCustomMuscle }]);
                       } catch (err) { console.error('Error saving custom exercise:', err); }
                     }
                   }}>
