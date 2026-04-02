@@ -4541,17 +4541,12 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.byo-set-demo .static-thumb-wrap {
-  width: 100%;
-  height: 100%;
-}
-
 .byo-set-demo video,
-.byo-set-demo img,
-.byo-set-demo canvas {
+.byo-set-demo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .byo-set-header {

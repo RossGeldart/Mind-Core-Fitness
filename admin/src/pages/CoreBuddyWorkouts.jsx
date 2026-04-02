@@ -2921,7 +2921,11 @@ export default function CoreBuddyWorkouts() {
               <div key={ex.name} className="byo-set-card">
                 {demoUrl && (
                   <div className="byo-set-demo">
-                    <StaticThumb src={demoUrl} isGif={isDemoGif} eager />
+                    {isDemoGif ? (
+                      <img src={demoUrl} alt={ex.name} loading="lazy" />
+                    ) : (
+                      <video src={demoUrl} autoPlay loop muted playsInline />
+                    )}
                   </div>
                 )}
                 <div className="byo-set-header">
