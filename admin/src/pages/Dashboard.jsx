@@ -373,7 +373,7 @@ export default function Dashboard() {
 
   // Low sessions (1-2 remaining) or empty (0)
   const lowSessionClients = activeBlockClients.filter(c => {
-    const remaining = (c.totalSessions || 0) - getCompletedCount(c);
+    const remaining = Math.max(0, (c.totalSessions || 0) - getCompletedCount(c));
     return remaining <= 2;
   });
 
@@ -538,7 +538,7 @@ export default function Dashboard() {
                   expiringClients.map(c => {
                     const end = c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate);
                     const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-                    const remaining = (c.totalSessions || 0) - getCompletedCount(c);
+                    const remaining = Math.max(0, (c.totalSessions || 0) - getCompletedCount(c));
                     return (
                       <div key={c.id} className="card-detail-item">
                         <span className="card-detail-name">{c.name}</span>
@@ -569,12 +569,12 @@ export default function Dashboard() {
                 ) : (
                   [...lowSessionClients]
                     .sort((a, b) => {
-                      const ra = (a.totalSessions || 0) - getCompletedCount(a);
-                      const rb = (b.totalSessions || 0) - getCompletedCount(b);
+                      const ra = Math.max(0, (a.totalSessions || 0) - getCompletedCount(a));
+                      const rb = Math.max(0, (b.totalSessions || 0) - getCompletedCount(b));
                       return ra - rb; // 0 remaining first
                     })
                     .map(c => {
-                      const remaining = (c.totalSessions || 0) - getCompletedCount(c);
+                      const remaining = Math.max(0, (c.totalSessions || 0) - getCompletedCount(c));
                       const end = c.endDate ? (c.endDate.toDate ? c.endDate.toDate() : new Date(c.endDate)) : null;
                       const daysLeft = end ? Math.ceil((end - now) / (1000 * 60 * 60 * 24)) : null;
                       return (

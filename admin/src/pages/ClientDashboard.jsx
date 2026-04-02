@@ -367,7 +367,22 @@ export default function ClientDashboard() {
   };
 
   const getCompletedCount = () => {
-    return sessions.filter(s => isSessionPast(s)).length;
+    const now = new Date();
+    const today = formatDateKey(now);
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    const blockStart = clientData.startDate?.toDate ? clientData.startDate.toDate() : (clientData.startDate ? new Date(clientData.startDate) : null);
+    const blockEnd = clientData.endDate?.toDate ? clientData.endDate.toDate() : (clientData.endDate ? new Date(clientData.endDate) : null);
+    const blockStartKey = blockStart ? formatDateKey(blockStart) : null;
+    const blockEndKey = blockEnd ? formatDateKey(blockEnd) : null;
+
+    return sessions.filter(s => {
+      if (blockStartKey && s.date < blockStartKey) return false;
+      if (blockEndKey && s.date > blockEndKey) return false;
+      if (s.date < today) return true;
+      if (s.date === today && s.time < currentTime) return true;
+      return false;
+    }).length;
   };
 
   const getUpcomingSessions = () => {
@@ -577,7 +592,7 @@ export default function ClientDashboard() {
   }
 
   const completed = getCompletedCount();
-  const remaining = clientData.totalSessions - completed;
+  const remaining = Math.max(0, (clientData.totalSessions || 0) - completed);
   const upcomingSessions = getUpcomingSessions();
   const availableDates = showRescheduleModal ? getAvailableDates() : [];
   const countdown = getNextSessionCountdown();
