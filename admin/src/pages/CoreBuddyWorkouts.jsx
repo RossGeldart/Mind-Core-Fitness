@@ -2913,8 +2913,15 @@ export default function CoreBuddyWorkouts() {
           {byoSelected.map(ex => {
             const sets = byoSetsData[ex.name] || [];
             const isWeighted = ex.type === 'weighted';
+            const demoUrl = byoVideoUrls[ex.storagePath];
+            const isDemoGif = /\.gif$/i.test(ex.storagePath || '');
             return (
               <div key={ex.name} className="byo-set-card">
+                {demoUrl && (
+                  <div className="byo-set-demo">
+                    <StaticThumb src={demoUrl} isGif={isDemoGif} eager />
+                  </div>
+                )}
                 <div className="byo-set-header">
                   <h3>{ex.name}</h3>
                   <span className="byo-set-type">{ex.equipment}</span>
