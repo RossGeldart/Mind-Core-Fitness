@@ -4290,7 +4290,7 @@ export default function CoreBuddyWorkouts() {
           <div className="header-content">
             <button className="header-back-btn" onClick={() => {
               if (luckyDipData) {
-                navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                navigate(`/client/core-buddy/event/${luckyDipData.eventId}`);
               } else {
                 setView('setup');
               }
@@ -4469,7 +4469,7 @@ export default function CoreBuddyWorkouts() {
           <button className="wk-back-btn" onClick={() => {
             if (confirm('Leave workout?')) {
               if (luckyDipData) {
-                navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                navigate(`/client/core-buddy/event/${luckyDipData.eventId}`);
               } else {
                 setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub');
               }
@@ -4564,14 +4564,14 @@ export default function CoreBuddyWorkouts() {
               userName={clientData?.name}
               onDismissStart={() => {
                 if (luckyDipData) {
-                  navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                  navigate(`/client/core-buddy/event/${luckyDipData.eventId}`);
                 } else {
                   setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub');
                 }
               }}
               onDone={() => {
                 if (luckyDipData) {
-                  navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                  navigate(`/client/core-buddy/event/${luckyDipData.eventId}`);
                 } else {
                   setShowFinish(false);
                 }
