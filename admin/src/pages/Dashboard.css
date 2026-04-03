@@ -1289,3 +1289,25 @@
   from { opacity: 0; transform: translateX(-50%) translateY(10px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+.admin-events-checkbox-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.admin-events-checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  color: var(--text-primary) !important;
+  cursor: pointer;
+}
+
+.admin-events-checkbox-label input[type="checkbox"] {
+  width: auto !important;
+  margin: 0;
+}
