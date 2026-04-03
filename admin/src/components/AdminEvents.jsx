@@ -259,7 +259,10 @@ export default function AdminEvents() {
       } catch { /* folder might not exist */ }
     }
 
-    if (allItems.length === 0) return null;
+    if (allItems.length === 0) {
+      console.warn('No exercises found in paths:', paths);
+      return null;
+    }
 
     const seen = new Set();
     const uniqueItems = allItems.filter(item => {
@@ -328,7 +331,7 @@ export default function AdminEvents() {
     try {
       const pool = await loadLuckyDipExercisePool(evt);
       if (!pool) {
-        showToast('No exercises found for this equipment/focus combo', 'error');
+        showToast(`No exercises found for ${(evt.luckyDipEquipment || []).join('+')} / ${evt.luckyDipFocus || 'mix'}. Check Firebase Storage paths.`, 'error');
         return;
       }
 
@@ -353,7 +356,7 @@ export default function AdminEvents() {
       showToast(`${days.length} daily workouts generated!`, 'success');
     } catch (err) {
       console.error('Error generating Lucky Dip workouts:', err);
-      showToast('Failed to generate workouts', 'error');
+      showToast(`Failed to generate workouts: ${err.message || err.code || 'Unknown error'}`, 'error');
     } finally {
       setGenerating(false);
       setGenerateProgress('');

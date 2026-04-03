@@ -310,6 +310,30 @@ service cloud.firestore {
         allow create: if isAuthenticated();
         allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       }
+      // Event Feed Likes - subcollection of events
+      match /feedLikes/{likeId} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated();
+      }
+      // Event Feed Comments - subcollection of events
+      match /feedComments/{commentId} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      }
+      // Lucky Dip Daily Workouts - admin generates, all authenticated users read
+      match /dailyWorkouts/{date} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+      }
+      // Lucky Dip Completions - users mark daily completion
+      match /completions/{completionId} {
+        allow read, write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
     }
     // ── NOTIFICATIONS (Phase 4) ──
     // Notifications - in-app notifications for each user
