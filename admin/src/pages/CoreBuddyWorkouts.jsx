@@ -594,21 +594,8 @@ export default function CoreBuddyWorkouts() {
     setWorkout(luckyDipData.exercises || []);
     setRounds(luckyDipData.rounds || 2);
 
-    // Skip straight to preview
-    thumbsReadyCount.current = 0;
-    thumbsTotal.current = (luckyDipData.exercises || []).length;
-    spinMinDone.current = false;
-    thumbsAllReady.current = false;
-
-    const reveal = () => {
-      if (spinMinDone.current && thumbsAllReady.current) setView('preview');
-    };
-    tryRevealPreview.current = reveal;
-    setView('preview_loading');
-
-    // Reveal quickly for Lucky Dip (exercises are pre-loaded)
-    setTimeout(() => { spinMinDone.current = true; reveal(); }, 500);
-    setTimeout(() => { thumbsAllReady.current = true; reveal(); }, 4000);
+    // Skip straight to preview (no spinner for Lucky Dip — exercises are pre-loaded)
+    setView('preview');
   }, [luckyDipData, authLoading]);
 
   // GIF looping
@@ -4300,7 +4287,13 @@ export default function CoreBuddyWorkouts() {
         <div className="wk-page">
         <header className="client-header">
           <div className="header-content">
-            <button className="header-back-btn" onClick={() => setView('setup')} aria-label="Go back">
+            <button className="header-back-btn" onClick={() => {
+              if (luckyDipData) {
+                navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+              } else {
+                setView('setup');
+              }
+            }} aria-label="Go back">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <img src="/Logo.webp" alt="Mind Core Fitness" className="header-logo" width="50" height="50" />
@@ -4368,20 +4361,22 @@ export default function CoreBuddyWorkouts() {
           )}
 
           <div className="wk-preview-actions">
-            <div className="wk-preview-actions-row">
-              <button className="wk-btn-secondary wk-btn-half" onClick={() => generateWorkout()}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                Reshuffle
-              </button>
-              {isPremium && (
-              <button className="wk-btn-secondary wk-btn-half" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                Save
-              </button>
-              )}
-            </div>
+            {!luckyDipData && (
+              <div className="wk-preview-actions-row">
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => generateWorkout()}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  Reshuffle
+                </button>
+                {isPremium && (
+                <button className="wk-btn-secondary wk-btn-half" onClick={() => setShowSaveModal(true)} disabled={savingWorkout}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  Save
+                </button>
+                )}
+              </div>
+            )}
             <button className="wk-btn-primary wk-btn-full" onClick={startWorkout}>
-              Start Workout
+              {luckyDipData ? 'Begin Workout' : 'Start Workout'}
             </button>
           </div>
 
@@ -4565,7 +4560,13 @@ export default function CoreBuddyWorkouts() {
                   setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub');
                 }
               }}
-              onDone={() => setShowFinish(false)}
+              onDone={() => {
+                if (luckyDipData) {
+                  navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                } else {
+                  setShowFinish(false);
+                }
+              }}
               onRate={lastWorkoutLogId ? (rating) => {
                 updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});
               } : undefined}
