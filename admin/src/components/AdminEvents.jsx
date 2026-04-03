@@ -229,85 +229,106 @@ export default function AdminEvents() {
     }
   };
 
+  // Load exercises and compute workout structure for Lucky Dip generation
+  const loadLuckyDipExercisePool = async (evt) => {
+    const focus = evt.luckyDipFocus || 'mix';
+    const equipment = evt.luckyDipEquipment || LUCKY_DIP_EQUIPMENT;
+
+    let focusKeys;
+    if (focus === 'mix') focusKeys = ['core', 'upper', 'lower'];
+    else if (focus === 'fullbody') focusKeys = ['upper', 'lower'];
+    else focusKeys = [focus];
+
+    const paths = [];
+    for (const eq of equipment) {
+      for (const fk of focusKeys) {
+        paths.push(`exercises/${eq}/${fk}`);
+      }
+    }
+
+    const allItems = [];
+    for (const path of paths) {
+      try {
+        const folderRef = ref(storage, path);
+        const result = await listAll(folderRef);
+        allItems.push(...result.items);
+      } catch { /* folder might not exist */ }
+    }
+
+    if (allItems.length === 0) return null;
+
+    const seen = new Set();
+    const uniqueItems = allItems.filter(item => {
+      const name = item.name.replace(/\.(mp4|gif)$/i, '');
+      if (seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    });
+
+    const exercises = await Promise.all(
+      uniqueItems.map(async (item) => {
+        const url = await getDownloadURL(item);
+        const name = toTitleCase(item.name.replace(/\.(mp4|gif)$/i, ''));
+        const isGif = /\.gif$/i.test(item.name);
+        return { name, videoUrl: url, isGif };
+      })
+    );
+
+    const config = LUCKY_DIP_LEVEL;
+    const intervalTime = config.work + config.rest;
+    const totalSeconds = LUCKY_DIP_DURATION * 60;
+    const totalIntervals = Math.floor(totalSeconds / intervalTime);
+
+    let exPerRound, numRounds;
+    if (totalIntervals <= 6) {
+      exPerRound = Math.max(3, Math.floor(totalIntervals / 2));
+      numRounds = Math.floor(totalIntervals / exPerRound);
+    } else if (totalIntervals <= 12) {
+      exPerRound = Math.min(6, Math.floor(totalIntervals / 2));
+      numRounds = Math.floor(totalIntervals / exPerRound);
+    } else {
+      exPerRound = Math.min(10, Math.floor(totalIntervals / 2));
+      numRounds = Math.floor(totalIntervals / exPerRound);
+    }
+    numRounds = Math.max(2, numRounds);
+
+    return { exercises, exPerRound, numRounds, focus, equipment, config };
+  };
+
+  // Save a single day's Lucky Dip workout to Firestore
+  const saveDailyWorkout = async (evtId, date, pool) => {
+    const { exercises, exPerRound, numRounds, focus, equipment, config } = pool;
+    const filtered = exercises.filter(e => !ADVANCED_CORE_EXERCISES.has(e.name.toLowerCase()));
+    const shuffled = shuffleArray(filtered.length > 0 ? filtered : exercises);
+    const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
+
+    await setDoc(doc(db, 'events', evtId, 'dailyWorkouts', date), {
+      exercises: selected,
+      rounds: numRounds,
+      duration: LUCKY_DIP_DURATION,
+      level: config.key,
+      work: config.work,
+      rest: config.rest,
+      focus,
+      equipment,
+      generatedAt: serverTimestamp(),
+    });
+  };
+
   // Pre-generate all Lucky Dip daily workouts for an event
   const generateLuckyDipWorkouts = async (evt) => {
     if (!window.confirm(`Pre-generate all daily workouts for "${evt.title}"? This will overwrite any existing daily workouts.`)) return;
     setGenerating(true);
     setGenerateProgress('Loading exercises...');
     try {
-      const focus = evt.luckyDipFocus || 'mix';
-      const equipment = evt.luckyDipEquipment || LUCKY_DIP_EQUIPMENT;
-
-      // Build storage paths (same logic as randomiser)
-      let focusKeys;
-      if (focus === 'mix') focusKeys = ['core', 'upper', 'lower'];
-      else if (focus === 'fullbody') focusKeys = ['upper', 'lower'];
-      else focusKeys = [focus];
-
-      const paths = [];
-      for (const eq of equipment) {
-        for (const fk of focusKeys) {
-          paths.push(`exercises/${eq}/${fk}`);
-        }
-      }
-
-      // Load all exercises from Firebase Storage
-      const allItems = [];
-      for (const path of paths) {
-        try {
-          const folderRef = ref(storage, path);
-          const result = await listAll(folderRef);
-          allItems.push(...result.items);
-        } catch { /* folder might not exist */ }
-      }
-
-      if (allItems.length === 0) {
+      const pool = await loadLuckyDipExercisePool(evt);
+      if (!pool) {
         showToast('No exercises found for this equipment/focus combo', 'error');
-        setGenerating(false);
-        setGenerateProgress('');
         return;
       }
 
-      // Deduplicate by file name
-      const seen = new Set();
-      const uniqueItems = allItems.filter(item => {
-        const name = item.name.replace(/\.(mp4|gif)$/i, '');
-        if (seen.has(name)) return false;
-        seen.add(name);
-        return true;
-      });
-
-      // Resolve download URLs
       setGenerateProgress('Resolving exercise URLs...');
-      const exercises = await Promise.all(
-        uniqueItems.map(async (item) => {
-          const url = await getDownloadURL(item);
-          const name = toTitleCase(item.name.replace(/\.(mp4|gif)$/i, ''));
-          const isGif = /\.gif$/i.test(item.name);
-          return { name, videoUrl: url, isGif };
-        })
-      );
 
-      // Calculate workout structure (same as randomiser for 15 min intermediate)
-      const config = LUCKY_DIP_LEVEL;
-      const intervalTime = config.work + config.rest;
-      const totalSeconds = LUCKY_DIP_DURATION * 60;
-      const totalIntervals = Math.floor(totalSeconds / intervalTime);
-
-      let exPerRound, numRounds;
-      if (totalIntervals <= 6) {
-        exPerRound = Math.max(3, Math.floor(totalIntervals / 2));
-        numRounds = Math.floor(totalIntervals / exPerRound);
-      } else if (totalIntervals <= 12) {
-        exPerRound = Math.min(6, Math.floor(totalIntervals / 2));
-        numRounds = Math.floor(totalIntervals / exPerRound);
-      } else {
-        exPerRound = Math.min(10, Math.floor(totalIntervals / 2));
-        numRounds = Math.floor(totalIntervals / exPerRound);
-      }
-      numRounds = Math.max(2, numRounds);
-
-      // Generate one workout per day
       const start = evt.startDate;
       const end = evt.endDate;
       const days = [];
@@ -320,24 +341,7 @@ export default function AdminEvents() {
       setGenerateProgress(`Generating ${days.length} daily workouts...`);
 
       for (let i = 0; i < days.length; i++) {
-        const date = days[i];
-        // Filter out advanced core moves and shuffle
-        const pool = exercises.filter(e => !ADVANCED_CORE_EXERCISES.has(e.name.toLowerCase()));
-        const shuffled = shuffleArray(pool.length > 0 ? pool : exercises);
-        const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
-
-        await setDoc(doc(db, 'events', evt.id, 'dailyWorkouts', date), {
-          exercises: selected,
-          rounds: numRounds,
-          duration: LUCKY_DIP_DURATION,
-          level: config.key,
-          work: config.work,
-          rest: config.rest,
-          focus: focus,
-          equipment: equipment,
-          generatedAt: serverTimestamp(),
-        });
-
+        await saveDailyWorkout(evt.id, days[i], pool);
         setGenerateProgress(`Generated ${i + 1} of ${days.length} workouts...`);
       }
 
@@ -345,6 +349,29 @@ export default function AdminEvents() {
     } catch (err) {
       console.error('Error generating Lucky Dip workouts:', err);
       showToast('Failed to generate workouts', 'error');
+    } finally {
+      setGenerating(false);
+      setGenerateProgress('');
+    }
+  };
+
+  // Generate (or regenerate) just today's Lucky Dip workout
+  const generateTodayWorkout = async (evt) => {
+    const today = new Date().toISOString().split('T')[0];
+    setGenerating(true);
+    setGenerateProgress('Loading exercises...');
+    try {
+      const pool = await loadLuckyDipExercisePool(evt);
+      if (!pool) {
+        showToast('No exercises found for this equipment/focus combo', 'error');
+        return;
+      }
+      setGenerateProgress('Generating today\'s workout...');
+      await saveDailyWorkout(evt.id, today, pool);
+      showToast(`Today's workout (${today}) generated!`, 'success');
+    } catch (err) {
+      console.error('Error generating today\'s workout:', err);
+      showToast('Failed to generate workout', 'error');
     } finally {
       setGenerating(false);
       setGenerateProgress('');
@@ -563,13 +590,22 @@ export default function AdminEvents() {
               <div className="admin-event-actions">
                 <button className="admin-event-edit-btn" onClick={() => handleEdit(evt)}>Edit</button>
                 {evt.eventType === 'luckyDip' && (
-                  <button
-                    className="admin-event-edit-btn"
-                    onClick={() => generateLuckyDipWorkouts(evt)}
-                    disabled={generating}
-                  >
-                    {generating ? generateProgress || 'Generating...' : '🎲 Generate Workouts'}
-                  </button>
+                  <>
+                    <button
+                      className="admin-event-edit-btn"
+                      onClick={() => generateTodayWorkout(evt)}
+                      disabled={generating}
+                    >
+                      {generating ? generateProgress || 'Generating...' : '🎲 Generate Today'}
+                    </button>
+                    <button
+                      className="admin-event-edit-btn"
+                      onClick={() => generateLuckyDipWorkouts(evt)}
+                      disabled={generating}
+                    >
+                      {generating ? generateProgress || 'Generating...' : '🎲 Generate All'}
+                    </button>
+                  </>
                 )}
                 <button className="admin-event-delete-btn" onClick={() => handleDelete(evt.id)}>Delete</button>
               </div>
