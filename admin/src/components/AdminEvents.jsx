@@ -215,7 +215,6 @@ export default function AdminEvents() {
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
         linkedChallenge: isLuckyDip ? 'randomiser' : (form.linkedChallenge || null),
-        participantCount: 0,
         eventType: form.eventType,
         ...(isLuckyDip && {
           luckyDipFocus: form.luckyDipFocus,
@@ -231,6 +230,7 @@ export default function AdminEvents() {
         await updateDoc(doc(db, 'events', eventId), eventData);
       } else {
         eventData.createdAt = serverTimestamp();
+        eventData.participantCount = 0;
         const docRef = await addDoc(collection(db, 'events'), eventData);
         eventId = docRef.id;
       }
