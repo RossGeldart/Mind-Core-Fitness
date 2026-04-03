@@ -2183,17 +2183,19 @@ export default function CoreBuddyWorkouts() {
               const r = 38;
               const circ = 2 * Math.PI * r;
               const offset = circ - (ring.pct / 100) * circ;
+              const isNear = ring.pct >= 75 && ring.pct < 100;
+              const isComplete = ring.pct >= 100;
               return (
                 <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
-                  <div className="wk-stat-ring">
+                  <div className={`wk-stat-ring${isNear ? ' wk-stat-near' : ''}${isComplete ? ' wk-stat-complete' : ''}`}>
                     <svg viewBox="0 0 100 100">
                       <circle className="wk-stat-track" cx="50" cy="50" r={r} />
-                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                      <circle className={`wk-stat-fill${isNear ? ' wk-fill-near' : ''}${isComplete ? ' wk-fill-complete' : ''}`} cx="50" cy="50" r={r}
                         style={{ stroke: ring.color }}
                         strokeDasharray={circ}
                         strokeDashoffset={offset} />
                     </svg>
-                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                    <span className={`wk-stat-value${isComplete ? ' wk-val-complete' : ''}`} style={{ color: ring.color }}>{ring.value}</span>
                   </div>
                   <span className="wk-stat-label">{ring.label}</span>
                 </div>
@@ -3876,17 +3878,19 @@ export default function CoreBuddyWorkouts() {
               const r = 38;
               const circ = 2 * Math.PI * r;
               const offset = circ - (ring.pct / 100) * circ;
+              const isNear = ring.pct >= 75 && ring.pct < 100;
+              const isComplete = ring.pct >= 100;
               return (
                 <div key={ring.label} className={`wk-stat-item${ring.size === 'large' ? ' wk-stat-large' : ''}`}>
-                  <div className="wk-stat-ring">
+                  <div className={`wk-stat-ring${isNear ? ' wk-stat-near' : ''}${isComplete ? ' wk-stat-complete' : ''}`}>
                     <svg viewBox="0 0 100 100">
                       <circle className="wk-stat-track" cx="50" cy="50" r={r} />
-                      <circle className="wk-stat-fill" cx="50" cy="50" r={r}
+                      <circle className={`wk-stat-fill${isNear ? ' wk-fill-near' : ''}${isComplete ? ' wk-fill-complete' : ''}`} cx="50" cy="50" r={r}
                         style={{ stroke: ring.color }}
                         strokeDasharray={circ}
                         strokeDashoffset={offset} />
                     </svg>
-                    <span className="wk-stat-value" style={{ color: ring.color }}>{ring.value}</span>
+                    <span className={`wk-stat-value${isComplete ? ' wk-val-complete' : ''}`} style={{ color: ring.color }}>{ring.value}</span>
                   </div>
                   <span className="wk-stat-label">{ring.label}</span>
                 </div>
