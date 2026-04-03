@@ -5818,7 +5818,7 @@
   margin: 0;
 }
 
-/* Stats row — 3 rings */
+/* Stats row — 3 rings (profile-matching style) */
 .wkl-stats-row {
   display: flex;
   justify-content: center;
@@ -5830,61 +5830,72 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.wkl-stat-ring {
   position: relative;
-}
-
-.wkl-stat--hero .wkl-stat-svg {
   width: 80px;
   height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.wkl-stat--hero .wkl-stat-center {
-  width: 80px;
-  height: 80px;
+.wkl-stat--hero .wkl-stat-ring {
+  width: 100px;
+  height: 100px;
 }
 
-.wkl-stat--hero .wkl-stat-value {
-  font-size: 1rem;
-}
-
-.wkl-stat-svg {
-  width: 68px;
-  height: 68px;
+.wkl-stat-ring svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   transform: rotate(-90deg);
 }
 
 .wkl-stat-track {
   fill: none;
-  stroke: var(--border-color);
-  stroke-width: 8;
+  stroke: rgba(var(--color-primary-rgb), 0.1);
+  stroke-width: 12;
   stroke-linecap: round;
 }
 
 .wkl-stat-fill {
   fill: none;
-  stroke-width: 8;
+  stroke-width: 12;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.6s ease-out;
+  animation: ringFillIn 1.6s ease-out;
 }
 
-.wkl-stat-center {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 68px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+.wkl-ring-near {
+  animation: wkStatNearPulse 2s ease-in-out infinite;
+}
+
+.wkl-fill-near {
+  filter: brightness(1.2);
+}
+
+.wkl-ring-complete {
+  animation: wkStatCompleteGlow 1s ease-out forwards;
+}
+
+.wkl-fill-complete {
+  stroke: #4CAF50 !important;
 }
 
 .wkl-stat-value {
+  position: relative;
+  z-index: 1;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
+}
+
+.wkl-stat--hero .wkl-stat-value {
+  font-size: 1rem;
 }
 
 .wkl-stat-of {
@@ -5894,13 +5905,11 @@
 }
 
 .wkl-stat-label {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--text-secondary);
-  margin-top: 4px;
+  letter-spacing: 0.5px;
 }
 
 .wkl-stat-value--sm {
@@ -6085,21 +6094,9 @@
 }
 
 @media (min-width: 400px) {
-  .wkl-stat--hero .wkl-stat-svg {
-    width: 90px;
-    height: 90px;
-  }
-  .wkl-stat--hero .wkl-stat-center {
-    width: 90px;
-    height: 90px;
-  }
-  .wkl-stat-svg {
-    width: 74px;
-    height: 74px;
-  }
-  .wkl-stat-center {
-    width: 74px;
-    height: 74px;
+  .wkl-stat--hero .wkl-stat-ring {
+    width: 110px;
+    height: 110px;
   }
 }
 

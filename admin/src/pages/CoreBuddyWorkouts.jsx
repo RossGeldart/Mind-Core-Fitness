@@ -3199,7 +3199,7 @@ export default function CoreBuddyWorkouts() {
     };
 
     // Ring constants for landing
-    const LR = 34;
+    const LR = 38;
     const LC = 2 * Math.PI * LR;
 
     // Level breakdown for overall tab
@@ -3264,40 +3264,40 @@ export default function CoreBuddyWorkouts() {
                 {isWeek ? (
                   <div className="wkl-stats-row">
                     <div className="wkl-stat">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (Math.min(100, (weeklyVolume % 10000) / 100) / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className="wkl-stat-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className="wkl-stat-fill" cx="50" cy="50" r={LR}
+                            style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (Math.min(100, (weeklyVolume % 10000) / 100) / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{fmtVol(weeklyVolume)}</span>
                       </div>
                       <span className="wkl-stat-label">Volume</span>
                     </div>
                     <div className="wkl-stat wkl-stat--hero">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: 'var(--color-primary)' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (weekPct / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className={`wkl-stat-ring${weekPct >= 100 ? ' wkl-ring-complete' : weekPct >= 75 ? ' wkl-ring-near' : ''}`}>
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className={`wkl-stat-fill${weekPct >= 100 ? ' wkl-fill-complete' : weekPct >= 75 ? ' wkl-fill-near' : ''}`} cx="50" cy="50" r={LR}
+                            style={{ stroke: 'var(--color-primary)' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (weekPct / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{combinedWeeklyCount}<span className="wkl-stat-of">/{WEEKLY_TARGET}</span></span>
                       </div>
                       <span className="wkl-stat-label">Sessions</span>
                     </div>
                     <div className="wkl-stat">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: isDark ? '#60a5fa' : '#3b82f6' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (Math.min(100, allTimeSessions / 100 * 100) / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className="wkl-stat-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className="wkl-stat-fill" cx="50" cy="50" r={LR}
+                            style={{ stroke: isDark ? '#60a5fa' : '#3b82f6' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (Math.min(100, allTimeSessions / 100 * 100) / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value" style={{ color: isDark ? '#60a5fa' : '#3b82f6' }}>{allTimeSessions}</span>
                       </div>
                       <span className="wkl-stat-label">Total</span>
@@ -3306,40 +3306,40 @@ export default function CoreBuddyWorkouts() {
                 ) : (
                   <div className="wkl-stats-row">
                     <div className="wkl-stat">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (Math.min(100, (byoTotalVolume % 100000) / 1000) / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className="wkl-stat-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className="wkl-stat-fill" cx="50" cy="50" r={LR}
+                            style={{ stroke: isDark ? '#2dd4bf' : '#14b8a6' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (Math.min(100, (byoTotalVolume % 100000) / 1000) / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value" style={{ color: isDark ? '#2dd4bf' : '#14b8a6' }}>{fmtVol(byoTotalVolume)}</span>
                       </div>
                       <span className="wkl-stat-label">Volume</span>
                     </div>
                     <div className="wkl-stat wkl-stat--hero">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: 'var(--color-primary)' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (Math.min(100, allTimeSessions) / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className="wkl-stat-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className="wkl-stat-fill" cx="50" cy="50" r={LR}
+                            style={{ stroke: 'var(--color-primary)' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (Math.min(100, allTimeSessions) / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value" style={{ color: 'var(--color-primary)' }}>{allTimeSessions}</span>
                       </div>
                       <span className="wkl-stat-label">Sessions</span>
                     </div>
                     <div className="wkl-stat">
-                      <svg className="wkl-stat-svg" viewBox="0 0 80 80">
-                        <circle className="wkl-stat-track" cx="40" cy="40" r={LR} />
-                        <circle className="wkl-stat-fill" cx="40" cy="40" r={LR}
-                          style={{ stroke: isDark ? '#a78bfa' : '#8b5cf6' }}
-                          strokeDasharray={LC}
-                          strokeDashoffset={LC - (Math.min(100, totalMinutes / 60) / 100) * LC} />
-                      </svg>
-                      <div className="wkl-stat-center">
+                      <div className="wkl-stat-ring">
+                        <svg viewBox="0 0 100 100">
+                          <circle className="wkl-stat-track" cx="50" cy="50" r={LR} />
+                          <circle className="wkl-stat-fill" cx="50" cy="50" r={LR}
+                            style={{ stroke: isDark ? '#a78bfa' : '#8b5cf6' }}
+                            strokeDasharray={LC}
+                            strokeDashoffset={LC - (Math.min(100, totalMinutes / 60) / 100) * LC} />
+                        </svg>
                         <span className="wkl-stat-value wkl-stat-value--sm" style={{ color: isDark ? '#a78bfa' : '#8b5cf6' }}>{hrsDisplay}</span>
                       </div>
                       <span className="wkl-stat-label">Time</span>
