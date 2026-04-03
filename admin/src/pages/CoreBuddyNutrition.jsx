@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -678,27 +678,29 @@ export default function CoreBuddyNutrition() {
     'ring-fats':    isDarkMode ? '#a78bfa' : '#8b5cf6',
     'ring-cals':    'var(--color-primary)',
   };
-  const NUT_RING_RADIUS = 80;
+  const NUT_RING_RADIUS = 38;
   const NUT_RING_CIRC = 2 * Math.PI * NUT_RING_RADIUS;
 
   const renderMacroRing = (label, shortLabel, current, target, colorClass) => {
     const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
     const offset = NUT_RING_CIRC - (pct / 100) * NUT_RING_CIRC;
     const color = MACRO_COLORS[colorClass] || '#14b8a6';
+    const isNear = pct >= 75 && pct < 100;
+    const isComplete = pct >= 100;
     return (
       <div className="nut-ring-wrap">
-        <svg className="nut-ring-svg" viewBox="0 0 200 200">
-          <circle className="nut-arc-track" cx="100" cy="100" r={NUT_RING_RADIUS} />
-          <circle className="nut-arc-fill" cx="100" cy="100" r={NUT_RING_RADIUS}
-            style={{ stroke: color }}
-            strokeDasharray={NUT_RING_CIRC}
-            strokeDashoffset={offset} />
-        </svg>
-        <div className="nut-ring-center">
+        <div className={`nut-ring-box${isNear ? ' nut-ring-near' : ''}${isComplete ? ' nut-ring-complete' : ''}`}>
+          <svg viewBox="0 0 100 100">
+            <circle className="nut-arc-track" cx="50" cy="50" r={NUT_RING_RADIUS} />
+            <circle className={`nut-arc-fill${isNear ? ' nut-fill-near' : ''}${isComplete ? ' nut-fill-complete' : ''}`} cx="50" cy="50" r={NUT_RING_RADIUS}
+              style={{ stroke: color }}
+              strokeDasharray={NUT_RING_CIRC}
+              strokeDashoffset={offset} />
+          </svg>
           <span className="nut-ring-value" style={{ color }}>{Math.round(current)}</span>
-          <span className="nut-ring-target">/ {target}{label === 'Calories' ? '' : 'g'}</span>
-          <span className="nut-ring-label" style={{ color }}>{shortLabel}</span>
         </div>
+        <span className="nut-ring-target">/ {target}{label === 'Calories' ? '' : 'g'}</span>
+        <span className="nut-ring-label" style={{ color }}>{shortLabel}</span>
         <span className="nut-ring-pct" style={{ color }}>{pct}%</span>
       </div>
     );

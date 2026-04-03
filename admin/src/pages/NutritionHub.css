@@ -167,74 +167,46 @@
   justify-content: center;
 }
 
-.nhub-ring-main .nhub-ring-svg {
-  width: 110px;
-  height: 110px;
-}
-
-.nhub-ring-main .nhub-ring-center {
-  width: 110px;
-  height: 110px;
+.nhub-ring-main .nhub-ring-box {
+  width: 100px;
+  height: 100px;
 }
 
 .nhub-ring-main .nhub-ring-value {
-  font-size: 1.15rem;
+  font-size: 1rem;
 }
 
-/* ===== WATER RING — hold-to-log interaction ===== */
+/* ===== WATER RING — tap-to-log interaction ===== */
 .nhub-water-ring {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
   position: relative;
-  transition: transform 0.25s ease;
 }
 
-/* Glow layer behind ring */
-.nhub-water-ring::before {
-  content: '';
-  position: absolute;
-  top: 34px;
-  left: 50%;
-  width: 56px;
-  height: 56px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  pointer-events: none;
-  transition: box-shadow 0.3s ease, opacity 0.3s ease;
-  box-shadow: none;
-  opacity: 0;
-  z-index: 0;
+/* Pulsing glow to encourage tapping (when not full) */
+.nhub-water-ring:not(.nhub-water-full) .nhub-ring-box {
+  animation: nhubWaterPulse 2s ease-in-out infinite;
 }
 
-/* ── Holding state: ring grows + pulses + glows ── */
-.nhub-water-ring.nhub-water-holding {
-  transform: scale(var(--hold-scale, 1));
-  animation: nhub-water-hold-pulse 0.7s ease-in-out infinite alternate;
+@keyframes nhubWaterPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4)); }
 }
 
-.nhub-water-ring.nhub-water-holding::before {
-  opacity: var(--hold-glow, 0);
-  box-shadow:
-    0 0 calc(12px + 20px * var(--hold-glow, 0)) calc(4px + 10px * var(--hold-glow, 0)) rgba(59, 130, 246, calc(0.2 + 0.35 * var(--hold-glow, 0))),
-    0 0 calc(24px + 40px * var(--hold-glow, 0)) calc(10px + 16px * var(--hold-glow, 0)) rgba(59, 130, 246, calc(0.05 + 0.15 * var(--hold-glow, 0)));
+[data-theme="dark"] .nhub-water-ring:not(.nhub-water-full) .nhub-ring-box {
+  animation: nhubWaterPulseDark 2s ease-in-out infinite;
 }
 
-@keyframes nhub-water-hold-pulse {
-  from { transform: scale(var(--hold-scale, 1)); }
-  to { transform: scale(calc(var(--hold-scale, 1) + 0.025)); }
+@keyframes nhubWaterPulseDark {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4)); }
 }
 
-/* ── Burst on success ── */
-.nhub-water-ring.nhub-water-burst {
+/* ── Burst on tap success ── */
+.nhub-water-ring.nhub-water-burst .nhub-ring-box {
   animation: nhub-burst-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.nhub-water-ring.nhub-water-burst::before {
-  box-shadow: 0 0 24px 12px rgba(59, 130, 246, 0.5), 0 0 48px 20px rgba(59, 130, 246, 0.2);
-  opacity: 1;
-  animation: nhub-burst-glow 0.6s ease-out 0.03s forwards;
 }
 
 @keyframes nhub-burst-pop {
@@ -243,68 +215,9 @@
   100% { transform: scale(1); }
 }
 
-@keyframes nhub-burst-glow {
-  0% { opacity: 1; box-shadow: 0 0 24px 12px rgba(59, 130, 246, 0.5), 0 0 48px 20px rgba(59, 130, 246, 0.2); }
-  100% { opacity: 0; box-shadow: 0 0 32px 20px rgba(59, 130, 246, 0), 0 0 60px 30px rgba(59, 130, 246, 0); }
-}
-
-/* SVG burst ring expanding outward */
-.nhub-water-burst-ring {
-  animation: nhub-burst-ring-expand 0.5s ease-out 0.015s forwards;
-  opacity: 0;
-}
-
-@keyframes nhub-burst-ring-expand {
-  0% { r: 34; stroke-width: 3; opacity: 0.7; }
-  100% { r: 50; stroke-width: 0.5; opacity: 0; }
-}
-
 /* ── Full/done state ── */
 .nhub-water-full {
   pointer-events: none;
-}
-
-.nhub-water-full::before {
-  box-shadow: 0 0 10px 4px rgba(59, 130, 246, 0.25), 0 0 20px 8px rgba(59, 130, 246, 0.08);
-  opacity: 1;
-}
-
-/* ── Hint label ── */
-.nhub-water-hint {
-  display: block;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.58rem;
-  font-weight: 700;
-  color: #3b82f6;
-  margin-top: 3px;
-  text-align: center;
-  opacity: 0.85;
-  letter-spacing: 0.02em;
-  animation: nhub-hint-pulse 2s ease-in-out infinite;
-}
-
-@keyframes nhub-hint-pulse {
-  0%, 100% { opacity: 0.85; }
-  50% { opacity: 0.4; }
-}
-
-/* ── Dark mode overrides ── */
-[data-theme="dark"] .nhub-water-hint {
-  color: #60a5fa;
-}
-
-[data-theme="dark"] .nhub-water-ring.nhub-water-holding::before {
-  box-shadow:
-    0 0 calc(14px + 24px * var(--hold-glow, 0)) calc(5px + 12px * var(--hold-glow, 0)) rgba(96, 165, 250, calc(0.25 + 0.35 * var(--hold-glow, 0))),
-    0 0 calc(28px + 44px * var(--hold-glow, 0)) calc(12px + 20px * var(--hold-glow, 0)) rgba(96, 165, 250, calc(0.08 + 0.15 * var(--hold-glow, 0)));
-}
-
-[data-theme="dark"] .nhub-water-ring.nhub-water-burst::before {
-  box-shadow: 0 0 28px 14px rgba(96, 165, 250, 0.55), 0 0 56px 24px rgba(96, 165, 250, 0.2);
-}
-
-[data-theme="dark"] .nhub-water-full::before {
-  box-shadow: 0 0 12px 5px rgba(96, 165, 250, 0.3), 0 0 24px 10px rgba(96, 165, 250, 0.1);
 }
 
 .nhub-macro-cta {
@@ -338,15 +251,27 @@
   position: relative;
 }
 
-.nhub-ring-svg {
-  width: 68px;
-  height: 68px;
+.nhub-ring-box {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nhub-ring-box svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   transform: rotate(-90deg);
 }
 
 .nhub-ring-track {
   fill: none;
-  stroke: var(--border-color);
+  stroke: rgba(var(--color-primary-rgb), 0.1);
   stroke-width: 12;
   stroke-linecap: round;
 }
@@ -355,35 +280,48 @@
   fill: none;
   stroke-width: 12;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.6s ease-out;
+  animation: nhubRingFillIn 1.6s ease-out;
 }
 
-.nhub-ring-center {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 68px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  gap: 1px;
+.nhub-ring-near {
+  animation: nhubStatNearPulse 2s ease-in-out infinite;
+}
+
+.nhub-fill-near {
+  stroke: var(--color-primary) !important;
+  filter: brightness(1.2);
+}
+
+.nhub-ring-complete {
+  animation: nhubStatCompleteGlow 1s ease-out forwards;
+}
+
+.nhub-fill-complete {
+  stroke: #4CAF50 !important;
+}
+
+@keyframes nhubRingFillIn {
+  from { stroke-dashoffset: 238.76; }
+}
+
+@keyframes nhubStatNearPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 8px rgba(var(--color-primary-rgb), 0.4)); }
+}
+
+@keyframes nhubStatCompleteGlow {
+  0% { filter: drop-shadow(0 0 0 transparent); }
+  40% { filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.6)); }
+  100% { filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb), 0.3)); }
 }
 
 .nhub-ring-value {
+  position: relative;
+  z-index: 1;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 700;
   line-height: 1;
-}
-
-.nhub-ring-unit {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.5rem;
-  color: var(--text-tertiary);
-  font-weight: 500;
 }
 
 .nhub-ring-label {
