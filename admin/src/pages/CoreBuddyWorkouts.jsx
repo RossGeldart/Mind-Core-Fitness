@@ -503,7 +503,8 @@ export default function CoreBuddyWorkouts() {
   const FREE_BYO_LIMIT = 1; // Free users can only save 1 BYO workout
   const navigate = useNavigate();
   const location = useLocation();
-  const luckyDipData = location.state?.luckyDip || null;
+  const luckyDipRef = useRef(location.state?.luckyDip || null);
+  const luckyDipData = luckyDipRef.current;
   const luckyDipProcessed = useRef(false);
 
   // Views: 'landing' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_hub' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
@@ -4465,9 +4466,17 @@ export default function CoreBuddyWorkouts() {
 
         {/* Back button */}
         <div className="wk-back-row">
-          <button className="wk-back-btn" onClick={() => { if (confirm('Leave workout?')) setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub'); }}>
+          <button className="wk-back-btn" onClick={() => {
+            if (confirm('Leave workout?')) {
+              if (luckyDipData) {
+                navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+              } else {
+                setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub');
+              }
+            }
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            Back
+            {luckyDipData ? 'Back to Event' : 'Back'}
           </button>
         </div>
 
