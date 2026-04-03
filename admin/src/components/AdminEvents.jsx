@@ -355,28 +355,6 @@ export default function AdminEvents() {
     }
   };
 
-  // Generate (or regenerate) just today's Lucky Dip workout
-  const generateTodayWorkout = async (evt) => {
-    const today = new Date().toISOString().split('T')[0];
-    setGenerating(true);
-    setGenerateProgress('Loading exercises...');
-    try {
-      const pool = await loadLuckyDipExercisePool(evt);
-      if (!pool) {
-        showToast('No exercises found for this equipment/focus combo', 'error');
-        return;
-      }
-      setGenerateProgress('Generating today\'s workout...');
-      await saveDailyWorkout(evt.id, today, pool);
-      showToast(`Today's workout (${today}) generated!`, 'success');
-    } catch (err) {
-      console.error('Error generating today\'s workout:', err);
-      showToast('Failed to generate workout', 'error');
-    } finally {
-      setGenerating(false);
-      setGenerateProgress('');
-    }
-  };
 
   const formatDate = (date) => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -590,22 +568,13 @@ export default function AdminEvents() {
               <div className="admin-event-actions">
                 <button className="admin-event-edit-btn" onClick={() => handleEdit(evt)}>Edit</button>
                 {evt.eventType === 'luckyDip' && (
-                  <>
-                    <button
-                      className="admin-event-edit-btn"
-                      onClick={() => generateTodayWorkout(evt)}
-                      disabled={generating}
-                    >
-                      {generating ? generateProgress || 'Generating...' : '🎲 Generate Today'}
-                    </button>
-                    <button
-                      className="admin-event-edit-btn"
-                      onClick={() => generateLuckyDipWorkouts(evt)}
-                      disabled={generating}
-                    >
-                      {generating ? generateProgress || 'Generating...' : '🎲 Generate All'}
-                    </button>
-                  </>
+                  <button
+                    className="admin-event-edit-btn"
+                    onClick={() => generateLuckyDipWorkouts(evt)}
+                    disabled={generating}
+                  >
+                    {generating ? generateProgress || 'Generating...' : '🎲 Generate Workouts'}
+                  </button>
                 )}
                 <button className="admin-event-delete-btn" onClick={() => handleDelete(evt.id)}>Delete</button>
               </div>
