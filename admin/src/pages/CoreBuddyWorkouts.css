@@ -1576,15 +1576,17 @@
 
 .wk-stat-track {
   fill: none;
-  stroke: rgba(150, 150, 150, 0.2);
+  stroke: rgba(var(--color-primary-rgb), 0.1);
   stroke-width: 12;
   stroke-linecap: round;
 }
 
 .wk-stat-fill {
   fill: none;
+  stroke: var(--color-primary);
   stroke-width: 12;
   stroke-linecap: round;
+  animation: ringFillIn 1.6s ease-out;
 }
 
 .wk-stat-value {
@@ -1605,6 +1607,10 @@
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+@keyframes ringFillIn {
+  from { stroke-dashoffset: 238.76; }
 }
 
 /* ==================== EQUIPMENT SELECTOR ==================== */

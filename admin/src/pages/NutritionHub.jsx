@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -168,10 +168,6 @@ export default function NutritionHub() {
   const [waterMl, setWaterMl] = useState(0);
   const WATER_TARGET = 2000;
   const WATER_INCREMENT = 500;
-  const waterHoldTimer = useRef(null);
-  const waterHoldStart = useRef(null);
-  const [waterHolding, setWaterHolding] = useState(false);
-  const [waterHoldProgress, setWaterHoldProgress] = useState(0);
   const [waterBurst, setWaterBurst] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
@@ -318,93 +314,27 @@ export default function NutritionHub() {
     loadWater();
   }, [clientData?.id, selectedDate]);
 
-  // Water hold-to-log handlers
-  const waterHoldAnimFrame = useRef(null);
-  const waterDecayFrame = useRef(null);
-  const waterDecayValue = useRef(0);
-
-  const animateWaterHold = useCallback(() => {
-    if (!waterHoldStart.current) return;
-    const elapsed = Date.now() - waterHoldStart.current;
-    const rawProgress = Math.min(1, elapsed / 2000);
-    // Cubic ease-in: early resistance, accelerates into completion
-    const eased = rawProgress * rawProgress * rawProgress;
-    setWaterHoldProgress(eased);
-    waterDecayValue.current = eased;
-    if (rawProgress < 1) {
-      waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
-    }
-  }, []);
-
-  const animateDecay = useCallback(() => {
-    waterDecayValue.current *= 0.85;
-    if (waterDecayValue.current < 0.005) {
-      waterDecayValue.current = 0;
-      setWaterHoldProgress(0);
-      setWaterHolding(false);
-      waterDecayFrame.current = null;
-      return;
-    }
-    setWaterHoldProgress(waterDecayValue.current);
-    waterDecayFrame.current = requestAnimationFrame(animateDecay);
-  }, []);
-
-  const onWaterHoldStart = useCallback(() => {
+  // Water tap-to-log handler
+  const onWaterTap = useCallback(async () => {
     if (waterMl >= WATER_TARGET) return;
-    // Cancel any in-progress decay
-    if (waterDecayFrame.current) {
-      cancelAnimationFrame(waterDecayFrame.current);
-      waterDecayFrame.current = null;
-    }
-    waterHoldStart.current = Date.now();
-    setWaterHolding(true);
-    setWaterHoldProgress(0);
-    waterDecayValue.current = 0;
-    waterHoldAnimFrame.current = requestAnimationFrame(animateWaterHold);
-    waterHoldTimer.current = setTimeout(async () => {
-      // 2 seconds held — add 500ml
-      const newWater = Math.min(WATER_TARGET, waterMl + WATER_INCREMENT);
-      setWaterMl(newWater);
-      setWaterHolding(false);
-      setWaterHoldProgress(0);
-      waterDecayValue.current = 0;
-      setWaterBurst(true);
-      setTimeout(() => setWaterBurst(false), 600);
-      waterHoldStart.current = null;
-      // Save to Firestore
-      if (clientData?.id) {
-        try {
-          await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`), {
-            clientId: clientData.id,
-            date: selectedDate,
-            waterMl: newWater,
-            updatedAt: Timestamp.now()
-          }, { merge: true });
-        } catch (err) {
-          console.error('Error saving water:', err);
-        }
+    const newWater = Math.min(WATER_TARGET, waterMl + WATER_INCREMENT);
+    setWaterMl(newWater);
+    setWaterBurst(true);
+    setTimeout(() => setWaterBurst(false), 600);
+    // Save to Firestore
+    if (clientData?.id) {
+      try {
+        await setDoc(doc(db, 'nutritionLogs', `${clientData.id}_${selectedDate}`), {
+          clientId: clientData.id,
+          date: selectedDate,
+          waterMl: newWater,
+          updatedAt: Timestamp.now()
+        }, { merge: true });
+      } catch (err) {
+        console.error('Error saving water:', err);
       }
-    }, 2000);
-  }, [waterMl, clientData?.id, selectedDate, animateWaterHold]);
-
-  const onWaterHoldEnd = useCallback(() => {
-    if (waterHoldTimer.current) {
-      clearTimeout(waterHoldTimer.current);
-      waterHoldTimer.current = null;
     }
-    if (waterHoldAnimFrame.current) {
-      cancelAnimationFrame(waterHoldAnimFrame.current);
-      waterHoldAnimFrame.current = null;
-    }
-    waterHoldStart.current = null;
-    // Spring-decay: unwind from current value instead of snapping to 0
-    if (waterDecayValue.current > 0.005) {
-      waterDecayFrame.current = requestAnimationFrame(animateDecay);
-    } else {
-      setWaterHolding(false);
-      setWaterHoldProgress(0);
-    }
-  }, [animateDecay]);
+  }, [waterMl, clientData?.id, selectedDate]);
 
   // Save log to Firestore
   const saveLog = async (newLog) => {
@@ -943,29 +873,24 @@ export default function NutritionHub() {
     cals: 'var(--color-primary)',
     water: isDark ? '#60a5fa' : '#3b82f6',
   };
-  const RING_R = 34;
-  const RING_R_MAIN = 50;
+  const RING_R = 38;
   const RING_C = 2 * Math.PI * RING_R;
-  const RING_C_MAIN = 2 * Math.PI * RING_R_MAIN;
 
   const renderMiniRing = (label, current, target, colorKey, isMain = false) => {
     const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
-    const r = isMain ? RING_R_MAIN : RING_R;
-    const c = isMain ? RING_C_MAIN : RING_C;
-    const vb = isMain ? '0 0 120 120' : '0 0 80 80';
-    const cx = isMain ? 60 : 40;
-    const offset = c - (pct / 100) * c;
+    const offset = RING_C - (pct / 100) * RING_C;
     const color = MACRO_COLORS_HUB[colorKey];
+    const isNear = pct >= 75 && pct < 100;
+    const isComplete = pct >= 100;
     return (
       <div className={`nhub-ring-wrap${isMain ? ' nhub-ring-main' : ''}`}>
-        <svg className="nhub-ring-svg" viewBox={vb}>
-          <circle className="nhub-ring-track" cx={cx} cy={cx} r={r} />
-          <circle className="nhub-ring-fill" cx={cx} cy={cx} r={r}
-            style={{ stroke: color }} strokeDasharray={c} strokeDashoffset={offset} />
-        </svg>
-        <div className="nhub-ring-center">
+        <div className={`nhub-ring-box${isNear ? ' nhub-ring-near' : ''}${isComplete ? ' nhub-ring-complete' : ''}`}>
+          <svg viewBox="0 0 100 100">
+            <circle className="nhub-ring-track" cx="50" cy="50" r={RING_R} />
+            <circle className={`nhub-ring-fill${isNear ? ' nhub-fill-near' : ''}${isComplete ? ' nhub-fill-complete' : ''}`} cx="50" cy="50" r={RING_R}
+              style={{ stroke: color }} strokeDasharray={RING_C} strokeDashoffset={offset} />
+          </svg>
           <span className="nhub-ring-value" style={{ color }}>{label === 'Water' ? `${current}ml` : Math.round(current)}</span>
-          <span className="nhub-ring-unit">{label === 'Cals' ? '' : label === 'Water' ? '' : 'g'}</span>
         </div>
         <span className="nhub-ring-label">{label}</span>
         <span className="nhub-ring-pct" style={{ color }}>{pct}%</span>
@@ -1257,42 +1182,26 @@ export default function NutritionHub() {
             </div>
             <div className="nhub-rings-side">
               <div
-                className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}${waterHolding ? ' nhub-water-holding' : ''}${waterBurst ? ' nhub-water-burst' : ''}`}
-                style={waterHolding ? {
-                  '--hold-scale': 1 + waterHoldProgress * 0.12,
-                  '--hold-glow': waterHoldProgress,
-                } : undefined}
-                onMouseDown={onWaterHoldStart}
-                onMouseUp={onWaterHoldEnd}
-                onMouseLeave={onWaterHoldEnd}
-                onTouchStart={onWaterHoldStart}
-                onTouchEnd={onWaterHoldEnd}
-                onTouchCancel={onWaterHoldEnd}
+                className={`nhub-ring-wrap nhub-water-ring${waterMl >= WATER_TARGET ? ' nhub-water-full' : ''}${waterBurst ? ' nhub-water-burst' : ''}`}
+                onClick={onWaterTap}
                 role="button"
                 tabIndex={0}
-                aria-label="Hold to log 500ml water"
+                aria-label="Tap to log 500ml water"
               >
-                <svg className="nhub-ring-svg" viewBox="0 0 80 80">
-                  <circle className="nhub-ring-track" cx="40" cy="40" r={RING_R} />
-                  <circle className="nhub-ring-fill" cx="40" cy="40" r={RING_R}
-                    style={{ stroke: MACRO_COLORS_HUB.water }}
-                    strokeDasharray={RING_C}
-                    strokeDashoffset={RING_C - (Math.min(100, Math.round((waterMl / WATER_TARGET) * 100)) / 100) * RING_C} />
-                  {/* Burst ring on success */}
-                  {waterBurst && (
-                    <circle className="nhub-water-burst-ring" cx="40" cy="40" r={RING_R}
-                      fill="none" strokeWidth="3"
-                      style={{ stroke: MACRO_COLORS_HUB.water }} />
-                  )}
-                </svg>
-                <div className="nhub-ring-center">
+                <div className={`nhub-ring-box${waterMl >= WATER_TARGET ? ' nhub-ring-complete' : ''}`}>
+                  <svg viewBox="0 0 100 100">
+                    <circle className="nhub-ring-track" cx="50" cy="50" r={RING_R} />
+                    <circle className={`nhub-ring-fill${waterMl >= WATER_TARGET ? ' nhub-fill-complete' : ''}`} cx="50" cy="50" r={RING_R}
+                      style={{ stroke: MACRO_COLORS_HUB.water }}
+                      strokeDasharray={RING_C}
+                      strokeDashoffset={RING_C - (Math.min(100, Math.round((waterMl / WATER_TARGET) * 100)) / 100) * RING_C} />
+                  </svg>
                   <span className="nhub-ring-value" style={{ color: MACRO_COLORS_HUB.water }}>{waterMl >= 1000 ? `${(waterMl / 1000).toFixed(waterMl % 1000 === 0 ? 0 : 1)}L` : `${waterMl}ml`}</span>
                 </div>
                 <span className="nhub-ring-label">Water</span>
                 <span className="nhub-ring-pct" style={{ color: MACRO_COLORS_HUB.water }}>
                   {waterMl >= WATER_TARGET ? 'Done' : `${Math.round((waterMl / WATER_TARGET) * 100)}%`}
                 </span>
-                {waterMl < WATER_TARGET && !waterHolding && <span className="nhub-water-hint">Hold +500ml</span>}
               </div>
             </div>
           </div>
