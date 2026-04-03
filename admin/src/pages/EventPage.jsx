@@ -121,6 +121,16 @@ export default function EventPage() {
   // My progress
   const [myProgress, setMyProgress] = useState(null);
 
+  // Lucky Dip state
+  const [luckyDipWorkout, setLuckyDipWorkout] = useState(null);
+  const [luckyDipRevealed, setLuckyDipRevealed] = useState(false);
+  const [luckyDipCompleted, setLuckyDipCompleted] = useState(false);
+  const [luckyDipLoading, setLuckyDipLoading] = useState(false);
+  const [revealAnimating, setRevealAnimating] = useState(false);
+  const [completingLuckyDip, setCompletingLuckyDip] = useState(false);
+
+  const getTodayStr = () => new Date().toISOString().split('T')[0];
+
   // Fetch event details
   const fetchEvent = useCallback(async () => {
     try {
@@ -139,7 +149,11 @@ export default function EventPage() {
 
       const config = CATEGORY_CONFIG[evt.category] || CATEGORY_CONFIG.fitness;
       const savedStat = evt.leaderboardStat;
-      setLbTab(savedStat && config.tabs.includes(savedStat) ? savedStat : config.tabs[0]);
+      if (evt.eventType === 'luckyDip') {
+        setLbTab('daysCompleted');
+      } else {
+        setLbTab(savedStat && config.tabs.includes(savedStat) ? savedStat : config.tabs[0]);
+      }
     } catch (err) {
       console.error('Error loading event:', err);
     } finally {
@@ -167,6 +181,31 @@ export default function EventPage() {
     }
     setLbLoading(true);
     try {
+      // Lucky Dip leaderboard: count completions per user
+      if (event.eventType === 'luckyDip') {
+        const completionsSnap = await getDocs(collection(db, 'events', eventId, 'completions'));
+        const counts = {};
+        completionsSnap.docs.forEach(d => {
+          const data = d.data();
+          if (!counts[data.userId]) counts[data.userId] = 0;
+          counts[data.userId]++;
+        });
+
+        const sorted = participants.map(p => ({
+          id: p.id,
+          name: p.name || 'Unknown',
+          photoURL: p.photoURL || '',
+          daysCompleted: counts[p.id] || 0,
+        })).sort((a, b) => b.daysCompleted - a.daysCompleted || a.name.localeCompare(b.name));
+
+        setLeaderboard(sorted);
+        if (myId && sorted.find(s => s.id === myId)) {
+          setMyProgress(sorted.find(s => s.id === myId));
+        }
+        setLbLoading(false);
+        return;
+      }
+
       const config = CATEGORY_CONFIG[event.category] || CATEGORY_CONFIG.fitness;
       const startTs = Timestamp.fromDate(event.startDate);
       const endTs = Timestamp.fromDate(event.endDate);
@@ -289,7 +328,7 @@ export default function EventPage() {
     } finally {
       setLbLoading(false);
     }
-  }, [event, participants, lbTab, myId]);
+  }, [event, eventId, participants, lbTab, myId]);
 
   // Fetch event feed + liked status
   const fetchPosts = useCallback(async () => {
@@ -472,9 +511,131 @@ export default function EventPage() {
     }
   };
 
+  // Fetch today's Lucky Dip workout + check reveal/completion state
+  const fetchLuckyDip = useCallback(async () => {
+    if (!event || event.eventType !== 'luckyDip' || event.status !== 'active') return;
+    setLuckyDipLoading(true);
+    try {
+      const today = getTodayStr();
+
+      // Check localStorage for reveal state
+      const revealKey = `luckyDip_${eventId}_${today}`;
+      if (localStorage.getItem(revealKey)) {
+        setLuckyDipRevealed(true);
+      }
+
+      // Fetch today's workout
+      const workoutSnap = await getDoc(doc(db, 'events', eventId, 'dailyWorkouts', today));
+      if (workoutSnap.exists()) {
+        setLuckyDipWorkout({ id: workoutSnap.id, ...workoutSnap.data() });
+      }
+
+      // Check if user already completed today
+      if (myId) {
+        const completionId = `${today}_${myId}`;
+        const completionSnap = await getDoc(doc(db, 'events', eventId, 'completions', completionId));
+        if (completionSnap.exists()) {
+          setLuckyDipCompleted(true);
+          setLuckyDipRevealed(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching Lucky Dip:', err);
+    } finally {
+      setLuckyDipLoading(false);
+    }
+  }, [event, eventId, myId]);
+
+  // Reveal today's Lucky Dip workout
+  const handleReveal = () => {
+    if (!luckyDipWorkout) return;
+    setRevealAnimating(true);
+    const today = getTodayStr();
+    localStorage.setItem(`luckyDip_${eventId}_${today}`, 'true');
+    setTimeout(() => {
+      setLuckyDipRevealed(true);
+      setRevealAnimating(false);
+    }, 600);
+  };
+
+  // Start the Lucky Dip workout (navigate to randomiser with pre-loaded exercises)
+  const startLuckyDipWorkout = () => {
+    if (!luckyDipWorkout) return;
+    navigate('/client/core-buddy/workouts', {
+      state: {
+        luckyDip: {
+          eventId,
+          date: getTodayStr(),
+          exercises: luckyDipWorkout.exercises,
+          rounds: luckyDipWorkout.rounds,
+          duration: luckyDipWorkout.duration,
+          level: luckyDipWorkout.level,
+          work: luckyDipWorkout.work,
+          rest: luckyDipWorkout.rest,
+          focus: luckyDipWorkout.focus,
+          equipment: luckyDipWorkout.equipment,
+          eventTitle: event.title,
+        },
+      },
+    });
+  };
+
+  // Mark Lucky Dip as complete (called after workout finishes, or can be called from here)
+  const completeLuckyDip = useCallback(async () => {
+    if (!myId || !event || luckyDipCompleted || completingLuckyDip) return;
+    setCompletingLuckyDip(true);
+    try {
+      const today = getTodayStr();
+      const completionId = `${today}_${myId}`;
+
+      // Save completion
+      await setDoc(doc(db, 'events', eventId, 'completions', completionId), {
+        userId: myId,
+        date: today,
+        eventId,
+        workoutId: luckyDipWorkout?.id || today,
+        completedAt: serverTimestamp(),
+        userName: clientData?.name || 'Unknown',
+        userPhotoURL: clientData?.photoURL || '',
+      });
+
+      // Auto-post to feed
+      const workoutExercises = luckyDipWorkout?.exercises?.map(e => e.name).join(', ') || '';
+      await addDoc(collection(db, 'events', eventId, 'feed'), {
+        authorId: myId,
+        authorName: clientData?.name || 'Unknown',
+        authorPhotoURL: clientData?.photoURL || '',
+        content: `completed today's Lucky Dip! 💪\n${luckyDipWorkout?.duration || 15} min · ${luckyDipWorkout?.exercises?.length || 0} exercises · ${luckyDipWorkout?.rounds || 0} rounds\n${workoutExercises}`,
+        imageURL: '',
+        likeCount: 0,
+        commentCount: 0,
+        createdAt: serverTimestamp(),
+        isAutoPost: true,
+        luckyDipDate: today,
+      });
+
+      setLuckyDipCompleted(true);
+    } catch (err) {
+      console.error('Error completing Lucky Dip:', err);
+    } finally {
+      setCompletingLuckyDip(false);
+    }
+  }, [myId, event, eventId, luckyDipWorkout, luckyDipCompleted, completingLuckyDip, clientData]);
+
+  // Check for Lucky Dip completion from randomiser return
+  useEffect(() => {
+    if (!event || event.eventType !== 'luckyDip') return;
+    const completionFlag = sessionStorage.getItem(`luckyDip_completed_${eventId}`);
+    if (completionFlag === getTodayStr() && !luckyDipCompleted) {
+      sessionStorage.removeItem(`luckyDip_completed_${eventId}`);
+      completeLuckyDip();
+    }
+  }, [event, eventId, luckyDipCompleted, completeLuckyDip]);
+
   // Initial load
   useEffect(() => { fetchEvent(); }, [fetchEvent]);
   useEffect(() => { if (event) fetchParticipants(); }, [event, fetchParticipants]);
+  useEffect(() => { if (event) fetchLuckyDip(); }, [event, fetchLuckyDip]);
   // Fetch leaderboard on overview and leaderboard tabs
   useEffect(() => {
     if ((activeTab === 'leaderboard' || activeTab === 'overview') && event && participants.length > 0) fetchLeaderboard();
@@ -503,6 +664,7 @@ export default function EventPage() {
     if (key === 'volume') return formatVolume(stat.volume);
     if (key === 'completion') return `${stat.completion} days`;
     if (key === 'daysTracked') return `${stat.daysTracked} days`;
+    if (key === 'daysCompleted') return `${stat.daysCompleted || 0} days`;
     return 0;
   };
 
@@ -512,6 +674,7 @@ export default function EventPage() {
     if (key === 'volume') return 'Volume';
     if (key === 'completion') return 'Habit Days';
     if (key === 'daysTracked') return 'Days Tracked';
+    if (key === 'daysCompleted') return 'Days Completed';
     return '';
   };
 
@@ -575,6 +738,85 @@ export default function EventPage() {
               </div>
             </div>
 
+            {/* Lucky Dip Panel */}
+            {event.eventType === 'luckyDip' && event.status === 'active' && isParticipant && (
+              <div className="ld-panel">
+                <div className="ld-panel-header">
+                  <span className="ld-panel-date">
+                    {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </span>
+                  <span className="ld-panel-badge">Daily Lucky Dip</span>
+                </div>
+
+                {luckyDipLoading ? (
+                  <div className="ld-loading"><div className="evp-spinner" /></div>
+                ) : !luckyDipWorkout ? (
+                  <div className="ld-no-workout">
+                    <p>No workout available for today</p>
+                  </div>
+                ) : luckyDipCompleted ? (
+                  <div className="ld-completed">
+                    <div className="ld-completed-icon">✅</div>
+                    <h3>Completed!</h3>
+                    <p>You've done today's Lucky Dip. Come back tomorrow!</p>
+                    <div className="ld-workout-summary">
+                      <span>{luckyDipWorkout.duration} min</span>
+                      <span>{luckyDipWorkout.exercises?.length} exercises</span>
+                      <span>{luckyDipWorkout.rounds} rounds</span>
+                    </div>
+                  </div>
+                ) : !luckyDipRevealed ? (
+                  <div className={`ld-mystery ${revealAnimating ? 'ld-mystery-revealing' : ''}`}>
+                    <div className="ld-mystery-card">
+                      <div className="ld-mystery-icon">🎲</div>
+                      <h3>Today's Workout</h3>
+                      <p>Tap to reveal your Lucky Dip workout</p>
+                    </div>
+                    <button className="ld-reveal-btn" onClick={handleReveal}>
+                      Reveal Today's Workout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="ld-revealed">
+                    <div className="ld-workout-info">
+                      <div className="ld-workout-summary">
+                        <span>{luckyDipWorkout.duration} min</span>
+                        <span>{luckyDipWorkout.exercises?.length} exercises</span>
+                        <span>{luckyDipWorkout.rounds} rounds</span>
+                      </div>
+                      <div className="ld-exercise-list">
+                        {luckyDipWorkout.exercises?.map((ex, i) => (
+                          <div key={i} className="ld-exercise-item">
+                            <span className="ld-exercise-num">{i + 1}</span>
+                            <span className="ld-exercise-name">{ex.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <button className="ld-start-btn" onClick={startLuckyDipWorkout}>
+                      Start Workout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lucky Dip Panel for non-participants */}
+            {event.eventType === 'luckyDip' && event.status === 'active' && !isParticipant && (
+              <div className="ld-panel">
+                <div className="ld-panel-header">
+                  <span className="ld-panel-badge">Daily Lucky Dip</span>
+                </div>
+                <div className="ld-mystery">
+                  <div className="ld-mystery-card">
+                    <div className="ld-mystery-icon">🎲</div>
+                    <h3>Join to Play!</h3>
+                    <p>Opt in to this event to reveal daily workouts</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Progress bar */}
             {event.status === 'active' && (
               <div className="evp-progress-section">
@@ -603,12 +845,19 @@ export default function EventPage() {
               <div className="evp-my-progress">
                 <h3>My Stats</h3>
                 <div className="evp-my-stats-grid">
-                  {config.tabs.map(key => (
-                    <div key={key} className="evp-my-stat">
-                      <span className="evp-my-stat-value">{getStatValue(myProgress, key)}</span>
-                      <span className="evp-my-stat-label">{getStatLabel(key)}</span>
+                  {event.eventType === 'luckyDip' ? (
+                    <div className="evp-my-stat">
+                      <span className="evp-my-stat-value">{myProgress.daysCompleted || 0} days</span>
+                      <span className="evp-my-stat-label">Days Completed</span>
                     </div>
-                  ))}
+                  ) : (
+                    config.tabs.map(key => (
+                      <div key={key} className="evp-my-stat">
+                        <span className="evp-my-stat-value">{getStatValue(myProgress, key)}</span>
+                        <span className="evp-my-stat-label">{getStatLabel(key)}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}

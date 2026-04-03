@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, query, where, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
@@ -502,6 +502,9 @@ export default function CoreBuddyWorkouts() {
   const { isPremium, FREE_RANDOMISER_DURATIONS, FREE_RANDOMISER_WEEKLY_LIMIT } = useTier();
   const FREE_BYO_LIMIT = 1; // Free users can only save 1 BYO workout
   const navigate = useNavigate();
+  const location = useLocation();
+  const luckyDipData = location.state?.luckyDip || null;
+  const luckyDipProcessed = useRef(false);
 
   // Views: 'landing' | 'randomiser_hub' | 'setup' | 'spinning' | 'preview' | 'countdown' | 'workout' | 'byo_hub' | 'byo_mode' | 'byo_pick' | 'byo_sets_config' | 'byo_save' | 'byo_sets'
   const [view, setView] = useState('landing');
@@ -570,6 +573,43 @@ export default function CoreBuddyWorkouts() {
 
   // Scroll to top on view change
   useEffect(() => { window.scrollTo(0, 0); }, [view]);
+
+  // Lucky Dip: pre-load workout from navigation state and jump to preview
+  useEffect(() => {
+    if (!luckyDipData || luckyDipProcessed.current || authLoading) return;
+    luckyDipProcessed.current = true;
+
+    const ldLevel = LEVELS.find(l => l.key === luckyDipData.level) || LEVELS[1];
+    const config = {
+      ...ldLevel,
+      work: luckyDipData.work || ldLevel.work,
+      rest: luckyDipData.rest || ldLevel.rest,
+    };
+
+    setSelectedEquipment(luckyDipData.equipment || ['dumbbells', 'kettlebells']);
+    setFocusArea(luckyDipData.focus || 'mix');
+    setLevel(luckyDipData.level || 'intermediate');
+    setDuration(luckyDipData.duration || 15);
+    setLevelConfig(config);
+    setWorkout(luckyDipData.exercises || []);
+    setRounds(luckyDipData.rounds || 2);
+
+    // Skip straight to preview
+    thumbsReadyCount.current = 0;
+    thumbsTotal.current = (luckyDipData.exercises || []).length;
+    spinMinDone.current = false;
+    thumbsAllReady.current = false;
+
+    const reveal = () => {
+      if (spinMinDone.current && thumbsAllReady.current) setView('preview');
+    };
+    tryRevealPreview.current = reveal;
+    setView('preview_loading');
+
+    // Reveal quickly for Lucky Dip (exercises are pre-loaded)
+    setTimeout(() => { spinMinDone.current = true; reveal(); }, 500);
+    setTimeout(() => { thumbsAllReady.current = true; reveal(); }, 4000);
+  }, [luckyDipData, authLoading]);
 
   // GIF looping
   const gifRef = useRef(null);
@@ -1921,6 +1961,11 @@ export default function CoreBuddyWorkouts() {
       // If this was a challenge workout, mark the day complete
       if (level === 'challenge' && challengeDay) {
         await saveChallengeCompletion(challengeDay.day);
+      }
+
+      // If this was a Lucky Dip workout, signal completion
+      if (luckyDipData) {
+        sessionStorage.setItem(`luckyDip_completed_${luckyDipData.eventId}`, luckyDipData.date);
       }
     } catch (err) {
       console.error('Error saving workout log:', err);
@@ -4513,7 +4558,13 @@ export default function CoreBuddyWorkouts() {
               hideShare={!isPremium}
               onShareJourney={clientData ? shareToJourney : null}
               userName={clientData?.name}
-              onDismissStart={() => setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub')}
+              onDismissStart={() => {
+                if (luckyDipData) {
+                  navigate(`/client/core-buddy/events/${luckyDipData.eventId}`);
+                } else {
+                  setView(level === 'challenge' ? 'challenge_calendar' : 'randomiser_hub');
+                }
+              }}
               onDone={() => setShowFinish(false)}
               onRate={lastWorkoutLogId ? (rating) => {
                 updateDoc(doc(db, 'workoutLogs', lastWorkoutLogId), { feelingRating: rating }).catch(() => {});

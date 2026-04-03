@@ -1,14 +1,53 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  collection, getDocs, doc, addDoc, deleteDoc, updateDoc, serverTimestamp, Timestamp
+  collection, getDocs, doc, addDoc, deleteDoc, updateDoc, serverTimestamp, Timestamp, setDoc
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { ref, listAll, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
 
 const WORKOUT_FEATURES = [
   { id: 'randomiser', name: 'Randomiser', description: 'Generate random HIIT workouts' },
   { id: 'byo', name: 'Build Your Own', description: 'Pick exercises and build custom workouts' },
   { id: 'challenges', name: '4-Week Core Challenge', description: '28-day progressive HIIT challenge' },
 ];
+
+const EVENT_TYPES = [
+  { id: 'standard', name: 'Standard', description: 'Standard event with manual tracking' },
+  { id: 'luckyDip', name: 'Lucky Dip', description: 'Daily reveal workout — same for all users' },
+];
+
+const LUCKY_DIP_FOCUS_OPTIONS = [
+  { value: 'core', label: 'Core' },
+  { value: 'upper', label: 'Upper Body' },
+  { value: 'lower', label: 'Lower Body' },
+  { value: 'fullbody', label: 'Full Body' },
+  { value: 'mix', label: 'Mix It Up' },
+];
+
+const LUCKY_DIP_EQUIPMENT = ['dumbbells', 'kettlebells'];
+const LUCKY_DIP_DURATION = 15;
+const LUCKY_DIP_LEVEL = { key: 'intermediate', work: 40, rest: 20 };
+
+const ADVANCED_CORE_EXERCISES = new Set([
+  'single leg v-up', 'hollow hold to v-sit', 'reverse crunch to leg raise',
+  'side plank rotation', 'hip dips plank', 'alternating cross body v-up',
+  'alternating cross body v up', 'bent hollow hold', 'heels elevated glute bridge',
+  'hollow body hold', 'hollow body rock', 'star side plank', 'straddle leg lift',
+  'leg raise to hip lift', 'scorpion kicks', 'seated v hold',
+]);
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, c => c.toUpperCase());
+}
 
 const STAT_OPTIONS = {
   fitness:     [
@@ -65,7 +104,12 @@ export default function AdminEvents() {
     startDate: '',
     endDate: '',
     linkedChallenge: '',
+    eventType: 'standard',
+    luckyDipFocus: 'mix',
   });
+
+  const [generating, setGenerating] = useState(false);
+  const [generateProgress, setGenerateProgress] = useState('');
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -101,7 +145,7 @@ export default function AdminEvents() {
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '' });
+    setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '', eventType: 'standard', luckyDipFocus: 'mix' });
     setEditingEvent(null);
     setShowForm(false);
   };
@@ -118,15 +162,23 @@ export default function AdminEvents() {
     }
     setSaving(true);
     try {
+      const isLuckyDip = form.eventType === 'luckyDip';
       const eventData = {
         title: form.title.trim(),
         description: form.description.trim(),
-        category: form.category,
-        leaderboardStat: form.leaderboardStat,
+        category: isLuckyDip ? 'fitness' : form.category,
+        leaderboardStat: isLuckyDip ? 'daysCompleted' : form.leaderboardStat,
         startDate: Timestamp.fromDate(new Date(form.startDate)),
         endDate: Timestamp.fromDate(new Date(form.endDate)),
-        linkedChallenge: form.linkedChallenge || null,
+        linkedChallenge: isLuckyDip ? 'randomiser' : (form.linkedChallenge || null),
         participantCount: 0,
+        eventType: form.eventType,
+        ...(isLuckyDip && {
+          luckyDipFocus: form.luckyDipFocus,
+          luckyDipEquipment: LUCKY_DIP_EQUIPMENT,
+          luckyDipDuration: LUCKY_DIP_DURATION,
+          luckyDipLevel: LUCKY_DIP_LEVEL.key,
+        }),
       };
 
       if (editingEvent) {
@@ -158,6 +210,8 @@ export default function AdminEvents() {
       startDate: evt.startDate.toISOString().split('T')[0],
       endDate: evt.endDate.toISOString().split('T')[0],
       linkedChallenge: evt.linkedChallenge || '',
+      eventType: evt.eventType || 'standard',
+      luckyDipFocus: evt.luckyDipFocus || 'mix',
     });
     setEditingEvent(evt);
     setShowForm(true);
@@ -172,6 +226,128 @@ export default function AdminEvents() {
     } catch (err) {
       console.error('Error deleting event:', err);
       showToast('Failed to delete event', 'error');
+    }
+  };
+
+  // Pre-generate all Lucky Dip daily workouts for an event
+  const generateLuckyDipWorkouts = async (evt) => {
+    if (!window.confirm(`Pre-generate all daily workouts for "${evt.title}"? This will overwrite any existing daily workouts.`)) return;
+    setGenerating(true);
+    setGenerateProgress('Loading exercises...');
+    try {
+      const focus = evt.luckyDipFocus || 'mix';
+      const equipment = evt.luckyDipEquipment || LUCKY_DIP_EQUIPMENT;
+
+      // Build storage paths (same logic as randomiser)
+      let focusKeys;
+      if (focus === 'mix') focusKeys = ['core', 'upper', 'lower'];
+      else if (focus === 'fullbody') focusKeys = ['upper', 'lower'];
+      else focusKeys = [focus];
+
+      const paths = [];
+      for (const eq of equipment) {
+        for (const fk of focusKeys) {
+          paths.push(`exercises/${eq}/${fk}`);
+        }
+      }
+
+      // Load all exercises from Firebase Storage
+      const allItems = [];
+      for (const path of paths) {
+        try {
+          const folderRef = ref(storage, path);
+          const result = await listAll(folderRef);
+          allItems.push(...result.items);
+        } catch { /* folder might not exist */ }
+      }
+
+      if (allItems.length === 0) {
+        showToast('No exercises found for this equipment/focus combo', 'error');
+        setGenerating(false);
+        setGenerateProgress('');
+        return;
+      }
+
+      // Deduplicate by file name
+      const seen = new Set();
+      const uniqueItems = allItems.filter(item => {
+        const name = item.name.replace(/\.(mp4|gif)$/i, '');
+        if (seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      });
+
+      // Resolve download URLs
+      setGenerateProgress('Resolving exercise URLs...');
+      const exercises = await Promise.all(
+        uniqueItems.map(async (item) => {
+          const url = await getDownloadURL(item);
+          const name = toTitleCase(item.name.replace(/\.(mp4|gif)$/i, ''));
+          const isGif = /\.gif$/i.test(item.name);
+          return { name, videoUrl: url, isGif };
+        })
+      );
+
+      // Calculate workout structure (same as randomiser for 15 min intermediate)
+      const config = LUCKY_DIP_LEVEL;
+      const intervalTime = config.work + config.rest;
+      const totalSeconds = LUCKY_DIP_DURATION * 60;
+      const totalIntervals = Math.floor(totalSeconds / intervalTime);
+
+      let exPerRound, numRounds;
+      if (totalIntervals <= 6) {
+        exPerRound = Math.max(3, Math.floor(totalIntervals / 2));
+        numRounds = Math.floor(totalIntervals / exPerRound);
+      } else if (totalIntervals <= 12) {
+        exPerRound = Math.min(6, Math.floor(totalIntervals / 2));
+        numRounds = Math.floor(totalIntervals / exPerRound);
+      } else {
+        exPerRound = Math.min(10, Math.floor(totalIntervals / 2));
+        numRounds = Math.floor(totalIntervals / exPerRound);
+      }
+      numRounds = Math.max(2, numRounds);
+
+      // Generate one workout per day
+      const start = evt.startDate;
+      const end = evt.endDate;
+      const days = [];
+      const d = new Date(start);
+      while (d <= end) {
+        days.push(d.toISOString().split('T')[0]);
+        d.setDate(d.getDate() + 1);
+      }
+
+      setGenerateProgress(`Generating ${days.length} daily workouts...`);
+
+      for (let i = 0; i < days.length; i++) {
+        const date = days[i];
+        // Filter out advanced core moves and shuffle
+        const pool = exercises.filter(e => !ADVANCED_CORE_EXERCISES.has(e.name.toLowerCase()));
+        const shuffled = shuffleArray(pool.length > 0 ? pool : exercises);
+        const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
+
+        await setDoc(doc(db, 'events', evt.id, 'dailyWorkouts', date), {
+          exercises: selected,
+          rounds: numRounds,
+          duration: LUCKY_DIP_DURATION,
+          level: config.key,
+          work: config.work,
+          rest: config.rest,
+          focus: focus,
+          equipment: equipment,
+          generatedAt: serverTimestamp(),
+        });
+
+        setGenerateProgress(`Generated ${i + 1} of ${days.length} workouts...`);
+      }
+
+      showToast(`${days.length} daily workouts generated!`, 'success');
+    } catch (err) {
+      console.error('Error generating Lucky Dip workouts:', err);
+      showToast('Failed to generate workouts', 'error');
+    } finally {
+      setGenerating(false);
+      setGenerateProgress('');
     }
   };
 
@@ -229,48 +405,95 @@ export default function AdminEvents() {
           </div>
           <div className="admin-events-form-row">
             <div className="admin-events-form-group">
-              <label>Category</label>
+              <label>Event Type</label>
               <select
-                value={form.category}
+                value={form.eventType}
                 onChange={e => {
-                  const cat = e.target.value;
-                  const opts = STAT_OPTIONS[cat] || STAT_OPTIONS.fitness;
-                  setForm(f => ({ ...f, category: cat, leaderboardStat: opts[0].value }));
+                  const type = e.target.value;
+                  if (type === 'luckyDip') {
+                    setForm(f => ({ ...f, eventType: type, category: 'fitness', leaderboardStat: 'daysCompleted', linkedChallenge: 'randomiser' }));
+                  } else {
+                    setForm(f => ({ ...f, eventType: type }));
+                  }
                 }}
               >
-                {categories.map(c => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="admin-events-form-group">
-              <label>Leaderboard Stat</label>
-              <select
-                value={form.leaderboardStat}
-                onChange={e => setForm(f => ({ ...f, leaderboardStat: e.target.value }))}
-              >
-                {(STAT_OPTIONS[form.category] || STAT_OPTIONS.fitness).map(s => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
+                {EVENT_TYPES.map(t => (
+                  <option key={t.id} value={t.id}>{t.name} — {t.description}</option>
                 ))}
               </select>
             </div>
           </div>
-          <div className="admin-events-form-row">
-            <div className="admin-events-form-group">
-              <label>Link Workout Feature (optional)</label>
-              <select
-                value={form.linkedChallenge}
-                onChange={e => setForm(f => ({ ...f, linkedChallenge: e.target.value }))}
-              >
-                <option value="">None — no feature linked</option>
-                {WORKOUT_FEATURES.map(f => (
-                  <option key={f.id} value={f.id}>
-                    {f.name} — {f.description}
-                  </option>
-                ))}
-              </select>
+          {form.eventType === 'luckyDip' && (
+            <div className="admin-events-form-row">
+              <div className="admin-events-form-group">
+                <label>Workout Focus</label>
+                <select
+                  value={form.luckyDipFocus}
+                  onChange={e => setForm(f => ({ ...f, luckyDipFocus: e.target.value }))}
+                >
+                  {LUCKY_DIP_FOCUS_OPTIONS.map(f => (
+                    <option key={f.value} value={f.value}>{f.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="admin-events-form-group">
+                <label>Equipment</label>
+                <input type="text" value="Dumbbells + Kettlebells" disabled />
+              </div>
+              <div className="admin-events-form-group">
+                <label>Duration</label>
+                <input type="text" value="15 minutes" disabled />
+              </div>
             </div>
-          </div>
+          )}
+          {form.eventType !== 'luckyDip' && (
+            <>
+              <div className="admin-events-form-row">
+                <div className="admin-events-form-group">
+                  <label>Category</label>
+                  <select
+                    value={form.category}
+                    onChange={e => {
+                      const cat = e.target.value;
+                      const opts = STAT_OPTIONS[cat] || STAT_OPTIONS.fitness;
+                      setForm(f => ({ ...f, category: cat, leaderboardStat: opts[0].value }));
+                    }}
+                  >
+                    {categories.map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="admin-events-form-group">
+                  <label>Leaderboard Stat</label>
+                  <select
+                    value={form.leaderboardStat}
+                    onChange={e => setForm(f => ({ ...f, leaderboardStat: e.target.value }))}
+                  >
+                    {(STAT_OPTIONS[form.category] || STAT_OPTIONS.fitness).map(s => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="admin-events-form-row">
+                <div className="admin-events-form-group">
+                  <label>Link Workout Feature (optional)</label>
+                  <select
+                    value={form.linkedChallenge}
+                    onChange={e => setForm(f => ({ ...f, linkedChallenge: e.target.value }))}
+                  >
+                    <option value="">None — no feature linked</option>
+                    {WORKOUT_FEATURES.map(f => (
+                      <option key={f.id} value={f.id}>
+                        {f.name} — {f.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
           <div className="admin-events-form-row">
             <div className="admin-events-form-group">
               <label>Start Date</label>
@@ -323,7 +546,10 @@ export default function AdminEvents() {
               </div>
               <h4 className="admin-event-title">{evt.title}</h4>
               {evt.description && <p className="admin-event-desc">{evt.description}</p>}
-              {evt.linkedChallenge && (
+              {evt.eventType === 'luckyDip' && (
+                <p className="admin-event-linked">🎲 Lucky Dip · {LUCKY_DIP_FOCUS_OPTIONS.find(f => f.value === evt.luckyDipFocus)?.label || 'Mix'} · 15 min</p>
+              )}
+              {evt.linkedChallenge && evt.eventType !== 'luckyDip' && (
                 <p className="admin-event-linked">
                   🔗 {WORKOUT_FEATURES.find(f => f.id === evt.linkedChallenge)?.name || evt.linkedChallenge}
                 </p>
@@ -336,6 +562,15 @@ export default function AdminEvents() {
               </div>
               <div className="admin-event-actions">
                 <button className="admin-event-edit-btn" onClick={() => handleEdit(evt)}>Edit</button>
+                {evt.eventType === 'luckyDip' && (
+                  <button
+                    className="admin-event-edit-btn"
+                    onClick={() => generateLuckyDipWorkouts(evt)}
+                    disabled={generating}
+                  >
+                    {generating ? generateProgress || 'Generating...' : '🎲 Generate Workouts'}
+                  </button>
+                )}
                 <button className="admin-event-delete-btn" onClick={() => handleDelete(evt.id)}>Delete</button>
               </div>
             </div>
