@@ -1589,6 +1589,34 @@
   animation: ringFillIn 1.6s ease-out;
 }
 
+.wk-stat-near {
+  animation: wkStatNearPulse 2s ease-in-out infinite;
+}
+
+.wk-fill-near {
+  stroke: var(--color-primary) !important;
+  filter: brightness(1.2);
+}
+
+.wk-stat-complete {
+  animation: wkStatCompleteGlow 1s ease-out forwards;
+}
+
+.wk-fill-complete {
+  stroke: #4CAF50 !important;
+}
+
+@keyframes wkStatNearPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb), 0.5)); }
+}
+
+@keyframes wkStatCompleteGlow {
+  0% { filter: drop-shadow(0 0 0 transparent); }
+  40% { filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.6)); }
+  100% { filter: drop-shadow(0 0 4px rgba(var(--color-primary-rgb), 0.3)); }
+}
+
 .wk-stat-value {
   position: relative;
   z-index: 1;
