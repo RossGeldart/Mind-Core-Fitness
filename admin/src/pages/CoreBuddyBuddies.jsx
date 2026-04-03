@@ -1093,6 +1093,11 @@ export default function CoreBuddyBuddies() {
                       const hasJoined = joinedEvents.has(evt.id);
                       return (
                         <div key={evt.id} className={`bdy-event-card bdy-event-${evt.status}`}>
+                          {evt.coverImage && (
+                            <div className="bdy-event-cover">
+                              <img src={evt.coverImage} alt="" />
+                            </div>
+                          )}
                           <div className="bdy-event-status-badge">
                             {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}
                           </div>

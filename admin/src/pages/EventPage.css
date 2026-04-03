@@ -151,6 +151,19 @@
   border: 1px solid var(--border-color);
 }
 
+.evp-cover {
+  margin: -16px -16px 14px -16px;
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+}
+
+.evp-cover img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+}
+
 .evp-desc {
   color: var(--text-secondary);
   font-size: 0.9rem;
