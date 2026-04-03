@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   collection, getDocs, doc, addDoc, deleteDoc, updateDoc, serverTimestamp, Timestamp, setDoc
 } from 'firebase/firestore';
-import { ref, listAll, getDownloadURL } from 'firebase/storage';
+import { ref, listAll, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 
 const WORKOUT_FEATURES = [
@@ -112,6 +112,8 @@ export default function AdminEvents() {
 
   const [generating, setGenerating] = useState(false);
   const [generateProgress, setGenerateProgress] = useState('');
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -150,6 +152,46 @@ export default function AdminEvents() {
     setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '', eventType: 'standard', luckyDipFocus: 'mix', luckyDipEquipment: ['dumbbells', 'kettlebells'], luckyDipDuration: 15 });
     setEditingEvent(null);
     setShowForm(false);
+    setCoverFile(null);
+    setCoverPreview(null);
+  };
+
+  // Resize cover image to max 800px wide, 2:1 aspect, JPEG 0.85 quality
+  const resizeCoverImage = (file) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX_W = 800;
+      const TARGET_H = MAX_W / 2; // 2:1 aspect
+      const canvas = document.createElement('canvas');
+      canvas.width = MAX_W;
+      canvas.height = TARGET_H;
+      const ctx = canvas.getContext('2d');
+      // Cover-fit: scale & center crop to fill 2:1
+      const srcRatio = img.width / img.height;
+      const tgtRatio = MAX_W / TARGET_H;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      if (srcRatio > tgtRatio) {
+        sw = img.height * tgtRatio;
+        sx = (img.width - sw) / 2;
+      } else {
+        sh = img.width / tgtRatio;
+        sy = (img.height - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, MAX_W, TARGET_H);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+
+  const handleCoverSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file', 'error');
+      return;
+    }
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -183,14 +225,26 @@ export default function AdminEvents() {
         }),
       };
 
+      let eventId;
       if (editingEvent) {
-        await updateDoc(doc(db, 'events', editingEvent.id), eventData);
-        showToast('Event updated', 'success');
+        eventId = editingEvent.id;
+        await updateDoc(doc(db, 'events', eventId), eventData);
       } else {
         eventData.createdAt = serverTimestamp();
-        await addDoc(collection(db, 'events'), eventData);
-        showToast('Event created', 'success');
+        const docRef = await addDoc(collection(db, 'events'), eventData);
+        eventId = docRef.id;
       }
+
+      // Upload cover image if selected
+      if (coverFile) {
+        const resized = await resizeCoverImage(coverFile);
+        const storageRef = ref(storage, `eventCovers/${eventId}/cover.jpg`);
+        await uploadBytes(storageRef, resized, { contentType: 'image/jpeg' });
+        const coverUrl = await getDownloadURL(storageRef);
+        await updateDoc(doc(db, 'events', eventId), { coverImage: coverUrl });
+      }
+
+      showToast(editingEvent ? 'Event updated' : 'Event created', 'success');
       resetForm();
       await fetchEvents();
     } catch (err) {
@@ -218,6 +272,8 @@ export default function AdminEvents() {
       luckyDipDuration: evt.luckyDipDuration || 15,
     });
     setEditingEvent(evt);
+    setCoverFile(null);
+    setCoverPreview(evt.coverImage || null);
     setShowForm(true);
   };
 
@@ -416,6 +472,25 @@ export default function AdminEvents() {
               maxLength={500}
             />
           </div>
+          <div className="admin-events-form-group">
+            <label>Cover Photo <span style={{ fontWeight: 400, color: 'var(--text-tertiary)' }}>(800×400 recommended)</span></label>
+            <div className="admin-events-cover-upload">
+              {coverPreview ? (
+                <div className="admin-events-cover-preview">
+                  <img src={coverPreview} alt="Cover preview" />
+                  <button type="button" className="admin-events-cover-remove" onClick={() => { setCoverFile(null); setCoverPreview(null); }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              ) : (
+                <label className="admin-events-cover-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Add Cover Photo
+                  <input type="file" accept="image/*" onChange={handleCoverSelect} hidden />
+                </label>
+              )}
+            </div>
+          </div>
           <div className="admin-events-form-row">
             <div className="admin-events-form-group">
               <label>Event Type</label>
@@ -573,6 +648,11 @@ export default function AdminEvents() {
         <div className="admin-events-list">
           {events.map(evt => (
             <div key={evt.id} className={`admin-event-card admin-event-${evt.status}`}>
+              {evt.coverImage && (
+                <div className="admin-event-cover">
+                  <img src={evt.coverImage} alt="" />
+                </div>
+              )}
               <div className="admin-event-card-header">
                 <span className={`admin-event-status admin-event-status-${evt.status}`}>
                   {evt.status === 'active' ? 'Active' : evt.status === 'upcoming' ? 'Upcoming' : 'Completed'}

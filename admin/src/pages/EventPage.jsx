@@ -724,6 +724,11 @@ export default function EventPage() {
         {activeTab === 'overview' && (
           <div className="evp-content">
             <div className="evp-overview-card">
+              {event.coverImage && (
+                <div className="evp-cover">
+                  <img src={event.coverImage} alt="" />
+                </div>
+              )}
               <p className="evp-desc">{event.description}</p>
               <div className="evp-overview-meta">
                 <span>
