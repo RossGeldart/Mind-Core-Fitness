@@ -106,6 +106,8 @@ export default function AdminEvents() {
     linkedChallenge: '',
     eventType: 'standard',
     luckyDipFocus: 'mix',
+    luckyDipEquipment: ['dumbbells', 'kettlebells'],
+    luckyDipDuration: 15,
   });
 
   const [generating, setGenerating] = useState(false);
@@ -145,7 +147,7 @@ export default function AdminEvents() {
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '', eventType: 'standard', luckyDipFocus: 'mix' });
+    setForm({ title: '', description: '', category: 'fitness', leaderboardStat: 'workouts', startDate: '', endDate: '', linkedChallenge: '', eventType: 'standard', luckyDipFocus: 'mix', luckyDipEquipment: ['dumbbells', 'kettlebells'], luckyDipDuration: 15 });
     setEditingEvent(null);
     setShowForm(false);
   };
@@ -175,8 +177,8 @@ export default function AdminEvents() {
         eventType: form.eventType,
         ...(isLuckyDip && {
           luckyDipFocus: form.luckyDipFocus,
-          luckyDipEquipment: LUCKY_DIP_EQUIPMENT,
-          luckyDipDuration: LUCKY_DIP_DURATION,
+          luckyDipEquipment: form.luckyDipEquipment,
+          luckyDipDuration: form.luckyDipDuration,
           luckyDipLevel: LUCKY_DIP_LEVEL.key,
         }),
       };
@@ -212,6 +214,8 @@ export default function AdminEvents() {
       linkedChallenge: evt.linkedChallenge || '',
       eventType: evt.eventType || 'standard',
       luckyDipFocus: evt.luckyDipFocus || 'mix',
+      luckyDipEquipment: evt.luckyDipEquipment || ['dumbbells', 'kettlebells'],
+      luckyDipDuration: evt.luckyDipDuration || 15,
     });
     setEditingEvent(evt);
     setShowForm(true);
@@ -274,9 +278,10 @@ export default function AdminEvents() {
       })
     );
 
+    const evtDuration = evt.luckyDipDuration || LUCKY_DIP_DURATION;
     const config = LUCKY_DIP_LEVEL;
     const intervalTime = config.work + config.rest;
-    const totalSeconds = LUCKY_DIP_DURATION * 60;
+    const totalSeconds = evtDuration * 60;
     const totalIntervals = Math.floor(totalSeconds / intervalTime);
 
     let exPerRound, numRounds;
@@ -292,12 +297,12 @@ export default function AdminEvents() {
     }
     numRounds = Math.max(2, numRounds);
 
-    return { exercises, exPerRound, numRounds, focus, equipment, config };
+    return { exercises, exPerRound, numRounds, focus, equipment, config, evtDuration };
   };
 
   // Save a single day's Lucky Dip workout to Firestore
   const saveDailyWorkout = async (evtId, date, pool) => {
-    const { exercises, exPerRound, numRounds, focus, equipment, config } = pool;
+    const { exercises, exPerRound, numRounds, focus, equipment, config, evtDuration } = pool;
     const filtered = exercises.filter(e => !ADVANCED_CORE_EXERCISES.has(e.name.toLowerCase()));
     const shuffled = shuffleArray(filtered.length > 0 ? filtered : exercises);
     const selected = shuffled.slice(0, Math.min(exPerRound, shuffled.length));
@@ -305,7 +310,7 @@ export default function AdminEvents() {
     await setDoc(doc(db, 'events', evtId, 'dailyWorkouts', date), {
       exercises: selected,
       rounds: numRounds,
-      duration: LUCKY_DIP_DURATION,
+      duration: evtDuration,
       level: config.key,
       work: config.work,
       rest: config.rest,
@@ -443,11 +448,36 @@ export default function AdminEvents() {
               </div>
               <div className="admin-events-form-group">
                 <label>Equipment</label>
-                <input type="text" value="Dumbbells + Kettlebells" disabled />
+                <div className="admin-events-checkbox-group">
+                  {[{ key: 'bodyweight', label: 'Bodyweight' }, { key: 'dumbbells', label: 'Dumbbells' }, { key: 'kettlebells', label: 'Kettlebells' }].map(eq => (
+                    <label key={eq.key} className="admin-events-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={form.luckyDipEquipment.includes(eq.key)}
+                        onChange={e => {
+                          setForm(f => {
+                            const next = e.target.checked
+                              ? [...f.luckyDipEquipment, eq.key]
+                              : f.luckyDipEquipment.filter(k => k !== eq.key);
+                            return { ...f, luckyDipEquipment: next.length > 0 ? next : f.luckyDipEquipment };
+                          });
+                        }}
+                      />
+                      {eq.label}
+                    </label>
+                  ))}
+                </div>
               </div>
               <div className="admin-events-form-group">
                 <label>Duration</label>
-                <input type="text" value="15 minutes" disabled />
+                <select
+                  value={form.luckyDipDuration}
+                  onChange={e => setForm(f => ({ ...f, luckyDipDuration: Number(e.target.value) }))}
+                >
+                  {[5, 10, 15, 20, 30].map(d => (
+                    <option key={d} value={d}>{d} minutes</option>
+                  ))}
+                </select>
               </div>
             </div>
           )}
@@ -552,7 +582,7 @@ export default function AdminEvents() {
               <h4 className="admin-event-title">{evt.title}</h4>
               {evt.description && <p className="admin-event-desc">{evt.description}</p>}
               {evt.eventType === 'luckyDip' && (
-                <p className="admin-event-linked">🎲 Lucky Dip · {LUCKY_DIP_FOCUS_OPTIONS.find(f => f.value === evt.luckyDipFocus)?.label || 'Mix'} · 15 min</p>
+                <p className="admin-event-linked">🎲 Lucky Dip · {LUCKY_DIP_FOCUS_OPTIONS.find(f => f.value === evt.luckyDipFocus)?.label || 'Mix'} · {evt.luckyDipDuration || 15} min · {(evt.luckyDipEquipment || []).join(' + ')}</p>
               )}
               {evt.linkedChallenge && evt.eventType !== 'luckyDip' && (
                 <p className="admin-event-linked">
