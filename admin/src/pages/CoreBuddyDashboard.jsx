@@ -1017,7 +1017,12 @@ export default function CoreBuddyDashboard() {
         </div>
 
         {/* Habit Carousel — swipe through today's habits, press-and-hold to complete */}
-        <ProfileHabitCarousel />
+        <ProfileHabitCarousel
+          onStatsChange={({ completed, total }) => {
+            setTodayHabitsCount(completed);
+            setHabitWeekPct(total > 0 ? Math.round((completed / total) * 100) : 0);
+          }}
+        />
 
         {/* Weekly target picker */}
         {showTargetPicker && (

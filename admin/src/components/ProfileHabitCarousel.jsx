@@ -39,7 +39,7 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-export default function ProfileHabitCarousel() {
+export default function ProfileHabitCarousel({ onStatsChange }) {
   const { currentUser, clientData } = useAuth();
   const { isDark } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
@@ -133,6 +133,12 @@ export default function ProfileHabitCarousel() {
         [todayStr]: { clientId: clientData.id, date: todayStr, habits: updated, _id: docId },
       }));
 
+      // Notify parent so its stat rings stay in sync
+      if (onStatsChange) {
+        const completedCount = Object.values(updated).filter(Boolean).length;
+        onStatsChange({ completed: completedCount, total: visibleHabits.length });
+      }
+
       await setDoc(doc(db, 'habitLogs', docId), {
         clientId: clientData.id,
         date: todayStr,
@@ -148,7 +154,7 @@ export default function ProfileHabitCarousel() {
     } finally {
       setSaving(false);
     }
-  }, [currentUser, clientData, saving, todayLog, todayStr]);
+  }, [currentUser, clientData, saving, todayLog, todayStr, onStatsChange, visibleHabits.length]);
 
   const startHold = (habitKey, clientX, clientY) => {
     const checked = todayLog.habits?.[habitKey] || false;
