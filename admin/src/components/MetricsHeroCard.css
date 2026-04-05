@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   padding: 14px 14px 12px;
+  margin-bottom: 16px;
   background: var(--bg-card);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
@@ -20,6 +21,20 @@
   border-color: rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+/* Mono themes — card backgrounds must be explicit since --bg-card is very transparent */
+[data-mono="true"][data-theme="light"] .mhc-wrap {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(20px) saturate(100%);
+  backdrop-filter: blur(20px) saturate(100%);
+}
+
+[data-mono="true"][data-theme="dark"] .mhc-wrap {
+  background: rgba(30, 30, 30, 0.92);
+  border-color: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(20px) saturate(100%);
+  backdrop-filter: blur(20px) saturate(100%);
 }
 
 /* ===== Empty state (no setup) ===== */
@@ -307,12 +322,14 @@
 .mhc-picker-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--overlay-bg, rgba(0, 0, 0, 0.6));
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 1000;
+  z-index: 2050;
   animation: mhcFade 0.2s ease-out;
 }
 
@@ -325,13 +342,24 @@
   width: 100%;
   max-width: 340px;
   padding: 20px;
-  background: var(--bg-card);
+  background: var(--bg-card-elevated, #fff);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 }
 
+/* Explicit opaque backgrounds — --bg-card-elevated is semi-transparent in mono */
 [data-theme="dark"] .mhc-picker {
-  background: #1e1e1e;
+  background: rgba(30, 30, 30, 0.95);
+}
+
+[data-mono="true"][data-theme="light"] .mhc-picker {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+[data-mono="true"][data-theme="dark"] .mhc-picker {
+  background: rgba(20, 20, 20, 0.96);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .mhc-picker-title {
@@ -385,7 +413,7 @@
 .mhc-picker-active {
   background: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
-  color: #fff !important;
+  color: var(--text-on-primary, #fff) !important;
 }
 
 .mhc-picker-option:disabled {

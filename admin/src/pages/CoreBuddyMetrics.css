@@ -225,7 +225,7 @@
 .cbm-focus-active {
   background: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
-  color: #fff !important;
+  color: var(--text-on-primary, #fff) !important;
 }
 
 .cbm-form-row {
