@@ -1,0 +1,85 @@
+/* Profile Habit Carousel — replaces spider chart on dashboard */
+
+.phc-wrap {
+  margin: 18px 0 6px;
+  padding: 0;
+}
+
+.phc-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 12px;
+}
+
+.phc-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.phc-count {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+/* Horizontal scroll-snap track */
+.phc-scroller {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 6px 20px 10px;
+  scroll-padding: 20px;
+}
+
+.phc-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each card — matches Habits page tile size */
+.phc-card {
+  flex: 0 0 auto;
+  width: calc(50% - 7px); /* same visual footprint as the 2-col grid on Habits page */
+  max-width: 200px;
+  min-width: 160px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+/* Pagination dots */
+.phc-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 0 20px;
+}
+
+.phc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  transition: background 0.2s ease, width 0.2s ease;
+}
+
+[data-theme="dark"] .phc-dot {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.phc-dot-active {
+  background: var(--color-primary);
+  width: 18px;
+  border-radius: 3px;
+}
