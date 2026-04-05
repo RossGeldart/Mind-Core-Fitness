@@ -39,7 +39,7 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-export default function ProfileHabitCarousel({ onStatsChange }) {
+export default function ProfileHabitCarousel({ onStatsChange, onOpenHabits }) {
   const { currentUser, clientData } = useAuth();
   const { isDark } = useTheme();
   const { isPremium, FREE_HABIT_LIMIT } = useTier();
@@ -328,6 +328,13 @@ export default function ProfileHabitCarousel({ onStatsChange }) {
             />
           ))}
         </div>
+      )}
+
+      {onOpenHabits && (
+        <button type="button" className="phc-link" onClick={onOpenHabits}>
+          Take me to Habits
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       )}
     </div>
   );

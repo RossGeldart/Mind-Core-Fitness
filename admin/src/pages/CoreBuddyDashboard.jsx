@@ -805,18 +805,7 @@ export default function CoreBuddyDashboard() {
         ringLabel: '0',
       };
     }
-    // 2. Habits not all done
-    if (todayHabitsCount < habitCount) {
-      return {
-        label: 'DAILY HABITS',
-        message: `${todayHabitsCount}/${habitCount} completed`,
-        cta: 'Open Habits',
-        action: () => navigate('/client/core-buddy/consistency'),
-        pct: habitWeekPct,
-        ringLabel: `${todayHabitsCount}/${habitCount}`,
-      };
-    }
-    // 3. No nutrition logged (premium only)
+    // 2. No nutrition logged (premium only)
     if (isPremium && nutritionTotals.calories === 0) {
       return {
         label: 'NUTRITION',
@@ -827,7 +816,7 @@ export default function CoreBuddyDashboard() {
         ringLabel: '0',
       };
     }
-    // 4. Everything done
+    // 3. Everything done
     return {
       label: 'TODAY',
       message: "You're crushing it!",
@@ -1022,6 +1011,7 @@ export default function CoreBuddyDashboard() {
             setTodayHabitsCount(completed);
             setHabitWeekPct(total > 0 ? Math.round((completed / total) * 100) : 0);
           }}
+          onOpenHabits={() => navigate('/client/core-buddy/consistency')}
         />
 
         {/* Weekly target picker */}

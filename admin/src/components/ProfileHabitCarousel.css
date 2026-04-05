@@ -83,3 +83,28 @@
   width: 18px;
   border-radius: 3px;
 }
+
+/* Take me to Habits link */
+.phc-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 10px auto 0;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.phc-link:hover,
+.phc-link:active {
+  opacity: 0.7;
+}
