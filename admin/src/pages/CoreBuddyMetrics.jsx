@@ -184,6 +184,7 @@ export default function CoreBuddyMetrics() {
   const [comparePhotoA, setComparePhotoA] = useState(0);
   const [comparePhotoB, setComparePhotoB] = useState(0);
   const [expandedPeriod, setExpandedPeriod] = useState(null);
+  const [showAllMetrics, setShowAllMetrics] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
@@ -266,14 +267,9 @@ export default function CoreBuddyMetrics() {
   const handleSetupSave = async () => {
     if (!clientData) return;
     // Validate all fields filled
-    const missingMeasurement = BODY_METRICS.find(m => !formValues[m.key] || isNaN(Number(formValues[m.key])));
-    if (missingMeasurement) {
-      showToast(`Please enter a value for ${missingMeasurement.name}`, 'error');
-      return;
-    }
-    const missingTarget = BODY_METRICS.find(m => !targetValues[m.key] || isNaN(Number(targetValues[m.key])));
-    if (missingTarget) {
-      showToast(`Please enter a target for ${missingTarget.name}`, 'error');
+    const anyMeasurement = BODY_METRICS.some(m => formValues[m.key] && !isNaN(Number(formValues[m.key])));
+    if (!anyMeasurement) {
+      showToast('Enter at least one measurement to get started', 'error');
       return;
     }
 
@@ -285,9 +281,15 @@ export default function CoreBuddyMetrics() {
       const baseline = {};
 
       BODY_METRICS.forEach(m => {
-        measurements[m.key] = Number(formValues[m.key]);
-        targets[m.key] = Number(targetValues[m.key]);
-        baseline[m.key] = Number(formValues[m.key]);
+        const measureRaw = formValues[m.key];
+        const targetRaw = targetValues[m.key];
+        if (measureRaw && !isNaN(Number(measureRaw))) {
+          measurements[m.key] = Number(measureRaw);
+          baseline[m.key] = Number(measureRaw);
+        }
+        if (targetRaw && !isNaN(Number(targetRaw))) {
+          targets[m.key] = Number(targetRaw);
+        }
       });
 
       // Save targets + baseline
@@ -325,7 +327,9 @@ export default function CoreBuddyMetrics() {
   // Log new measurements
   const handleMeasureSave = async () => {
     if (!clientData) return;
-    const missingMeasurement = BODY_METRICS.find(m => !formValues[m.key] || isNaN(Number(formValues[m.key])));
+    const trackedMetrics = BODY_METRICS.filter(m => targetsDoc?.baseline?.[m.key] != null);
+    const metricsToValidate = trackedMetrics.length > 0 ? trackedMetrics : BODY_METRICS;
+    const missingMeasurement = metricsToValidate.find(m => !formValues[m.key] || isNaN(Number(formValues[m.key])));
     if (missingMeasurement) {
       showToast(`Please enter a value for ${missingMeasurement.name}`, 'error');
       return;
@@ -335,7 +339,7 @@ export default function CoreBuddyMetrics() {
     try {
       const today = new Date().toISOString().split('T')[0];
       const measurements = {};
-      BODY_METRICS.forEach(m => {
+      metricsToValidate.forEach(m => {
         measurements[m.key] = Number(formValues[m.key]);
       });
 
@@ -368,17 +372,15 @@ export default function CoreBuddyMetrics() {
   // Update targets
   const handleTargetsSave = async () => {
     if (!clientData || !targetsDoc) return;
-    const missingTarget = BODY_METRICS.find(m => !targetValues[m.key] || isNaN(Number(targetValues[m.key])));
-    if (missingTarget) {
-      showToast(`Please enter a target for ${missingTarget.name}`, 'error');
-      return;
-    }
 
     setSaving(true);
     try {
       const newTargets = {};
       BODY_METRICS.forEach(m => {
-        newTargets[m.key] = Number(targetValues[m.key]);
+        const raw = targetValues[m.key];
+        if (raw && !isNaN(Number(raw))) {
+          newTargets[m.key] = Number(raw);
+        }
       });
 
       await updateDoc(doc(db, 'coreBuddyMetricTargets', clientData.id), {
@@ -796,6 +798,7 @@ export default function CoreBuddyMetrics() {
 
             <div className="cbm-form-section">
               <h3 className="cbm-form-label">Current Measurements</h3>
+              <p className="cbm-form-hint">Fill in just the ones you want to track. You can add more later.</p>
               {BODY_METRICS.map(m => (
                 <div key={m.key} className="cbm-form-row">
                   <label className="cbm-form-name">{m.name}</label>
@@ -815,8 +818,8 @@ export default function CoreBuddyMetrics() {
             </div>
 
             <div className="cbm-form-section">
-              <h3 className="cbm-form-label">Your Targets</h3>
-              <p className="cbm-form-hint">Set where you want to be. If your target is smaller than current, we'll track loss as progress.</p>
+              <h3 className="cbm-form-label">Your Targets <span className="cbm-form-optional">(optional)</span></h3>
+              <p className="cbm-form-hint">Set where you want to be — leave any blank and add them later. If smaller than current, we'll track loss as progress.</p>
               {BODY_METRICS.map(m => {
                 const current = Number(formValues[m.key]) || 0;
                 const target = Number(targetValues[m.key]) || 0;
@@ -858,7 +861,10 @@ export default function CoreBuddyMetrics() {
           <>
             {/* Progress rings grid */}
             <div className="cbm-rings-grid">
-              {BODY_METRICS.map(m => {
+              {(BODY_METRICS.filter(m => targetsDoc.baseline?.[m.key] != null).length > 0
+                ? BODY_METRICS.filter(m => targetsDoc.baseline?.[m.key] != null)
+                : BODY_METRICS
+              ).map(m => {
                 const pct = getProgressForMetric(m.key);
                 const offset = CIRC - (pct / 100) * CIRC;
                 const isComplete = pct >= 100;
@@ -889,7 +895,15 @@ export default function CoreBuddyMetrics() {
 
             {/* Metric detail cards */}
             <div className="cbm-details">
-              {BODY_METRICS.map(m => {
+              {(() => {
+                const tracked = BODY_METRICS.filter(m => targetsDoc.baseline?.[m.key] != null);
+                const universe = tracked.length > 0 ? tracked : BODY_METRICS;
+                const focusKey = targetsDoc.focusMetric || 'waist';
+                const list = showAllMetrics
+                  ? universe
+                  : universe.filter(m => m.key === focusKey);
+                return list;
+              })().map(m => {
                 const baseline = targetsDoc.baseline?.[m.key];
                 const target = targetsDoc.targets?.[m.key];
                 const current = latestRecord?.measurements?.[m.key];
@@ -934,6 +948,21 @@ export default function CoreBuddyMetrics() {
                   </div>
                 );
               })}
+              {(() => {
+                const trackedCount = BODY_METRICS.filter(m => targetsDoc.baseline?.[m.key] != null).length;
+                const total = trackedCount > 0 ? trackedCount : BODY_METRICS.length;
+                if (total <= 1) return null;
+                return (
+                  <button
+                    type="button"
+                    className="cbm-toggle-all-btn"
+                    onClick={() => setShowAllMetrics(v => !v)}
+                  >
+                    {showAllMetrics ? 'Show focus metric only' : `Show all ${total} metrics`}
+                    <svg className={`cbm-toggle-chevron${showAllMetrics ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                );
+              })()}
             </div>
 
             {/* Actions row */}
@@ -1081,8 +1110,28 @@ export default function CoreBuddyMetrics() {
           <div className="cbm-overlay-card" onClick={(e) => e.stopPropagation()}>
             <h2 className="cbm-overlay-title">Log Measurements</h2>
             <p className="cbm-overlay-desc">Enter your current measurements below.</p>
+            {latestRecord && (
+              <button
+                type="button"
+                className="cbm-copy-last-btn"
+                onClick={() => {
+                  const prefill = {};
+                  BODY_METRICS.forEach(m => {
+                    const v = latestRecord.measurements?.[m.key];
+                    if (v != null) prefill[m.key] = String(v);
+                  });
+                  setFormValues(prefill);
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy from last — then just edit what changed
+              </button>
+            )}
             <div className="cbm-form-section">
-              {BODY_METRICS.map(m => (
+              {(BODY_METRICS.filter(m => targetsDoc?.baseline?.[m.key] != null).length > 0
+                ? BODY_METRICS.filter(m => targetsDoc?.baseline?.[m.key] != null)
+                : BODY_METRICS
+              ).map(m => (
                 <div key={m.key} className="cbm-form-row">
                   <label className="cbm-form-name">{m.name}</label>
                   <div className="cbm-form-input-wrap">
@@ -1114,9 +1163,12 @@ export default function CoreBuddyMetrics() {
         <div className="cbm-overlay" onClick={() => setShowEditTargets(false)}>
           <div className="cbm-overlay-card" onClick={(e) => e.stopPropagation()}>
             <h2 className="cbm-overlay-title">Edit Targets</h2>
-            <p className="cbm-overlay-desc">Update your target measurements.</p>
+            <p className="cbm-overlay-desc">Update your target measurements — leave blank to clear a target.</p>
             <div className="cbm-form-section">
-              {BODY_METRICS.map(m => {
+              {(BODY_METRICS.filter(m => targetsDoc?.baseline?.[m.key] != null).length > 0
+                ? BODY_METRICS.filter(m => targetsDoc?.baseline?.[m.key] != null)
+                : BODY_METRICS
+              ).map(m => {
                 const baseline = targetsDoc?.baseline?.[m.key] || 0;
                 const target = Number(targetValues[m.key]) || 0;
                 const dir = baseline && target ? getDirection(baseline, target) : null;
