@@ -259,6 +259,59 @@
   margin: 0;
 }
 
+.evp-countdown-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.evp-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  padding: 8px 6px 6px;
+  background: var(--bg-card-elevated, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  border-radius: 10px;
+}
+.evp-countdown-num {
+  font-size: 1.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-primary);
+  font-feature-settings: "tnum";
+}
+.evp-countdown-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, var(--text-secondary));
+  margin-top: 4px;
+}
+.evp-countdown-sep {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-tertiary, var(--text-secondary));
+  line-height: 1;
+  padding-top: 8px;
+  opacity: 0.5;
+}
+[data-theme="dark"] .evp-countdown-unit {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+[data-mono="true"][data-theme="light"] .evp-countdown-unit {
+  background: rgba(0, 0, 0, 0.04);
+}
+[data-mono="true"][data-theme="dark"] .evp-countdown-unit {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* My Progress */
 .evp-my-progress {
   margin-top: 16px;

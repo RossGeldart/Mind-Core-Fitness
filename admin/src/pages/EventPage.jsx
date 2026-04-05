@@ -121,6 +121,14 @@ export default function EventPage() {
   // My progress
   const [myProgress, setMyProgress] = useState(null);
 
+  // Live countdown ticker (updates every second for upcoming events)
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    if (event?.status !== 'upcoming') return;
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, [event?.status]);
+
   // Lucky Dip state
   const [luckyDipWorkout, setLuckyDipWorkout] = useState(null);
   const [luckyDipRevealed, setLuckyDipRevealed] = useState(false);
@@ -836,14 +844,39 @@ export default function EventPage() {
               </div>
             )}
 
-            {event.status === 'upcoming' && (
-              <div className="evp-countdown">
-                <h3>Starts In</h3>
-                <p className="evp-countdown-value">
-                  {Math.max(0, Math.ceil((event.startDate - new Date()) / (1000 * 60 * 60 * 24)))} days
-                </p>
-              </div>
-            )}
+            {event.status === 'upcoming' && (() => {
+              const diffMs = Math.max(0, event.startDate - now);
+              const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+              return (
+                <div className="evp-countdown">
+                  <h3>Starts In</h3>
+                  <div className="evp-countdown-grid">
+                    <div className="evp-countdown-unit">
+                      <span className="evp-countdown-num">{String(days).padStart(2, '0')}</span>
+                      <span className="evp-countdown-label">Days</span>
+                    </div>
+                    <span className="evp-countdown-sep">:</span>
+                    <div className="evp-countdown-unit">
+                      <span className="evp-countdown-num">{String(hours).padStart(2, '0')}</span>
+                      <span className="evp-countdown-label">Hrs</span>
+                    </div>
+                    <span className="evp-countdown-sep">:</span>
+                    <div className="evp-countdown-unit">
+                      <span className="evp-countdown-num">{String(mins).padStart(2, '0')}</span>
+                      <span className="evp-countdown-label">Min</span>
+                    </div>
+                    <span className="evp-countdown-sep">:</span>
+                    <div className="evp-countdown-unit">
+                      <span className="evp-countdown-num">{String(secs).padStart(2, '0')}</span>
+                      <span className="evp-countdown-label">Sec</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* My progress */}
             {isParticipant && myProgress && event.status !== 'upcoming' && (
