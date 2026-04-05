@@ -190,6 +190,7 @@ export default function CoreBuddyMetrics() {
   // Form state
   const [formValues, setFormValues] = useState({});
   const [targetValues, setTargetValues] = useState({});
+  const [focusMetric, setFocusMetric] = useState('waist');
 
   // Toast
   const [toast, setToast] = useState(null);
@@ -294,6 +295,7 @@ export default function CoreBuddyMetrics() {
         clientId: clientData.id,
         targets,
         baseline,
+        focusMetric,
         setupComplete: true,
         lastMeasured: Timestamp.now(),
         updatedAt: serverTimestamp(),
@@ -774,6 +776,23 @@ export default function CoreBuddyMetrics() {
           <div className="cbm-setup-card">
             <h2 className="cbm-setup-heading">Set Up Your Metrics</h2>
             <p className="cbm-setup-desc">Enter your current measurements and set targets. We'll track your progress every 4 weeks.</p>
+
+            <div className="cbm-form-section">
+              <h3 className="cbm-form-label">Focus Metric</h3>
+              <p className="cbm-form-hint">Pick the one measurement that matters most to you. It'll appear on your profile dashboard.</p>
+              <div className="cbm-focus-picker">
+                {BODY_METRICS.map(m => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    className={`cbm-focus-option${focusMetric === m.key ? ' cbm-focus-active' : ''}`}
+                    onClick={() => setFocusMetric(m.key)}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="cbm-form-section">
               <h3 className="cbm-form-label">Current Measurements</h3>
